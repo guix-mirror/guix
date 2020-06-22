@@ -40,7 +40,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
-;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019, 2020 Brian Leung <bkleung89@gmail.com>
@@ -96,6 +96,7 @@
   #:use-module (guix packages)
   #:use-module (guix cvs-download)
   #:use-module (guix download)
+  #:use-module (guix bzr-download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
@@ -249,6 +250,79 @@ using geiser.")
       (license license:bsd-3)
       (home-page "https://github.com/xiaohanyu/ac-geiser"))))
 
+(define-public emacs-hyperbole
+  (package
+    (name "emacs-hyperbole")
+    (version "7.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "hyperbole-" version ".tar"))
+       (sha256
+        (base32 "08gi4v76s53nfmn3s0qcxc3zii0pspjfd6ry7jq1kgm3z34x8hab"))
+       (patches
+        (search-patches "emacs-hyperbole-toggle-messaging.patch"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include '("DEMO"
+                   "DEMO-ROLO.otl"
+                   "HY-ABOUT"
+                   "\\.el$"
+                   "\\.info$"
+                   "\\.kotl$")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Fix build issues about missing "domainname" and "hpmap:dir-user"
+         ;; parent dir.
+         (add-after 'unpack 'fix-build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "hypb.el"
+               (("/bin/domainname")
+                (string-append (assoc-ref inputs "inetutils")
+                               "/bin/dnsdomainname")))
+             (substitute* "hyperbole.el"
+               (("\\(hyperb:check-dir-user\\)") ""))
+             #t)))))
+    (inputs
+     `(("inetutils" ,inetutils)))
+    (home-page "https://www.gnu.org/software/hyperbole/")
+    (synopsis "The Everyday Hypertextual Information Manager")
+    (description
+     "GNU Hyperbole, or just Hyperbole, is an easy-to-use, yet powerful and
+programmable hypertextual information management system implemented as a GNU
+Emacs package.  It offers rapid views and interlinking of all kinds of textual
+information, utilizing Emacs for editing.  It can dramatically increase your
+productivity and greatly reduce the number of keyboard/mouse keys you'll need
+to work efficiently.  Hyperbole lets you:
+
+@itemize
+@item Quickly create hyperlink buttons either from the keyboard or by dragging
+between a source and destination window with a mouse button depressed.  Later,
+activate buttons by pressing/clicking on them or by giving the name of the
+button.
+@item Activate many kinds of \"implicit buttons\" recognized by context within
+text buffers, e.g. URLs, grep output lines, and git commits.  A single key or
+mouse button automatically does the right thing in dozens of contexts; just
+press and go.
+@item Build outlines with multi-level numbered outline nodes, e.g. 1.4.8.6,
+that all renumber automatically as any node or tree is moved in the outline.
+Each node also has a permanent hyperlink anchor that you can reference from
+any other node.
+@item Manage all your contacts quickly with hierarchical categories and embed
+hyperlinks within each entry.  Or create an archive of documents with
+hierarchical entries and use the same search mechanism to quickly find any
+matching entry.
+@item Use single keys to easily manage your Emacs windows or frames and
+quickly retrieve saved window and frame configurations.
+@item Search for things in your current buffers, in a directory tree or across
+major web search engines with the touch of a few keys.
+@end itemize
+
+The common thread in all these features is making retrieval, management and
+display of information fast and easy.  That is Hyperbole's purpose.")
+    (license license:gpl3+)))
+
 (define-public emacs-paredit
   (package
     (name "emacs-paredit")
@@ -398,10 +472,10 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
 
 (define-public emacs-magit
   ;; There hasn't been an official release since 2018-11-16.
-  (let ((commit "d05545ec2fd7edf915eaf1b9c15c785bb08975cc"))
+  (let ((commit "0746bf1bacfe896d3917ccc19c7fb9d95c18b1e9"))
     (package
       (name "emacs-magit")
-      (version (git-version "2.90.1" "4" commit))
+      (version (git-version "2.90.1" "5" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -410,7 +484,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "11aqyy4r9hrdi9nlypd70hn8384b6q89c7xavgv8c5q7f2g5z9qg"))))
+                  "1sgdygr81s2qxq2ahf998hl89qrb0r2wbgnsiz3hdda1431p0wzg"))))
       (build-system emacs-build-system)
       (arguments
        `(#:emacs ,emacs-no-x            ;module support is required
@@ -1188,14 +1262,14 @@ optional minor mode which can apply this command automatically on save.")
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.17")
+    (version "1.18")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/relint-" version ".tar"))
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "relint-" version ".tar"))
        (sha256
-        (base32 "1nv13dqdhf72c1jgk1ml4k6jqb8wsyphcx2vhsyhig5198lg4kd7"))))
+        (base32 "0zfislsksrkn6qs0w26yaff5xr7xqy2x235dcdpz8s2v35b6dhci"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -1404,44 +1478,21 @@ incrementally confined in Isearch manner.")
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.4")
+    (version "5.42")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnu/emms/emms-" version ".tar.gz"))
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "emms-" version ".tar"))
        (sha256
-        (base32 "1nd7sb6pva7qb1ki6w0zhd6zvqzd7742kaqi0f3v4as5jh09l6nr"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "Makefile"
-             (("/usr/bin/install-info")
-              ;; No need to use 'install-info' since it would create a
-              ;; useless 'dir' file.
-              "true")
-             (("^INFODIR=.*")
-              ;; Install Info files to $out/share/info, not $out/info.
-              "INFODIR := $(PREFIX)/share/info\n")
-             (("/site-lisp/emms")
-              ;; Install directly in share/emacs/site-lisp, not in a
-              ;; sub-directory.
-              "/site-lisp")
-             (("^all: (.*)\n" _ rest)
-              ;; Build 'emms-print-metadata'.
-              (string-append "all: " rest " emms-print-metadata\n")))
-           #t))))
-    (build-system gnu-build-system)
+        (base32 "1khx1fvllrs6w9kxk12mp1hj309c90mc7lkq1vvlqlr7vd6zmnpj"))))
+    (build-system emacs-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils)
-                  (ice-9 ftw))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (replace 'configure
+         (add-after 'unpack 'set-external-programs
+           ;; Specify the absolute file names of the various programs
+           ;; so that everything works out-of-the-box.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out     (assoc-ref outputs "out"))
                    (flac    (assoc-ref inputs "flac"))
@@ -1451,94 +1502,56 @@ incrementally confined in Isearch manner.")
                    (mp3info (assoc-ref inputs "mp3info"))
                    (mutagen (assoc-ref inputs "mutagen"))
                    (opus    (assoc-ref inputs "opus-tools")))
-               ;; Specify the installation directory.
-               (substitute* "Makefile"
-                 (("PREFIX=.*$")
-                  (string-append "PREFIX := " out "\n")))
-
-               (setenv "SHELL" (which "sh"))
-               (setenv "CC" "gcc")
-
-               ;; Specify the absolute file names of the various
-               ;; programs so that everything works out-of-the-box.
-               (with-directory-excursion "lisp"
-                 (emacs-substitute-variables
-                     "emms-player-mpg321-remote.el"
-                   ("emms-player-mpg321-remote-command"
-                    (string-append mpg321 "/bin/mpg321")))
-                 (substitute* "emms-player-simple.el"
-                   (("\"ogg123\"")
-                    (string-append "\"" vorbis "/bin/ogg123\"")))
-                 (substitute* "emms-player-simple.el"
-                   (("\"mpg321\"")
-                    (string-append "\"" mpg321 "/bin/mpg321\"")))
-                 (emacs-substitute-variables "emms-info-ogginfo.el"
-                   ("emms-info-ogginfo-program-name"
-                    (string-append vorbis "/bin/ogginfo")))
-                 (emacs-substitute-variables "emms-info-opusinfo.el"
-                   ("emms-info-opusinfo-program-name"
-                    (string-append opus "/bin/opusinfo")))
-                 (emacs-substitute-variables "emms-info-libtag.el"
-                   ("emms-info-libtag-program-name"
-                    (string-append out "/bin/emms-print-metadata")))
-                 (emacs-substitute-variables "emms-info-mp3info.el"
-                   ("emms-info-mp3info-program-name"
-                    (string-append mp3info "/bin/mp3info")))
-                 (emacs-substitute-variables "emms-info-metaflac.el"
-                   ("emms-info-metaflac-program-name"
-                    (string-append flac "/bin/metaflac")))
-                 (emacs-substitute-variables "emms-source-file.el"
-                   ("emms-source-file-gnu-find" (which "find")))
-                 (substitute* "emms-volume-amixer.el"
-                   (("\"amixer\"")
-                    (string-append "\"" alsa "/bin/amixer\"")))
-                 (substitute* "emms-tag-editor.el"
-                   (("\"mid3v2\"")
-                    (string-append "\"" mutagen "/bin/mid3v2\"")))
-                 #t))))
-         (add-before 'install 'pre-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; The 'install' rule expects the target directories to exist.
-             (let* ((out  (assoc-ref outputs "out"))
-                    (bin  (string-append out "/bin"))
-                    (man1 (string-append out "/share/man/man1")))
-               (mkdir-p bin)
-               (mkdir-p man1)
-
-               ;; Ensure that files are not rejected by gzip
-               (let ((early-1980 315619200)) ; 1980-01-02 UTC
-                 (ftw "." (lambda (file stat flag)
-                            (unless (<= early-1980 (stat:mtime stat))
-                              (utime file early-1980 early-1980))
-                            #t)))
-               #t)))
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (symlink "emms-auto.el"
-                        (string-append out "/share/emacs/site-lisp/"
-                                       "emms-autoloads.el")))
-             #t)))
-       #:tests? #f))
-    (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
-                     ("texinfo" ,texinfo)))
-    (inputs `(("alsa-utils" ,alsa-utils)
-              ("flac" ,flac)            ;for metaflac
-              ("vorbis-tools" ,vorbis-tools)
-              ("mpg321" ,mpg321)
-              ("taglib" ,taglib)
-              ("mp3info" ,mp3info)
-              ("mutagen" ,python-mutagen)
-              ("opus-tools" ,opus-tools)))
-    (properties '((upstream-name . "emms")))
-    (synopsis "Emacs Multimedia System")
+               (emacs-substitute-variables "emms-player-mpg321-remote.el"
+                 ("emms-player-mpg321-remote-command"
+                  (string-append mpg321 "/bin/mpg321")))
+               (substitute* "emms-player-simple.el"
+                 (("\"ogg123\"")
+                  (string-append "\"" vorbis "/bin/ogg123\"")))
+               (substitute* "emms-player-simple.el"
+                 (("\"mpg321\"")
+                  (string-append "\"" mpg321 "/bin/mpg321\"")))
+               (emacs-substitute-variables "emms-info-ogginfo.el"
+                 ("emms-info-ogginfo-program-name"
+                  (string-append vorbis "/bin/ogginfo")))
+               (emacs-substitute-variables "emms-info-opusinfo.el"
+                 ("emms-info-opusinfo-program-name"
+                  (string-append opus "/bin/opusinfo")))
+               (emacs-substitute-variables "emms-info-libtag.el"
+                 ("emms-info-libtag-program-name"
+                  (string-append out "/bin/emms-print-metadata")))
+               (emacs-substitute-variables "emms-info-mp3info.el"
+                 ("emms-info-mp3info-program-name"
+                  (string-append mp3info "/bin/mp3info")))
+               (emacs-substitute-variables "emms-info-metaflac.el"
+                 ("emms-info-metaflac-program-name"
+                  (string-append flac "/bin/metaflac")))
+               (emacs-substitute-variables "emms-source-file.el"
+                 ("emms-source-file-gnu-find" (which "find")))
+               (substitute* "emms-volume-amixer.el"
+                 (("\"amixer\"")
+                  (string-append "\"" alsa "/bin/amixer\"")))
+               (substitute* "emms-tag-editor.el"
+                 (("\"mid3v2\"")
+                  (string-append "\"" mutagen "/bin/mid3v2\"")))
+               #t))))))
+    (inputs
+     `(("alsa-utils" ,alsa-utils)
+       ("flac" ,flac)                   ;for metaflac
+       ("vorbis-tools" ,vorbis-tools)
+       ("mpg321" ,mpg321)
+       ("taglib" ,taglib)
+       ("mp3info" ,mp3info)
+       ("mutagen" ,python-mutagen)
+       ("opus-tools" ,opus-tools)))
+    (home-page "https://www.gnu.org/software/emms/")
+    (synopsis "The Emacs Multimedia System")
     (description
      "EMMS is the Emacs Multimedia System.  It is a small front-end which
 can control one of the supported external players.  Thus, it supports
 whatever formats are supported by your music player.  It also
 supports tagging and playlist management, all behind a clean and
 light user interface.")
-    (home-page "https://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
 (define-public emacs-emms-mode-line-cycle
@@ -3289,6 +3302,32 @@ appropriate console.")
 IRC bouncer with ERC.")
     (license license:expat)))
 
+(define-public emacs-erc-status-sidebar
+  (let ((commit "ea4189a1dbfe60117359c36e681ad7c389e2968c")
+        (revision "1"))
+    (package
+      (name "emacs-erc-status-sidebar")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/drewbarbs/erc-status-sidebar.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1hwlhzgx03z8891sblz56zdp8zj0izh72kxykgcnz5rrkyc3vfi3"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-seq" ,emacs-seq)))
+      (home-page "https://github.com/drewbarbs/erc-status-sidebar")
+      (synopsis "Hexchat-like activity overview for ERC channels")
+      (description
+       "This package provides a Hexchat-like status bar for joined channels in
+ERC, an Emacs client for IRC (Internet Relay Chat).  It relies on the
+@code{erc-track} module, and displays all the same information
+@code{erc-track} does in the mode line, but in an alternative format.")
+      (license license:expat))))
+
 (define-public emacs-shut-up
   (package
     (name "emacs-shut-up")
@@ -3912,6 +3951,31 @@ provides an easy way to find synonyms and antonyms for a given word (to avoid
 repetitions for example).")
     (license license:gpl3+)))
 
+(define-public emacs-flycheck-guile
+  (package
+    (name "emacs-flycheck-guile")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/flatwhatson/flycheck-guile")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "163pnsh6r6bral1jg0vqri54g6hygws21vis0zci4114yb3fhkm1"))))
+    (propagated-inputs
+     `(("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-geiser" ,emacs-geiser)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/flatwhatson/flycheck-guile")
+    (synopsis "GNU Guile support for Flycheck")
+    (description
+     "This package provides a Flycheck checker for GNU Guile using @code{guild
+compile}.")
+    (license license:gpl3+)))
+
 (define-public emacs-flycheck-rust
   (package
     (name "emacs-flycheck-rust")
@@ -3988,6 +4052,62 @@ respective @code{*Help*} buffers.")
      "This is a major mode for @file{docker-compose} files that provides
 completion of relevant keywords.")
     (license license:expat)))
+
+(define-public emacs-dvc
+  (let ((revision "591")                ;no tags or official releases
+        (guix-revision "1"))
+    (package
+      (name "emacs-dvc")
+      (version (string-append "0.0.0-" guix-revision "." revision))
+      (source
+       (origin
+         (method bzr-fetch)
+         (uri (bzr-reference
+               (url "lp:dvc")
+               (revision revision)))
+         (sha256
+          (base32
+           "03pqn493w70wcpgaxvqnfgynxghw114l9pyiv3r414d84vzhan6h"))
+         (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list (string-append "--with-lispdir=" (assoc-ref %outputs "out")
+                              "/share/emacs/site-lisp/"))
+         #:tests? #f                    ;no test suite
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'set-home
+             ;; Something in dvc-bookmarks.el attempts to write config files in
+             ;; $HOME during the autoload generation.
+             (lambda _ (setenv "HOME" (getenv "TMPDIR")) #t))
+           (add-before 'build 'fix-texinfo
+             ;; See https://bugs.launchpad.net/dvc/+bug/1264383.
+             (lambda _
+               (substitute* "texinfo/dvc-intro.texinfo"
+                 (("@itemx update ``to''")
+                  "@item update ``to''")
+                 (("@itemx brief")
+                  "@item brief")
+                 (("@itemx full")
+                  "@item full")
+                 (("@itemx drop")
+                  "@item drop")
+                 (("@itemx left file")
+                  "@item left file"))
+               #t)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)         ;for aclocal
+         ("emacs" ,emacs-minimal)
+         ("texinfo" ,texinfo)))
+      (home-page "http://xsteve.at/prg/emacs_dvc/index.html")
+      (synopsis "Emacs front-end for various distributed version control systems.")
+      (description "DVC is a legacy Emacs front-end for a number of
+distributed version control systems.  It currently supports GNU Arch, GNU
+Bazaar, git, Mercurial, and Monotone.  It also provides some integration with
+Gnus, e.g., for applying patches received by email.")
+      (license license:gpl2+))))
 
 (define-public emacs-sudo-edit
   (let ((commit "cc3d478937b1accd38742bfceba92af02ee9357d")
@@ -4073,14 +4193,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.23")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
-                                  version ".tar"))
-              (sha256
-               (base32
-                "0mcz97b3sddrc68wi8dz95b2rq7ky88pr2i1ghyhy28as16chmz5"))))
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
+                           version ".tar"))
+       (sha256
+        (base32 "1b8qwdvf3jvw0chrdgbymb2ci9ms45mf90nrljxx7jql2lsr3x63"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
@@ -5109,31 +5229,28 @@ linting of manifests and integration with Puppet Debugger.")
       (license license:gpl3+))))
 
 (define-public emacs-god-mode
-  (let ((commit "6cf0807b6555eb6fcf8387a4e3b667071ef38964")
-        (revision "1"))
-    (package
-      (name "emacs-god-mode")
-      (version (string-append "20151005.925."
-                              revision "-" (string-take commit 9)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/chrisdone/god-mode.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1am415k4xxcva6y3vbvyvknzc6bma49pq3p85zmpjsdmsp18qdix"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/chrisdone/god-mode")
-      (synopsis "Minor mode for entering commands without modifier keys")
-      (description
-       "This package provides a global minor mode for entering Emacs commands
+  (package
+    (name "emacs-god-mode")
+    (version "2.17.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chrisdone/god-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d2nrj35fzhnycchi0b7m5mbk5fyq7bgpbkkvc5xzqafclrsnapi"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/chrisdone/god-mode")
+    (synopsis "Minor mode for entering commands without modifier keys")
+    (description
+     "This package provides a global minor mode for entering Emacs commands
 without modifier keys.  It's similar to Vim's separation of commands and
 insertion mode.  When enabled all keys are implicitly prefixed with
 @samp{C-} (among other helpful shortcuts).")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-jinja2-mode
   (package
@@ -7397,7 +7514,7 @@ indentation guides in Emacs:
 (define-public emacs-elpy
   (package
     (name "emacs-elpy")
-    (version "1.32.0")
+    (version "1.34.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7406,12 +7523,23 @@ indentation guides in Emacs:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f00mdnzx6xqwni86rgvaa6sfkwyh62xfbwz8qsar15j0j6vc2dj"))))
+                "1x1z298axbh4xalssnq9nkf2z1sdgmx839vb01xz18kr9lfavx1x"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
        #:phases
        (modify-phases %standard-phases
+         ;; The following tests fail when building with Emacs 27 (see:
+         ;; https://github.com/jorgenschaefer/elpy/issues/1812).
+         (add-after 'unpack 'disable-problematic-tests
+           (lambda _
+             (substitute* "test/elpy-company-backend-test.el"
+               (("elpy-company-backend-should-add-shell-candidates.*" all)
+                (string-append all "  (skip-unless nil)\n")))
+             (substitute* "test/elpy-folding-fold-comments-test.el"
+               (("elpy-fold-at-point-should-fold-and-unfold-comments.*" all)
+                (string-append all "  (skip-unless nil)\n")))
+             #t))
          ;; The default environment of the RPC uses Virtualenv to install
          ;; Python dependencies from PyPI.  We don't want/need this in Guix.
          (add-before 'check 'do-not-use-virtualenv
@@ -9456,48 +9584,26 @@ been adapted to work with mu4e.")
        (uri (git-reference
              (url "https://github.com/joaotavora/yasnippet.git")
              (commit version)))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0via9dzw8m5lzymg1h78xkwjssh39zr3g6ccyamlf1rjzjsyxknv"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; YASnippet expects a "snippets" subdirectory in the same
-           ;; directory as yasnippet.el, but we don't install it because it's
-           ;; a git submodule pointing to an external repository.  Adjust
-           ;; `yas-snippet-dirs' to prevent warnings about a missing
-           ;; directory.
-           (substitute* "yasnippet.el"
-             (("^ +'yas-installed-snippets-dir\\)\\)\n")
-              "))\n"))
-           #t))))
+        (base32 "0via9dzw8m5lzymg1h78xkwjssh39zr3g6ccyamlf1rjzjsyxknv"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
        #:test-command '("emacs" "--batch"
                         "-l" "yasnippet-tests.el"
                         "-f" "ert-run-tests-batch-and-exit")
-       ;; FIXME: one failing test.
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'make-tests-writable
+         ;; Set HOME, otherwise test-rebindings fails.
+         (add-before 'check 'set-home
            (lambda _
-             (make-file-writable "yasnippet-tests.el")
-             #t))
-         (add-before 'check 'delete-rebinding-test
-           (lambda _
-             (emacs-batch-edit-file "yasnippet-tests.el"
-               `(progn (goto-char (point-min))
-                       (re-search-forward "ert-deftest test-rebindings")
-                       (beginning-of-line)
-                       (kill-sexp)
-                       (basic-save-buffer)))
+             (setenv "HOME" (getcwd))
              #t)))))
     (home-page "https://github.com/joaotavora/yasnippet")
     (synopsis "Yet another snippet extension for Emacs")
-    (description
-     "YASnippet is a template system for Emacs.  It allows you to type an
-abbreviation and automatically expand it into function templates.")
+    (description "YASnippet is a template system for Emacs.  It allows you to
+type an abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))
 
 (define-public emacs-yasnippet-snippets
@@ -10015,26 +10121,17 @@ performance-oriented and tidy.")
 (define-public emacs-leaf
   (package
     (name "emacs-leaf")
-    (version "3.5.0")
+    (version "4.2.5")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/conao3/leaf.el.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "leaf-" version ".tar"))
        (sha256
-        (base32
-         "1rgd59146wad92yc64las0qgx67k2ifgsw1vwhp40xvkd7kb0r6d"))))
+        (base32 "0y78mp4c2gcwp7dc87wlx3r4hfmap14vvx8gkjc9nkf99qavpnkw"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/conao3/leaf.el")
-    (arguments
-     `(#:tests? #t
-       #:test-command '("emacs" "--batch"
-                        "-l" "leaf-tests.el"
-                        "-f" "cort-test-run")))
-    (synopsis
-     "Simplify your init.el configuration, extended use-package")
+    (synopsis "Simplify your init.el configuration, extended use-package")
     (description
      "This package provides macros that allows you to declaratively configure
 settings typical of an Elisp package with various keywords.  The syntax is
@@ -14524,7 +14621,7 @@ documentation.")
 (define-public emacs-hy-mode
   (package
     (name "emacs-hy-mode")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method git-fetch)
@@ -14533,7 +14630,7 @@ documentation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jxximiznz7fw9ys5k6plw85zrbzvxidql7py1fdi425fdp4058z"))))
+        (base32 "0gihxlmfminadaqdr8d2zccd7wwygl3m0gfzxsk5izi7f8hl4w7f"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -14672,12 +14769,11 @@ scientific publication.  Org Ref is also useful for research documents and
 notes.")
       (license license:gpl3+))))
 
-;; This project is unmaintained.  Please use emacs-org-re-reveal instead.
 (define-public emacs-org-reveal
-  (let ((commit "9210413202a360a559a51e8275faa42be68cf44b"))
+  (let ((commit "84039bb499290926511b04749882ecb5eda45a0c"))
     (package
       (name "emacs-org-reveal")
-      (version (git-version "0.1" "3" commit))
+      (version (git-version "20200607" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -14686,7 +14782,7 @@ notes.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1wlfk823d3vrn480m38j7ncaqm193lvh6y22b92fx4b3yhdbndza"))))
+                  "1fx3xmnkpfljrdmy0dsyq79k93ky57gcqm1ad9qbzykk7qjvmmi8"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/yjwen/org-reveal")
       (synopsis "Org and Reveal.js powered HTML presentation tool")
@@ -16936,11 +17032,11 @@ accept and reject GitHub pull requests.")
       (license license:gpl3+))))
 
 (define-public emacs-deadgrep
-  (let ((commit "3fc7ca1f58e190f0c80da455a0e40187e673020e")
-        (revision "2"))
+  (let ((commit "7e50e71c6ff4e17dded43e0836dae4e5ec020fcf")
+        (revision "1"))
     (package
       (name "emacs-deadgrep")
-      (version (git-version "0.8" revision commit))
+      (version (git-version "0.10" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16950,9 +17046,9 @@ accept and reject GitHub pull requests.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "016gwqxd9aqzjw3hqv3vdf8cs6la8r65g6azg5rlmjqwfx3vsaha"))))
+           "1vjhrq02l8gvdn2haygzq7277hnhjchs9xrfpcnh76gqip200gx4"))))
       (build-system emacs-build-system)
-      (inputs
+      (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
          ("emacs-s" ,emacs-s)
          ("emacs-spinner" ,emacs-spinner)))

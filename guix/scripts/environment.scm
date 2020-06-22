@@ -48,7 +48,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (srfi srfi-98)
-  #:export (guix-environment))
+  #:export (assert-container-features
+            guix-environment))
 
 ;; Protect some env vars from purification.  Borrowed from nix-shell.
 (define %precious-variables

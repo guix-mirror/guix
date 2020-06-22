@@ -6450,7 +6450,7 @@ callback signature using a prototype function.")
     (propagated-inputs
      `(("python-backcall" ,python-backcall)
        ("python-pyzmq" ,python-pyzmq)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-prompt-toolkit" ,python-prompt-toolkit-2)
        ("python-terminado" ,python-terminado)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
@@ -9004,8 +9004,7 @@ interactive computing.")
          "1ismyaxbv9d56yqqqb8xl58hg0iq0bbyy014a53y1g3hfbc8g7q7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel"
-        ,(prompt-toolkit-2-instead-of-prompt-toolkit python-ipykernel))
+     `(("python-ipykernel" ,python-ipykernel)
        ("python-notebook" ,python-notebook)))
     (native-inputs
      `(("python-certifi" ,python-certifi)
@@ -9032,8 +9031,7 @@ notebooks.")
          "15sww2mvnkqlvx55gwa82v05062a8j1xpncnqna4k9sl53hgcig9"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipython" ,(prompt-toolkit-2-instead-of-prompt-toolkit
-                           python-ipython))
+     `(("python-ipython" ,python-ipython)
        ("python-traitlets" ,python-traitlets)
        ("python-widgetsnbextension" ,python-widgetsnbextension)))
     (native-inputs
@@ -9063,8 +9061,7 @@ in the data.")
          "06s3kr5vx0l1y1b7fxb04dmrppscl7q69sl9yyfr0d057d1ssvkg"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,(prompt-toolkit-2-instead-of-prompt-toolkit
-        python-ipykernel))
+     `(("python-ipykernel" ,python-ipykernel)
        ("python-jupyter-client" ,python-jupyter-client)
        ("python-prompt-toolkit" ,python-prompt-toolkit-2)
        ("python-pygments" ,python-pygments)))
@@ -11782,7 +11779,8 @@ running in.")
        (uri (pypi-uri "python-memcached" version))
        (sha256
         (base32
-         "0kvyapavbirk2x3n1jx4yb9nyigrj1s3x15nm3qhpvhkpqvqdqm2"))))
+         "0kvyapavbirk2x3n1jx4yb9nyigrj1s3x15nm3qhpvhkpqvqdqm2"))
+       (patches (search-patches "python-memcached-syntax-warnings.patch"))))
     (build-system python-build-system)
     (propagated-inputs `(("python-six" ,python-six)))
     (home-page
@@ -11886,7 +11884,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "1.0.5")
+    (version "1.0.9")
     ;; Poetry can only be built from source with Poetry.
     (source
      (origin
@@ -11894,7 +11892,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "02h387k0xssvv78yy82pcpknpq4w5ym2in1zl8cg9r5wljl5w6cf"))))
+         "1avp0db1a4hf6lz3wrzhpdvj4rpmzr4in3myrd3lp5j66nc5ck0a"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;; Pypi does not have tests.
@@ -11905,8 +11903,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
              (substitute* "setup.py"
                ;; poetry won't update version as 21.0.0 relies on python > 3.6
                (("keyring>=20.0.1,<21.0.0") "keyring>=21.0.0,<22.0.0")
-               (("pyrsistent>=0.14.2,<0.15.0") "pyrsistent>=0.14.2,<0.16.0")
-               (("importlib-metadata>=1.1.3,<1.2.0") "importlib-metadata>=1.1.3,<1.5.0"))
+               (("pyrsistent>=0.14.2,<0.15.0") "pyrsistent>=0.14.2,<0.17.0"))
              #t)))))
     (propagated-inputs
      `(("python-cachecontrol" ,python-cachecontrol)
@@ -11914,9 +11911,9 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
        ("python-cleo" ,python-cleo)
        ("python-clikit" ,python-clikit)
        ("python-html5lib" ,python-html5lib)
-       ("python-importlib-metadata" ,python-importlib-metadata) ;; python < 3.8
        ("python-jsonschema" ,python-jsonschema)
        ("python-keyring" ,python-keyring)
+       ("python-msgpack-transitional" ,python-msgpack-transitional)
        ("python-pexpect" ,python-pexpect)
        ("python-pkginfo" ,python-pkginfo)
        ("python-pyparsing" ,python-pyparsing)
@@ -12191,10 +12188,6 @@ characters, mouse support, and auto suggestions.")
      `(("python-wcwidth" ,python-wcwidth)
        ("python-six" ,python-six)
        ("python-pygments" ,python-pygments)))))
-
-(define-public prompt-toolkit-2-instead-of-prompt-toolkit
-  (package-input-rewriting/spec
-   `(("python-prompt-toolkit" . ,(const python-prompt-toolkit-2)))))
 
 (define-public python2-prompt-toolkit
   (package-with-python2 python-prompt-toolkit-2))

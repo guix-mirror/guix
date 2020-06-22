@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
@@ -1495,7 +1495,7 @@ of use.")
 (define-public openmw
   (package
     (name "openmw")
-    (version "0.45.0")
+    (version "0.46.0")
     (source
      (origin
        (method url-fetch)
@@ -1504,7 +1504,7 @@ of use.")
                        "openmw-" version ".tar.gz"))
        (sha256
         (base32
-         "0r0wgvv1faan8z8lbply8lks4hcnppifjrcz04l5zvq6yiqzjg5n"))))
+         "0n7x39kwhwmi6ly9hd7yc6dhlrmmdmx30ahc46kmlzzn2n7mm8q7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -1743,20 +1743,25 @@ a 2D editor view.")
 (define-public guile-chickadee
   (package
     (name "guile-chickadee")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "1fdicsgls5cp0yffcm5vjmav67gv9bxhz1s3jvdvinspxb485x7l"))))
+                "0y3s0p4zyghys48sayfhcbmxmflh8hwawnx5an2jlb3x84yr0dsx"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (propagated-inputs
      `(("guile-opengl" ,guile-opengl)
        ("guile-sdl2" ,guile-sdl2)))
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-2.2)
+       ("libvorbis" ,libvorbis)
+       ("mpg123" ,mpg123)
+       ("openal" ,openal)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
@@ -1779,20 +1784,23 @@ that parenthetically inclined game developers need to make 2D (and eventually
   (package
     (inherit guile-chickadee)
     (name "guile3.0-chickadee")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "1fdicsgls5cp0yffcm5vjmav67gv9bxhz1s3jvdvinspxb485x7l"))))
+                "0y3s0p4zyghys48sayfhcbmxmflh8hwawnx5an2jlb3x84yr0dsx"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("guile-opengl" ,guile3.0-opengl)
        ("guile-sdl2" ,guile3.0-sdl2)))
     (inputs
-     `(("guile" ,guile-3.0)))
+     `(("guile" ,guile-3.0)
+       ("libvorbis" ,libvorbis)
+       ("mpg123" ,mpg123)
+       ("openal" ,openal)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))

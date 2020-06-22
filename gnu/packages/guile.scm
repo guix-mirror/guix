@@ -308,6 +308,19 @@ without requiring the source code to be rewritten.")
             (files '("lib/guile/3.0/site-ccache"
                      "share/guile/site/3.0")))))))
 
+(define-public guile-3.0.3
+  ;; TODO: Make this 'guile-3.0' on the next rebuild cycle.
+  (package
+    (inherit guile-3.0)
+    (version "3.0.3")
+    (source (origin
+              (inherit (package-source guile-3.0))
+              (uri (string-append "mirror://gnu/guile/guile-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0fz6fgx7ran6nn0l978jmpckjc9knk4g3bddr75n0daqqmhjs95k"))))))
+
 (define-public guile-next
   (deprecated-package "guile-next" guile-3.0))
 

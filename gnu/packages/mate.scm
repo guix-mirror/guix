@@ -6,6 +6,7 @@
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -264,7 +265,16 @@ desktop and the mate-about program.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "094mnlczxq9crjj8z7dzs1zmwscdkbp54l3qjaf4a4bhd8lihv8d"))))
+         "094mnlczxq9crjj8z7dzs1zmwscdkbp54l3qjaf4a4bhd8lihv8d"))
+       (modules '((guix build utils)))
+       ;; This is fixed by commit ea13e065 upstream. Remove this once 1.25.0
+       ;; is out.
+       (snippet
+        '(begin
+           (substitute* "data/Locations.xml.in"
+             (("Godthab")
+              "Nuuk"))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

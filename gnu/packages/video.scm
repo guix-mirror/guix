@@ -121,11 +121,13 @@
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libreoffice)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -935,16 +937,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.2.3")
+    (version "4.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
-             ;; See <https://issues.guix.gnu.org/issue/39719>
-             (patches (search-patches "ffmpeg-prefer-dav1d.patch"))
              (sha256
               (base32
-               "0cddkb5sma9dzy8i59sfls19rhjlq40zn9mh3x666dqkxl5ckxlx"))))
+               "0pbrsv5v96yd8qzb9bk4kw7qk4xqpi03rsd5xfbwnjzlhijd02hx"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
@@ -971,6 +971,7 @@ operate properly.")
        ("mesa" ,mesa)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
+       ("rav1e" ,rav1e)
        ("sdl" ,sdl2)
        ("soxr" ,soxr)
        ("speex" ,speex)
@@ -1052,6 +1053,7 @@ operate properly.")
          "--enable-libmp3lame"
          "--enable-libopus"
          "--enable-libpulse"
+         "--enable-librav1e"
          "--enable-libsoxr"
          "--enable-libspeex"
          "--enable-libtheora"
@@ -1130,10 +1132,10 @@ audio/video codec library.")
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
-        `(delete "--enable-libdav1d" (delete "--enable-libaom"
-                 ,flags)))))
-    (inputs (alist-delete "dav1d" (alist-delete "libaom"
-                          (package-inputs ffmpeg))))))
+        `(delete "--enable-libdav1d" (delete "--enable-libaom" (delete "--enable-librav1e"
+                  ,flags))))))
+    (inputs (alist-delete "dav1d" (alist-delete "libaom" (alist-delete "rav1e"
+                           (package-inputs ffmpeg)))))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
@@ -1197,7 +1199,7 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.10")
+    (version "3.0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1206,7 +1208,7 @@ videoformats depend on the configuration flags of ffmpeg.")
                     "/vlc-" version ".tar.xz"))
               (sha256
                (base32
-                "0cackl1084hcmg4myf3kvjvd6sjxmzn0c0qkmanz6brvgzyanrm9"))))
+                "06a9hfl60f6l0fs5c9ma5s8np8kscm4ala6m2pdfji9lyfna351y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -1218,10 +1220,6 @@ videoformats depend on the configuration flags of ffmpeg.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("avahi" ,avahi)
-       ;; XXX Try removing dav1d here and testing AV1 playback when FFmpeg 4.3
-       ;; is released.
-       ;; <https://issues.guix.gnu.org/issue/39719>
-       ("dav1d" ,dav1d)
        ("dbus" ,dbus)
        ("eudev" ,eudev)
        ("flac" ,flac)
@@ -2771,7 +2769,7 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/HandBrake/HandBrake/"
@@ -2779,7 +2777,7 @@ supported players in addition to this package.")
                                   "HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "0w7jxjrccvxp7g15dv0spildg5apmqp4gwbcqmg58va2gylynvzc"))
+                "11bzhyp052bmng5119x74xvdj5632smx6qsk537ygda8bzckg2i1"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for
@@ -4097,3 +4095,42 @@ can also directly record to WebM or MP4 if you prefer.")
 wlroots-based compositors.  More specifically, those that support
 @code{wlr-screencopy-v1} and @code{xdg-output}.")
     (license license:expat)))
+
+(define-public guvcview
+  (package
+    (name "guvcview")
+    (version "2.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/guvcview/source/guvcview-"
+                                  "src-" version ".tar.gz"))
+              (sha256
+               (base32
+                "11byyfpkcik7wvf2qic77zjamfr2rhji97dpj1gy2fg1bvpiqf4m"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; There are no tests and "make check" would fail on an intltool error.
+     '(#:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("eudev" ,eudev)
+       ("libusb" ,libusb)
+       ("v4l-utils" ,v4l-utils)                   ;libv4l2
+       ("ffmpeg" ,ffmpeg)                         ;libavcodec, libavutil
+       ("sdl2" ,sdl2)
+       ("gsl" ,gsl)
+       ("portaudio" ,portaudio)
+       ("alsa-lib" ,alsa-lib)))
+    (home-page "http://guvcview.sourceforge.net/")
+    (synopsis "Control your webcam and capture videos and images")
+    (description
+     "GTK+ UVC Viewer (guvcview) is a graphical application to control a
+webcam accessible with Video4Linux (V4L2) and to capture videos and images.
+It provides control over precise settings of the webcam such as exposure,
+brightness, contrast, and frame rate.")
+
+    ;; 'COPYING' is GPLv3 but source headers say GPLv2+.
+    (license license:gpl2+)))

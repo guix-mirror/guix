@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,9 +39,11 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix gexp)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
@@ -241,6 +244,54 @@ target drive is CDDA capable.  In addition to simple reading, cdparanoia adds
 extra-robust data verification, synchronization, error handling and scratch
 reconstruction capability.")
     (license gpl2))) ; libraries under lgpl2.1
+
+(define-public cdrdao
+  (package
+    (name "cdrdao")
+    (version "1.2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cdrdao/cdrdao.git")
+             (commit
+              (string-append "rel_" (string-replace-substring version "." "_")))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gcl8ibyylamy2d1piq3749nw3xrlp12r0spzp2gmni57b8a6b7j"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list
+        ;; GCDMaster depends on obsolete libgnomeuimm, see
+        ;; <https://github.com/cdrdao/cdrdao/issues/3>.
+        "--without-gcdmaster"
+        ;; Use the native SCSI interface.
+        "--without-scglib")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'fix-configure.ac
+           (lambda _
+             ;; Remove reference to missing macro.
+             (substitute* "configure.ac" (("^AM_GCONF_SOURCE_2.*") ""))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ao" ,ao)
+       ("lame" ,lame)
+       ("libmad" ,libmad)
+       ("libvorbis" ,libvorbis)))
+    (home-page "http://cdrdao.sourceforge.net")
+    (synopsis "Read and write CDs in disk-at-once mode")
+    (description "cdrdao records audio or data CDs in disk-at-once (DAO) mode,
+based on a textual description of the contents.  This mode writes the complete
+disc – lead-in, one or more tracks, and lead-out – in a single step and is
+commonly used with audio CDs.  @code{cdrdao} can also handle the bin/cue
+format, commonly used for VCDs or disks with subchannel data.")
+    (license gpl2+)))
 
 (define-public cdrtools
   (package

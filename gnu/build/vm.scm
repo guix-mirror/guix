@@ -223,12 +223,13 @@ produced by #:references-graphs..  As a side effect, if RESET-TIMESTAMPS? is
 true, reset timestamps on store files and, if DEDUPLICATE? is true,
 deduplicates files common to CLOSURE and the rest of PREFIX."
   (let ((items (call-with-input-file closure read-reference-graph)))
-    (register-items items
-                    #:prefix prefix
-                    #:deduplicate? deduplicate?
-                    #:reset-timestamps? reset-timestamps?
-                    #:registration-time %epoch
-                    #:schema schema)))
+    (parameterize ((sql-schema schema))
+      (with-database (store-database-file #:prefix prefix) db
+        (register-items db items
+                        #:prefix prefix
+                        #:deduplicate? deduplicate?
+                        #:reset-timestamps? reset-timestamps?
+                        #:registration-time %epoch)))))
 
 
 ;;;

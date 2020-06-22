@@ -81,7 +81,10 @@
         (service guix-service-type
                  (guix-configuration
                   (extra-options '("--disable-chroot"
-                                   "--disable-deduplication"))))))
+                                   "--disable-deduplication"))))
+        (service special-files-service-type
+                 `(("/bin/sh" ,(file-append bash "/bin/sh"))
+                   ("/usr/bin/env" ,(file-append coreutils "/bin/env"))))))
 
 (define %hurd-default-operating-system
   (operating-system

@@ -271,13 +271,13 @@ an OpenPGP keyring."
                                #:key
                                (default-authorizations '())
                                (keyring-reference "keyring")
+                               (keyring (load-keyring-from-reference
+                                         repository keyring-reference))
                                (report-progress (const #t)))
   "Authenticate COMMITS, a list of commit objects, calling REPORT-PROGRESS for
 each of them.  Return an alist showing the number of occurrences of each key.
-The OpenPGP keyring is loaded from KEYRING-REFERENCE in REPOSITORY."
-  (define keyring
-    (load-keyring-from-reference repository keyring-reference))
-
+If KEYRING is omitted, the OpenPGP keyring is loaded from KEYRING-REFERENCE in
+REPOSITORY."
   (fold (lambda (commit stats)
           (report-progress)
           (let ((signer (authenticate-commit repository commit keyring
@@ -295,33 +295,40 @@ The OpenPGP keyring is loaded from KEYRING-REFERENCE in REPOSITORY."
 ;;; Caching.
 ;;;
 
-(define (authenticated-commit-cache-file)
+(define (authenticated-commit-cache-file key)
   "Return the name of the file that contains the cache of
-previously-authenticated commits."
-  (string-append (cache-directory) "/authentication/channels/guix"))
+previously-authenticated commits for KEY."
+  (string-append (cache-directory) "/authentication/" key))
 
-(define (previously-authenticated-commits)
-  "Return the previously-authenticated commits as a list of commit IDs (hex
-strings)."
+(define (previously-authenticated-commits key)
+  "Return the previously-authenticated commits under KEY as a list of commit
+IDs (hex strings)."
   (catch 'system-error
     (lambda ()
-      (call-with-input-file (authenticated-commit-cache-file)
-        read))
+      (call-with-input-file (authenticated-commit-cache-file key)
+        (lambda (port)
+          ;; If PORT has the wrong permissions, it might have been tampered
+          ;; with by another user so ignore its contents.
+          (if (= #o600 (stat:perms (stat port)))
+              (read port)
+              (begin
+                (chmod port #o600)
+                '())))))
     (lambda args
       (if (= ENOENT (system-error-errno args))
           '()
           (apply throw args)))))
 
-(define (cache-authenticated-commit commit-id)
-  "Record in ~/.cache COMMIT-ID and its closure as authenticated (only
-COMMIT-ID is written to cache, though)."
+(define (cache-authenticated-commit key commit-id)
+  "Record in ~/.cache, under KEY, COMMIT-ID and its closure as
+authenticated (only COMMIT-ID is written to cache, though)."
   (define %max-cache-length
     ;; Maximum number of commits in cache.
     200)
 
   (let ((lst  (delete-duplicates
-               (cons commit-id (previously-authenticated-commits))))
-        (file (authenticated-commit-cache-file)))
+               (cons commit-id (previously-authenticated-commits key))))
+        (file (authenticated-commit-cache-file key)))
     (mkdir-p (dirname file))
     (with-atomic-file-output file
       (lambda (port)

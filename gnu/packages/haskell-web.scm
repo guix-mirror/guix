@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@gmail.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,6 +92,27 @@ for screen-scraping.")
     (home-page "https://github.com/snoyberg/cookie")
     (synopsis "HTTP cookie parsing and rendering")
     (description "HTTP cookie parsing and rendering library for Haskell.")
+    (license license:bsd-3)))
+
+(define-public ghc-curl
+  (package
+    (name "ghc-curl")
+    (version "1.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://hackage/package/curl/curl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vj4hpaa30jz7c702xpsfvqaqdxz28zslsqnsfx6bf6dpwvck1wh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("curl" ,curl)))
+    (home-page "https://hackage.haskell.org/package/curl")
+    (synopsis "Haskell bindings for libcurl")
+    (description
+     "@code{libcurl} is a versatile client-side URL transfer library.
+This package provides a Haskell binding to libcurl.")
     (license license:bsd-3)))
 
 (define-public ghc-httpd-shed

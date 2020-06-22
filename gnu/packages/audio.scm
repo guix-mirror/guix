@@ -2344,7 +2344,29 @@ background file post-processing.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02v911w2kdbg3kfl593lb2ig4sjbfxzv20a0vbcymhfzpvp1x6xp"))))
+                "02v911w2kdbg3kfl593lb2ig4sjbfxzv20a0vbcymhfzpvp1x6xp"))
+              (modules '((guix build utils)
+                         (ice-9 ftw)))
+              (snippet
+               ;; The build system doesn't allow us to unbundle the following
+               ;; libraries.  hidapi is also heavily patched and upstream not
+               ;; actively maintained.
+               '(let ((keep-dirs '("nova-simd" "nova-tt" "hidapi"
+                                   "TLSF-2.4.6" "oscpack_1_1_0" "." "..")))
+                  (with-directory-excursion "./external_libraries"
+                    (for-each
+                     delete-file-recursively
+                     (scandir "."
+                              (lambda (x)
+                                (and (eq? (stat:type (stat x)) 'directory)
+                                     (not (member (basename x) keep-dirs)))))))
+                  ;; To find the Guix provided ableton-link library.
+                  (substitute* "lang/CMakeLists.txt"
+                    (("include\\(\\.\\./external_libraries/link/\
+AbletonLinkConfig\\.cmake\\)")
+                     "find_package(AbletonLink NAMES AbletonLink ableton-link \
+link REQUIRED)"))
+                  #t))))
     (build-system cmake-build-system)
     (outputs
      '("out"   ;core language
@@ -2355,44 +2377,16 @@ background file post-processing.")
                            "-DFORTIFY=ON" "-DLIBSCSYNTH=ON"
                            "-DSC_EL=off") ;scel is packaged individually as
                                           ;emacs-scel
-       #:modules ((guix build utils)
-                  (guix build cmake-build-system)
-                  (ice-9 ftw))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'rm-bundled-libs
+         ;; HOME must be defined otherwise supercollider throws a "ERROR:
+         ;; Primitive '_FileMkDir' failed." error when generating the doc.
+         ;; The graphical tests also hang without it.
+         (add-after 'unpack 'set-home-directory
            (lambda _
-             ;; The build system doesn't allow us to unbundle the following
-             ;; libraries.  hidapi is also heavily patched.
-             (let ((keep-dirs '("nova-simd" "nova-tt" "hidapi" "TLSF-2.4.6"
-                                "oscpack_1_1_0" "." "..")))
-               (with-directory-excursion "./external_libraries"
-                 (for-each
-                  delete-file-recursively
-                  (scandir "."
-                           (lambda (x)
-                             (and (eq? (stat:type (stat x)) 'directory)
-                                  (not (member (basename x) keep-dirs))))))))
-             (substitute* "lang/CMakeLists.txt"
-               (("include\\(\\.\\./external_libraries/link/AbletonLinkConfig\\.cmake\\)")
-                "find_package(AbletonLink NAMES AbletonLink ableton-link link REQUIRED)"))
+             (setenv "HOME" (getcwd))
              #t))
-         ;; Some tests are broken (see:
-         ;; https://github.com/supercollider/supercollider/issues/3555 and
-         ;; https://github.com/supercollider/supercollider/issues/1736
-         (add-after 'rm-bundled-libs 'disable-broken-tests
-           (lambda _
-             (substitute* "testsuite/server/supernova/CMakeLists.txt"
-               (("server_test.cpp")
-                "")
-               (("perf_counter_test.cpp")
-                ""))
-             (substitute* "testsuite/CMakeLists.txt"
-               (("add_subdirectory\\(sclang\\)")
-                ""))
-             (delete-file "testsuite/sclang/CMakeLists.txt")
-             #t))
-         (add-after 'disable-broken-tests 'patch-scclass-dir
+         (add-after 'unpack 'patch-scclass-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (scclass-dir
@@ -2404,6 +2398,11 @@ background file post-processing.")
                     "\\(DirName::Resource\\) / CLASS_LIB_DIR_NAME"))
                   (string-append "Path(\"" scclass-dir "\")")))
                #t)))
+         (add-before 'build 'prepare-x
+           (lambda _
+             (system "Xvfb &")
+             (setenv "DISPLAY" ":0")
+             #t))
          (add-before 'install 'install-ide
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2416,7 +2415,8 @@ background file post-processing.")
     (native-inputs
      `(("ableton-link" ,ableton-link)
        ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("jack" ,jack-1)
        ("libsndfile" ,libsndfile)

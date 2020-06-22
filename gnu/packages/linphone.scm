@@ -512,14 +512,6 @@ and video calls or instant messaging capabilities to an application.")
      `(#:tests? #f                      ; No test target
        #:phases
        (modify-phases %standard-phases
-         (add-after 'set-paths 'set-qt-rcc-source-date-override
-           (lambda _
-             ;; This fixes a reproducibility problem where the Qt Resource
-             ;; Compiler (RCC) includes timestamp of its source files
-             ;; (see: https://reproducible-builds.org/docs/
-             ;;       deterministic-build-systems/#cmake-notes).
-             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
-             #t))
          (add-after 'unpack 'fix-cmake-error
            (lambda _
              ;; This is fixed in commit efed2fd8 of the master branch.

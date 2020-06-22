@@ -32,6 +32,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -49,6 +50,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
@@ -149,10 +151,10 @@ Rust, using gimli.")
         ("rust-memmap" ,rust-memmap-0.7)
         ("rust-rustc-test" ,rust-rustc-test-0.3))))))
 
-(define-public rust-adler32-1.0
+(define-public rust-adler32-1
   (package
     (name "rust-adler32")
-    (version "1.0.4")
+    (version "1.1.0")
     (source
       (origin
         (method url-fetch)
@@ -161,12 +163,15 @@ Rust, using gimli.")
           (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1hnan4fgmnidgn2k84hh2i67c3wp2c5iwd5hs61yi7gwwx1p6bjx"))))
+          "0bgks405vz823bphgwhj4l9h6vpfh900s0phfk4qqijyh9xhfysn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:cargo-inputs
+       (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-rand" ,rust-rand-0.4))))
     (home-page "https://github.com/remram44/adler32-rs")
     (synopsis "Implementation of the Adler32 rolling hash algorithm")
     (description
@@ -4619,31 +4624,42 @@ Transparency logs for use with sct crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "curl-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "02542zmvl3fpdqf7ai4cqnamm4albx9j645dkjx5qr1myq8ax42y"))))
+          "02542zmvl3fpdqf7ai4cqnamm4albx9j645dkjx5qr1myq8ax42y"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "curl") #t))))
     (build-system cargo-build-system)
-    ;(arguments
-    ; `(#:phases
-    ;   (modify-phases %standard-phases
-    ;    (add-after 'unpack 'find-openssl
-    ;      (lambda* (#:key inputs #:allow-other-keys)
-    ;        (let ((openssl (assoc-ref inputs "openssl")))
-    ;          (setenv "OPENSSL_DIR" openssl))
-    ;        #t)))))
-    ;(native-inputs
-    ; `(("pkg-config" ,pkg-config)))
-    ;(inputs
-    ; `(("curl" ,curl)
-    ;   ("nghttp2" ,nghttp2)
-    ;   ("openssl" ,openssl)
-    ;   ("zlib" ,zlib)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-libnghttp2-sys" ,rust-libnghttp2-sys-0.1)
+        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'unpack 'find-openssl
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((openssl (assoc-ref inputs "openssl")))
+              (setenv "OPENSSL_DIR" openssl))
+            #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("nghttp2" ,nghttp2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/alexcrichton/curl-rust")
     (synopsis "Native bindings to the libcurl library")
     (description
      "This package provides native bindings to the @code{libcurl} library.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-custom-derive-0.1
@@ -4835,7 +4851,7 @@ and arithmetic.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-adler32" ,rust-adler32-1.0)
+       (("rust-adler32" ,rust-adler32-1)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-gzip-header" ,rust-gzip-header-0.3)
         ("rust-flate2" ,rust-flate2-1.0))))
@@ -10325,7 +10341,7 @@ renamed to indexmap.")
          "1zxjdn8iwa0ssxrnjmywm3r1v284wryvzrf8vkc7nyf5ijbjknqw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-adler32" ,rust-adler32-1.0))))
+     `(#:cargo-inputs (("rust-adler32" ,rust-adler32-1))))
     (home-page "https://github.com/PistonDevelopers/inflate.git")
     (synopsis "DEFLATE decoding")
     (description "This package provides DEFLATE decoding.")
@@ -11178,8 +11194,43 @@ requires non-const function calls to be computed.")
      "This package provides a library providing a lazily filled Cell struct.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lexical-core-0.7
+  (package
+    (name "rust-lexical-core")
+    (version "0.7.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lexical-core" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "05i6b69ay8xbxw88vx89vglb7xm5n8ky82hax7d5a7z60bdccrfv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.5)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-dtoa" ,rust-dtoa-0.4)
+        ("rust-ryu" ,rust-ryu-1.0)
+        ("rust-static-assertions" ,rust-static-assertions-1))
+       #:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page
+     "https://github.com/Alexhuszagh/rust-lexical/tree/master/lexical-core")
+    (synopsis
+     "Lexical, to- and from-string conversion routines")
+    (description
+     "Lexical, to- and from-string conversion routines.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-lexical-core-0.4
   (package
+    (inherit rust-lexical-core-0.7)
     (name "rust-lexical-core")
     (version "0.4.2")
     (source
@@ -11191,7 +11242,6 @@ requires non-const function calls to be computed.")
        (sha256
         (base32
          "1gr5y3ykghd3wjc00l3iizkj1dxylyhwi6fj6yn2qg06nzx771iz"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -11204,14 +11254,7 @@ requires non-const function calls to be computed.")
        (("rust-approx" ,rust-approx-0.3)
         ("rust-proptest" ,rust-proptest-0.9)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rustc-version" ,rust-rustc-version-0.2))))
-    (home-page
-     "https://github.com/Alexhuszagh/rust-lexical/tree/master/lexical-core")
-    (synopsis
-     "Lexical, to- and from-string conversion routines")
-    (description
-     "Lexical, to- and from-string conversion routines.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
 (define-public rust-libc-0.2
   (package
@@ -11334,12 +11377,22 @@ macros on libc without stdlib.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libgit2-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1wcvg2qqra2aviasvqcscl8gb2rnjnd6h998wy5dlmf2bnriqi28"))))
-    (arguments '())
-    (properties '((hidden? . #t)))))
+          "1wcvg2qqra2aviasvqcscl8gb2rnjnd6h998wy5dlmf2bnriqi28"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "libgit2") #t))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-curl-sys" ,rust-curl-sys-0.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libssh2-sys" ,rust-libssh2-sys-0.2)
+        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))))
 
 (define-public rust-libloading-0.5
   (package
@@ -11438,18 +11491,25 @@ functions and static variables these libraries contain.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libnghttp2-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0qr4lyh7righx9n22c7amlcpk906rn1jnb2zd6gdfpa3yi24s982"))))
+          "0qr4lyh7righx9n22c7amlcpk906rn1jnb2zd6gdfpa3yi24s982"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "nghttp2") #t))))
     (build-system cargo-build-system)
-    ;(inputs
-    ; `(("nghttp2" ,nghttp2)))
+    (arguments
+     `(#:skip-build? #t     ; Uses unstable features
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-cc" ,rust-cc-1.0))))
+    (inputs
+     `(("nghttp2" ,nghttp2)))
     (home-page "https://github.com/alexcrichton/nghttp2-rs")
     (synopsis "FFI bindings for libnghttp2 (nghttp2)")
     (description
      "This package provides FFI bindings for libnghttp2 (nghttp2).")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
@@ -12639,7 +12699,7 @@ for Rust structs.")
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-adler32" ,rust-adler32-1.0))))
+       #:cargo-inputs (("rust-adler32" ,rust-adler32-1))))
     (home-page  "https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide")
     (synopsis "Pure rust replacement for the miniz DEFLATE/zlib encoder/decoder")
     (description
@@ -13421,8 +13481,53 @@ implementation (which is unstable / requires nightly).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-nom-5
+  (package
+    (name "rust-nom")
+    (version "5.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nom" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1br74rwdp3c2ddga03bphnf355spn4mzwf1slg0a30zd4qnjdd7z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Tests require example directory, not included in tarball.
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-lexical-core" ,rust-lexical-core-0.7)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-version-check" ,rust-version-check-0.9))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.2)
+        ("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-jemallocator" ,rust-jemallocator-0.1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'override-jemalloc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jemalloc (assoc-ref inputs "jemalloc")))
+               (setenv "JEMALLOC_OVERRIDE"
+                       (string-append jemalloc "/lib/libjemalloc_pic.a")))
+             #t)))))
+    (native-inputs
+     `(("jemalloc" ,jemalloc)))
+    (home-page "https://github.com/Geal/nom")
+    (synopsis
+     "Byte-oriented, zero-copy, parser combinators library")
+    (description
+     "This package provides a byte-oriented, zero-copy, parser
+combinators library.")
+    (license license:expat)))
+
 (define-public rust-nom-4.2
   (package
+    (inherit rust-nom-5)
     (name "rust-nom")
     (version "4.2.3")
     (source
@@ -13434,7 +13539,6 @@ implementation (which is unstable / requires nightly).")
        (sha256
         (base32
          "1mkvby8b4m61p4g1px0pwr58yfkphyp1jcfbp4qfp7l6iqdaklia"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -13444,14 +13548,7 @@ implementation (which is unstable / requires nightly).")
         ("rust-version-check" ,rust-version-check-0.1))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
-        ("rust-jemallocator" ,rust-jemallocator-0.1))))
-    (home-page "https://github.com/Geal/nom")
-    (synopsis
-     "Byte-oriented, zero-copy, parser combinators library")
-    (description
-     "This package provides a byte-oriented, zero-copy, parser
-combinators library.")
-    (license license:expat)))
+        ("rust-jemallocator" ,rust-jemallocator-0.1))))))
 
 (define-public rust-nom-3
   (package
@@ -21861,8 +21958,29 @@ deeply recursive algorithms that may accidentally blow the stack.")
      "StackVec: vector-like facade for stack-allocated arrays.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-static-assertions-1
+  (package
+    (name "rust-static-assertions")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "static-assertions" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0gsl6xmw10gvn3zs1rv99laj5ig7ylffnh71f9l34js4nr4r7sx2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/nvzqz/static-assertions-rs")
+    (synopsis "Compile-time assertions for rust")
+    (description
+     "This package provides compile-time assertions to ensure that invariants
+are met.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-static-assertions-0.3
   (package
+    (inherit rust-static-assertions-1)
     (name "rust-static-assertions")
     (version "0.3.4")
     (source
@@ -21872,14 +21990,7 @@ deeply recursive algorithms that may accidentally blow the stack.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1lw33i89888yb3x29c6dv4mrkg3534n0rlg3r7qzh4p58xmv6gkz"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/nvzqz/static-assertions-rs")
-    (synopsis "Compile-time assertions for rust")
-    (description
-     "This package provides compile-time assertions to ensure that invariants
-are met.")
-    (license (list license:expat license:asl2.0))))
+          "1lw33i89888yb3x29c6dv4mrkg3534n0rlg3r7qzh4p58xmv6gkz"))))))
 
 (define-public rust-stb-truetype-0.3
   (package

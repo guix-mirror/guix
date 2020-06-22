@@ -146,6 +146,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -176,14 +177,15 @@
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages networking)
   #:use-module (guix build-system copy)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
-  #:use-module (guix build-system scons)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
+  #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
   #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (srfi srfi-26))
@@ -515,7 +517,7 @@ want what you have.")
 (define-public corsix-th
   (package
     (name "corsix-th")
-    (version "0.63")
+    (version "0.64")
     (source
      (origin
        (method git-fetch)
@@ -524,7 +526,7 @@ want what you have.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rkyk8g55xny276s0hr5k8mq6f4nzz56d3k2mp09dzfymrqb8hgi"))))
+        (base32 "0chh9cv2kdc39sr0x8hclcyzd8dz2y6grgagqzkvr7j570wa5cqh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1010,6 +1012,45 @@ bugs) of the original game, so that saved games are compatible.  This package
 does not include game data.")
     (license (list license:agpl3
                    license:zlib))))     ; ext/tinyfiledialogs
+
+(define-public augustus
+  (package
+    (inherit julius)
+    (name "augustus")
+    (version (package-version julius))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Keriew/augustus")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ii0w0iwa9zv5bbqfcps5mxifd796m6fw4gvjf09pkm3yjgqc0ag"))
+       ;; Remove unused bundled libraries.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (with-directory-excursion "ext"
+             (for-each delete-file-recursively '("dirent" "png" "SDL2" "zlib")))
+           #t))))
+    (arguments
+     ;; No tests.  See https://github.com/Keriew/augustus/issues/82.
+     `(#:tests? #f))
+    (home-page "https://github.com/Keriew/augustus")
+    (synopsis "Re-implementation of Caesar III game engine with gameplay changes")
+    (description
+     "Fork of Julius, an engine for the a city-building real-time strategy
+game Caesar III.  Gameplay enhancements include:
+
+@itemize
+@item roadblocks;
+@item market special orders;
+@item global labour pool;
+@item partial warehouse storage;
+@item increased game limits;
+@item zoom controls.
+@end itemize\n")))
 
 (define-public meandmyshadow
   (package
@@ -1732,6 +1773,118 @@ can be explored and changed freely.")
                    license:cc-by3.0
                    license:gpl3+
                    license:silofl1.1))))
+
+(define-public seahorse-adventures
+  (package
+    (name "seahorse-adventures")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dulsi/seahorse-adventures.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rnvk06npaqcpjz5z6xcmssz61i32s422lydp49vrnf3j2g4yimd"))
+       (modules '((guix build utils)
+                  (ice-9 ftw)
+                  (srfi srfi-1)))
+       ;; Remove non-free (non-commercial) font.
+       (snippet
+        `(begin
+           (for-each delete-file (find-files "data/fonts" "."))
+           #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)                ;pure Python
+         (replace 'install              ;no install script
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share (string-append out "/share"))
+                    (applications (string-append share "/applications"))
+                    (data (string-append share "/seahorse-adventures")))
+               ;; Install data.
+               (for-each (lambda (f)
+                           (chmod f #o555)
+                           (install-file f data))
+                         '("leveledit.py" "run_game.py" "tileedit.py"))
+               (for-each (lambda (dir)
+                           (let ((target (string-append data "/" dir)))
+                             (mkdir-p target)
+                             (copy-recursively dir target)))
+                         '("data" "lib"))
+               ;; Create executable.
+               (mkdir-p bin)
+               (let ((executable (string-append bin "/seahorse-adventures")))
+                 (call-with-output-file executable
+                   (lambda (p)
+                     (format p
+                             "#!~a~@
+                              export PYTHONPATH=~a:~a~@
+                              exec -a \"~a\" ~a \"$@\"~%"
+                             (which "bash") data (getenv "PYTHONPATH")
+                             (which "python3")
+                             (string-append data "/run_game.py"))))
+                 (chmod executable #o555))
+               ;; Add desktop file.
+               (mkdir-p applications)
+               (make-desktop-entry-file
+                (string-append applications "/seahorse-adventures.desktop")
+                #:name "Seahorse Adventures"
+                #:comment
+                '((#f "Help Barbie the seahorse float on bubbles to the moon"))
+                #:exec ,name
+                #:icon ,name
+                #:categories '("Game" "ActionGame")
+                #:keywords '("game" "retro" "platform"))
+               ;; Add icons.
+               (for-each
+                (lambda (size)
+                  (let ((dir (string-append share "/icons/hicolor/"
+                                            size "x" size "/apps")))
+                    (mkdir-p dir)
+                    (copy-file
+                     (string-append "icon" size ".png")
+                     (string-append dir "/searhorse-adventures.png"))))
+                '("32" "64" "128")))
+             #t))
+         (add-after 'install 'unbundle-fonts
+           ;; Unbundle Bitstream Vera font and replace deleted one.
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (data (string-append out "/share/seahorse-adventures"))
+                    (vera (string-append (assoc-ref inputs "font-bitstream-vera")
+                                         "/share/fonts/truetype/Vera.ttf")))
+               (let ((themes-dir (string-append data "/data/themes/")))
+                 (for-each
+                  (lambda (theme)
+                    (let ((target (string-append themes-dir theme "/Vera.ttf")))
+                      (delete-file target)
+                      (symlink vera target)))
+                  '("default" "gray")))
+               (symlink vera (string-append data "/data/fonts/04B_20__.TTF"))
+               (substitute* (string-append data "/lib/main.py")
+                 (("f_scale = 0.35") "f_scale = 0.47")))
+             #t)))))
+    (inputs
+     `(("font-bitstream-vera" ,font-bitstream-vera)
+       ("python-pygame" ,python-pygame)))
+    (home-page "http://www.imitationpickles.org/barbie/")
+    (synopsis "Help Barbie the seahorse float on bubbles to the moon")
+    (description
+     "Barbie Seahorse Adventures is a retro style platform arcade game.
+You are Barbie the seahorse who travels through the jungle, up to the
+volcano until you float on bubbles to the moon.  On the way to your
+final destination you will encounter various enemies, servants of the
+evil overlord who has stolen the galaxy crystal.  Avoid getting hit
+and defeat them with your bubbles!")
+    ;; GPL2+ is for code, CC0 is for art.
+    (license (list license:gpl2+ license:cc0))))
 
 (define-public superstarfighter
   (package
@@ -2970,7 +3123,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.12")
+    (version "1.14.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -2979,7 +3132,7 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "027bc1363hdgahw7dvd22fvvqd132byxnljfbq6lvlr5ci01q8mk"))))
+                "1pmqj4rah0256qi9w394ksb9apid723i5f5agkg6x1lahb1ac91q"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
@@ -5225,7 +5378,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.24.0")
+    (version "0.25.0")
     (source
      (origin
        (method url-fetch)
@@ -5238,8 +5391,18 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (string-append "http://crawl.develz.org/release/stone_soup-"
                             version "-nodeps.tar.xz")))
        (sha256
-        (base32 "0kdq6s12myxfdg75ma9x3ys2nd0xwb3xm2ynlmhg4628va0pnixr"))
-       (patches (search-patches "crawl-upgrade-saves.patch"))))
+        (base32 "0rn1wjxdqw33caiwisfypm1j8cid3c9pz01ahicl17144zs29z3d"))
+       (patches (search-patches "crawl-upgrade-saves.patch"))
+       ;; The 0.25.0 -nodeps.tar.xz was built from an OSX machine; normally
+       ;; apparently it's built from a Debian machine before the Debian
+       ;; packages are made.  These ._* files are binary and have the string
+       ;; "Mac OS X" in them... removing these seems to result in compilation
+       ;; again.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file (find-files "." "^\\._"))
+           #t))))
     (build-system gnu-build-system)
     (inputs
      `(("lua51" ,lua-5.1)
@@ -6841,6 +7004,104 @@ libraries.  AIFF sound effects and music in MOD and OGG formats are supported
 when packaged in Blorb container files or optionally from individual files.")
       (home-page "http://frotz.sourceforge.net")
       (license license:gpl2+))))
+
+(define-public frozen-bubble
+  ;; Last official release is very outdated (2010).  Use latest commit (2017).
+  (let ((commit "d6a029110ad6ab9e4960052e175addc98807fb7e")
+        (revision "1"))
+    (package
+      (name "frozen-bubble")
+      (version (git-version "2.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kthakore/frozen-bubble.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1rfrcym5lf4qac2qdklikb1ywijyxypq298azzxahy461dadl6cx"))))
+      (build-system perl-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; Build process needs to create files in the "server"
+           ;; directory.
+           (add-after 'unpack 'fix-permissions
+             (lambda _
+               (for-each make-file-writable
+                         (find-files "server" "." #:directories? #t))))
+           ;; By default, build stops at warnings.
+           (add-after 'unpack 'prevent-build-error
+             (lambda _
+               (substitute* "inc/My/Builder.pm"
+                 (("-Werror") ""))
+               #t))
+           (add-after 'install 'install-desktop-file-and-icons
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((share (string-append (assoc-ref outputs "out") "/share"))
+                      (hicolor (string-append share "/icons/hicolor")))
+                 ;; Create desktop entry.
+                 (make-desktop-entry-file
+                  (string-append share "/applications/" ,name ".desktop")
+                  #:name "Frozen Bubble"
+                  #:comment "Frozen Bubble arcade game"
+                  #:exec ,name
+                  #:icon ,name
+                  #:categories '("Game" "ArcadeGame"))
+                 ;; Add icons.
+                 (with-directory-excursion "share/icons"
+                   (for-each
+                    (lambda (size)
+                      (let* ((dim (string-append size "x" size))
+                             (dir (string-append hicolor "/" dim "/apps")))
+                        (mkdir-p dir)
+                        (copy-file
+                         (string-append "frozen-bubble-icon-" dim ".png")
+                         (string-append dir "/frozen-bubble.png"))))
+                    '("16" "32" "48" "64"))))
+               #t))
+           (add-after 'install 'wrap-perl-libs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (perl5lib (getenv "PERL5LIB")))
+                 (for-each (lambda (prog)
+                             (wrap-program (string-append out "/" prog)
+                               `("PERL5LIB" ":" prefix
+                                 (,(string-append perl5lib ":" out
+                                                  "/lib/perl5/site_perl")))))
+                           (find-files "bin" ".")))
+               #t)))))
+      (native-inputs
+       `(("perl-alien-sdl" ,perl-alien-sdl)
+         ("perl-capture-tiny" ,perl-capture-tiny)
+         ("perl-locale-maketext-lexicon" ,perl-locale-maketext-lexicon)
+         ("perl-module-build" ,perl-module-build)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("glib" ,glib)
+         ("perl-compress-bzip2" ,perl-compress-bzip2)
+         ("perl-file-sharedir" ,perl-file-sharedir)
+         ("perl-file-slurp" ,perl-file-slurp)
+         ("perl-file-which" ,perl-file-which)
+         ("perl-ipc-system-simple" ,perl-ipc-system-simple)
+         ("perl-sdl" ,perl-sdl)
+         ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-pango sdl-ttf)))))
+      (home-page "http://frozen-bubble.org/")
+      (synopsis "Puzzle with bubbles")
+      (description
+       "Frozen-Bubble is a clone of the popular Puzzle Bobble game, in which
+you attempt to shoot bubbles into groups of the same color to cause them to
+pop.
+
+Players compete as penguins and must use the arrow keys to aim a colored
+bubble at groups of bubbles.  The objective is to clear all the bubbles off
+the screen before a bubble passes below a line at the bottom.
+
+It features 100 single-player levels, a two-player mode, music and striking
+graphics.  A level editor is also included to allow players to create and play
+their own levels.")
+      (license license:gpl2))))
 
 (define-public libmanette
   (package
@@ -10273,43 +10534,54 @@ This package is part of the KDE games module.")
 (define-public xmoto
   (package
     (name "xmoto")
-    (version "0.5.11")
+    (version "0.6.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://download.tuxfamily.org/xmoto/xmoto/" version "/"
-             "xmoto-" version "-src.tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xmoto/xmoto.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1ci6r8zd0l7z28cy92ddf9dmqbdqwinz2y1cny34c61b57wsd155"))
-       (patches
-        (search-patches
-         "xmoto-remove-glext.patch"     ;fixes licensing issue
-         "xmoto-reproducible.patch"
-         "xmoto-utf8.patch"))
-       ;; Unbundle ODE.
-       (modules '((guix build utils)))
+        (base32 "00f5ha79lfa2iiaz66wl0hl5dapa1l15qdr7m7knzi0ll7j6z66n"))
+       (modules '((guix build utils)
+                  (ice-9 ftw)
+                  (srfi srfi-1)))
+       ;; XXX: Remove some bundled libraries.  Guix provides Chipmunk, but
+       ;; it appears to be incompatible with the (older) one bundled.
        (snippet
         `(begin
-           (delete-file-recursively "src/ode")
+           (let ((keep '("chipmunk" "glad" "md5sum")))
+             (with-directory-excursion "vendor"
+               (for-each delete-file-recursively
+                         (lset-difference string=?
+                                          (scandir ".")
+                                          (cons* "." ".." keep))))
+             (substitute* "src/CMakeLists.txt"
+               (("add_subdirectory\\(.*?/vendor/(.+?)\".*" line library)
+                (if (member library keep) line ""))))
            #t))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
-     ;; XXX: First flag prevents a build error with GCC7+.  The second
-     ;; flag works around missing text in game.  Both are fixed
-     ;; upstream.  Remove once xmoto 0.5.12+ is released.
-     `(#:make-flags '("CXXFLAGS=-fpermissive -D_GLIBCXX_USE_CXX11_ABI=0")
+     `(#:tests? #f                      ;no test
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-desktop-file
+         (add-after 'unpack 'fix-hard-coded-directory
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (apps (string-append out "/share/applications"))
-                    (pixmaps (string-append out "/share/pixmaps")))
-               (install-file "extra/xmoto.desktop" apps)
-               (install-file "extra/xmoto.xpm" pixmaps)
-               #t)))
-         (add-after 'install-desktop-file 'install-fonts
+             (substitute* "src/common/VFileIO.cpp"
+               (("/usr/share")
+                (string-append (assoc-ref outputs "out") "/share")))
+             #t))
+         (add-before 'build 'set-SDL
+           ;; Set correct environment for SDL.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append
+                      (assoc-ref inputs "sdl") "/include/SDL:"
+                      (or (getenv "CPATH") "")))
+             #t))
+         (add-after 'install 'unbundle-fonts
+           ;; Unbundle DejaVuSans TTF files.
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((font-dir (string-append (assoc-ref inputs "font-dejavu")
                                             "/share/fonts/truetype/"))
@@ -10321,38 +10593,34 @@ This package is part of the KDE games module.")
                              (delete-file target)
                              (symlink font target)))
                          '("DejaVuSans.ttf" "DejaVuSansMono.ttf"))
-               #t)))
-         (add-after 'install-fonts 'install-man-page
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "xmoto.6"
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/man/man6"))
-             #t)))))
+               #t))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)))
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("curl" ,curl)
+     `(("bzip2" ,bzip2)
+       ("curl" ,curl)
        ("font-dejavu" ,font-dejavu)
        ("glu" ,glu)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libxdg-basedir" ,libxdg-basedir)
        ("libxml2" ,libxml2)
-       ("lua" ,lua-5.2)
+       ("lua" ,lua-5.1)
        ("ode" ,ode)
        ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-net sdl-ttf)))
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (home-page "https://xmoto.tuxfamily.org/")
     (synopsis "2D motocross platform game")
-    (description "X-Moto is a challenging 2D motocross platform game, where
-physics play an all important role in the gameplay.  You need to control your
-bike to its limit, if you want to have a chance finishing the more difficult
-challenges.")
+    (description
+     "X-Moto is a challenging 2D motocross platform game, where
+physics play an all important role in the gameplay.  You need to
+control your bike to its limit, if you want to have a chance finishing
+the more difficult challenges.")
     (license (list license:gpl2+        ;whole project
-                   license:bsd-4        ;src/bzip
-                   license:bsd-3        ;src/md5sum
-                   license:lgpl2.1+     ;src/iqsort.h
+                   license:bsd-3        ;vendor/md5sum
+                   license:lgpl2.1+
                    license:expat))))
 
 (define-public eboard

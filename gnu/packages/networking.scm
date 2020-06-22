@@ -38,6 +38,7 @@
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +64,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
@@ -85,6 +87,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
@@ -296,6 +299,34 @@ or, more generally, MAC addresses of the same category of hardware.")
 specification, which provides IPv6 Internet connectivity to IPv6 enabled hosts
 residing in IPv4-only networks, even when they are behind a NAT device.")
     (license license:gpl2+)))
+
+(define-public ndisc6
+  (package
+    (name "ndisc6")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.remlab.net/files/ndisc6/ndisc6-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "07swyar1hl83zxmd7fqwb2q0c0slvrswkcfp3nz5lknrk15dmcdb"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.remlab.net/ndisc6/")
+    (synopsis "IPv6 diagnostic tools")
+    (description
+     "NDisc6 is a collection of tools for IPv6 networking diagnostics.
+It includes the following programs:
+
+@itemize
+@item @command{ndisc6}: ICMPv6 Neighbor Discovery tool.
+@item @command{rdisc6}: ICMPv6 Router Discovery tool.
+@item @command{tcptraceroute6}: IPv6 traceroute over TCP.
+@item @command{traceroute6}: IPv6 traceroute over UDP.
+@item @command{rdnssd}: Recursive DNS Servers discovery daemon.
+@end itemize")
+    ;; The user can choose version 2 or 3 of the GPL, not later versions.
+    (license (list license:gpl2 license:gpl3))))
 
 (define-public socat
   (package
@@ -652,6 +683,76 @@ needed/wanted real-time traffic statistics of multiple network
 interfaces, with a simple and efficient view on the command line.  It is
 intended as a substitute for the PPPStatus and EthStatus projects.")
     (license license:gpl2+)))
+
+(define-public iputils
+  (package
+    (name "iputils")
+    (version "20190709")
+    (home-page "https://github.com/iputils/iputils")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "s" version))))
+              (file-name (git-file-name name version))
+              (patches (search-patches "iputils-libcap-compat.patch"))
+              (sha256
+               (base32
+                "04bp4af15adp79ipxmiakfp0ij6hx5qam266flzbr94pr8z8l693"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_RARPD=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-docbook-url
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((docbook-xsl (assoc-ref inputs "docbook-xsl"))
+                    (uri (string-append docbook-xsl "/xml/xsl/docbook-xsl-"
+                                        ,(package-version docbook-xsl))))
+               (for-each
+                (lambda (file)
+                  (substitute* file
+                    (("http://docbook\\.sourceforge\\.net/release/xsl-ns/current")
+                     uri)))
+                (cons "doc/meson.build"
+                      (find-files "doc" "\\.xsl$")))
+               #t))))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml-5)
+       ("libxml2" ,libxml2)          ;for XML_CATALOG_FILES
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("libcap" ,libcap)
+       ("libidn2" ,libidn2)
+       ("openssl" ,openssl)))
+    (synopsis "Collection of network utilities")
+    (description
+     "This package contains a variety of tools for dealing with network
+configuration, troubleshooting, or servers.  Utilities included are:
+
+@itemize @bullet
+@item @command{arping}: Ping hosts using the @dfn{Adress Resolution Protocol}.
+@item @command{clockdiff}: Compute time difference between network hosts
+using ICMP TSTAMP messages.
+@item @command{ninfod}: Daemon that responds to IPv6 Node Information Queries.
+@item @command{ping}: Use ICMP ECHO messages to measure round-trip delays
+and packet loss across network paths.
+@item @command{rarpd}: Answer RARP requests from clients.
+@item @command{rdisc}: Populate network routing tables with information from
+the ICMP router discovery protocol.
+@item @command{tftpd}: Trivial file transfer protocol server.
+@item @command{tracepath}: Trace network path to an IPv4 or IPv6 address and
+discover MTU along the way.
+@end itemize")
+    ;; The various utilities are covered by different licenses, see LICENSE
+    ;; for details.
+    (license (list license:gpl2+  ;arping, rarpd, tracepath
+                   license:bsd-3  ;clockdiff, ninfod, ping, tftpd
+                   (license:non-copyleft
+                    "https://spdx.org/licenses/Rdisc.html"
+                    "Sun Microsystems license, see rdisc.c for details")))))
 
 (define-public nload
   (package
@@ -3187,3 +3288,49 @@ CDP.  The goal of LLDP is to provide an inter-vendor compatible mechanism to
 deliver Link-Layer notifications to adjacent network devices.  @code{lldpd} is
 an implementation of LLDP.  It also supports some proprietary protocols.")
     (license license:isc)))
+
+(define-public hashcash
+  (package
+    (name "hashcash")
+    (version "1.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.hashcash.org/source/hashcash-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "15kqaimwb2y8wvzpn73021bvay9mz1gqqfc40gk4hj6f84nz34h1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; No tests available.
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((outdir (assoc-ref outputs "out"))
+                    (bindir (string-append outdir "/bin"))
+                    (mandir (string-append outdir "/share/man/man1"))
+                    (docdir (string-append outdir "/share/doc/hashcash-" ,version)))
+               ;; Install manually, as we don't need the `sha1' binary
+               (install-file "hashcash" bindir)
+               (install-file "hashcash.1" mandir)
+               (install-file "README" docdir)
+               (install-file "LICENSE" docdir)
+               (install-file "CHANGELOG" docdir)
+               #t))))))
+    (home-page "https://www.hashcash.org/")
+    (synopsis "Denial-of-service countermeasure")
+    (description "Hashcash is a proof-of-work algorithm, which has been used
+as a denial-of-service countermeasure technique in a number of systems.
+
+A hashcash stamp constitutes a proof-of-work which takes a parametrizable
+amount of work to compute for the sender.  The recipient can verify received
+hashcash stamps efficiently.
+
+This package contains a command-line tool for computing and verifying hashcash
+stamps.")
+    (license license:public-domain)))

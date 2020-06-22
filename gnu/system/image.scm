@@ -524,15 +524,15 @@ it can be used for bootloading."
   "Return the derivation of IMAGE.  It can be a raw disk-image or an ISO9660
 image, depending on IMAGE format."
   (define substitutable? (image-substitutable? image))
+  (define target (image-target image))
 
-  (let* ((os (operating-system-for-image image))
-         (image* (image-with-os image os))
-         (target (image-target image))
-         (register-closures? (has-guix-service-type? os))
-         (bootcfg (operating-system-bootcfg os))
-         (bootloader (bootloader-configuration-bootloader
-                      (operating-system-bootloader os))))
-    (with-parameters ((%current-target-system target))
+  (with-parameters ((%current-target-system target))
+    (let* ((os (operating-system-for-image image))
+           (image* (image-with-os image os))
+           (register-closures? (has-guix-service-type? os))
+           (bootcfg (operating-system-bootcfg os))
+           (bootloader (bootloader-configuration-bootloader
+                        (operating-system-bootloader os))))
       (case (image-format image)
         ((disk-image)
          (system-disk-image image*
@@ -572,9 +572,5 @@ addition of the <image> record."
          hurd-disk-image)
         (else
          efi-disk-image)))))
-
-;;; Local Variables:
-;;; eval: (put 'maybe-with-target 'scheme-indent-function 1)
-;;; End:
 
 ;;; image.scm ends here

@@ -9812,6 +9812,29 @@ the ideal templating system.")
 replace the standard one provided by GHC.")
     (license license:expat)))
 
+(define-public ghc-psqueue
+  (package
+    (name "ghc-psqueue")
+    (version "1.1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://hackage/package/PSQueue-"
+                                  version "/PSQueue-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cik7sw10sacsijmfhghzy54gm1qcyxw14shlp86lx8z89kcnkza"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/PSQueue")
+    (synopsis "Priority search queue")
+    (description
+     "A @dfn{priority search queue} efficiently supports the operations of
+both a search tree and a priority queue.  A @code{Binding} is a product of
+a key and a priority.  Bindings can be inserted, deleted, modified and queried
+in logarithmic time, and the binding with the least priority can be retrieved
+in constant time.  A queue can be built from a list of bindings, sorted by
+keys, in linear time.")
+    (license license:bsd-3)))
+
 (define-public ghc-psqueues
   (package
     (name "ghc-psqueues")
@@ -10247,6 +10270,29 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
 @code{regex-compat} can't use Unicode characters correctly because of using regex-posix.
 This is not good for Unicode users.  This modified regex-compat uses regex-tdfa to solve
 this problem.")
+    (license license:bsd-3)))
+
+(define-public ghc-regex-pcre
+  (package
+    (name "ghc-regex-pcre")
+    (version "0.94.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "regex-pcre/regex-pcre-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1h16w994g9s62iwkdqa7bar2n9cfixmkzz2rm8svm960qr57valf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-regex-base" ,ghc-regex-base)
+       ("pcre" ,pcre)))
+    (home-page "https://hackage.haskell.org/package/regex-pcre")
+    (synopsis "Enhancement of the builtin Text.Regex library")
+    (description
+     "This package is an enhancement of the @code{Text.Regex} library.
+It wraps the @code{PCRE} C library providing Perl-compatible regular
+expressions.")
     (license license:bsd-3)))
 
 (define-public ghc-regex-pcre-builtin

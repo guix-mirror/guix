@@ -811,6 +811,33 @@ time.")
       (home-page "https://godoc.org/golang.org/x/time/rate")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-oauth2
+  (let ((commit "0f29369cfe4552d0e4bcddc57cc75f4d7e672a33")
+        (revision "1"))
+    (package
+      (name "go-golang-org-x-oauth2")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/oauth2")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-oauth2-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "06jwpvx0x2gjn2y959drbcir5kd7vg87k0r1216abk6rrdzzrzi2"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/oauth2"))
+      (propagated-inputs
+       `(("go-golang-org-x-net" ,go-golang-org-x-net)))
+      (home-page "https://go.googlesource.com/oauth2")
+      (synopsis "Client implementation of the OAuth 2.0 spec")
+      (description "This package contains a client implementation for OAuth 2.0
+ spec in Go.")
+      (license license:bsd-3))))
+
 (define-public go-github-com-burntsushi-toml
   (package
     (name "go-github-com-burntsushi-toml")
@@ -1811,6 +1838,31 @@ terminal.")
       (synopsis "Handle ANSI color escapes on Windows")
       (description "This package provides @code{colorable}, a module that
 makes it possible to handle ANSI color escapes on Windows.")
+      (license license:expat))))
+
+(define-public go-github-com-mattn-go-pointer
+  (let ((commit "a0a44394634f41e4992b173b24f14fecd3318a67")
+        (revision "1"))
+    (package
+      (name "go-github-com-mattn-go-pointer")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mattn/go-pointer")
+               (commit commit)))
+         (sha256
+          (base32
+           "09w7hcyc0zz2g23vld6jbcmq4ar27xakp1ldjvh549i5izf2anhz"))
+         (file-name (git-file-name name version))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/mattn/go-pointer"))
+      (home-page "https://github.com/mattn/go-pointer")
+      (synopsis "Utility for cgo")
+      (description
+       "This package allows for a cgo argument to be passed a Go pointer.")
       (license license:expat))))
 
 (define-public go-github-com-mgutz-ansi

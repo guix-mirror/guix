@@ -941,7 +941,9 @@ use 'plain-file' instead~%")
   ;; Default set of setuid-root programs.
   (let ((shadow (@ (gnu packages admin) shadow)))
     (list (file-append shadow "/bin/passwd")
+          (file-append shadow "/bin/sg")
           (file-append shadow "/bin/su")
+          (file-append shadow "/bin/newgrp")
           (file-append shadow "/bin/newuidmap")
           (file-append shadow "/bin/newgidmap")
           (file-append inetutils "/bin/ping")
@@ -1191,6 +1193,7 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
                 "--device-master-port='${device-port}'"
                 "--exec-server-task='${exec-task}'"
                 "--store-type=typed"
+                "--x-xattr-translator-records"
                 "'${root}'" "'$(task-create)'" "'$(task-resume)'"))
          (target (%current-target-system))
          (libc (if target

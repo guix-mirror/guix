@@ -1,0 +1,86 @@
+From 6d5c587ec719e3309077c7d637b03b13db65c047 Mon Sep 17 00:00:00 2001
+From: Joseph LaFreniere <joseph@lafreniere.xyz>
+Date: Fri, 12 Jul 2019 12:43:46 -0500
+Subject: [PATCH] Move definition of hyperbole-toggle-messaging to hsettings
+
+---
+ hsettings.el | 25 +++++++++++++++++++++++++
+ hyperbole.el | 26 --------------------------
+ 2 files changed, 25 insertions(+), 26 deletions(-)
+
+diff --git a/hsettings.el b/hsettings.el
+index 6cdd1b8..9632067 100644
+--- a/hsettings.el
++++ b/hsettings.el
+@@ -163,6 +163,31 @@ package to display search results."
+ 			      search-term)))
+       (user-error "(Hyperbole): Invalid web search service `%s'" service-name))))
+ 
++;;;###autoload
++(defun hyperbole-toggle-messaging (&optional arg)
++  "Toggle Hyperbole support for explicit buttons in mail and news buffers.
++Toggles the boolean variable `inhibit-hyperbole-messaging’ and either
++adds hooks (nil value) or removes them (t value).
++
++With optional prefix ARG > 0, enables support.  If ARG <= 0,
++disables/inhibits support."
++  (interactive "P")
++  (setq inhibit-hyperbole-messaging (if (null arg)
++					(not inhibit-hyperbole-messaging)
++				      (<= (prefix-numeric-value arg) 0)))
++  (if inhibit-hyperbole-messaging
++      (var:remove-all)
++    (var:append-all)
++    ;; Add any hooks that were skipped when inhibit-hyperbole-messaging
++    ;; was nil.
++    (cond ((boundp 'hyperbole-loading))
++	  ((not after-init-time)
++	   (add-hook 'after-init-hook (lambda () (load "hyperbole"))))
++	  (t (load "hyperbole"))))
++  (if (called-interactively-p 'interactive)
++      (message "Hyperbole messaging button support is %s"
++	       (if inhibit-hyperbole-messaging "disabled" "enabled"))))
++
+ (defcustom inhibit-hyperbole-messaging t
+   "*Determines whether Hyperbole supports explicit buttons in mail and news buffers.
+ The default of t means disable such support (work remains to
+diff --git a/hyperbole.el b/hyperbole.el
+index 4aa427d..872dbaf 100644
+--- a/hyperbole.el
++++ b/hyperbole.el
+@@ -121,32 +121,6 @@
+ 			    t)))
+     (error "(Hyperbole): Startup failure: `hyperb:dir' must be manually added to `load-path' to fix.")))
+ 
+-;; This must be defined before the defcustom `inhbit-hyperbole-messaging'.
+-;;;###autoload
+-(defun hyperbole-toggle-messaging (&optional arg)
+-  "Toggle Hyperbole support for explicit buttons in mail and news buffers.
+-Toggles the boolean variable `inhibit-hyperbole-messaging’ and either
+-adds hooks (nil value) or removes them (t value).
+-
+-With optional prefix ARG > 0, enables support.  If ARG <= 0,
+-disables/inhibits support."
+-  (interactive "P")
+-  (setq inhibit-hyperbole-messaging (if (null arg)
+-					(not inhibit-hyperbole-messaging)
+-				      (<= (prefix-numeric-value arg) 0)))
+-  (if inhibit-hyperbole-messaging
+-      (var:remove-all)
+-    (var:append-all)
+-    ;; Add any hooks that were skipped when inhibit-hyperbole-messaging
+-    ;; was nil.
+-    (cond ((boundp 'hyperbole-loading))
+-	  ((not after-init-time)
+-	   (add-hook 'after-init-hook (lambda () (load "hyperbole"))))
+-	  (t (load "hyperbole"))))
+-  (if (called-interactively-p 'interactive)
+-      (message "Hyperbole messaging button support is %s"
+-	       (if inhibit-hyperbole-messaging "disabled" "enabled"))))
+-
+ (defgroup hyperbole-koutliner nil
+   "Hyperbole multi-level autonumbered outliner customizations."
+   :group 'hyperbole)
+-- 
+2.22.0
+

@@ -301,6 +301,7 @@ AC_CONFIG_FILES([Makefile
                  etc/guix-daemon.cil
                  guix/config.scm])
 
+AC_CONFIG_FILES([etc/committer.scm], [chmod +x etc/committer.scm])
 AC_CONFIG_FILES([test-env:build-aux/test-env.in], [chmod +x test-env])
 AC_CONFIG_FILES([pre-inst-env:build-aux/pre-inst-env.in],
   [chmod +x pre-inst-env])

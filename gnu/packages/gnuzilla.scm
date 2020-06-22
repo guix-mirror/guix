@@ -648,6 +648,12 @@ from forcing GEXP-PROMISE."
                           "-p1" "--input" #+makeicecat-patch)
                   (invoke "patch" "--force" "--no-backup-if-mismatch"
                           "-p1" "--input" #+gnuzilla-fixes-patch)
+
+                  ;; Remove the bundled tortm-browser-button extension,
+                  ;; which doesn't seem to be working properly.
+                  (delete-file-recursively
+                   "data/extensions/tortm-browser-button@jeremybenthum")
+
                   (patch-shebang "makeicecat")
                   (substitute* "makeicecat"
                     (("^FFMAJOR=(.*)" all ffmajor)

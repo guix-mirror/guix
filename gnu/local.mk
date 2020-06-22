@@ -35,6 +35,7 @@
 # Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 # Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 # Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+# Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 #
 # This file is part of GNU Guix.
 #
@@ -133,6 +134,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/compton.scm 			\
   %D%/packages/conky.scm			\
   %D%/packages/connman.scm			\
+  %D%/packages/convmv.scm			\
   %D%/packages/cook.scm				\
   %D%/packages/coq.scm				\
   %D%/packages/cpio.scm				\
@@ -891,6 +893,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
+  %D%/packages/patches/emacs-hyperbole-toggle-messaging.patch	\
   %D%/packages/patches/emacs-libgit-use-system-libgit2.patch    \
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
@@ -917,7 +920,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/fasthenry-spSolve.patch			\
   %D%/packages/patches/fasthenry-spFactor.patch			\
   %D%/packages/patches/fbreader-curl-7.62.patch		\
-  %D%/packages/patches/ffmpeg-prefer-dav1d.patch		\
   %D%/packages/patches/fifengine-swig-compat.patch		\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
@@ -1103,6 +1105,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/inetutils-hurd.patch			\
   %D%/packages/patches/inkscape-poppler-0.76.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
+  %D%/packages/patches/iputils-libcap-compat.patch		\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
@@ -1160,8 +1163,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/leela-zero-gtest.patch			\
   %D%/packages/patches/less-hurd-path-max.patch			\
   %D%/packages/patches/lib2geom-enable-assertions.patch		\
-  %D%/packages/patches/lib2geom-link-tests-against-glib.patch	\
-  %D%/packages/patches/lib2geom-use-system-googletest.patch	\
+  %D%/packages/patches/lib2geom-fix-tests.patch			\
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
@@ -1425,6 +1427,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-jedi-sort-project-test.patch	\
   %D%/packages/patches/python-libxml2-utf8.patch		\
+  %D%/packages/patches/python-memcached-syntax-warnings.patch	\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-testtools.patch			\
   %D%/packages/patches/python-packaging-test-arch.patch		\
@@ -1449,6 +1452,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
+  %D%/packages/patches/quassel-qt-514-compat.patch		\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/qtwebkit-pbutils-include.patch		\
   %D%/packages/patches/randomjungle-disable-static-build.patch	\
@@ -1540,6 +1544,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
+  %D%/packages/patches/tup-unbundle-dependencies.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-bcg729.patch			\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
@@ -1605,9 +1610,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-voodoo-pcitag.patch		\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
-  %D%/packages/patches/xmoto-utf8.patch				\
-  %D%/packages/patches/xmoto-remove-glext.patch			\
-  %D%/packages/patches/xmoto-reproducible.patch			\
   %D%/packages/patches/xplanet-1.3.1-cxx11-eof.patch		\
   %D%/packages/patches/xplanet-1.3.1-libdisplay_DisplayOutput.cpp.patch	\
   %D%/packages/patches/xplanet-1.3.1-libimage_gif.c.patch	\

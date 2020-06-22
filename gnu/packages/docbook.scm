@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,8 +35,50 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system python))
 
+(define-public docbook-xml-5
+  (package
+    (name "docbook-xml")
+    (version "5.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.docbook.org/xml/" version
+                                  "/docbook-" version ".zip"))
+              (sha256
+               (base32
+                "1iz3hq1lqgnshvlz4j9gvh4jy1ml74qf90vqf2ikbq0h4i2xzybs"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((unzip
+                 (string-append (assoc-ref %build-inputs "unzip")
+                                "/bin/unzip"))
+                (source (assoc-ref %build-inputs "source"))
+                (out    (assoc-ref %outputs "out"))
+                (dtd    (string-append out "/xml/dtd/docbook")))
+           (invoke unzip source)
+           (mkdir-p dtd)
+           (copy-recursively (string-append "docbook-" ,version) dtd)
+           (with-directory-excursion dtd
+             (substitute* (string-append out "/xml/dtd/docbook/catalog.xml")
+               (("uri=\"")
+                (string-append
+                 "uri=\"file://" dtd "/")))
+             #t)))))
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://docbook.org")
+    (synopsis "DocBook XML DTDs for document authoring")
+    (description
+     "DocBook is general purpose XML and SGML document type particularly well
+suited to books and papers about computer hardware and software (though it is
+by no means limited to these applications.)  This package provides XML DTDs.")
+    (license (x11-style "" "See file headers."))))
+
 (define-public docbook-xml
   (package
+    (inherit docbook-xml-5)
     (name "docbook-xml")
     (version "4.5")
     (source (origin
@@ -45,7 +88,6 @@
               (sha256
                (base32
                 "1d671lcjckjri28xfbf6dq7y3xnkppa910w1jin8rjc35dx06kjf"))))
-    (build-system trivial-build-system)
     (arguments
      '(#:builder (begin
                    (use-modules (guix build utils))
@@ -60,19 +102,11 @@
                      (with-directory-excursion dtd
                        (invoke unzip source))
                      (substitute* (string-append out "/xml/dtd/docbook/catalog.xml")
-                       (("uri=\"") 
-                        (string-append 
+                       (("uri=\"")
+                        (string-append
                          "uri=\"file://" dtd "/")))
                      #t))
-                 #:modules ((guix build utils))))
-    (native-inputs `(("unzip" ,unzip)))
-    (home-page "https://docbook.org")
-    (synopsis "DocBook XML DTDs for document authoring")
-    (description
-     "DocBook is general purpose XML and SGML document type particularly well
-suited to books and papers about computer hardware and software (though it is
-by no means limited to these applications.)  This package provides XML DTDs.")
-    (license (x11-style "" "See file headers."))))
+                 #:modules ((guix build utils))))))
 
 (define-public docbook-xml-4.4
   (package (inherit docbook-xml)

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -212,7 +213,7 @@ written in Go.")
 (define-public go-ipfs
   (package
     (name "go-ipfs")
-    (version "0.4.23")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch/tarbomb)
@@ -220,7 +221,7 @@ written in Go.")
              "https://dist.ipfs.io/go-ipfs/v" version
              "/go-ipfs-source.tar.gz"))
        (sha256
-        (base32 "191ir4h6c76xcnbwx9fj8j2lzzqyp10inmqd8sa393b5y0jmhi5a"))
+        (base32 "0lpilycjbc1g9adp4d5kryfprixj18hg3235fnivakmv7fy2akkm"))
        (file-name (string-append name "-" version "-source"))))
     (build-system go-build-system)
     (arguments

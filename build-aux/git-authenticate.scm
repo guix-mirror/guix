@@ -218,6 +218,17 @@
            (string-downcase (string-filter char-set:graphic fingerprint)))))
        %historical-committers))
 
+(define %use-historical-authorizations?
+  ;; Whether to allow authentication of past commits using
+  ;; %HISTORICAL-AUTHORIZED-SIGNING-KEYS for when '.guix-authorizations' was
+  ;; missing.
+  (getenv "GUIX_USE_HISTORICAL_AUTHORIZATIONS"))
+
+(define %introductory-commit
+  ;; This is the commit that appears in the official 'guix' channel
+  ;; introduction.  XXX: Keep in sync with (guix channels)!
+  "9edb3f66fd807b096b48283debdcddccfea34bad")
+
 (define %commits-with-bad-signature
   ;; Commits with a known-bad signature.
   '("6a34f4ccc8a5d4a48e25ad3c9c512f8634928b91"))  ;2016-12-29
@@ -242,7 +253,10 @@
     (match args
       ((_ start end)
        (define start-commit
-         (commit-lookup repository (string->oid start)))
+         (commit-lookup repository
+                        (string->oid (if %use-historical-authorizations?
+                                         start
+                                         %introductory-commit))))
        (define end-commit
          (commit-lookup repository (string->oid end)))
 
@@ -252,7 +266,7 @@
          (filter-map (lambda (id)
                        (false-if-exception
                         (commit-lookup repository (string->oid id))))
-                     (previously-authenticated-commits)))
+                     (previously-authenticated-commits "channels/guix")))
 
        (define commits
          ;; Commits to authenticate, excluding the closure of
@@ -263,6 +277,14 @@
        (define reporter
          (progress-reporter/bar (length commits)))
 
+       (define historical-authorizations
+         ;; List of authorizations in effect before '.guix-authorizations' was
+         ;; introduced.  By default, assume there were no authorizations; this
+         ;; is what 'guix pull' does.
+         (if %use-historical-authorizations?
+             %historical-authorized-signing-keys
+             '()))
+
        (format #t (G_ "Authenticating ~a to ~a (~a commits)...~%")
                (commit-short-id start-commit)
                (commit-short-id end-commit)
@@ -272,9 +294,10 @@
                       (lambda (report)
                         (authenticate-commits repository commits
                                               #:default-authorizations
-                                              %historical-authorized-signing-keys
+                                              historical-authorizations
                                               #:report-progress report)))))
-         (cache-authenticated-commit (oid->string (commit-id end-commit)))
+         (cache-authenticated-commit "channels/guix"
+                                     (oid->string (commit-id end-commit)))
 
          (unless (null? stats)
            (format #t (G_ "Signing statistics:~%"))

@@ -2131,14 +2131,14 @@ validation and filtering on the values, making options invisible or private.")
 (define-public r-circlize
   (package
     (name "r-circlize")
-    (version "0.4.9")
+    (version "0.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "circlize" version))
        (sha256
         (base32
-         "14944vn0n5d095mpjyag4fz8vy04m6wxb6mmyygi8q813akikm3h"))))
+         "1xb1jq3mg4kw1513zv1i09vhn7rj7f8vp0bnms2qml74s47wxsgk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-colorspace" ,r-colorspace)
@@ -3839,18 +3839,20 @@ structure.")
 (define-public r-vioplot
   (package
     (name "r-vioplot")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vioplot" version))
        (sha256
         (base32
-         "1fsklymilspzz5fzlj7666x09aglaw0v4x0yfjjzy4vr5qpjc529"))))
+         "0aiy615kn9lpr2cs757g3pklg81n01yhqh0wrwv111fn3cy86r0v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-sm" ,r-sm)
        ("r-zoo" ,r-zoo)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://wsopuppenkiste.wiso.uni-goettingen.de/~dadler")
     (synopsis "Violin plot")
     (description
@@ -6634,23 +6636,106 @@ be added or removed.  When working with Word documents, a cursor can be used
 to help insert or delete content at a specific location in the document.")
     (license license:gpl3)))
 
+(define-public r-profilemodel
+  (package
+    (name "r-profilemodel")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "profileModel" version))
+       (sha256
+        (base32
+         "0yq8hy43h62hlz8bbf9ila4a3xcwizi1if27b78xc5y857ncwad8"))))
+    (properties `((upstream-name . "profileModel")))
+    (build-system r-build-system)
+    (home-page "https://github.com/ikosmidis/profileModel")
+    (synopsis "Profiling inference functions for various model classes")
+    (description
+     "This package provides tools that can be used to calculate, evaluate,
+plot and use for inference the profiles of *arbitrary* inference functions for
+arbitrary @code{glm}-like fitted models with linear predictors.  More information
+on the methods that are implemented can be found in Kosmidis (2008)
+@url{https://www.r-project.org/doc/Rnews/Rnews_2008-2.pdf}.")
+    (license license:gpl2+)))
+
+(define-public r-brglm
+  (package
+    (name "r-brglm")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "brglm" version))
+       (sha256
+        (base32
+         "0c9ngscc6zlfm90fqyggnj04qfkhp5qgf5q3wnfpxwyc8cm47by2"))))
+    (properties `((upstream-name . "brglm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-profilemodel" ,r-profilemodel)))
+    (home-page "https://github.com/ikosmidis/brglm")
+    (synopsis "Bias reduction in binomial-response generalized linear models")
+    (description
+     "Fit generalized linear models with binomial responses using either an
+adjusted-score approach to bias reduction or maximum penalized likelihood
+where penalization is by Jeffreys invariant prior.  These procedures return
+estimates with improved frequentist properties (bias, mean squared error) that
+are always finite even in cases where the maximum likelihood estimates are
+infinite (data separation).  Fitting takes place by fitting generalized linear
+models on iteratively updated pseudo-data.  The interface is essentially the
+same as @code{glm}.  More flexibility is provided by the fact that custom
+pseudo-data representations can be specified and used for model fitting.
+Functions are provided for the construction of confidence intervals for the
+reduced-bias estimates.")
+    (license license:gpl2+)))
+
+(define-public r-entropy
+  (package
+    (name "r-entropy")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "entropy" version))
+       (sha256
+        (base32
+         "10vg4818q5g54pv2nn9x5i7pvky5nsv96syy47pz2mgqp1273cpd"))))
+    (properties `((upstream-name . "entropy")))
+    (build-system r-build-system)
+    (home-page "https://www.strimmerlab.org/software/entropy/")
+    (synopsis "Estimation of entropy, mutual information and related quantities")
+    (description
+     "This package implements various estimators of entropy, such as the
+shrinkage estimator by Hausser and Strimmer, the maximum likelihood and the
+Millow-Madow estimator, various Bayesian estimators, and the Chao-Shen
+estimator.  It also offers an R interface to the NSB estimator.  Furthermore,
+it provides functions for estimating Kullback-Leibler divergence, chi-squared,
+mutual information, and chi-squared statistic of independence.  In addition
+there are functions for discretizing continuous random variables.")
+    (license license:gpl3+)))
+
 (define-public r-abn
   (package
     (name "r-abn")
-    (version "2.2")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abn" version))
        (sha256
         (base32
-         "19w6bdjyp4zwqs6p0flry4qxqynf9rh8ykdrfrp61wrdf7kysw0d"))))
+         "11nbg6dwvbj0ac7qvr203vzjnw5zc1a8cibb9l6rzzr7yfg16xzc"))))
     (build-system r-build-system)
     (inputs
      `(("gsl" ,gsl)))
     (propagated-inputs
-     `(("r-lme4" ,r-lme4)
+     `(("r-boot" ,r-boot)
+       ("r-brglm" ,r-brglm)
+       ("r-entropy" ,r-entropy)
+       ("r-lme4" ,r-lme4)
        ("r-mass" ,r-mass)
+       ("r-moments" ,r-moments)
        ("r-nnet" ,r-nnet)
        ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)
@@ -8922,14 +9007,14 @@ ROPE percentage and pd).")
 (define-public r-performance
   (package
     (name "r-performance")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "performance" version))
        (sha256
         (base32
-         "08i9ngvga06abs2k50gvkh6iwl4r77bkmmchsqjibsy09wdvd8xj"))))
+         "0gw165wm2a0vjsvyll8z9k6qd156z3jf4priy1r745v63x4mnb5k"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
@@ -11769,14 +11854,14 @@ dynamical correlation and dynamical covariance.")
 (define-public r-genenet
   (package
     (name "r-genenet")
-    (version "1.2.14")
+    (version "1.2.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GeneNet" version))
        (sha256
         (base32
-         "0cdhrj15rz0w0pyw3r8mikrzsdh95y5i1c0pa3cn0c2bjnjx3x3n"))))
+         "11ba6ahsk3x9alvcw8bai2bpg84ki1m8nadrjjdhjg65svhw8njm"))))
     (properties `((upstream-name . "GeneNet")))
     (build-system r-build-system)
     (propagated-inputs
@@ -15839,14 +15924,14 @@ the current document.")
 (define-public r-xgboost
   (package
     (name "r-xgboost")
-    (version "1.0.0.2")
+    (version "1.1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xgboost" version))
        (sha256
         (base32
-         "1ld2w51c5fy3bl0kvjn1iplffc4lmin9s9zz5xx7xsm44d6j6kzd"))))
+         "13njhcxljhbcs37ni6r5174fk8kx9b5p7rlw1an1ak3w92jn56cq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)

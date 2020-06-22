@@ -48,6 +48,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages lxqt)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
@@ -77,6 +78,7 @@
         (sha256
          (base32
           "0mg8jydc70vlylppzich26q4s40kr78r3ysfyjwisfvlg2byxvs8"))
+        (patches (search-patches "quassel-qt-514-compat.patch"))
         (modules '((guix build utils)))
         ;; We don't want to install the bundled scripts.
         (snippet
@@ -111,6 +113,7 @@
        ("qttools" ,qttools)))
     (inputs
      `(("inxi" ,inxi-minimal)
+       ("libdbusmenu-qt" ,libdbusmenu-qt)
        ("qca" ,qca)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)

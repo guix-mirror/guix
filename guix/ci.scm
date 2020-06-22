@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,12 +23,19 @@
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (build?
+  #:export (build-product?
+            build-product-id
+            build-product-type
+            build-product-file-size
+            build-product-path
+
+            build?
             build-id
             build-derivation
             build-system
             build-status
             build-timestamp
+            build-products
 
             checkout?
             checkout-commit
@@ -52,13 +60,28 @@
 ;;;
 ;;; Code:
 
+(define-json-mapping <build-product> make-build-product
+  build-product?
+  json->build-product
+  (id          build-product-id)                  ;integer
+  (type        build-product-type)                ;string
+  (file-size   build-product-file-size)           ;integer
+  (path        build-product-path))               ;string
+
 (define-json-mapping <build> make-build build?
   json->build
   (id          build-id "id")                     ;integer
   (derivation  build-derivation)                  ;string | #f
   (system      build-system)                      ;string
   (status      build-status "buildstatus" )       ;integer
-  (timestamp   build-timestamp))                  ;integer
+  (timestamp   build-timestamp)                   ;integer
+  (products    build-products "buildproducts"     ;<build-product>*
+               (lambda (products)
+                 (map json->build-product
+                      ;; Before Cuirass 3db603c1, #f is always returned.
+                      (if (vector? products)
+                          (vector->list products)
+                          '())))))
 
 (define-json-mapping <checkout> make-checkout checkout?
   json->checkout
@@ -95,7 +118,7 @@
     (map json->build (vector->list queue))))
 
 (define* (latest-builds url #:optional (limit %query-limit)
-                        #:key evaluation system)
+                        #:key evaluation system job status)
   "Return the latest builds performed by the CI server at URL.  If EVALUATION
 is an integer, restrict to builds of EVALUATION.  If SYSTEM is true (a system
 string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
@@ -108,7 +131,10 @@ string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
                                            (number->string limit)
                                            (option "evaluation" evaluation
                                                    number->string)
-                                           (option "system" system)))))
+                                           (option "system" system)
+                                           (option "job" job)
+                                           (option "status" status
+                                                   number->string)))))
     ;; Note: Hydra does not provide a "derivation" field for entries in
     ;; 'latestbuilds', but Cuirass does.
     (map json->build (vector->list latest))))

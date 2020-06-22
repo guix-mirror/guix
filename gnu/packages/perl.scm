@@ -57,9 +57,13 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages less)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl-check)
@@ -67,7 +71,9 @@
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web))
 
 ;;;
@@ -320,6 +326,63 @@ into your namespace a subroutine that returns the class name.  You can
 explicitly alias the class to another name or, if you prefer, you can do so
 implicitly.")
     (license (package-license perl))))
+
+(define-public perl-alien-sdl
+  (package
+    (name "perl-alien-sdl")
+    (version "1.446")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FR/FROGGS/"
+                           "Alien-SDL-" version ".tar.gz"))
+       (sha256
+        (base32 "0ajipk43syhlmw0zinbj1i6r46vdlkr06wkx7ivqjgf6qffjran9"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:module-build-flags
+       ;; XXX: For some reason, `sdl-config' reports stand-alone SDL
+       ;; directory, not SDL-union provided as an input to the
+       ;; package.  We force the latter with "--prefix=" option.
+       (list (let ((sdl (assoc-ref %build-inputs "sdl")))
+               (string-append "--with-sdl-config=" sdl "/bin/sdl-config"
+                              " --prefix=" sdl)))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Fix "unrecognized option: --with-sdl-config" during build.
+         ;; Reported upstream as
+         ;; <https://github.com/PerlGameDev/SDL/issues/261>.  See also
+         ;; <https://github.com/PerlGameDev/SDL/issues/272>.
+         (add-after 'unpack 'fix-build.pl
+           (lambda _
+             (substitute* "Build.PL"
+               (("use Getopt::Long;") "")
+               (("GetOptions\\( \"travis\" => \\\\\\$travis \\);") ""))
+             #t)))))
+    (native-inputs
+     `(("perl-archive-extract" ,perl-archive-extract)
+       ("perl-archive-zip" ,perl-archive-zip)
+       ("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-file-which" ,perl-file-which)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-text-patch" ,perl-text-patch)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("fontconfig" ,fontconfig)
+       ("pango" ,pango)
+       ("sdl" ,(sdl-union
+                (list sdl sdl-gfx sdl-image sdl-mixer sdl-net sdl-ttf
+                      sdl-pango)))
+       ("zlib" ,zlib)))
+    (home-page "https://metacpan.org/release/Alien-SDL")
+    (synopsis "Get, build and use SDL libraries")
+    (description
+     "Alien::SDL can be used to detect and get configuration settings from an
+installed SDL and related libraries.  Based on your platform it offers the
+possibility to download and install prebuilt binaries or to build SDL & co.@:
+from source codes.")
+    (license license:perl-license)))
 
 (define-public perl-any-moose
   (package
@@ -2850,14 +2913,14 @@ Date::Calc.")
 (define-public perl-date-manip
   (package
     (name "perl-date-manip")
-    (version "6.78")
+    (version "6.82")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SB/SBECK/"
                            "Date-Manip-" version ".tar.gz"))
        (sha256
-        (base32 "1faxj6gafrqir9hvy9r8q57s93n57b412s04qycrks7r0520hdnb"))))
+        (base32 "0ak72kpydwhq2z03mhdfwm3ganddzb8gawzh6crpsjvb9kwvr5ps"))))
     (build-system perl-build-system)
     (arguments
      ;; Tests would require tzdata for timezone information, but tzdata is in
@@ -4808,15 +4871,14 @@ back to a full directory scan if none of these are available.")
 (define-public perl-getopt-long
   (package
     (name "perl-getopt-long")
-    (version "2.49.1")
+    (version "2.51")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/J/JV/JV/"
-                           "Getopt-Long-v" (substring version 1) ".tar.gz"))
+                           "Getopt-Long-" version ".tar.gz"))
        (sha256
-        (base32
-         "0bw8gbhj8s5gmkqvs3m7pk9arqhgqssrby4yimh29ah9alix9ylq"))))
+        (base32 "0r659i6rkz8zkfgdccbn29zmd4bk9lcdc4y20ng6w2glqaa3pd10"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Getopt-Long")
     (synopsis "Module to handle parsing command line options")
@@ -9676,14 +9738,14 @@ can combine fields into a CSV string and parse a CSV string into fields.")
 (define-public perl-text-csv-xs
   (package
     (name "perl-text-csv-xs")
-    (version "1.39")
+    (version "1.43")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HM/HMBRAND/"
                            "Text-CSV_XS-" version ".tgz"))
        (sha256
-        (base32 "1gcy1bxym6f7qsxivkl3c5p94r1bjhf9csy1x38a1gk8mx744kma"))))
+        (base32 "1frh8awr5ipry21x4403wdkbglpl707n69smksg8sf79ia75756d"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-CSV_XS")
     (synopsis "Routines for manipulating CSV files")
@@ -10704,14 +10766,14 @@ neither visible nor modifiable from Perl space).")
 (define-public perl-yaml
   (package
     (name "perl-yaml")
-    (version "1.29")
+    (version "1.30")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TI/TINITA/"
                            "YAML-" version ".tar.gz"))
        (sha256
-        (base32 "0gl5ssvrdajlbc85cy6z873n9cwlssk5q8z97a31vyiikhw5fp4w"))))
+        (base32 "1kbrfksjg4k4vmx1i337m5n69m00m0m5bgsh61c15bzzrgbacc2h"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-yaml" ,perl-test-yaml)))
@@ -10955,6 +11017,46 @@ have expressed would be nice to have in the perl core, but the usage would not
 really be high enough to warrant the use of a keyword, and the size so small
 such that being individual extensions would be wasteful.")
     (license (package-license perl))))
+
+(define-public perl-sdl
+  (package
+    (name "perl-sdl")
+    (version "2.548")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FR/FROGGS/"
+                           "SDL-" version ".tar.gz"))
+       (sha256
+        (base32 "1dagpmcpjnwvd4g6mmnc312rqpd4qcwx21rpi2j7084wz8mijai5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-alien-sdl" ,perl-alien-sdl)
+       ("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-test-most" ,perl-test-most)
+       ("perl-tie-simple" ,perl-tie-simple)))
+    (inputs
+     `(("freeglut" ,freeglut)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libsmpeg" ,libsmpeg)
+       ("libtiff" ,libtiff)
+       ("mesa" ,mesa)
+       ("sdl" ,(sdl-union
+                (list sdl sdl-gfx sdl-image sdl-mixer sdl-pango sdl-ttf)))))
+    (propagated-inputs
+     `(("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-tie-simple" ,perl-tie-simple)))
+    (home-page "https://metacpan.org/release/SDL")
+    (synopsis "SDL bindings to Perl")
+    (description
+     "SDL Perl is a package of Perl modules that provide both functional and
+object oriented interfaces to the Simple DirectMedia Layer for Perl5.  This
+package takes some liberties with the SDL API, and attempts to adhere to the
+spirit of both the SDL and Perl.")
+    (license license:lgpl2.1)))
 
 (define-public perl-shell-command
   (package

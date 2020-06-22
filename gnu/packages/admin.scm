@@ -1364,7 +1364,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.0")
+    (version "1.9.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1374,7 +1374,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0p7r3cl16pjwbc48ff1gbhjw51lngrghvwblxz5lxpyzqlwi88xb"))
+                "1zxd6hxwhxqrm876wsn9bfajbfc4hc6l9ivzj5rjg80hzv71ch99"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3472,7 +3472,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.01-1")
+      (version "3.1.03-1")
       (source
        (origin
          (method git-fetch)
@@ -3481,7 +3481,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0r204w0r06ibdr4dck7yw2nmvj7xq68bjr7xwwiy7liqdml0n0yc"))))
+          (base32 "0539hvlq021wxhbwzdp7qliiq1jgw60mxlwrwx0z2x8qi1zqdzg6"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

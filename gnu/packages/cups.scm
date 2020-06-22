@@ -415,14 +415,14 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.20.5")
+    (version "3.20.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0nj79r61fzddwwzf8kcc0qkp4y9qx46v15iarz6h6y3v91wbsjq0"))
+                "0rmk7i28mb0q66i5l9d0fq2j23dkhz5gx5g2xvi16ga0dnprcilp"))
               (modules '((guix build utils)))
               (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
@@ -681,14 +681,14 @@ printer/driver specific, but spooler-independent PPD file.")
 (define-public foo2zjs
   (package
     (name "foo2zjs")
-    (version "20200426")
+    (version "20200610")
     (source (origin
               (method url-fetch)
               ;; XXX: This is an unversioned URL!
               (uri "http://foo2zjs.rkkda.com/foo2zjs.tar.gz")
               (sha256
                (base32
-                "0wwh29ddd59q18r1jpi3166lgnwr8zn9lry82vahc2g96l97isp7"))))
+                "11ddx6wf8b5ksl4fqw6fnyz9m3y470lryyrskkya2bsch2bvj9lg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

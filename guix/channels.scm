@@ -21,6 +21,11 @@
 (define-module (guix channels)
   #:use-module (git)
   #:use-module (guix git)
+  #:use-module (guix git-authenticate)
+  #:use-module ((guix openpgp)
+                #:select (openpgp-public-key-fingerprint
+                          openpgp-format-fingerprint))
+  #:use-module (guix base16)
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix modules)
@@ -28,6 +33,7 @@
   #:use-module (guix monads)
   #:use-module (guix profiles)
   #:use-module (guix packages)
+  #:use-module (guix progress)
   #:use-module (guix derivations)
   #:use-module (guix combinators)
   #:use-module (guix diagnostics)
@@ -48,16 +54,22 @@
   #:autoload   (guix self) (whole-package make-config.scm)
   #:autoload   (guix inferior) (gexp->derivation-in-inferior) ;FIXME: circular dep
   #:autoload   (guix quirks) (%quirks %patches applicable-patch? apply-patch)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module ((ice-9 rdelim) #:select (read-string))
+  #:use-module ((rnrs bytevectors) #:select (bytevector=?))
   #:export (channel
             channel?
             channel-name
             channel-url
             channel-branch
             channel-commit
+            channel-introduction
             channel-location
+
+            channel-introduction?
+            ;; <channel-introduction> accessors purposefully omitted for now.
 
             %default-channels
             guix-channel?
@@ -67,6 +79,7 @@
             channel-instance-commit
             channel-instance-checkout
 
+            authenticate-channel
             latest-channel-instances
             checkout->channel-instance
             latest-channel-derivation
@@ -104,19 +117,62 @@
   (url       channel-url)
   (branch    channel-branch (default "master"))
   (commit    channel-commit (default #f))
+  (introduction channel-introduction (default #f))
   (location  channel-location
              (default (current-source-location)) (innate)))
+
+;; Channel introductions.  A "channel introduction" provides a commit/signer
+;; pair that specifies the first commit of the authentication process as well
+;; as its signer's fingerprint.  The pair must be signed by the signer of that
+;; commit so that only them may emit this introduction.  Introductions are
+;; used to bootstrap trust in a channel.
+(define-record-type <channel-introduction>
+  (make-channel-introduction first-signed-commit first-commit-signer
+                             signature)
+  channel-introduction?
+  (first-signed-commit  channel-introduction-first-signed-commit) ;hex string
+  (first-commit-signer  channel-introduction-first-commit-signer) ;bytevector
+  (signature            channel-introduction-signature))          ;string
+
+(define %guix-channel-introduction
+  ;; Introduction of the official 'guix channel.  The chosen commit is the
+  ;; first one that introduces '.guix-authorizations' on the 'staging'
+  ;; branch that was eventually merged in 'master'.  Any branch starting
+  ;; before that commit cannot be merged or it will be rejected by 'guix pull'
+  ;; & co.
+  (make-channel-introduction
+   "9edb3f66fd807b096b48283debdcddccfea34bad"     ;2020-05-26
+   (base16-string->bytevector
+    (string-downcase
+     (string-filter char-set:hex-digit            ;mbakke
+                    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
+   #f))                   ;TODO: Add an intro signature so it can be exported.
+
+(define %default-channel-url
+  ;; URL of the default 'guix' channel.
+  "https://git.savannah.gnu.org/git/guix.git")
 
 (define %default-channels
   ;; Default list of channels.
   (list (channel
          (name 'guix)
          (branch "master")
-         (url "https://git.savannah.gnu.org/git/guix.git"))))
+         (url %default-channel-url)
+         (introduction %guix-channel-introduction))))
 
 (define (guix-channel? channel)
   "Return true if CHANNEL is the 'guix' channel."
   (eq? 'guix (channel-name channel)))
+
+(define (ensure-default-introduction chan)
+  "If CHAN represents the \"official\" 'guix' channel and lacks an
+introduction, add it."
+  (if (and (guix-channel? chan)
+           (not (channel-introduction chan))
+           (string=? (channel-url chan) %default-channel-url))
+      (channel (inherit chan)
+               (introduction %guix-channel-introduction))
+      chan))
 
 (define-record-type <channel-instance>
   (channel-instance channel commit checkout)
@@ -126,11 +182,17 @@
   (checkout  channel-instance-checkout))
 
 (define-record-type <channel-metadata>
-  (channel-metadata directory dependencies news-file)
+  (channel-metadata directory dependencies news-file keyring-reference url)
   channel-metadata?
   (directory     channel-metadata-directory)      ;string with leading slash
   (dependencies  channel-metadata-dependencies)   ;list of <channel>
-  (news-file     channel-metadata-news-file))     ;string | #f
+  (news-file     channel-metadata-news-file)      ;string | #f
+  (keyring-reference channel-metadata-keyring-reference) ;string
+  (url           channel-metadata-url))           ;string | #f
+
+(define %default-keyring-reference
+  ;; Default value of the 'keyring-reference' field.
+  "keyring")
 
 (define (channel-reference channel)
   "Return the \"reference\" for CHANNEL, an sexp suitable for
@@ -147,7 +209,11 @@ if valid metadata could not be read from PORT."
     (('channel ('version 0) properties ...)
      (let ((directory    (and=> (assoc-ref properties 'directory) first))
            (dependencies (or (assoc-ref properties 'dependencies) '()))
-           (news-file    (and=> (assoc-ref properties 'news-file) first)))
+           (news-file    (and=> (assoc-ref properties 'news-file) first))
+           (url          (and=> (assoc-ref properties 'url) first))
+           (keyring-reference
+            (or (and=> (assoc-ref properties 'keyring-reference) first)
+                %default-keyring-reference)))
        (channel-metadata
         (cond ((not directory) "/")               ;directory
               ((string-prefix? "/" directory) directory)
@@ -164,7 +230,9 @@ if valid metadata could not be read from PORT."
                     (url url)
                     (commit (get 'commit))))))
              dependencies)
-        news-file)))                              ;news-file
+        news-file
+        keyring-reference
+        url)))
     ((and ('channel ('version version) _ ...) sexp)
      (raise (condition
              (&message (message "unsupported '.guix-channel' version"))
@@ -188,7 +256,7 @@ doesn't exist."
         read-channel-metadata))
     (lambda args
       (if (= ENOENT (system-error-errno args))
-          (channel-metadata "/" '() #f)
+          (channel-metadata "/" '() #f %default-keyring-reference #f)
           (apply throw args)))))
 
 (define (channel-instance-metadata instance)
@@ -212,19 +280,137 @@ result is unspecified."
          (apply-patch patch checkout))
        (loop rest)))))
 
+(define commit-short-id
+  (compose (cut string-take <> 7) oid->string commit-id))
+
+(define (verify-introductory-commit repository introduction keyring)
+  "Raise an exception if the first commit described in INTRODUCTION doesn't
+have the expected signer."
+  (define commit-id
+    (channel-introduction-first-signed-commit introduction))
+
+  (define actual-signer
+    (openpgp-public-key-fingerprint
+     (commit-signing-key repository (string->oid commit-id)
+                         keyring)))
+
+  (define expected-signer
+    (channel-introduction-first-commit-signer introduction))
+
+  (unless (bytevector=? expected-signer actual-signer)
+    (raise (condition
+            (&message
+             (message (format #f (G_ "initial commit ~a is signed by '~a' \
+instead of '~a'")
+                              commit-id
+                              (openpgp-format-fingerprint actual-signer)
+                              (openpgp-format-fingerprint expected-signer))))))))
+
+(define* (authenticate-channel channel checkout commit
+                               #:key (keyring-reference-prefix "origin/"))
+  "Authenticate the given COMMIT of CHANNEL, available at CHECKOUT, a
+directory containing a CHANNEL checkout.  Raise an error if authentication
+fails."
+  ;; XXX: Too bad we need to re-open CHECKOUT.
+  (with-repository checkout repository
+    (define start-commit
+      (commit-lookup repository
+                     (string->oid
+                      (channel-introduction-first-signed-commit
+                       (channel-introduction channel)))))
+
+    (define end-commit
+      (commit-lookup repository (string->oid commit)))
+
+    (define cache-key
+      (string-append "channels/" (symbol->string (channel-name channel))))
+
+    (define keyring-reference
+      (channel-metadata-keyring-reference
+       (read-channel-metadata-from-source checkout)))
+
+    (define keyring
+      (load-keyring-from-reference repository
+                                   (string-append keyring-reference-prefix
+                                                  keyring-reference)))
+
+    (define authenticated-commits
+      ;; Previously-authenticated commits that don't need to be checked again.
+      (filter-map (lambda (id)
+                    (false-if-exception
+                     (commit-lookup repository (string->oid id))))
+                  (previously-authenticated-commits cache-key)))
+
+    (define commits
+      ;; Commits to authenticate, excluding the closure of
+      ;; AUTHENTICATED-COMMITS.
+      (commit-difference end-commit start-commit
+                         authenticated-commits))
+
+    (define reporter
+      (progress-reporter/bar (length commits)))
+
+    ;; When COMMITS is empty, it's because END-COMMIT is in the closure of
+    ;; START-COMMIT and/or AUTHENTICATED-COMMITS, in which case it's known to
+    ;; be authentic already.
+    (unless (null? commits)
+      (format (current-error-port)
+              (G_ "Authenticating channel '~a', \
+commits ~a to ~a (~h new commits)...~%")
+              (channel-name channel)
+              (commit-short-id start-commit)
+              (commit-short-id end-commit)
+              (length commits))
+
+      ;; If it's our first time, verify CHANNEL's introductory commit.
+      (when (null? authenticated-commits)
+        (verify-introductory-commit repository
+                                    (channel-introduction channel)
+                                    keyring))
+
+      (call-with-progress-reporter reporter
+        (lambda (report)
+          (authenticate-commits repository commits
+                                #:keyring keyring
+                                #:report-progress report)))
+
+      (cache-authenticated-commit cache-key
+                                  (oid->string
+                                   (commit-id end-commit))))))
+
 (define* (latest-channel-instance store channel
                                   #:key (patches %patches)
-                                  starting-commit)
-  "Return two values: the latest channel instance for CHANNEL, and its
-relation to STARTING-COMMIT when provided."
+                                  starting-commit
+                                  (authenticate? #f)
+                                  (validate-pull
+                                   ensure-forward-channel-update))
+  "Return the latest channel instance for CHANNEL.  When STARTING-COMMIT is
+true, call VALIDATE-PULL with CHANNEL, STARTING-COMMIT, the target commit, and
+their relation.  When AUTHENTICATE? is false, CHANNEL is not authenticated."
   (define (dot-git? file stat)
     (and (string=? (basename file) ".git")
          (eq? 'directory (stat:type stat))))
 
-  (let-values (((checkout commit relation)
+  (let-values (((channel)
+                (ensure-default-introduction channel))
+               ((checkout commit relation)
                 (update-cached-checkout (channel-url channel)
                                         #:ref (channel-reference channel)
                                         #:starting-commit starting-commit)))
+    (when relation
+      (validate-pull channel starting-commit commit relation))
+
+    (if authenticate?
+        (if (channel-introduction channel)
+            (authenticate-channel channel checkout commit)
+            ;; TODO: Warn for all the channels once the authentication interface
+            ;; is public.
+            (when (guix-channel? channel)
+              (warning (G_ "channel '~a' lacks an introduction and \
+cannot be authenticated~%")
+                       (channel-name channel))))
+        (warning (G_ "channel authentication disabled~%")))
+
     (when (guix-channel? channel)
       ;; Apply the relevant subset of PATCHES directly in CHECKOUT.  This is
       ;; safe to do because 'switch-to-ref' eventually does a hard reset.
@@ -233,12 +419,11 @@ relation to STARTING-COMMIT when provided."
     (let* ((name     (url+commit->name (channel-url channel) commit))
            (checkout (add-to-store store name #t "sha256" checkout
                                    #:select? (negate dot-git?))))
-      (values (channel-instance channel commit checkout)
-              relation))))
+      (channel-instance channel commit checkout))))
 
-(define (ensure-forward-channel-update channel start instance relation)
+(define (ensure-forward-channel-update channel start commit relation)
   "Raise an error if RELATION is not 'ancestor, meaning that START is not an
-ancestor of the commit in INSTANCE, unless CHANNEL specifies a commit.
+ancestor of COMMIT, unless CHANNEL specifies a commit.
 
 This procedure implements a channel update policy meant to be used as a
 #:validate-pull argument."
@@ -252,8 +437,7 @@ This procedure implements a channel update policy meant to be used as a
                          (format #f (G_ "\
 aborting update of channel '~a' to commit ~a, which is not a descendant of ~a")
                                  (channel-name channel)
-                                 (channel-instance-commit instance)
-                                 start))))
+                                 commit start))))
 
              ;; If the user asked for a specific commit, they might want
              ;; that to happen nevertheless, so tell them about the
@@ -270,13 +454,22 @@ been tampered with and is trying to force a roll-back, preventing you from
 getting the latest updates.  If you think this is not the case, explicitly
 allow non-forward updates."))))))))))
 
+(define (channel-instance-primary-url instance)
+  "Return the primary URL advertised for INSTANCE, or #f if there is no such
+information."
+  (channel-metadata-url (channel-instance-metadata instance)))
+
 (define* (latest-channel-instances store channels
                                    #:key
                                    (current-channels '())
+                                   (authenticate? #t)
                                    (validate-pull
                                     ensure-forward-channel-update))
   "Return a list of channel instances corresponding to the latest checkouts of
 CHANNELS and the channels on which they depend.
+
+When AUTHENTICATE? is true, authenticate the subset of CHANNELS that has a
+\"channel introduction\".
 
 CURRENT-CHANNELS is the list of currently used channels.  It is compared
 against the newly-fetched instances of CHANNELS, and VALIDATE-PULL is called
@@ -312,14 +505,28 @@ depending on the policy it implements."
                              (G_ "Updating channel '~a' from Git repository at '~a'...~%")
                              (channel-name channel)
                              (channel-url channel))
-                     (let*-values (((current)
-                                    (current-commit (channel-name channel)))
-                                   ((instance relation)
-                                    (latest-channel-instance store channel
-                                                             #:starting-commit
-                                                             current)))
-                       (when relation
-                         (validate-pull channel current instance relation))
+                     (let* ((current (current-commit (channel-name channel)))
+                            (instance
+                             (latest-channel-instance store channel
+                                                      #:authenticate?
+                                                      authenticate?
+                                                      #:validate-pull
+                                                      validate-pull
+                                                      #:starting-commit
+                                                      current)))
+                       (when authenticate?
+                         ;; CHANNEL is authenticated so we can trust the
+                         ;; primary URL advertised in its metadata and warn
+                         ;; about possibly stale mirrors.
+                         (let ((primary-url (channel-instance-primary-url
+                                             instance)))
+                           (unless (or (not primary-url)
+                                       (channel-commit channel)
+                                       (string=? primary-url (channel-url channel)))
+                             (warning (G_ "pulled channel '~a' from a mirror \
+of ~a, which might be stale~%")
+                                      (channel-name channel)
+                                      primary-url))))
 
                        (let-values (((new-instances new-channels)
                                      (loop (channel-instance-dependencies instance)

@@ -72,7 +72,7 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "146")
+    (version "148")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -81,7 +81,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07kd3vshf4wlm0mv3mp6ljbxjq80mcg52w5ks6si1gnpzfbfz07p"))))
+                "0siv5z8iqgkzl51dmv69ifqids6hqmiir00yyl1aaqbginrwyhyv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -92,12 +92,6 @@
                     (lambda _
                       (substitute* "setup.py"
                         (("'python-magic',") ""))))
-                  ;; Patch in support for known tools
-                  (add-after 'unpack 'add-known-tools
-                    (lambda _
-                      (substitute* "diffoscope/external_tools.py"
-                        (("'debian': 'openssl'")
-                         "'debian': 'openssl', 'guix': 'openssl'"))))
                   ;; This test is broken because our `file` package has a
                   ;; bug in berkeley-db file type detection.
                   (add-after 'unpack 'remove-berkeley-test

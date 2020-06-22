@@ -298,5 +298,5 @@ corresponding bytevector; otherwise return #f."
      (bytevector=? (uuid-bytevector a) b))
     (((? uuid? a) (? uuid? b))
      (bytevector=? (uuid-bytevector a) (uuid-bytevector b)))
-    ((a b)
+    (((or (? uuid? a) (? bytevector? a)) (or (? uuid? b) (? bytevector? b)))
      (uuid=? b a))))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -287,21 +288,48 @@ This package is part of the KDE multimedia module.")
 (define-public k3b
   (package
     (name "k3b")
-    (version "20.04.1")
+    (version "20.04.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/k3b-" version ".tar.xz"))
        (sha256
-        (base32 "0r01ninrrmqk7pl5jg0g51fcky1ammw0yyq572wyhibw7q8y7ly7"))))
+        (base32 "15wm987hz6rfs9ds9l1gbs6gdsardj1ywvk6zmpvj2i2190y4b3q"))))
     (build-system qt-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-absolute-library-paths
+           (lambda _
+             ;; Set absolute paths for dlopened libraries. We can’t use k3b’s
+             ;; runpath as they are loaded by the Qt library.
+             (let ((libcdio-paranoia (assoc-ref %build-inputs "libcdio-paranoia"))
+                   (libdvdcss (assoc-ref %build-inputs "libdvdcss")))
+               (substitute* "libk3b/tools/k3bcdparanoialib.cpp"
+                 (("\"(cdio_cdda|cdio_paranoia)\"" _ library)
+                  (string-append "\"" libcdio-paranoia "/lib/" library "\"")))
+               (substitute* "libk3b/tools/k3blibdvdcss.cpp"
+                 (("\"(dvdcss)\"" _ library)
+                  (string-append "\"" libdvdcss "/lib/" library "\""))))
+             #t))
+         (add-after 'qt-wrap 'wrap-path
+           (lambda _
+             ;; Set paths to backend programs.
+             (wrap-program (string-append (assoc-ref %outputs "out") "/bin/k3b")
+               `("PATH" ":" prefix
+                 ,(map (lambda (input)
+                         (string-append (assoc-ref %build-inputs input) "/bin"))
+                       '("cdrdao" "dvd+rw-tools" "libburn" "sox"))))
+             #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
        ("kdoctools" ,kdoctools)))
     (inputs
-     `(("ffmpeg" ,ffmpeg)
+     `(("cdrdao" ,cdrdao)
+       ("dvd+rw-tools" ,dvd+rw-tools)
+       ("ffmpeg" ,ffmpeg)
        ("flac" ,flac)
        ("karchive" ,karchive)
        ("kcmutils" ,kcmutils)
@@ -319,6 +347,9 @@ This package is part of the KDE multimedia module.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
        ("lame" ,lame)
+       ("libburn" ,libburn)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libdvdcss" ,libdvdcss)
        ("libdvdread" ,libdvdread)
        ;; TODO: LibFuzzer
        ("libiconv" ,libiconv)
@@ -334,13 +365,17 @@ This package is part of the KDE multimedia module.")
        ("qtwebkit" ,qtwebkit)
        ("shared-mime-info" ,shared-mime-info)
        ("solid" ,solid)
+       ("sox" ,sox)
        ("taglib" ,taglib)))
     (home-page "https://kde.org/applications/multimedia/org.kde.k3b")
     (synopsis "Sophisticated CD/DVD burning application")
     (description "K3b is CD-writing software which intends to be feature-rich
 and provide an easily usable interface.  Features include burning audio CDs
 from .WAV and .MP3 audio files, configuring external programs and configuring
-devices.")
+devices.
+
+The @code{udisks-service} should be enabled for @command{k3b} to discover the
+available CD drives.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
 

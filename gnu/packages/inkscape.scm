@@ -213,6 +213,11 @@ endif()~%~%"
     (arguments
      `(#:tests? #t
        #:test-target "check"            ;otherwise some test binaries are missing
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build glib-or-gtk-build-system))
+       #:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-icon-cache-generator
@@ -240,7 +245,11 @@ endif()~%~%"
          ;; as the "share/inkscape/ui/units.xml" file.
          (delete 'check)
          (add-after 'install 'check
-           (assoc-ref %standard-phases 'check)))))
+           (assoc-ref %standard-phases 'check))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (inputs
      `(("aspell" ,aspell)
        ("autotrace" ,autotrace)
