@@ -3451,7 +3451,7 @@ It counts more than 100 plugins.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libjpeg" ,libjpeg-turbo)
-       ("ffmpeg" ,ffmpeg-3.4)
+       ("ffmpeg" ,ffmpeg)
        ("libmicrohttpd" ,libmicrohttpd)
        ("sqlite" ,sqlite)))
     (arguments
