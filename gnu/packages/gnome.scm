@@ -2406,7 +2406,7 @@ library.")
         ("rust-rayon" ,rust-rayon-1.3)
         ("rust-rctree" ,rust-rctree-0.3)
         ("rust-string-cache" ,rust-string-cache-0.7)
-        ("rust-regex" ,rust-regex-1.3)
+        ("rust-regex" ,rust-regex-1)
         ("rust-url" ,rust-url-2.1)
         ("rust-xml-rs" ,rust-xml-rs-0.8))
        #:cargo-development-inputs

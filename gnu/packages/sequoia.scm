@@ -104,7 +104,7 @@
         ("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-quickcheck", rust-quickcheck-0.9)
         ("rust-rand", rust-rand-0.7)
-        ("rust-regex", rust-regex-1.3)
+        ("rust-regex" ,rust-regex-1)
         ("rust-rusqlite" ,rust-rusqlite-0.19)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-thiserror" ,rust-thiserror-1.0)
