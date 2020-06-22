@@ -785,7 +785,11 @@ from forcing GEXP-PROMISE."
        ("dbus-glib" ,dbus-glib)
        ("expat" ,expat)
        ("flac" ,flac)
-       ("ffmpeg" ,ffmpeg)
+
+       ;; FIXME: Change to ffmpeg 4.3 when supported, see
+       ;; <https://bugs.chromium.org/p/chromium/issues/detail?id=1095962>.
+       ("ffmpeg" ,ffmpeg-4.2)
+
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("gdk-pixbuf" ,gdk-pixbuf)

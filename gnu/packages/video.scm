@@ -1126,6 +1126,24 @@ convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
 
+;; ungoogled-chromium crashes with ffmpeg 4.3, so stick with this version for
+;; now.  See <https://issues.guix.gnu.org/41987>.
+(define-public ffmpeg-4.2
+  (package
+    (inherit ffmpeg)
+    (version "4.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0cddkb5sma9dzy8i59sfls19rhjlq40zn9mh3x666dqkxl5ckxlx"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ffmpeg)
+       ((#:configure-flags flags)
+        `(delete "--enable-librav1e" ,flags))))))
+
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
