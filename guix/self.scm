@@ -293,22 +293,6 @@ DOMAIN, a gettext domain."
                        (ice-9 vlist)
                        (srfi srfi-1))
 
-          (mkdir #$output)
-
-          (copy-recursively #$documentation "."
-                            #:log (%make-void-port "w"))
-
-          (for-each
-            (lambda (file)
-              (copy-file file (basename file)))
-            (find-files #$documentation-po ".*.po$"))
-
-          (setenv "GUIX_LOCPATH"
-                  #+(file-append glibc-utf8-locales "/lib/locale"))
-          (setenv "PATH" #+(file-append gettext "/bin"))
-          (setenv "LC_ALL" "en_US.UTF-8")
-          (setlocale LC_ALL "en_US.UTF-8")
-
           (define (translate-tmp-texi po source output)
             "Translate Texinfo file SOURCE using messages from PO, and write
 the result to OUTPUT."
@@ -413,6 +397,21 @@ a list of extra files, such as '(\"contributing\")."
                                     (cons lang po))))))
                         (find-files directory
                                     "\\.[a-z]{2}(_[A-Z]{2})?\\.po$")))
+
+          (mkdir #$output)
+          (copy-recursively #$documentation "."
+                            #:log (%make-void-port "w"))
+
+          (for-each
+            (lambda (file)
+              (copy-file file (basename file)))
+            (find-files #$documentation-po ".*.po$"))
+
+          (setenv "GUIX_LOCPATH"
+                  #+(file-append glibc-utf8-locales "/lib/locale"))
+          (setenv "PATH" #+(file-append gettext "/bin"))
+          (setenv "LC_ALL" "en_US.UTF-8")
+          (setlocale LC_ALL "en_US.UTF-8")
 
           (for-each (match-lambda
                       ((language . po)
