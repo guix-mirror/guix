@@ -801,7 +801,7 @@ users.")
   (package
     (inherit hamlib)
     (name "wsjtx-hamlib")
-    (version "2.1.2")
+    (version "2.2.1")
     (source
      (origin
        (method git-fetch)
@@ -810,18 +810,32 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ksv3cmr1dl45p0pp1panyc9dngd158gvv9ysv25lq4nqv1wn87i"))))
+        (base32 "01h5ps0yq5vi1x9rkw742gx6a5fj02zhbpi89i412qdfbnyk35cv"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("texinfo" ,texinfo)
-       ,@(package-native-inputs hamlib)))))
+       ,@(package-native-inputs hamlib)))
+    (arguments
+     `(#:configure-flags '("--disable-static"
+                           "--with-lua-binding"
+                           "--with-python-binding"
+                           "--with-tcl-binding"
+                           "--with-xml-support")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "tests/testloc.c"
+               (("dmmm2dec\\(deg, mmm, nesw\\);")
+                "dmmm2dec(deg, mmm, 0, nesw);"))
+             #t)))))))
 
 (define-public wsjtx
   (package
     (name "wsjtx")
-    (version "2.1.2")
+    (version "2.2.1")
     (source
      (origin
        (method git-fetch)
@@ -830,7 +844,7 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fnqzjd3dmxp3yjwjvwz2djk9gzb1y2cqfa188f3x8lynxhdhnfs"))
+        (base32 "12i8ch2yhxlbd7lbpl4s4y37ks4i00wasah4j44g104rxrzdny57"))
        (modules '((guix build utils)))
        (snippet
         '(begin
