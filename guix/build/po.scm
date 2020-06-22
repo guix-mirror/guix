@@ -55,8 +55,8 @@
 (define (parse-tree->assoc parse-tree)
   "Converts a po PARSE-TREE to an association list."
   (match parse-tree
-    ('() '())
-    ((entry parse-tree ...)
+    (() '())
+    ((entry . parse-tree)
      (match entry
        ((? string? entry)
         (parse-tree->assoc parse-tree))
