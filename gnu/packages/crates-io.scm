@@ -3972,7 +3972,7 @@ intrinsics.")
         ("rust-rand-os" ,rust-rand-os-0.1)
         ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.1)
         ("rust-rayon" ,rust-rayon-1.1)
-        ("rust-rayon-core" ,rust-rayon-core-1.7)
+        ("rust-rayon-core" ,rust-rayon-core-1)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
@@ -18428,7 +18428,7 @@ accessors.")
        #:cargo-inputs
        (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
         ("rust-either" ,rust-either-1.5)
-        ("rust-rayon-core" ,rust-rayon-core-1.7))
+        ("rust-rayon-core" ,rust-rayon-core-1))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-docopt" ,rust-docopt-1.1)
@@ -18461,7 +18461,7 @@ accessors.")
        #:cargo-inputs
        (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.6)
         ("rust-either" ,rust-either-1.5)
-        ("rust-rayon-core" ,rust-rayon-core-1.7))
+        ("rust-rayon-core" ,rust-rayon-core-1))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-docopt" ,rust-docopt-1.1)
@@ -18485,7 +18485,7 @@ accessors.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-rayon-core" ,rust-rayon-core-1.7))
+       (("rust-rayon-core" ,rust-rayon-core-1))
       #:cargo-development-inputs
       (("rust-compiletest-rs" ,rust-compiletest-rs-0.2)
        ("rust-docopt" ,rust-docopt-0.7)
@@ -18493,7 +18493,7 @@ accessors.")
        ("rust-rand" ,rust-rand-0.3)
        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
 
-(define-public rust-rayon-core-1.7
+(define-public rust-rayon-core-1
   (package
     (name "rust-rayon-core")
     (version "1.7.0")
