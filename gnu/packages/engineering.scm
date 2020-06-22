@@ -2704,9 +2704,7 @@ GUI.")
       ;; The GUI, which we elide, requires tcl and tk.
       (native-inputs `(("autoconf" ,autoconf)
                        ("automake" ,automake)
-                       ;; Requires bison 3.6+ but we currently only have 3.5.
-                       ;; Bison 3.6 will be available in the next core update.
-                       ("bison-3.6" ,bison-3.6)
+                       ("bison" ,bison)
                        ("clisp" ,clisp)
                        ("dejagnu" ,dejagnu)
                        ("flex" ,flex)
