@@ -39,7 +39,7 @@
 (define-public sequoia
   (package
     (name "sequoia")
-    (version "0.16.0")
+    (version "0.17.0")
     (source
      (origin
        (method git-fetch)
@@ -47,7 +47,7 @@
              (url "https://gitlab.com/sequoia-pgp/sequoia.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0iwzi2ylrwz56s77cd4vcf89ig6ipy4w6kp2pfwqvd2d00x54dhk"))
+        (base32 "1rf9q67qmjfkgy6r3mz1h9ibfmc04r4j8nzacqv2l75x4mwvf6xb"))
        (file-name (git-file-name name version))))
     (build-system cargo-build-system)
     (outputs '("out" "python"))
@@ -105,6 +105,7 @@
         ("rust-rand" ,rust-rand-0.7)
         ("rust-regex" ,rust-regex-1)
         ("rust-rusqlite" ,rust-rusqlite-0.19)
+        ("rust-structopt" ,rust-structopt-0.3)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-thiserror" ,rust-thiserror-1.0)
         ("rust-tokio" ,rust-tokio-0.1)
@@ -161,6 +162,14 @@
              ;; FIXME: why do we need to set this here?
              (setenv "LIBCLANG_PATH"
                      (string-append (assoc-ref inputs "clang") "/lib"))
+             #t))
+         (add-after 'unpack 'unpin-deps
+           (lambda _
+             ;; As the comment in that file explains, upstream encourages
+             ;; unpinning, as the pinned version is only to make sure the crate
+             ;; compiles on older versions of rustc
+             (substitute* '("openpgp/Cargo.toml" "tool/Cargo.toml")
+               (("= \"=") "= \""))
              #t)))))
     (home-page "https://sequoia-pgp.org")
     (synopsis "New OpenPGP implementation")
