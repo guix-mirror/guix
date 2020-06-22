@@ -14500,6 +14500,26 @@ You probably don't want to link to this crate directly; instead check out the
      "Single assignment cells and lazy values.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-once-cell-0.1
+  (package
+    (inherit rust-once-cell-1.2)
+    (name "rust-once-cell")
+    (version "0.1.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "once-cell" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0drcjs7si0hygc0v64y55hkxv9fpvlvrb3wl5374b2hnc6i2jb2k"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-parking-lot" ,rust-parking-lot-0.7))
+       #:cargo-development-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))))))
+
 (define-public rust-oorandom-11.1
   (package
     (name "rust-oorandom")
