@@ -648,10 +648,10 @@ public keys and can roam across IP addresses.")
                   (delete 'configure) ;no configure script
                   (add-before 'build 'setup-environment
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (setenv "CFLAGS"
-                              (string-append "-DPPPD=\""
-                                             (assoc-ref inputs "ppp")
-                                             "/sbin/pppd\""))
+                      (substitute* "l2tp.h"
+                        (("/usr/sbin/pppd")
+                         (string-append (assoc-ref inputs "ppp")
+                                        "/sbin/pppd")))
                       (setenv "KERNELSRC"
                               (assoc-ref inputs "linux-libre-headers"))
                       #t)))
