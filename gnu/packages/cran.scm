@@ -21334,23 +21334,26 @@ linear systems can be manageable using the @code{Matrix} package along with
 (define-public r-zvcv
   (package
     (name "r-zvcv")
-    (version "1.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ZVCV" version))
        (sha256
         (base32
-         "1npw836q2skx54843lgxvb0rfwafckjc8k8dljykm60ad3z7zak8"))))
+         "0np6h6x74kz1x13wmbkkm1wq43d8bnn2khzjc80prqdi6n0m9v8r"))))
     (properties `((upstream-name . "ZVCV")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
+       ("r-bh" ,r-bh)
+       ("r-dplyr" ,r-dplyr)
        ("r-glmnet" ,r-glmnet)
+       ("r-magrittr" ,r-magrittr)
        ("r-mvtnorm" ,r-mvtnorm)
-       ("r-partitions" ,r-partitions)
        ("r-rcpp" ,r-rcpp)
-       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rlinsolve" ,r-rlinsolve)))
     (home-page "https://cran.r-project.org/web/packages/ZVCV/")
     (synopsis "Zero-Variance Control Variates")
     (description
