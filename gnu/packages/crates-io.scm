@@ -35,6 +35,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages jemalloc)
@@ -8092,6 +8093,40 @@ API library @code{gdi32}.")
      "This package provides a small cross-platform library for
 retrieving random data from system source.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-gettext-sys-0.19
+  (package
+    (name "rust-gettext-sys")
+    (version "0.19.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gettext-sys" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0lzi6ja81vc16mhcdmn3lw35120n9ijhvsy5dh5775mpbfxc8d70"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file "gettext-0.19.8.1.tar.xz") #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1.0))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'use-system-gettext
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gettext (assoc-ref inputs "gettext")))
+               (setenv "GETTEXT_SYSTEM" gettext)
+               #t))))))
+    (inputs
+     `(("gettext" ,gettext-minimal)))
+    (home-page "https://github.com/Koka/gettext-rs")
+    (synopsis "Gettext raw FFI bindings")
+    (description "This package provides raw FFI bindings for GNU Gettext.")
+    (license license:expat)))
 
 (define-public rust-gfx-0.18
   (package
