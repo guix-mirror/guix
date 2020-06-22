@@ -649,7 +649,7 @@ public keys and can roam across IP addresses.")
                   (add-before 'build 'setup-environment
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CFLAGS"
-                              (string-append "-DPPD=\""
+                              (string-append "-DPPPD=\""
                                              (assoc-ref inputs "ppp")
                                              "/sbin/pppd\""))
                       (setenv "KERNELSRC"
