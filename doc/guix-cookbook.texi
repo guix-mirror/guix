@@ -852,6 +852,24 @@ version when packaging programs for a specific commit, following the
 Guix contributor guidelines (@pxref{Version Numbers,,, guix, GNU Guix
 Reference Manual}).
 
+How does one obtain the @code{sha256} hash that's in there, you ask?  By
+invoking @command{guix hash} on a checkout of the desired commit, along
+the lines:
+
+@example
+git clone https://github.com/libgit2/libgit2/
+cd libgit2
+git checkout v0.26.6
+guix hash -rx .
+@end example
+
+@command{guix hash -rx} computes a SHA256 hash over the whole directory,
+excluding the @file{.git} sub-directory (@pxref{Invoking guix hash,,,
+guix, GNU Guix Reference Manual}).
+
+In the future, @command{guix download} will hopefully be able to do
+these steps for you, just like it does for regular downloads.
+
 @subsubsection Snippets
 
 Snippets are quoted (i.e. non-evaluated) Scheme code that are a means of patching
