@@ -21424,19 +21424,18 @@ Encyclopedia of Integer Sequences} (OEIS) in the function help page.")
 (define-public r-isoband
   (package
     (name "r-isoband")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "isoband" version))
        (sha256
         (base32
-         "1ndlnv4g9pbd02y50sx4ffg2ccwqbi7fm2v1lh22wdd8pq33d20q"))))
+         "044fg014gb6v6v11gm7ivfipz45iqw9cpahjhaacw6kyahyb66zx"))))
     (properties `((upstream-name . "isoband")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)
-       ("r-testthat" ,r-testthat)))
+     `(("r-testthat" ,r-testthat)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/wilkelab/isoband")
