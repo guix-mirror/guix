@@ -22143,3 +22143,26 @@ multi-state models.")
      "This package creates scatterpie plots, especially useful for plotting
 pies on a map.")
     (license license:artistic2.0)))
+
+(define-public r-boruta
+  (package
+    (name "r-boruta")
+    (version "7.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Boruta" version))
+       (sha256
+        (base32
+         "0y2w4wb45kfnzrxcrdsiwgal9fsnlr3wad1sqdc70qv8gp921xbg"))))
+    (properties `((upstream-name . "Boruta")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-ranger" ,r-ranger)))
+    (home-page "https://gitlab.com/mbq/Boruta/")
+    (synopsis "Wrapper algorithm for all relevant feature selection")
+    (description
+     "This package provides an all relevant feature selection wrapper
+algorithm.  It finds relevant features by comparing original attributes'
+importance with importance achievable at random, estimated using their
+permuted copies (shadows).")
+    (license license:gpl2+)))
