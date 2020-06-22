@@ -290,6 +290,7 @@ DOMAIN, a gettext domain."
       #~(begin
           (use-modules (guix build utils) (guix build po)
                        (ice-9 match) (ice-9 regex) (ice-9 textual-ports)
+                       (ice-9 vlist)
                        (srfi srfi-1))
 
           (mkdir #$output)
@@ -315,38 +316,69 @@ the result to OUTPUT."
               "-M" "UTF-8" "-L" "UTF-8" "-k" "0" "-f" "texinfo"
               "-m" source "-p" po "-l" output))
 
-          (define (make-ref-regex msgid end)
-            (make-regexp (string-append
-                           "ref\\{"
-                           (string-join (string-split (regexp-quote msgid) #\ )
-                                        "[ \n]+")
-                           end)))
+          (define (canonicalize-whitespace str)
+            ;; Change whitespace (newlines, etc.) in STR to #\space.
+            (string-map (lambda (chr)
+                          (if (char-set-contains? char-set:whitespace chr)
+                              #\space
+                              chr))
+                        str))
 
-          (define (translate-cross-references content translations)
-            "Take CONTENT, a string representing a .texi file and translate any
-cross-reference in it (@ref, @xref and @pxref) that have a translation in
-TRANSLATIONS, an alist of msgid and msgstr."
-            (fold
-              (lambda (elem content)
-                (match elem
-                  ((msgid . msgstr)
-                   ;; Empty translations and strings containing some special characters
-                   ;; cannot be the name of a section.
-                   (if (or (equal? msgstr "")
-                           (string-any (lambda (chr)
-                                         (member chr '(#\{ #\} #\( #\) #\newline #\,)))
-                                       msgid))
-                       content
-                       ;; Otherwise, they might be the name of a section, so we
-                       ;; need to translate any occurence in @(p?x?)ref{...}.
-                       (let ((regexp1 (make-ref-regex msgid ","))
-                             (regexp2 (make-ref-regex msgid "\\}")))
-                         (regexp-substitute/global
-                           #f regexp2
-                           (regexp-substitute/global
-                             #f regexp1 content 'pre "ref{" msgstr "," 'post)
-                           'pre "ref{" msgstr "}" 'post))))))
-              content translations))
+          (define xref-regexp
+            ;; Texinfo cross-reference regexp.
+            (make-regexp "@(px|x)?ref\\{([^,}]+)"))
+
+          (define (translate-cross-references texi translations)
+            ;; Translate the cross-references that appear in TEXI, a Texinfo
+            ;; file, using the msgid/msgstr pairs from TRANSLATIONS.
+            (define content
+              (call-with-input-file texi get-string-all))
+
+            (define matches
+              (list-matches xref-regexp content))
+
+            (define translation-map
+              (fold (match-lambda*
+                      (((msgid . str) result)
+                       (vhash-cons msgid str result)))
+                    vlist-null
+                    translations))
+
+            (define translated
+              ;; Iterate over MATCHES and replace cross-references with their
+              ;; translation found in TRANSLATION-MAP.  (We can't use
+              ;; 'substitute*' because matches can span multiple lines.)
+              (let loop ((matches matches)
+                         (offset 0)
+                         (result '()))
+                (match matches
+                  (()
+                   (string-concatenate-reverse
+                    (cons (string-drop content offset) result)))
+                  ((head . tail)
+                   (let ((prefix (match:substring head 1))
+                         (ref    (canonicalize-whitespace (match:substring head 2))))
+                     (define translated
+                       (string-append "@" (or prefix "")
+                                      "ref{"
+                                      (match (vhash-assoc ref translation-map)
+                                        (#f ref)
+                                        ((_ . str) str))))
+
+                     (loop tail
+                           (match:end head)
+                           (append (list translated
+                                         (string-take
+                                          (string-drop content offset)
+                                          (- (match:start head) offset)))
+                                   result)))))))
+
+            (format (current-error-port)
+                    "translated ~a cross-references in '~a'~%"
+                    (length matches) texi)
+            (call-with-output-file texi
+              (lambda (port)
+                (display translated port))))
 
           (define* (translate-texi prefix po lang
                                    #:key (extras '()))
@@ -363,12 +395,9 @@ a list of extra files, such as '(\"contributing\")."
               (for-each (lambda (file)
                           (let* ((texi (string-append file "." lang ".texi"))
                                  (tmp  (string-append texi ".tmp")))
-                            (with-output-to-file texi
-                              (lambda ()
-                                (display
-                                 (translate-cross-references
-                                  (call-with-input-file tmp get-string-all)
-                                  translations))))))
+                            (copy-file tmp texi)
+                            (translate-cross-references texi
+                                                        translations)))
                         (cons prefix extras))))
 
           (define (available-translations directory domain)
