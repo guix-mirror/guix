@@ -255,10 +255,16 @@ used in the image."
              (graph (match inputs
                       (((names . _) ...)
                        names)))
-             (root-builder
+             (type (partition-file-system partition))
+             (image-builder
               (with-imported-modules*
-               (let* ((initializer #$(partition-initializer partition)))
+               (let ((initializer #$(partition-initializer partition))
+                     (inputs '#+(list e2fsprogs fakeroot dosfstools mtools
+                                      sed coreutils))
+                     (image-root "tmp-root"))
                  (sql-schema #$schema)
+
+                 (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
 
                  ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be
                  ;; decoded.
@@ -266,7 +272,7 @@ used in the image."
                          #+(file-append glibc-utf8-locales "/lib/locale"))
                  (setlocale LC_ALL "en_US.utf8")
 
-                 (initializer #$output
+                 (initializer image-root
                               #:references-graphs '#$graph
                               #:deduplicate? #f
                               #:system-directory #$os
@@ -277,19 +283,12 @@ used in the image."
                               #+(bootloader-installer bootloader)
                               #:bootcfg #$bootcfg
                               #:bootcfg-location
-                              #$(bootloader-configuration-file bootloader)))))
-             (image-root
-              (computed-file "partition-image-root" root-builder
-                             #:options `(#:references-graphs ,inputs)))
-             (type (partition-file-system partition))
-             (image-builder
-              (with-imported-modules*
-               (let ((inputs '#+(list e2fsprogs dosfstools mtools)))
-                 (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+                              #$(bootloader-configuration-file bootloader))
                  (make-partition-image #$(partition->gexp partition)
                                        #$output
-                                       #$image-root)))))
-        (computed-file "partition.img" image-builder)))
+                                       image-root)))))
+        (computed-file "partition.img" image-builder
+                       #:options `(#:references-graphs ,inputs))))
 
     (define (partition->config partition)
       ;; Return the genimage partition configuration for PARTITION.

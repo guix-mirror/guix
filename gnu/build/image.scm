@@ -77,7 +77,7 @@ take the partition metadata size into account, take a 25% margin."
         (uuid (partition-uuid partition))
         (journal-options "lazy_itable_init=1,lazy_journal_init=1"))
     (apply invoke
-           `("mke2fs" "-t" ,fs "-d" ,root
+           `("fakeroot" "mke2fs" "-t" ,fs "-d" ,root
              "-L" ,label "-U" ,(uuid->string uuid)
              "-E" ,(format #f "root_owner=~a:~a,~a"
                            owner-uid owner-gid journal-options)
@@ -93,7 +93,8 @@ take the partition metadata size into account, take a 25% margin."
   "Handle the creation of VFAT partition images.  See 'make-partition-image'."
   (let ((size (partition-size partition))
         (label (partition-label partition)))
-    (invoke "mkdosfs" "-n" label "-C" target "-F" "16" "-S" "1024"
+    (invoke "fakeroot" "mkdosfs" "-n" label "-C" target
+            "-F" "16" "-S" "1024"
             (size-in-kib
              (if (eq? size 'guess)
                  (estimate-partition-size root)
