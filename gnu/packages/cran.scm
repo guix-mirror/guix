@@ -850,17 +850,17 @@ directory.")
 (define-public r-htmltools
   (package
     (name "r-htmltools")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmltools" version))
               (sha256
                (base32
-                "06l17d8jkf438yk2mchpsp4j90bynnapz3nabh5vkcc324p5a62v"))))
+                "07fjznax5sin563ddnzlb7iwc8b39wzf7ymjn66pbmxgskijq2pz"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-digest" ,r-digest)
-       ("r-rcpp" ,r-rcpp)
+     `(("r-base64enc" ,r-base64enc)
+       ("r-digest" ,r-digest)
        ("r-rlang" ,r-rlang)))
     (home-page "https://cran.r-project.org/web/packages/htmltools")
     (synopsis "R tools for HTML")
