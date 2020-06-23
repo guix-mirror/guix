@@ -1866,12 +1866,12 @@ gone wild and are suddenly taking up your bandwidth.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/nzbget/nzbget/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://github.com/nzbget/nzbget/releases"
+                           "/download/v" version
+                           "/nzbget-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0l3dzxz7d7jf6cyach41zirvsx1x0vs4nh053c0miycv7zjyrly7"))
+         "0lwd0pfrs4a5ms193hgz2qiyf7grrc925dw6y0nfc0gkp27db9b5"))
        (modules '((guix build utils)))
        (snippet
         ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.
