@@ -5392,6 +5392,43 @@ converting, and viewing many of the proprietary file formats used to store
 experimental data and metadata at the Laboratory for Fluorescence Dynamics.")
     (license license:bsd-3)))
 
+(define-public python-imageio
+  (package
+    (name "python-imageio")
+    (version "2.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "imageio" version))
+       (sha256
+        (base32
+         "1ksjl523fm0fikrd85llxfba35rc1qsgwadgr6mbn9kis79xcpzv"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; many tests require online data
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key outputs inputs tests? #:allow-other-keys)
+             (if tests?
+                 (begin
+                   ;; Make installed package available for running the tests.
+                   (add-installed-pythonpath inputs outputs)
+                   (invoke "pytest" "-vv"))
+                 #t))))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pillow" ,python-pillow)
+       ("python-psutil" ,python-psutil)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/imageio/imageio")
+    (synopsis "Read and write image, video, scientific, and volumetric data formats")
+    (description
+     "This package provides a Python library for reading and writing a wide
+range of image, video, scientific, and volumetric data formats.")
+    (license license:bsd-2)))
+
 (define-public python-pycparser
   (package
     (name "python-pycparser")
