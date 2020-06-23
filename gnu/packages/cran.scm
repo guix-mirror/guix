@@ -22299,3 +22299,27 @@ via Newick parenthetic text.  This improves accessibility to the comprehensive
 range of object-specific analytical and tree-visualization functions found
 across a wide array of bioinformatic R packages.")
     (license license:gpl3)))
+
+(define-public r-kmer
+  (package
+    (name "r-kmer")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "kmer" version))
+       (sha256
+        (base32 "0jimn9r0abglwxdl1zqz0lxa99cmj6haydkxjzqfbpx9by80wnww"))))
+    (properties `((upstream-name . "kmer")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-openssl" ,r-openssl)
+       ("r-phylogram" ,r-phylogram)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/shaunpwilkinson/kmer/")
+    (synopsis "Fast K-Mer counting and clustering for biological sequence analysis")
+    (description
+     "@code{r-kmer} is an R package for rapidly computing distance matrices
+and clustering large sequence datasets using fast alignment-free k-mer
+counting and recursive k-means partitioning.")
+    (license license:gpl3)))
