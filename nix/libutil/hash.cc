@@ -38,11 +38,9 @@ Hash::Hash()
 Hash::Hash(HashType type)
 {
     this->type = type;
-    if (type == htMD5) hashSize = md5HashSize;
-    else if (type == htSHA1) hashSize = sha1HashSize;
-    else if (type == htSHA256) hashSize = sha256HashSize;
-    else if (type == htSHA512) hashSize = sha512HashSize;
-    else throw Error("unknown hash type");
+    hashSize = gcry_md_get_algo_dlen(type);
+
+    if (hashSize == 0) throw Error("unknown hash type");
     assert(hashSize <= maxHashSize);
     memset(hash, 0, maxHashSize);
 }

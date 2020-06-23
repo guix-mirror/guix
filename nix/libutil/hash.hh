@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gcrypt.h>
+
 #include "types.hh"
 #include "serialise.hh"
 
@@ -7,16 +9,15 @@
 namespace nix {
 
 
-typedef enum { htUnknown, htMD5, htSHA1, htSHA256, htSHA512 } HashType;
-
-
-const int md5HashSize = 16;
-const int sha1HashSize = 20;
-const int sha256HashSize = 32;
-const int sha512HashSize = 64;
-
 extern const string base32Chars;
 
+typedef enum {
+    htUnknown = 0,
+    htMD5 = GCRY_MD_MD5,
+    htSHA1 = GCRY_MD_SHA1,
+    htSHA256 = GCRY_MD_SHA256,
+    htSHA512 = GCRY_MD_SHA512
+} HashType;
 
 struct Hash
 {
