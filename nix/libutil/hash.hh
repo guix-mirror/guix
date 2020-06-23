@@ -16,7 +16,10 @@ typedef enum {
     htMD5 = GCRY_MD_MD5,
     htSHA1 = GCRY_MD_SHA1,
     htSHA256 = GCRY_MD_SHA256,
-    htSHA512 = GCRY_MD_SHA512
+    htSHA512 = GCRY_MD_SHA512,
+    htSHA3_256 = GCRY_MD_SHA3_256,
+    htSHA3_512 = GCRY_MD_SHA3_512,
+    htBLAKE2s_256 = GCRY_MD_BLAKE2S_256
 } HashType;
 
 struct Hash

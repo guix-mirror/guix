@@ -116,7 +116,7 @@
     (list (stat:uid s) (stat:perms s))))
 
 (test-equal "add-to-store"
-  '("sha1" "sha256" "sha512")
+  '("sha1" "sha256" "sha512" "sha3-256" "sha3-512" "blake2s-256")
   (let* ((file    (search-path %load-path "guix.scm"))
          (content (call-with-input-file file get-bytevector-all)))
     (map (lambda (hash-algo)
@@ -125,7 +125,7 @@
                   (bytevector=? (call-with-input-file file get-bytevector-all)
                                 content)
                   hash-algo)))
-         '("sha1" "sha256" "sha512"))))
+         '("sha1" "sha256" "sha512" "sha3-256" "sha3-512" "blake2s-256"))))
 
 (test-equal "add-data-to-store"
   #vu8(1 2 3 4 5)

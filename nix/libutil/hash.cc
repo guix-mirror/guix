@@ -321,6 +321,9 @@ HashType parseHashType(const string & s)
     else if (s == "sha1") return htSHA1;
     else if (s == "sha256") return htSHA256;
     else if (s == "sha512") return htSHA512;
+    else if (s == "sha3-256") return htSHA3_256;
+    else if (s == "sha3-512") return htSHA3_512;
+    else if (s == "blake2s-256") return htBLAKE2s_256;
     else return htUnknown;
 }
 
@@ -331,6 +334,9 @@ string printHashType(HashType ht)
     else if (ht == htSHA1) return "sha1";
     else if (ht == htSHA256) return "sha256";
     else if (ht == htSHA512) return "sha512";
+    else if (ht == htSHA3_256) return "sha3-256";
+    else if (ht == htSHA3_512) return "sha3-512";
+    else if (ht == htBLAKE2s_256) return "blake2s-256";
     else throw Error("cannot print unknown hash type");
 }
 
