@@ -13430,7 +13430,8 @@ cases include:
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
               (install-file "miniasm" bin)
-              (install-file "minidot" bin)))))))
+              (install-file "minidot" bin)
+              #t))))))
    (home-page "https://github.com/lh3/miniasm")
    (synopsis "Ultrafast de novo assembly for long noisy reads")
    (description "Miniasm is a very fast OLC-based de novo assembler for noisy
