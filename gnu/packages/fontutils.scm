@@ -746,14 +746,14 @@ implements UFO3 as described by the UFO font format.")
     (version "20170925")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/googlei18n/nototools/"
-                           "archive/v2017-09-25-tooling-for-phase3-"
-                           "update.tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/googlei18n/nototools")
+              (commit "v2017-09-25-tooling-for-phase3-update")))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1pvacw18cm9l4sb66pqyjc7hc74xhhfxc7kd5ald8lixf4wzg0s8"))))
+         "03nzvcvwmrhfrcjhg218q2f3hfrm3vlivp4rk19sc397kh3hisiz"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
