@@ -9883,6 +9883,38 @@ concurrent.futures package from Python 3.2")
          ("python2-pytest" ,python2-pytest)
          ,@(package-native-inputs promise))))))
 
+(define-public python-progressbar2
+  (package
+    (name "python-progressbar2")
+    (version "3.51.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "progressbar2" version))
+       (sha256
+        (base32
+         "0b2v3mim90rmfvixkaniz2qrs650sk230rzgd5zhcjfldmlqgxpc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-utils" ,python-utils)))
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-freezegun" ,python-freezegun)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flakes" ,python-pytest-flakes)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/WoLpH/python-progressbar")
+    (synopsis "Text progress bar library for Python")
+    (description
+     "This package provides a Python progressbar library to provide
+visual (yet text based) progress to long running operations.")
+    (license license:bsd-3)))
+
 (define-public python-progressbar33
   (package
     (name "python-progressbar33")
