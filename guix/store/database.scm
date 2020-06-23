@@ -457,24 +457,25 @@ typically by adding them as temp-roots."
       (when reset-timestamps?
         (reset-timestamps real-file-name))
       (let-values (((hash nar-size) (nar-sha256 real-file-name)))
-        (sqlite-register db #:path to-register
-                         #:references (store-info-references item)
-                         #:deriver (store-info-deriver item)
-                         #:hash (string-append "sha256:"
-                                               (bytevector->base16-string hash))
-                         #:nar-size nar-size
-                         #:time registration-time)
+        (call-with-retrying-transaction db
+          (lambda ()
+            (sqlite-register db #:path to-register
+                             #:references (store-info-references item)
+                             #:deriver (store-info-deriver item)
+                             #:hash (string-append
+                                     "sha256:"
+                                     (bytevector->base16-string hash))
+                             #:nar-size nar-size
+                             #:time registration-time)))
         (when deduplicate?
           (deduplicate real-file-name hash #:store store-dir)))))
 
-  (call-with-retrying-transaction db
-      (lambda ()
-        (let* ((prefix   (format #f "registering ~a items" (length items)))
-               (progress (progress-reporter/bar (length items)
-                                                prefix log-port)))
-          (call-with-progress-reporter progress
-            (lambda (report)
-              (for-each (lambda (item)
-                          (register db item)
-                          (report))
-                        items)))))))
+  (let* ((prefix   (format #f "registering ~a items" (length items)))
+         (progress (progress-reporter/bar (length items)
+                                          prefix log-port)))
+    (call-with-progress-reporter progress
+      (lambda (report)
+        (for-each (lambda (item)
+                    (register db item)
+                    (report))
+                  items)))))
