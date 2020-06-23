@@ -14187,14 +14187,22 @@ exception message with a traceback that points to the culprit.")
 (define-public python-utils
   (package
     (name "python-utils")
-    (version "2.1.0")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "python-utils" version))
               (sha256
                (base32
-                "1mcsy6q5am4ya72rgkpb6kax6vv7c93cfkkas89xnpa4sj9zf28p"))))
+                "12c0glzkm81ljgf6pwh0d4rmdm1r7vvgg3ifzp8yp9cfyngw07zj"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (delete-file "pytest.ini")
+             (invoke "pytest" "-vv"))))))
     (native-inputs
      `(("pytest-runner" ,python-pytest-runner)
        ("pytest" ,python-pytest)
