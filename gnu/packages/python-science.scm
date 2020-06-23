@@ -389,3 +389,28 @@ concise, and less error-prone developer experience.  The package includes a
 large and growing library of domain-agnostic functions for advanced analytics
 and visualization with these data structures.")
     (license license:asl2.0)))
+
+(define-public python-msgpack-numpy
+  (package
+    (name "python-msgpack-numpy")
+    (version "0.4.6.post0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "msgpack-numpy" version))
+       (sha256
+        (base32
+         "0syzy645mwcy7lfjwz6pc8f9p2vv1qk4limc8iina3l5nnf0rjyz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-msgpack" ,python-msgpack)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/lebedov/msgpack-numpy")
+    (synopsis
+     "Numpy data serialization using msgpack")
+    (description
+     "This package provides encoding and decoding routines that enable the
+serialization and deserialization of numerical and array data types provided
+by numpy using the highly efficient @code{msgpack} format.  Serialization of
+Python's native complex data types is also supported.")
+    (license license:bsd-3)))
