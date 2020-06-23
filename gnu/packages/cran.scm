@@ -22210,3 +22210,23 @@ positioning methods that can be re-used across several different plots.  There
 are heuristics for examining @code{trellis} and @code{ggplot} objects and
 inferring an appropriate positioning method.")
     (license license:gpl3)))
+
+(define-public r-lsd
+  (package
+    (name "r-lsd")
+    (version "4.1-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "LSD" version))
+       (sha256
+        (base32 "17pbdlcbhzf3v7l42mjikln1ga5xjp5r78gjg6a88iahk0lwwlvm"))))
+    (properties `((upstream-name . "LSD")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/LSD/")
+    (synopsis "Lots of superior depictions tool creates colorful plots")
+    (description
+     "This package creates lots of colorful plots in a multitude of variations.
+Try a demo of the LSD by running @code{demotour()}.")
+    ;; Either version
+    (license (list license:gpl2 license:gpl3))))
