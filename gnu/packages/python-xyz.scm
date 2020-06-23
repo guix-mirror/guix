@@ -5019,15 +5019,23 @@ a simple netcat replacement with chaining support.")
 (define-public python-pycodestyle
   (package
     (name "python-pycodestyle")
-    (version "2.5.0")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycodestyle" version))
        (sha256
         (base32
-         "0v4prb05n21bm8650v0a01k1nyqjdmkrsm3zycfxh2j5k9n962p4"))))
+         "0bhr6ia0hmgx3nhgibc9pmkzhlh1zcqk707i5fbxgs702ll7v2n5"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://pycodestyle.readthedocs.io/")
     (synopsis "Python style guide checker")
     (description "@code{pycodestyle} (formerly pep8) is a tool to check
