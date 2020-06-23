@@ -2572,57 +2572,60 @@ serializing continuations or delimited continuations.")
     (license license:lgpl2.0+)))
 
 (define-public python-on-guile
-  (let ((commit "00a51a23247f1edc4ae8eda72b30df5cd7d0015f")
-        (revision "3"))
-    (package
-      (name "python-on-guile")
-      (version (git-version "0.1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.elephly.net/software/python-on-guile.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "03rpnqr08rqr3gay128g564rwk8w4jbj28ss6b46z1d4vjs4nk68"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:parallel-build? #f ; not supported
-         #:make-flags '("GUILE_AUTO_COMPILE=0")   ;to prevent guild warnings
-
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
-             (lambda _ (chdir "modules") #t))
-           (add-after 'install 'wrap
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; Wrap the 'python' executable so it can find its
-               ;; dependencies.
-               (let ((out  (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/python")
-                   `("GUILE_LOAD_PATH" ":" prefix
-                     (,(getenv "GUILE_LOAD_PATH")))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                     (,(getenv "GUILE_LOAD_COMPILED_PATH"))))
-                 #t))))))
-      (inputs
-       `(("guile" ,guile-2.2)))
-      (propagated-inputs
-       `(("guile-persist" ,guile-persist)
-         ("guile-readline" ,guile-readline)
-         ("guile-stis-parser" ,guile-stis-parser)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://gitlab.com/python-on-guile/python-on-guile/")
-      (synopsis "Python implementation in Guile")
-      (description
-       "This package allows you to compile a Guile Python file to any target
+  (package
+    (name "python-on-guile")
+    (version "1.2.3.4")
+    (home-page "https://gitlab.com/python-on-guile/python-on-guile")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qn5f79z43jh0rqh39a0qal81nsnw3cd5pj0d1j5cm3nhj5s64a7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f                   ;not supported
+       #:make-flags '("GUILE_AUTO_COMPILE=0") ;to prevent guild warnings
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "modules") #t))
+         (add-after 'chdir 'augment-GUILE_LOAD_PATH
+           (lambda _
+             ;; TODO: It would be better to patch the Makefile.
+             (setenv "GUILE_LOAD_PATH"
+                     (string-append ".:"
+                                    (getenv "GUILE_LOAD_PATH")))
+             #t))
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Wrap the 'python' executable so it can find its
+             ;; dependencies.
+             (let ((out  (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/python")
+                 `("GUILE_LOAD_PATH" ":" prefix
+                   (,(getenv "GUILE_LOAD_PATH")))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                   (,(getenv "GUILE_LOAD_COMPILED_PATH"))))
+               #t))))))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     `(("guile-persist" ,guile-persist)
+       ("guile-readline" ,guile-readline)
+       ("guile-stis-parser" ,guile-stis-parser)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Python implementation in Guile")
+    (description
+     "This package allows you to compile a Guile Python file to any target
 from @code{tree-il}.")
-      (license license:lgpl2.0+))))
+    (license license:lgpl2.0+)))
 
 (define-public guile-file-names
   (package
