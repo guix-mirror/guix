@@ -831,14 +831,14 @@ work well with other GTK+ desktop environments.")
     (name "fntsample")
     (version "5.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/eugmes/fntsample/archive/release/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eugmes/fntsample")
+                     (commit (string-append "release/" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0awp4dh1g40ivzvm5xqlvcpcdw1vplrx3drjmbylr62y185vbs74"))))
+                "02rx3gp7k472304vhjwb129nw10a29s4nvgs7i2m6bpjhlk2xgs5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
