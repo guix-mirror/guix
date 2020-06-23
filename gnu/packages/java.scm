@@ -11922,6 +11922,7 @@ Isolation and Durability) properties.")
               (uri (git-reference
                      (url "https://github.com/remkop/picocli")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1sxp6rxjfgjd98ly14b3d15dvxkm5wg4g46w12jyhmr0kmkaca3c"))))
