@@ -5652,7 +5652,7 @@ memoizing PEG/Packrat parser in Python.")
 (define-public python-gridmap
   (package
     (name "python-gridmap")
-    (version "0.13.0")
+    (version "0.14.0")
     (source
      (origin
        (method git-fetch)
@@ -5661,7 +5661,7 @@ memoizing PEG/Packrat parser in Python.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1478lbwsr1w24cii2x01m2910fvh8r43ghnb78nc972a96hqiknm"))))
+        (base32 "0v0sgpg6pz8h61f9aqjf5xk0ipr512bbz8dxzjjylksj135qr19l"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Requires python-cherrypy.
