@@ -2602,13 +2602,28 @@ serializing continuations or delimited continuations.")
          (add-after 'install 'wrap
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Wrap the 'python' executable so it can find its
-             ;; dependencies.
-             (let ((out  (assoc-ref outputs "out")))
+             ;; dependencies and own modules.
+             (let* ((out (assoc-ref outputs "out"))
+                    (guile-version ,(version-major+minor
+                                     (package-version guile-3.0)))
+                    (scm (string-append out "/share/guile/site/"
+                                        guile-version))
+                    (ccache (string-append out "/lib/guile/" guile-version
+                                           "/site-ccache"))
+                    (load-path (string-join
+                                (cons scm
+                                      ;; XXX: cdr because we augment it above.
+                                      (cdr (string-split
+                                            (getenv "GUILE_LOAD_PATH") #\:)))
+                                ":"))
+                    (compiled-path (string-append
+                                    ccache ":"
+                                    (getenv "GUILE_LOAD_COMPILED_PATH"))))
                (wrap-program (string-append out "/bin/python")
                  `("GUILE_LOAD_PATH" ":" prefix
-                   (,(getenv "GUILE_LOAD_PATH")))
+                   (,load-path))
                  `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                   (,(getenv "GUILE_LOAD_COMPILED_PATH"))))
+                   (,compiled-path)))
                #t))))))
     (inputs
      `(("guile" ,guile-3.0)))
