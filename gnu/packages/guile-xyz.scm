@@ -2626,9 +2626,8 @@ serializing continuations or delimited continuations.")
                    (,compiled-path)))
                #t))))))
     (inputs
-     `(("guile" ,guile-3.0)))
-    (propagated-inputs
-     `(("guile-persist" ,guile-persist)
+     `(("guile" ,guile-3.0)
+       ("guile-persist" ,guile-persist)
        ("guile-readline" ,guile-readline)
        ("guile-stis-parser" ,guile-stis-parser)))
     (native-inputs
