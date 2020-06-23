@@ -5320,6 +5320,28 @@ a general image processing tool.")
 (define-public python2-pillow
   (package-with-python2 python-pillow))
 
+(define-public python-roifile
+  (package
+    (name "python-roifile")
+    (version "2020.5.28")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "roifile" version))
+        (sha256
+          (base32
+            "1vwbwfsw745gyqymff6dllc5zqjsgqmxaw245sw4an6yw9rcbzc0"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; there are none
+    (propagated-inputs
+      `(("python-numpy" ,python-numpy)))
+    (home-page "https://www.lfd.uci.edu/~gohlke/")
+    (synopsis "Read and write ImageJ ROI format")
+    (description "Roifile is a Python library to read, write, create, and plot
+ImageJ ROIs, an undocumented and ImageJ application specific format to store
+regions of interest, geometric shapes, paths, text, etc for image overlays.")
+    (license license:bsd-3)))
+
 (define-public python-pycparser
   (package
     (name "python-pycparser")
