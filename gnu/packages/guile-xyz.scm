@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Julien Lepiler <julien@lepiller.eu>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2483,50 +2484,43 @@ completion, a simple mode line, etc.")
       (license license:gpl3+))))
 
 (define-public guile-stis-parser
-  (let ((commit "6e85d37ffc333b722f4413a6c648263701eb75bd")
-        (revision "1"))
-    (package
-      (name "guile-stis-parser")
-      (version (git-version "0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/tampe/stis-parser")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0v4hvq7rlpbra1ni73lf8k6sdmjlflr50yi3p1f24g85h77pc7c0"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:parallel-build? #f ; not supported
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
-             (lambda _ (chdir "modules") #t))
-           (add-after 'chdir 'use-canonical-directory-for-go-files
-             (lambda _
-               (substitute* "Makefile.am"
-                 (("/ccache") "/site-ccache"))
-               #t))
-           (add-after 'chdir 'delete-broken-symlink
-             (lambda _
-               (delete-file "parser/stis-parser/lang/.#calc.scm")
-               #t)))))
-      (inputs
-       `(("guile" ,guile-2.2)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://gitlab.com/tampe/stis-parser")
-      (synopsis "Parser combinator framework")
-      (description
-       "This package provides a functional parser combinator library that
+  (package
+    (name "guile-stis-parser")
+    (version "1.2.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/tampe/stis-parser")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1fvxdfvc80zqhwzq5x3kxyr6j8p4b51yx85fx1gr3d4gy2ddpx5w"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f             ; not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "modules") #t))
+         (add-after 'chdir 'delete-broken-symlink
+           (lambda _
+             (delete-file "parser/stis-parser/lang/.#calc.scm")
+             #t)))))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.com/tampe/stis-parser")
+    (synopsis "Parser combinator framework")
+    (description
+     "This package provides a functional parser combinator library that
 supports backtracking and a small logical framework. The idea is to build up
 chunks that are memoized and there is no clear scanner/parser separation,
 chunks can be expressions as well as simple tokens.")
-      (license license:lgpl2.0+))))
+    (license license:lgpl2.0+)))
 
 (define-public guile-persist
   (let ((commit "b14927b0368af51c024560aee5f55724aee35233")
