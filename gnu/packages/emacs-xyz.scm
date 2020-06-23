@@ -2533,7 +2533,7 @@ type, for example: packages, buffers, files, etc.")
      `(("pkg-config" ,pkg-config)
        ("emacs" ,emacs-minimal)))
     (inputs
-     `(("guile" ,guile-3.0)
+     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
        ("guix" ,guix)))
     (propagated-inputs
      `(("geiser" ,emacs-geiser)

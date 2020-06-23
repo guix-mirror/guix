@@ -7370,9 +7370,9 @@ compressed JSON header blocks.
          ("uglify-js" ,uglify-js)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("guix" ,guix)))
+       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
       (propagated-inputs
-       `(("guile" ,guile-3.0)
+       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("guile-commonmark" ,guile-commonmark)
          ("guile-json" ,guile-json-4)))
       (home-page "https://github.com/UMCUGenetics/hpcguix-web")

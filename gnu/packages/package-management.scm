@@ -319,7 +319,7 @@ $(prefix)/etc/init.d\n")))
 
                        ;; Guile libraries are needed here for
                        ;; cross-compilation.
-                       ("guile" ,guile-3.0)
+                       ("guile" ,guile-3.0-latest) ;for faster builds
                        ("gnutls" ,gnutls)
                        ("guile-gcrypt" ,guile-gcrypt)
                        ("guile-json" ,guile-json-4)
@@ -346,7 +346,7 @@ $(prefix)/etc/init.d\n")))
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
 
-         ("guile" ,guile-3.0)
+         ("guile" ,guile-3.0-latest)
 
          ;; Some of the tests use "unshare" when it is available.
          ("util-linux" ,util-linux)
@@ -897,7 +897,7 @@ written entirely in Python.")))
        ("texinfo" ,texinfo)
        ("graphviz" ,graphviz)))
     (inputs
-     `(("guile" ,guile-3.0)))
+     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
     (propagated-inputs
      `(("guix" ,guix)
        ("guile-commonmark" ,guile-commonmark)
@@ -995,7 +995,7 @@ environments.")
        ("python-ipykernel" ,python-ipykernel)))
     (inputs
      `(("guix" ,guix)
-       ("guile" ,guile-3.0)))
+       ("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
     (propagated-inputs
      `(("guile-json" ,guile-json-4)
        ("guile-simple-zmq" ,guile-simple-zmq)

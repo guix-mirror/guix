@@ -120,7 +120,7 @@
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
                  #t))))))
       (inputs
-       `(("guile" ,guile-3.0)
+       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("guile-fibers" ,guile-fibers)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
