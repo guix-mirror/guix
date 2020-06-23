@@ -3592,11 +3592,13 @@ process form data posted with HTTP POST method using enctype
     (version "2.0.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/pmai/md5/archive/release-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/pmai/md5")
+              (commit (string-append "release-" version))))
+       (file-name (git-file-name "md5" version))
        (sha256
-        (base32 "19yl9n0pjdz5gw4qi711lka97xcd9f81ylg434hk7jwn9f2s6w11"))))
+        (base32 "1waqxzm7vlc22n92hv8r27anlvvjkkh9slhrky1ww7mdx4mmxwb8"))))
     (build-system asdf-build-system/sbcl)
     (home-page "https://github.com/pmai/md5")
     (synopsis
