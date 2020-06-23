@@ -5368,6 +5368,30 @@ NIH, ImageJ, MicroManager, MD GEL, and FluoView files.  It also lets you write
 numpy arrays to TIFF, BigTIFF, and ImageJ hyperstack compatible files.")
     (license license:bsd-3)))
 
+(define-public python-lfdfiles
+  (package
+    (name "python-lfdfiles")
+    (version "2020.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lfdfiles" version))
+       (sha256
+        (base32
+         "1n9bkfn4vxl0lbhzd0m35lq86ayx5fwcj3ghpfl2vbjbsnfp3h47"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-numpy" ,python-numpy)
+       ("python-tifffile" ,python-tifffile)))
+    (home-page "https://www.lfd.uci.edu/~gohlke/")
+    (synopsis "Work with LFD data files")
+    (description
+     "Lfdfiles is a Python library and console script for reading, writing,
+converting, and viewing many of the proprietary file formats used to store
+experimental data and metadata at the Laboratory for Fluorescence Dynamics.")
+    (license license:bsd-3)))
+
 (define-public python-pycparser
   (package
     (name "python-pycparser")
