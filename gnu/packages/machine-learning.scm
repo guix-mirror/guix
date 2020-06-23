@@ -946,14 +946,14 @@ main intended application of Autograd is gradient-based optimization.")
     (name "lightgbm")
     (version "2.0.12")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Microsoft/LightGBM/archive/v"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Microsoft/LightGBM")
+                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "132zf0yk0545mg72hyzxm102g3hpb6ixx9hnf8zd2k55gas6cjj1"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0jlvyn7k81dzrh9ij3zw576wbgiwmmr26rzpdxjn1dbpc3njpvzi"))
+              (file-name (git-file-name name version))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-nose" ,python-nose)))
@@ -968,8 +968,8 @@ main intended application of Autograd is gradient-based optimization.")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (with-directory-excursion ,(string-append "../LightGBM-" version)
+           (lambda _
+             (with-directory-excursion "../source"
                (invoke "pytest" "tests/c_api_test/test_.py")))))))
     (build-system cmake-build-system)
     (home-page "https://github.com/Microsoft/LightGBM")
