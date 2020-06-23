@@ -1152,7 +1152,9 @@ the boot loader configuration.")
        (string-append "--with-system-bubblewrap="
                       (assoc-ref %build-inputs "bubblewrap")
                       "/bin/bwrap")
-       "--with-system-dbus-proxy")
+       (string-append "--with-system-dbus-proxy="
+                      (assoc-ref %build-inputs "xdg-dbus-proxy")
+                      "/bin/xdg-dbus-proxy"))
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'fix-tests
