@@ -24,7 +24,7 @@
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -1850,13 +1850,13 @@ failures.")
 (define-public python-pytest-flakes
   (package
     (name "python-pytest-flakes")
-    (version "1.0.1")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest-flakes" version))
               (sha256
                (base32
-                "0flag3n33kbhyjrhzmq990rvg4yb8hhhl0i48q9hw0ll89jp28lw"))))
+                "0hyind0gb950v9kfy0v97x66fb33slbqmxhrjvgbvsv0ayzn869l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1867,7 +1867,7 @@ failures.")
              ;; It's easier to run tests after install.
              ;; Make installed package available for running the tests
              (add-installed-pythonpath inputs outputs)
-             (invoke "py.test" "-vv"))))))
+             (invoke "py.test" "-vv" "-k" "not test_syntax_error"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)
