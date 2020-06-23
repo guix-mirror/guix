@@ -22274,3 +22274,28 @@ a Python script to demultiplex libraries and trim off primer sequences.  With
 a standard alignment software the required bam files can be then be
 generated.")
     (license license:gpl3+)))
+
+(define-public r-phylogram
+  (package
+    (name "r-phylogram")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "phylogram" version))
+       (sha256
+        (base32 "1p4h5pirc0m5pzc18q0jk3mcmb5n48gdf9abz03vml3a209xxl2v"))))
+    (properties `((upstream-name . "phylogram")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-ape" ,r-ape)))
+    (home-page "https://github.com/ropensci/phylogram/")
+    (synopsis "Dendrograms for evolutionary analysis")
+    (description
+     "The @code{r-phylogram} package is a tool for for developing phylogenetic
+trees as deeply-nested lists known as \"dendrogram\" objects.  It provides
+functions for conversion between \"dendrogram\" and \"phylo\" class objects,
+as well as several tools for command-line tree manipulation and import/export
+via Newick parenthetic text.  This improves accessibility to the comprehensive
+range of object-specific analytical and tree-visualization functions found
+across a wide array of bioinformatic R packages.")
+    (license license:gpl3)))
