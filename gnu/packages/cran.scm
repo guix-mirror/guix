@@ -22230,3 +22230,47 @@ inferring an appropriate positioning method.")
 Try a demo of the LSD by running @code{demotour()}.")
     ;; Either version
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-fourcseq
+  (package
+    (name "r-fourcseq")
+    (version "1.21.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "FourCSeq" version))
+       (sha256
+        (base32 "0lhcjw2hmmdafq52c5fvpm1crnzynbslamzh7r6ygifmzaz2pa8x"))))
+    (properties `((upstream-name . "FourCSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biostrings" ,r-biostrings)
+       ("r-deseq2" ,r-deseq2)
+       ("r-fda" ,r-fda)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggbio" ,r-ggbio)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gtools" ,r-gtools)
+       ("r-lsd" ,r-lsd)
+       ("r-matrix" ,r-matrix)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page
+     "https://bioconductor.org/packages/release/bioc/html/FourCSeq.html")
+    (synopsis "Analysis of multiplexed 4C sequencing data")
+    (description
+     "This package is an R package dedicated to the analysis of (multiplexed)
+4C sequencing data.  @code{r-fourcseq} provides a pipeline to detect specific
+interactions between DNA elements and identify differential interactions
+between conditions.  The statistical analysis in R starts with individual bam
+files for each sample as inputs.  To obtain these files, the package contains
+a Python script to demultiplex libraries and trim off primer sequences.  With
+a standard alignment software the required bam files can be then be
+generated.")
+    (license license:gpl3+)))
