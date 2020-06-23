@@ -201,13 +201,13 @@ Cython.")
 (define-public python-scikit-image
   (package
     (name "python-scikit-image")
-    (version "0.14.2")
+    (version "0.17.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scikit-image" version))
        (sha256
-        (base32 "07qchljkyxvg5nrm12fvszi7pmjk4m01qp0w0z8syxzxxs20pz8s"))))
+        (base32 "1cyqqbcbrg3prc36wis0sm3q5rjhd7h9bp33jwfyixzhi02lr5dx"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Some tests require running X11 server. Disable them?
