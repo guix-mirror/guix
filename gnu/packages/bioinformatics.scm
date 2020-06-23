@@ -13410,14 +13410,14 @@ cases include:
    (name "miniasm")
    (version "0.3")
    (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/lh3/miniasm/archive/v"
-                  version ".tar.gz"))
-            (file-name (string-append name "-" version ".tar.gz"))
+            (method git-fetch)
+            (uri (git-reference
+                   (url "https://github.com/lh3/miniasm")
+                   (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
             (sha256
-               (base32
-                "0g89pa98dvh34idv7w1zv12bsbyr3a11c4qb1cdcz68gyda88s4v"))))
+             (base32
+              "04dv5wv8bhsw1imxwyd438bnn9kby7svp44nbcz8lsadzjjci5gs"))))
    (build-system gnu-build-system)
    (inputs
     `(("zlib" ,zlib)))
