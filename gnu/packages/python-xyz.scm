@@ -5478,14 +5478,14 @@ a front-end for C compilers or analysis tools.")
 (define-public python-pywavelets
   (package
     (name "python-pywavelets")
-    (version "1.0.1")
+    (version "1.1.1")
     (home-page "https://github.com/PyWavelets/pywt")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyWavelets" version))
               (sha256
                (base32
-                "1p3qv2v66ghnqrb1f98wyyhp9dz71jwcd6kfpsax65sfdpiyqp1w"))))
+                "1j88c0r4j1d4mb3f8qhz6nalyx21qrzmsm70rjngnkybd87v8r0s"))))
     (build-system python-build-system)
     (arguments
      '(#:modules ((ice-9 ftw)
@@ -5493,17 +5493,18 @@ a front-end for C compilers or analysis tools.")
                   (srfi srfi-26)
                   (guix build utils)
                   (guix build python-build-system))
-       #:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (let ((cwd (getcwd))
-                            (libdir (find (cut string-prefix? "lib." <>)
-                                          (scandir "build"))))
-                      (with-directory-excursion (string-append cwd "/build/" libdir)
-                        (invoke "nosetests" "-v" "."))))))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (let ((cwd (getcwd))
+                   (libdir (find (cut string-prefix? "lib." <>)
+                                 (scandir "build"))))
+               (with-directory-excursion (string-append cwd "/build/" libdir)
+                 (invoke "pytest" "-vv"))))))))
     (native-inputs
      `(("python-matplotlib" ,python-matplotlib)          ;for tests
-       ("python-nose" ,python-nose)))
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
     (synopsis "Wavelet transforms in Python")
