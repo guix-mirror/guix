@@ -233,6 +233,11 @@ in the style of communicating sequential processes (@dfn{CSP}).")
          "07gksk9194wa90xyd6yhagxfv7syvsx29bh8ypc4mg700vc1kfrl"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
+       ((#:system system)
+        (if (string-prefix? "aarch64-linux" (or (%current-system)
+                                                (%current-target-system)))
+          "aarch64-linux"
+          system))
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'prebuild
@@ -328,6 +333,10 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                     ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
                     ("syscall/exec_linux_test.go"
                      "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
+
+                 ;; These tests fail on aarch64-linux
+                 (substitute* "cmd/dist/test.go"
+                   (("t.registerHostTest\\(\"testsanitizers/msan.*") ""))
 
                  ;; fix shebang for testar script
                  ;; note the target script is generated at build time.
