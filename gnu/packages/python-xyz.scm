@@ -5342,6 +5342,32 @@ ImageJ ROIs, an undocumented and ImageJ application specific format to store
 regions of interest, geometric shapes, paths, text, etc for image overlays.")
     (license license:bsd-3)))
 
+(define-public python-tifffile
+  (package
+    (name "python-tifffile")
+    (version "2020.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tifffile" version))
+       (sha256
+        (base32
+         "0xv3ynkbrsibqvx7250075idb7wm3canjd6lx2nzf3cbp6l07577"))))
+    (build-system python-build-system)
+    ;; Tests require lfdfiles, which depends on tifffile
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ;;("python-lfdfiles" ,python-lfdfiles)
+       ("python-roifile" ,python-roifile)))
+    (home-page "https://www.lfd.uci.edu/~gohlke/")
+    (synopsis "Read and write TIFF(r) files")
+    (description "This package lets you read image and metadata from many
+bio-scientific formats such as plain TIFF, BigTIFF, OME-TIFF, STK, LSM, SGI,
+NIH, ImageJ, MicroManager, MD GEL, and FluoView files.  It also lets you write
+numpy arrays to TIFF, BigTIFF, and ImageJ hyperstack compatible files.")
+    (license license:bsd-3)))
+
 (define-public python-pycparser
   (package
     (name "python-pycparser")
