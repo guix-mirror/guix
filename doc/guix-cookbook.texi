@@ -847,14 +847,14 @@ To ensure that the source code from the Git repository is stored in a
 directory with a descriptive name, we use @code{(file-name (git-file-name name
 version))}.
 
-The @code{git-version} procedure that can be used to derive the
+The @code{git-version} procedure can be used to derive the
 version when packaging programs for a specific commit, following the
 Guix contributor guidelines (@pxref{Version Numbers,,, guix, GNU Guix
 Reference Manual}).
 
 How does one obtain the @code{sha256} hash that's in there, you ask?  By
 invoking @command{guix hash} on a checkout of the desired commit, along
-the lines:
+these lines:
 
 @example
 git clone https://github.com/libgit2/libgit2/
