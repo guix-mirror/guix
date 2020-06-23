@@ -524,6 +524,32 @@
     (build-derivations %store (list drv))
     (call-with-input-file output get-string-all)))
 
+(test-equal "package-source-derivation, origin, sha3-512"
+  "hello, sha3"
+  (let* ((bash    (search-bootstrap-binary "bash" (%current-system)))
+         (builder (add-text-to-store %store "my-fixed-builder.sh"
+                                     "echo -n hello, sha3 > $out" '()))
+         (method  (lambda* (url hash-algo hash #:optional name
+                                #:rest rest)
+                    (and (eq? hash-algo 'sha3-512)
+                         (raw-derivation name bash (list builder)
+                                         #:sources (list builder)
+                                         #:hash hash
+                                         #:hash-algo hash-algo))))
+         (source  (origin
+                    (method method)
+                    (uri "unused://")
+                    (file-name "origin-sha3")
+                    (hash (content-hash
+                           (gcrypt:bytevector-hash (string->utf8 "hello, sha3")
+                                                   (gcrypt:lookup-hash-algorithm
+                                                    'sha3-512))
+                           sha3-512))))
+         (drv    (package-source-derivation %store source))
+         (output (derivation->output-path drv)))
+    (build-derivations %store (list drv))
+    (call-with-input-file output get-string-all)))
+
 (unless (network-reachable?) (test-skip 1))
 (test-equal "package-source-derivation, snippet"
   "OK"

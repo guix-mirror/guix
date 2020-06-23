@@ -191,7 +191,10 @@ its first argument has the right size for the chosen algorithm."
 
 (define-content-hash-constructor build-content-hash
   (sha256 32)
-  (sha512 64))
+  (sha512 64)
+  (sha3-256 32)
+  (sha3-512 64)
+  (blake2s-256 64))
 
 (define-syntax content-hash
   (lambda (s)
