@@ -531,7 +531,11 @@ higher-level API for doing so.")
                   "1hfxffnpaw49pr3wrkbzq3pnv3nyzsvk5dxndv0yz70xlrbg8a04"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/rcrowley/go-metrics"))
+       ;; Arbitrary precision tests are known to be broken on aarch64, ppc64le
+       ;; and s390x. See: https://github.com/rcrowley/go-metrics/issues/249
+       `(#:tests? ,(not (string-prefix? "aarch64" (or (%current-target-system)
+                                                      (%current-system))))
+         #:import-path "github.com/rcrowley/go-metrics"))
       (propagated-inputs
        `(("go-github-com-stathat-go" ,go-github-com-stathat-go)))
       (synopsis "Go port of Coda Hale's Metrics library")
