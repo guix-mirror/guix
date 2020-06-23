@@ -1492,13 +1492,14 @@ of use.")
     (version "0.46.0")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/OpenMW/openmw/archive/"
-                       "openmw-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/OpenMW/openmw")
+              (commit (string-append "openmw-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0n7x39kwhwmi6ly9hd7yc6dhlrmmdmx30ahc46kmlzzn2n7mm8q7"))))
+         "0rm32zsmxvr6b0jjihfj543skhicbw5kg6shjx312clhlm035w2x"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
