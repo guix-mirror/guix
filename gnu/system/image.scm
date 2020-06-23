@@ -259,8 +259,7 @@ used in the image."
              (image-builder
               (with-imported-modules*
                (let ((initializer #$(partition-initializer partition))
-                     (inputs '#+(list e2fsprogs fakeroot dosfstools mtools
-                                      sed coreutils))
+                     (inputs '#+(list e2fsprogs fakeroot dosfstools mtools))
                      (image-root "tmp-root"))
                  (sql-schema #$schema)
 
