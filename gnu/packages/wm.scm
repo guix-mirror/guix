@@ -1671,6 +1671,7 @@ productive, customizable lisp based systems.")
          (uri (git-reference
                (url "https://github.com/stumpwm/stumpwm-contrib.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
       (build-system asdf-build-system/sbcl)
