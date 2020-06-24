@@ -31,6 +31,7 @@
   #:use-module (guix store)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 format)
   #:export (nix-service-type))
 
 ;;; Commentary:
