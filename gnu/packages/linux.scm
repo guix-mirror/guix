@@ -1486,12 +1486,13 @@ block devices, UUIDs, TTYs, and many other tools.")
     (name "ddate")
     (version "0.2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bo0ts/ddate/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/bo0ts/ddate")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "1bbqqq8mswj4bp9083gxjaky5ysfznax4cynsqwmy125z053yg6m"))))
+               (base32 "1qchxnxvghbma6gp1g78wnjxsri0b72ha9axyk31cplssl7yn73f"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))
     (home-page "https://github.com/bo0ts/ddate")
