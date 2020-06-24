@@ -34,6 +34,7 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu system hurd)
   #:use-module (gnu system image)
+  #:use-module (gnu system images hurd)
   #:use-module (gnu system shadow)
   #:use-module (gnu system)
   #:use-module (guix derivations)
