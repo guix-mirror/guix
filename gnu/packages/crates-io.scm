@@ -6001,10 +6001,9 @@ is configured via an environment variable.")
         (base32
          "1lx2s5nk96xx4i3m4zc4ghqgi8kb07dsnyiv8jk2clhax42dxz5a"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
-        ("rust-humantime" ,rust-humantime-1.2)
+        ("rust-humantime" ,rust-humantime-1.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-regex" ,rust-regex-1)
         ("rust-termcolor" ,rust-termcolor-1.0))))))
@@ -6024,10 +6023,9 @@ is configured via an environment variable.")
          (base32
           "0f0c4i4c65jh8lci0afl5yg74ac0lbnpxcp81chj114zwg9a9c0m"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
-        ("rust-humantime" ,rust-humantime-1.2)
+        ("rust-humantime" ,rust-humantime-1.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-regex" ,rust-regex-1)
         ("rust-termcolor" ,rust-termcolor-1.0))))))
@@ -10034,21 +10032,6 @@ or response body.")
      "A parser and formatter for @code{std::time::{Duration,
 SystemTime}}.")
     (license (list license:expat license:asl2.0))))
-
-(define-public rust-humantime-1.2
-  (package
-    (inherit rust-humantime-1.3)
-    (name "rust-humantime")
-    (version "1.2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "humantime" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "057ilhy6vc9iqhhby5ymh45m051pgxwq2z437gwkbnqhw7rfb9rw"))))))
 
 (define-public rust-hyper-0.12
   (package
