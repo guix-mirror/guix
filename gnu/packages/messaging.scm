@@ -155,14 +155,14 @@ keys, no previous conversation is compromised.")
   (name "libsignal-protocol-c")
   (version "2.3.2")
   (source (origin
-           (method url-fetch)
-           (uri (string-append "https://github.com/WhisperSystems/"
-                               "libsignal-protocol-c/archive/v" version
-                               ".tar.gz"))
-           (file-name (string-append name "-" version ".tar.gz"))
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://github.com/WhisperSystems/libsignal-protocol-c")
+                  (commit (string-append "v" version))))
+           (file-name (git-file-name name version))
            (sha256
             (base32
-             "0380hl6fw3ppf265fg897pyrpqygpx4m9j8ifq118bim8lq6z0pk"))))
+             "1qj2w4csy6j9jg1jy66n1qwysx7hgjywk4n35hlqcnh1kpa14k3p"))))
   (arguments
    `(;; Required for proper linking and for tests to run.
      #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
