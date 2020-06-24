@@ -8817,7 +8817,7 @@ shell style patterns.")
 (define-public rust-globset-0.4
   (package
     (name "rust-globset")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
@@ -8826,18 +8826,20 @@ shell style patterns.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1wnqxq91liknmr2w93wjq2spyxbrd1pmnhd4nbi3921dr35a4nlj"))))
+         "0841ihdg1ps2618cs0kjbr3pn3rzrj24rx3n4pg1sa6p1d1xmlbs"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.7)
         ("rust-bstr" ,rust-bstr-0.2)
         ("rust-fnv" ,rust-fnv-1.0)
         ("rust-log" ,rust-log-0.4)
-        ("rust-regex" ,rust-regex-1))
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-glob" ,rust-glob-0.3))))
+       (("rust-glob" ,rust-glob-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
     (home-page
      "https://github.com/BurntSushi/ripgrep/tree/master/globset")
     (synopsis
