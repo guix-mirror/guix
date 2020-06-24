@@ -6291,13 +6291,14 @@ NexGen, Rise, and SiS CPUs.")
     (version "0.5")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/JasonFerrara/jmtpfs/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JasonFerrara/jmtpfs")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "10v8d7mmx8b8123x5f9y9zaaa428ms6wkngwn2ra71n5a53wrjn0"))))
+          "1pm68agkhrwgrplrfrnbwdcvx5lrivdmqw8pb5gdmm3xppnryji1"))))
     (build-system gnu-build-system)
     (inputs
      `(("file" ,file)
