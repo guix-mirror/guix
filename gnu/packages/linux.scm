@@ -6317,12 +6317,13 @@ the MTP device as a file system.")
    (version "0.51")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/jamesodhunt/procenv/archive/"
-                         version ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
+     (method git-fetch)
+     (uri (git-reference
+            (url "https://github.com/jamesodhunt/procenv")
+            (commit version)))
+     (file-name (git-file-name name version))
      (sha256
-      (base32 "1javw97yw0qvjmj14js8vw6nsfyf2xc0kfiyq5f2hsp0553w2cdq"))))
+      (base32 "1ilrsw1rc85w29mkbkmm5n5w427gapv43yrjzvkb4kc9xhscgdjn"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--disable-silent-rules")))
    (native-inputs `(("groff" ,groff) ; for tests
