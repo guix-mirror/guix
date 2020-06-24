@@ -21424,29 +21424,6 @@ words, like Python's shlex.")
     (description "Backend crate for signal-hook.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-signal-hook-registry-1.0
-  (package
-    (inherit rust-signal-hook-registry-1.2)
-    (name "rust-signal-hook-registry")
-    (version "1.0.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "signal-hook-registry" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1mw5v909fn99h5qb96ma4almlik80lr1c7xbakn24rql6bx4zvfd"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-arc-swap" ,rust-arc-swap-0.3)
-        ("rust-libc" ,rust-libc-0.2))
-       #:cargo-development-inputs
-       (("rust-signal-hook" ,rust-signal-hook-0.1)
-        ("rust-version-sync" ,rust-version-sync-0.8))))))
-
 (define-public rust-simd-0.2
   (package
     (name "rust-simd")
