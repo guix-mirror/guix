@@ -1117,10 +1117,10 @@ trace (backtrace) at runtime in a Rust program.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-base64-0.11
+(define-public rust-base64-0.12
   (package
     (name "rust-base64")
-    (version "0.11.0")
+    (version "0.12.2")
     (source
      (origin
        (method url-fetch)
@@ -1129,7 +1129,14 @@ trace (backtrace) at runtime in a Rust program.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1iqmims6yvr6vwzyy54qd672zw29ipjj17p8klcr578c9ajpw6xl"))))
+         "0ryc48pp8dpx3rl1dcwn723dyfgifi4imh1f6kwd95lcqh6sy8z2"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; 'doctest' isn't stable until rust-1.40
+           (substitute* "src/lib.rs"
+             (("\\(doctest") "(test"))
+           #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
@@ -1141,6 +1148,21 @@ trace (backtrace) at runtime in a Rust program.")
     (description
      "This package encodes and decodes base64 as bytes or utf8.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-base64-0.11
+  (package
+    (inherit rust-base64-0.12)
+    (name "rust-base64")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "base64" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1iqmims6yvr6vwzyy54qd672zw29ipjj17p8klcr578c9ajpw6xl"))))))
 
 (define-public rust-base64-0.10
   (package
