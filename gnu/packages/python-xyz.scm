@@ -81,6 +81,7 @@
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -106,6 +107,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
@@ -10195,6 +10197,29 @@ document.")
 
 (define-public python2-jmespath
   (package-with-python2 python-jmespath))
+
+(define-public python-symengine
+  (package
+    (name "python-symengine")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "symengine" version))
+       (sha256
+        (base32 "1kn1w4dp9mrsq6kzmhf4pjmx3wicxc3dw1mwa924q8g48g77lr4c"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("python-cython" ,python-cython)))
+    (inputs
+     `(("symengine" ,symengine)))
+    (home-page "https://github.com/symengine/symengine.py")
+    (synopsis "Python library providing wrappers to SymEngine")
+    (description
+     "This library provides a Python wrapper to SymEngine, a fast C++ symbolic
+manipulation library.")
+    (license license:expat)))
 
 (define-public python-botocore
   (package
