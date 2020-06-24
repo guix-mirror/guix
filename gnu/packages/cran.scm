@@ -8326,14 +8326,14 @@ multiple-imputation datasets.")
 (define-public r-magick
   (package
     (name "r-magick")
-    (version "2.3")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "magick" version))
        (sha256
         (base32
-         "182b4wahkq9q0scn99mql4vm9fp92nja0r5yizc4x9rjl492ahd8"))))
+         "1y1p2blkg0h6061ay7mdwssxbswgrc25raffp6d8d9cqhdmsa72s"))))
     (build-system r-build-system)
     (inputs
      `(("imagemagick" ,imagemagick)
@@ -8343,7 +8343,8 @@ multiple-imputation datasets.")
        ("r-magrittr" ,r-magrittr)
        ("r-rcpp" ,r-rcpp)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://github.com/ropensci/magick")
     (synopsis "Advanced graphics and image-processing in R")
     (description
