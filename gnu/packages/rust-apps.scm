@@ -134,7 +134,7 @@ also knows about symlinks, extended attributes, and Git.")
 (define-public fd
   (package
     (name "fd")
-    (version "7.4.0")
+    (version "8.1.1")
     (source
      (origin
        (method url-fetch)
@@ -143,24 +143,27 @@ also knows about symlinks, extended attributes, and Git.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "147m872zff0srwq9vaxkkbab06g3fkklbk1g2lx90vdhgs37f5xj"))))
+         "124a5r8hpk2phs1288jybh34d48yxy44wr7gv5ggchs272gs2jam"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-anyhow" ,rust-anyhow-1.0)
         ("rust-atty" ,rust-atty-0.2)
         ("rust-clap" ,rust-clap-2)
         ("rust-ctrlc" ,rust-ctrlc-3.1)
+        ("rust-dirs" ,rust-dirs-2.0)
         ("rust-globset" ,rust-globset-0.4)
-        ("rust-humantime" ,rust-humantime-1.3)
+        ("rust-humantime" ,rust-humantime-2)
         ("rust-ignore" ,rust-ignore-0.4)
         ("rust-jemallocator" ,rust-jemallocator-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-lscolors" ,rust-lscolors-0.6)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-lscolors" ,rust-lscolors-0.7)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-regex" ,rust-regex-1)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-users" ,rust-users-0.10)
         ("rust-version-check" ,rust-version-check-0.9))
        #:cargo-development-inputs
        (("rust-diff" ,rust-diff-0.1)
