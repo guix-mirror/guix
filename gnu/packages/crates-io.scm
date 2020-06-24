@@ -18495,7 +18495,7 @@ accessors.")
 (define-public rust-rayon-core-1
   (package
     (name "rust-rayon-core")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
@@ -18504,16 +18504,18 @@ accessors.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ac55kpnh2390ah7r071vnjbiy308qpznql0n597x5dgxx39pa08"))))
+         "101jjwkcfw5jk31695gbdm163iicc2pz349q6l8lwj43j3c1abp9"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(;; One of the tests attempts to overflow the stack, but the compiler
+       ;; has since gotten smarter and the test became defective.
+       #:tests? #f
        #:cargo-inputs
        (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
         ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.2)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-num-cpus" ,rust-num-cpus-1.10))
+        ("rust-num-cpus" ,rust-num-cpus-1.11))
        #:cargo-development-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-rand" ,rust-rand-0.7)
