@@ -18895,7 +18895,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
 (define-public rust-regex-syntax-0.6
   (package
     (name "rust-regex-syntax")
-    (version "0.6.17")
+    (version "0.6.18")
     (source
       (origin
         (method url-fetch)
@@ -18903,7 +18903,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1blmlgzcg7in3kcxqabpfzzrbnamr2i671flbrmlqhfps5bvvrbz"))))
+          "1s648w7rwpxnq9iqwbyy43ar4al07906jpz0jxlql23bgjwjwh96"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/rust-lang/regex")
     (synopsis "Regular expression parser")
