@@ -2574,7 +2574,7 @@ serializing continuations or delimited continuations.")
 (define-public python-on-guile
   (package
     (name "python-on-guile")
-    (version "1.2.3.4")
+    (version "1.2.3.5")
     (home-page "https://gitlab.com/python-on-guile/python-on-guile")
     (source (origin
               (method git-fetch)
@@ -2583,7 +2583,7 @@ serializing continuations or delimited continuations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qn5f79z43jh0rqh39a0qal81nsnw3cd5pj0d1j5cm3nhj5s64a7"))))
+                "05xrvcj6a4gzq1ybyin270qz8wamgc7w2skyi9iy6hkpgdhxy8vf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f                   ;not supported
