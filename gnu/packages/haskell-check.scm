@@ -489,7 +489,7 @@ use HUnit assertions as QuickCheck properties.")
   (package
     (name "ghc-quickcheck")
     (version "2.13.2")
-    (outputs '("out" "doc"))
+    (outputs '("out" "static" "doc"))
     (source
      (origin
        (method url-fetch)
@@ -651,7 +651,7 @@ using Template Haskell")
   (package
     (name "ghc-hunit")
     (version "1.6.0.0")
-    (outputs '("out" "doc"))
+    (outputs '("out" "static" "doc"))
     (source
      (origin
        (method url-fetch)

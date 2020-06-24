@@ -171,7 +171,7 @@ both client and server code).")
   (package
     (name "ghc-http")
     (version "4000.3.14")
-    (outputs '("out" "doc"))
+    (outputs '("out" "static" "doc"))
     (source
      (origin
        (method url-fetch)
