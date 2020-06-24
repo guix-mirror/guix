@@ -473,7 +473,7 @@ and Game Boy Color games.")
 (define-public sameboy
   (package
     (name "sameboy")
-    (version "0.13.2")
+    (version "0.13.3")
     (source
      (origin
        (method git-fetch)
@@ -482,7 +482,7 @@ and Game Boy Color games.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19qb1ib9sk5bjdv4arbwkv8l2afpll5axrif3wi7p2yhvpba10c0"))))
+        (base32 "1mv5a7p6plz0359l3z9g232rgaq2h3yby5949ps0s88cxj94w9qm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("rgbds" ,rgbds)
