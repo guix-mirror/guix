@@ -78,13 +78,11 @@ and parameters ~s~%"
   (let* ((out (assoc-ref outputs "out"))
          (doc (assoc-ref outputs "doc"))
          (lib (assoc-ref outputs "lib"))
-         (bin (assoc-ref outputs "bin"))
          (name-version (strip-store-file-name out))
          (extra-dirs (filter-map (cut assoc-ref inputs <>) extra-directories))
          (ghc-path (getenv "GHC_PACKAGE_PATH"))
          (params `(,(string-append "--prefix=" out)
                    ,(string-append "--libdir=" (or lib out) "/lib")
-                   ,(string-append "--bindir=" (or bin out) "/bin")
                    ,(string-append "--docdir=" (or doc out)
                                    "/share/doc/" name-version)
                    "--libsubdir=$compiler/$pkg-$version"
