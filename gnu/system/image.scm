@@ -115,9 +115,7 @@
     (list (partition
            (size 'guess)
            (label "GUIX_IMAGE")
-           (flags '(boot)))))
-   ;; XXX: Temporarily disable compression to speed-up the tests.
-   (compression? #f)))
+           (flags '(boot)))))))
 
 
 ;;
