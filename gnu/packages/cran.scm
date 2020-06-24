@@ -10405,14 +10405,14 @@ R packages (on CRAN, Bioconductor or Github).")
 (define-public r-docopt
   (package
     (name "r-docopt")
-    (version "0.6.1")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "docopt" version))
        (sha256
         (base32
-         "06zknnd0c5s2y0hbddzdlr3m63ib783izpck6pgz7sjbab5pd068"))))
+         "1zxhwizs916qm5by7nfslqnarl2q5202xc2azlhrnzk0wj3khiwz"))))
     (build-system r-build-system)
     (home-page "https://github.com/docopt/docopt.R")
     (synopsis "Command-line interface specification language")
