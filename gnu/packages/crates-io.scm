@@ -9180,7 +9180,7 @@ loading crate.")
 (define-public rust-grep-0.2
   (package
     (name "rust-grep")
-    (version "0.2.4")
+    (version "0.2.7")
     (source
      (origin
        (method url-fetch)
@@ -9189,7 +9189,7 @@ loading crate.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1pkhjladybzzciwg0mjk3vjz5fyi76hk0d3hgyzv2jxlyp8v4fyc"))))
+         "0s3y1rx94swqnciz2zzifm8pmy2iyck270skgxhgkq7ab6x96bjq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
