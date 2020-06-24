@@ -10193,7 +10193,7 @@ SystemTime}}.")
 (define-public rust-ignore-0.4
   (package
     (name "rust-ignore")
-    (version "0.4.11")
+    (version "0.4.16")
     (source
      (origin
        (method url-fetch)
@@ -10202,11 +10202,11 @@ SystemTime}}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "07js5k91v870b2i5rl5shg37214yzwl0p6fjqy06y0v97gyawbaj"))))
+         "0wpcv4qgfzcyzydhlqa2qr56j72fj1a66s11xzdji59898mbzp12"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4)
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-globset" ,rust-globset-0.4)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
@@ -10215,7 +10215,9 @@ SystemTime}}.")
         ("rust-same-file" ,rust-same-file-1.0)
         ("rust-thread-local" ,rust-thread-local-1.0)
         ("rust-walkdir" ,rust-walkdir-2.2)
-        ("rust-winapi-util" ,rust-winapi-util-0.1))))
+        ("rust-winapi-util" ,rust-winapi-util-0.1))
+       #:cargo-development-inputs
+       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4))))
     (home-page "https://github.com/BurntSushi/ripgrep/tree/master/ignore")
     (synopsis "Efficiently match ignore files such as .gitignore")
     (description
