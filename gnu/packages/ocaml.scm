@@ -2940,13 +2940,14 @@ and 4 (random based) according to RFC 4122.")
     (name "ocaml4.07-piqi")
     (version "0.7.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alavrik/piqi-ocaml/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alavrik/piqi-ocaml")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1l0b4saxmwqgw9mb10mwrz31lvpj3l0abh3cwarqp0x4vdrzshbh"))))
+                "1913jpsb8mvqi8609j4g4sm5jhg50dq0xqxgy8nmvknfryyc89nm"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:make-flags
@@ -2955,6 +2956,10 @@ and 4 (random based) according to RFC 4122.")
                             "/bin/sh"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (delete 'configure))
        #:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib))
