@@ -2020,8 +2020,37 @@ UTF-8.")
     (description "Bytes related utility functions.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-bytecount-0.6
+  (package
+    (name "rust-bytecount")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bytecount" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vplsx73zncb7mz8x0fs3k0p0rz5bmavj09vjk5nqn4z6fa7h0dh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-packed-simd" ,rust-packed-simd-0.3))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7))))
+    (home-page "https://github.com/llogiq/bytecount")
+    (synopsis "Count occurrences of a given byte")
+    (description
+     "Count occurrences of a given byte, or the number of UTF-8 code points,
+in a byte slice, fast.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-bytecount-0.5
   (package
+    (inherit rust-bytecount-0.6)
     (name "rust-bytecount")
     (version "0.5.1")
     (source
@@ -2033,24 +2062,17 @@ UTF-8.")
        (sha256
         (base32
          "0z6a280kiy4kg5v3qw97pbyvwycr17fsm41804i8zpq7nmads3xy"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-packed-simd" ,rust-packed-simd-0.3))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rand" ,rust-rand-0.4))))
-    (home-page "https://github.com/llogiq/bytecount")
-    (synopsis "Count occurrences of a given byte")
-    (description
-     "Count occurrences of a given byte, or the number of UTF-8 code points,
-in a byte slice, fast.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-bytecount-0.4
   (package
+    (inherit rust-bytecount-0.5)
     (name "rust-bytecount")
     (version "0.4.0")
     (source
@@ -2062,20 +2084,13 @@ in a byte slice, fast.")
         (sha256
          (base32
           "13qpy38z5wx0rzcdvr2h0ixbfgi1dbrif068il3hwn3k2mah88mr"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-packed-simd" ,rust-packed-simd-0.3))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.6)
-        ("rust-rand" ,rust-rand-0.4))))
-    (home-page "https://github.com/llogiq/bytecount")
-    (synopsis "Counting bytes really fast")
-    (description
-     "This package counts occurrences of a given byte, or the number of UTF-8
-code points, in a byte slice, fast.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-byteorder-1.3
   (package
