@@ -3567,6 +3567,28 @@ tables.")
 been copied from an Emacs major mode.")
     (license license:gpl2+)))
 
+(define-public emacs-ob-erlang
+  (let ((revision "1")
+        (commit "f1a8c665b8f7d0ab32267a9961de8eed872e6333"))
+    (package
+      (name "emacs-ob-erlang")
+      (version (git-version "20180827" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/xfwduke/ob-erlang.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0b5zajqiy6955yvlqwy92prrqy89lqchsv4ss2ylws3p4s14rhij"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/xfwduke/ob-erlang/")
+      (synopsis "Org-babel support for Erlang")
+      (description "This package adds support for working with Erlang code
+blocks with @code{org-babel} in @code{org-mode}.")
+      (license license:gpl3+))))
+
 (define-public emacs-ob-restclient
   (let ((commit "53376667eeddb1388fd6c6976f3222e7c8adcd46"))
     (package
