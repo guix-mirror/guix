@@ -85,25 +85,22 @@ and parameters ~s~%"
                         dir)
                        (_ '())))
          (ghc-path (getenv "GHC_PACKAGE_PATH"))
-         (params (append `(,(string-append "--prefix=" out))
-                         `(,(string-append "--libdir=" (or lib out) "/lib"))
-                         `(,(string-append "--bindir=" (or bin out) "/bin"))
-                         `(,(string-append
-                             "--docdir=" (or doc out)
-                             "/share/doc/" name-version))
-                         '("--libsubdir=$compiler/$pkg-$version")
-                         `(,(string-append "--package-db=" %tmp-db-dir))
-                         '("--global")
-                         `(,@(map
-                              (cut string-append "--extra-include-dirs=" <>)
-                              (search-path-as-list '("include") input-dirs)))
-                         `(,@(map
-                              (cut string-append "--extra-lib-dirs=" <>)
-                              (search-path-as-list '("lib") input-dirs)))
-                         (if tests?
-                             '("--enable-tests")
-                             '())
-                         configure-flags)))
+         (params `(,(string-append "--prefix=" out)
+                   ,(string-append "--libdir=" (or lib out) "/lib")
+                   ,(string-append "--bindir=" (or bin out) "/bin")
+                   ,(string-append "--docdir=" (or doc out)
+                                   "/share/doc/" name-version)
+                   "--libsubdir=$compiler/$pkg-$version"
+                   ,(string-append "--package-db=" %tmp-db-dir)
+                   "--global"
+                   ,@(map (cut string-append "--extra-include-dirs=" <>)
+                          (search-path-as-list '("include") input-dirs))
+                   ,@(map (cut string-append "--extra-lib-dirs=" <>)
+                          (search-path-as-list '("lib") input-dirs))
+                   ,@(if tests?
+                         '("--enable-tests")
+                         '())
+                   ,@configure-flags)))
     ;; Cabal errors if GHC_PACKAGE_PATH is set during 'configure', so unset
     ;; and restore it.
     (unsetenv "GHC_PACKAGE_PATH")
