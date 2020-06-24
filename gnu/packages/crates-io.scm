@@ -4291,9 +4291,8 @@ intrinsics.")
          "1a31wbrda1320gj2a6az1lin2d34xfc3xf88da4c17qy5lxcgiy3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-0.1)
+     `(#:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-1.0)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1))
        #:cargo-development-inputs
