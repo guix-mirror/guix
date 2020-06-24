@@ -18772,7 +18772,7 @@ functionality.")
 (define-public rust-regex-1
   (package
     (name "rust-regex")
-    (version "1.3.6")
+    (version "1.3.9")
     (source
      (origin
        (method url-fetch)
@@ -18781,7 +18781,7 @@ functionality.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1cx4lcgy7vdi2kij2n1dp2whl33d7974g1kxwiklhs192nclcsbz"))))
+         "1rnqga94ypykl2apgj26l2j1s9bvr2ix4dlzs323n6abyky80dww"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -18790,8 +18790,7 @@ functionality.")
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
         ("rust-thread-local" ,rust-thread-local-1.0))
        #:cargo-development-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
+       (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-rand" ,rust-rand-0.6))))
     (home-page "https://github.com/rust-lang/regex")
