@@ -25563,8 +25563,35 @@ untrusted inputs in Rust.")
 See winapi for types and constants.")
     (license license:expat)))
 
+(define-public rust-users-0.10
+  (package
+    (name "rust-users")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "users" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "11plda5r3dl8hs0sl0jskazam4ayv3a06vmhzk4l7914agljfhma"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.7))))
+    (home-page "https://github.com/ogham/rust-users")
+    (synopsis "Library for getting information on Unix users and groups")
+    (description "This package provides a library for getting information on
+Unix users and groups.")
+    (license license:expat)))
+
 (define-public rust-users-0.9
   (package
+    (inherit rust-users-0.10)
     (name "rust-users")
     (version "0.9.1")
     (source
@@ -25576,14 +25603,8 @@ See winapi for types and constants.")
         (sha256
          (base32
           "1kxl3y2hcrqqip7jpqn5mz7xlpbwmmpfmaza0xnyrhx0mrkl4by7"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/ogham/rust-users")
-    (synopsis "Library for getting information on Unix users and groups")
-    (description "This package provides a library for getting information on
-Unix users and groups.")
-    (license license:expat)))
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-utf-8-0.7
   (package
