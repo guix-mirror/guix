@@ -954,17 +954,17 @@ algorithms from the FORTRAN library MINPACK.")
     (version "0.6.0")
     (source
      (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/symengine/symengine.git")
-            (commit (string-append "v" version))))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32 "129iv9maabmb42ylfdv0l0g94mcbf3y4q3np175008rcqdr8z6h1"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/symengine/symengine.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "129iv9maabmb42ylfdv0l0g94mcbf3y4q3np175008rcqdr8z6h1"))))
     (build-system cmake-build-system)
     (arguments
-     '(;; These are the suggested build options in the README.
-       #:configure-flags
+     '(#:configure-flags
+       ;; These are the suggested build options in the README.
        '("-DCMAKE_BUILD_TYPE=Release"
          "-DWITH_GMP=on"
          "-DWITH_MPFR=on"
@@ -972,7 +972,7 @@ algorithms from the FORTRAN library MINPACK.")
          "-DINTEGER_CLASS=flint"
          "-DWITH_LLVM=on"
          "-DWITH_SYMENGINE_THREAD_SAFE=on"
-         "-DBUILD_SHARED_LIBS=on"))) ; also build libsymengine
+         "-DBUILD_SHARED_LIBS=on")))    ;also build libsymengine
     (native-inputs
      `(("llvm" ,llvm)))
     (inputs
@@ -982,11 +982,11 @@ algorithms from the FORTRAN library MINPACK.")
        ("mpfr" ,mpfr)))
     (home-page "https://github.com/symengine/symengine")
     (synopsis "Fast symbolic manipulation library")
-    (description "SymEngine is a standalone fast C++ symbolic manipulation
-library.  Optional thin wrappers allow usage of the library from other
-languages.")
-    (license (list license:expat     ; SymEngine
-                   license:bsd-3)))) ; 3rd party code
+    (description
+     "SymEngine is a standalone fast C++ symbolic manipulation library.
+Optional thin wrappers allow usage of the library from other languages.")
+    (license (list license:expat        ;SymEngine
+                   license:bsd-3))))    ;3rd party code
 
 (define-public eigen
   (package
