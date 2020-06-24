@@ -9272,7 +9272,7 @@ the regex engine it uses pluggable.")
 (define-public rust-grep-pcre2-0.1
   (package
     (name "rust-grep-pcre2")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
@@ -9281,7 +9281,7 @@ the regex engine it uses pluggable.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1wjc3gsan20gapga8nji6jcrmwn9n85q5zf2yfq6g50c7abkc2ql"))))
+         "0sk8b188j81zfrmmy7jsq0pckydz42qf7w0pd2lwyfsa2nw4yksb"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
