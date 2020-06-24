@@ -9212,7 +9212,7 @@ loading crate.")
 (define-public rust-grep-cli-0.1
   (package
     (name "rust-grep-cli")
-    (version "0.1.3")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
@@ -9221,11 +9221,10 @@ loading crate.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "05a502x5m4fijwx7zj9icxna2dx86scm76ap80zr89pnvpbfk1hp"))))
+         "10mi7pkvlm5r478jhwlx15wlmqylq9fmkdg4qazz1xcifx7pi4im"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-bstr" ,rust-bstr-0.2)
         ("rust-globset" ,rust-globset-0.4)
