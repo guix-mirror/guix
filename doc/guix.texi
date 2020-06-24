@@ -14172,6 +14172,9 @@ It takes the following parameters:
 @item @code{wpa-supplicant} (default: @code{wpa-supplicant})
 The WPA Supplicant package to use.
 
+@item @code{requirement} (default: @code{'(user-processes dbus-system loopback syslogd)}
+List of services that should be started before WPA Supplicant starts.
+
 @item @code{dbus?} (default: @code{#t})
 Whether to listen for requests on D-Bus.
 
