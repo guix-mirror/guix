@@ -3975,8 +3975,47 @@ deploys Guix itself from the official GNU@tie{}Guix repository.  This can be
 customized by defining @dfn{channels} in the
 @file{~/.config/guix/channels.scm} file.  A channel specifies a URL and branch
 of a Git repository to be deployed, and @command{guix pull} can be instructed
-to pull from one or more channels.  In other words, channels can be used to
-@emph{customize} and to @emph{extend} Guix, as we will see below.
+to pull from one or more channels.  In other words, channels can be used
+to @emph{customize} and to @emph{extend} Guix, as we will see below.
+Before that, some security considerations.
+
+@subsection Channel Authentication
+
+@cindex authentication, of channel code
+The @command{guix pull} and @command{guix time-machine} commands
+@dfn{authenticate} the code retrieved from channels: they make sure each
+commit that is fetched is signed by an authorized developer.  The goal
+is to protect from unauthorized modifications to the channel that would
+lead users to run malicious code.
+
+As a user, you must provide a @dfn{channel introduction} in your
+channels file so that Guix knows how to authenticate its first commit.
+A channel specification, including its introduction, looks something
+along these lines:
+
+@lisp
+(channel
+  (name 'my-channel)
+  (url "https://example.org/my-channel.git")
+  (introduction
+   (make-channel-introduction
+    "6f0d8cc0d88abb59c324b2990bfee2876016bb86"
+    (openpgp-fingerprint
+     "CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"))))
+@end lisp
+
+The specification above shows the name and URL of the channel.  The call
+to @code{make-channel-introduction} above specifies that authentication
+of this channel starts at commit @code{6f0d8cc@dots{}}, which is signed
+by the OpenPGP key with fingerprint @code{CABB A931@dots{}}.
+
+For the main channel, called @code{guix}, you automatically get that
+information from your Guix installation.  For other channels, include
+the channel introduction provided by the channel authors in your
+@file{channels.scm} file.  Make sure you retrieve the channel
+introduction from a trusted source since that is the root of your trust.
+
+If you're curious about the authentication mechanics, read on!
 
 @subsection Using a Custom Guix Channel
 
@@ -4149,6 +4188,75 @@ add a meta-data file @file{.guix-channel} that contains:
   (version 0)
   (directory "guix"))
 @end lisp
+
+@cindex channel authorizations
+@subsection Specifying Channel Authorizations
+
+As we saw above, Guix ensures the source code it pulls from channels
+comes from authorized developers.  As a channel author, you need to
+specify the list of authorized developers in the
+@file{.guix-authorizations} file in the channel's Git repository.  The
+authentication rule is simple: each commit must be signed by a key
+listed in the @file{.guix-authorizations} file of its parent
+commit(s)@footnote{Git commits form a @dfn{directed acyclic graph}
+(DAG).  Each commit can have zero or more parents; ``regular'' commits
+have one parent and merge commits have two parent commits.  Read
+@uref{https://eagain.net/articles/git-for-computer-scientists/, @i{Git
+for Computer Scientists}} for a great overview.}  The
+@file{.guix-authorizations} file looks like this:
+
+@lisp
+;; Example '.guix-authorizations' file.
+
+(authorizations
+ (version 0)               ;current file format version
+
+ (("AD17 A21E F8AE D8F1 CC02  DBD9 F8AE D8F1 765C 61E3"
+   (name "alice"))
+  ("2A39 3FFF 68F4 EF7A 3D29  12AF 68F4 EF7A 22FB B2D5"
+   (name "bob"))
+  ("CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"
+   (name "charlie"))))
+@end lisp
+
+Each fingerprint is followed by optional key/value pairs, as in the
+example above.  Currently these key/value pairs are ignored.
+
+This authentication rule creates a chicken-and-egg issue: how do we
+authenticate the first commit?  Related to that: how do we deal with
+channels whose repository history contains unsigned commits and lack
+@file{.guix-authorizations}?  And how do we fork existing channels?
+
+@cindex channel introduction
+Channel introductions answer these questions by describing the first
+commit of a channel that should be authenticated.  The first time a
+channel is fetched with @command{guix pull} or @command{guix
+time-machine}, the command looks up the introductory commit and verifies
+that it is signed by the specified OpenPGP key.  From then on, it
+authenticates commits according to the rule above.
+
+To summarize, as the author of a channel, there are two things you have
+to do to allow users to authenticate your code:
+
+@enumerate
+@item
+Introduce an initial @file{.guix-authorizations} in the channel's
+repository.  Do that in a signed commit (@pxref{Commit Access}, for
+information on how to sign Git commits.)
+
+@item
+Advertise the channel introduction, for instance on your channel's web
+page.  The channel introduction, as we saw above, is the commit/key
+pair---i.e., the commit that introduced @file{.guix-authorizations}, and
+the fingerprint of the OpenPGP used to sign it.
+@end enumerate
+
+Publishing a signed channel requires discipline: any mistake, such as an
+unsigned commit or a commit signed by an unauthorized key, will prevent
+users from pulling from your channel---well, that's the whole point of
+authentication!  Pay attention to merges in particular: merge commits
+are considered authentic if and only if they are signed by a key present
+in the @file{.guix-authorizations} file of @emph{both} branches.
 
 @cindex primary URL, channels
 @subsection Primary URL

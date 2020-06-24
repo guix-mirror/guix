@@ -451,12 +451,11 @@
       (with-repository directory repository
         (let* ((commit1 (find-commit repository "first"))
                (commit2 (find-commit repository "second"))
-               (intro   ((@@ (guix channels) make-channel-introduction)
+               (intro   (make-channel-introduction
                          (commit-id-string commit1)
                          (openpgp-public-key-fingerprint
                           (read-openpgp-packet
-                           %ed25519bis-public-key-file)) ;different key
-                         #f))                     ;no signature
+                           %ed25519bis-public-key-file)))) ;different key
                (channel (channel (name 'example)
                                  (url (string-append "file://" directory))
                                  (introduction intro))))
@@ -507,12 +506,11 @@
         (let* ((commit1 (find-commit repository "first"))
                (commit2 (find-commit repository "second"))
                (commit3 (find-commit repository "third"))
-               (intro   ((@@ (guix channels) make-channel-introduction)
+               (intro   (make-channel-introduction
                          (commit-id-string commit1)
                          (openpgp-public-key-fingerprint
                           (read-openpgp-packet
-                           %ed25519-public-key-file))
-                         #f))                     ;no signature
+                           %ed25519-public-key-file))))
                (channel (channel (name 'example)
                                  (url (string-append "file://" directory))
                                  (introduction intro))))
