@@ -10003,8 +10003,36 @@ or response body.")
      "This package provides a tiny, safe, speedy, zero-copy HTTP/1.x parser.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-humantime-2
+  (package
+    (name "rust-humantime")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "humantime" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yivhqyi8xik2j6sd3q45ybakjx8jsx5632dx9xjn0birh4dj6iw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://github.com/tailhook/humantime")
+    (synopsis
+     "Parser and formatter for Duration and SystemTime")
+    (description
+     "A parser and formatter for @code{std::time::{Duration,
+SystemTime}}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-humantime-1.3
   (package
+    (inherit rust-humantime-2)
     (name "rust-humantime")
     (version "1.3.0")
     (source
@@ -10016,7 +10044,6 @@ or response body.")
        (sha256
         (base32
          "0krwgbf35pd46xvkqg14j070vircsndabahahlv3rwhflpy4q06z"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -10024,14 +10051,7 @@ or response body.")
        #:cargo-development-inputs
        (("rust-chrono" ,rust-chrono-0.4)
         ("rust-rand" ,rust-rand-0.4)
-        ("rust-time" ,rust-time-0.1))))
-    (home-page "https://github.com/tailhook/humantime")
-    (synopsis
-     "Parser and formatter for Duration and SystemTime")
-    (description
-     "A parser and formatter for @code{std::time::{Duration,
-SystemTime}}.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-time" ,rust-time-0.1))))))
 
 (define-public rust-hyper-0.12
   (package
