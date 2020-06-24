@@ -12077,10 +12077,10 @@ by inspecting the system for user preference.")
 key-value pairs.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-lscolors-0.6
+(define-public rust-lscolors-0.7
   (package
     (name "rust-lscolors")
-    (version "0.6.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
@@ -12089,7 +12089,7 @@ key-value pairs.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0jxsgkn378kxkiqdshdjdclw5wwp2xaz45cqd3yw85fhn8a38fza"))))
+         "0vn1824lagf0xdv5rxyl7m9fbrcylyjibmnd4634dnn98m68jjyj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -12101,6 +12101,21 @@ key-value pairs.")
     (description
      "Colorize paths using the LS_COLORS environment variable.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-lscolors-0.6
+  (package
+    (inherit rust-lscolors-0.7)
+    (name "rust-lscolors")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lscolors" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jxsgkn378kxkiqdshdjdclw5wwp2xaz45cqd3yw85fhn8a38fza"))))))
 
 (define-public rust-lyon-geom-0.14
   (package
