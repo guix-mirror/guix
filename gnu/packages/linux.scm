@@ -3788,13 +3788,14 @@ particular the @code{perf} command.")
     (name "pflask")
     (version "0.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ghedo/pflask/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ghedo/pflask")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g8fjj67dfkc2s0852l9vqi1pm61gp4rxbpzbzg780f5s5hd1fys"))))
+                "1jikjbhlxlqracnai3v9krzcgd2xwp0p4adw5n07yxc7b857damz"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
