@@ -15590,7 +15590,7 @@ synchronization primitives.")
 (define-public rust-pcre2-0.2
   (package
     (name "rust-pcre2")
-    (version "0.2.1")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
@@ -15599,14 +15599,14 @@ synchronization primitives.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "103i66a998g1fjrqf9sdyvi8qi83hwglz3pjdcq9n2r207hsagb0"))))
+         "1c8sn70h72llf26sya9v26zmaamq350q57nwv6fl6fwhd4phzcw5"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-pcre2-sys" ,rust-pcre2-sys-0.2)
-        ("rust-thread-local" ,rust-thread-local-0.3))))
+        ("rust-thread-local" ,rust-thread-local-1.0))))
     (native-inputs
      `(("pcre2" ,pcre2)
        ("pkg-config" ,pkg-config)))
