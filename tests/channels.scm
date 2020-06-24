@@ -402,6 +402,27 @@
                          (channel-news-for-commit channel commit5 commit1))
                     '(#f "tag-for-first-news-entry")))))))
 
+(unless (which (git-command)) (test-skip 1))
+(test-assert "latest-channel-instances, missing introduction for 'guix'"
+  (with-temporary-git-repository directory
+      '((add "a.txt" "A")
+        (commit "first commit")
+        (add "b.scm" "#t")
+        (commit "second commit"))
+    (with-repository directory repository
+      (let* ((commit1 (find-commit repository "first"))
+             (commit2 (find-commit repository "second"))
+             (channel (channel (url (string-append "file://" directory))
+                               (name 'guix))))
+
+        (guard (c ((message-condition? c)
+                   (->bool (string-contains (condition-message c)
+                                            "introduction"))))
+          (with-store store
+            ;; Attempt a downgrade from NEW to OLD.
+            (latest-channel-instances store (list channel))
+            #f))))))
+
 (unless (gpg+git-available?) (test-skip 1))
 (test-equal "authenticate-channel, wrong first commit signer"
   #t

@@ -406,9 +406,16 @@ their relation.  When AUTHENTICATE? is false, CHANNEL is not authenticated."
             ;; TODO: Warn for all the channels once the authentication interface
             ;; is public.
             (when (guix-channel? channel)
-              (warning (G_ "channel '~a' lacks an introduction and \
-cannot be authenticated~%")
-                       (channel-name channel))))
+              (raise (condition
+                      (&message
+                       (message (format #f (G_ "channel '~a' lacks an \
+introduction and cannot be authenticated~%")
+                                        (channel-name channel))))
+                      (&fix-hint
+                       (hint (G_ "Add the missing introduction to your
+channels file to address the issue.  Alternatively, you can pass
+@option{--disable-authentication}, at the risk of running unauthenticated and
+thus potentially malicious code.")))))))
         (warning (G_ "channel authentication disabled~%")))
 
     (when (guix-channel? channel)
