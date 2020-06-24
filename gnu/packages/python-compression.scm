@@ -259,6 +259,7 @@ wrapper.  It provides a backport of the @code{Path} object.")
   (hidden-package
    (package/inherit
     python2-zipp
+    (name "python2-zipp-bootstrap")
     (arguments
      `(#:tests? #f
        ,@(package-arguments python2-zipp)))
