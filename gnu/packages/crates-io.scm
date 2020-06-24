@@ -648,33 +648,6 @@ text or blue underlined text, on ANSI terminals.")
     (description "This package provides an atomically swappable Arc.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-arc-swap-0.3
-  (package
-    (inherit rust-arc-swap-0.4)
-    (name "rust-arc-swap")
-    (version "0.3.11")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "arc-swap" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0ha8724dpki985v52ifq5sd98xvpa5q51hyma52di75dbqbn4imw"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
-       (("rust-crossbeam" ,rust-crossbeam-0.7)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
-        ("rust-itertools" ,rust-itertools-0.8)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-model" ,rust-model-0.1)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
-        ("rust-parking-lot" ,rust-parking-lot-0.8)
-        ("rust-proptest" ,rust-proptest-0.9)
-        ("rust-version-sync" ,rust-version-sync-0.8))))))
-
 (define-public rust-arg-enum-proc-macro-0.3
   (package
     (name "rust-arg-enum-proc-macro")
