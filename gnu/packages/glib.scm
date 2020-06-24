@@ -68,7 +68,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (srfi srfi-1)
+  #:use-module ((srfi srfi-1) #:hide (zip))
 
   ;; Export variables up-front to allow circular dependency with the 'xorg'
   ;; module.
