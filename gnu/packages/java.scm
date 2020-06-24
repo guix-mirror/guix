@@ -7359,8 +7359,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
      `(("junit" ,java-junit)))
     (propagated-inputs
      `(("java-stringtemplate" ,java-stringtemplate-3)
-       ("antlr" ,antlr2)
-       ("antlr3" ,antlr3-3.1)))))
+       ("antlr" ,antlr2)))))
 
 (define-public antlr3-3.1
   (package
