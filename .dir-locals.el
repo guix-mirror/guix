@@ -90,9 +90,9 @@
    (eval . (put 'let-system 'scheme-indent-function 1))
 
    (eval . (put 'with-database 'scheme-indent-function 2))
-   (eval . (put 'call-with-transaction 'scheme-indent-function 2))
+   (eval . (put 'call-with-transaction 'scheme-indent-function 1))
    (eval . (put 'with-statement 'scheme-indent-function 3))
-   (eval . (put 'call-with-retrying-transaction 'scheme-indent-function 2))
+   (eval . (put 'call-with-retrying-transaction 'scheme-indent-function 1))
    (eval . (put 'call-with-savepoint 'scheme-indent-function 1))
    (eval . (put 'call-with-retrying-savepoint 'scheme-indent-function 1))
 
