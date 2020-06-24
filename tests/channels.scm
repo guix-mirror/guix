@@ -403,7 +403,8 @@
                     '(#f "tag-for-first-news-entry")))))))
 
 (unless (gpg+git-available?) (test-skip 1))
-(test-assert "authenticate-channel, wrong first commit signer"
+(test-equal "authenticate-channel, wrong first commit signer"
+  #t
   (with-fresh-gnupg-setup (list %ed25519-public-key-file
                                 %ed25519-secret-key-file
                                 %ed25519bis-public-key-file
@@ -422,9 +423,13 @@
           (add "signer.key" ,(call-with-input-file %ed25519-public-key-file
                                get-string-all))
           (commit "first commit"
+                  (signer ,(key-fingerprint %ed25519-public-key-file)))
+          (add "random" ,(random-text))
+          (commit "second commit"
                   (signer ,(key-fingerprint %ed25519-public-key-file))))
       (with-repository directory repository
         (let* ((commit1 (find-commit repository "first"))
+               (commit2 (find-commit repository "second"))
                (intro   ((@@ (guix channels) make-channel-introduction)
                          (commit-id-string commit1)
                          (openpgp-public-key-fingerprint
@@ -434,11 +439,11 @@
                (channel (channel (name 'example)
                                  (url (string-append "file://" directory))
                                  (introduction intro))))
-          (guard (c ((message? c)
+          (guard (c ((message-condition? c)
                      (->bool (string-contains (condition-message c)
                                               "initial commit"))))
             (authenticate-channel channel directory
-                                  (commit-id-string commit1)
+                                  (commit-id-string commit2)
                                   #:keyring-reference-prefix "")
             'failed))))))
 
