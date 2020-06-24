@@ -71,6 +71,9 @@
             channel-introduction?
             ;; <channel-introduction> accessors purposefully omitted for now.
 
+            openpgp-fingerprint->bytevector
+            openpgp-fingerprint
+
             %default-channels
             guix-channel?
 
@@ -134,6 +137,23 @@
   (first-commit-signer  channel-introduction-first-commit-signer) ;bytevector
   (signature            channel-introduction-signature))          ;string
 
+(define (openpgp-fingerprint->bytevector str)
+  "Convert STR, an OpenPGP fingerprint (hexadecimal string with whitespace),
+to the corresponding bytevector."
+  (base16-string->bytevector
+   (string-downcase (string-filter char-set:hex-digit str))))
+
+(define-syntax openpgp-fingerprint
+  (lambda (s)
+    "Convert STR, an OpenPGP fingerprint (hexadecimal string with whitespace),
+to the corresponding bytevector."
+    (syntax-case s ()
+      ((_ str)
+       (string? (syntax->datum #'str))
+       (openpgp-fingerprint->bytevector (syntax->datum #'str)))
+      ((_ str)
+       #'(openpgp-fingerprint->bytevector str)))))
+
 (define %guix-channel-introduction
   ;; Introduction of the official 'guix channel.  The chosen commit is the
   ;; first one that introduces '.guix-authorizations' on the 'staging'
@@ -142,11 +162,8 @@
   ;; & co.
   (make-channel-introduction
    "9edb3f66fd807b096b48283debdcddccfea34bad"     ;2020-05-26
-   (base16-string->bytevector
-    (string-downcase
-     (string-filter char-set:hex-digit            ;mbakke
-                    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
-   #f))                   ;TODO: Add an intro signature so it can be exported.
+   (openpgp-fingerprint                           ;mbakke
+    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
 
 (define %default-channel-url
   ;; URL of the default 'guix' channel.
