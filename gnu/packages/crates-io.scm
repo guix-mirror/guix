@@ -9300,7 +9300,7 @@ the regex engine it uses pluggable.")
 (define-public rust-grep-printer-0.1
   (package
     (name "rust-grep-printer")
-    (version "0.1.3")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
@@ -9309,12 +9309,11 @@ the regex engine it uses pluggable.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0mxc1yx5sx89f00imlm5d3hxwdgglv9rzwdki8ba50gvq8a2nr8m"))))
+         "004xv2bb52x801n0m1pknkdmzcjbi9fk9625m49y9s0ghh6d8d3z"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-base64" ,rust-base64-0.10)
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.12)
         ("rust-bstr" ,rust-bstr-0.2)
         ("rust-grep-matcher" ,rust-grep-matcher-0.1)
         ("rust-grep-searcher" ,rust-grep-searcher-0.1)
