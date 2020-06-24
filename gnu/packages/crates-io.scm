@@ -240,7 +240,7 @@ the Rust programming language.")
 (define-public rust-aho-corasick-0.7
   (package
     (name "rust-aho-corasick")
-    (version "0.7.10")
+    (version "0.7.13")
     (source
      (origin
        (method url-fetch)
@@ -249,7 +249,7 @@ the Rust programming language.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1nka9509afjgal6lpymn8w2lq11dmjwxs8yjcmzys966if5l05l7"))))
+         "11hfmqf90rdvjdpk0x1lixw1s9n08y3fxfy9zqsk0k2wpbc68c84"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-memchr" ,rust-memchr-2.3))
