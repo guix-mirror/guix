@@ -9171,7 +9171,7 @@ store.
 @section Invoking @command{guix hash}
 
 @cindex @command{guix hash}
-The @command{guix hash} command computes the SHA256 hash of a file.
+The @command{guix hash} command computes the hash of a file.
 It is primarily a convenience tool for anyone contributing to the
 distribution: it computes the cryptographic hash of a file, which can be
 used in the definition of a package (@pxref{Defining Packages}).
