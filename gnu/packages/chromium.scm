@@ -248,6 +248,12 @@
     "v8/third_party/inspector_protocol" ;BSD-3
     "v8/third_party/v8/builtins")) ;PSFL
 
+(define %blacklisted-files
+  ;; 'third_party/blink/perf_tests/resources/svg/HarveyRayner.svg' carries a
+  ;; nonfree license according to LICENSES in the same directory.  As we don't
+  ;; run the Blink performance tests, just remove everything to save ~24MiB.
+  '("third_party/blink/perf_tests"))
+
 (define %chromium-version "83.0.4103.116")
 (define %ungoogled-revision "f08ce8b3f1300ef0750b5d6bf967b9cbbfd9a56d")
 (define %debian-revision "debian/81.0.4044.92-1")
@@ -340,13 +346,6 @@
            "PATH" '("bin")
            (list #+patch #+python-wrapper #+xz))
 
-          (format #t "Removing non-free file...~%")
-          (force-output)
-          ;; This file has a CC-BY-NC clause according to LICENSES from
-          ;; the same directory, making it non-free.
-          (delete-file
-           "third_party/blink/perf_tests/svg/resources/HarveyRayner.svg")
-
           ;; Apply patches before running the ungoogled scripts because
           ;; domain substitution may break some of the patches.
           (format #t "Applying assorted build fixes...~%")
@@ -373,6 +372,12 @@
             (invoke "python" "utils/domain_substitution.py" "apply" "-r"
                     "domain_regex.list" "-f" "domain_substitution.list"
                     "-c" "/tmp/domainscache.tar.gz" chromium-dir))
+
+          ;; Run after the ungoogled scripts to avoid interfering with
+          ;; patches or file lists.
+          (format #t "Removing blacklisted files...~%")
+          (force-output)
+          (for-each delete-file-recursively '#$%blacklisted-files)
 
           (format #t "Pruning third party files...~%")
           (force-output)
