@@ -6002,6 +6002,25 @@ Ruby classes.")
     (home-page "https://ms-ati.github.io/docile/")
     (license license:expat)))
 
+(define-public ruby-middleware
+  (package
+    (name "ruby-middleware")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "middleware" version))
+       (sha256
+        (base32
+         "0703nkf2v371wqr41c04x5qid7ww45cxqv3hnlg07if3b3xrm9xl"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f))          ;no test suite
+    (synopsis "Implementation of a middleware abstraction for Ruby")
+    (description "Middleware is a generalized implementation of a middleware
+abstraction for Ruby.")
+    (home-page "https://github.com/mitchellh/middleware")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
