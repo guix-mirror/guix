@@ -900,3 +900,31 @@ bound by synchronicity.  Kick off builds and test suites using one of several
 asynchronous adapters (including tmux, screen, and a headless mode), and when
 the job completes, errors will be loaded and parsed automatically.")
     (license license:vim)))
+
+(define-public vim-eunuch
+  (let ((commit "33e875b31c8b811a0a47908884a5e2339106bbe8")
+        (revision "1"))
+    (package
+      (name "vim-eunuch")
+      (version (git-version "1.2" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/tpope/vim-eunuch")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1xadb22kd40swmww0qxmmkcpcq6viy8l167pjck5q32hfngll5d3"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan
+         '(("doc" "share/vim/vimfiles/")
+           ("plugin" "share/vim/vimfiles/"))))
+      (home-page "https://github.com/tpope/vim-eunuch")
+      (synopsis "Vim sugar for the UNIX shell commands")
+      (description "Vim sugar for the UNIX shell commands that need it the most.
+This package includes commands such as @code{SudoWrite} and @code{SudoEdit} and
+help working on Vim buffers and the files they reference with one command.")
+      (license license:vim))))
