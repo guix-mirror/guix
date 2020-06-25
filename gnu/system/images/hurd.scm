@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
            (offset root-offset)
            (label root-label)
            (file-system "ext2")
+           (file-system-options '("-o" "hurd" "-O" "ext_attr"))
            (flags '(boot))
            (initializer (gexp initialize-root-partition)))))))
 
