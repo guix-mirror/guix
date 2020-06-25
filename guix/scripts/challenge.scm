@@ -416,9 +416,9 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
       --substitute-urls=URLS
                          compare build results with those at URLS"))
   (display (G_ "
-      -v, --verbose      show details about successful comparisons"))
+  -v, --verbose          show details about successful comparisons"))
   (display (G_ "
-          --diff=MODE    show differences according to MODE"))
+      --diff=MODE        show differences according to MODE"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
