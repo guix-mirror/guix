@@ -23846,6 +23846,35 @@ as a plug-and-play solution for anyone already using Org mode for their
 personal wiki.")
     (license license:gpl3+)))
 
+(define-public emacs-org-generate
+  (package
+    (name "emacs-org-generate")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/conao3/org-generate.el.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0z2frp5mn3lp2xskwanw2rncrwa50x3aphy87vfxmhx4fqlqrzy8"))))
+    (inputs
+     `(("emacs-cort" ,emacs-cort))) ;tests suite
+    (propagated-inputs
+     `(("emacs-mustache" ,emacs-mustache)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch" "--quick"
+                        "--directory=." "--load=org-generate-tests.el"
+                        "--funcall=cort-test-run")))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/conao3/org-generate.el")
+    (synopsis "Generate template files and folders from Org document")
+    (description "This package allows to generate files and folders from Emacs
+org-mode templates.")
+    (license license:gpl3+)))
+
 (define-public emacs-uml-mode
   ;; Package has no release.  Version is extracted from "Version:" keyword in
   ;; main file.
