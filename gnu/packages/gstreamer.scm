@@ -122,6 +122,59 @@ applications that want audio visualisation and audio visualisation plugins.")
       ;; Examples and Tests.
       license:gpl2+))))
 
+(define-public libvisual-plugins
+  (package
+    (name "libvisual-plugins")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Libvisual/libvisual.git")
+         (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02xwakwkqjsznc03pjlb6hcv1li1gw3r8xvyswqsm4msix5xq18a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-gstreamer-plugin"
+        "--disable-corona"
+        "--disable-gforce"
+        (string-append "--with-plugins-base-dir=" (assoc-ref %outputs "out")
+                       "/lib/libvisual-0.4"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The package is in a sub-dir of this repo.
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "libvisual-plugins")
+             #t)))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
+       ("libintl" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("esound" ,esound)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("gtk+" ,gtk+-2)
+       ("jack" ,jack-2)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (propagated-inputs
+     `(("libvisual" ,libvisual)))
+    (synopsis "Audio visualisation library")
+    (description "Libvisual is a library that acts as a middle layer between
+applications that want audio visualisation and audio visualisation plugins.")
+    (home-page "http://libvisual.org/")
+    (license license:gpl2+)))
+
 (define-public esound
   (package
     (name "esound")
