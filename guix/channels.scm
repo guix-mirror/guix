@@ -851,8 +851,9 @@ derivation."
   "Return a profile manifest with entries for all of INSTANCES, a list of
 channel instances."
   (define (instance->entry instance drv)
-    (let ((commit  (channel-instance-commit instance))
-          (channel (channel-instance-channel instance)))
+    (let* ((commit  (channel-instance-commit instance))
+           (channel (channel-instance-channel instance))
+           (intro   (channel-introduction channel)))
       (manifest-entry
         (name (symbol->string (channel-name channel)))
         (version (string-take commit 7))
@@ -867,7 +868,19 @@ channel instances."
                     (version 0)
                     (url ,(channel-url channel))
                     (branch ,(channel-branch channel))
-                    (commit ,commit))))))))
+                    (commit ,commit)
+                    ,@(if intro
+                          `((introduction
+                             (channel-introduction
+                              (version 0)
+                              (commit
+                               ,(channel-introduction-first-signed-commit
+                                 intro))
+                              (signer
+                               ,(openpgp-format-fingerprint
+                                 (channel-introduction-first-commit-signer
+                                  intro))))))
+                          '()))))))))
 
   (mlet* %store-monad ((derivations (channel-instance-derivations instances))
                        (entries ->  (map instance->entry instances derivations)))
@@ -935,17 +948,30 @@ to 'latest-channel-instances'."
 (define (profile-channels profile)
   "Return the list of channels corresponding to entries in PROFILE.  If
 PROFILE is not a profile created by 'guix pull', return the empty list."
+  (define sexp->channel-introduction
+    (match-lambda
+      (('channel-introduction ('version 0)
+                              ('commit commit) ('signer signer)
+                              _ ...)
+       (make-channel-introduction commit (openpgp-fingerprint signer)))
+      (x #f)))
+
   (filter-map (lambda (entry)
                 (match (assq 'source (manifest-entry-properties entry))
                   (('source ('repository ('version 0)
                                          ('url url)
                                          ('branch branch)
                                          ('commit commit)
-                                         _ ...))
+                                         rest ...))
                    (channel (name (string->symbol
                                    (manifest-entry-name entry)))
                             (url url)
-                            (commit commit)))
+                            (commit commit)
+                            (introduction
+                             (match (assq 'introduction rest)
+                               (#f #f)
+                               (('introduction intro)
+                                (sexp->channel-introduction intro))))))
 
                   ;; No channel information for this manifest entry.
                   ;; XXX: Pre-0.15.0 Guix did not provide that information,
