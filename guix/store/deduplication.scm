@@ -94,6 +94,20 @@ LINK-PREFIX."
             (try (tempname-in link-prefix))
             (apply throw args))))))
 
+(define (call-with-writable-file file thunk)
+  (let ((stat (lstat file)))
+    (dynamic-wind
+      (lambda ()
+        (make-file-writable file))
+      thunk
+      (lambda ()
+        (set-file-time file stat)
+        (chmod file (stat:mode stat))))))
+
+(define-syntax-rule (with-writable-file file exp ...)
+  "Make FILE writable for the dynamic extent of EXP..."
+  (call-with-writable-file file (lambda () exp ...)))
+
 ;; There are 3 main kinds of errors we can get from hardlinking: "Too many
 ;; things link to this" (EMLINK), "this link already exists" (EEXIST), and
 ;; "can't fit more stuff in this directory" (ENOSPC).
@@ -120,20 +134,14 @@ Note: TARGET, TO-REPLACE, and SWAP-DIRECTORY must be on the same file system."
   ;; If we couldn't create TEMP-LINK, that's OK: just don't do the
   ;; replacement, which means TO-REPLACE won't be deduplicated.
   (when temp-link
-    (let* ((parent (dirname to-replace))
-           (stat   (stat parent)))
-      (make-file-writable parent)
+    (with-writable-file (dirname to-replace)
       (catch 'system-error
         (lambda ()
           (rename-file temp-link to-replace))
         (lambda args
           (delete-file temp-link)
           (unless (= EMLINK (system-error-errno args))
-            (apply throw args))))
-
-      ;; Restore PARENT's mtime and permissions.
-      (set-file-time parent stat)
-      (chmod parent (stat:mode stat)))))
+            (apply throw args)))))))
 
 (define* (deduplicate path hash #:key (store %store-directory))
   "Check if a store item with sha256 hash HASH already exists.  If so,
