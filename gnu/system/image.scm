@@ -96,13 +96,6 @@
    (flags '(boot))
    (initializer (gexp initialize-root-partition))))
 
-(define hurd-initialize-root-partition
-  #~(lambda* (#:rest args)
-      (apply initialize-root-partition
-             (append args
-                     (list #:make-device-nodes
-                           make-hurd-device-nodes)))))
-
 (define efi-disk-image
   (image
    (format 'disk-image)

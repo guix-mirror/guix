@@ -57,6 +57,13 @@
                               (password-authentication? #t)))
                %base-services/hurd))))
 
+(define hurd-initialize-root-partition
+  #~(lambda* (#:rest args)
+      (apply initialize-root-partition
+             (append args
+                     (list #:make-device-nodes
+                           make-hurd-device-nodes)))))
+
 (define hurd-disk-image
   (image
    (format 'disk-image)
@@ -69,7 +76,7 @@
            (file-system "ext2")
            (file-system-options '("-o" "hurd" "-O" "ext_attr"))
            (flags '(boot))
-           (initializer (gexp initialize-root-partition)))))))
+           (initializer hurd-initialize-root-partition))))))
 
 (define hurd-barebones-disk-image
   (image
