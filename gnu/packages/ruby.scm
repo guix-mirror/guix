@@ -6021,6 +6021,27 @@ abstraction for Ruby.")
     (home-page "https://github.com/mitchellh/middleware")
     (license license:expat)))
 
+(define-public ruby-benchmark-ips
+  (package
+    (name "ruby-benchmark-ips")
+    (version "2.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "benchmark-ips" version))
+       (sha256
+        (base32
+         "1n9397j7kh4vvikfann1467qgksc679imlr50hax3lk1q3af8kdw"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Iterations per second enhancement for the Ruby Benchmark module")
+    (description "Benchmark-ips enhances the Ruby Benchmark module with the
+iterations per second count.  For short snippets of code, it can automatically
+figure out how many times to run the code to get interesting data.")
+    (home-page "https://github.com/evanphx/benchmark-ips")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
