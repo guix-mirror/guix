@@ -143,7 +143,7 @@ Note: TARGET, TO-REPLACE, and SWAP-DIRECTORY must be on the same file system."
           (unless (= EMLINK (system-error-errno args))
             (apply throw args)))))))
 
-(define* (deduplicate path hash #:key (store %store-directory))
+(define* (deduplicate path hash #:key (store (%store-directory)))
   "Check if a store item with sha256 hash HASH already exists.  If so,
 replace PATH with a hardlink to the already-existing one.  If not, register
 PATH so that future duplicates can hardlink to it.  PATH is assumed to be
