@@ -4094,7 +4094,7 @@ intrinsics.")
        #:cargo-inputs
         (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
         #:cargo-development-inputs
-        (("rust-num-cpus" ,rust-num-cpus-1.10)
+        (("rust-num-cpus" ,rust-num-cpus-1.11)
          ("rust-rand" ,rust-rand-0.6)
          ("rust-signal-hook" ,rust-signal-hook-0.1))))
     (home-page
@@ -4126,7 +4126,7 @@ intrinsics.")
        #:cargo-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
        #:cargo-development-inputs
-       (("rust-num-cpus" ,rust-num-cpus-1.10)
+       (("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-signal-hook" ,rust-signal-hook-0.1))))))
 
@@ -7509,7 +7509,7 @@ the computation on the threads themselves.")
        (("rust-futures-channel-preview" ,rust-futures-channel-preview-0.3)
         ("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
         ("rust-futures-util-preview" ,rust-futures-util-preview-0.3)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-pin-utils" ,rust-pin-utils-0.1))))
     (home-page "https://github.com/rust-lang/futures-rs")
     (synopsis
@@ -8343,8 +8343,7 @@ retrieving random data from system source.")
          "0ma1zg2klqr47rasm7jn3zzd1j1pj2a8wkfbv5zsx10qh43phy4k"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-arrayvec" ,rust-arrayvec-0.4)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
@@ -8354,7 +8353,7 @@ retrieving random data from system source.")
        (("rust-crossbeam" ,rust-crossbeam-0.7)
         ("rust-getopts" ,rust-getopts-0.2)
         ("rust-memmap" ,rust-memmap-0.7)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-object" ,rust-object-0.12)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-regex" ,rust-regex-1)
@@ -10099,7 +10098,7 @@ SystemTime}}.")
         ("rust-want" ,rust-want-0.2))
        #:cargo-development-inputs
        (("rust-futures-timer" ,rust-futures-timer-0.1)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.3)
         ("rust-serde" ,rust-serde-1.0)
@@ -10948,7 +10947,7 @@ primitives to an @code{io::Write}.")
        (("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
        (("rust-futures" ,rust-futures-0.1)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-tempdir" ,rust-tempdir-0.3)
         ("rust-tokio-core" ,rust-tokio-core-0.1)
         ("rust-tokio-process" ,rust-tokio-process-0.2))))
@@ -13945,25 +13944,6 @@ including bigint, complex, rational, range iterators, generic integers, and more
      "Get the number of CPUs on a machine.")
     (license (list license:asl2.0
                    license:expat))))
-
-(define-public rust-num-cpus-1.10
-  (package
-    (inherit rust-num-cpus-1.11)
-    (name "rust-num-cpus")
-    (version "1.10.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "num_cpus" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "0wrj3zvj6h3q26sqj9zxpd59frjb54n7jhjwf307clq31ic47vxw"))))
-    (arguments
-     `(#:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2))
-       #:cargo-development-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3))))))
 
 (define-public rust-num-derive-0.3
   (package
@@ -23949,7 +23929,7 @@ in Rust.")
         ("rust-mio" ,rust-mio-0.6)
         ("rust-mio-named-pipes" ,rust-mio-named-pipes-0.1)
         ("rust-mio-uds" ,rust-mio-uds-0.6)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-parking-lot" ,rust-parking-lot-0.10)
         ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
         ("rust-signal-hook-registry" ,rust-signal-hook-registry-1.2)
@@ -23984,13 +23964,12 @@ backed applications.")
          "11ra8jp3fj70a2zrqmd6as7wgpwiiyzjf50gz89i8r7wpksgqbzc"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.4)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-mio" ,rust-mio-0.6)
         ("rust-miow" ,rust-miow-0.3)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-tokio-codec" ,rust-tokio-codec-0.1)
         ("rust-tokio-current-thread" ,rust-tokio-current-thread-0.1)
         ("rust-tokio-executor" ,rust-tokio-executor-0.1)
@@ -24005,13 +23984,13 @@ backed applications.")
         ("rust-tokio-udp" ,rust-tokio-udp-0.1)
         ("rust-tokio-uds" ,rust-tokio-uds-0.2))
        #:cargo-development-inputs
-       (("rust-env-logger" ,rust-env-logger-0.6)
+       (("rust-env-logger" ,rust-env-logger-0.5)
         ("rust-flate2" ,rust-flate2-1.0)
         ("rust-futures-cpupool" ,rust-futures-cpupool-0.1)
         ("rust-http" ,rust-http-0.1)
         ("rust-httparse" ,rust-httparse-1.3)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
@@ -24090,8 +24069,7 @@ backed applications.")
          "0wbgg59mxfvrhzv97y56nh3gmnmw3jj9dhgkmvz27410jjxzpvxf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.4)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-iovec" ,rust-iovec-0.1)
@@ -24110,7 +24088,7 @@ backed applications.")
         ("rust-http" ,rust-http-0.1)
         ("rust-httparse" ,rust-httparse-1.3)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
@@ -24254,10 +24232,9 @@ the current thread.")
          "17lrjj7lcw13wchpbvr8cynmypd29h40clf9qxabh6fxva40kwm5"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-executor" ,rust-tokio-executor-0.1))
        #:cargo-development-inputs
@@ -24420,21 +24397,20 @@ futures.")
          "1khip64cn63xvayq1db68kxcnhgw3cb449a4n2lbw4p1qzx6pwba"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-mio" ,rust-mio-0.6)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-parking-lot" ,rust-parking-lot-0.7)
         ("rust-slab" ,rust-slab-0.4)
         ("rust-tokio-executor" ,rust-tokio-executor-0.1)
         ("rust-tokio-io" ,rust-tokio-io-0.1)
         ("rust-tokio-sync" ,rust-tokio-sync-0.1))
        #:cargo-development-inputs
-       (("rust-num-cpus" ,rust-num-cpus-1.10)
+       (("rust-num-cpus" ,rust-num-cpus-1.11)
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-io-pool" ,rust-tokio-io-pool-0.1))))
     (home-page "https://tokio.rs")
@@ -24612,19 +24588,19 @@ futures.")
          "1wkj3wixicsqvllm8w74b24knw6mdn00zslm8l9fm1p81gr8lmbj"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
         ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-log" ,rust-log-0.4)
-        ("rust-num-cpus" ,rust-num-cpus-1.10)
-        ("rust-rand" ,rust-rand-0.4)
+        ("rust-num-cpus" ,rust-num-cpus-1.11)
+        ("rust-rand" ,rust-rand-0.6)
         ("rust-slab" ,rust-slab-0.4)
         ("rust-tokio-executor" ,rust-tokio-executor-0.1))
        #:cargo-development-inputs
-       (("rust-env-logger" ,rust-env-logger-0.6)
+       (("rust-env-logger" ,rust-env-logger-0.5)
         ("rust-futures-cpupool" ,rust-futures-cpupool-0.1)
         ("rust-threadpool" ,rust-threadpool-1.7))))
     (home-page "https://github.com/tokio-rs/tokio")
