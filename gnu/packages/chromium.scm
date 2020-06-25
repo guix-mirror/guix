@@ -248,19 +248,6 @@
     "v8/third_party/inspector_protocol" ;BSD-3
     "v8/third_party/v8/builtins")) ;PSFL
 
-(define* (computed-origin-method gexp-promise hash-algo hash
-                                 #:optional (name "source")
-                                 #:key (system (%current-system))
-                                 (guile (default-guile)))
-  "Return a derivation that executes the G-expression that results
-from forcing GEXP-PROMISE."
-  (mlet %store-monad ((guile (package->derivation guile system)))
-    (gexp->derivation (or name "computed-origin")
-                      (force gexp-promise)
-                      #:graft? #f       ;nothing to graft
-                      #:system system
-                      #:guile-for-build guile)))
-
 (define %chromium-version "83.0.4103.116")
 (define %ungoogled-revision "f08ce8b3f1300ef0750b5d6bf967b9cbbfd9a56d")
 (define %debian-revision "debian/81.0.4044.92-1")
@@ -328,16 +315,6 @@ from forcing GEXP-PROMISE."
         (debian-patch "system/openjpeg.patch" %debian-revision
                       "0zd6v5njx1pc7i0y6mslxvpx5j4cq01mmyx55qcqx8qzkm0gm48j")))
 
-(define %chromium-origin
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://commondatastorage.googleapis.com"
-                        "/chromium-browser-official/chromium-"
-                        %chromium-version ".tar.xz"))
-    (sha256
-     (base32
-      "1hravbi1lazmab2mih465alfzji1kzy38zya1visbwz9zs6pw35v"))))
-
 (define %ungoogled-origin
   (origin
     (method git-fetch)
@@ -349,106 +326,69 @@ from forcing GEXP-PROMISE."
      (base32
       "0kc40p8f7cls696gh6ign37l8j4x1pyyz32jkkli9cmrpbsjsadl"))))
 
-;; This is a "computed" origin that does the following:
-;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
-;; *) Applies Debians Chromium patches, for their unbundling and GCC work.
+;; This is a source 'snippet' that does the following:
+;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
+;; *) Runs the ungoogled patch-, domain substitution-, and scrubbing scripts.
 ;; *) Prunes all third_party directories that are not explicitly preserved.
 ;; *) Adjusts "GN" build files such that system libraries are preferred.
-(define ungoogled-chromium-source
-  (let ((chromium-source %chromium-origin)
-        (ungoogled-source %ungoogled-origin))
-    (origin
-      (method computed-origin-method)
-      (file-name (string-append "ungoogled-chromium-" %package-version ".tar.xz"))
-      (sha256 #f)
-      (uri
-       (delay
-         (with-imported-modules '((guix build utils))
-           #~(begin
-               (use-modules (guix build utils)
-                            (ice-9 rdelim)
-                            (srfi srfi-1)
-                            (srfi srfi-26))
-               (let ((chromium-dir    (string-append "chromium-" #$%chromium-version))
-                     (preserved-files '#$%preserved-third-party-files))
+(define ungoogled-chromium-snippet
+  ;; Note: delay to cope with cyclic module imports at the top level.
+  (delay
+    #~(begin
+        (let ((chromium-dir (getcwd)))
+          (set-path-environment-variable
+           "PATH" '("bin")
+           (list #+patch #+python-wrapper #+xz))
 
-                 (set-path-environment-variable
-                  "PATH" '("bin")
-                  (list #+(canonical-package patch)
-                        #+(canonical-package xz)
-                        #+(canonical-package tar)
-                        #+python-wrapper))
+          (format #t "Removing non-free file...~%")
+          (force-output)
+          ;; This file has a CC-BY-NC clause according to LICENSES from
+          ;; the same directory, making it non-free.
+          (delete-file
+           "third_party/blink/perf_tests/svg/resources/HarveyRayner.svg")
 
-                 (copy-recursively #+ungoogled-source "/tmp/ungoogled")
+          ;; Apply patches before running the ungoogled scripts because
+          ;; domain substitution may break some of the patches.
+          (format #t "Applying assorted build fixes...~%")
+          (force-output)
+          (for-each (lambda (patch)
+                      (invoke "patch" "-p1" "--force" "--input"
+                              patch "--no-backup-if-mismatch"))
+                    (append
+                     '#+%gentoo-patches '#+%debian-patches
+                     '#+(list (local-file
+                               (search-patch
+                                "ungoogled-chromium-system-jsoncpp.patch"))
+                              (local-file
+                               (search-patch
+                                "ungoogled-chromium-system-zlib.patch")))))
 
-                 (with-directory-excursion "/tmp/ungoogled"
+          (with-directory-excursion #+%ungoogled-origin
+            (format #t "Ungooglifying...~%")
+            (force-output)
+            (invoke "python" "utils/prune_binaries.py" chromium-dir
+                    "pruning.list")
+            (invoke "python" "utils/patches.py" "apply"
+                    chromium-dir "patches")
+            (invoke "python" "utils/domain_substitution.py" "apply" "-r"
+                    "domain_regex.list" "-f" "domain_substitution.list"
+                    "-c" "/tmp/domainscache.tar.gz" chromium-dir))
 
-                   (format #t "Unpacking chromium tarball...~%")
-                   (force-output)
-                   (invoke "tar" "xf" #+chromium-source)
+          (format #t "Pruning third party files...~%")
+          (force-output)
+          (apply invoke (string-append #+python-2 "/bin/python")
+                 "build/linux/unbundle/remove_bundled_libraries.py"
+                 "--do-remove" '#$%preserved-third-party-files)
 
-                   (with-directory-excursion chromium-dir
-                     (format #t "Removing non-free file...~%")
-                     (force-output)
-                     ;; This file has a CC-BY-NC clause according to LICENSES from
-                     ;; the same directory, making it non-free.
-                     (delete-file
-                      "third_party/blink/perf_tests/svg/resources/HarveyRayner.svg")
-
-                     ;; Apply patches before running the ungoogled scripts because
-                     ;; domain substitution may break some of the patches.
-                     (format #t "Applying assorted build fixes...~%")
-                     (force-output)
-                     (for-each
-                      (lambda (patch)
-                        (invoke "patch" "-p1" "--force" "--input"
-                                patch "--no-backup-if-mismatch"))
-                      (append
-                       '#+%gentoo-patches '#+%debian-patches
-                       '#+(list (local-file
-                                 (search-patch
-                                  "ungoogled-chromium-system-jsoncpp.patch"))
-                                (local-file
-                                 (search-patch
-                                  "ungoogled-chromium-system-zlib.patch"))))))
-
-                   (format #t "Ungooglifying...~%")
-                   (force-output)
-                   (invoke "python" "utils/prune_binaries.py" chromium-dir
-                           "pruning.list")
-                   (invoke "python" "utils/patches.py" "apply"
-                           chromium-dir "patches")
-                   (invoke "python" "utils/domain_substitution.py" "apply" "-r"
-                           "domain_regex.list" "-f" "domain_substitution.list"
-                           "-c" "/tmp/domainscache.tar.gz" chromium-dir)
-
-                   (with-directory-excursion chromium-dir
-                     (format #t "Pruning third party files...~%")
-                     (force-output)
-                     (apply invoke (string-append #+python-2 "/bin/python")
-                            "build/linux/unbundle/remove_bundled_libraries.py"
-                            "--do-remove" preserved-files)
-
-                     (format #t "Replacing GN files...~%")
-                     (force-output)
-                     (invoke "python" "build/linux/unbundle/replace_gn_files.py"
-                             "--system-libraries" "ffmpeg" "flac" "fontconfig"
-                             "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
-                             "libjpeg" "libpng" "libvpx" "libwebp" "libxml"
-                             "libxslt" "openh264" "opus" "re2" "snappy" "yasm"
-                             "zlib"))
-
-                   (format #t "Packing new ungoogled tarball ...~%")
-                   (force-output)
-                   (invoke "tar" "cvfa" #$output
-                           ;; Avoid non-determinism in the archive.
-                           "--mtime=@0"
-                           "--owner=root:0"
-                           "--group=root:0"
-                           "--sort=name"
-                           chromium-dir)
-
-                   #t)))))))))
+          (format #t "Replacing GN files...~%")
+          (force-output)
+          (invoke "python" "build/linux/unbundle/replace_gn_files.py"
+                  "--system-libraries" "ffmpeg" "flac" "fontconfig"
+                  "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
+                  "libjpeg" "libpng" "libvpx" "libwebp" "libxml"
+                  "libxslt" "openh264" "opus" "re2" "snappy" "yasm"
+                  "zlib")
+          #t))))
 
 (define opus+custom
   (package/inherit opus
@@ -467,7 +407,16 @@ from forcing GEXP-PROMISE."
     (name "ungoogled-chromium")
     (version %package-version)
     (synopsis "Graphical web browser")
-    (source ungoogled-chromium-source)
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://commondatastorage.googleapis.com"
+                                  "/chromium-browser-official/chromium-"
+                                  %chromium-version ".tar.xz"))
+              (sha256
+               (base32
+                "1hravbi1lazmab2mih465alfzji1kzy38zya1visbwz9zs6pw35v"))
+              (modules '((guix build utils)))
+              (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
