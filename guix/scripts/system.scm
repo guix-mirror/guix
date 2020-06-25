@@ -453,7 +453,9 @@ list of services."
     (('channel ('name name)
                ('url url)
                ('branch branch)
-               ('commit commit))
+               ('commit commit)
+               rest ...)
+     ;; XXX: In the future REST may include a channel introduction.
      (channel (name name) (url url)
               (branch branch) (commit commit)))))
 

@@ -31,6 +31,7 @@
   #:use-module (guix sets)
   #:use-module (guix ui)
   #:use-module ((guix utils) #:select (source-properties->location))
+  #:autoload   (guix openpgp) (openpgp-format-fingerprint)
   #:use-module (guix modules)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
@@ -392,14 +393,31 @@ by the initrd once the root file system is mounted.")))
 (define (channel->code channel)
   "Return code to build CHANNEL, ready to be dropped in a 'channels.scm'
 file."
-  `(channel (name ',(channel-name channel))
-            (url ,(channel-url channel))
-            (branch ,(channel-branch channel))
-            (commit ,(channel-commit channel))))
+  ;; Since the 'introduction' field is backward-incompatible, and since it's
+  ;; optional when using the "official" 'guix channel, include it if and only
+  ;; if we're referring to a different channel.
+  (let ((intro (and (not (equal? (list channel) %default-channels))
+                    (channel-introduction channel))))
+    `(channel (name ',(channel-name channel))
+              (url ,(channel-url channel))
+              (branch ,(channel-branch channel))
+              (commit ,(channel-commit channel))
+              ,@(if intro
+                    `((introduction
+                       (make-channel-introduction
+                        ,(channel-introduction-first-signed-commit intro)
+                        (openpgp-fingerprint
+                         ,(openpgp-format-fingerprint
+                           (channel-introduction-first-commit-signer
+                            intro))))))
+                    '()))))
 
 (define (channel->sexp channel)
   "Return an sexp describing CHANNEL.  The sexp is _not_ code and is meant to
 be parsed by tools; it's potentially more future-proof than code."
+  ;; TODO: Add CHANNEL's introduction.  Currently we can't do that because
+  ;; older 'guix system describe' expect exactly name/url/branch/commit
+  ;; without any additional fields.
   `(channel (name ,(channel-name channel))
             (url ,(channel-url channel))
             (branch ,(channel-branch channel))
