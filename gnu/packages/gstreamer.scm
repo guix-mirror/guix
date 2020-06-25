@@ -60,6 +60,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xorg)
@@ -72,6 +73,54 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages xml))
+
+(define-public libvisual
+  (package
+    (name "libvisual")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Libvisual/libvisual.git")
+         (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02xwakwkqjsznc03pjlb6hcv1li1gw3r8xvyswqsm4msix5xq18a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The package is in a sub-dir of this repo.
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "libvisual")
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("libintl" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl" ,sdl)))
+    (native-search-paths
+     (list
+      (search-path-specification
+       (variable "LIBVISUAL_PLUGINS_BASE_DIR")
+       (files '("lib/libvisual-0.4")))))
+    ;; To load libvisual-plugins.
+    (search-paths native-search-paths)
+    (synopsis "Audio visualisation library")
+    (description "Libvisual is a library that acts as a middle layer between
+applications that want audio visualisation and audio visualisation plugins.")
+    (home-page "http://libvisual.org/")
+    (license
+     (list
+      ;; Libraries.
+      license:lgpl2.1+
+      ;; Examples and Tests.
+      license:gpl2+))))
 
 (define-public esound
   (package
