@@ -128,22 +128,19 @@
 
 ;; Channel introductions.  A "channel introduction" provides a commit/signer
 ;; pair that specifies the first commit of the authentication process as well
-;; as its signer's fingerprint.  The pair must be signed by the signer of that
-;; commit so that only them may emit this introduction.  Introductions are
-;; used to bootstrap trust in a channel.
+;; as its signer's fingerprint.  Introductions are used to bootstrap trust in
+;; a channel.
 (define-record-type <channel-introduction>
-  (%make-channel-introduction first-signed-commit first-commit-signer
-                              signature)
+  (%make-channel-introduction first-signed-commit first-commit-signer)
   channel-introduction?
-  (first-signed-commit  channel-introduction-first-signed-commit) ;hex string
-  (first-commit-signer  channel-introduction-first-commit-signer) ;bytevector
-  (signature            channel-introduction-signature))          ;string
+  (first-signed-commit  channel-introduction-first-signed-commit)  ;hex string
+  (first-commit-signer  channel-introduction-first-commit-signer)) ;bytevector
 
 (define (make-channel-introduction commit signer)
   "Return a new channel introduction: COMMIT is the introductory where
 authentication starts, and SIGNER is the OpenPGP fingerprint (a bytevector) of
 the signer of that commit."
-  (%make-channel-introduction commit signer #f))
+  (%make-channel-introduction commit signer))
 
 (define (openpgp-fingerprint->bytevector str)
   "Convert STR, an OpenPGP fingerprint (hexadecimal string with whitespace),
