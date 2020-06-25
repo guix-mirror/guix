@@ -95,17 +95,20 @@ LINK-PREFIX."
             (apply throw args))))))
 
 (define (call-with-writable-file file thunk)
-  (let ((stat (lstat file)))
-    (dynamic-wind
-      (lambda ()
-        (make-file-writable file))
-      thunk
-      (lambda ()
-        (set-file-time file stat)
-        (chmod file (stat:mode stat))))))
+  (if (string=? file (%store-directory))
+      (thunk)                       ;don't meddle with the store's permissions
+      (let ((stat (lstat file)))
+        (dynamic-wind
+          (lambda ()
+            (make-file-writable file))
+          thunk
+          (lambda ()
+            (set-file-time file stat)
+            (chmod file (stat:mode stat)))))))
 
 (define-syntax-rule (with-writable-file file exp ...)
-  "Make FILE writable for the dynamic extent of EXP..."
+  "Make FILE writable for the dynamic extent of EXP..., except if FILE is the
+store."
   (call-with-writable-file file (lambda () exp ...)))
 
 ;; There are 3 main kinds of errors we can get from hardlinking: "Too many
