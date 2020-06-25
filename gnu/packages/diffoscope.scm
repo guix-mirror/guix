@@ -180,8 +180,7 @@
                          ((or "x86_64-linux")
                           `(("enjarify" ,enjarify)
                             ;; no unversioned openjdk available
-                            ("openjdk:jdk" ,openjdk12 "jdk")
-                            ))
+                            ("openjdk:jdk" ,openjdk12 "jdk")))
                          (_
                           `()))
                      ("abootimg" ,abootimg)
