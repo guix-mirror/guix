@@ -18439,7 +18439,7 @@ accessors.")
 (define-public rust-rayon-1
   (package
     (name "rust-rayon")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -18448,17 +18448,16 @@ accessors.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1650g13bxlmywhdlw65q3g1zyyb7l0wcm35v45kf31cwgwly6v6v"))))
+         "104h6i5lcp9kx8g80jgqf6z7wcqa186q57wj4qzf011xfmb2iw32"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+     `(#:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-1.0)
+        ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
         ("rust-either" ,rust-either-1.5)
         ("rust-rayon-core" ,rust-rayon-core-1))
        #:cargo-development-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-docopt" ,rust-docopt-1.1)
+       (("rust-docopt" ,rust-docopt-1.1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
