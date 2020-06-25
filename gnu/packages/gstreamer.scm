@@ -546,78 +546,97 @@ for the GStreamer multimedia library.")
     (version "1.16.2")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append
-            "https://gstreamer.freedesktop.org/src/" name "/"
-            name "-" version ".tar.xz"))
-      (sha256
-       (base32
-        "068k3cbv1yf3gbllfdzqsg263kzwh21y8dpwr0wvgh15vapkpfs0"))))
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://gstreamer.freedesktop.org/src/" name "/"
+         name "-" version ".tar.xz"))
+       (sha256
+        (base32 "068k3cbv1yf3gbllfdzqsg263kzwh21y8dpwr0wvgh15vapkpfs0"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* "plugins/gst-plugins-good-plugins-docs.sgml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-before
+             'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Tests look for $XDG_RUNTIME_DIR.
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
+       ("xmllint" ,libxml2)
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("aalib" ,aalib)
+       ("bzip2" ,bzip2)
        ("cairo" ,cairo)
        ("flac" ,flac)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gst-plugins-base" ,gst-plugins-base)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("glu" ,glu)
        ("gtk+" ,gtk+)
-       ("jack" ,jack-1)
+       ("jack" ,jack-2)
        ("lame" ,lame)
        ("libavc1394" ,libavc1394)
        ("libcaca" ,libcaca)
        ("libdv" ,libdv)
+       ("libgudev" ,libgudev)
        ("libiec61883" ,libiec61883)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libshout" ,libshout)
        ("libsoup" ,libsoup)
        ("libvpx" ,libvpx)
+       ("libx11" ,libx11)
+       ("libxdamage" ,libxdamage)
+       ("libxfixes" ,libxfixes)
+       ("libxext" ,libxext)
+       ("libxshm" ,libxshmfence)
+       ("mesa" ,mesa)
        ("mpg123" ,mpg123)
        ("orc" ,orc)
        ("pulseaudio" ,pulseaudio)
        ("speex" ,speex)
        ("taglib" ,taglib)
        ("twolame" ,twolame)
-       ("wavpack" ,wavpack)))
-    (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)
-       ("python-wrapper" ,python-wrapper)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ,@%common-gstreamer-phases
-         ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                         (%current-system)))
-               ;; FIXME: These tests started failing on armhf after switching to Meson.
-               ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/issues/689
-               `((add-after 'unpack 'disable-tests-for-armhf
-                   (lambda _
-                     (substitute* "tests/check/elements/rtpbin_buffer_list.c"
-                       (("tcase_add_test \\(tc_chain, test_bufferlist\\);")
-                        ""))
-                     (substitute* "tests/check/elements/rtpulpfec.c"
-                       (("tcase_add_loop_test.*rtpulpfecdec_recovered_from_many.*")
-                        "")
-                       (("tcase_add.*rtpulpfecdec_recovered_using_recovered_packet.*")
-                        ""))
-                     #t)))
-               '())
-         (add-after
-          'unpack 'disable-failing-tests
-          (lambda _
-            ;; Disable tests that fail non-deterministically.
-            ;; This test fails on aarch64 on 1.12.x.
-            (substitute* "tests/check/elements/alpha.c"
-              (("tcase_add_test \\(tc_chain, test_chromakeying\\);" all)
-               (string-append "/* " all " */")))
-            #t)))))
+       ("v4l-utils" ,v4l-utils)
+       ("wavpack" ,wavpack)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (synopsis "GStreamer plugins and helper libraries")
+    (description "GStreamer-Plugins-Good is a collection of plug-ins you'd want
+to have right next to you on the battlefield.  Shooting sharp and making no
+mistakes, these plug-ins have it all: good looks, good code, and good
+licensing.  Documented and dressed up in tests.  If you're looking for a role
+model to base your own plug-in on, here it is.")
     (home-page "https://gstreamer.freedesktop.org/")
-    (synopsis
-     "Plugins for the GStreamer multimedia library")
-    (description "GStreamer Good Plug-ins is a set of plug-ins for the
-GStreamer multimedia library.  This set contains those plug-ins which the
-developers consider to have good quality code and correct functionality.")
     (license license:lgpl2.0+)))
 
 (define-public gst-plugins-bad
