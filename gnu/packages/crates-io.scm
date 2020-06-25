@@ -13921,7 +13921,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
 (define-public rust-num-cpus-1
   (package
     (name "rust-num-cpus")
-    (version "1.11.1")
+    (version "1.13.0")
     (source
       (origin
         (method url-fetch)
@@ -13930,14 +13930,12 @@ including bigint, complex, rational, range iterators, generic integers, and more
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0wlxs00cpg16z09fwchj1gdz1jxnf5dgg1cbidvq0sc75bnwbnkn"))))
+          "1cv6yxhz2zbnwn8pn1yn8grg7zsnd523947fby41a737aqvryj85"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
         (("rust-hermit-abi" ,rust-hermit-abi-0.1)
-         ("rust-libc" ,rust-libc-0.2))
-        #:cargo-development-inputs
-        (("rust-doc-comment" ,rust-doc-comment-0.3))))
+         ("rust-libc" ,rust-libc-0.2))))
     (home-page "https://github.com/seanmonstar/num_cpus")
     (synopsis "Get the number of CPUs on a machine")
     (description
