@@ -588,6 +588,16 @@ address of one of the participants.")
              (substitute* "src/mumble/Settings.cpp"
                (("bUsage = true;") "bUsage = false;"))
              #t))
+         (add-before 'configure 'fix-mumble-overlay
+           (lambda* (#:key outputs #:allow-other-keys)
+              (with-output-to-file "scripts/mumble-overlay"
+                (lambda ()
+                  (format #t "#!~a~%" (which "bash"))
+                  (format #t "export LD_PRELOAD=\"~a $LD_PRELOAD\"~%"
+                          (string-append (assoc-ref outputs "out")
+                                         "/lib/mumble/libmumble.so.1"))
+                  (format #t "exec \"${@}\"")))
+              #t))
          (add-before 'install 'disable-murmur-ice
            (lambda _
              (substitute* "scripts/murmur.ini.system"
