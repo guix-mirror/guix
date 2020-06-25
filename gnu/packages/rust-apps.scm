@@ -207,7 +207,7 @@ provides defaults for 80% of the use cases.")
 (define-public ripgrep
   (package
     (name "ripgrep")
-    (version "11.0.2")
+    (version "12.1.1")
     (source
      (origin
        (method url-fetch)
@@ -216,7 +216,7 @@ provides defaults for 80% of the use cases.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0vqjr96s2rs45715hzf0g0wjahig4zjyiqfijmzzg4jyh9ni80yr"))))
+         "1grfi0j9zczzipipc21lkdbqmd2lvy2wlqy65fy4sckqvix5amdr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
