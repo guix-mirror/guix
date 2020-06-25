@@ -74,6 +74,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (rnrs bytevectors)
   #:export (guix-system
