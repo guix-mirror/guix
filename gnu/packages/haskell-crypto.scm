@@ -311,6 +311,7 @@ the C implementation.")
     ;; FIXME: tests are broken.
     ;; See https://github.com/haskell-crypto/cryptonite/issues/260
     (arguments '(#:tests? #f))
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-basement" ,ghc-basement)
        ("ghc-memory" ,ghc-memory)
