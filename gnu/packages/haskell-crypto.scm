@@ -150,6 +150,7 @@ algorithm (ex: padding) is within scope of this package.")
         (base32
          "0w3j43jdrlj28jryp18hc6q84nkl2yf4vs1hhgrsk7gb9kfyqjpl"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs `(("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
               ("ghc-crypto-api" ,ghc-crypto-api)
               ("ghc-cereal" ,ghc-cereal)
