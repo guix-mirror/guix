@@ -379,9 +379,13 @@ Maven Wagon, for use in Maven.")))
     (arguments
      `(#:jar-name "maven-shared-utils.jar"
        #:source-dir "src/main/java"
-       #:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'fix-/bin/sh-invocation
+           (lambda _
+             (substitute* (find-files "src" ".*.java$")
+               (("/bin/sh") (which "sh")))
+             #t))
          (add-before 'check 'remove-cyclic-dep
            (lambda _
              (delete-file
