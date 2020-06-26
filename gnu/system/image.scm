@@ -301,7 +301,8 @@ image ~a {
 }~%" #$genimage-name #$image-type (list #$@partitions-config))))))))
       (computed-file "genimage.cfg" builder)))
 
-  (let* ((substitutable? (image-substitutable? image))
+  (let* ((name (or (image-name image) name))
+         (substitutable? (image-substitutable? image))
          (builder
           (with-imported-modules*
            (let ((inputs '#+(list genimage coreutils findutils))
