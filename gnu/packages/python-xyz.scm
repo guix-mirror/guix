@@ -13149,8 +13149,9 @@ English stemmer.")
         (replace 'check
            (lambda _
              (setenv "PYTHON" (or (which "python3") (which "python")))
-             (setenv "PYCONFIG" (or (which "python3-config")
-                                    (which "python-config")))
+             (setenv "PYCONFIG" (string-append (or (which "python3-config")
+                                                   (which "python-config"))
+                                               " --embed"))
              (setenv "CC" "gcc")
              ;; No need to extend PYTHONPATH to find the built package, since
              ;; the Makefile will build anyway
