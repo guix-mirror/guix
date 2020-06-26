@@ -5128,17 +5128,18 @@ multivalue dictionary that retains the order of insertions and deletions.")
 (define-public python-autopep8
   (package
     (name "python-autopep8")
-    (version "1.3.5")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "autopep8" version))
        (sha256
         (base32
-         "192bvhzi4d0claqxgzymvv7k3qnj627742bc8sgxpzjj42pd9112"))))
+         "1w6vh627vrmgfbvrdcxrc3k4gxcldrb2lpgxv9irkdds851qrzb0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pycodestyle" ,python-pycodestyle)))
+     `(("python-pycodestyle" ,python-pycodestyle)
+       ("python-toml" ,python-toml)))
     (home-page "https://github.com/hhatto/autopep8")
     (synopsis "Format Python code according to the PEP 8 style guide")
     (description
