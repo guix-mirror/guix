@@ -328,6 +328,54 @@ It includes the following programs:
     ;; The user can choose version 2 or 3 of the GPL, not later versions.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public parprouted
+  (package
+    (name "parprouted")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.hazard.maks.net/parprouted/"
+                                  "parprouted-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z6yg28i0pv20jivyy82pxb38hsryj95inhj27bs6ja1bp4l6dnn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'insert-absolute-iproute-reference
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let* ((iproute (assoc-ref inputs "iproute"))
+                             (ip (string-append iproute "/sbin/ip")))
+                        (substitute* "parprouted.c"
+                          (("/sbin/ip") ip))
+                        #t)))
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (sbin (string-append out "/sbin"))
+                             (man8 (string-append out "/share/man/man8")))
+                        ;; No configure script; hijack the phase to make
+                        ;; the necessary arrangements.
+                        (setenv "CC" ,(cc-for-target))
+                        (for-each mkdir-p (list sbin man8))
+                        (substitute* "Makefile"
+                          (("/usr/local/sbin") sbin)
+                          (("/usr/local/man/man8") man8))
+                        #t))))))
+    (inputs
+     `(("iproute" ,iproute)))
+    (home-page "https://www.hazard.maks.net/parprouted/")
+    (synopsis "Proxy ARP requests to other interfaces")
+    (description
+     "@command{parprouted} is a daemon for transparent IP (Layer@tie{}3)
+proxy ARP bridging.  Unlike standard bridging, proxy ARP bridging can bridge
+Ethernet networks behind wireless nodes.  Normal layer@tie{}2 bridging does
+not work between wireless nodes because wireless does not know about MAC
+addresses used in the wired Ethernet networks.  This daemon can also be
+useful for making transparent firewalls.")
+    (license license:gpl2)))
+
 (define-public socat
   (package
     (name "socat")
