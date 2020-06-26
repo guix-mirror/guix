@@ -5437,11 +5437,12 @@ experimental data and metadata at the Laboratory for Fluorescence Dynamics.")
        ("python-psutil" ,python-psutil)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "https://github.com/imageio/imageio")
-    (synopsis "Read and write image, video, scientific, and volumetric data formats")
+    (home-page "https://imageio.github.io/")
+    (synopsis "Library for reading and writing a wide range of image data")
     (description
-     "This package provides a Python library for reading and writing a wide
-range of image, video, scientific, and volumetric data formats.")
+     "Imageio is a Python library that provides an easy interface to read and
+write a wide range of image data, including animated images, video, volumetric
+data, and scientific formats.")
     (license license:bsd-2)))
 
 (define-public python-pycparser
