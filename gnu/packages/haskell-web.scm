@@ -935,6 +935,7 @@ entity decoding bugfixes applied.")
          "1jhabz1lbbv6yqxqiybifi86cb5xlsadrn368n5dd0wzzc7ja4iz"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-base-compat" ,ghc-base-compat)
