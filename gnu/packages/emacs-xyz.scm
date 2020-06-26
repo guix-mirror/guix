@@ -473,19 +473,20 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
 
 (define-public emacs-magit
   ;; There hasn't been an official release since 2018-11-16.
-  (let ((commit "0746bf1bacfe896d3917ccc19c7fb9d95c18b1e9"))
+  (let ((commit "7f486d47fe7042edba8d9a855a4c2c301a30bc6b")
+        (revision "6"))
     (package
       (name "emacs-magit")
-      (version (git-version "2.90.1" "5" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/magit/magit.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1sgdygr81s2qxq2ahf998hl89qrb0r2wbgnsiz3hdda1431p0wzg"))))
+      (version (git-version "2.90.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/magit/magit.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "05kyc5y5wa1p3h8j7mbgvfc4zcj998zi26lnnmksj9wnvahzxfms"))))
       (build-system emacs-build-system)
       (arguments
        `(#:emacs ,emacs-no-x            ;module support is required
@@ -550,11 +551,12 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
          ("emacs-with-editor" ,emacs-with-editor)))
       (home-page "https://magit.vc/")
       (synopsis "Emacs interface for the Git version control system")
-      (description "With Magit, you can inspect and modify your Git
-repositories with Emacs.  You can review and commit the changes you have made
-to the tracked files, for example, and you can browse the history of past
-changes.  There is support for cherry picking, reverting, merging, rebasing,
-and other common Git operations.")
+      (description
+       "With Magit, you can inspect and modify your Git repositories
+with Emacs.  You can review and commit the changes you have made to
+the tracked files, for example, and you can browse the history of past
+changes.  There is support for cherry picking, reverting, merging,
+rebasing, and other common Git operations.")
       (license license:gpl3+))))
 
 (define-public emacs-magit-svn
