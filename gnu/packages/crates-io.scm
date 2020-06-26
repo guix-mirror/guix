@@ -20227,6 +20227,36 @@ with one of the implemented strategies.")
          (base32
           "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
 
+(define-public rust-scrypt-0.2
+  (package
+    (name "rust-scrypt")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scrypt" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1pfgqgzdjxjf7c8r1wfka0ackfpv1g8w7wvbr25b42hdx787jv35"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-byte-tools" ,rust-byte-tools-0.3)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-hmac" ,rust-hmac-0.7)
+        ("rust-pbkdf2" ,rust-pbkdf2-0.3)
+        ("rust-rand" ,rust-rand-0.5)
+        ("rust-sha2" ,rust-sha2-0.8)
+        ("rust-subtle" ,rust-subtle-1.0))))
+    (home-page "https://github.com/RustCrypto/password-hashes")
+    (synopsis "Scrypt password-based key derivation function")
+    (description
+     "Scrypt password-based key derivation function.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-scroll-0.10
   (package
     (name "rust-scroll")
