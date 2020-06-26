@@ -183,14 +183,14 @@ of the project to ensure it renders properly.")
 (define-public python-pytest-flake8
   (package
     (name "python-pytest-flake8")
-    (version "1.0.4")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-flake8" version))
        (sha256
         (base32
-         "1h30gd21fjsafqxwclf25sdh89vrdz7rsh4lzw11aiw7ww9mq8jd"))))
+         "09vhn7r77s1yiqnlwfvh5585f904zpyd6620a90dpccfr1cbp0hv"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flake8" ,python-flake8)))
