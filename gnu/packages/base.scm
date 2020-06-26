@@ -559,8 +559,8 @@ included.")
 ;; big refactoring of xtensa-modules.c (commit 567607c11fbf7105 upstream).
 ;; Keep this version around until the patch is updated.
 (define-public binutils-2.33
-  (package/inherit
-   binutils
+  (package
+   (inherit binutils)
    (version "2.33.1")
    (source (origin
              (inherit (package-source binutils))
