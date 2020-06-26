@@ -6028,7 +6028,7 @@ an Apache AB clone based on HttpCore.")))
 (define-public java-httpcomponents-httpclient
   (package
     (name "java-httpcomponents-httpclient")
-    (version "4.5.3")
+    (version "4.5.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/httpcomponents/httpclient/"
@@ -6036,7 +6036,7 @@ an Apache AB clone based on HttpCore.")))
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1428399s7qy3cim5wc6f3ks4gl9nf9vkjpfmnlap3jflif7g2pj1"))))
+                "1va99m2zc2liv0v9vn72p5ja8yz4s5wq7zpahaai5nr966kvxzkb"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "httpcomponents-httpclient.jar"
