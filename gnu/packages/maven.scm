@@ -30,6 +30,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages maven-parent-pom)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
@@ -401,19 +402,26 @@ replacement with improvements.")
 (define-public maven-wagon-provider-api
   (package
     (name "maven-wagon-provider-api")
-    (version "3.1.0")
+    (version "3.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/maven/wagon/"
                                   "wagon-" version "-source-release.zip"))
-              (sha256 (base32 "0r07j6xdzdnrvqnv8ida7dx1m05pznh5qgmcfcfpyvg9nxbj3l1n"))))
+              (sha256
+               (base32
+                "1iq9bilgfklzbxwwhzi3f19mkbaaf9dh9f83h3yz5gbmvypask9a"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-wagon-provider-api.jar"
        #:source-dir "wagon-provider-api/src/main/java"
-       #:test-dir "wagon-provider-api/src/test"))
-    (inputs
-     `(("java-plexus-utils" ,java-plexus-utils)))
+       #:test-dir "wagon-provider-api/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "wagon-provider-api/pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("maven-wagon-parent-pom" ,maven-wagon-parent-pom)))
     (native-inputs
      `(("unzip" ,unzip)
        ("java-junit" ,java-junit)
@@ -423,6 +431,22 @@ replacement with improvements.")
     (description "Maven Wagon is a transport abstraction that is used in Maven's
 artifact and repository handling code.")
     (license license:asl2.0)))
+
+(define maven-wagon-parent-pom
+  (package
+    (inherit maven-wagon-provider-api)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("maven-parent-pom-33" ,maven-parent-pom-33)))
+    (native-inputs
+     `(("unzip" ,unzip)))))
 
 (define-public maven-wagon-provider-test
   (package
@@ -436,6 +460,7 @@ artifact and repository handling code.")
     (inputs
      `(("java-plexus-utils" ,java-plexus-utils)
        ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-eclipse-jetty-http-9.2" ,java-eclipse-jetty-http-9.2)
        ("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
        ("java-eclipse-jetty-security-9.2" ,java-eclipse-jetty-security-9.2)
        ("java-eclipse-jetty-server-9.2" ,java-eclipse-jetty-server-9.2)
