@@ -254,14 +254,9 @@
   ;; run the Blink performance tests, just remove everything to save ~24MiB.
   '("third_party/blink/perf_tests"))
 
-(define %chromium-version "83.0.4103.116")
 (define %ungoogled-revision "f08ce8b3f1300ef0750b5d6bf967b9cbbfd9a56d")
 (define %debian-revision "debian/81.0.4044.92-1")
 (define %gentoo-revision "55ef09d6709f4e4cbe23418e4ade0f219fa2fa1f")
-(define package-revision "0")
-(define %package-version (string-append %chromium-version "-"
-                                        package-revision "."
-                                        (string-take %ungoogled-revision 7)))
 
 (define (gentoo-patch name revision hash)
   (origin
@@ -410,13 +405,14 @@
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
-    (version %package-version)
+    (version (string-append "83.0.4103.116-0."
+                            (string-take %ungoogled-revision 7)))
     (synopsis "Graphical web browser")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://commondatastorage.googleapis.com"
                                   "/chromium-browser-official/chromium-"
-                                  %chromium-version ".tar.xz"))
+                                  (car (string-split version #\-)) ".tar.xz"))
               (sha256
                (base32
                 "1hravbi1lazmab2mih465alfzji1kzy38zya1visbwz9zs6pw35v"))
