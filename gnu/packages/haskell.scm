@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
@@ -568,6 +568,32 @@ interactive environment for the functional language Haskell.")
                ,make-flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
+           (add-after 'install 'remove-unnecessary-references
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* (find-files (string-append (assoc-ref outputs "out") "/lib/")
+                                        "settings")
+                 (("/gnu/store/.*/bin/(.*)" m program) program))
+
+               ;; Remove references to "doc" output from "out" by rewriting
+               ;; the "haddock-interfaces" fields and removing the optional
+               ;; "haddock-html" field in the generated .conf files.
+               (let ((doc (assoc-ref outputs "doc"))
+                     (out (assoc-ref outputs "out")))
+                 (with-fluids ((%default-port-encoding #f))
+                   (for-each (lambda (config-file)
+                               (substitute* config-file
+                                 (("^haddock-html: .*") "\n")
+                                 (((format #f "^haddock-interfaces: ~a" doc))
+                                  (string-append "haddock-interfaces: " out))))
+                             (find-files (string-append out "/lib") ".conf")))
+                 ;; Move the referenced files to the "out" output.
+                 (for-each (lambda (haddock-file)
+                             (let* ((subdir (string-drop haddock-file (string-length doc)))
+                                    (new    (string-append out subdir)))
+                               (mkdir-p (dirname new))
+                               (rename-file haddock-file new)))
+                           (find-files doc "\\.haddock$")))
+               #t))
            (add-after 'unpack-testsuite 'skip-tests
              (lambda _
                ;; These two tests refer to the root user, which doesn't exist
