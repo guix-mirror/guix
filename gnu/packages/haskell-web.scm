@@ -904,6 +904,7 @@ entity decoding bugfixes applied.")
         (base32
          "0k1r1hddjgqighazcazxrx6xfhvy2gm8il8l82ainv3cai13yl30"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-blaze-markup" ,ghc-blaze-markup)))
