@@ -1978,7 +1978,7 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guix-system-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX
+dd if=guix-system-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX status=progress
 sync
 @end example
 
@@ -27665,7 +27665,7 @@ the device corresponding to a USB stick, one can copy the image to it
 using the following command:
 
 @example
-# dd if=$(guix system disk-image my-os.scm) of=/dev/sdc
+# dd if=$(guix system disk-image my-os.scm) of=/dev/sdc status=progress
 @end example
 
 When using @code{docker-image}, a Docker image is produced.  Guix builds
