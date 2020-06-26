@@ -575,8 +575,7 @@ included.")
    (properties '())))
 
 (define-public binutils-gold
-  (package
-    (inherit binutils+documentation)
+  (package/inherit binutils+documentation
     (name "binutils-gold")
     (arguments
      `(#:phases
