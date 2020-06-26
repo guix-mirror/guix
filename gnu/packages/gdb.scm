@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
 
 (define-module (gnu packages gdb)
   #:use-module (gnu packages)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages dejagnu)
@@ -68,12 +70,14 @@
                      #t))
                   (add-after
                    'install 'remove-libs-already-in-binutils
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (lambda* (#:key inputs native-inputs outputs
+                             #:allow-other-keys)
                      ;; Like Binutils, GDB installs libbfd, libopcodes, etc.
                      ;; However, this leads to collisions when both are
                      ;; installed, and really is none of its business,
                      ;; conceptually.  So remove them.
-                     (let* ((binutils (assoc-ref inputs "binutils"))
+                     (let* ((binutils (or (assoc-ref inputs "binutils")
+                                          (assoc-ref native-inputs "binutils")))
                             (out      (assoc-ref outputs "out"))
                             (files1   (with-directory-excursion binutils
                                         (append (find-files "lib")
@@ -98,11 +102,15 @@
 
        ;; Allow use of XML-formatted syscall information.  This enables 'catch
        ;; syscall' and similar commands.
-       ("libxml2" ,libxml2)))
+       ("libxml2" ,libxml2)
+
+       ;; The Hurd needs -lshouldbeinlibc.
+       ,@(if (hurd-target?) `(("hurd" ,hurd)) '())))
     (native-inputs
       `(("texinfo" ,texinfo)
         ("dejagnu" ,dejagnu)
-        ("pkg-config" ,pkg-config)))
+        ("pkg-config" ,pkg-config)
+        ,@(if (hurd-target?) `(("mig" ,mig)) '())))
     (home-page "https://www.gnu.org/software/gdb/")
     (synopsis "The GNU debugger")
     (description
@@ -140,6 +148,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
+              (patches (search-patches "gdb-hurd.patch"))
               (sha256
                (base32
                 "0mf5fn8v937qwnal4ykn3ji1y2sxk0fa1yfqi679hxmpg6pdf31n"))))))
