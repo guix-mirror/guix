@@ -247,6 +247,8 @@ packages defined in installation-os."
                           (operating-system
                             (operating-system-with-gc-roots
                              os (list target guile-final)))
+                          ;; Do not compress to speed-up the tests.
+                          (compression? #f)
                           ;; Don't provide substitutes; too big.
                           (substitutable? #f)))))
     (define install
