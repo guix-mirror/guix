@@ -13121,21 +13121,21 @@ English stemmer.")
   (package-with-python2 python-snowballstemmer))
 
 (define-public python-setproctitle
-(package
-  (name "python-setproctitle")
-  (version "1.1.10")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (pypi-uri "setproctitle" version))
-      (sha256
+  (package
+    (name "python-setproctitle")
+    (version "1.1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setproctitle" version))
+       (sha256
         (base32
-          "163kplw9dcrw0lffq1bvli5yws3rngpnvrxrzdw89pbphjjvg0v2"))))
-  (build-system python-build-system)
-  (arguments
-   '(#:phases
-     (modify-phases %standard-phases
-        (add-before 'check 'patch-Makefile
+         "163kplw9dcrw0lffq1bvli5yws3rngpnvrxrzdw89pbphjjvg0v2"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-Makefile
            ;; Stricly this is only required for the python2 variant.
            ;; But adding a phase in an inherited package seems to be
            ;; cumbersum. So we patch even for python3.
@@ -13146,7 +13146,7 @@ English stemmer.")
                    (("\\$\\(PYTHON\\) [^ ]which nosetests[^ ] ")
                     (string-append nose "/bin/nosetests "))))
                #t)))
-        (replace 'check
+         (replace 'check
            (lambda _
              (setenv "PYTHON" (or (which "python3") (which "python")))
              (setenv "PYCONFIG" (string-append (or (which "python3-config")
@@ -13156,21 +13156,20 @@ English stemmer.")
              ;; No need to extend PYTHONPATH to find the built package, since
              ;; the Makefile will build anyway
              (invoke "make" "check"))))))
-  (native-inputs
-   `(("procps" ,procps))) ; required for tests
-  (home-page
-    "https://github.com/dvarrazzo/py-setproctitle")
-  (synopsis
-   "Setproctitle implementation for Python to customize the process title")
-  (description "The library allows a process to change its title (as displayed
+    (native-inputs
+     `(("procps" ,procps)))             ; required for tests
+    (home-page "https://github.com/dvarrazzo/py-setproctitle")
+    (synopsis
+     "Setproctitle implementation for Python to customize the process title")
+    (description "The library allows a process to change its title (as displayed
 by system tools such as ps and top).
 
 Changing the title is mostly useful in multi-process systems, for
 example when a master process is forked: changing the children's title
 allows identifying the task each process is busy with.  The technique
 is used by PostgreSQL and the OpenSSH Server for example.")
-  (license license:bsd-3)
-  (properties `((python2-variant . ,(delay python2-setproctitle))))))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-setproctitle))))))
 
 (define-public python2-setproctitle
   (let ((base (package-with-python2
