@@ -96,7 +96,11 @@ provides the Maven plugin generating the component metadata.")))
     (arguments
      `(#:jar-name "maven-resolver-api.jar"
        #:source-dir "maven-resolver-api/src/main/java"
-       #:test-dir "maven-resolver-api/src/test"))
+       #:test-dir "maven-resolver-api/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "maven-resolver-api/pom.xml")))))
     (native-inputs
      `(("java-asm" ,java-asm)
        ("java-cglib" ,java-cglib)
@@ -104,10 +108,31 @@ provides the Maven plugin generating the component metadata.")))
        ("java-junit" ,java-junit)
        ("java-mockito-1" ,java-mockito-1)
        ("java-objenesis" ,java-objenesis)))
+    (propagated-inputs
+     `(("maven-resolver-parent-pom" ,maven-resolver-parent-pom)))
     (home-page "https://github.com/apache/maven-resolver")
     (synopsis "Maven repository system API")
     (description "This package contains the API for the maven repository system.")
     (license license:asl2.0)))
+
+(define maven-resolver-parent-pom
+  (package
+    (inherit maven-resolver-api)
+    (name "maven-resolver-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (add-before 'install 'fix-pom
+           (lambda _
+             (substitute* "pom.xml"
+               (("<classifier>no_aop</classifier>") ""))
+             #t))
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs '())))
 
 (define-public maven-resolver-spi
   (package
@@ -117,8 +142,11 @@ provides the Maven plugin generating the component metadata.")))
      `(#:jar-name "maven-resolver-spi.jar"
        #:source-dir "maven-resolver-spi/src/main/java"
        #:test-dir "maven-resolver-spi/src/test"
-       #:jdk ,icedtea-8))
-    (inputs
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "maven-resolver-spi/pom.xml")))))
+    (propagated-inputs
      `(("maven-resolver-api" ,maven-resolver-api)))
     (synopsis "Maven repository system SPI")
     (description "This package contains the service provider interface (SPI)
@@ -148,8 +176,11 @@ ease testing of the repository system.")))
      `(#:jar-name "maven-resolver-util.jar"
        #:source-dir "maven-resolver-util/src/main/java"
        #:test-dir "maven-resolver-util/src/test"
-       #:jdk ,icedtea-8))
-    (inputs
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "maven-resolver-util/pom.xml")))))
+    (propagated-inputs
      `(("maven-resolver-api" ,maven-resolver-api)))
     (native-inputs
      `(("java-junit" ,java-junit)
@@ -176,16 +207,17 @@ ease usage of the repository system.")))
              (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
                (lambda _
                  (display "org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory\n")))
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install
+           (install-from-pom "maven-resolver-connector-basic/pom.xml")))))
+    (propagated-inputs
      `(("maven-resolver-api" ,maven-resolver-api)
        ("maven-resolver-spi" ,maven-resolver-spi)
        ("maven-resolver-util" ,maven-resolver-util)
-       ("java-javax-inject" ,java-javax-inject)
        ("java-slf4j-api" ,java-slf4j-api)))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)
+     `(("java-javax-inject" ,java-javax-inject)
+       ("java-junit" ,java-junit)
        ("maven-resolver-test-util" ,maven-resolver-test-util)))
     (synopsis "Maven repository connector implementation")
     (description "This package contains a repository connector implementation
@@ -199,7 +231,6 @@ for repositories using URI-based layouts.")))
      `(#:jar-name "maven-resolver-impl.jar"
        #:source-dir "maven-resolver-impl/src/main/java"
        #:test-dir "maven-resolver-impl/src/test"
-       #:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'generate-sisu
@@ -233,22 +264,20 @@ for repositories using URI-based layouts.")))
                      "org.eclipse.aether.internal.impl.Maven2RepositoryLayoutFactory\n"
                      "org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory\n"
                      "org.eclipse.aether.internal.impl.slf4j.Slf4jLoggerFactory"))))
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install
+           (install-from-pom "maven-resolver-impl/pom.xml")))))
+    (propagated-inputs
      `(("maven-resolver-api" ,maven-resolver-api)
        ("maven-resolver-spi" ,maven-resolver-spi)
        ("maven-resolver-util" ,maven-resolver-util)
        ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
        ("java-javax-inject" ,java-javax-inject)
        ("java-guice" ,java-guice)
-       ("java-guava" ,java-guava)
-       ("java-cglib" ,java-cglib)
-       ("java-asm" ,java-asm)
-       ("jajva-aopalliance" ,java-aopalliance)
-       ("java-slf4j-api" ,java-slf4j-api)))
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("maven-resolver-parent-pom" ,maven-resolver-parent-pom)))
     (native-inputs
      `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)
        ("maven-resolver-test-util" ,maven-resolver-test-util)))))
 
 (define-public maven-resolver-transport-wagon
@@ -357,12 +386,15 @@ Maven Wagon, for use in Maven.")))
            (lambda _
              (delete-file
                "src/test/java/org/apache/maven/shared/utils/introspection/ReflectionValueExtractorTest.java")
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
      `(("java-jansi" ,java-jansi)
        ("java-commons-io" ,java-commons-io)
        ("java-jsr305" ,java-jsr305)
-       ("java-plexus-container-default" ,java-plexus-container-default)))
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("maven-parent-pom-30" ,maven-parent-pom-30)))
     (native-inputs
      `(("unzip" ,unzip)
        ("java-junit" ,java-junit)
@@ -405,7 +437,7 @@ replacement with improvements.")
     (version "3.3.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://apache/maven/wagon/"
+              (uri (string-append "https://archive.apache.org/dist/maven/wagon/"
                                   "wagon-" version "-source-release.zip"))
               (sha256
                (base32
@@ -710,9 +742,9 @@ artifact and repository handling code.  It uses providers, that are tools to
 manage artifacts and deployment.  This package contains a Wagon provider that
 gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
 
-(define-public maven-artifact
+(define maven-pom
   (package
-    (name "maven-artifact")
+    (name "maven-pom")
     (version "3.6.1")
     (source (origin
               (method url-fetch)
@@ -730,23 +762,100 @@ gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
                                 "maven-generate-javax-inject-named.patch"))))
     (build-system ant-build-system)
     (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (add-before 'install 'fix-dependencies
+           (lambda _
+             (substitute* "pom.xml"
+               (("classWorldsVersion>.*")
+                (string-append
+                  "classWorldsVersion>"
+                  ,(package-version java-plexus-classworlds)
+                  "</classWorldsVersion>\n"))
+               (("commonsCliVersion>.*")
+                (string-append
+                  "commonsCliVersion>"
+                  ,(package-version java-commons-cli)
+                  "</commonsCliVersion>\n"))
+               (("commonsLangVersion>.*")
+                (string-append
+                  "commonsLangVersion>"
+                  ,(package-version java-commons-lang3)
+                  "</commonsLangVersion>\n"))
+               (("plexusUtilsVersion>.*")
+                (string-append
+                  "plexusUtilsVersion>"
+                  ,(package-version java-plexus-utils)
+                  "</plexusUtilsVersion>\n"))
+               (("plexusInterpolationVersion>.*")
+                (string-append
+                  "plexusInterpolationVersion>"
+                  ,(package-version java-plexus-interpolation)
+                  "</plexusInterpolationVersion>\n"))
+               (("guiceVersion>.*")
+                (string-append
+                  "guiceVersion>"
+                  ,(package-version java-guice)
+                  "</guiceVersion>\n"))
+               (("sisuInjectVersion>.*")
+                (string-append
+                  "sisuInjectVersion>"
+                  ,(package-version java-eclipse-sisu-inject)
+                  "</sisuInjectVersion>\n"))
+               (("securityDispatcherVersion>.*")
+                (string-append
+                  "securityDispatcherVersion>"
+                  ,(package-version java-plexus-sec-dispatcher)
+                  "</securityDispatcherVersion>\n"))
+               (("cipherVersion>.*")
+                (string-append
+                  "cipherVersion>"
+                  ,(package-version java-plexus-cipher)
+                  "</cipherVersion>\n"))
+               (("slf4jVersion>.*")
+                (string-append
+                  "slf4jVersion>"
+                  ,(package-version java-slf4j-api)
+                  "</slf4jVersion>\n"))
+               (("<classifier>no_aop</classifier>") ""))
+             #t))
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("maven-parent-pom-33" ,maven-parent-pom-33)))
+    (home-page "https://maven.apache.org/")
+    (synopsis "Build system")
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains the Maven pom file, used by all maven components.")
+    (license license:asl2.0)))
+
+(define-public maven-artifact
+  (package
+    (inherit maven-pom)
+    (name "maven-artifact")
+    (arguments
      `(#:jar-name "maven-artifact.jar"
        #:source-dir "maven-artifact/src/main/java"
        #:test-dir "maven-artifact/src/test"
-       #:main-class "org.apache.maven.artifact.versioning.ComparableVersion"))
-    (inputs
+       #:main-class "org.apache.maven.artifact.versioning.ComparableVersion"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "maven-artifact/pom.xml")))))
+    (propagated-inputs
      `(("java-plexus-utils" ,java-plexus-utils)
-       ("java-commons-lang3" ,java-commons-lang3)))
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("maven-pom" ,maven-pom)))
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "https://maven.apache.org/")
-    (synopsis "Build system")
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains the Maven Artifact classes, providing the
 @code{Artifact} interface, with its @code{DefaultArtifact} implementation.  The
 jar file is executable and provides a little tool to display how Maven parses
-and compares versions:")
-    (license license:asl2.0)))
+and compares versions:")))
 
 (define-public maven-model
   (package
@@ -756,7 +865,6 @@ and compares versions:")
      `(#:jar-name "maven-model.jar"
        #:source-dir "maven-model/src/main/java"
        #:test-dir "maven-model/src/test"
-       #:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'generate-models
@@ -770,10 +878,12 @@ and compares versions:")
                (modello-single-mode file "4.0.0" "xpp3-reader")
                (modello-single-mode file "4.0.0" "xpp3-writer")
                (modello-single-mode file "4.0.0" "xpp3-extended-reader"))
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install (install-from-pom "maven-model/pom.xml")))))
+    (propagated-inputs
      `(("java-commons-lang3" ,java-commons-lang3)
-       ("java-plexus-utils" ,java-plexus-utils)))
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("maven-pom" ,maven-pom)))
     (native-inputs
      `(("java-modello-core" ,java-modello-core)
        ;; for modello:
@@ -816,13 +926,12 @@ so really just plain Java objects.")))
                  '("org/apache/maven/building/FileSourceTest.java"
                    "org/apache/maven/building/UrlSourceTest.java")
                  (("target/test-classes") "maven-builder-support/src/test/resources")))
-             #t)))))
-    (inputs
-     `(("java-plexus-utils" ,java-plexus-utils)
-       ("java-commons-lang3" ,java-commons-lang3)))
+             #t))
+         (replace 'install (install-from-pom "maven-builder-support/pom.xml")))))
+    (propagated-inputs
+     `(("maven-pom" ,maven-pom)))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
+     `(("java-junit" ,java-junit)))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains a support library for descriptor builders (model,
 setting, toolchains)")))
@@ -834,7 +943,6 @@ setting, toolchains)")))
     (arguments
      `(#:jar-name "maven-settings.jar"
        #:source-dir "maven-settings/src/main/java"
-       #:jdk ,icedtea-8
        #:tests? #f; no tests
        #:phases
        (modify-phases %standard-phases
@@ -848,8 +956,11 @@ setting, toolchains)")))
                (modello-single-mode file "1.1.0" "java")
                (modello-single-mode file "1.1.0" "xpp3-reader")
                (modello-single-mode file "1.1.0" "xpp3-writer"))
-             #t)))))
-    (inputs '())
+             #t))
+         (replace 'install (install-from-pom "maven-settings/pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("maven-pom" ,maven-pom)))
     (native-inputs
      `(("java-modello-core" ,java-modello-core)
        ;; for modello:
@@ -891,17 +1002,18 @@ simply plain java objects.")))
              (chmod "components.sh" #o755)
              (invoke "./components.sh" "maven-settings-builder/src/main/java"
                      "build/classes/META-INF/plexus/components.xml")
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install (install-from-pom "maven-settings-builder/pom.xml")))))
+    (propagated-inputs
      `(("java-plexus-utils" ,java-plexus-utils)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
        ("java-plexus-interpolation" ,java-plexus-interpolation)
        ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
        ("maven-builder-support" ,maven-builder-support)
        ("maven-settings" ,maven-settings)
-       ("java-commons-lang3" ,java-commons-lang3)))
+       ("maven-pom" ,maven-pom)))
     (native-inputs
-     `(("java-junit" ,java-junit)))
+     `(("java-junit" ,java-junit)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains the effective model builder, with profile activation,
 inheritance, interpolation, @dots{}")))
@@ -933,19 +1045,19 @@ inheritance, interpolation, @dots{}")))
            (lambda _
              (substitute* (find-files "maven-model-builder/src/test/java" ".*.java")
                (("src/test") "maven-model-builder/src/test"))
-             #t)))))
-    (inputs
-     `(("model" ,maven-model)
-       ("artifact" ,maven-artifact)
-       ("support" ,maven-builder-support)
-       ("annotations" ,java-plexus-component-annotations)
-       ("utils" ,java-plexus-utils)
-       ("interpolation" ,java-plexus-interpolation)
-       ("lang3" ,java-commons-lang3)
-       ("guava" ,java-guava)))
+             #t))
+         (replace 'install
+           (install-from-pom "maven-model-builder/pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-interpolation" ,java-plexus-interpolation)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("maven-artifact" ,maven-artifact)
+       ("maven-builder-support" ,maven-builder-support)
+       ("maven-model" ,maven-model)
+       ("maven-pom" ,maven-pom)))
     (native-inputs
      `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-guava" ,java-guava)
        ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
        ("java-plexus-component-annotations" ,java-plexus-component-annotations)
        ("guice" ,java-guice)
@@ -982,8 +1094,12 @@ inheritance, interpolation, @dots{}")))
                (modello-single-mode file "1.1.0" "java")
                (modello-single-mode file "1.1.0" "xpp3-reader")
                (modello-single-mode file "1.1.0" "xpp3-writer"))
-             #t)))))
-    (inputs '())
+             #t))
+         (replace 'install
+           (install-from-pom "maven-repository-metadata/pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("maven-pom" ,maven-pom)))
     (native-inputs
      `(("modello" ,java-modello-core)
        ;; for modello:
@@ -1025,22 +1141,21 @@ so really just plain objects.")))
              (chmod "./sisu.sh" #o755)
              (invoke "./sisu.sh" "maven-resolver-provider/src/main/java"
                      "build/classes/META-INF/sisu/javax.inject.Named")
-             #t)))))
-    (inputs
-     `(("maven-resolver-spi" ,maven-resolver-spi)
+             #t))
+         (replace 'install
+           (install-from-pom "maven-resolver-provider/pom.xml")))))
+    (propagated-inputs
+     `(("maven-model" ,maven-model)
+       ("maven-model-builder" ,maven-model-builder)
+       ("maven-resolver-spi" ,maven-resolver-spi)
        ("maven-resolver-api" ,maven-resolver-api)
        ("maven-resolver-impl" ,maven-resolver-impl)
        ("maven-resolver-util" ,maven-resolver-util)
-       ("maven-model" ,maven-model)
-       ("maven-model-builder" ,maven-model-builder)
        ("maven-builder-support" ,maven-builder-support)
        ("maven-repository-metadata" ,maven-repository-metadata)
        ("java-plexus-utils" ,java-plexus-utils)
        ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-commons-lang3" ,java-commons-lang3)
        ("java-guice" ,java-guice)
-       ("java-guava" ,java-guava)
-       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
        ("java-javax-inject" ,java-javax-inject)))))
 
 (define-public maven-plugin-api
@@ -1064,8 +1179,10 @@ so really just plain objects.")))
                (modello-single-mode file "1.0.0" "java")
                (modello-single-mode file "1.0.0" "xpp3-reader")
                (modello-single-mode file "1.0.0" "xpp3-writer"))
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install
+           (install-from-pom "maven-plugin-api/pom.xml")))))
+    (propagated-inputs
      `(("maven-artifact" ,maven-artifact)
        ("maven-model" ,maven-model)
        ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
@@ -1147,8 +1264,15 @@ generally generated from plugin sources using maven-plugin-plugin.")))
                (modello-single-mode file "1.1.0" "java")
                (modello-single-mode file "1.1.0" "xpp3-reader")
                (modello-single-mode file "1.1.0" "xpp3-writer"))
-             #t)))))
-    (inputs
+             #t))
+         (add-before 'install 'fix-pom
+           (lambda _
+             (substitute* "pom.xml"
+               (("<classifier>no_aop</classifier>") ""))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
      `(("maven-artifact" ,maven-artifact)
        ("maven-resolver-provider" ,maven-resolver-provider)
        ("maven-builder-support" ,maven-builder-support)
@@ -1306,8 +1430,10 @@ artifactId=maven-core" ,(package-version maven-core-bootstrap))))
              (substitute* "build.xml"
                (("srcdir=\"maven-embedder/src/test\"")
                 "srcdir=\"maven-embedder/src/test/java\""))
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install
+           (install-from-pom "maven-embedder/pom.xml")))))
+    (propagated-inputs
      `(("maven-core" ,maven-core)
        ("maven-artifact" ,maven-artifact)
        ("maven-plugin-api" ,maven-plugin-api)
@@ -1334,7 +1460,8 @@ artifactId=maven-core" ,(package-version maven-core-bootstrap))))
        ("java-guice" ,java-guice)
        ("java-javax-inject" ,java-javax-inject)
        ("java-slf4j-api" ,java-slf4j-api)
-       ("java-slf4j-simple" ,java-slf4j-simple)))
+       ("java-slf4j-simple" ,java-slf4j-simple)
+       ("java-jsr250" ,java-jsr250)))
     (native-inputs
      `(("java-modello-core" ,java-modello-core)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
@@ -1503,8 +1630,10 @@ logging support.")))
          (add-after 'generate-metadata 'rebuild
            (lambda _
              (invoke "ant" "jar")
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
      `(("maven-artifact" ,maven-artifact)
        ("maven-repository-metadata" ,maven-repository-metadata)
        ("maven-builder-support" ,maven-builder-support)
@@ -1584,8 +1713,10 @@ layer for plugins that need to keep Maven2 compatibility.")))
                  ;; Reference every jar so plexus-classworlds can find them.
                  (for-each
                    (lambda (dependency)
-                     (format #t "load       ~a/share/java/*.jar~%"
-                             (assoc-ref inputs dependency)))
+                     (for-each
+                       (lambda (file)
+                         (format #t "load       ~a~%" file))
+                       (find-files (assoc-ref inputs dependency) ".*.jar$")))
                    '("maven-artifact" "maven-embedder" "maven-core" "maven-compat"
                      "maven-builder-support" "maven-model" "maven-model-builder"
                      "maven-settings" "maven-settings-builder" "maven-plugin-api"

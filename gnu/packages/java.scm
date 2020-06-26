@@ -3591,11 +3591,11 @@ documentation tools.")
                (("<path id=\"path.build\">")
                 (string-append "<path id=\"path.build\"><fileset dir=\""
                                (assoc-ref inputs "java-asm-bootstrap")
-                               "/share/java\" includes=\"**/*.jar\"/>"))
+                               "/lib/m2\" includes=\"**/*.jar\"/>"))
                (("<zipfileset src=\"lib/asm-4.0.jar\"/>") "")
                (("lib/asm-commons-4.0.jar")
-                (string-append (assoc-ref inputs "java-asm-bootstrap")
-                               "/share/java/asm-6.0.jar"))
+                (car (find-files (assoc-ref inputs "java-asm-bootstrap")
+                                 "asm-6.0.jar")))
                (("<include name=\"org/objectweb/asm/commons/Remap\\*\\.class\"/>")
                 (string-append "<include name=\"org/objectweb/asm/"
                                "commons/Remap*.class\"/>"
@@ -4181,9 +4181,15 @@ archives (jar).")
                             ;; Failures
                             "**/ComponentRealmCompositionTest.java"
                             "**/PlexusContainerTest.java")
-       #:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'fix-google-collections
+           (lambda _
+             ;; Google collections are now replaced with guava
+             (substitute* "plexus-container-default/pom.xml"
+               (("google-collections") "guava")
+               (("com.google.collections") "com.google.guava"))
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
              (copy-recursively
@@ -4198,7 +4204,9 @@ archives (jar).")
                    dir "/plexus/component/composition/"
                    "ComponentRealmCompositionTest.java")
                  (("src/test") "plexus-container-default/src/test"))
-               #t))))))
+               #t)))
+         (replace 'install
+           (install-from-pom "plexus-container-default/pom.xml")))))
     (inputs
      `(("worldclass" ,java-plexus-classworlds)
        ("xbean" ,java-geronimo-xbean-reflect)
@@ -4216,7 +4224,13 @@ archives (jar).")
     (arguments
      `(#:jar-name "plexus-component-annotations.jar"
        #:source-dir "plexus-component-annotations/src/main/java"
-       #:tests? #f)); no tests
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "plexus-component-annotations/pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-containers-parent-pom" ,java-plexus-containers-parent-pom)))
     (inputs '())
     (native-inputs '())
     (synopsis "Plexus descriptors generator")
@@ -4240,7 +4254,6 @@ from source tags and class annotations.")))
     (arguments
      `(#:jar-name "plexus-cipher.jar"
        #:source-dir "src/main/java"
-       #:jdk ,icedtea-8
        #:tests? #f; FIXME: requires sisu-inject-bean
        #:phases
        (modify-phases %standard-phases
@@ -4251,10 +4264,21 @@ from source tags and class annotations.")))
              (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
                (lambda _
                  (display "org.sonatype.plexus.components.cipher.DefaultPlexusCipher\n")))
-             #t)))))
+             #t))
+         (add-before 'install 'fix-test-dependency
+           (lambda _
+             ;; sisu-inject-bean is only used for tests, but its scope is "provided".
+             (substitute* "pom.xml"
+               (("provided") "test"))
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
     (inputs
      `(("java-cdi-api" ,java-cdi-api)
        ("java-javax-inject" ,java-javax-inject)))
+    (propagated-inputs
+     `(("java-sonatype-spice-parent-pom" ,java-sonatype-spice-parent-pom-15)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
     (home-page "https://github.com/sonatype/plexus-cipher")
     (synopsis "Encryption/decryption Component")
     (description "Plexus-cipher contains a component to deal with encryption
@@ -4330,7 +4354,6 @@ Compiler component.")))
     (arguments
      `(#:jar-name "plexus-sec-dispatcher.jar"
        #:source-dir "src/main/java"
-       #:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'generate-models
@@ -4378,9 +4401,12 @@ Compiler component.")))
          (add-before 'check 'fix-paths
            (lambda _
              (copy-recursively "src/test/resources" "target")
-             #t)))))
-    (inputs
-     `(("java-plexus-cipher" ,java-plexus-cipher)))
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-cipher" ,java-plexus-cipher)
+       ("java-sonatype-spice-parent-pom" ,java-sonatype-spice-parent-pom-12)))
     (native-inputs
      `(("java-modello-core" ,java-modello-core)
        ;; for modello:
@@ -4708,10 +4734,19 @@ on the XPP3 API (XML Pull Parser).")))
              (invoke "jar"
                      "-cf" (string-append "dist/asm-" ,version ".jar")
                      "-C" "output/build/tmp" ".")))
+         (add-before 'install 'fix-pom
+           (lambda _
+             (substitute* (find-files "archive" "\\.pom$")
+               (("@product.artifact@") ,version))
+             #t))
+         (add-before 'install 'install-parent
+           (install-pom-file "archive/asm-parent.pom"))
          (replace 'install
-           (install-jars "dist")))))
+           (install-from-pom "archive/asm.pom")))))
     (native-inputs
      `(("java-junit" ,java-junit)))
+    (propagated-inputs
+     `(("java-org-ow2-parent-pom" ,java-org-ow2-parent-pom-1.3)))
     (home-page "https://asm.ow2.io/")
     (synopsis "Very small and fast Java bytecode manipulation framework")
     (description "ASM is an all purpose Java bytecode manipulation and
@@ -4720,6 +4755,32 @@ generate classes, directly in binary form.  The provided common
 transformations and analysis algorithms allow easily assembling custom
 complex transformations and code analysis tools.")
     (license license:bsd-3)))
+
+(define java-org-ow2-parent-pom-1.3
+  (package
+    (name "java-org-ow2-parent-pom")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri "https://repo1.maven.org/maven2/org/ow2/ow2/1.3/ow2-1.3.pom")
+              (sha256
+               (base32
+                "1yr8hfx8gffpppa4ii6cvrsq029a6x8hzy7nsavxhs60s9kmq8ai"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'unpack)
+         (delete 'build)
+         (delete 'configure)
+         (replace 'install
+           (install-pom-file (assoc-ref %build-inputs "source"))))))
+    (home-page "https://ow2.org")
+    (synopsis "Ow2.org parent pom")
+    (description "This package contains the parent pom for projects from ow2.org,
+including java-asm.")
+    (license license:lgpl2.1+)))
 
 (define java-asm-bootstrap
   (package
@@ -5715,7 +5776,28 @@ bottlenecks move away from the database in an effectively cached system.")
     (arguments
      `(#:tests? #f ; no tests included
        #:jdk ,icedtea-8
-       #:jar-name "jsr250.jar"))
+       #:jar-name "jsr250.jar"
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build maven pom)
+                  (guix build java-utils)
+                  (sxml simple))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'create-pom
+           (lambda _
+             (with-output-to-file "pom.xml"
+               (lambda _
+                 (sxml->xml
+                   `((project
+                       (modelVersion "4.0.0")
+                       (name "jsr250")
+                       (groupId "javax.annotation")
+                       (artifactId "jsr250-api")
+                       (version ,,version))))))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (home-page "https://jcp.org/en/jsr/detail?id=250")
     (synopsis "Security-related annotations")
     (description "This package provides annotations for security.  It provides
@@ -7024,7 +7106,11 @@ logging framework for Java.")))
     (build-system ant-build-system)
     ;; TODO: javadoc
     (arguments
-     `(#:jar-name "commons-cli.jar"))
+     `(#:jar-name "commons-cli.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
@@ -7197,8 +7283,12 @@ more efficient storage-wise than an uncompressed bitmap (as implemented in the
                 (string-append "<include name=\"**/*Test.java\" />"
                                "<exclude name=\"**/MultithreadedInitializationTest"
                                ".java\" />")))
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install
+           (install-from-pom "slf4j-api/pom.xml")))))
+    (propagated-inputs
+     `(("java-slf4j-parent" ,java-slf4j-parent)))
+    (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
     (home-page "https://www.slf4j.org/")
@@ -7209,6 +7299,21 @@ frameworks (e.g. @code{java.util.logging}, @code{logback}, @code{log4j})
 allowing the end user to plug in the desired logging framework at deployment
 time.")
     (license license:expat)))
+
+(define java-slf4j-parent
+  (package
+    (inherit java-slf4j-api)
+    (name "java-slf4j-parent")
+    (native-inputs `())
+    (propagated-inputs '())
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (delete 'configure)
+         (replace 'install
+           (install-pom-file "pom.xml")))))))
 
 (define-public java-slf4j-simple
   (package
@@ -7231,11 +7336,14 @@ time.")
              ;; ... and build test helper classes here:
              (apply invoke
                     `("javac" "-d" "."
-                      ,@(find-files "slf4j-api/src/test" ".*\\.java"))))))))
-    (inputs
+                      ,@(find-files "slf4j-api/src/test" ".*\\.java")))))
+         (replace 'install
+           (install-from-pom "slf4j-simple/pom.xml")))))
+    (propagated-inputs
+     `(("java-slf4j-api" ,java-slf4j-api)))
+    (native-inputs
      `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)
-       ("java-slf4j-api" ,java-slf4j-api)))
+       ("java-hamcrest-core" ,java-hamcrest-core)))
     (home-page "https://www.slf4j.org/")
     (synopsis "Simple implementation of simple logging facade for Java")
     (description "SLF4J binding for the Simple implementation, which outputs
@@ -9522,11 +9630,7 @@ annotations.")
                (("org.apache-extras.beanshell") "org.beanshell"))
              #t))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((share (string-append (assoc-ref outputs "out") "/share/java")))
-               (mkdir-p share)
-               (copy-file "dist/bsh-2.0b6.jar" (string-append share "/bsh-2.0b6.jar"))
-               #t))))))
+           (install-from-pom "pom.xml")))))
     (inputs
      `(("java-classpathx-servletapi" ,java-classpathx-servletapi)
        ("java-commons-bsf" ,java-commons-bsf)))
@@ -10775,7 +10879,31 @@ sequences to format your console output which works on every platform.")
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-jboss-el-api_spec.jar"
-       #:jdk ,icedtea-8))
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build maven pom)
+                  (guix build java-utils)
+                  (sxml simple))
+       #:phases
+       (modify-phases %standard-phases
+         ;; the origin of javax.el:javax.el-api is unknown, so we use this package
+         ;; instead, which implements the same thing.  We override the pom file
+         ;; to "rename" the package so it can be found by maven.
+         (add-before 'install 'override-pom
+           (lambda _
+             (delete-file "pom.xml")
+             (with-output-to-file "pom.xml"
+               (lambda _
+                 (sxml->xml
+                   `(project
+                      (modelVersion "4.0.0")
+                      (name "el-api")
+                      (groupId "javax.el")
+                      (artifactId "javax.el-api")
+                      (version "3.0")))))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (inputs
      `(("java-junit" ,java-junit)))
     (home-page "https://github.com/jboss/jboss-el-api_spec")
@@ -10804,7 +10932,33 @@ JavaServer Pages (JSP).")
      `(#:jar-name "java-jboss-interceptors-api_spec.jar"
        #:jdk ,icedtea-8
        #:source-dir "."
-       #:tests? #f)); no tests
+       #:tests? #f; no tests
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build maven pom)
+                  (guix build java-utils)
+                  (sxml simple))
+       #:phases
+       (modify-phases %standard-phases
+         ;; the origin of javax.interceptor:javax.interceptor-api is unknown,
+         ;; so we use this package instead, which implements the same thing.
+         ;; We override the pom file to "rename" the package so it can be found
+         ;; by maven.
+         (add-before 'install 'override-pom
+           (lambda _
+             (delete-file "pom.xml")
+             (with-output-to-file "pom.xml"
+               (lambda _
+                 (sxml->xml
+                   `(project
+                      (modelVersion "4.0.0")
+                      (name "interceptor-api")
+                      (groupId "javax.interceptor")
+                      (artifactId "javax.interceptor-api")
+                      (version "3.0")))))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (home-page "https://github.com/jboss/jboss-interceptors-api_spec")
     (synopsis "Interceptors 1.2 API classes from JSR 318")
     (description "Java-jboss-interceptors-api-spec implements the Interceptors
@@ -10831,11 +10985,16 @@ specific events.")
        #:jar-name "java-cdi-api.jar"
        #:test-dir "api/src/test"
        #:jdk ,icedtea-8
-       #:tests? #f)); Tests fail because we don't have a CDI provider yet
-    (inputs
+       #:tests? #f; Tests fail because we don't have a CDI provider yet
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "api/pom.xml")))))
+    (propagated-inputs
      `(("java-javax-inject" ,java-javax-inject)
        ("java-jboss-el-api-spec" ,java-jboss-el-api-spec)
-       ("java-jboss-interceptors-api-spec" ,java-jboss-interceptors-api-spec)))
+       ("java-jboss-interceptors-api-spec" ,java-jboss-interceptors-api-spec)
+       ("java-weld-parent-pom" ,java-weld-parent-pom)))
     (native-inputs
      `(("java-testng" ,java-testng)
        ("java-hamcrest-core" ,java-hamcrest-core)))
@@ -11825,28 +11984,48 @@ OSGi Service Registry is a goal of this project.")
                (substitute* "java/org/eclipse/sisu/plexus/DefaultPlexusContainerTest.java"
                  (("resources/component-jar")
                   "org.eclipse.sisu.plexus.tests/resources/component-jar")))
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install
+           (install-from-pom "org.eclipse.sisu.plexus/pom.xml")))))
+    (propagated-inputs
      `(("java-plexus-classworlds" ,java-plexus-classworlds)
-       ("java-plexus-util" ,java-plexus-utils)
+       ("java-plexus-utils" ,java-plexus-utils)
        ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-osgi-framework" ,java-osgi-framework)
+       ("java-cdi-api" ,java-cdi-api)
        ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
-       ("java-guice" ,java-guice)
-       ("java-javax-inject" ,java-javax-inject)
+       ("java-sisu-plexus-parent-pom" ,java-sisu-plexus-parent-pom)))
+    (inputs
+     `(("java-osgi-framework" ,java-osgi-framework)
        ("java-slf4j-api" ,java-slf4j-api)
-       ("java-junit" ,java-junit)))
-    (native-inputs
-     `(("java-guava" ,java-guava)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-guice" ,java-guice)
+       ("java-guava" ,java-guava)
        ("java-aopalliance" ,java-aopalliance)
-       ("java-cglib" ,java-cglib)
-       ("java-asm" ,java-asm)))
+       ("java-asm" ,java-asm)
+       ("java-cglib" ,java-cglib)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
     (home-page "https://www.eclipse.org/sisu/")
     (synopsis "Plexus support for the sisu container")
     (description "Sisu is a modular JSR330-based container that supports
 classpath scanning, auto-binding, and dynamic auto-wiring.  This package
 adds Plexus support to the Sisu-Inject container.")
     (license license:epl1.0)))
+
+(define java-sisu-plexus-parent-pom
+  (package
+    (inherit java-eclipse-sisu-plexus)
+    (name "java-sisu-plexus-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("java-sonatype-oss-parent-pom-9" ,java-sonatype-oss-parent-pom-9)))))
 
 (define-public java-commons-compiler
   (package

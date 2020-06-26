@@ -231,10 +231,9 @@ compressor/decompressor.")
          (replace 'install (install-from-pom "pom.xml")))))
     (home-page "https://github.com/dain/snappy")
     (native-inputs
-     `(("guava" ,java-guava)
+     `(("java-guava" ,java-guava)
        ("java-snappy" ,java-snappy)
-       ("hamcrest" ,java-hamcrest-core)
-       ("testng" ,java-testng)))
+       ("java-testng" ,java-testng)))
     (synopsis "Java port of the Snappy (de)compressor")
     (description
      "Iq80-snappy is a port of the Snappy compressor and decompressor rewritten
