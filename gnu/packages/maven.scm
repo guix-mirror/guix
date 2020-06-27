@@ -35,51 +35,6 @@
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
-(define-public java-plexus-component-metadata
-  (package
-    (inherit java-plexus-container-default)
-    (name "java-plexus-component-metadata")
-    (arguments
-     `(#:jar-name "plexus-component-metadata.jar"
-       #:source-dir "src/main/java"
-       #:test-dir "src/test"
-       #:jdk ,icedtea-8
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'chdir
-           (lambda _
-             (chdir "plexus-component-metadata")
-             #t))
-         (add-before 'build 'copy-resources
-           (lambda _
-             (copy-recursively "src/main/resources"
-                               "build/classes/")
-             #t)))))
-    (propagated-inputs
-     `(("java-plexus-container-default" ,java-plexus-container-default)
-       ("java-plexu-component-annotations" ,java-plexus-component-annotations)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-plexus-cli" ,java-plexus-cli)
-       ("java-plexus-classworlds" ,java-plexus-classworlds)
-       ("maven-plugin-api" ,maven-plugin-api)
-       ("maven-plugin-annotations" ,maven-plugin-annotations)
-       ("maven-core-bootstrap" ,maven-core-bootstrap)
-       ("maven-model" ,maven-model)
-       ("java-commons-cli" ,java-commons-cli)
-       ("java-qdox" ,java-qdox)
-       ("java-jdom2" ,java-jdom2)
-       ("java-asm" ,java-asm)))
-    (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-guava" ,java-guava)
-       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)))
-    (synopsis "Inversion-of-control container for Maven")
-    (description "The Plexus project provides a full software stack for creating
-and executing software projects.  Based on the Plexus container, the
-applications can utilise component-oriented programming to build modular,
-reusable components that can easily be assembled and reused.  This package
-provides the Maven plugin generating the component metadata.")))
-
 (define-public maven-resolver-api
   (package
     (name "maven-resolver-api")
@@ -1472,106 +1427,107 @@ implemented by Mojos -- development.
 A plugin is described in a @file{META-INF/maven/plugin.xml} plugin descriptor,
 generally generated from plugin sources using maven-plugin-plugin.")))
 
-(define maven-core-bootstrap
-  (package
-    (inherit maven-artifact)
-    (name "maven-core")
-    (arguments
-     `(#:jar-name "maven-core.jar"
-       #:source-dir "src/main/java"
-       #:jdk ,icedtea-8
-       ;; Tests need maven-compat, which requires maven-core
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'chdir
-           (lambda _
-             ;; Required for generating components.xml in maven-core
-             (chdir "maven-core")
-             #t))
-         (add-before 'build 'copy-resources
-           (lambda _
-             (mkdir-p "build/classes/")
-             (copy-recursively "src/main/resources" "build/classes")
-             #t))
-         (add-after 'copy-resources 'fill-properties
-           (lambda _
-             ;; This file controls the output of some mvn subcommands, such as
-             ;; mvn -version.
-             (substitute* "build/classes/org/apache/maven/messages/build.properties"
-               (("\\$\\{buildNumber\\}") "guix_build")
-               (("\\$\\{timestamp\\}") "0")
-               (("\\$\\{project.version\\}") ,(package-version maven-artifact))
-               (("\\$\\{distributionId\\}") "apache-maven")
-               (("\\$\\{distributionShortName\\}") "Maven")
-               (("\\$\\{distributionName\\}") "Apache Maven"))
-             #t))
-         (add-before 'build 'generate-sisu-named
-           (lambda _
-             (mkdir-p "build/classes/META-INF/sisu")
-             (chmod "../sisu.sh" #o755)
-             (invoke "../sisu.sh" "src/main/java"
-                     "build/classes/META-INF/sisu/javax.inject.Named")
-             #t))
-         (add-before 'build 'generate-models
-           (lambda* (#:key inputs #:allow-other-keys)
-             (define (modello-single-mode file version mode)
-               (invoke "java" "org.codehaus.modello.ModelloCli"
-                       file mode "src/main/java" version
-                       "false" "true"))
-             (let ((file "src/main/mdo/toolchains.mdo"))
-               (modello-single-mode file "1.1.0" "java")
-               (modello-single-mode file "1.1.0" "xpp3-reader")
-               (modello-single-mode file "1.1.0" "xpp3-writer"))
-             #t))
-         (add-before 'install 'fix-pom
-           (lambda _
-             (substitute* "pom.xml"
-               (("<classifier>no_aop</classifier>") ""))
-             #t))
-         (replace 'install
-           (install-from-pom "pom.xml")))))
-    (propagated-inputs
-     `(("maven-artifact" ,maven-artifact)
-       ("maven-resolver-provider" ,maven-resolver-provider)
-       ("maven-builder-support" ,maven-builder-support)
-       ("maven-model" ,maven-model)
-       ("maven-model-builder" ,maven-model-builder)
-       ("maven-settings" ,maven-settings)
-       ("maven-settings-builder" ,maven-settings-builder)
-       ("maven-plugin-api" ,maven-plugin-api)
-       ("maven-repository-metadata" ,maven-repository-metadata)
-       ("maven-shared-utils" ,maven-shared-utils)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-commons-lang3" ,java-commons-lang3)
-       ("java-guava" ,java-guava)
-       ("java-guice" ,java-guice)
-       ("maven-resolver-api" ,maven-resolver-api)
-       ("maven-resolver-spi" ,maven-resolver-spi)
-       ("maven-resolver-util" ,maven-resolver-util)
-       ("maven-resolver-impl" ,maven-resolver-impl)
-       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
-       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
-       ("java-javax-inject" ,java-javax-inject)
-       ("java-plexus-classworld" ,java-plexus-classworlds)))
-    (native-inputs
-     `(("java-modello-core" ,java-modello-core)
-       ("java-cglib" ,java-cglib)
-       ("java-asm" ,java-asm)
-       ("java-plexus-classworlds" ,java-plexus-classworlds)
-       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-       ("java-sisu-build-api" ,java-sisu-build-api)
-       ("java-modello-plugins-java" ,java-modello-plugins-java)
-       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
-       ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)
-       ;; tests
-       ("java-junit" ,java-junit)
-       ("java-mockito-1" ,java-mockito-1)
-       ("java-commons-jxpath" ,java-commons-jxpath)))
-    (description "Apache Maven is a software project management and comprehension
+(define-public maven-core-bootstrap
+  (hidden-package
+    (package
+      (inherit maven-artifact)
+      (name "maven-core")
+      (arguments
+       `(#:jar-name "maven-core.jar"
+         #:source-dir "src/main/java"
+         #:jdk ,icedtea-8
+         ;; Tests need maven-compat, which requires maven-core
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'chdir
+             (lambda _
+               ;; Required for generating components.xml in maven-core
+               (chdir "maven-core")
+               #t))
+           (add-before 'build 'copy-resources
+             (lambda _
+               (mkdir-p "build/classes/")
+               (copy-recursively "src/main/resources" "build/classes")
+               #t))
+           (add-after 'copy-resources 'fill-properties
+             (lambda _
+               ;; This file controls the output of some mvn subcommands, such as
+               ;; mvn -version.
+               (substitute* "build/classes/org/apache/maven/messages/build.properties"
+                 (("\\$\\{buildNumber\\}") "guix_build")
+                 (("\\$\\{timestamp\\}") "0")
+                 (("\\$\\{project.version\\}") ,(package-version maven-artifact))
+                 (("\\$\\{distributionId\\}") "apache-maven")
+                 (("\\$\\{distributionShortName\\}") "Maven")
+                 (("\\$\\{distributionName\\}") "Apache Maven"))
+               #t))
+           (add-before 'build 'generate-sisu-named
+             (lambda _
+               (mkdir-p "build/classes/META-INF/sisu")
+               (chmod "../sisu.sh" #o755)
+               (invoke "../sisu.sh" "src/main/java"
+                       "build/classes/META-INF/sisu/javax.inject.Named")
+               #t))
+           (add-before 'build 'generate-models
+             (lambda* (#:key inputs #:allow-other-keys)
+               (define (modello-single-mode file version mode)
+                 (invoke "java" "org.codehaus.modello.ModelloCli"
+                         file mode "src/main/java" version
+                         "false" "true"))
+               (let ((file "src/main/mdo/toolchains.mdo"))
+                 (modello-single-mode file "1.1.0" "java")
+                 (modello-single-mode file "1.1.0" "xpp3-reader")
+                 (modello-single-mode file "1.1.0" "xpp3-writer"))
+               #t))
+           (add-before 'install 'fix-pom
+             (lambda _
+               (substitute* "pom.xml"
+                 (("<classifier>no_aop</classifier>") ""))
+               #t))
+           (replace 'install
+             (install-from-pom "pom.xml")))))
+      (propagated-inputs
+       `(("maven-artifact" ,maven-artifact)
+         ("maven-resolver-provider" ,maven-resolver-provider)
+         ("maven-builder-support" ,maven-builder-support)
+         ("maven-model" ,maven-model)
+         ("maven-model-builder" ,maven-model-builder)
+         ("maven-settings" ,maven-settings)
+         ("maven-settings-builder" ,maven-settings-builder)
+         ("maven-plugin-api" ,maven-plugin-api)
+         ("maven-repository-metadata" ,maven-repository-metadata)
+         ("maven-shared-utils" ,maven-shared-utils)
+         ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+         ("java-plexus-utils" ,java-plexus-utils)
+         ("java-commons-lang3" ,java-commons-lang3)
+         ("java-guava" ,java-guava)
+         ("java-guice" ,java-guice)
+         ("maven-resolver-api" ,maven-resolver-api)
+         ("maven-resolver-spi" ,maven-resolver-spi)
+         ("maven-resolver-util" ,maven-resolver-util)
+         ("maven-resolver-impl" ,maven-resolver-impl)
+         ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+         ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+         ("java-javax-inject" ,java-javax-inject)
+         ("java-plexus-classworld" ,java-plexus-classworlds)))
+      (native-inputs
+       `(("java-modello-core" ,java-modello-core)
+         ("java-cglib" ,java-cglib)
+         ("java-asm" ,java-asm)
+         ("java-plexus-classworlds" ,java-plexus-classworlds)
+         ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+         ("java-sisu-build-api" ,java-sisu-build-api)
+         ("java-modello-plugins-java" ,java-modello-plugins-java)
+         ("java-modello-plugins-xml" ,java-modello-plugins-xml)
+         ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)
+         ;; tests
+         ("java-junit" ,java-junit)
+         ("java-mockito-1" ,java-mockito-1)
+         ("java-commons-jxpath" ,java-commons-jxpath)))
+      (description "Apache Maven is a software project management and comprehension
 tool.  This package contains the maven core classes managing the whole build
-process.")))
+process."))))
 
 (define-public maven-core
   (package
