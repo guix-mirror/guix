@@ -3548,7 +3548,28 @@ documentation tools.")
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "qdox.jar"
-       #:tests? #f)); no tests
+       #:tests? #f; no tests
+       #:modules
+       ((guix build ant-build-system)
+        (guix build java-utils)
+        (guix build utils)
+        (sxml simple))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'create-pom
+           (lambda _
+             (with-output-to-file "pom.xml"
+               (lambda _
+                 (sxml->xml
+                   `((project
+                       (modelVersion "4.0.0")
+                       (name "QDox")
+                       (groupId "com.thoughtworks.qdox")
+                       (artifactId "qdox")
+                       (version ,,version))))))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (home-page "https://github.com/codehaus/qdox")
     (synopsis "Parse definitions from Java source files")
     (description "QDox is a high speed, small footprint parser for extracting
@@ -3556,6 +3577,23 @@ class/interface/method definitions from source files complete with JavaDoc
 @code{@@tags}.  It is designed to be used by active code generators or
 documentation tools.")
     (license license:asl2.0)))
+
+(define-public java-qdox-2-M9
+  (package
+    (inherit java-qdox)
+    (version "2.0-M9"); required by plexus-java
+    (source (origin
+              (method url-fetch)
+              ;; 2.0-M4, -M5 at https://github.com/paul-hammant/qdox
+              ;; Older releases at https://github.com/codehaus/qdox/
+              ;; Note: The release at maven is pre-generated. The release at
+              ;; github requires jflex.
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "com/thoughtworks/qdox/qdox/" version
+                                  "/qdox-" version "-sources.jar"))
+              (sha256
+               (base32
+                "1s2jnmx2dkwnaha12lcj26aynywgwa8sslc47z82wx8xai13y4fg"))))))
 
 (define-public java-jarjar
   (package
