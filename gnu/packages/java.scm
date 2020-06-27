@@ -4442,10 +4442,14 @@ language, for the plexus project.")
     (arguments
      `(#:jar-name "plexus-compiler-api.jar"
        #:source-dir "plexus-compiler-api/src/main/java"
-       #:jdk ,icedtea-8
-       #:test-dir "plexus-compiler-api/src/test"))
-    (inputs
+       #:test-dir "plexus-compiler-api/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "plexus-compiler-api/pom.xml")))))
+    (propagated-inputs
      `(("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-plexus-compiler-pom" ,java-plexus-compiler-pom)
        ("java-plexus-util" ,java-plexus-utils)))
     (native-inputs
      `(("java-junit" ,java-junit)))
@@ -4456,6 +4460,91 @@ compilers.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define java-plexus-compiler-pom
+  (package
+    (inherit java-plexus-compiler-api)
+    (name "java-plexus-compiler-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml"))
+         (add-after 'install 'install-compilers
+           (install-pom-file "plexus-compilers/pom.xml")))))
+    (propagated-inputs
+     `(("plexus-components-parent-pom-4.0" ,plexus-components-parent-pom-4.0)))))
+
+(define plexus-components-parent-pom-4.0
+  (package
+    (name "plexus-components-parent-pom")
+    (version "4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-components")
+                     (commit (string-append "plexus-components-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "041bm8yv0m2i17mqg8zljib4ykpha7ijls2qfdwvkma4d39lhysi"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+      `(("plexus-parent-pom-4.0" ,plexus-parent-pom-4.0)))
+    (home-page "https://codehaus-plexus.github.io/plexus-components")
+    (synopsis "Plexus parent pom")
+    (description "This package contains the Plexus components parent POM.")
+    (license license:asl2.0)))
+
+(define-public java-plexus-compiler-manager
+  (package
+    (inherit java-plexus-compiler-api)
+    (name "java-plexus-compiler-manager")
+    (arguments
+     `(#:jar-name "compiler-compiler-manager.java"
+       #:source-dir "plexus-compiler-manager/src/main/java"
+       #:test-dir "plexus-compiler-manager/src/test"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "plexus-compiler-manager/src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             (invoke "ant" "jar")
+             #t))
+         (add-after 'generate-metadata 'rebuild
+           (lambda _
+             (invoke "ant" "jar")
+             #t))
+         (replace 'install
+           (install-from-pom "plexus-compiler-manager/pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-compiler-api" ,java-plexus-compiler-api)
+       ("java-plexus-compiler-pom" ,java-plexus-compiler-pom)
+       ("java-plexus-container-default" ,java-plexus-container-default)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-plexus-component-metadata" ,java-plexus-component-metadata)))
+    (synopsis "Compiler management for Plexus Compiler component")
+    (description "Plexus Compiler is a Plexus component to use different
+compilers through a uniform API.  This component chooses the compiler
+implementation to use in a project.")))
+
 (define-public java-plexus-compiler-javac
   (package
     (inherit java-plexus-compiler-api)
@@ -4465,13 +4554,38 @@ compilers.")
        #:source-dir "plexus-compilers/plexus-compiler-javac/src/main/java"
        #:jdk ,icedtea-8
        #:tests? #f; depends on compiler-test -> maven-core -> ... -> this package.
-       #:test-dir "plexus-compilers/plexus-compiler-javac/src/test"))
-    (inputs
+       #:test-dir "plexus-compilers/plexus-compiler-javac/src/test"
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build java-utils)
+                  (sxml simple))
+       #:phases
+       (modify-phases %standard-phases
+         ;; We cannot use java-plexus-component-metadata to generate the metadata
+         ;; because it ultimately depends on this package.
+         ;; Create it manually instead
+         (add-before 'build 'create-metadata
+           (lambda _
+             (let* ((dir "build/classes/META-INF/plexus")
+                    (file (string-append dir "/components.xml")))
+               (mkdir-p dir)
+               (with-output-to-file file
+                 (lambda _
+                   (sxml->xml
+                     `(component-set
+                        (components
+                          (component
+                            (role "org.codehaus.plexus.compiler.Compiler")
+                            (role-hint "javac")
+                            (implementation "org.codehaus.plexus.compiler.javac.JavacCompiler")
+                            (isolated-realm "false"))))))))
+             #t))
+         (replace 'install
+           (install-from-pom "plexus-compilers/plexus-compiler-javac/pom.xml")))))
+    (propagated-inputs
      `(("java-plexus-compiler-api" ,java-plexus-compiler-api)
        ("java-plexus-utils" ,java-plexus-utils)
        ("java-plexus-container-default" ,java-plexus-container-default)))
-    (native-inputs
-     `(("java-junit" ,java-junit)))
     (synopsis "Javac Compiler support for Plexus Compiler component")
     (description "This package contains the Javac Compiler support for Plexus
 Compiler component.")))
