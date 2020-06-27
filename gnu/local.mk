@@ -359,6 +359,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/maths.scm			\
   %D%/packages/matrix.scm			\
   %D%/packages/maven.scm			\
+  %D%/packages/maven-parent-pom.scm		\
   %D%/packages/mc.scm				\
   %D%/packages/mcrypt.scm			\
   %D%/packages/medical.scm			\
