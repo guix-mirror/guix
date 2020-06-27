@@ -828,7 +828,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
       (native-inputs
        ;; FIXME: Rust 1.27 and some later versions require GDB 8.2 specifically.
        ;; See <https://bugs.gnu.org/37810>.
-       (alist-replace "gdb" (list gdb-8.2)
+       (alist-replace "gdb" (list gdb-minimal-8.2)
                       (package-native-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)

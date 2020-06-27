@@ -122,11 +122,18 @@ the program is running to try to fix bugs.  It can be used to debug programs
 written in C, C++, Ada, Objective-C, Pascal and more.")
     (license gpl3+)))
 
+(define-public gdb-minimal
+  (package/inherit
+   gdb
+   (name "gdb-minimal")
+   (inputs (fold alist-delete (package-inputs gdb)
+                 '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
+
 ;; This version of GDB is required by some of the Rust compilers, see
 ;; <https://bugs.gnu.org/37810>.
-(define-public gdb-8.2
+(define-public gdb-minimal-8.2
   (package
-    (inherit gdb)
+    (inherit gdb-minimal)
     (version "8.2.1")
     (source (origin
               (method url-fetch)
@@ -135,10 +142,3 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
               (sha256
                (base32
                 "00i27xqawjv282a07i73lp1l02n0a3ywzhykma75qg500wll6sha"))))))
-
-(define-public gdb-minimal
-  (package/inherit
-   gdb
-   (name "gdb-minimal")
-   (inputs (fold alist-delete (package-inputs gdb)
-                 '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
