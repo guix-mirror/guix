@@ -2528,3 +2528,43 @@ Maven project dependencies.")
     (description "This package provides a tree-based API for resolution of
 Maven project dependencies.")
     (license license:asl2.0)))
+
+(define-public maven-archiver
+  (package
+    (name "maven-archiver")
+    (version "3.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/shared/"
+                                  "maven-archiver-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "1204xkqj259brpk3yscprml0lbfbyn1vn5nrgqjk44z5vx127lbw"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-archiver.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("java-commons-io" ,java-commons-io)
+       ("maven-artifact" ,maven-3.0-artifact)
+       ("maven-core" ,maven-3.0-core)
+       ("maven-model" ,maven-3.0-model)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("java-plexus-archiver" ,java-plexus-archiver)
+       ("java-plexus-interpolation" ,java-plexus-interpolation)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("maen-parent-pom" ,maven-parent-pom-33)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-assertj" ,java-assertj)
+       ("unzip" ,unzip)))
+    (home-page "https://maven.apache.org/shared/maven-dependency-tree")
+    (synopsis "Tree-based API for resolution of Maven project dependencies")
+    (description "This package provides a tree-based API for resolution of
+Maven project dependencies.")
+    (license license:asl2.0)))
