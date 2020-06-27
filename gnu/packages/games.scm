@@ -36,7 +36,7 @@
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
@@ -153,6 +153,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
@@ -4138,24 +4139,40 @@ in-window at 640x480 resolution or fullscreen.")
 (define-public warzone2100
   (package
     (name "warzone2100")
-    (version "3.2.3")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/warzone2100/archives/"
-                           "unsupported/Warzone2100-"
-                           (version-major+minor version) "/" version
-                           "/warzone2100-" version ".tar.xz"))
+       (uri (string-append "mirror://sourceforge/warzone2100/releases/"
+                           version
+                           "/warzone2100_src.tar.xz"))
        (sha256
-        (base32 "10kmpr4cby95zwqsl1zwx95d9achli6khq7flv6xmrq30a39xazw"))))
-    (build-system gnu-build-system)
+        (base32 "0g4qwi9zw0s4pfgrz3fxhargsj3405rbrh9zy3b2j3arzss2h0gy"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (with-directory-excursion "3rdparty"
+             (for-each
+              delete-file-recursively
+              '("discord-rpc"
+                "miniupnp"
+                "utfcpp")))
+             #t))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("--with-distributor=Guix")
+     `(#:configure-flags '("-DWZ_DISTRIBUTOR=Guix"
+                           "-DENABLE_DISCORD=off")
+       #:tests? #f ; TODO: Tests seem to be broken, configure.ac is missing.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-utfcpp-include
+           (lambda _
+             (substitute* "lib/framework/wzstring.cpp"
+               (("<utfcpp/source/utf8.h>") "<utf8.h>"))
+             #t))
          (add-after 'unpack 'link-tests-with-qt
            (lambda _
-             (substitute* "tests/Makefile.in"
+             (substitute* "tests/Makefile.am"
                (("(framework_linktest_LDADD|maptest_LDADD) = " prefix)
                 (string-append prefix "$(QT5_LIBS) ")))
              #t))
@@ -4166,32 +4183,38 @@ in-window at 640x480 resolution or fullscreen.")
                 (string-append "iV_DrawTextRotated(\"Press ESC to exit.\", "
                                "100, 100, 0.0f, font_regular);")))
              #t)))))
-    (native-inputs `(("gettext" ,gettext-minimal)
+    (native-inputs `(("asciidoc" ,asciidoc)
+                     ("asciidoctor" ,ruby-asciidoctor)
+                     ("gettext" ,gettext-minimal)
                      ("pkg-config" ,pkg-config)
                      ("unzip" ,unzip)
-                     ("zip" ,zip)))
-    (inputs `(("fontconfig" ,fontconfig)
+                     ;; 7z is used to create .zip archive, not `zip' as in version 3.2.*.
+                     ("p7zip" ,p7zip)))
+    (inputs `(("curl" ,curl)
+              ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
-              ("fribidi" ,fribidi)
               ("glew" ,glew)
               ("harfbuzz" ,harfbuzz)
               ("libtheora" ,libtheora)
               ("libvorbis" ,libvorbis)
               ("libxrandr" ,libxrandr)
+              ("libsodium" ,libsodium)
+              ("miniupnpc" ,miniupnpc)
               ("openal" ,openal)
               ("physfs" ,physfs)
               ("qtbase" ,qtbase)
               ("qtscript" ,qtscript)
               ("openssl" ,openssl)
-              ("sdl2" ,sdl2)))
+              ("sdl2" ,sdl2)
+              ("utfcpp" ,utfcpp)))
     (home-page "https://wz2100.net")
     (synopsis "3D Real-time strategy and real-time tactics game")
     (description
      "Warzone 2100 offers campaign, multi-player, and single-player skirmish
-modes. An extensive tech tree with over 400 different technologies, combined
+modes.  An extensive tech tree with over 400 different technologies, combined
 with the unit design system, allows for a wide variety of possible units and
 tactics.")
-                                        ; Everything is GPLv2+ unless otherwise specified in COPYING.NONGPL
+    ;; Everything is GPLv2+ unless otherwise specified in COPYING.NONGPL
     (license (list license:bsd-3
                    license:cc0
                    license:cc-by-sa3.0
