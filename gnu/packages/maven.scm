@@ -3403,3 +3403,95 @@ POM in Apache Maven Surefire project.")))
     (synopsis "Shared JUnit4 provider code for Maven SureFire")
     (description "This package contains shared code for all JUnit providers,
 starting from JUnit 4.")))
+
+(define-public java-surefire-junit4
+  (package
+    (inherit java-surefire-logger-api)
+    (name "java-surefire-junit4")
+    (arguments
+     `(;#:tests? #f
+       #:jar-name "java-surefire-junit4.jar"
+       #:source-dir "surefire-providers/surefire-junit4/src/main/java"
+       #:test-dir "surefire-providers/surefire-junit4/src/test"
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build java-utils)
+                  (sxml simple))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'regenerate-own-pom
+           (lambda _
+             ;; Surefire struggles resolving artifacts because of this pom
+             ;; file, resulting in a NullPointerException when collecting
+             ;; Artifacts (and a "Failure detected." message from
+             ;; DefaultArtifactResolver).  Replace the pom file with a much
+             ;; simpler one.  Everything is shaded anyway (as used to be the
+             ;; case in 2.22), so there will not be missing dependencies.
+             (with-output-to-file "surefire-providers/surefire-junit4/pom.xml"
+               (lambda _
+                 (sxml->xml
+                   `((project
+                       (modelVersion "4.0.0")
+                       (name "Surefire JUnit4")
+                       (groupId "org.apache.maven.surefire")
+                       (artifactId "surefire-junit4")
+                       (version ,,(package-version java-surefire-common-java5)))))))
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes")
+             (copy-recursively "surefire-providers/surefire-junit4/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'build 'prepare-shade
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "build/classes")
+             (with-directory-excursion "build/classes"
+               (for-each
+                 (lambda (input)
+                   (for-each
+                     (lambda (jar-file)
+                       (invoke "jar" "xf" jar-file)
+                       (delete-file-recursively "META-INF"))
+                     (find-files (assoc-ref inputs input) ".*.jar$")))
+                 '("maven-shared-utils" "java-surefire-common-java5"
+                   "java-surefire-common-junit3" "java-surefire-common-junit4"
+                   "java-surefire-api")))
+             #t))
+         (add-after 'build 'shade
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jarjar
+                   (car (find-files (assoc-ref inputs "java-jarjar") ".*.jar$")))
+                   (injar "java-surefire-junit4.jar")
+                   (outjar "java-surefire-junit4-shaded.jar"))
+               (with-directory-excursion "build/jar"
+                 (with-output-to-file "rules"
+                   (lambda _
+                     (format #t (string-append
+                                  "rule "
+                                  "org.apache.maven.shared.utils.** "
+                                  "org.apache.maven.surefire.shade."
+                                  "org.apache.maven.shared.utils.@1~%"))))
+                 (invoke "java" "-jar" jarjar "process" "rules" injar outjar)
+                 (delete-file injar)
+                 (rename-file outjar injar)))
+             #t))
+         (replace 'install
+           (install-from-pom "surefire-providers/surefire-junit4/pom.xml")))))
+    (propagated-inputs
+     `(("java-junit" ,java-junit)
+       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+    (inputs
+     `(("java-surefire-common-junit4" ,java-surefire-common-junit4)
+       ("java-surefire-common-junit3" ,java-surefire-common-junit3)
+       ("java-surefire-common-java5" ,java-surefire-common-java5)
+       ("java-surefire-api" ,java-surefire-api)))
+    (native-inputs
+     `(("java-jarjar" ,java-jarjar)
+       ("unzip" ,unzip)
+       ("java-junit" ,java-junit)
+       ("java-hamcrest-all" ,java-hamcrest-all)
+       ("java-fest-assert" ,java-fest-assert)))
+    (synopsis "SureFire JUnit 4.0+ runner")
+    (description "This package contains the runner for tests run on a forked
+JVM, using JUnit 4.0 or later.")))
