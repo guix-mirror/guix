@@ -377,3 +377,41 @@ other projects as their parent pom.")
 (define-public plexus-parent-pom-6.1
   (make-plexus-parent-pom
     "6.1" "1pisca0fxpgbhf4xdgw5mn86622pg3mc5b8760kf9mk2awazshlj"))
+
+(define (make-maven-parent-pom version hash parent)
+  (hidden-package
+    (package
+      (name "maven-parent-pom")
+      (version version)
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/apache/maven-parent")
+                       (commit (string-append "maven-parent-" version))))
+                (file-name (git-file-name name version))
+                (sha256 (base32 hash))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (add-after 'install 'install-plugins
+             (install-pom-file "maven-plugins/pom.xml"))
+           (add-after 'install 'install-shared
+             (install-pom-file "maven-shared-components/pom.xml"))
+           (replace 'install
+             (install-pom-file "pom.xml")))))
+      (propagated-inputs
+       `(("parent" ,parent)))
+      (home-page "https://maven.apache.org/")
+      (synopsis "Maven parent pom")
+      (description "Apache Maven is a software project management and comprehension
+tool.  This package contains the Maven parent POM.")
+      (license license:asl2.0))))
+
+(define-public maven-parent-pom-33
+  (make-maven-parent-pom
+    "33" "1b0z2gsvpccgcssys9jbdfwlwq8b5imdwr508f87ssdbfs29lh65"
+    apache-parent-pom-21))
