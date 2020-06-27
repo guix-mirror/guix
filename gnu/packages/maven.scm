@@ -2655,3 +2655,53 @@ Maven project dependencies.")
     (description "This package provides a tree-based API for resolution of
 Maven project dependencies.")
     (license license:asl2.0)))
+
+(define-public maven-enforcer-api
+  (package
+    (name "maven-enforcer-api")
+    (version "3.0.0-M3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/enforcer/"
+                                  "enforcer-" version "-source-release.zip"))
+              (sha256
+               (base32
+                "014cwj0dqa69nnlzcin8pk9wsjmmg71vsbcpb16cibcjpm6h9wjg"))
+              (patches
+                (search-patches "maven-enforcer-api-fix-old-dependencies.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-enforcer-api.jar"
+       #:source-dir "enforcer-api/src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "enforcer-api/pom.xml")))))
+    (propagated-inputs
+     `(("maven-plugin-api" ,maven-plugin-api)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-jsr305" ,java-jsr305)
+       ("maven-enforcer-parent-pom" ,maven-enforcer-parent-pom)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://maven.apache.org/shared/maven-dependency-tree")
+    (synopsis "Tree-based API for resolution of Maven project dependencies")
+    (description "This package provides a tree-based API for resolution of
+Maven project dependencies.")
+    (license license:asl2.0)))
+
+(define maven-enforcer-parent-pom
+  (package
+    (inherit maven-enforcer-api)
+    (name "maven-enforcer-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("maven-parent-pom" ,maven-parent-pom-30)))))

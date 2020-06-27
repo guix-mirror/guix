@@ -1279,6 +1279,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
   %D%/packages/patches/maxima-defsystem-mkdir.patch		\
+  %D%/packages/patches/maven-enforcer-api-fix-old-dependencies.patch	\
   %D%/packages/patches/maven-generate-component-xml.patch		\
   %D%/packages/patches/maven-generate-javax-inject-named.patch		\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\

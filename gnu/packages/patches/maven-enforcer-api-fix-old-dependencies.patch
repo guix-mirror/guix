@@ -1,0 +1,177 @@
+From eccc46eaf7903a8e837813795498b12c078faaea Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Wed, 11 Mar 2020 21:53:32 +0100
+Subject: [PATCH] Fix old dependencies
+
+---
+ .../enforcer/AbstractBanDependencies.java     |  2 +-
+ .../enforcer/BanTransitiveDependencies.java   |  2 +-
+ .../enforcer/DependencyConvergence.java       | 17 ++++++++---------
+ .../enforcer/RequireUpperBoundDeps.java       | 19 +++++++++----------
+ .../enforcer/utils/DependencyVersionMap.java  |  6 +++---
+ 5 files changed, 22 insertions(+), 24 deletions(-)
+
+diff --git a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/AbstractBanDependencies.java b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/AbstractBanDependencies.java
+index 2888a61..2b944b7 100644
+--- a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/AbstractBanDependencies.java
++++ b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/AbstractBanDependencies.java
+@@ -119,7 +119,7 @@ public abstract class AbstractBanDependencies
+         Set<Artifact> dependencies = null;
+         try
+         {
+-            DependencyNode node = graphBuilder.buildDependencyGraph( project, null );
++            DependencyNode node = graphBuilder.buildDependencyGraph( project.getProjectBuildingRequest(), null );
+             if ( searchTransitive )
+             {
+                 dependencies = ArtifactUtils.getAllDescendants( node );
+diff --git a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/BanTransitiveDependencies.java b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/BanTransitiveDependencies.java
+index 6e1dcd4..1b964ba 100644
+--- a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/BanTransitiveDependencies.java
++++ b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/BanTransitiveDependencies.java
+@@ -158,7 +158,7 @@ public class BanTransitiveDependencies
+         try
+         {
+             MavenProject project = (MavenProject) helper.evaluate( "${project}" );
+-            rootNode = createDependencyGraphBuilder().buildDependencyGraph( project, null );
++            rootNode = createDependencyGraphBuilder().buildDependencyGraph( project.getProjectBuildingRequest(), null );
+         }
+         catch ( Exception e )
+         {
+diff --git a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/DependencyConvergence.java b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/DependencyConvergence.java
+index 684f984..ca7ad3a 100644
+--- a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/DependencyConvergence.java
++++ b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/DependencyConvergence.java
+@@ -35,9 +35,9 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
+ import org.apache.maven.plugin.logging.Log;
+ import org.apache.maven.plugins.enforcer.utils.DependencyVersionMap;
+ import org.apache.maven.project.MavenProject;
+-import org.apache.maven.shared.dependency.tree.DependencyNode;
+-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
+-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
++import org.apache.maven.shared.dependency.graph.DependencyNode;
++import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
++import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
+ import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
+ import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+ 
+@@ -60,7 +60,7 @@ public class DependencyConvergence
+     // CHECKSTYLE_OFF: LineLength
+     /**
+      * Uses the {@link EnforcerRuleHelper} to populate the values of the
+-     * {@link DependencyTreeBuilder#buildDependencyTree(MavenProject, ArtifactRepository, ArtifactFactory, ArtifactMetadataSource, ArtifactFilter, ArtifactCollector)}
++     * {@link DependencyGraphBuilder#buildDependencyTree(MavenProject, ArtifactRepository, ArtifactFactory, ArtifactMetadataSource, ArtifactFilter, ArtifactCollector)}
+      * factory method. <br/>
+      * This method simply exists to hide all the ugly lookup that the {@link EnforcerRuleHelper} has to do.
+      * 
+@@ -75,16 +75,15 @@ public class DependencyConvergence
+         try
+         {
+             MavenProject project = (MavenProject) helper.evaluate( "${project}" );
+-            DependencyTreeBuilder dependencyTreeBuilder =
+-                (DependencyTreeBuilder) helper.getComponent( DependencyTreeBuilder.class );
++            DependencyGraphBuilder dependencyTreeBuilder =
++                (DependencyGraphBuilder) helper.getComponent( DependencyGraphBuilder.class );
+             ArtifactRepository repository = (ArtifactRepository) helper.evaluate( "${localRepository}" );
+             ArtifactFactory factory = (ArtifactFactory) helper.getComponent( ArtifactFactory.class );
+             ArtifactMetadataSource metadataSource =
+                 (ArtifactMetadataSource) helper.getComponent( ArtifactMetadataSource.class );
+             ArtifactCollector collector = (ArtifactCollector) helper.getComponent( ArtifactCollector.class );
+             ArtifactFilter filter = null; // we need to evaluate all scopes
+-            DependencyNode node = dependencyTreeBuilder.buildDependencyTree( project, repository, factory,
+-                                                                             metadataSource, filter, collector );
++            DependencyNode node = dependencyTreeBuilder.buildDependencyGraph( project.getProjectBuildingRequest(), filter);
+             return node;
+         }
+         catch ( ExpressionEvaluationException e )
+@@ -95,7 +94,7 @@ public class DependencyConvergence
+         {
+             throw new EnforcerRuleException( "Unable to lookup a component " + e.getLocalizedMessage(), e );
+         }
+-        catch ( DependencyTreeBuilderException e )
++        catch ( DependencyGraphBuilderException e )
+         {
+             throw new EnforcerRuleException( "Could not build dependency tree " + e.getLocalizedMessage(), e );
+         }
+diff --git a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/RequireUpperBoundDeps.java b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/RequireUpperBoundDeps.java
+index 458554a..2de9870 100644
+--- a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/RequireUpperBoundDeps.java
++++ b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/RequireUpperBoundDeps.java
+@@ -38,10 +38,10 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
+ import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
+ import org.apache.maven.plugin.logging.Log;
+ import org.apache.maven.project.MavenProject;
+-import org.apache.maven.shared.dependency.tree.DependencyNode;
+-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
+-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
+-import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
++import org.apache.maven.shared.dependency.graph.DependencyNode;
++import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
++import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
++import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
+ import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
+ import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+ 
+@@ -91,7 +91,7 @@ public class RequireUpperBoundDeps
+     // CHECKSTYLE_OFF: LineLength
+     /**
+      * Uses the {@link EnforcerRuleHelper} to populate the values of the
+-     * {@link DependencyTreeBuilder#buildDependencyTree(MavenProject, ArtifactRepository, ArtifactFactory, ArtifactMetadataSource, ArtifactFilter, ArtifactCollector)}
++     * {@link DependencyGraphBuilder#buildDependencyTree(MavenProject, ArtifactRepository, ArtifactFactory, ArtifactMetadataSource, ArtifactFilter, ArtifactCollector)}
+      * factory method. <br/>
+      * This method simply exists to hide all the ugly lookup that the {@link EnforcerRuleHelper} has to do.
+      * 
+@@ -106,8 +106,8 @@ public class RequireUpperBoundDeps
+         try
+         {
+             MavenProject project = (MavenProject) helper.evaluate( "${project}" );
+-            DependencyTreeBuilder dependencyTreeBuilder =
+-                (DependencyTreeBuilder) helper.getComponent( DependencyTreeBuilder.class );
++            DependencyGraphBuilder dependencyTreeBuilder =
++                (DependencyGraphBuilder) helper.getComponent( DependencyGraphBuilder.class );
+             ArtifactRepository repository = (ArtifactRepository) helper.evaluate( "${localRepository}" );
+             ArtifactFactory factory = (ArtifactFactory) helper.getComponent( ArtifactFactory.class );
+             ArtifactMetadataSource metadataSource =
+@@ -115,8 +115,7 @@ public class RequireUpperBoundDeps
+             ArtifactCollector collector = (ArtifactCollector) helper.getComponent( ArtifactCollector.class );
+             ArtifactFilter filter = null; // we need to evaluate all scopes
+             DependencyNode node =
+-                dependencyTreeBuilder.buildDependencyTree( project, repository, factory, metadataSource, filter,
+-                                                           collector );
++                dependencyTreeBuilder.buildDependencyGraph( project.getProjectBuildingRequest(), filter);
+             return node;
+         }
+         catch ( ExpressionEvaluationException e )
+@@ -127,7 +126,7 @@ public class RequireUpperBoundDeps
+         {
+             throw new EnforcerRuleException( "Unable to lookup a component " + e.getLocalizedMessage(), e );
+         }
+-        catch ( DependencyTreeBuilderException e )
++        catch ( DependencyGraphBuilderException e )
+         {
+             throw new EnforcerRuleException( "Could not build dependency tree " + e.getLocalizedMessage(), e );
+         }
+diff --git a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/utils/DependencyVersionMap.java b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/utils/DependencyVersionMap.java
+index b6213fa..2c2a645 100644
+--- a/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/utils/DependencyVersionMap.java
++++ b/enforcer-rules/src/main/java/org/apache/maven/plugins/enforcer/utils/DependencyVersionMap.java
+@@ -26,8 +26,8 @@ import java.util.Map;
+ 
+ import org.apache.maven.artifact.Artifact;
+ import org.apache.maven.plugin.logging.Log;
+-import org.apache.maven.shared.dependency.tree.DependencyNode;
+-import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
++import org.apache.maven.shared.dependency.graph.DependencyNode;
++import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
+ 
+ /**
+  * @author Brian Fox
+@@ -132,4 +132,4 @@ public class DependencyVersionMap
+         }
+         return output;
+     }
+-}
+\ No newline at end of file
++}
+-- 
+2.24.1
+
