@@ -10034,6 +10034,7 @@ includes efficient implementations for common data types.")
         (base32
          "0q4m2fa7wkgxs0grir8rlqwibasmi3s1x7c107ynndwfm62nzv0a"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs `(("ghc-hashable" ,ghc-hashable)
               ("ghc-vector" ,ghc-vector)
               ("ghc-unordered-containers" ,ghc-unordered-containers)
