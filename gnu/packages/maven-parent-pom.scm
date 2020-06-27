@@ -233,3 +233,28 @@ other projects as their parent pom.")
       (description "This package contains a single pom.xml file that is used by
 other projects as their parent pom.")
       (license license:asl2.0))))
+
+(define-public java-sonatype-spice-parent-pom-17
+  (hidden-package
+    (package
+      (inherit java-sonatype-spice-parent-pom-15)
+      (version "17")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/sonatype/oss-parents")
+                       (commit "spice-parent-17")))
+                (file-name (git-file-name "java-sonatype-spice-parent-pom" version))
+                (sha256
+                 (base32
+                  "1d4jh1scgnjwhv8f0r052vrksg0kman09hslfvfvpfidl8rwiigq"))))
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build)
+           (delete 'configure)
+           (replace 'install
+             (install-pom-file "spice-parent/pom.xml")))))
+      (propagated-inputs
+       `(("java-sonatype-forge-parent-pom-10" ,java-sonatype-forge-parent-pom-10))))))
