@@ -11140,6 +11140,7 @@ class, forming lattice-like structure.")
         (base32
          "016hc4imr9l4szs3p7f1aahvxr5wv4clvr3qzrm3nibssg5vrs61"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-transformers-compat" ,ghc-transformers-compat)
