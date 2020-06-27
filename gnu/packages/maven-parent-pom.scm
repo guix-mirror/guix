@@ -73,3 +73,7 @@
 (define-public apache-parent-pom-18
   (make-apache-parent-pom
     "18" "1il97vpdmv5k2gnyinj45q00f7f4w9hcb588digwfid5bskddnyy"))
+
+(define-public apache-parent-pom-19
+  (make-apache-parent-pom
+    "19" "02drnwv2qqk1dmxbmmrk0bi1iil5cal9l47w53ascpbjg6242mp1"))
