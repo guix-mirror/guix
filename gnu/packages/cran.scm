@@ -22486,3 +22486,38 @@ Webdriver/Selenium project (see @url{http://www.seleniumhq.org/download/},
 more information).  This package provides functions to download these binaries
 and to manage processes involving them.")
     (license license:expat)))
+
+(define-public r-rselenium
+  (package
+    (name "r-rselenium")
+    (version "1.7.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "RSelenium" version))
+        (sha256
+          (base32
+            "1xn5fdbzmq7b1f5fc9ls23g177bmnd8bn4p4d8aafr6z3jwkmfir"))))
+    (properties `((upstream-name . "RSelenium")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-binman" ,r-binman)
+        ("r-catools" ,r-catools)
+        ("r-httr" ,r-httr)
+        ("r-openssl" ,r-openssl)
+        ("r-wdman" ,r-wdman)
+        ("r-xml" ,r-xml)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://docs.ropensci.org/RSelenium/")
+    (synopsis "R bindings for Selenium WebDriver")
+    (description
+      "This package provides a set of R bindings for the Selenium 2.0
+WebDriver (see @url{https://selenium.dev/documentation/en/} for more
+information) using the @code{JsonWireProtocol} (see
+@url{https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol} for more
+information).  Selenium 2.0 WebDriver allows driving a web browser natively as
+a user would either locally or on a remote machine using the Selenium server
+it marks a leap forward in terms of web browser automation.  Selenium
+automates web browsers (commonly referred to as browsers).  Using RSelenium
+you can automate browsers locally or remotely.")
+    (license license:agpl3+)))
