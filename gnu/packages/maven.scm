@@ -3251,3 +3251,31 @@ internal to the SureFire Logger API.  It is designed to have no dependency.")
        ("java-jarjar" ,java-jarjar)))
     (synopsis "Maven SureFire API")
     (description "This package contains the API to use Maven SureFire.")))
+
+(define-public java-surefire-booter
+  (package
+    (inherit java-surefire-logger-api)
+    (name "java-surefire-booter")
+    (arguments
+     `(#:tests? #f; require mockito 2
+       #:jar-name "java-surefire-booter.jar"
+       #:source-dir "surefire-booter/src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-/bin/sh
+           (lambda _
+             (substitute* "surefire-booter/src/main/java/org/apache/maven/surefire/booter/PpidChecker.java"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (replace 'install
+           (install-from-pom "surefire-booter/pom.xml")))))
+    (propagated-inputs
+     `(("java-surefire-api" ,java-surefire-api)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("java-commons-io" ,java-commons-io)
+       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+    (inputs
+     `(("java-jsr305" ,java-jsr305)))
+    (synopsis "API and Facilities used by forked tests running in JVM sub-process")
+    (description "SureFire runs tests inside a forked JVM subprocess.  This
+package contains an API and facilities used inside that forked JVM.")))
