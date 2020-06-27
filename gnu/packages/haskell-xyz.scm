@@ -4385,6 +4385,7 @@ and are often as efficient as hand-written folds.")
              (substitute* "tests/Test/Foundation/Number.hs"
                ((", testDividible proxy") ""))
              #t)))))
+    (outputs '("out" "static" "doc"))
     (inputs `(("ghc-basement" ,ghc-basement)))
     (home-page "https://github.com/haskell-foundation/foundation")
     (synopsis "Alternative prelude with batteries and no dependencies")
