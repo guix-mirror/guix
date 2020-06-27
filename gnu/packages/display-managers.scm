@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 L  p R n  d n <guix@lprndn.info>
+;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,9 +28,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -122,6 +125,37 @@ create smooth, animated user interfaces.")
     (home-page "https://github.com/sddm/sddm")
     ;; QML files are MIT licensed and images are CC BY 3.0.
     (license (list license:gpl2+ license:expat license:cc-by3.0))))
+
+(define-public guix-simplyblack-sddm-theme
+  (package
+    (name "guix-simplyblack-sddm-theme")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/plattfot/guix-simplyblack-sddm")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1fwny6b0xpjs8ad2b16pyxd27gf0sr0nillmhc2h5k0q7dva21vi"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (sddm-themes (string-append out "/share/sddm/themes")))
+           (mkdir-p sddm-themes)
+           (copy-recursively (assoc-ref %build-inputs "source")
+                             (string-append sddm-themes "/guix-simplyblack-sddm"))))))
+    (home-page "https://github.com/plattfot/guix-simplyblack-sddm")
+    (synopsis "Guix based theme for SDDM")
+    (description
+     "This package provides a simple theme for SDDM, black background with
+Guix's logo.  Based on Arch linux's archlinux-simplyblack theme.")
+    ;; Theme under cc-by-sa3.0, guix logo under license:cc-by-sa4.0
+    (license (list license:cc-by-sa3.0 license:cc-by-sa4.0))))
 
 (define-public lightdm
   (package
