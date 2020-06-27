@@ -116,3 +116,8 @@
   (make-apache-commons-parent-pom
     "39" "0mjx48a55ik1h4hsxhifkli1flvkp6d05ab14p4al0fc6rhdxi46"
     apache-parent-pom-16))
+
+(define-public apache-commons-parent-pom-41
+  (make-apache-commons-parent-pom
+    "41" "1k184amdqdx62bb2k0m9v93zzx768qcyam5dvdgksqc1aaqhadlb"
+    apache-parent-pom-18))
