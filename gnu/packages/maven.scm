@@ -2970,3 +2970,56 @@ build are stored.  By default, it is located within the user's home directory
     (description "This component provides an API to filter resources in Maven
 projects.")
     (license license:asl2.0)))
+
+(define-public maven-resources-plugin
+  (package
+    (name "maven-resources-plugin")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/apache/"
+                                  "maven-resources-plugin/archive/"
+                                  "maven-resources-plugin-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1f5gnjg2xmqfxml6k0ydyd1sxxwzgnb24qn6avcc4mijwd8a84pl"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-resources-plugin.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:tests? #f; test depends on maven-plugin-test-harness
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-plugin.xml
+           (generate-plugin.xml "pom.xml" "resources"
+             "src/main/java/org/apache/maven/plugins/resources"
+             (list
+               (list "ResourcesMojo.java" "CopyResourcesMojo.java")
+               (list "ResourcesMojo.java")
+               (list "ResourcesMojo.java" "TestResourcesMojo.java"))))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-plugin-api" ,maven-plugin-api)
+       ("maven-core" ,maven-core)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("maven-filtering" ,maven-filtering)
+       ("java-plexus-interpolation" ,java-plexus-interpolation)
+       ("maven-parent-pom" ,maven-parent-pom-31)))
+    (inputs
+     `(("maven-plugin-annotations" ,maven-plugin-annotations)
+       ("java-commons-io" ,java-commons-io)))
+    (native-inputs
+     `(("java-plexus-component-metadata" ,java-plexus-component-metadata)))
+    (home-page "https://maven.apache.org/plugins/maven-resources-plugin")
+    (synopsis "Maven plugin to collect and install resources")
+    (description "The Resources Plugin handles the copying of project resources
+to the output directory.  There are two different kinds of resources: main
+resources and test resources.  The difference is that the main resources are
+the resources associated to the main source code while the test resources are
+associated to the test source code.
+
+Thus, this allows the separation of resources for the main source code and its
+unit tests.")
+    (license license:asl2.0)))
