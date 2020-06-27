@@ -15474,28 +15474,6 @@ functionality like full case-folding for case-insensitive matches in Unicode.")
 (define-public python2-regex
   (package-with-python2 python-regex))
 
-(define-public python2-pyopengl
-  (package
-   (name "python2-pyopengl")
-   (version "3.1.0")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (pypi-uri "PyOpenGL" version))
-     (sha256
-      (base32
-       "1byxjj6a8rwzhxhjqlc588zdad2qwxdd7vlam2653ylll31waiwv"))))
-   (arguments
-     `(#:python ,python-2))
-   (build-system python-build-system)
-   (home-page "http://pyopengl.sourceforge.net")
-   (synopsis "Standard OpenGL bindings for Python")
-   (description
-    "PyOpenGL is the most common cross platform Python binding to OpenGL and
-related APIs.  The binding is created using the standard @code{ctypes}
-library.")
-   (license license:bsd-3)))
-
 (define-public python-pyopengl
   (package
     (name "python-pyopengl")
