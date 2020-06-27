@@ -2201,3 +2201,31 @@ reporting or the build process.")))
                  ("maven-builder-support" #f)
                  (_ input)))
              (package-propagated-inputs maven-model-builder)))))))
+
+(define-public maven-3.0-plugin-api
+  (package
+    (inherit maven-plugin-api)
+    (version (package-version maven-3.0-pom))
+    (source (package-source maven-3.0-pom))
+    (arguments
+      (substitute-keyword-arguments (package-arguments maven-plugin-api)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-before 'install 'fix-pom
+              (lambda _
+                (substitute* "maven-plugin-api/pom.xml"
+                  (("org.sonatype.sisu") "org.codehaus.plexus")
+                  (("sisu-inject-plexus") "plexus-container-default"))
+                #t))))))
+    (propagated-inputs
+      (map
+        (lambda (input)
+          (match (car input)
+            ("maven-pom" `("maven-pom" ,maven-3.0-pom))
+            ("maven-artifact" `("maven-artifact" ,maven-3.0-artifact))
+            ("maven-model" `("maven-model" ,maven-3.0-model))
+            (_ input)))
+        (package-propagated-inputs maven-model-builder)))
+    (native-inputs
+     `(("java-plexus-container-default" ,java-plexus-container-default)
+       ,@(package-native-inputs maven-plugin-api)))))
