@@ -4369,6 +4369,62 @@ provides the Maven plugin generating the component metadata.")))
 and decryption.")
     (license license:asl2.0)))
 
+(define-public java-plexus-java
+  (package
+    (name "java-plexus-java")
+    (version "0.9.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-languages")
+                     (commit (string-append "plexus-languages-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0vmvgq5hfxs90yyxgssfpwq78l7vwx1ljwpkk594mrdr8sm668b5"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  (for-each delete-file (find-files "." ".*.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-java.java"
+       #:source-dir "plexus-java/src/main/java"
+       #:test-dir "plexus-java/src/test"
+       #:tests? #f; require mockito 2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "plexus-java/src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             (invoke "ant" "jar")
+             #t))
+         (add-before 'install 'install-parent
+           (install-pom-file "pom.xml"))
+         (replace 'install
+           (install-from-pom "plexus-java/pom.xml")))))
+    (propagated-inputs
+     `(("java-asm" ,java-asm)
+       ("java-qdox" ,java-qdox-2-M9)
+       ("java-javax-inject" ,java-javax-inject)
+       ("plexus-parent-pom" ,plexus-parent-pom-4.0)))
+    (inputs
+     `(("java-plexus-component-annotations" ,java-plexus-component-annotations)))
+    (native-inputs
+     `(("java-plexus-component-metadata" ,java-plexus-component-metadata)
+       ("java-junit" ,java-junit)))
+    (home-page "https://codehaus-plexus.github.io/plexus-languages/plexus-java")
+    (synopsis "Shared language features for Java")
+    (description "This package contains shared language features of the Java
+language, for the plexus project.")
+    (license license:asl2.0)))
+
 (define-public java-plexus-compiler-api
   (package
     (name "java-plexus-compiler-api")
