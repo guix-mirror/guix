@@ -906,6 +906,7 @@ available in later versions of base to a wider (older) range of compilers.")
         (base32
          "1zk728sd09hh2r4xwz4lazsrrgg5cshydn64932sm0vckplndk73"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (home-page "https://github.com/nikita-volkov/base-prelude")
     (synopsis "The most complete prelude formed solely from the Haskell's base
 package")
