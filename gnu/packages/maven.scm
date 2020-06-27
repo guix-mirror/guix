@@ -556,6 +556,26 @@ for repository system implementations and repository connectors.")))
     (description "This package contains a collection of utility classes to
 ease testing of the repository system.")))
 
+(define-public java-eclipse-aether-util
+  (package
+    (inherit java-eclipse-aether-api)
+    (name "java-eclipse-aether-util")
+    (arguments
+     `(#:jar-name "aether-util.jar"
+       #:source-dir "aether-util/src/main/java"
+       #:test-dir "aether-util/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-from-pom "aether-util/pom.xml")))))
+    (propagated-inputs
+     `(("java-eclipse-aether-api" ,java-eclipse-aether-api)))
+    (native-inputs
+     `(("java-eclipse-aether-test-util" ,java-eclipse-aether-test-util)
+       ("java-junit" ,java-junit)))
+    (synopsis "Utility classes for the maven repository system")
+    (description "This package contains a collection of utility classes to
+ease usage of the repository system.")))
+
 (define-public maven-shared-utils
   (package
     (name "maven-shared-utils")
