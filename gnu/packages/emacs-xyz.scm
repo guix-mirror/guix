@@ -142,6 +142,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages w3m)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -19276,6 +19277,58 @@ processes for Emacs")
            (add-after 'chdir-elisp 'copy-extra
              (lambda _
                (copy-recursively "../extra" ".")))))))))
+
+(define-public emacs-libyaml
+  ;; Upstream made no release so far.
+  (let ((version "0")
+        (revision "1")
+        (commit "703e0d448c7ee24e25b513a3c65980c80e166805"))
+    (package
+      (name "emacs-libyaml")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/syohex/emacs-libyaml")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "08l7pm9v50ykd3fkbm0bh2kcd57cadbc5i9r6rj51vd32w3pl2yl"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #f                    ;no test
+         #:modules ((guix build emacs-build-system)
+                    (guix build emacs-utils)
+                    (guix build utils))
+         #:imported-modules (,@%emacs-build-system-modules
+                             (guix build gnu-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'add-source-to-load-path 'substitute-libyaml-core-path
+             (lambda* (#:key outputs #:allow-other-keys)
+               (chmod "libyaml.el" #o644)
+               (substitute* "libyaml.el"
+                 (("^\\(require 'libyaml-core\\)")
+                  (string-append "(module-load \"" (assoc-ref outputs "out")
+                                 "/lib/libyaml-core.so\")")))
+               #t))
+           (add-after 'check 'make
+             ;; Run make.
+             (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
+               ;; Compile the shared object file.
+               (apply invoke "make" "all" "CPPFLAGS=" make-flags)
+               ;; Move the file into /lib.
+               (install-file "libyaml-core.so"
+                             (string-append (assoc-ref outputs "out") "/lib"))
+               #t)))))
+      (native-inputs `(("libyaml" ,libyaml)))
+      (home-page "https://github.com/syohex/emacs-libyaml")
+      (synopsis "Libyaml bindings for Emacs")
+      (description
+       "This package implements bindings for LibYAML to be able to parse YAML
+files in Elisp.")
+      (license license:gpl3+))))
 
 (define-public emacs-lsp-java
   (package
