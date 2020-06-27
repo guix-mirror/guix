@@ -2242,3 +2242,41 @@ reporting or the build process.")))
               `("maven-pom" ,maven-3.0-pom)
               input))
         (package-propagated-inputs maven-repository-metadata)))))
+
+(define-public maven-3.0-aether-provider
+  (package
+    (inherit maven-3.0-pom)
+    (name "maven-aether-provider")
+    (arguments
+     `(#:jar-name "maven-aether-provider.jar"
+       #:source-dir "maven-aether-provider/src/main/java"
+       #:tests? #f; no tests in 3.0
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             #t))
+         (add-after 'generate-metadata 'rebuild
+           (lambda _
+             (invoke "ant" "jar")
+             #t))
+         (replace 'install
+           (install-from-pom "maven-aether-provider/pom.xml")))))
+    (propagated-inputs
+     `(("maven-model" ,maven-3.0-model)
+       ("maven-model-builder" ,maven-3.0-model-builder)
+       ("maven-repository-metadata" ,maven-3.0-repository-metadata)
+       ("java-sonatype-aether-api" ,java-sonatype-aether-api)
+       ("java-sonatype-aether-spi" ,java-sonatype-aether-spi)
+       ("java-sonatype-aether-impl" ,java-sonatype-aether-impl)
+       ("java-plexus-component-annotation" ,java-plexus-component-annotations)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("maven-pom" ,maven-3.0-pom)))
+    (native-inputs
+     `(("java-plexus-component-metadata" ,java-plexus-component-metadata)))))
