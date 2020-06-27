@@ -2315,3 +2315,44 @@ utilities frequently used in roguelikes.")
 shooter video game.  The engine is based on qfusion, the id Tech 2 derived
 game engine.  id Tech 2 is the engine originally behind Quake 2.")
       (license license:gpl2+))))
+
+(define-public dhewm3
+  (package
+    (name "dhewm3")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dhewm/dhewm3/releases/download/"
+                    version "/dhewm3-" version "-src.tar.xz"))
+              (sha256
+               (base32
+                "0dmd1876az5q8gbjrd1jk8zidz11ydj607z3m8m5kvw2yj136jzv"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-to-build-dir
+           (lambda _
+             (chdir "neo")
+             #t)))))
+    (inputs
+     `(("curl" ,curl)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("libx11" ,libx11)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (home-page "https://dhewm3.org/")
+    (synopsis "Port of the original Doom 3 engine")
+    (description
+     "@command{dhewm3} is a source port of the original Doom 3 engine (not
+Doom 3: BFG Edition), also known as id Tech 4.  Compared to the original
+version of the Doom 3 engine, dhewm3 has many bugfixes, supports EAX-like
+sound effects on all operating systems and hardware (via OpenAL Softs EFX
+support), has much better support for widescreen resolutions and has 64bit
+support.")
+    (license license:gpl3)))
