@@ -2377,3 +2377,40 @@ reporting or the build process.")))
        ("java-plexus-container-default" ,java-plexus-container-default)
        ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
        ("maven-pom" ,maven-3.0-pom)))))
+
+(define-public maven-3.0-compat
+  (package
+    (inherit maven-compat)
+    (version (package-version maven-3.0-pom))
+    (source (package-source maven-3.0-pom))
+    (arguments
+     `(#:tests? #f ;require an old version of java-easymock
+       ,@(substitute-keyword-arguments (package-arguments maven-compat)
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (add-before 'install 'fix-pom
+                (lambda _
+                  (substitute* "pom.xml"
+                    (("org.sonatype.sisu") "org.codehaus.plexus")
+                    (("sisu-inject-plexus") "plexus-container-default"))
+                  #t))
+              (delete 'build-tests))))))
+    (propagated-inputs
+     `(("maven-model" ,maven-3.0-model)
+       ("maven-model-builder" ,maven-3.0-model-builder)
+       ("maven-settings" ,maven-3.0-settings)
+       ("maven-settings-builder" ,maven-3.0-settings-builder)
+       ("maven-artifact" ,maven-3.0-artifact)
+       ("maven-core" ,maven-3.0-core)
+       ("maven-aether-provider" ,maven-3.0-aether-provider)
+       ("maven-repository-metadata" ,maven-3.0-repository-metadata)
+       ("java-sonatype-aether-api" ,java-sonatype-aether-api)
+       ("java-sonatype-aether-util" ,java-sonatype-aether-util)
+       ("java-sonatype-aether-impl" ,java-sonatype-aether-impl)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-interpolation" ,java-plexus-interpolation)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("maven-wagon-provider-api" ,maven-wagon-provider-api)
+       ("maven-pom" ,maven-3.0-pom)))))
