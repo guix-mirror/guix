@@ -2761,3 +2761,59 @@ Maven project dependencies.")
        ("maven-enforcer-rules" ,maven-enforcer-rules)
        ("maven-plugin-annotations" ,maven-plugin-annotations)
        ("maven-enforcer-parent-pom" ,maven-enforcer-parent-pom)))))
+
+(define-public maven-artifact-transfer
+  (package
+    (name "maven-artifact-transfer")
+    (version "0.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/shared/"
+                                  "maven-artifact-transfer-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "0mkdjr3wnvaxqaq68sy7h4mqlq3xgwwp5s2anj5vbxfy4bsc1ivj"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; require mockito 2
+       #:jar-name "maven-artifact-transfer.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             #t))
+         (add-after 'generate-metadata 'rebuild
+           (lambda _
+             (invoke "ant" "jar")
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("java-commons-codec" ,java-commons-codec)
+       ("maven-artifact" ,maven-3.0-artifact)
+       ("maven-core" ,maven-3.0-core)
+       ("maven-common-artifact-filters" ,maven-common-artifact-filters)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-sonatype-aether-api" ,java-sonatype-aether-api)
+       ("java-eclipse-aether-api" ,java-eclipse-aether-api)
+       ("java-eclipse-aether-util" ,java-eclipse-aether-util)
+       ("java-eclipse-aether-impl" ,java-eclipse-aether-impl)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-plexus-component-metadata" ,java-plexus-component-metadata)))
+    (home-page "https://maven.apache.org/shared/maven-artifact-transfer")
+    (synopsis "API to install, deploy and resolve artifacts in Maven")
+    (description "This package contains an API to install, deploy and resolve
+artifacts in Maven 3.")
+    (license license:asl2.0)))
