@@ -6559,6 +6559,7 @@ JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
                (base32
                 "0qacrnz2qcykj3f6c4k2p8qd31pa2slpv3ykfblgizrfh3401q6x"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-zlib" ,ghc-zlib)
        ("ghc-vector" ,ghc-vector)
