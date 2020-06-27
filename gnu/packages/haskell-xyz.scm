@@ -10380,6 +10380,7 @@ Haskell library @code{regex-base}.")
         (base32
          "03yhpqrqz977nwlnhnyz9dacnbzw8xb6j18h365rkgmbc05sb3hf"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
     (home-page "https://github.com/haskell-hvr/regex-tdfa")
