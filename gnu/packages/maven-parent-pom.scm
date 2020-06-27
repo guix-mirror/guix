@@ -373,3 +373,7 @@ other projects as their parent pom.")
 (define-public plexus-parent-pom-5.1
   (make-plexus-parent-pom
     "5.1" "1mb87adzyv8lilzd6sw40j5000vhib2p0lgf9zzgggpkh79ddm8v"))
+
+(define-public plexus-parent-pom-6.1
+  (make-plexus-parent-pom
+    "6.1" "1pisca0fxpgbhf4xdgw5mn86622pg3mc5b8760kf9mk2awazshlj"))
