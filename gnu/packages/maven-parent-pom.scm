@@ -329,3 +329,38 @@ other projects as their parent pom.")
            (delete 'build)
            (replace 'install
              (install-pom-file (assoc-ref %build-inputs "source")))))))))
+
+(define* (make-plexus-parent-pom version hash #:optional parent)
+  (hidden-package
+    (package
+      (name "plexus-parent-pom")
+      (version version)
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/codehaus-plexus/plexus-pom")
+                       (commit (string-append "plexus-" version))))
+                (file-name (git-file-name name version))
+                (sha256 (base32 hash))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (install-pom-file "pom.xml")))))
+      (propagated-inputs
+        (if parent
+            `(("parent" ,parent))
+            '()))
+      (home-page "https://codehaus-plexus.github.io/plexus-pom")
+      (synopsis "Plexus parent pom")
+      (description "This package contains the Plexus parent POM.")
+      (license license:asl2.0))))
+
+(define-public plexus-parent-pom-3.1
+  (make-plexus-parent-pom
+    "3.1" "0r1wa6zrpzynn4028w7880abkk2xk25mipav5f0a4d1abqzy5m53"
+    java-sonatype-spice-parent-pom-17))
