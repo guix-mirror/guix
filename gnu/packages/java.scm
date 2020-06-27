@@ -4554,7 +4554,7 @@ project and determining what files need to be rebuilt.")
                               "modello/core/io/ModelReaderTest.java")
                  (("src/test") "modello-core/src/test")))
              #t)))))
-    (inputs
+    (propagated-inputs
      `(("java-plexus-utils" ,java-plexus-utils)
        ("java-plexus-container-default" ,java-plexus-container-default)
        ("java-sisu-build-api" ,java-sisu-build-api)))
@@ -4603,8 +4603,7 @@ XSD and documentation.")
                                "build/classes")
              #t)))))
     (inputs
-     `(("java-modello-core" ,java-modello-core)
-       ,@(package-inputs java-modello-core)))
+     `(("java-modello-core" ,java-modello-core)))
     (synopsis "Modello Java Plugin")
     (description "Modello Java Plugin generates Java objects for the model.")))
 
@@ -4633,10 +4632,9 @@ XSD and documentation.")
                  "java/org/codehaus/modello/plugins/xml/XmlModelloPluginTest.java"
                  (("src/test") "modello-plugins/modello-plugin-xml/src/test")))
              #t)))))
-    (inputs
+    (propagated-inputs
      `(("java-modello-core" ,java-modello-core)
-       ("java-modello-plugins-java" ,java-modello-plugins-java)
-       ,@(package-inputs java-modello-core)))
+       ("java-modello-plugins-java" ,java-modello-plugins-java)))
     (synopsis "Modello XML Plugin")
     (description "Modello XML Plugin contains shared code for every plugins
 working on XML representation of the model.")))
@@ -4679,11 +4677,10 @@ every feature for every plugin.")))
              (copy-recursively "modello-plugins/modello-plugin-xpp3/src/main/resources"
                                "build/classes")
              #t)))))
-    (inputs
+    (propagated-inputs
      `(("java-modello-core" ,java-modello-core)
        ("java-modello-plugins-java" ,java-modello-plugins-java)
-       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
-       ,@(package-inputs java-modello-core)))
+       ("java-modello-plugins-xml" ,java-modello-plugins-xml)))
     (native-inputs
      `(("java-xmlunit" ,java-xmlunit)
        ("java-modello-test" ,java-modello-test)
