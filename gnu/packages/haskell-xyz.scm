@@ -6693,6 +6693,7 @@ with @code{wc} (for a web service).")
         (base32
          "1gpkc53l2cggnfrgg5k4ih82rycjbdvpj9pnbi5cq8ms0dbvs4a7"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-bifunctors" ,ghc-bifunctors)
