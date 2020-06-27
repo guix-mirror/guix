@@ -70,14 +70,20 @@
                      #t))
                   (add-after
                    'install 'remove-libs-already-in-binutils
-                   (lambda* (#:key inputs native-inputs outputs
+                   (lambda* (#:key inputs outputs
+                             ;; TODO: Inline the native-inputs addition and
+                             ;; below usage in the next rebuild cycle.
+                             ,@(if (%current-target-system)
+                                   '(native-inputs)
+                                   '())
                              #:allow-other-keys)
                      ;; Like Binutils, GDB installs libbfd, libopcodes, etc.
                      ;; However, this leads to collisions when both are
                      ;; installed, and really is none of its business,
                      ;; conceptually.  So remove them.
-                     (let* ((binutils (or (assoc-ref inputs "binutils")
-                                          (assoc-ref native-inputs "binutils")))
+                     (let* ((binutils ,@(if (%current-target-system)
+                                            '((assoc-ref native-inputs "binutils"))
+                                            '((assoc-ref inputs "binutils"))))
                             (out      (assoc-ref outputs "out"))
                             (files1   (with-directory-excursion binutils
                                         (append (find-files "lib")
