@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,9 +71,6 @@
                (mkdir-p dest)
                (rename-file orig dest)
                #t))))))
-    (inputs
-     ;; GDB is needed to provide a sane default for `--db-command'.
-     `(("gdb" ,gdb)))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "https://www.valgrind.org/")
@@ -82,4 +80,15 @@
 tools.  There are Valgrind tools that can automatically detect many memory
 management and threading bugs, and profile your programs in detail.  You can
 also use Valgrind to build new tools.")
-    (license gpl2+)))
+    (license gpl2+)
+
+    ;; Hide this variant so end users get the "interactive" Valgrind below.
+    (properties '((hidden? . #t)))))
+
+(define-public valgrind/interactive
+  (package/inherit
+   valgrind
+   (inputs
+    ;; GDB is needed to provide a sane default for `--db-command'.
+    `(("gdb" ,gdb)))
+   (properties '())))
