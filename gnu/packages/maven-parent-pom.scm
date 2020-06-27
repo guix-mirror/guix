@@ -420,3 +420,16 @@ tool.  This package contains the Maven parent POM.")
   (make-maven-parent-pom
     "30" "1w463na38v2054wn1cwbfqy095z13fhil4jmn08dsa4drdvdsjdw"
     apache-parent-pom-18))
+
+(define-public maven-parent-pom-27
+  (let ((base (make-maven-parent-pom
+                "27" "1s31hi4n99kj7x1cy5dvzwldbjqzk6c3dn20hk61hwhgmkcbf14x"
+                apache-parent-pom-17)))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'install-plugins)
+             (delete 'install-shared))))))))
