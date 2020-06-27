@@ -11462,13 +11462,13 @@ graphviz.")
 (define-public python-gevent
   (package
     (name "python-gevent")
-    (version "20.5.0")
+    (version "20.6.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gevent" version))
               (sha256
                (base32
-                "1yppsrs0ccld9j9zfbsd0bxb987b2zkh2ar7whjxcrqzpkvg3iqx"))
+                "1ldmppgghfphdaazjw6wq2i17xcmsjb2jsizfa4cjlg812zjlg52"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -11613,7 +11613,8 @@ to provide a high-level synchronous API on top of the libev event loop.")
     (package
       (inherit base)
       (native-inputs `(,@(package-native-inputs base)
-                       ("python-mock" ,python2-mock))))))
+                       ("python-mock" ,python2-mock)
+                       ("python2-selectors2" ,python2-selectors2))))))
 
 (define-public python-fastimport
   (package
