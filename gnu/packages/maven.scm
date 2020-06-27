@@ -54,7 +54,7 @@
              (copy-recursively "src/main/resources"
                                "build/classes/")
              #t)))))
-    (inputs
+    (propagated-inputs
      `(("java-plexus-container-default" ,java-plexus-container-default)
        ("java-plexu-component-annotations" ,java-plexus-component-annotations)
        ("java-plexus-utils" ,java-plexus-utils)
@@ -449,6 +449,48 @@ ease testing of the repository system.")))
     (synopsis "Utility classes for the maven repository system")
     (description "This package contains a collection of utility classes to
 ease usage of the repository system.")))
+
+(define-public java-sonatype-aether-impl
+  (package
+    (inherit java-sonatype-aether-api)
+    (name "java-sonatype-aether-impl")
+    (arguments
+     `(#:jar-name "aether-impl.jar"
+       #:source-dir "aether-impl/src/main/java"
+       #:test-dir "aether-impl/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'fix-pom
+           (lambda _
+             (substitute* "aether-impl/pom.xml"
+               (("org.sonatype.sisu") "org.codehaus.plexus")
+               (("sisu-inject-plexus") "plexus-container-default"))
+             #t))
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             #t))
+         (add-after 'generate-metadata 'rebuild
+           (lambda _
+             (invoke "ant" "jar")
+             #t))
+         (replace 'install (install-from-pom "aether-impl/pom.xml")))))
+    (propagated-inputs
+     `(("java-sonatype-aether-api" ,java-sonatype-aether-api)
+       ("java-sonatype-aether-spi" ,java-sonatype-aether-spi)
+       ("java-sonatype-aether-util" ,java-sonatype-aether-util)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-slf4j-api" ,java-slf4j-api)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-plexus-component-metadata" ,java-plexus-component-metadata)
+       ("java-sonatype-aether-test-util" ,java-sonatype-aether-test-util)))))
 
 (define-public maven-shared-utils
   (package
