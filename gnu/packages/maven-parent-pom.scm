@@ -470,3 +470,33 @@ tool.  This package contains the Maven parent POM.")
                    (("1.5.5")
                     ,(package-version java-plexus-component-annotations)))
                  #t)))))))))
+
+(define-public maven-plugins-pom-23
+  (hidden-package
+    (package
+      (name "maven-plugins-pom")
+      (version "23")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/apache/maven-plugins")
+                       (commit (string-append "maven-plugins-" version))))
+                (file-name (git-file-name "maven-plugins-pom" version))
+                (sha256
+                 (base32
+                  "1j50il0c9kirr1cvf6vfr86wxp65lwqm9i4bz304ix12vv6ncxjq"))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (install-pom-file "pom.xml")))))
+      (propagated-inputs
+       `(("maven-parent-pom" ,maven-parent-pom-22)))
+      (home-page "https://github.com/apache/maven-plugins")
+      (synopsis "Maven parent pom for maven plugins projects")
+      (description "This package contains the parent pom for maven plugins.")
+      (license license:asl2.0))))
