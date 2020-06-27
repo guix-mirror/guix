@@ -3279,3 +3279,24 @@ internal to the SureFire Logger API.  It is designed to have no dependency.")
     (synopsis "API and Facilities used by forked tests running in JVM sub-process")
     (description "SureFire runs tests inside a forked JVM subprocess.  This
 package contains an API and facilities used inside that forked JVM.")))
+
+(define-public java-surefire-extensions-api
+  (package
+    (inherit java-surefire-logger-api)
+    (name "java-surefire-extensions-api")
+    (arguments
+     `(#:tests? #f; requires mockito 2
+       #:jar-name "java-surefire-extensions-api.jar"
+       #:source-dir "surefire-extensions-api/src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "surefire-extensions-api/pom.xml")))))
+    (propagated-inputs
+     `(("java-surefire-api" ,java-surefire-api)
+       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+    (inputs
+     `(("java-plexus-component-annotations" ,java-plexus-component-annotations)))
+    (synopsis "Extension API for Maven SureFire")
+    (description "Surefire is a test framework project.  This is the aggregator
+POM in Apache Maven Surefire project.")))
