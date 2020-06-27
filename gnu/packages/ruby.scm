@@ -6089,6 +6089,35 @@ library.")
     (home-page "https://github.com/chuckremes/ffi-rzmq-core")
     (license license:expat)))
 
+(define-public ruby-ffi-rzmq
+  (package
+    (name "ruby-ffi-rzmq")
+    (version "2.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ffi-rzmq" version))
+       (sha256
+        (base32
+         "14a5kxfnf8l3ngyk8hgmk30z07aj1324ll8i48z67ps6pz2kpsrg"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #t
+                 #:phases (modify-phases %standard-phases
+                            (replace 'check
+                              (lambda _
+                                (invoke "rspec"))))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-ffi-rzmq-core" ,ruby-ffi-rzmq-core)))
+    (synopsis "High-level Ruby wrapper for the ZeroMQ networking library")
+    (description "This library provides a high-level API that wraps the ZeroMQ
+networking library using the Ruby foreign function interface (FFI).  It is a
+pure Ruby wrapper, hence is compatible with any Ruby runtime that has support
+for FFI.")
+    (home-page "https://github.com/chuckremes/ffi-rzmq")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
