@@ -538,6 +538,24 @@ ease usage of the repository system.")))
     (description "This package contains the service provider interface (SPI)
 for repository system implementations and repository connectors.")))
 
+(define-public java-eclipse-aether-test-util
+  (package
+    (inherit java-eclipse-aether-api)
+    (name "java-eclipse-aether-test-util")
+    (arguments
+     `(#:jar-name "aether-test-util.jar"
+       #:source-dir "aether-test-util/src/main/java"
+       #:test-dir "aether-test-util/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-from-pom "aether-util/pom.xml")))))
+    (propagated-inputs
+     `(("java-eclipse-aether-api" ,java-eclipse-aether-api)
+       ("java-eclipse-aether-spi" ,java-eclipse-aether-spi)))
+    (synopsis "Utility classes for testing the maven repository system")
+    (description "This package contains a collection of utility classes to
+ease testing of the repository system.")))
+
 (define-public maven-shared-utils
   (package
     (name "maven-shared-utils")
