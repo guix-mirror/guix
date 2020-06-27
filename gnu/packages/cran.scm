@@ -22422,3 +22422,34 @@ operating on semantic version strings.  Semantic versioning is a simple set of
 rules and requirements that dictate how version numbers are assigned and
 incremented as outlined at @url{http://semver.org}.")
     (license license:expat)))
+
+(define-public r-binman
+  (package
+    (name "r-binman")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "binman" version))
+        (sha256
+          (base32
+            "0hm0h285p4v9lhrqjy8s22f1s1vmfpfla5iaycpj8vw3qb3632az"))))
+    (properties `((upstream-name . "binman")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-assertthat" ,r-assertthat)
+        ("r-httr" ,r-httr)
+        ("r-jsonlite" ,r-jsonlite)
+        ("r-rappdirs" ,r-rappdirs)
+        ("r-semver" ,r-semver)
+        ("r-xml2" ,r-xml2)
+        ("r-yaml" ,r-yaml)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ropensci/binman")
+    (synopsis "Binary download manager")
+    (description
+      "This package provides tools and functions for managing the download of
+binary files.  Binary repositories are defined in the YAML format.  Defining
+new pre-download, download and post-download templates allow additional
+repositories to be added.")
+    (license license:expat)))
