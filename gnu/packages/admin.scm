@@ -3863,3 +3863,25 @@ It supports mounting local filesystems of any kind the normal mount utility
 supports.  It can also mount encrypted LUKS volumes using the password
 supplied by the user when logging in.")
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public jtbl
+  (package
+    (name "jtbl")
+    (version "1.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kellyjonbrazil/jtbl.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1zzd7rd63xva50f22d1rfja4r302aizrafarhwm67vv181swvdya"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-tabulate" ,python-tabulate)))
+    (home-page "https://github.com/kellyjonbrazil/jtbl")
+    (synopsis "Command-line tool to print JSON data as a table in the terminal")
+    (description "@code{jtbl} accepts piped JSON data from stdin and outputs a
+text table representation to stdout.")
+    (license license:expat)))
