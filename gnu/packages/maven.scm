@@ -3583,3 +3583,34 @@ JVM, using JUnit 4.0 or later.")))
     (synopsis "API used in Surefire and Failsafe MOJO")
     (description "This package contains an API used in SureFire and Failsafe
 MOJO.")))
+
+(define-public maven-surefire-plugin
+  (package
+    (inherit java-surefire-logger-api)
+    (name "maven-surefire-plugin")
+    (arguments
+     `(#:jar-name "maven-surefire-plugin.jar"
+       #:source-dir "maven-surefire-plugin/src/main/java"
+       #:tests? #f; test depends on maven-plugin-test-harness
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-plugin.xml
+           (generate-plugin.xml "maven-surefire-plugin/pom.xml"
+             "surefire"
+             "."
+             (list
+               (list
+                 "maven-surefire-common/src/main/java/org/apache/maven/plugin/surefire/AbstractSurefireMojo.java"
+                 "maven-surefire-plugin/src/main/java/org/apache/maven/plugin/surefire/SurefirePlugin.java"))))
+         (replace 'install
+           (install-from-pom "maven-surefire-plugin/pom.xml")))))
+    (propagated-inputs
+     `(("maven-surefire-common" ,maven-surefire-common)
+       ("maven-core" ,maven-core)))
+    (native-inputs
+     `(("maven-plugin-annotations" ,maven-plugin-annotations)
+       ("unzip" ,unzip)))
+    (synopsis "SureFire Maven plugin that runs tests.")
+    (description "The Surefire Plugin is used during the test phase of the
+build lifecycle to execute the unit tests of an application.  It generates
+reports in two different file formats, plain text and xml.")))
