@@ -1612,14 +1612,14 @@ recreates the stored directory structure by default.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.6.1")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/libzip-" version ".tar.xz"))
               (sha256
                (base32
-                "0h9nsgkw0dk4srsvmz6xy6f9l4h815xn07j8h40l8gqvcxxaqpbh"))))
+                "1b4pl3dhva80lg9pmsg82cw40pnn0n35z823irsam7x72wdxq850"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
