@@ -197,3 +197,7 @@ other projects as their parent pom.")
 (define-public java-sonatype-forge-parent-pom-6
   (make-java-sonatype-forge-parent-pom
     "6" "0sa5wn5kc6y74m9g3azkm5i9d7kvyvgdw7wjlp7bjgy9s5qkbhgz"))
+
+(define-public java-sonatype-forge-parent-pom-10
+  (make-java-sonatype-forge-parent-pom
+    "10" "1n89wb00q4s9nwpqq6q1h4nzakw1l1rppjygxkl3iid7m5fnj60n"))
