@@ -81,3 +81,38 @@
 (define-public apache-parent-pom-21
   (make-apache-parent-pom
     "21" "0clcbrq1b2b8sbvlqddyw2dg5niq25dhdma9sk4b0i30hqaipx96"))
+
+(define (make-apache-commons-parent-pom version hash parent)
+  (hidden-package
+    (package
+      (name "apache-commons-parent-pom")
+      (version version)
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/apache/commons-parent")
+                       (commit (string-append "commons-parent-" version))))
+                (file-name (git-file-name name version))
+                (sha256 (base32 hash))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (install-pom-file "pom.xml")))))
+      (propagated-inputs
+        (if parent
+            `(("parent" ,parent))
+            '()))
+      (home-page "https://maven.apache.org/")
+      (synopsis "Apache Commons parent pom")
+      (description "This package contains the Apache Commons parent POM.")
+      (license license:asl2.0))))
+
+(define-public apache-commons-parent-pom-39
+  (make-apache-commons-parent-pom
+    "39" "0mjx48a55ik1h4hsxhifkli1flvkp6d05ab14p4al0fc6rhdxi46"
+    apache-parent-pom-16))
