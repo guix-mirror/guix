@@ -22325,3 +22325,36 @@ across a wide array of bioinformatic R packages.")
 and clustering large sequence datasets using fast alignment-free k-mer
 counting and recursive k-means partitioning.")
     (license license:gpl3)))
+
+(define-public r-shapforxgboost
+  (package
+    (name "r-shapforxgboost")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SHAPforxgboost" version))
+       (sha256
+        (base32
+         "0k6bg27wqnkzv82bcahbapmqhiz6rvnx81m23zbjw58c7lwshgnq"))))
+    (properties
+     `((upstream-name . "SHAPforxgboost")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bbmisc" ,r-bbmisc)
+       ("r-data-table" ,r-data-table)
+       ("r-ggextra" ,r-ggextra)
+       ("r-ggforce" ,r-ggforce)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggpubr" ,r-ggpubr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-xgboost" ,r-xgboost)))
+    (home-page "https://github.com/liuyanguu/SHAPforxgboost")
+    (synopsis "SHAP Plots for XGBoost")
+    (description
+     "The aim of @code{SHAPforxgboost} is to aid in visual data investigations
+using @dfn{SHAP} (Shapley additive explanation) visualization plots for
+@code{XGBoost}.  It provides summary plot, dependence plot, interaction plot,
+and force plot.  It relies on the @code{XGBoost} package to produce SHAP
+values.")
+    (license license:expat)))
