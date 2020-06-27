@@ -6842,6 +6842,7 @@ Music Player Daemon.")
         (base32
          "12gsh994pr13bsybwlravmi21la66dyw74pk74yfw2pnz682wv10"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc")) ; documentation is 39M
     (native-inputs
      `(("ghc-alex" ,ghc-alex)
        ("ghc-happy" ,ghc-happy)))
