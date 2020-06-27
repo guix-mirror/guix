@@ -611,7 +611,7 @@ available.")
 (define-public x265
   (package
     (name "x265")
-    (version "3.3")
+    (version "3.4")
     (outputs '("out" "static"))
     (source
       (origin
@@ -621,7 +621,7 @@ available.")
                    (string-append "https://download.videolan.org/videolan/x265/"
                                   "x265_" version ".tar.gz")))
         (sha256
-         (base32 "170b61cgpcs5n35qps0p40dqs1q81vkgagzbs4zv7pzls6718vpj"))
+         (base32 "0wl62hfsdqpf3r3z3s6l9bz7pdb1rcik5ll00b3yaadplqipy162"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -638,8 +638,7 @@ available.")
        #:configure-flags
          ;; Ensure position independent code for everyone.
          (list "-DENABLE_PIC=TRUE"
-               ,@(if (string-prefix? "armhf" (or (%current-system)
-                                                 (%current-target-system)))
+               ,@(if (target-arm?)
                      '("-DENABLE_ASSEMBLY=OFF")
                      '())
                (string-append "-DCMAKE_INSTALL_PREFIX="
@@ -650,9 +649,6 @@ available.")
            (lambda _
              (delete-file-recursively "build")
              (chdir "source")
-             ;; recognize armv8 in 32-bit mode as ARM
-             (substitute* "CMakeLists.txt"
-              (("armv6l") "armv8l"))
              #t))
          (add-before 'configure 'build-12-bit
            (lambda* (#:key (configure-flags '()) #:allow-other-keys)
