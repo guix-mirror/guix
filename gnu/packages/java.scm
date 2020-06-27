@@ -11079,7 +11079,11 @@ including pre-existing objects that you do not have source-code of.")
                (with-directory-excursion "hawtjni-generator/src/main/resources/"
                  (install-file "libhawtjni.so" lib)
                  (install-file "hawtjni.h" inc)))
-             #t)))))
+             #t))
+         (add-before 'install 'install-parent
+           (install-pom-file "pom.xml"))
+         (replace 'install
+           (install-from-pom "hawtjni-runtime/pom.xml")))))
     (inputs
      `(("java-commons-cli" ,java-commons-cli)
        ("java-asm" ,java-asm)
@@ -11138,8 +11142,16 @@ that is part of the SWT Tools project.")
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "src/main/native-package/src/jansi.h"
                            (string-append (assoc-ref outputs "out") "/include"))
-             #t)))))
-    (inputs
+             #t))
+         (add-before 'install 'fix-pom
+           (lambda _
+             ;; pom contains variables to complete name, but we don't support that
+             (substitute* "pom.xml"
+               (("\\$\\{platform\\}") "native"))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
      `(("java-hawtjni" ,java-hawtjni)))
     (home-page "https://fusesource.github.io/jansi/")
     (synopsis "Native library for jansi")
@@ -11168,8 +11180,25 @@ console output.")
        (modify-phases %standard-phases
          (add-after 'check 'clear-term
            (lambda _
-             (invoke "echo" "-e" "\\e[0m"))))))
-    (inputs
+             (invoke "echo" "-e" "\\e[0m")))
+         (add-before 'install 'install-parent
+           (install-pom-file "pom.xml"))
+         (add-before 'install 'fix-pom
+           (lambda _
+             ;; pom adds jansi native versions for different platforms, but we
+             ;; only need one, so use native instead
+             (substitute* "jansi/pom.xml"
+               (("windows32") "native")
+               (("windows64") "native")
+               (("osx") "native")
+               (("linux32") "native")
+               (("linux64") "native")
+               (("freebsd32") "native")
+               (("freebsd64") "native"))
+             #t))
+         (replace 'install
+           (install-from-pom "jansi/pom.xml")))))
+    (propagated-inputs
      `(("java-jansi-native" ,java-jansi-native)))
     (native-inputs
      `(("java-junit" ,java-junit)

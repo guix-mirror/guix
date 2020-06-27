@@ -3495,3 +3495,91 @@ starting from JUnit 4.")))
     (synopsis "SureFire JUnit 4.0+ runner")
     (description "This package contains the runner for tests run on a forked
 JVM, using JUnit 4.0 or later.")))
+
+(define-public maven-surefire-common
+  (package
+    (inherit java-surefire-logger-api)
+    (name "maven-surefire-common")
+    (arguments
+     `(#:tests? #f; require mockito 2
+       #:jar-name "maven-surefire-common.jar"
+       #:source-dir "maven-surefire-common/src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'prepare-shade
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "build/classes")
+             (with-directory-excursion "build/classes"
+               (for-each
+                 (lambda (input)
+                   (for-each
+                     (lambda (jar-file)
+                       (invoke "jar" "xf" jar-file)
+                       (delete-file-recursively "META-INF"))
+                     (find-files (assoc-ref inputs input) ".*.jar$")))
+                 '("maven-shared-utils" "java-commons-io" "java-commons-lang3"
+                   "java-commons-compress" "maven-common-artifact-filters")))
+             #t))
+         (add-after 'build 'shade
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jarjar
+                   (car (find-files (assoc-ref inputs "java-jarjar") ".*.jar$")))
+                   (injar "maven-surefire-common.jar")
+                   (outjar "maven-surefire-common-shaded.jar"))
+               (with-directory-excursion "build/jar"
+                 (with-output-to-file "rules"
+                   (lambda _
+                     (format #t (string-append
+                                  "rule "
+                                  "org.apache.maven.shared.utils.** "
+                                  "org.apache.maven.surefire.shade.common."
+                                  "org.apache.maven.shared.utils.@1~%"))
+                     (format #t (string-append
+                                  "rule "
+                                  "org.apache.commons.io.** "
+                                  "org.apache.maven.surefire.shade.common."
+                                  "org.apache.commons.io.@1~%"))
+                     (format #t (string-append
+                                  "rule "
+                                  "org.apache.commons.lang3.** "
+                                  "org.apache.maven.surefire.shade.common."
+                                  "org.apache.commons.lang3.@1~%"))
+                     (format #t (string-append
+                                  "rule "
+                                  "org.apache.commons.compress.** "
+                                  "org.apache.maven.surefire.shade.common."
+                                  "org.apache.commons.compress.@1~%"))))
+                 (invoke "java" "-jar" jarjar "process" "rules" injar outjar)
+                 (delete-file injar)
+                 (rename-file outjar injar)))
+             #t))
+         (add-before 'install 'fix-pom
+           (lambda _
+             (substitute* "maven-surefire-common/pom.xml"
+               (("maven-toolchain") "maven-core"))
+             #t))
+         (replace 'install
+           (install-from-pom "maven-surefire-common/pom.xml")))))
+    (propagated-inputs
+     `(("java-surefire-api" ,java-surefire-api)
+       ("java-surefire-extensions-api" ,java-surefire-extensions-api)
+       ("java-surefire-booter" ,java-surefire-booter)
+       ("maven-core" ,maven-core)
+       ("maven-plugin-annotations" ,maven-plugin-annotations)
+       ("maven-common-artifact-filters" ,maven-common-artifact-filters)
+       ("maven-artifact-transfer" ,maven-artifact-transfer)
+       ("java-plexus-java" ,java-plexus-java)
+       ("java-jansi" ,java-jansi)
+       ("java-commons-io" ,java-commons-io)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("java-commons-compress" ,java-commons-compress)
+       ("maven-shared-utils" ,maven-shared-utils-3.1)
+       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+    (inputs
+     `(("java-jsr305" ,java-jsr305)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-jarjar" ,java-jarjar)))
+    (synopsis "API used in Surefire and Failsafe MOJO")
+    (description "This package contains an API used in SureFire and Failsafe
+MOJO.")))
