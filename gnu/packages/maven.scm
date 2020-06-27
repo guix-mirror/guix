@@ -2606,3 +2606,52 @@ Maven project dependencies.")
     (description "This package provides a tree-based API for resolution of
 Maven project dependencies.")
     (license license:asl2.0)))
+
+(define-public maven-common-artifact-filters
+  (package
+    (name "maven-common-artifact-filters")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/shared/"
+                                  "maven-common-artifact-filters-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "1cl1qk4r0gp62bjzfm7lml9raz1my2kd4yf0ci0lnfsn0h5qivnb"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-common-artifact-filters.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f; require maven-plugin-testing-harness, which requires maven 3.2.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-sisu
+           (lambda _
+             ;; Replace sisu with an existing dependency, to prevent a failure
+             ;; when rewritting dependency versions
+             (substitute* "pom.xml"
+               (("sisu-inject-plexus") "maven-plugin-api")
+               (("org.sonatype.sisu") "org.apache.maven"))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-artifact" ,maven-3.0-artifact)
+       ("maven-model" ,maven-3.0-model)
+       ("maven-core" ,maven-3.0-core)
+       ("maven-plugin-api" ,maven-3.0-plugin-api)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("maven-parent-pom" ,maven-parent-pom-33)
+       ("java-sonatype-aether-api" ,java-sonatype-aether-api)
+       ("java-sonatype-aether-util" ,java-sonatype-aether-util)))
+    (inputs
+     `(("maven-resolver-api" ,maven-resolver-api)
+       ("maven-resolver-util" ,maven-resolver-util)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+   (home-page "https://maven.apache.org/shared/maven-dependency-tree")
+    (synopsis "Tree-based API for resolution of Maven project dependencies")
+    (description "This package provides a tree-based API for resolution of
+Maven project dependencies.")
+    (license license:asl2.0)))
