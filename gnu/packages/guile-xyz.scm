@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Julien Lepiler <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -155,9 +156,9 @@
     ;; projects.
     ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
     (propagated-inputs
-     `(("guile-json" ,guile-json-1)
+     `(("guile-json" ,guile-json-1) ; This ia already using guile-2.2.
        ("guile-readline" ,guile2.2-readline)
-       ("guile-redis" ,guile-redis)))
+       ("guile-redis" ,guile2.2-redis)))
     (native-inputs
      `(("bash"       ,bash)         ;for the `source' builtin
        ("pkgconfig"  ,pkg-config)
