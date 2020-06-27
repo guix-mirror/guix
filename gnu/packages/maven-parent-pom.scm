@@ -131,3 +131,30 @@
   (make-apache-commons-parent-pom
     "50" "0ki8px35dan51ashblpw6rdl27c2fq62slazhslhq3lr4fwlpvxs"
     apache-parent-pom-21))
+
+(define-public java-weld-parent-pom
+  (hidden-package
+    (package
+      (name "java-weld-parent-pom")
+      (version "36")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/weld/parent")
+                       (commit version)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0rbvizcsma456mw9fvp4dj9cljh97nswvhi04xhczi38j5bgal0m"))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build)
+           (replace 'install
+             (install-pom-file "pom.xml")))))
+      (home-page "https://github.com/weld/parent")
+      (synopsis "Pom parent file for weld projects")
+      (description "This package contains the parent Maven Pom for weld projects.")
+      (license license:asl2.0))))
