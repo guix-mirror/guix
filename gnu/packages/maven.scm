@@ -2182,3 +2182,22 @@ reporting or the build process.")))
                  ("maven-builder-support" #f)
                  (_ input)))
              (package-propagated-inputs maven-settings-builder)))))))
+
+(define-public maven-3.0-model-builder
+  (package
+    (inherit maven-model-builder)
+    (version (package-version maven-3.0-pom))
+    (source (package-source maven-3.0-pom))
+    (propagated-inputs
+     `(("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ,@(filter
+           (lambda (a) a)
+           (map
+             (lambda (input)
+               (match (car input)
+                 ("maven-pom" `("maven-pom" ,maven-3.0-pom))
+                 ("maven-model" `("maven-model" ,maven-3.0-model))
+                 ("maven-artifact" `("maven-artifact" ,maven-3.0-artifact))
+                 ("maven-builder-support" #f)
+                 (_ input)))
+             (package-propagated-inputs maven-model-builder)))))))
