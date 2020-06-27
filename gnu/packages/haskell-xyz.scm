@@ -859,6 +859,7 @@ than @code{base-compat}, which has no dependencies.")
         (base32
          "0srlws74yiraqaapgcjd9p5d1fwb3zr9swcz74jpjm55fls2nn37"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (home-page "https://github.com/haskell-foundation/foundation")
     (synopsis "Basic primitives for Foundation starter pack")
     (description
