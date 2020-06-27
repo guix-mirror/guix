@@ -2827,10 +2827,26 @@ X server.")
 X server.")
     (license license:x11)))
 
-
-;; non-free license
-;; (define-public xf86-video-dummy
-
+(define-public xf86-video-dummy
+  (package
+    (name "xf86-video-dummy")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/driver/"
+                           "xf86-video-dummy-" version ".tar.bz2"))
+       (sha256
+        (base32 "1fcm9vwgv8wnffbvkzddk4yxrh3kc0np6w65wj8k88q7jf3bn4ip"))))
+    (build-system gnu-build-system)
+    (inputs `(("xorg-server" ,xorg-server)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Dummy video driver for X server")
+    (description
+     "Virtual/offscreen frame buffer driver for the Xorg X server.")
+    ;; per https://lists.freedesktop.org/archives/xorg/2020-June/060316.html
+    (license license:x11)))
 
 (define-public xf86-video-fbdev
   (package
