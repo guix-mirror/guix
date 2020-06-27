@@ -2066,6 +2066,7 @@ of the C library.")
         (base32
          "0cbkmgrcnwgigg6z88y3c09gm7g6dwm7gzbgr53h8k1xik29s9hf"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (home-page
      "http://community.haskell.org/~ndm/cmdargs/")
     (synopsis "Command line argument processing")
