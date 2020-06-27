@@ -3300,3 +3300,60 @@ package contains an API and facilities used inside that forked JVM.")))
     (synopsis "Extension API for Maven SureFire")
     (description "Surefire is a test framework project.  This is the aggregator
 POM in Apache Maven Surefire project.")))
+
+(define-public java-surefire-common-java5
+  (package
+    (inherit java-surefire-logger-api)
+    (name "java-surefire-common-java5")
+    (arguments
+     `(#:jar-name "java-surefire-common-java5.jar"
+       #:source-dir "surefire-providers/common-java5/src/main/java"
+       #:test-dir "surefire-providers/common-java5/src/test"
+       #:test-exclude (list
+                        ;; Abstract class
+                        "**/PojoStackTraceWriterTest.java"
+                        ;; Fails
+                        "**/SmartStackTraceParserTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'prepare-shade
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "build/classes")
+             (with-directory-excursion "build/classes"
+               (for-each
+                 (lambda (jar-file)
+                   (invoke "jar" "xf" jar-file)
+                   (delete-file-recursively "META-INF"))
+                 (find-files (assoc-ref inputs "maven-shared-utils") ".*.jar$")))
+             #t))
+         (add-after 'build 'shade
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jarjar
+                   (car (find-files (assoc-ref inputs "java-jarjar") ".*.jar$")))
+                   (injar "java-surefire-common-java5.jar")
+                   (outjar "java-surefire-common-java5-shaded.jar"))
+               (with-directory-excursion "build/jar"
+                 (with-output-to-file "rules"
+                   (lambda _
+                     (format #t (string-append
+                                  "rule "
+                                  "org.apache.maven.shared.utils.** "
+                                  "org.apache.maven.surefire.shade.common."
+                                  "org.apache.maven.shared.utils.@1~%"))))
+                 (invoke "java" "-jar" jarjar "process" "rules" injar outjar)
+                 (delete-file injar)
+                 (rename-file outjar injar)))
+             #t))
+         (replace 'install
+           (install-from-pom "surefire-providers/common-java5/pom.xml")))))
+    (propagated-inputs
+     `(("maven-shared-utils" ,maven-shared-utils-3.1)
+       ("java-surefire-api" ,java-surefire-api)
+       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-jarjar" ,java-jarjar)
+       ("java-junit" ,java-junit)
+       ("java-fest-assert" ,java-fest-assert)))
+    (synopsis "Common java5 facilities for Maven SureFire")
+    (description "This package contains shared Java 5 code for all providers.")))
