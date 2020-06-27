@@ -4489,6 +4489,7 @@ specific Windows, Mac, and Linux file system event notification.")
         (base32
          "0vdg9qdq35jl3m11a87wk8cq1y71qm4i1g1b2pxki0wk70yw20a4"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-th-abstraction" ,ghc-th-abstraction)))
     (native-inputs
