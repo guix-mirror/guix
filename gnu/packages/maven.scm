@@ -2979,3 +2979,58 @@ associated to the test source code.
 Thus, this allows the separation of resources for the main source code and its
 unit tests.")
     (license license:asl2.0)))
+
+(define-public maven-shared-incremental
+  (package
+    (name "maven-shared-incremental")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/maven/shared/"
+                                  "maven-shared-incremental-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "03n4nfswyg9ahkz2zx4skcr3ghs01zh95g9js51hc75mfqx9b976"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "shared-incremental.java"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'change-parent
+           (lambda _
+             (substitute* "pom.xml"
+               (("19") "30"))
+             #t))
+         (add-before 'build 'fix-pom
+           (lambda _
+             (substitute* "pom.xml"
+               (("plexus-component-api") "plexus-component-annotations"))
+             #t))
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-plugin-api" ,maven-plugin-api)
+       ("maven-core" ,maven-core)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("maven-parent-pom" ,maven-parent-pom-30)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-plexus-component-metadata" ,java-plexus-component-metadata)))
+    (home-page "https://maven.apache.org/shared/maven-shared-incremental")
+    (synopsis "Maven Incremental Build support utilities")
+    (description "This package contains various utility classes and plexus
+components for supporting incremental build functionality in maven plugins.")
+    (license license:asl2.0)))
