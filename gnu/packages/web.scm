@@ -1488,7 +1488,7 @@ hash/signatures.")
 (define-public libyaml
   (package
     (name "libyaml")
-    (version "0.2.4")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
@@ -1497,7 +1497,7 @@ hash/signatures.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0mq5wf17ifcwwxq3kbimhi53jn3fg23vcynqpzxjcz3vfjlfs2nq"))))
+         "1x4fcw13r3lqy8ndydr3ili87wicplw2awbcv6r21qgyfndswhn6"))))
     (build-system gnu-build-system)
     (home-page "http://pyyaml.org/wiki/LibYAML")
     (synopsis "YAML 1.1 parser and emitter written in C")
