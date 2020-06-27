@@ -4336,6 +4336,69 @@ compilers.")
     (description "This package contains the Javac Compiler support for Plexus
 Compiler component.")))
 
+(define plexus-components-pom-1.1.20
+  (package
+    (name "plexus-components-pom-1.1.20")
+    (version "1.1.20")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-components")
+                     (commit (string-append "plexus-components-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q254k95m9icyfsvaw8c226midg8v6v436wvivhv7im825mnp5yb"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("plexus-parent-pom" ,plexus-parent-pom-3.1)))
+    (home-page "https://github.com/codehaus-plexus/plexus-components")
+    (synopsis "Maven parent pom for plexus packages")
+    (description "This package contains the parent pom for plexus component
+packages.")
+    (license license:asl2.0)))
+
+(define-public java-plexus-digest
+  (package
+    (name "java-plexus-digest")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-digest")
+                     (commit "2a52ad1bda8297fa0e287163d2fa37245ec6a430")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "19w5wxsliz8r42niry68qa665kvjsb8081dazg9vgd3pca72w07x"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-digest.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("plexus-components-pom-1.1.20" ,plexus-components-pom-1.1.20)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/codehaus-plexus/plexus-digest")
+    (synopsis "Hash function utilities for Java")
+    (description "This package is a plexus component that contains hash
+function utilities.")
+    (license license:asl2.0)))
+
 (define-public java-plexus-sec-dispatcher
   (package
     (name "java-plexus-sec-dispatcher")
