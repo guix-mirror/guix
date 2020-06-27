@@ -6276,7 +6276,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.5.3")
+    (version "4.0.2")
     (source
      (origin
        (method url-fetch)
@@ -6284,85 +6284,108 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1ys35lj28903alccks9p055psy1fsk1nxi8ncchvw8bfxkkkvbys"))))
+         "1cs39jzi59hkl421xmhi549ndmdfzkg0ap45f4nlsn9zr9zwmp3x"))
+       (patches (search-patches "xpra-4.0.1-systemd-run.patch"))))
     (build-system python-build-system)
-    (inputs `(("ffmpeg" ,ffmpeg)
-              ("flac" ,flac)
-              ("gtk+-2" ,gtk+-2) ;; no full GTK3 support yet
+    ;; see also http://xpra.org/trac/wiki/Dependencies
+    (inputs `(
+              ;; Essential dependencies.
               ("libjpeg" ,libjpeg-turbo)
-              ("libpng" ,libpng)
-              ("libvpx" ,libvpx)
-              ("libx264" ,libx264)
-              ("libxcomposite" ,libxcomposite)
-              ("libxdamage" ,libxdamage)
-              ("libxi" ,libxi)
-              ("libxkbfile" ,libxkbfile)
+              ("libwebp" ,libwebp)
+              ("ffmpeg" ,ffmpeg)
+              ("libx11" ,libx11)
               ("libxrandr" ,libxrandr)
               ("libxtst" ,libxtst)
-              ("lzo" ,lzo)
-              ("python2-cryptography" ,python2-cryptography)
-              ("python2-dbus" ,python2-dbus)
-              ("python2-lz4" ,python2-lz4)
-              ("python2-lzo" ,python2-lzo)
-              ("python2-netifaces" ,python2-netifaces)
-              ("python2-numpy" ,python2-numpy)
-              ("python2-pillow" ,python2-pillow)
-              ("python2-pycairo" ,python2-pycairo)
-              ("python2-pycrypto" ,python2-pycrypto)
-              ("python2-pygobject" ,python2-pygobject)
-              ("python2-pyopengl" ,python2-pyopengl)
-              ("python2-pyopengl-accelerate" ,python2-pyopengl-accelerate)
-              ("python2-pygtk" ,python2-pygtk)
-              ("python2-rencode" ,python2-rencode)
-              ("xorg-server" ,xorg-server)))
+              ("libxfixes" ,libxfixes)
+              ("libxkbfile" ,libxkbfile)
+              ("libxcomposite" ,libxcomposite)
+              ("libxdamage" ,libxdamage)
+              ("libxext" ,libxext)
+              ("gtk+" ,gtk+)
+              ("python-pycairo" ,python-pycairo)
+              ("python-pygobject" ,python-pygobject)
+              ("xauth" ,xauth)
+              ("xorg-server" ,xorg-server)
+              ("xf86-video-dummy" ,xf86-video-dummy)
+              ("xf86-input-mouse" ,xf86-input-mouse)
+              ("xf86-input-keyboard" ,xf86-input-keyboard)
+              ("python-pillow" ,python-pillow)
+              ;; Optional dependencies.
+              ("python-rencode" ,python-rencode) ; For speed.
+              ("python-numpy", python-numpy)
+              ("python-pyopengl" ,python-pyopengl) ; Drawing acceleration.
+              ("python-pyopengl-accelerate" ,python-pyopengl-accelerate) ; Same.
+              ("python-paramiko" ,python-paramiko) ; Tunneling over SSH.
+              ("python-dbus" ,python-dbus) ; For desktop notifications.
+              ("dbus" ,dbus)               ; For dbus-launch command.
+              ("python-lz4" ,python-lz4) ; Faster compression than zlib.
+              ("python-netifaces" ,python-netifaces)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("python2-cython" ,python2-cython)))
+                     ("python-cython" ,python-cython)))
     (arguments
-     `(#:python ,python-2 ;; no full Python 3 support yet
-       #:configure-flags '("--with-tests"
-                           "--with-bundle_tests"
-                           "--without-Xdummy" ;; We use Xvfb instead.
-                           "--without-Xdummy_wrapper"
-                           "--without-strict")
+     `(#:configure-flags '("--without-Xdummy"
+						   "--without-Xdummy_wrapper"
+                           "--with-opengl"
+                           "--without-debug"
+                           "--without-strict") ; Ignore compiler warnings.
        #:modules ((guix build python-build-system)
                   (guix build utils))
-
+       #:tests? #f ; Do not run test-cases. This would rebuild all modules and
+                                        ; they seem to require python2.
        #:phases
        (modify-phases %standard-phases
+         ;; built by 'install phase
          (delete 'build)
-         (delete 'check) ;; There's no test suite at the moment.
-
-         ;; Remove BUILD_CPU, BUILD_DATE, BUILD_TIME from build info to
-         ;; prevent deterministic issues.  Also correct some directories and
-         ;; use the xvfb binary instead of xorg-server (which doesn't seem to
-         ;; work).
-         (add-before 'install 'remove-timestamps&set-file-names
+         (add-before 'install 'fix-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* "add_build_info.py"
-               ((".*\"BUILD_CPU\", get_cpuinfo.*") ""))
-             (substitute* "add_build_info.py"
-               ((".*\"BUILD_DATE\", datetime.*") ""))
-             (substitute* "add_build_info.py"
-               ((".*\"BUILD_TIME\", datetime.*") ""))
-             (substitute* "setup.py"
-               (("/etc/init.d/")
-                (string-append (assoc-ref outputs "out")
-                               "/etc/init.d/")))
-             (substitute* "setup.py"
-               (("/usr/lib/")
-                (string-append (assoc-ref outputs "out") "/lib/")))
-             ;; Use Xvfb with '-nolisten local' to disable abstract X11 sockets.
-             (substitute* "./xpra/scripts/config.py"
-               ((":.*join.*xvfb.*")
-                (string-append ": \"" (assoc-ref inputs "xorg-server")
-                               "/bin/Xvfb +extension Composite"
-                               " -screen 0 5760x2560x24+32 -dpi 96 -nolisten"
-                               " tcp -nolisten local -noreset -auth"
-                               " $XAUTHORITY\",\n")))
+             ;; Fix binary paths.
+             (substitute* '("xpra/scripts/config.py" "xpra/x11/vfb_util.py")
+               (("\"Xvfb\"")
+                (string-append "\"" (assoc-ref inputs "xorg-server") "/bin/Xvfb\""))
+               (("\"Xorg\"")
+                (string-append "\"" (assoc-ref inputs "xorg-server") "/bin/Xorg\""))
+               (("\"xauth\"")
+                (string-append "\"" (assoc-ref inputs "xauth") "/bin/xauth\"")))
+             ;; Fix directory of config files.
+             (substitute* '("xpra/scripts/config.py" "xpra/platform/xposix/paths.py")
+               (("\"/etc/xpra/?\"")
+                (string-append "\"" (assoc-ref outputs "out") "/etc/xpra/\"")))
+             ;; XXX: Stolen from (gnu packages linux)
+             (define (append-to-file name body)
+               (let ((file (open-file name "a")))
+                 (display body file)
+                 (close-port file)))
+             ;; Add Xorg module paths.
+             (append-to-file
+              "etc/xpra/xorg.conf"
+              (string-append "\nSection \"Files\"\nModulePath \""
+                             (assoc-ref inputs "xf86-video-dummy") "/lib/xorg/modules,"
+                             (assoc-ref inputs "xf86-input-mouse") "/lib/xorg/modules,"
+                             (assoc-ref inputs "xf86-input-keyboard") "/lib/xorg/modules,"
+                             (assoc-ref inputs "xorg-server") "/lib/xorg/modules\"\n"
+                             "EndSection\n\n"))
+             (substitute* '("xpra/scripts/config.py"
+                            "etc/xpra/conf.d/60_server.conf.in"
+                            "unittests/unit/server/mixins/notification_test.py")
+               ;; The trailing -- is intentional, so we only replace it inside
+               ;; a command line.
+               (("dbus-launch --")
+                (string-append (assoc-ref inputs "dbus") "/bin/dbus-launch --")))
+             ;; /run/user does not exist on guix system
              (substitute* "./xpra/scripts/config.py"
                (("socket-dir.*: \"\",")
                 "socket-dir\"        : \"~/.xpra\","))
-             #t)))))
+             #t))
+         ;; GTK3 will not be found, if GI can’t find its typelibs.
+         (add-after
+             'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/xpra")))
+               ;; XXX: only export typelibs in inputs
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
     (home-page "https://www.xpra.org/")
     (synopsis "Remote access to individual applications or full desktops")
     (description "Xpra is a persistent remote display server and client for
