@@ -160,9 +160,9 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
                 "0mf5fn8v937qwnal4ykn3ji1y2sxk0fa1yfqi679hxmpg6pdf31n"))))))
 
 (define-public gdb-minimal
-  (package
-    (inherit gdb-9.2)
-    (name "gdb-minimal")
-    (inputs (fold alist-delete (package-inputs gdb)
-                  '("guile" "libxml2" "ncurses" "python-wrapper"
-                    "source-highlight")))))
+  (package/inherit
+   gdb-9.2
+   (name "gdb-minimal")
+   (inputs (fold alist-delete (package-inputs gdb)
+                 '("guile" "libxml2" "ncurses" "python-wrapper"
+                   "source-highlight")))))
