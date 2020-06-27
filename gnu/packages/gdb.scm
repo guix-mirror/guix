@@ -141,5 +141,4 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
    gdb
    (name "gdb-minimal")
    (inputs (fold alist-delete (package-inputs gdb)
-                 '("guile" "libxml2" "ncurses" "python-wrapper"
-                   "source-highlight")))))
+                 '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))

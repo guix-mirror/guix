@@ -124,6 +124,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
@@ -3863,3 +3864,49 @@ It supports mounting local filesystems of any kind the normal mount utility
 supports.  It can also mount encrypted LUKS volumes using the password
 supplied by the user when logging in.")
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public jc
+  (package
+    (name "jc")
+    (version "1.11.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kellyjonbrazil/jc.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rkckbgm04ql4r48wjgljfiqvsz36n99yqcpcyna8lvlm8h4nmwa"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-xmltodict" ,python-xmltodict)
+       ("python-pygments" ,python-pygments)))
+    (home-page "https://github.com/kellyjonbrazil/jc")
+    (synopsis "Convert the output of command-line tools to JSON")
+    (description "@code{jc} JSONifies the output of many CLI tools and
+file-types for easier parsing in scripts.")
+    (license license:expat)))
+
+(define-public jtbl
+  (package
+    (name "jtbl")
+    (version "1.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kellyjonbrazil/jtbl.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1zzd7rd63xva50f22d1rfja4r302aizrafarhwm67vv181swvdya"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-tabulate" ,python-tabulate)))
+    (home-page "https://github.com/kellyjonbrazil/jtbl")
+    (synopsis "Command-line tool to print JSON data as a table in the terminal")
+    (description "@code{jtbl} accepts piped JSON data from stdin and outputs a
+text table representation to stdout.")
+    (license license:expat)))
