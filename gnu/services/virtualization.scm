@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ryan Moe <ryan.moe@gmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,24 +19,46 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services virtualization)
-  #:use-module (gnu services)
-  #:use-module (gnu services configuration)
+  #:use-module (gnu bootloader)
+  #:use-module (gnu bootloader grub)
+  #:use-module (gnu image)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages virtualization)
   #:use-module (gnu services base)
+  #:use-module (gnu services configuration)
   #:use-module (gnu services dbus)
   #:use-module (gnu services shepherd)
-  #:use-module (gnu system shadow)
+  #:use-module (gnu services ssh)
+  #:use-module (gnu services)
   #:use-module (gnu system file-systems)
-  #:use-module (gnu packages admin)
-  #:use-module (gnu packages virtualization)
-  #:use-module (guix records)
+  #:use-module (gnu system hurd)
+  #:use-module (gnu system image)
+  #:use-module (gnu system images hurd)
+  #:use-module (gnu system shadow)
+  #:use-module (gnu system)
+  #:use-module (guix derivations)
   #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix packages)
+  #:use-module (guix records)
+  #:use-module (guix store)
+  #:use-module (guix utils)
+
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
 
-  #:export (libvirt-configuration
+  #:export (%hurd-vm-operating-system
+            hurd-vm-configuration
+            hurd-vm-disk-image
+            hurd-vm-id
+            hurd-vm-net-options
+            hurd-vm-options
+            hurd-vm-service-type
+
+            libvirt-configuration
             libvirt-service-type
             virtlog-configuration
             virtlog-service-type
@@ -773,3 +796,112 @@ given QEMU package."
                  "This service supports transparent emulation of binaries
 compiled for other architectures using QEMU and the @code{binfmt_misc}
 functionality of the kernel Linux.")))
+
+
+;;;
+;;; The Hurd in VM service: a Childhurd.
+;;;
+
+(define %hurd-vm-operating-system
+  (operating-system
+    (inherit %hurd-default-operating-system)
+    (host-name "childhurd")
+    (timezone "Europe/Amsterdam")
+    (bootloader (bootloader-configuration
+                 (bootloader grub-minimal-bootloader)
+                 (target "/dev/vda")
+                 (timeout 0)))
+    (services (cons*
+               (service openssh-service-type
+                        (openssh-configuration
+                         (openssh openssh-sans-x)
+                         (use-pam? #f)
+                         (port-number 2222)
+                         (permit-root-login #t)
+                         (allow-empty-passwords? #t)
+                         (password-authentication? #t)))
+               %base-services/hurd))))
+
+(define-record-type* <hurd-vm-configuration>
+  hurd-vm-configuration make-hurd-vm-configuration
+  hurd-vm-configuration?
+  (os          hurd-vm-configuration-os                 ;<operating-system>
+               (default %hurd-vm-operating-system))
+  (qemu        hurd-vm-configuration-qemu               ;<package>
+               (default qemu-minimal))
+  (image       hurd-vm-configuration-image              ;string
+               (thunked)
+               (default (hurd-vm-disk-image this-record)))
+  (disk-size   hurd-vm-configuration-disk-size          ;number or 'guess
+               (default 'guess))
+  (memory-size hurd-vm-configuration-memory-size        ;number
+               (default 512))
+  (options     hurd-vm-configuration-options            ;list of string
+               (default `("--snapshot")))
+  (id          hurd-vm-configuration-id                 ;#f or integer [1..]
+               (default #f))
+  (net-options hurd-vm-configuration-net-options        ;list of string
+               (thunked)
+               (default (hurd-vm-net-options this-record))))
+
+(define (hurd-vm-disk-image config)
+  "Return a disk-image for the Hurd according to CONFIG."
+  (let ((os (hurd-vm-configuration-os config))
+        (disk-size (hurd-vm-configuration-disk-size config)))
+    (system-image
+     (image
+      (inherit hurd-disk-image)
+      (size disk-size)
+      (operating-system os)))))
+
+(define (hurd-vm-net-options config)
+  (let ((id (or (hurd-vm-configuration-id config) 0)))
+    (define (qemu-vm-port base)
+      (number->string (+ base (* 1000 id))))
+    `("--device" "rtl8139,netdev=net0"
+      "--netdev" ,(string-append
+                   "user,id=net0"
+                   ",hostfwd=tcp:127.0.0.1:" (qemu-vm-port 10022) "-:2222"
+                   ",hostfwd=tcp:127.0.0.1:" (qemu-vm-port 15900) "-:5900"))))
+
+(define (hurd-vm-shepherd-service config)
+  "Return a <shepherd-service> for a Hurd in a Virtual Machine with CONFIG."
+
+  (let ((image       (hurd-vm-configuration-image config))
+        (qemu        (hurd-vm-configuration-qemu config))
+        (memory-size (hurd-vm-configuration-memory-size config))
+        (options     (hurd-vm-configuration-options config))
+        (id          (hurd-vm-configuration-id config))
+        (net-options (hurd-vm-configuration-net-options config))
+        (provisions  '(hurd-vm childhurd)))
+
+    (define vm-command
+      #~(list
+         (string-append #$qemu "/bin/qemu-system-i386")
+         #$@(if (file-exists? "/dev/kvm") '("--enable-kvm") '())
+         "-m" (number->string #$memory-size)
+         #$@net-options
+         #$@options
+         "--hda" #+image))
+
+    (list
+     (shepherd-service
+      (documentation "Run the Hurd in a Virtual Machine: a Childhurd.")
+      (provision (if id
+                     (map
+                      (cute symbol-append <>
+                            (string->symbol (number->string id)))
+                      provisions)
+                     provisions))
+      (requirement '(networking))
+      (start #~(make-forkexec-constructor #$vm-command))
+      (stop  #~(make-kill-destructor))))))
+
+(define hurd-vm-service-type
+  (service-type
+   (name 'hurd-vm)
+   (extensions (list (service-extension shepherd-root-service-type
+                                        hurd-vm-shepherd-service)))
+   (default-value (hurd-vm-configuration))
+   (description
+    "Provide a Virtual Machine running the GNU/Hurd.")))

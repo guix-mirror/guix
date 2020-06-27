@@ -341,14 +341,14 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20200522")
+    (version "8.20200617")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "1v71k5k9mcj1nq4pb8apx99rgw2rmckr6yshhvjl1dr6j70d67x8"))))
+        (base32 "1vgpqbscvxm03ibxy6cjnp9vd1wpsr3gkajp4z3m9nnkmjz5r4q4"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -760,6 +760,58 @@ that cause a shell to behave strangely and counter-intuitively.
 @item Point out subtle caveats, corner cases and pitfalls that may cause an
 advanced user's otherwise working script to fail under future circumstances.
 @end enumerate")
+    (license license:gpl3+)))
+
+(define-public shelltestrunner
+  (package
+    (name "shelltestrunner")
+    (version "1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://hackage/package/shelltestrunner-"
+                                  version "/shelltestrunner-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1a5kzqbwg6990249ypw0cx6cqj6663as1kbj8nzblcky8j6kbi6b"))))
+    (build-system haskell-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs tests? parallel-tests? #:allow-other-keys)
+             ;; This test is inspired by the Makefile in the upstream
+             ;; repository, which is missing in the Hackage release tarball
+             ;; along with some of the tests.  The Makefile would not work
+             ;; anyway as it ties into the 'stack' build tool.
+             (let* ((out (assoc-ref outputs "out"))
+                    (shelltest (string-append out "/bin/shelltest"))
+                    (numjobs (if parallel-tests?
+                                 (number->string (parallel-job-count))
+                                 "1")))
+               (if tests?
+                   (invoke shelltest (string-append "-j" numjobs)
+                           "tests/examples")
+                   (format #t "test suite not run~%"))
+               #t))))))
+    (inputs
+     `(("ghc-diff" ,ghc-diff)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-filemanip" ,ghc-filemanip)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-pretty-show" ,ghc-pretty-show)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "https://github.com/simonmichael/shelltestrunner")
+    (synopsis "Test CLI programs")
+    (description
+     "shelltestrunner (executable: @command{shelltest}) is a command-line tool
+for testing command-line programs, or general shell commands.  It reads simple
+test specifications defining a command to run, some input, and the expected
+output, stderr, and exit status.")
     (license license:gpl3+)))
 
 (define-public stylish-haskell

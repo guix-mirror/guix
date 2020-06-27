@@ -166,12 +166,14 @@ with usb4java.")
     (name "java-usb4java")
     (version "1.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/usb4java/usb4java/"
-                                  "archive/usb4java-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/usb4java/usb4java")
+                     (commit (string-append "usb4java-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gzpsnzwgsdyra3smq288yvxnwrgvdwxr6g8jbknnsk56kv6wc34"))))
+                "0aip6k24czz5g58qwb963mpick0b6ks774drfpdd8gcdvj9iv87j"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "usb4java.jar"

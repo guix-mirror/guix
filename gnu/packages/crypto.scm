@@ -1063,7 +1063,7 @@ Trusted comments are signed, thus verified, before being displayed.")
 (define-public libolm
   (package
     (name "libolm")
-    (version "3.1.4")
+    (version "3.1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1071,7 +1071,7 @@ Trusted comments are signed, thus verified, before being displayed.")
                     (commit version)))
               (sha256
                (base32
-                "06s7rw4a9vn35wzz7chxn54mp0sjgbpv2bzz9lq0g4hnzw33cjbi"))
+                "030g0jmmvhx2dh32k708sz6cdd5q1wz48i4gigh6dclqk10w28lm"))
               (file-name (git-file-name name version))))
     (arguments
      `(#:phases

@@ -250,7 +250,6 @@
        ;; mirrors keeping old versions at the top level
        "https://sunsite.icm.edu.pl/packages/ImageMagick/"
        ;; mirrors moving old versions to "legacy"
-       "http://mirrors-usa.go-parts.com/mirrors/ImageMagick/"
        "http://mirror.checkdomain.de/imagemagick/"
        "http://ftp.surfnet.nl/pub/ImageMagick/"
        "http://mirror.searchdaimon.com/ImageMagick"
@@ -308,7 +307,6 @@
        "http://mirror.its.dal.ca/kde/"
        "http://mirror.csclub.uwaterloo.ca/kde/"
        "http://mirror.cc.columbia.edu/pub/software/kde/"
-       "http://mirrors-usa.go-parts.com/kde"
        "http://kde.mirrors.hoobly.com/"
        "http://ftp.ussg.iu.edu/kde/"
        "http://mirrors.mit.edu/kde/"

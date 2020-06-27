@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Julien Lepiler <julien@lepiller.eu>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1396,7 +1397,7 @@ PostgreSQL.")
 (define-public guile-config
   (package
     (name "guile-config")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
@@ -1405,7 +1406,7 @@ PostgreSQL.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256 (base32
-                "1c59ch96d5p4c7si8qp55fdc15375klf2hyh29y3ap8ahqx9pxqj"))))
+                "09028ylbddjdp3d67zdjz3pnsjqz6zs2bfck5rr3dfaa0qjap40n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2483,163 +2484,162 @@ completion, a simple mode line, etc.")
       (license license:gpl3+))))
 
 (define-public guile-stis-parser
-  (let ((commit "6e85d37ffc333b722f4413a6c648263701eb75bd")
-        (revision "1"))
-    (package
-      (name "guile-stis-parser")
-      (version (git-version "0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/tampe/stis-parser")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0v4hvq7rlpbra1ni73lf8k6sdmjlflr50yi3p1f24g85h77pc7c0"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:parallel-build? #f ; not supported
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
-             (lambda _ (chdir "modules") #t))
-           (add-after 'chdir 'use-canonical-directory-for-go-files
-             (lambda _
-               (substitute* "Makefile.am"
-                 (("/ccache") "/site-ccache"))
-               #t))
-           (add-after 'chdir 'delete-broken-symlink
-             (lambda _
-               (delete-file "parser/stis-parser/lang/.#calc.scm")
-               #t)))))
-      (inputs
-       `(("guile" ,guile-2.2)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://gitlab.com/tampe/stis-parser")
-      (synopsis "Parser combinator framework")
-      (description
-       "This package provides a functional parser combinator library that
+  (package
+    (name "guile-stis-parser")
+    (version "1.2.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/tampe/stis-parser")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1fvxdfvc80zqhwzq5x3kxyr6j8p4b51yx85fx1gr3d4gy2ddpx5w"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f             ; not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "modules") #t))
+         (add-after 'chdir 'delete-broken-symlink
+           (lambda _
+             (delete-file "parser/stis-parser/lang/.#calc.scm")
+             #t)))))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.com/tampe/stis-parser")
+    (synopsis "Parser combinator framework")
+    (description
+     "This package provides a functional parser combinator library that
 supports backtracking and a small logical framework. The idea is to build up
 chunks that are memoized and there is no clear scanner/parser separation,
 chunks can be expressions as well as simple tokens.")
-      (license license:lgpl2.0+))))
+    (license license:lgpl2.0+)))
 
 (define-public guile-persist
-  (let ((commit "b14927b0368af51c024560aee5f55724aee35233")
-        (revision "1"))
-    (package
-      (name "guile-persist")
-      (version (git-version "0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/tampe/guile-persist")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0z5nf377wh8yj6n3sx2ddn4bdx1qrqnw899dlqjhg0q69qzil522"))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    ;; Install .go files in the right place.
-                    (substitute* "Makefile.am"
-                      (("/ccache") "/site-ccache"))
-                    #t))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-prefix
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (substitute* "src/Makefile.am"
-                 (("/usr/local/lib/guile")
-                  (string-append (assoc-ref outputs "out") "/lib/guile"))
-                 (("/usr/local/include/guile")
-                  (string-append (assoc-ref inputs "guile") "/include/guile"))
-                 (("-L/usr/local/lib")
-                  (string-append "-L" (assoc-ref inputs "guile") "/lib"))
-                 ;; Use canonical directory for go files.
-                 (("/ccache") "/site-ccache"))
-               #t))
-           (add-after 'unpack 'patch-library-reference
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (substitute* "persist/persistance.scm"
-                   (("\"libguile-persist\"")
-                    (format #f "\"~a/lib/guile/2.2/extensions/libguile-persist\"" out)))
-                 #t))))))
-      (inputs
-       `(("guile" ,guile-2.2)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://gitlab.com/tampe/guile-persist")
-      (synopsis "Persistence programming framework for Guile")
-      (description
-       "This is a serialization library for serializing objects like classes
+  (package
+    (name "guile-persist")
+    (version "1.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/tampe/guile-persist")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "19f8hqcax4v40858kx2j8fy1cvzc2djj99r0n17dy1xxmwa097qi"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-prefix
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "src/Makefile.am"
+               (("/usr/local/lib/guile")
+                (string-append (assoc-ref outputs "out") "/lib/guile"))
+               (("/usr/local/include/guile")
+                (string-append (assoc-ref inputs "guile") "/include/guile"))
+               (("-L/usr/local/lib")
+                (string-append "-L" (assoc-ref inputs "guile") "/lib")))
+             #t))
+         (add-after 'unpack 'patch-library-reference
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "persist/persistance.scm"
+                 (("\"libguile-persist\"")
+                  (format #f "\"~a/lib/guile/3.0/extensions/libguile-persist\"" out)))
+               #t))))))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.com/tampe/guile-persist")
+    (synopsis "Persistence programming framework for Guile")
+    (description
+     "This is a serialization library for serializing objects like classes
 and objects, closures and structs.  This currently does not support
 serializing continuations or delimited continuations.")
-      (license license:lgpl2.0+))))
+    (license license:lgpl2.0+)))
 
 (define-public python-on-guile
-  (let ((commit "00a51a23247f1edc4ae8eda72b30df5cd7d0015f")
-        (revision "3"))
-    (package
-      (name "python-on-guile")
-      (version (git-version "0.1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.elephly.net/software/python-on-guile.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "03rpnqr08rqr3gay128g564rwk8w4jbj28ss6b46z1d4vjs4nk68"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:parallel-build? #f ; not supported
-         #:make-flags '("GUILE_AUTO_COMPILE=0")   ;to prevent guild warnings
-
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
-             (lambda _ (chdir "modules") #t))
-           (add-after 'install 'wrap
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; Wrap the 'python' executable so it can find its
-               ;; dependencies.
-               (let ((out  (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/python")
-                   `("GUILE_LOAD_PATH" ":" prefix
-                     (,(getenv "GUILE_LOAD_PATH")))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                     (,(getenv "GUILE_LOAD_COMPILED_PATH"))))
-                 #t))))))
-      (inputs
-       `(("guile" ,guile-2.2)))
-      (propagated-inputs
-       `(("guile-persist" ,guile-persist)
-         ("guile-readline" ,guile-readline)
-         ("guile-stis-parser" ,guile-stis-parser)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://gitlab.com/python-on-guile/python-on-guile/")
-      (synopsis "Python implementation in Guile")
-      (description
-       "This package allows you to compile a Guile Python file to any target
+  (package
+    (name "python-on-guile")
+    (version "1.2.3.5")
+    (home-page "https://gitlab.com/python-on-guile/python-on-guile")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05xrvcj6a4gzq1ybyin270qz8wamgc7w2skyi9iy6hkpgdhxy8vf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f                   ;not supported
+       #:make-flags '("GUILE_AUTO_COMPILE=0") ;to prevent guild warnings
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "modules") #t))
+         (add-after 'chdir 'augment-GUILE_LOAD_PATH
+           (lambda _
+             ;; TODO: It would be better to patch the Makefile.
+             (setenv "GUILE_LOAD_PATH"
+                     (string-append ".:"
+                                    (getenv "GUILE_LOAD_PATH")))
+             #t))
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Wrap the 'python' executable so it can find its
+             ;; dependencies and own modules.
+             (let* ((out (assoc-ref outputs "out"))
+                    (guile-version ,(version-major+minor
+                                     (package-version guile-3.0)))
+                    (scm (string-append out "/share/guile/site/"
+                                        guile-version))
+                    (ccache (string-append out "/lib/guile/" guile-version
+                                           "/site-ccache"))
+                    (load-path (string-join
+                                (cons scm
+                                      ;; XXX: cdr because we augment it above.
+                                      (cdr (string-split
+                                            (getenv "GUILE_LOAD_PATH") #\:)))
+                                ":"))
+                    (compiled-path (string-append
+                                    ccache ":"
+                                    (getenv "GUILE_LOAD_COMPILED_PATH"))))
+               (wrap-program (string-append out "/bin/python")
+                 `("GUILE_LOAD_PATH" ":" prefix
+                   (,load-path))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                   (,compiled-path)))
+               #t))))))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("guile-persist" ,guile-persist)
+       ("guile-readline" ,guile-readline)
+       ("guile-stis-parser" ,guile-stis-parser)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Python implementation in Guile")
+    (description
+     "This package allows you to compile a Guile Python file to any target
 from @code{tree-il}.")
-      (license license:lgpl2.0+))))
+    (license license:lgpl2.0+)))
 
 (define-public guile-file-names
   (package

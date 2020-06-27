@@ -24,7 +24,7 @@
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,8 +106,8 @@ source code editors and IDEs.")
 
 ;; Some packages require this older version.  Removed once no longer needed.
 (define-public check-0.12
-  (package/inherit
-   check
+  (package
+   (inherit check)
    (version "0.12.0")
    (source (origin
              (method url-fetch)
@@ -115,6 +116,54 @@ source code editors and IDEs.")
              (sha256
               (base32
                "0d22h8xshmbpl9hba9ch3xj8vb9ybm5akpsbbh7yj07fic4h2hj6"))))))
+
+(define-public clitest
+  (package
+    (name "clitest")
+    (version "0.3.0")
+    (home-page "https://github.com/aureliojargas/clitest")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zw5wra9hc717srmcar1wm4i34kyj8c49ny4bb7y3nrvkjp2pdb5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This package is distributed as a single shell script and comes
+         ;; without a proper build system.
+         (delete 'configure)
+         (delete 'build)
+         (replace 'check
+           (lambda _
+             (substitute* "test.md"
+               ;; One test looks for an error from grep in the form "grep: foo",
+               ;; but our grep returns the absolute file name on errors.  Adjust
+               ;; the test to cope with that.
+               (("sed 's/\\^e\\*grep: \\.\\*/")
+                "sed 's/.*e*grep: .*/"))
+
+             (setenv "HOME" "/tmp")
+             (invoke "./clitest" "test.md")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "clitest" (string-append out "/bin"))
+               (install-file "README.md"
+                             (string-append out "/share/doc/clitest-" ,version))
+               #t))))))
+    (native-inputs
+     `(("perl" ,perl)))                 ;for tests
+    (synopsis "Command line test tool")
+    (description
+     "@command{clitest} is a portable shell script that performs automatic
+testing of Unix command lines.")
+    (license license:expat)))
 
 (define-public cunit
   (package
@@ -970,6 +1019,33 @@ supports coverage of subprocesses.")
 (define-public python2-pytest-runner-2
   (package-with-python2 python-pytest-runner-2))
 
+(define-public python-pytest-lazy-fixture
+  (package
+    (name "python-pytest-lazy-fixture")
+    (version "0.6.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pytest-lazy-fixture" version))
+        (sha256
+         (base32 "1b0hmnsxw4s2wf9pks8dg6dfy5cx3zcbzs8517lfccxsfizhqz8f"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/tvorog/pytest-lazy-fixture")
+    (synopsis "Use fixtures in @code{pytest.mark.parametrize}")
+    (description "This plugin helps to use fixtures in
+@code{pytest.mark.parametrize}.")
+    (license license:expat)))
+
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
@@ -1822,13 +1898,13 @@ failures.")
 (define-public python-pytest-flakes
   (package
     (name "python-pytest-flakes")
-    (version "1.0.1")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest-flakes" version))
               (sha256
                (base32
-                "0flag3n33kbhyjrhzmq990rvg4yb8hhhl0i48q9hw0ll89jp28lw"))))
+                "0hyind0gb950v9kfy0v97x66fb33slbqmxhrjvgbvsv0ayzn869l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1839,7 +1915,7 @@ failures.")
              ;; It's easier to run tests after install.
              ;; Make installed package available for running the tests
              (add-installed-pythonpath inputs outputs)
-             (invoke "py.test" "-vv"))))))
+             (invoke "py.test" "-vv" "-k" "not test_syntax_error"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)

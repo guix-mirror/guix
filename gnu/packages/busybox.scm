@@ -32,7 +32,7 @@
 (define-public busybox
   (package
     (name "busybox")
-    (version "1.29.3")
+    (version "1.31.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -40,11 +40,18 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1dzg45vgy2w1xcd3p6h8d76ykhabbvk1h0lf8yb24ikrwlv8cr4p"))))
+                "1659aabzp8w4hayr4z8kcpbk2z1q2wqhw7i1yb0l72b45ykl1yfh"))
+              (patches
+               (search-patches
+                "busybox-1.31.1-fix-build-with-glibc-2.31.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'disable-timestamps
+           (lambda _
+             (setenv "KCONFIG_NOTIMESTAMP" "1")
+             #t))
          (add-before 'configure 'disable-taskset
            ;; This feature fails its tests in the build environment,
            ;; was default 'n' until after 1.26.2.
@@ -74,6 +81,9 @@
 
              (substitute* "testsuite/date/date-works-1"
                (("/bin/date") (which "date")))
+
+             (substitute* "testsuite/start-stop-daemon.tests"
+              (("/bin/false") (which "false")))
 
              ;; The pidof tests assume that pid 1 is called "init" but that is not
              ;; true in guix build environment

@@ -74,6 +74,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (rnrs bytevectors)
   #:export (guix-system
@@ -802,8 +803,8 @@ static checks."
       (check-initrd-modules os)))
 
   (mlet* %store-monad
-      ((target    (current-target-system))
-       (image ->  (find-image file-system-type target))
+      ((target*   (current-target-system))
+       (image ->  (find-image file-system-type target*))
        (sys       (system-derivation-for-action os image action
                                                 #:file-system-type file-system-type
                                                 #:image-size image-size

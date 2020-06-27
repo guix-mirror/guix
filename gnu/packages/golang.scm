@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright @ 2018, 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright @ 2018, 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
 ;;; Copyright @ 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
@@ -218,21 +218,28 @@ in the style of communicating sequential processes (@dfn{CSP}).")
     (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
     (license license:bsd-3)))
 
-(define-public go-1.13
+(define-public go-1.14
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.13.9")
+    (version "1.14.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://storage.googleapis.com/golang/"
-                           name version ".src.tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/golang/go.git")
+             (commit (string-append "go" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "07gksk9194wa90xyd6yhagxfv7syvsx29bh8ypc4mg700vc1kfrl"))))
+         "08bazglmqp123c9dgrxflvxd011xsqfxsgah2kzbvca0mhm6qcm3"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
+       ((#:system system)
+        (if (string-prefix? "aarch64-linux" (or (%current-system)
+                                                (%current-target-system)))
+          "aarch64-linux"
+          system))
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'prebuild
@@ -261,7 +268,13 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                   '("cmd/go/testdata/script/mod_case_cgo.txt"
                     "cmd/go/testdata/script/list_find.txt"
                     "cmd/go/testdata/script/list_compiled_imports.txt"
-                    "cmd/go/testdata/script/cgo_syso_issue29253.txt"))
+                    "cmd/go/testdata/script/cgo_syso_issue29253.txt"
+                    "cmd/go/testdata/script/cover_cgo.txt"
+                    "cmd/go/testdata/script/cover_cgo_xtest.txt"
+                    "cmd/go/testdata/script/cover_cgo_extra_test.txt"
+                    "cmd/go/testdata/script/cover_cgo_extra_file.txt"))
+
+                 (for-each make-file-writable (find-files "."))
 
                  (substitute* "os/os_test.go"
                    (("/usr/bin") (getcwd))
@@ -329,6 +342,10 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                     ("syscall/exec_linux_test.go"
                      "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
 
+                 ;; These tests fail on aarch64-linux
+                 (substitute* "cmd/dist/test.go"
+                   (("t.registerHostTest\\(\"testsanitizers/msan.*") ""))
+
                  ;; fix shebang for testar script
                  ;; note the target script is generated at build time.
                  (substitute* "../misc/cgo/testcarchive/carchive_test.go"
@@ -360,7 +377,6 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (setenv "GOROOT_FINAL" output)
                  (setenv "CGO_ENABLED" "1")
                  (invoke "sh" "all.bash"))))
-
            (replace 'install
              ;; TODO: Most of this could be factorized with Go 1.4.
              (lambda* (#:key outputs #:allow-other-keys)
@@ -406,7 +422,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
-(define-public go go-1.13)
+(define-public go go-1.14)
 
 (define-public go-github-com-alsm-ioprogress
   (let ((commit "063c3725f436e7fba0c8f588547bee21ffec7ac5")
@@ -809,6 +825,33 @@ support for low-level interaction with the operating system.")
       (description "This package provides supplemental Go libraries related to
 time.")
       (home-page "https://godoc.org/golang.org/x/time/rate")
+      (license license:bsd-3))))
+
+(define-public go-golang-org-x-oauth2
+  (let ((commit "0f29369cfe4552d0e4bcddc57cc75f4d7e672a33")
+        (revision "1"))
+    (package
+      (name "go-golang-org-x-oauth2")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/oauth2")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-oauth2-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "06jwpvx0x2gjn2y959drbcir5kd7vg87k0r1216abk6rrdzzrzi2"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/oauth2"))
+      (propagated-inputs
+       `(("go-golang-org-x-net" ,go-golang-org-x-net)))
+      (home-page "https://go.googlesource.com/oauth2")
+      (synopsis "Client implementation of the OAuth 2.0 spec")
+      (description "This package contains a client implementation for OAuth 2.0
+ spec in Go.")
       (license license:bsd-3))))
 
 (define-public go-github-com-burntsushi-toml
@@ -1811,6 +1854,31 @@ terminal.")
       (synopsis "Handle ANSI color escapes on Windows")
       (description "This package provides @code{colorable}, a module that
 makes it possible to handle ANSI color escapes on Windows.")
+      (license license:expat))))
+
+(define-public go-github-com-mattn-go-pointer
+  (let ((commit "a0a44394634f41e4992b173b24f14fecd3318a67")
+        (revision "1"))
+    (package
+      (name "go-github-com-mattn-go-pointer")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mattn/go-pointer")
+               (commit commit)))
+         (sha256
+          (base32
+           "09w7hcyc0zz2g23vld6jbcmq4ar27xakp1ldjvh549i5izf2anhz"))
+         (file-name (git-file-name name version))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/mattn/go-pointer"))
+      (home-page "https://github.com/mattn/go-pointer")
+      (synopsis "Utility for cgo")
+      (description
+       "This package allows for a cgo argument to be passed a Go pointer.")
       (license license:expat))))
 
 (define-public go-github-com-mgutz-ansi
@@ -3562,6 +3630,135 @@ on running processes and system utilization (CPU, memory, disks, network,
 sensors).")
       (home-page "https://github.com/shirou/gopsutil")
       (license license:bsd-3))))
+
+(define-public go-github-com-danwakefield-fnmatch
+  (let ((commit "cbb64ac3d964b81592e64f957ad53df015803288")
+        (revision "0"))
+    (package
+     (name "go-github-com-danwakefield-fnmatch")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/danwakefield/fnmatch")
+             (commit commit)))
+       (sha256
+        (base32
+         "0cbf511ppsa6hf59mdl7nbyn2b2n71y0bpkzbmfkdqjhanqh1lqz"))
+       (file-name (git-file-name name version))))
+     (build-system go-build-system)
+     (arguments
+      '(#:import-path "github.com/danwakefield/fnmatch"))
+     (home-page "https://github.com/danwakefield/fnmatch")
+     (synopsis "Updated clone of kballards golang fnmatch gist")
+     (description "This package provides an updated clone of kballards golang
+fnmatch gist (https://gist.github.com/kballard/272720).")
+     (license license:bsd-2))))
+
+(define-public go-github-com-ddevault-go-libvterm
+  (let ((commit "b7d861da381071e5d3701e428528d1bfe276e78f")
+        (revision "0"))
+    (package
+      (name "go-github-com-ddevault-go-libvterm")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/ddevault/go-libvterm")
+                (commit commit)))
+          (sha256
+           (base32
+            "06vv4pgx0i6hjdjcar4ch18hp9g6q6687mbgkvs8ymmbacyhp7s6"))
+          (file-name (git-file-name name version))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/ddevault/go-libvterm"))
+      (propagated-inputs
+       `(("go-github-com-mattn-go-pointer" ,go-github-com-mattn-go-pointer)))
+      (home-page "https://github.com/ddevault/go-libvterm")
+      (synopsis "Go binding to libvterm")
+      (description
+       "This is a fork of another go-libvterm library for use with aerc.")
+      (license license:expat))))
+
+(define-public go-github-com-emersion-go-imap
+  (package
+    (name "go-github-com-emersion-go-imap")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/emersion/go-imap")
+              (commit (string-append "v" version))))
+        (sha256
+         (base32
+          "1id8j2d0rn9sj8y62xhyygqpk5ygrcl9jlfx92sm1jsvxsm3kywq"))
+        (file-name (git-file-name name version))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/emersion/go-imap"))
+    (native-inputs
+     `(("go-golang-org-x-text" ,go-golang-org-x-text)))
+    (home-page "https://github.com/emersion/go-imap")
+    (synopsis "IMAP4rev1 library written in Go")
+    (description "This package provides an IMAP4rev1 library written in Go.  It
+can be used to build a client and/or a server.")
+    (license license:expat)))
+
+(define-public go-github-com-emersion-go-sasl
+  (let ((commit "240c8404624e076f633766c16adbe96c7ac516b7")
+        (revision "0"))
+    (package
+      (name "go-github-com-emersion-go-sasl")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/emersion/go-sasl")
+                (commit commit)))
+          (sha256
+           (base32
+            "1py18p3clp474xhx6ypyp0bgv6n1dfm24m95cyyqb0k3vibar6ih"))
+          (file-name (git-file-name name version))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/emersion/go-sasl"))
+      (home-page "https://github.com/emersion/go-sasl")
+      (synopsis "SASL library written in Go")
+      (description "This package provides a SASL library written in Go.")
+      (license license:expat))))
+
+(define-public go-github-com-emersion-go-imap-idle
+  (let ((commit "2704abd7050ed7f2143753554ee23affdf847bd9")
+        (revision "0"))
+    (package
+      (name "go-github-com-emersion-go-imap-idle")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/emersion/go-imap-idle")
+                (commit commit)))
+          (sha256
+           (base32
+            "0blwcadmxgqsdwgr9m4jqfbpfa2viw5ah19xbybpa1z1z4aj5cbc"))
+          (file-name (git-file-name name version))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/emersion/go-imap-idle"))
+      (native-inputs
+       `(("go-github-com-emersion-go-imap" ,go-github-com-emersion-go-imap)
+         ("go-github-com-emersion-go-sasl" ,go-github-com-emersion-go-sasl)
+         ("go-golang-org-x-text" ,go-golang-org-x-text)))
+      (home-page "https://github.com/emersion/go-imap-idle")
+      (synopsis "IDLE extension for go-imap")
+      (description "This package provides an IDLE extension for go-imap.")
+      (license license:expat))))
 
 (define-public go-github-com-fatih-color
   (package

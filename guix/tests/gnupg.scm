@@ -17,12 +17,23 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix tests gnupg)
+  #:use-module (guix openpgp)
   #:use-module (guix utils)
   #:use-module (guix build utils)
+  #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
   #:export (gpg-command
             gpgconf-command
-            with-fresh-gnupg-setup))
+            with-fresh-gnupg-setup
+
+            %ed25519-public-key-file
+            %ed25519-secret-key-file
+            %ed25519bis-public-key-file
+            %ed25519bis-secret-key-file
+
+            read-openpgp-packet
+            key-fingerprint
+            key-id))
 
 (define gpg-command
   (make-parameter "gpg"))
@@ -50,3 +61,22 @@ listed in IMPORTED, and only them, have been imported.  This sets 'GNUPGHOME'
 such that the user's real GnuPG files are left untouched.  The 'gpg-agent'
 process is terminated afterwards."
   (call-with-fresh-gnupg-setup imported (lambda () exp ...)))
+
+(define %ed25519-public-key-file
+  (search-path %load-path "tests/ed25519.key"))
+(define %ed25519-secret-key-file
+  (search-path %load-path "tests/ed25519.sec"))
+(define %ed25519bis-public-key-file
+  (search-path %load-path "tests/ed25519bis.key"))
+(define %ed25519bis-secret-key-file
+  (search-path %load-path "tests/ed25519bis.sec"))
+
+(define (read-openpgp-packet file)
+  (get-openpgp-packet
+   (open-bytevector-input-port
+    (call-with-input-file file read-radix-64))))
+
+(define key-fingerprint
+  (compose openpgp-format-fingerprint
+           openpgp-public-key-fingerprint
+           read-openpgp-packet))

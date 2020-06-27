@@ -64,7 +64,7 @@ environment presented by Intel's EFI.")
 (define-public sbsigntools
   (package
     (name "sbsigntools")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (method git-fetch)
@@ -75,7 +75,7 @@ environment presented by Intel's EFI.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gc3xmp73xl7z4nkwz4qy960rdflmx7k4ksgyblcnia9smvsir6y"))))
+        (base32 "1y76wy65y6k10mjl2dm5hb5ms475alr4s080xzj8y833x01xvf3m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

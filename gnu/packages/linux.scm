@@ -371,50 +371,50 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.7-version "5.7.2")
+(define-public linux-libre-5.7-version "5.7.6")
 (define-public linux-libre-5.7-pristine-source
   (let ((version linux-libre-5.7-version)
-        (hash (base32 "02brxm78n0kg4mh48acvjsr7mpvaqd279ycyaixaflid1s1awrb0")))
+        (hash (base32 "1rhhys2fvfrfsc6lk0qkq59p83qhwvns4jhk0jlyylyzqqywkm4z")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.7)))
 
-(define-public linux-libre-5.4-version "5.4.46")
+(define-public linux-libre-5.4-version "5.4.49")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "13hvnfdcbcb9a21zizq8d90mc8maxz03zmzsj6iqsjd2y7r4y1rh")))
+        (hash (base32 "0g2psjf2q10mfc3vv6brjn6s2nkg73ll1s04gpshw907d9irpn2m")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.128")
+(define-public linux-libre-4.19-version "4.19.130")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0g31ad3wziy4xqna0yvwjcnza3jhd93syjpfvmwh0b4pkj2adar9")))
+        (hash (base32 "03zhsizj53ngwxn7d4mzix9xbxxd5lhbzrvawvbb91f83pkc14m6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.184")
+(define-public linux-libre-4.14-version "4.14.186")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0h6r06c1d7amkfglsr66ic89p0zxpmk7jkq1ylcbknmkiwkixx9g")))
+        (hash (base32 "0q52fmkiqa9hpdkf0wlpcqnc6wqssqz6cgfk1ix1anq0h5hl4ns4")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.227")
+(define-public linux-libre-4.9-version "4.9.228")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0pqc0wld4s4zjas95xm54mrkk00l9zkc59b6i9gq4km126s8bi1q")))
+        (hash (base32 "0d7w2zzs79ywxzfrh4bmk5lw318qbkcb8mcsyyh3cc25qqlz9gwg")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.227")
+(define-public linux-libre-4.4-version "4.4.228")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "196x57w740firg8zchypq4vq6a83ymmwn9amqrscym9zr0pcgm40")))
+        (hash (base32 "0y1xc5lk8j3p5maarksmh18wy921rgcngzsih7q1a82rah1fsjxr")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1087,6 +1087,29 @@ network adapters.")
 between the CDemu userspace daemon and linux kernel.")
     (license license:gpl2+)))
 
+(define-public bbswitch-module
+  (package
+    (name "bbswitch-module")
+    (version "0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Bumblebee-Project/bbswitch")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1glch4j0x1dzlp2yrb67v2r5jg9609jb6p8m251y78m74advqw0l"))))
+    (build-system linux-module-build-system)
+    (arguments
+     ;; No tests.
+     `(#:tests? #f))
+    (home-page "https://github.com/Bumblebee-Project/bbswitch")
+    (synopsis "Kernel module that disables discrete Nvidia graphics cards")
+    (description "The bbswitch module provides a way to toggle the Nvidia
+graphics card on Optimus laptops.")
+    (license license:gpl2)))
+
 (define-public ddcci-driver-linux
   (package
     (name "ddcci-driver-linux")
@@ -1463,12 +1486,13 @@ block devices, UUIDs, TTYs, and many other tools.")
     (name "ddate")
     (version "0.2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bo0ts/ddate/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/bo0ts/ddate")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "1bbqqq8mswj4bp9083gxjaky5ysfznax4cynsqwmy125z053yg6m"))))
+               (base32 "1qchxnxvghbma6gp1g78wnjxsri0b72ha9axyk31cplssl7yn73f"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))
     (home-page "https://github.com/bo0ts/ddate")
@@ -3764,13 +3788,14 @@ particular the @code{perf} command.")
     (name "pflask")
     (version "0.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ghedo/pflask/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ghedo/pflask")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g8fjj67dfkc2s0852l9vqi1pm61gp4rxbpzbzg780f5s5hd1fys"))))
+                "1jikjbhlxlqracnai3v9krzcgd2xwp0p4adw5n07yxc7b857damz"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
@@ -6266,13 +6291,14 @@ NexGen, Rise, and SiS CPUs.")
     (version "0.5")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/JasonFerrara/jmtpfs/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JasonFerrara/jmtpfs")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "10v8d7mmx8b8123x5f9y9zaaa428ms6wkngwn2ra71n5a53wrjn0"))))
+          "1pm68agkhrwgrplrfrnbwdcvx5lrivdmqw8pb5gdmm3xppnryji1"))))
     (build-system gnu-build-system)
     (inputs
      `(("file" ,file)
@@ -6293,12 +6319,13 @@ the MTP device as a file system.")
    (version "0.51")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/jamesodhunt/procenv/archive/"
-                         version ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
+     (method git-fetch)
+     (uri (git-reference
+            (url "https://github.com/jamesodhunt/procenv")
+            (commit version)))
+     (file-name (git-file-name name version))
      (sha256
-      (base32 "1javw97yw0qvjmj14js8vw6nsfyf2xc0kfiyq5f2hsp0553w2cdq"))))
+      (base32 "1ilrsw1rc85w29mkbkmm5n5w427gapv43yrjzvkb4kc9xhscgdjn"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--disable-silent-rules")))
    (native-inputs `(("groff" ,groff) ; for tests
@@ -6817,12 +6844,18 @@ the superuser to make device nodes.")
             (substitute* "Makefile"
              (("/bin/sh") (which "sh")))
             #t))
-        (add-after 'unpack 'patch-getopt
+        (add-after 'unpack 'patch-script
           (lambda*  (#:key inputs #:allow-other-keys)
             (substitute* "scripts/fakeroot.in"
              (("getopt")
               (string-append (assoc-ref inputs "util-linux")
-                             "/bin/getopt")))
+                             "/bin/getopt"))
+             (("sed")
+              (string-append (assoc-ref inputs "sed")
+                             "/bin/sed"))
+             (("cut")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/cut")) )
             #t))
         (add-before 'configure 'setenv
           (lambda _
@@ -6859,7 +6892,9 @@ the superuser to make device nodes.")
        ("xz" ,xz))) ; for the tests
     (inputs
      `(("libcap" ,libcap/next)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux)
+       ("sed" ,sed)
+       ("coreutils" ,coreutils)))
     (synopsis "Provides a fake root environment")
     (description "@command{fakeroot} runs a command in an environment where
 it appears to have root privileges for file manipulation. This is useful

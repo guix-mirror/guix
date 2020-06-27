@@ -72,7 +72,7 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "146")
+    (version "148")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -81,7 +81,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07kd3vshf4wlm0mv3mp6ljbxjq80mcg52w5ks6si1gnpzfbfz07p"))))
+                "0siv5z8iqgkzl51dmv69ifqids6hqmiir00yyl1aaqbginrwyhyv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -92,12 +92,6 @@
                     (lambda _
                       (substitute* "setup.py"
                         (("'python-magic',") ""))))
-                  ;; Patch in support for known tools
-                  (add-after 'unpack 'add-known-tools
-                    (lambda _
-                      (substitute* "diffoscope/external_tools.py"
-                        (("'debian': 'openssl'")
-                         "'debian': 'openssl', 'guix': 'openssl'"))))
                   ;; This test is broken because our `file` package has a
                   ;; bug in berkeley-db file type detection.
                   (add-after 'unpack 'remove-berkeley-test
@@ -138,17 +132,25 @@
                         (("\\['getfacl',")
                          (string-append "['" (which "getfacl") "',")))
                       #t))
+                  (add-after 'build 'build-man-page
+                    (lambda* (#:key (make-flags '()) #:allow-other-keys)
+                      (apply invoke "make" "-C" "doc" make-flags)))
                   (add-before 'check 'writable-test-data
                     (lambda _
-                      ;; tests may need needs write access to tests
-                      ;; directory
+                      ;; Tests may need write access to tests directory.
                       (for-each make-file-writable (find-files "tests"))
                       #t))
                   (add-before 'check 'delete-failing-test
                     (lambda _
-                      ;; this requires /sbin to be on the path
+                      ;; This requires /sbin to be in $PATH.
                       (delete-file "tests/test_tools.py")
-                      #t)))))
+                      #t))
+                  (add-after 'install 'install-man-page
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (man (string-append out "/share/man/man1")))
+                        (install-file "doc/diffoscope.1" man)
+                        #t))))))
     (inputs `(("rpm" ,rpm)              ;for rpm-python
               ("python-file" ,python-file)
               ("python-debian" ,python-debian)
@@ -157,14 +159,15 @@
               ("acl" ,acl)              ;for getfacl
               ("colordiff" ,colordiff)
               ("xxd" ,xxd)))
-    ;; Below are modules used for tests.
-    (native-inputs `(("python-pytest" ,python-pytest)
+    (native-inputs `(("help2man" ,help2man)
+                     ;; Below are modules used for tests.
+                     ("python-pytest" ,python-pytest)
                      ("python-chardet" ,python-chardet)
                      ("python-binwalk" ,python-binwalk)
                      ("python-h5py" ,python-h5py)
                      ("python-pypdf2" ,python-pypdf2)
                      ("python-progressbar33" ,python-progressbar33)
-                     ;; test suite skips tests when tool is missing
+                     ;; The test suite skips tests when these are missing.
                      ,@(match (%current-system)
                          ;; ghc is only available on x86 currently.
                          ((or "x86_64-linux" "i686-linux")
@@ -177,8 +180,7 @@
                          ((or "x86_64-linux")
                           `(("enjarify" ,enjarify)
                             ;; no unversioned openjdk available
-                            ("openjdk:jdk" ,openjdk12 "jdk")
-                            ))
+                            ("openjdk:jdk" ,openjdk12 "jdk")))
                          (_
                           `()))
                      ("abootimg" ,abootimg)

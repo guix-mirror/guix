@@ -4029,3 +4029,51 @@ request/response web apps to larger, grown applications.")
 than 326,000 known user-agents.  Users can pick a random one, or select one
 based on filters.")
     (license license:expat)))
+
+(define-public python-flask-restx
+  (package
+    (name "python-flask-restx")
+    (version "0.2.0")
+    (source
+     ;; We fetch from the Git repo because there are no tests in the PyPI
+     ;; archive.
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python-restx/flask-restx")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xf2vkmdngp9cv9klznizai4byxjcf0iqh1pr4b83nann0jxqwy7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-aniso8601" ,python-aniso8601)
+       ("python-flask" ,python-flask)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-pytz" ,python-pytz)))
+    (native-inputs
+     `(("python-blinker" ,python-blinker)
+       ("python-faker" ,python-faker)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-benchmark"
+        ,python-pytest-benchmark)
+       ("python-pytest-flask" ,python-pytest-flask)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "--benchmark-skip" "-k"
+                     ;; Those tests need internet access
+                     "not test_check and not test_valid_value_check"))))))
+    (home-page "https://github.com/python-restx/flask-restx")
+    (synopsis
+     "Framework for fast, easy and documented API development with Flask")
+    (description
+     "Flask-RESTX is an extension for Flask that adds support for quickly building
+REST APIs.  Flask-RESTX encourages best practices with minimal setup.  If you are familiar
+ with Flask, Flask-RESTX should be easy to pick up.  It provides a coherent collection of
+decorators and tools to describe your API and expose its documentation properly using
+Swagger.")
+    (license license:bsd-3)))

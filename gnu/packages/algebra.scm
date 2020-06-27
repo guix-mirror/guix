@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
@@ -945,6 +947,46 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
 minimization and curve fitting.  It is mature code, based on decades-old
 algorithms from the FORTRAN library MINPACK.")
     (license license:bsd-2)))
+
+(define-public symengine
+  (package
+    (name "symengine")
+    (version "0.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/symengine/symengine.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "129iv9maabmb42ylfdv0l0g94mcbf3y4q3np175008rcqdr8z6h1"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; These are the suggested build options in the README.
+       '("-DCMAKE_BUILD_TYPE=Release"
+         "-DWITH_GMP=on"
+         "-DWITH_MPFR=on"
+         "-DWITH_MPC=on"
+         "-DINTEGER_CLASS=flint"
+         "-DWITH_LLVM=on"
+         "-DWITH_SYMENGINE_THREAD_SAFE=on"
+         "-DBUILD_SHARED_LIBS=on")))    ;also build libsymengine
+    (native-inputs
+     `(("llvm" ,llvm)))
+    (inputs
+     `(("flint" ,flint)
+       ("gmp" ,gmp)
+       ("mpc" ,mpc)
+       ("mpfr" ,mpfr)))
+    (home-page "https://github.com/symengine/symengine")
+    (synopsis "Fast symbolic manipulation library")
+    (description
+     "SymEngine is a standalone fast C++ symbolic manipulation library.
+Optional thin wrappers allow usage of the library from other languages.")
+    (license (list license:expat        ;SymEngine
+                   license:bsd-3))))    ;3rd party code
 
 (define-public eigen
   (package

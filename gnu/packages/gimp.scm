@@ -51,7 +51,7 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.76")
+    (version "0.1.78")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -65,7 +65,7 @@
                                         "/babl-" version ".tar.xz")))
               (sha256
                (base32
-                "183kj2yq08vvldp8307vq61y2ravcqkyarrhak9w2l30gygp9100"))))
+                "0fjjfb0pbgimlqi7rk8cqz8pq595b7gw8nrpkxfmixdz6cv4km8p"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -90,7 +90,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.22")
+    (version "0.4.24")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
@@ -104,7 +104,7 @@ provided, as well as a framework to add new color models and data types.")
                                         "/gegl-" version ".tar.xz")))
               (sha256
                (base32
-                "0q9cckf90fb82qc5d496fjz459f1xw4j4p3rff1f57yivx0yr20q"))))
+                "0ji57s7cba94vzy49agn7x47ca61rccm6rif0cb0s6rl4ygljrbp"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -135,7 +135,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.18")
+    (version "2.10.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.gimp.org/pub/gimp/v"
@@ -143,7 +143,7 @@ buffers.")
                                   "/gimp-" version ".tar.bz2"))
               (sha256
                (base32
-                "05np26g61fyr72s7qjfrcck8v57r0yswq5ihvqyzvgzfx08y3gv5"))))
+                "0g3vzh1bjffqx94mfghmwvkhncv71cgah2mnfx17q00s9f3rybz1"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML

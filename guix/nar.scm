@@ -27,8 +27,9 @@
   ;; (guix store) since this is "daemon-side" code.
   #:use-module (guix store)
   #:use-module (guix store database)
+  #:use-module ((guix build store-copy) #:select (store-info))
 
-  #:use-module (guix ui)                          ; for '_'
+  #:use-module (guix i18n)
   #:use-module (gcrypt hash)
   #:use-module (guix pki)
   #:use-module (gcrypt pk-crypto)
@@ -115,9 +116,8 @@ held."
 
           ;; Register TARGET.  As a side effect, it resets the timestamps of all
           ;; its files, recursively, and runs a deduplication pass.
-          (register-path target
-                         #:references references
-                         #:deriver deriver))
+          (register-items db
+                          (list (store-info target deriver references))))
 
         (when lock?
           (delete-file (string-append target ".lock"))

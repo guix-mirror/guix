@@ -353,6 +353,36 @@
     (((and (? lint-warning?) first-warning) others ...)
      (lint-warning-message first-warning))))
 
+(test-equal "profile-collisions: no warnings"
+  '()
+  (check-profile-collisions (dummy-package "x")))
+
+(test-equal "profile-collisions: propagated inputs collide"
+  "propagated inputs p0@1 and p0@2 collide"
+  (let* ((p0  (dummy-package "p0" (version "1")))
+         (p0* (dummy-package "p0" (version "2")))
+         (p1  (dummy-package "p1" (propagated-inputs `(("p0" ,p0)))))
+         (p2  (dummy-package "p2" (propagated-inputs `(("p1" ,p1)))))
+         (p3  (dummy-package "p3" (propagated-inputs `(("p0" ,p0*)))))
+         (p4  (dummy-package "p4" (propagated-inputs
+                                   `(("p2" ,p2) ("p3", p3))))))
+    (single-lint-warning-message
+     (check-profile-collisions p4))))
+
+(test-assert "profile-collisions: propagated inputs collide, store items"
+  (string-match-or-error
+   "propagated inputs /[[:graph:]]+-p0-1 and /[[:graph:]]+-p0-1 collide"
+   (let* ((p0  (dummy-package "p0" (version "1")))
+          (p0* (dummy-package "p0" (version "1")
+                              (inputs `(("x" ,(dummy-package "x"))))))
+          (p1  (dummy-package "p1" (propagated-inputs `(("p0" ,p0)))))
+          (p2  (dummy-package "p2" (propagated-inputs `(("p1" ,p1)))))
+          (p3  (dummy-package "p3" (propagated-inputs `(("p0" ,p0*)))))
+          (p4  (dummy-package "p4" (propagated-inputs
+                                    `(("p2" ,p2) ("p3", p3))))))
+     (single-lint-warning-message
+      (check-profile-collisions p4)))))
+
 (test-equal "license: invalid license"
   "invalid license field"
   (single-lint-warning-message
@@ -707,6 +737,7 @@
     (single-lint-warning-message
      (check-mirror-url (dummy-package "x" (source source))))))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "github-url"
   '()
   (with-http-server `((200 ,%long-string))
@@ -718,6 +749,7 @@
                            (sha256 %null-sha256)))))))
 
 (let ((github-url "https://github.com/foo/bar/bar-1.0.tar.gz"))
+  (test-skip (if (http-server-can-listen?) 0 1))
   (test-equal "github-url: one suggestion"
     (string-append
      "URL should be '" github-url "'")
@@ -740,6 +772,8 @@
                                       (method url-fetch)
                                       (uri (%local-url))
                                       (sha256 %null-sha256))))))))))))
+
+  (test-skip (if (http-server-can-listen?) 0 1))
   (test-equal "github-url: already the correct github url"
     '()
     (check-github-url
@@ -863,6 +897,7 @@
   '()
   (check-formatting (dummy-package "x")))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "archival: missing content"
   (let* ((origin   (origin
                      (method url-fetch)
@@ -874,6 +909,7 @@
                                                       (source origin)))))))
     (warning-contains? "not archived" warnings)))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "archival: content available"
   '()
   (let* ((origin   (origin
@@ -887,6 +923,7 @@
       (parameterize ((%swh-base-url (%local-url)))
         (check-archival (dummy-package "x" (source origin)))))))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "archival: missing revision"
   (let* ((origin   (origin
                      (method git-fetch)
@@ -906,6 +943,7 @@
                        (check-archival (dummy-package "x" (source origin)))))))
     (warning-contains? "scheduled" warnings)))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "archival: revision available"
   '()
   (let* ((origin   (origin
@@ -921,6 +959,7 @@
       (parameterize ((%swh-base-url (%local-url)))
         (check-archival (dummy-package "x" (source origin)))))))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "archival: rate limit reached"
   ;; We should get a single warning stating that the rate limit was reached,
   ;; and nothing more, in particular no other HTTP requests.

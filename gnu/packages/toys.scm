@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
-;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -167,7 +167,7 @@ The GNU project hosts a similar collection of filters, the GNU talkfilters.")
 (define-public xsnow
   (package
     (name "xsnow")
-    (version "2.0.15")
+    (version "2.0.22")
     (source
      (origin
        (method url-fetch)
@@ -175,7 +175,7 @@ The GNU project hosts a similar collection of filters, the GNU talkfilters.")
              "https://www.ratrabbit.nl/ratrabbit/system/files/xsnow/xsnow-"
              version ".tar.gz"))
        (sha256
-        (base32 "086s42frbz9bk550414v908yrax4iwwlvlxv4zwp39cyp7wgws03"))))
+        (base32 "1880643fal6l7bskqbm4zfbr2s719698mkx4pchrxkjpb240sj0z"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

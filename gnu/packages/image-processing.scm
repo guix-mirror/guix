@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -486,6 +487,43 @@ Compared to most image processing libraries VIPS needs little RAM and runs
 quickly, especially on machines with more than one CPU core.  This is primarily
 due to its architecture which automatically parallelises the image workflows.")
     (license license:lgpl2.1+)))
+
+(define-public gmic
+  (package
+    (name "gmic")
+    (version "2.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gmic.eu/files/source/gmic_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "13axx7nwchn6ysgpvlw3fib474q4nrwv3qn20g3q03ldid0xvjah"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;there are no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("fftw" ,fftw)
+       ("graphicsmagick" ,graphicsmagick)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libx11" ,libx11)
+       ;;("opencv" ,opencv) ;OpenCV is currently broken in the CI
+       ("openexr" ,openexr)
+       ("zlib" ,zlib)))
+    (home-page "https://gmic.eu/")
+    (synopsis "Full-featured framework for digital image processing")
+    (description "G'MIC is a full-featured framework for digital image
+processing.  It provides several user interfaces to convert / manipulate
+/ filter / visualize generic image datasets, ranging from 1D scalar
+signals to 3D+t sequences of multi-spectral volumetric images, hence
+including 2D color images.")
+    ;; Dual-licensed, either license applies.
+    (license (list license:cecill license:cecill-c))))
 
 (define-public nip2
   (package

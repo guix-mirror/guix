@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright @ 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -436,3 +437,39 @@ with essential JSON handling functions, sufficiently good JSON support (not
      "Liblogging is an easy to use library for logging.  It offers an enhanced
 replacement for the syslog() call, but retains its ease of use.")
     (license license:bsd-2)))
+
+(define-public unifdef
+  (package
+    (name "unifdef")
+    (version "2.12")
+    (source (origin
+              (method url-fetch)
+              ;; https://dotat.at/prog/unifdef/unifdef-2.12.tar.xz
+              (uri (string-append "https://dotat.at/prog/" name "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "00647bp3m9n01ck6ilw6r24fk4mivmimamvm4hxp5p6wxh10zkj3"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin (delete-file-recursively "FreeBSD")
+                       (delete-file-recursively "win32")
+                       #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:make-flags (list "CC=gcc" (string-append "prefix=" %output))
+       #:tests? #f))                    ;no test suite
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "https://dotat.at/prog/unifdef/")
+    (synopsis "Utility to selectively processes conditional C preprocessor")
+    (description "The @command{unifdef} utility selectively processes
+conditional C preprocessor @code{#if} and @code{#ifdef} directives.  It
+removes from a file both the directives and the additional text that they
+delimit, while otherwise leaving the file alone.  It can be useful for
+avoiding distractions when studying code that uses @code{#ifdef} heavily for
+portability.")
+    (license (list license:bsd-2        ;all files except...
+                   license:bsd-3))))    ;...the unidef.1 manual page

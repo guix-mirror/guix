@@ -4,6 +4,7 @@
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -390,6 +391,17 @@ built-in registry server of Docker.")
              (substitute* "pkg/archive/archive.go"
                (("string\\{\"xz")
                 (string-append "string{\"" (assoc-ref inputs "xz") "/bin/xz")))
+             ;; TODO: Remove when Docker proper uses v1.14.x to build
+             (substitute* "registry/resumable/resumablerequestreader_test.go"
+               (("I%27m%20not%20an%20url" all)
+                (string-append "\"" all "\"")))
+             ;; TODO: Remove when Docker proper uses v1.14.x to build
+             (substitute* "vendor/gotest.tools/x/subtest/context.go"
+               (("func \\(tc \\*testcase\\) Cleanup\\(" all)
+                (string-append all "func()"))
+               (("tc\\.Cleanup\\(" all)
+                (string-append all "nil")))
+
              (let ((source-files (filter (lambda (name)
                                            (not (string-contains name "test")))
                                          (find-files "." "\\.go$"))))
@@ -488,6 +500,7 @@ built-in registry server of Docker.")
              ;; Timeouts after 5 min.
              (delete-file "plugin/manager_linux_test.go")
              ;; Operation not permitted.
+             (delete-file "daemon/graphdriver/aufs/aufs_test.go")
              (delete-file "daemon/graphdriver/btrfs/btrfs_test.go")
              (delete-file "daemon/graphdriver/overlay/overlay_test.go")
              (delete-file "daemon/graphdriver/overlay2/overlay_test.go")

@@ -37,6 +37,7 @@
   #:use-module (system foreign)
   #:export (sql-schema
             %default-database-file
+            store-database-file
             with-database
             path-id
             sqlite-register
@@ -65,6 +66,28 @@
         (unless (zero? ret)
           ((@@ (sqlite3) sqlite-error) db "sqlite-exec" ret))))))
 
+(define* (store-database-directory #:key prefix state-directory)
+  "Return the store database directory, taking PREFIX and STATE-DIRECTORY into
+account when provided."
+  ;; Priority for options: first what is given, then environment variables,
+  ;; then defaults. %state-directory, %store-directory, and
+  ;; %store-database-directory already handle the "environment variables /
+  ;; defaults" question, so we only need to choose between what is given and
+  ;; those.
+  (cond (state-directory
+         (string-append state-directory "/db"))
+        (prefix
+         (string-append prefix %localstatedir "/guix/db"))
+        (else
+         %store-database-directory)))
+
+(define* (store-database-file #:key prefix state-directory)
+  "Return the store database file name, taking PREFIX and STATE-DIRECTORY into
+account when provided."
+  (string-append (store-database-directory #:prefix prefix
+                                           #:state-directory state-directory)
+                 "/db.sqlite"))
+
 (define (initialize-database db)
   "Initializing DB, an empty database, by creating all the tables and indexes
 as specified by SQL-SCHEMA."
@@ -77,7 +100,10 @@ as specified by SQL-SCHEMA."
 (define (call-with-database file proc)
   "Pass PROC a database record corresponding to FILE.  If FILE doesn't exist,
 create it and initialize it as a new database."
-  (let ((new? (not (file-exists? file)))
+  (let ((new? (and (not (file-exists? file))
+                   (begin
+                     (mkdir-p (dirname file))
+                     #t)))
         (db   (sqlite-open file)))
     ;; Turn DB in "write-ahead log" mode, which should avoid SQLITE_LOCKED
     ;; errors when we have several readers: <https://www.sqlite.org/wal.html>.
@@ -361,45 +387,32 @@ Return #t on success.
 
 Use with care as it directly modifies the store!  This is primarily meant to
 be used internally by the daemon's build hook."
-  (register-items (list (store-info path deriver references))
-                  #:prefix prefix #:state-directory state-directory
-                  #:deduplicate? deduplicate?
-                  #:reset-timestamps? reset-timestamps?
-                  #:schema schema
-                  #:log-port (%make-void-port "w")))
+  (define db-file
+    (store-database-file #:prefix prefix
+                         #:state-directory state-directory))
+
+  (parameterize ((sql-schema schema))
+    (with-database db-file db
+      (register-items db (list (store-info path deriver references))
+                      #:prefix prefix
+                      #:deduplicate? deduplicate?
+                      #:reset-timestamps? reset-timestamps?
+                      #:log-port (%make-void-port "w")))))
 
 (define %epoch
   ;; When it all began.
   (make-time time-utc 0 1))
 
-(define* (register-items items
-                         #:key prefix state-directory
+(define* (register-items db items
+                         #:key prefix
                          (deduplicate? #t)
                          (reset-timestamps? #t)
                          registration-time
-                         (schema (sql-schema))
                          (log-port (current-error-port)))
   "Register all of ITEMS, a list of <store-info> records as returned by
-'read-reference-graph', in the database under PREFIX/STATE-DIRECTORY.  ITEMS
-must be in topological order (with leaves first.)  If the database is
-initially empty, apply SCHEMA to initialize it.  REGISTRATION-TIME must be the
-registration time to be recorded in the database; #f means \"now\".
-Write a progress report to LOG-PORT."
-
-  ;; Priority for options: first what is given, then environment variables,
-  ;; then defaults. %state-directory, %store-directory, and
-  ;; %store-database-directory already handle the "environment variables /
-  ;; defaults" question, so we only need to choose between what is given and
-  ;; those.
-
-  (define db-dir
-    (cond (state-directory
-           (string-append state-directory "/db"))
-          (prefix
-           (string-append prefix %localstatedir "/guix/db"))
-          (else
-           %store-database-directory)))
-
+'read-reference-graph', in DB.  ITEMS must be in topological order (with
+leaves first.)  REGISTRATION-TIME must be the registration time to be recorded
+in the database; #f means \"now\".  Write a progress report to LOG-PORT."
   (define store-dir
     (if prefix
         (string-append prefix %storedir)
@@ -438,17 +451,14 @@ Write a progress report to LOG-PORT."
         (when deduplicate?
           (deduplicate real-file-name hash #:store store-dir)))))
 
-  (mkdir-p db-dir)
-  (parameterize ((sql-schema schema))
-    (with-database (string-append db-dir "/db.sqlite") db
-      (call-with-retrying-transaction db
-          (lambda ()
-            (let* ((prefix   (format #f "registering ~a items" (length items)))
-                   (progress (progress-reporter/bar (length items)
-                                                    prefix log-port)))
-              (call-with-progress-reporter progress
-                (lambda (report)
-                  (for-each (lambda (item)
-                              (register db item)
-                              (report))
-                            items)))))))))
+  (call-with-retrying-transaction db
+      (lambda ()
+        (let* ((prefix   (format #f "registering ~a items" (length items)))
+               (progress (progress-reporter/bar (length items)
+                                                prefix log-port)))
+          (call-with-progress-reporter progress
+            (lambda (report)
+              (for-each (lambda (item)
+                          (register db item)
+                          (report))
+                        items)))))))

@@ -215,9 +215,10 @@ void LocalStore::optimisePath_(OptimiseStats & stats, const Path & path, InodeHa
 
     /* Atomically replace the old file with the new hard link. */
     if (rename(tempLink.c_str(), path.c_str()) == -1) {
+	int renameErrno = errno;
         if (unlink(tempLink.c_str()) == -1)
             printMsg(lvlError, format("unable to unlink `%1%'") % tempLink);
-        if (errno == EMLINK) {
+        if (renameErrno == EMLINK) {
             /* Some filesystems generate too many links on the rename,
                rather than on the original link.  (Probably it
                temporarily increases the st_nlink field before

@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
+  #:use-module (guix deprecation)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
@@ -941,7 +943,9 @@ Python.")
        ("python-future" ,python-future)
        ("python-click" ,python-click)
        ("python-h5py" ,python-h5py)
-       ("python-pandas" ,python-pandas)))
+       ;; FIXME: Upgrade to pandas 1.0 when
+       ;; https://github.com/biocore/biom-format/issues/837 is resolved.
+       ("python-pandas" ,python-pandas-0.25)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
@@ -2406,12 +2410,18 @@ interval trees with associated meta-data.  It is primarily used by the
     (name "python-deeptools")
     (version "3.4.3")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "deepTools" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/deeptools/deepTools.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1azgjniss5ff6a90nicdjkxyjwqmi3gzfn09gra42hwlz19hipxb"))))
+                "0l09vyynz6s6w7fnyd94rpys4a6aja6kp4gli64pngdxdz3md1nl"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
@@ -2421,7 +2431,7 @@ interval trees with associated meta-data.  It is primarily used by the
        ("python-pysam" ,python-pysam)
        ("python-scipy" ,python-scipy)
        ("python-deeptoolsintervals" ,python-deeptoolsintervals)
-       ("python-plotly" ,python-plotly)))
+       ("python-plotly" ,python-plotly-2.4.1)))
     (home-page "https://pypi.org/project/deepTools/")
     (synopsis "Useful tools for exploring deep sequencing data")
     (description "This package addresses the challenge of handling large amounts
@@ -2435,6 +2445,8 @@ annotations of the genome.")
     ;; The file deeptools/cm.py is licensed under the BSD license.  The
     ;; remainder of the code is licensed under the MIT license.
     (license (list license:bsd-3 license:expat))))
+
+(define-deprecated deeptools python-deeptools)
 
 (define-public cutadapt
   (package
@@ -2598,51 +2610,6 @@ trees (phylogenies) and characters.")
      "This package provides Python bindings for lib2bit to access 2bit files
 with Python.")
     (license license:expat)))
-
-(define-public deeptools
-  (package
-    (name "deeptools")
-    (version "3.1.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/deeptools/deepTools.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1vggnf52g6q2vifdl4cyi7s2fnfqq0ky2zrkj5zv2qfzsc3p3siw"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; This phase fails, but it's not needed.
-         (delete 'reset-gzip-timestamps))))
-    (inputs
-     `(("python-plotly" ,python-plotly)
-       ("python-scipy" ,python-scipy)
-       ("python-numpy" ,python-numpy)
-       ("python-numpydoc" ,python-numpydoc)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-pysam" ,python-pysam)
-       ("python-py2bit" ,python-py2bit)
-       ("python-pybigwig" ,python-pybigwig)))
-    (native-inputs
-     `(("python-mock" ,python-mock)   ;for tests
-       ("python-nose" ,python-nose)   ;for tests
-       ("python-pytz" ,python-pytz))) ;for tests
-    (home-page "https://github.com/deeptools/deepTools")
-    (synopsis "Tools for normalizing and visualizing deep-sequencing data")
-    (description
-     "DeepTools addresses the challenge of handling the large amounts of data
-that are now routinely generated from DNA sequencing centers.  To do so,
-deepTools contains useful modules to process the mapped reads data to create
-coverage files in standard bedGraph and bigWig file formats.  By doing so,
-deepTools allows the creation of normalized coverage files or the comparison
-between two files (for example, treatment and control).  Finally, using such
-normalized and standardized files, multiple visualizations can be created to
-identify enrichments with functional annotations of the genome.")
-    (license license:gpl3+)))
 
 (define-public delly
   (package
@@ -3050,16 +3017,16 @@ dynamic programming or a variety of heuristics.")
 (define-public express
   (package
     (name "express")
-    (version "1.5.1")
+    (version "1.5.3")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "http://bio.math.berkeley.edu/eXpress/downloads/express-"
-                version "/express-" version "-src.tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/adarob/eXpress.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03rczxd0gjp2l1jxcmjfmf5j94j77zqyxa6x063zsc585nj40n0c"))))
+                "18nb22n7x820fzjngf4qgyb3mspqkw7xyk7v7s5ps6wfrd8qwscb"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -3076,6 +3043,12 @@ dynamic programming or a variety of heuristics.")
                (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
                 (string-append (assoc-ref inputs "bamtools") "/lib"))
                (("libprotobuf.a") "libprotobuf.so"))
+             #t))
+         (add-after 'unpack 'remove-update-check
+           (lambda _
+             (substitute* "src/main.cpp"
+               (("#include \"update_check.h\"") "")
+               (("check_version\\(PACKAGE_VERSION\\);") ""))
              #t)))))
     (inputs
      `(("boost" ,boost)
@@ -7716,13 +7689,13 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.24.0")
+    (version "1.24.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "0ab92nq7lvhvhgp512qhiiphpby0b17c666qska6p8a636zzmqiv"))))
+                "1cqs53p4m5q1dr59war72bccphy01ilw4xra24fmngrv4x32rznd"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
@@ -7813,13 +7786,13 @@ coding changes and predict coding outcomes.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.44.1")
+    (version "3.44.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "0l6f6lz1rghj8c5s14ljbnmsrwz27fi6a7g42n15n3d3msvflw36"))))
+                "09fnqxx4rzq5n447aqg2l6y0idfwgz2jxz99sifxsr2q8afzbcj6"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
@@ -7950,13 +7923,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.44.0")
+    (version "2.44.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "0ag26q9283p9mfz4zx8qnx1w7b7ilmsb8wyx737z9cqy9a0i57wj"))))
+                "0np4nh3gj60mgb6312z7x0z9fg5bhrhw872sp3dzgmqc8q8b84iz"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -8923,13 +8896,13 @@ of gene-level counts.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.32.0")
+    (version "2.32.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "097znwl95y2vd6asyqxs62m7binwxqmna7ss0302yl3b0s72skcy"))))
+                "102zam2j43jwgaz9ch6y2jjbc3qf56ngmggikf99s8l3w9ggbskm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rhdf5lib" ,r-rhdf5lib)))
@@ -10840,14 +10813,14 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "1g848s0qc6i4ipd7y2s5pk8k1xggk2kfy0gnr8wjjs2gq3914aw4"))))
+         "01767v90nl0499jcicpxngbbs0af5p9c5aasi5va01w3v5bnqddn"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (inputs
@@ -13437,14 +13410,14 @@ cases include:
    (name "miniasm")
    (version "0.3")
    (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/lh3/miniasm/archive/v"
-                  version ".tar.gz"))
-            (file-name (string-append name "-" version ".tar.gz"))
+            (method git-fetch)
+            (uri (git-reference
+                   (url "https://github.com/lh3/miniasm")
+                   (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
             (sha256
-               (base32
-                "0g89pa98dvh34idv7w1zv12bsbyr3a11c4qb1cdcz68gyda88s4v"))))
+             (base32
+              "04dv5wv8bhsw1imxwyd438bnn9kby7svp44nbcz8lsadzjjci5gs"))))
    (build-system gnu-build-system)
    (inputs
     `(("zlib" ,zlib)))
@@ -13457,7 +13430,8 @@ cases include:
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
               (install-file "miniasm" bin)
-              (install-file "minidot" bin)))))))
+              (install-file "minidot" bin)
+              #t))))))
    (home-page "https://github.com/lh3/miniasm")
    (synopsis "Ultrafast de novo assembly for long noisy reads")
    (description "Miniasm is a very fast OLC-based de novo assembler for noisy

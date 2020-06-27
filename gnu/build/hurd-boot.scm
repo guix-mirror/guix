@@ -80,16 +80,8 @@ Return the value associated with OPTION, or #f on failure."
     (string-append root (if (string-suffix? "/" root) "" "/") dir))
 
   (mkdir (scope "dev"))
-  (for-each (lambda (file)
-              (call-with-output-file (scope file)
-                (lambda (port)
-                  (display file port)   ;avoid hard-linking
-                  (chmod port #o666))))
-            '("dev/null"
-              "dev/zero"
-              "dev/full"
-              "dev/random"
-              "dev/urandom"))
+  ;; Don't create /dev/null etc just yet; the store
+  ;; messes-up the permission bits.
   ;; Don't create /dev/console, /dev/vcs, etc.: they are created by
   ;; console-run on first boot.
 
@@ -115,6 +107,143 @@ Return the value associated with OPTION, or #f on failure."
   ;; settings?
   )
 
+(define (passive-translator-xattr? file-name)
+  "Return true if FILE-NAME has an extended @code{gnu.translator} attribute
+set."
+  (catch 'system-error
+    (lambda _ (not (string-null? (getxattr file-name "gnu.translator"))))
+    (lambda args
+      (if (= ENODATA (system-error-errno args))
+          #f
+          (apply throw args)))))
+
+(define (passive-translator-installed? file-name)
+  "Return true if @file{showtrans} finds a translator installed on FILE-NAME."
+  (with-output-to-port (%make-void-port "w")
+    (lambda _
+      (with-error-to-port (%make-void-port "w")
+        (lambda _
+          (zero? (system* "showtrans" "--silent" file-name)))))))
+
+(define (translated? file-name)
+  "Return true if a translator is installed on FILE-NAME."
+  (if (string-contains %host-type "linux-gnu")
+      (passive-translator-xattr? file-name)
+      (passive-translator-installed? file-name)))
+
+(define* (set-translator file-name command #:optional (mode #o600))
+  "Setup translator COMMAND on FILE-NAME."
+  (unless (translated? file-name)
+    (let ((dir (dirname file-name)))
+      (unless (directory-exists? dir)
+        (mkdir-p dir))
+      (unless (file-exists? file-name)
+        (call-with-output-file file-name
+          (lambda (port)
+            (display file-name port)  ;avoid hard-linking
+            (chmod port mode)))))
+    (catch 'system-error
+      (lambda _
+        (setxattr file-name "gnu.translator" (string-join command "\0" 'suffix)))
+      (lambda (key . args)
+        (let ((errno (system-error-errno (cons key args))))
+          (format (current-error-port) "~a: ~a\n"
+                  (strerror errno) file-name)
+          (format (current-error-port) "Ignoring...Good Luck!\n"))))))
+
+(define-syntax-rule (false-if-EEXIST exp)
+  "Evaluate EXP but return #f if it raises to 'system-error with EEXIST."
+  (catch 'system-error
+    (lambda () exp)
+    (lambda args
+      (if (= EEXIST (system-error-errno args))
+          #f
+          (apply throw args)))))
+
+(define* (set-hurd-device-translators #:optional (root "/"))
+  "Make some of the device nodes needed on GNU/Hurd."
+
+  (define (scope dir)
+    (string-append root (if (string-suffix? "/" root) "" "/") dir))
+
+  (define scope-set-translator
+    (match-lambda
+      ((file-name command)
+       (scope-set-translator (list file-name command #o600)))
+      ((file-name command mode)
+       (let ((mount-point (scope file-name)))
+         (set-translator mount-point command mode)))))
+
+  (define (mkdir* dir)
+    (let ((dir (scope dir)))
+     (unless (file-exists? dir)
+       (mkdir-p dir))))
+
+  (define servers
+    '(("servers/crash-dump-core" ("/hurd/crash" "--dump-core"))
+      ("servers/crash-kill"      ("/hurd/crash" "--kill"))
+      ("servers/crash-suspend"   ("/hurd/crash" "--suspend"))
+      ("servers/password"        ("/hurd/password"))
+      ("servers/socket/1"        ("/hurd/pflocal"))
+      ("servers/socket/2"        ("/hurd/pfinet"
+                                  "--interface" "eth0"
+                                  "--address"
+                                  "10.0.2.15" ;the default QEMU guest IP
+                                  "--netmask" "255.255.255.0"
+                                  "--gateway" "10.0.2.2"
+                                  "--ipv6" "/servers/socket/16"))))
+
+  (define devices
+    '(("dev/full"    ("/hurd/null"     "--full")            #o666)
+      ("dev/null"    ("/hurd/null")                         #o666)
+      ("dev/random"  ("/hurd/random"   "--seed-file" "/var/lib/random-seed")
+                                                            #o644)
+      ("dev/zero"    ("/hurd/storeio"  "--store-type=zero") #o666)
+
+      ("dev/console" ("/hurd/term"     "/dev/console" "device" "console"))
+
+      ("dev/klog"    ("/hurd/streamio" "kmsg"))
+      ("dev/mem"     ("/hurd/storeio"  "--no-cache" "mem")  #o660)
+      ("dev/shm"     ("/hurd/tmpfs"    "--mode=1777" "50%") #o644)
+      ("dev/time"    ("/hurd/storeio"  "--no-cache" "time") #o644)
+
+      ("dev/vcs"     ("/hurd/console"))
+      ("dev/tty"     ("/hurd/magic"    "tty")               #o666)
+
+      ("dev/tty1"    ("/hurd/term"     "/dev/tty1" "hurdio" "/dev/vcs/1/console")
+                                                            #o666)
+      ("dev/tty2"    ("/hurd/term"     "/dev/tty2" "hurdio" "/dev/vcs/2/console")
+                                                            #o666)
+      ("dev/tty3"    ("/hurd/term"     "/dev/tty3" "hurdio" "/dev/vcs/3/console")
+                                                            #o666)
+
+      ("dev/ptyp0"   ("/hurd/term"     "/dev/ptyp0" "pty-master" "/dev/ttyp0")
+                                                            #o666)
+      ("dev/ptyp1"   ("/hurd/term"     "/dev/ptyp1" "pty-master" "/dev/ttyp1")
+                                                            #o666)
+      ("dev/ptyp2"   ("/hurd/term"     "/dev/ptyp2" "pty-master" "/dev/ttyp2")
+                                                            #o666)
+
+      ("dev/ttyp0"   ("/hurd/term"     "/dev/ttyp0" "pty-slave" "/dev/ptyp0")
+                                                            #o666)
+      ("dev/ttyp1"   ("/hurd/term"     "/dev/ttyp1" "pty-slave" "/dev/ptyp1")
+                                                            #o666)
+      ("dev/ttyp2"   ("/hurd/term"     "/dev/ttyp2" "pty-slave" "/dev/ptyp2")
+                                                            #o666)))
+
+  (for-each scope-set-translator servers)
+  (mkdir* (scope "dev/vcs/1"))
+  (mkdir* (scope "dev/vcs/2"))
+  (mkdir* (scope "dev/vcs/2"))
+  (rename-file (scope "/dev/console") (scope "/dev/console-"))
+  (for-each scope-set-translator devices)
+
+  (false-if-EEXIST (symlink "/dev/random" (scope "dev/urandom")))
+  (mkdir* (scope "dev/fd"))
+  (false-if-EEXIST (symlink "/dev/fd/0" (scope "dev/stdin")))
+  (false-if-EEXIST (symlink "/dev/fd/1" (scope "dev/stdout")))
+  (false-if-EEXIST (symlink "/dev/fd/2" (scope "dev/stderr"))))
+
 
 (define* (boot-hurd-system #:key (on-error 'debug))
   "This procedure is meant to be called from an early RC script.
@@ -126,20 +255,9 @@ starting the Shepherd.
 XXX TODO: see linux-boot.scm:boot-system.
 XXX TODO: add proper file-system checking, mounting
 XXX TODO: move bits to (new?) (hurd?) (activation?) services
-XXX TODO: use settrans/setxattr instead of MAKEDEV
+XXX TODO: use Linux xattr/setxattr to remove (settrans in) /libexec/RUNSYSTEM
 
 "
-  (define translators
-    '(("/servers/crash-dump-core" ("/hurd/crash" "--dump-core"))
-      ("/servers/crash-kill" ("/hurd/crash" "--kill"))
-      ("/servers/crash-suspend" ("/hurd/crash" "--suspend"))
-      ("/servers/password" ("/hurd/password"))
-      ("/servers/socket/1" ("/hurd/pflocal"))
-      ("/servers/socket/2" ("/hurd/pfinet" "--interface" "eth0"
-                            "--address" "10.0.2.15" ;the default QEMU guest IP
-                            "--netmask" "255.255.255.0"
-                            "--gateway" "10.0.2.2"
-                            "--ipv6" "/servers/socket/16"))))
 
   (display "Welcome, this is GNU's early boot Guile.\n")
   (display "Use '--repl' for an initrd REPL.\n\n")
@@ -147,35 +265,13 @@ XXX TODO: use settrans/setxattr instead of MAKEDEV
   (call-with-error-handling
    (lambda ()
 
-     (define (translated? node)
-       ;; Return true if a translator is installed on NODE.
-       (with-output-to-port (%make-void-port "w")
-         (lambda ()
-           (with-error-to-port (%make-void-port "w")
-             (lambda ()
-               (zero? (system* "showtrans" "--silent" node)))))))
-
      (let* ((args    (command-line))
             (system  (find-long-option "--system" args))
             (to-load (find-long-option "--load" args)))
 
-       (format #t "Creating essential servers...\n")
-       (setenv "PATH" (string-append system "/profile/bin"
-                                     ":" system "/profile/sbin"))
-       (for-each (match-lambda
-                   ((node command)
-                    (unless (translated? node)
-                      (mkdir-p (dirname node))
-                      (apply invoke "settrans" "--create" node command))))
-                 translators)
-
-       (format #t "Creating essential device nodes...\n")
-       (with-directory-excursion "/dev"
-         (invoke "MAKEDEV" "--devdir=/dev" "std")
-         (invoke "MAKEDEV" "--devdir=/dev" "vcs")
-         (invoke "MAKEDEV" "--devdir=/dev" "tty1""tty2" "tty3" "tty4" "tty5" "tty6")
-         (invoke "MAKEDEV" "--devdir=/dev" "ptyp0" "ptyp1" "ptyp2")
-         (invoke "MAKEDEV" "--devdir=/dev" "console"))
+       (format #t "Setting-up essential translators...\n")
+       (setenv "PATH" (string-append system "/profile/bin"))
+       (set-hurd-device-translators)
 
        (false-if-exception (delete-file "/hurd"))
        (let ((hurd/hurd (readlink* (string-append system "/profile/hurd"))))

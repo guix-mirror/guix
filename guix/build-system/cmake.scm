@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,6 +114,7 @@
                       (phases '(@ (guix build cmake-build-system)
                                   %standard-phases))
                       (system (%current-system))
+                      (substitutable? #t)
                       (imported-modules %cmake-build-system-modules)
                       (modules '((guix build cmake-build-system)
                                  (guix build utils))))
@@ -162,6 +164,7 @@ provides a 'CMakeLists.txt' file as its build system."
                                 #:inputs inputs
                                 #:modules imported-modules
                                 #:outputs outputs
+                                #:substitutable? substitutable?
                                 #:guile-for-build guile-for-build))
 
 
@@ -192,6 +195,7 @@ provides a 'CMakeLists.txt' file as its build system."
                                                   "bin" "sbin"))
                             (phases '(@ (guix build cmake-build-system)
                                         %standard-phases))
+                            (substitutable? #t)
                             (system (%current-system))
                             (build (nix-system->gnu-triplet system))
                             (imported-modules %cmake-build-system-modules)
@@ -271,6 +275,7 @@ build system."
                                 #:inputs (append native-drvs target-drvs)
                                 #:outputs outputs
                                 #:modules imported-modules
+                                #:substitutable? substitutable?
                                 #:guile-for-build guile-for-build))
 
 (define cmake-build-system

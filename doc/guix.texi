@@ -239,7 +239,7 @@ Programming Interface
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
-* Invoking guix repl::          Fiddling with Guix interactively.
+* Invoking guix repl::          Programming Guix in Guile
 
 Defining Packages
 
@@ -3721,13 +3721,17 @@ this option is primarily useful when the daemon was running with
 @cindex updating Guix
 @cindex @command{guix pull}
 @cindex pull
+@cindex security, @command{guix pull}
+@cindex authenticity, of code obtained with @command{guix pull}
 Packages are installed or upgraded to the latest version available in
 the distribution currently available on your local machine.  To update
 that distribution, along with the Guix tools, you must run @command{guix
 pull}: the command downloads the latest Guix source code and package
 descriptions, and deploys it.  Source code is downloaded from a
 @uref{https://git-scm.com, Git} repository, by default the official
-GNU@tie{}Guix repository, though this can be customized.
+GNU@tie{}Guix repository, though this can be customized.  @command{guix
+pull} ensures that the code it downloads is @emph{authentic} by
+verifying that commits are signed by Guix developers.
 
 Specifically, @command{guix pull} downloads code from the @dfn{channels}
 (@pxref{Channels}) specified by one of the followings, in this order:
@@ -3925,13 +3929,24 @@ Make sure you understand its security implications before using
 @option{--allow-downgrades}.
 @end quotation
 
+@item --disable-authentication
+Allow pulling channel code without authenticating it.
+
+@cindex authentication, of channel code
+By default, @command{guix pull} authenticates code downloaded from
+channels by verifying that its commits are signed by authorized
+developers, and raises an error if this is not the case.  This option
+instructs it to not perform any such verification.
+
+@quotation Note
+Make sure you understand its security implications before using
+@option{--disable-authentication}.
+@end quotation
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
 the system type of the build host.
-
-@item --verbose
-Produce verbose output, writing build logs to the standard error output.
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
@@ -4134,6 +4149,28 @@ add a meta-data file @file{.guix-channel} that contains:
   (version 0)
   (directory "guix"))
 @end lisp
+
+@cindex primary URL, channels
+@subsection Primary URL
+
+Channel authors can indicate the primary URL of their channel's Git
+repository in the @file{.guix-channel} file, like so:
+
+@lisp
+(channel
+  (version 0)
+  (url "https://example.org/guix.git"))
+@end lisp
+
+This allows @command{guix pull} to determine whether it is pulling code
+from a mirror of the channel; when that is the case, it warns the user
+that the mirror might be stale and displays the primary URL.  That way,
+users cannot be tricked into fetching code from a stale mirror that does
+not receive security updates.
+
+This feature only makes sense for authenticated repositories, such as
+the official @code{guix} channel, for which @command{guix pull} ensures
+the code it fetches is authentic.
 
 @cindex news, for channels
 @subsection Writing Channel News
@@ -5345,7 +5382,8 @@ configuration triplets,, autoconf, Autoconf}).
 @item --compression=@var{tool}
 @itemx -C @var{tool}
 Compress the resulting tarball using @var{tool}---one of @code{gzip},
-@code{bzip2}, @code{xz}, @code{lzip}, or @code{none} for no compression.
+@code{zstd}, @code{bzip2}, @code{xz}, @code{lzip}, or @code{none} for no
+compression.
 
 @item --symlink=@var{spec}
 @itemx -S @var{spec}
@@ -5474,7 +5512,7 @@ package definitions.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
-* Invoking guix repl::          Fiddling with Guix interactively.
+* Invoking guix repl::          Programming Guix in Guile
 @end menu
 
 @node Package Modules
@@ -8248,12 +8286,47 @@ has an associated gexp compiler, such as a @code{<package>}.
 @node Invoking guix repl
 @section Invoking @command{guix repl}
 
-@cindex REPL, read-eval-print loop
-The @command{guix repl} command spawns a Guile @dfn{read-eval-print loop}
-(REPL) for interactive programming (@pxref{Using Guile Interactively,,, guile,
-GNU Guile Reference Manual}).  Compared to just launching the @command{guile}
+@cindex REPL, read-eval-print loop, script
+The @command{guix repl} command makes it easier to program Guix in Guile
+by launching a Guile @dfn{read-eval-print loop} (REPL) for interactive
+programming (@pxref{Using Guile Interactively,,, guile,
+GNU Guile Reference Manual}), or by running Guile scripts
+(@pxref{Running Guile Scripts,,, guile,
+GNU Guile Reference Manual}).
+Compared to just launching the @command{guile}
 command, @command{guix repl} guarantees that all the Guix modules and all its
-dependencies are available in the search path.  You can use it this way:
+dependencies are available in the search path.
+
+The general syntax is:
+
+@example
+guix repl @var{options} [@var{file} @var{args}]
+@end example
+
+When a @var{file} argument is provided, @var{file} is
+executed as a Guile scripts:
+
+@example
+guix repl my-script.scm
+@end example
+
+To pass arguments to the script, use @code{--} to prevent them from
+being interpreted as arguments to @command{guix repl} itself:
+
+@example
+guix repl -- my-script.scm --input=foo.txt
+@end example
+
+To make a script executable directly from the shell, using the guix
+executable that is on the user's search path, add the following two
+lines at the top of the script:
+
+@example
+@code{#!/usr/bin/env -S guix repl --}
+@code{!#}
+@end example
+
+Without a file name argument, a Guile REPL is started:
 
 @example
 $ guix repl
@@ -8302,7 +8375,7 @@ Add @var{directory} to the front of the package module search path
 (@pxref{Package Modules}).
 
 This allows users to define their own packages and make them visible to
-the command-line tool.
+the script or REPL.
 
 @item -q
 Inhibit loading of the @file{~/.guile} file.  By default, that
@@ -9098,7 +9171,7 @@ store.
 @section Invoking @command{guix hash}
 
 @cindex @command{guix hash}
-The @command{guix hash} command computes the SHA256 hash of a file.
+The @command{guix hash} command computes the hash of a file.
 It is primarily a convenience tool for anyone contributing to the
 distribution: it computes the cryptographic hash of a file, which can be
 used in the definition of a package (@pxref{Defining Packages}).
@@ -9952,6 +10025,17 @@ version number or ``git-checkout'', without a declared @code{file-name}
 Parse the @code{source} URL to determine if a tarball from GitHub is
 autogenerated or if it is a release tarball.  Unfortunately GitHub's
 autogenerated tarballs are sometimes regenerated.
+
+@item derivation
+Check that the derivation of the given packages can be successfully
+computed for all the supported systems (@pxref{Derivations}).
+
+@item profile-collisions
+Check whether installing the given packages in a profile would lead to
+collisions.  Collisions occur when several packages with the same name
+but a different version or a different store file name are propagated.
+@xref{package Reference, @code{propagated-inputs}}, for more information
+on propagated inputs.
 
 @item archival
 @cindex Software Heritage, source code archive
@@ -24582,6 +24666,107 @@ Return true if @var{obj} is a platform object.
 @deffn {Scheme Procedure} qemu-platform-name @var{platform}
 Return the name of @var{platform}---a string such as @code{"arm"}.
 @end deffn
+
+
+@subsubheading The Hurd in a Virtual Machine
+
+@cindex @code{hurd}
+@cindex the Hurd
+
+Service @code{hurd-vm} provides support for running GNU/Hurd in a
+virtual machine (VM), a so-called ``Childhurd''.  The virtual machine is
+a Shepherd service that can be referred to by the names @code{hurd-vm}
+and @code{childhurd} and be controlled with commands such as:
+
+@example
+herd start hurd-vm
+herd stop childhurd
+@end example
+
+The given GNU/Hurd operating system configuration is cross-compiled.
+
+@defvr {Scheme Variable} hurd-vm-service-type
+This is the type of the Hurd in a Virtual Machine service.  Its value
+must be a @code{hurd-vm-configuration} object, which specifies the
+operating system (@pxref{operating-system Reference}) and the disk size
+for the Hurd Virtual Machine, the QEMU package to use as well as the
+options for running it.
+
+For example:
+
+@lisp
+(service hurd-vm-service-type
+         (hurd-vm-configuration
+          (disk-size (* 5000 (expt 2 20))) ;5G
+          (memory-size 1024)))             ;1024MiB
+@end lisp
+
+would create a disk image big enough to build GNU@tie{}Hello, with some
+extra memory.
+@end defvr
+
+@deftp {Data Type} hurd-vm-configuration
+The data type representing the configuration for
+@code{hurd-vm-service-type}.
+
+@table @asis
+@item @code{os} (default: @var{%hurd-vm-operating-system})
+The operating system to instantiate.  This default is bare-bones with a
+permissive OpenSSH secure shell daemon listening on port 2222
+(@pxref{Networking Services, @code{openssh-service-type}}).
+
+@item @code{qemu} (default: @code{qemu-minimal})
+The QEMU package to use.
+
+@item @code{image} (default: @var{hurd-vm-disk-image})
+The procedure used to build the disk-image built from this
+configuration.
+
+@item @code{disk-size} (default: @code{'guess})
+The size of the disk image.
+
+@item @code{memory-size} (default: @code{512})
+The memory size of the Virtual Machine in mebibytes.
+
+@item @code{options} (default: @code{'("--snapshot")})
+The extra options for running QEMU.
+
+@item @code{id} (default: @code{#f})
+If set, a non-zero positive integer used to parameterize Childhurd
+instances.  It is appended to the service's name,
+e.g. @code{childhurd1}.
+
+@item @code{net-options} (default: @var{hurd-vm-net-options})
+The procedure used to produce the list of QEMU networking options.
+
+By default, it produces
+
+@lisp
+'("--device" "rtl8139,netdev=net0"
+  "--netdev" "user,id=net0\
+              ,hostfwd=tcp:127.0.0.1:<ssh-port>-:2222\
+              ,hostfwd=tcp:127.0.0.1:<vnc-port>-:5900")
+@end lisp
+with forwarded ports
+@example
+<ssh-port>: @code{(+ 10022 (* 1000 @var{ID}))}
+<vnc-port>: @code{(+ 15900 (* 1000 @var{ID}))}
+@end example
+
+@end table
+@end deftp
+
+Note that by default the VM image is volatile, i.e., once stopped the
+contents are lost.  If you want a stateful image instead, override the
+configuration's @code{image} and @code{options} without
+the @code{--snapshot} flag using something along these lines:
+
+@lisp
+(service hurd-vm-service-type
+         (hurd-vm-configuration
+          (image   (const "/out/of/store/writable/hurd.img"))
+          (options '("--hda"))))
+@end lisp
 
 @node Version Control Services
 @subsection Version Control Services

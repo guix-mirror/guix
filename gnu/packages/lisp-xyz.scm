@@ -3592,11 +3592,13 @@ process form data posted with HTTP POST method using enctype
     (version "2.0.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/pmai/md5/archive/release-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/pmai/md5")
+              (commit (string-append "release-" version))))
+       (file-name (git-file-name "md5" version))
        (sha256
-        (base32 "19yl9n0pjdz5gw4qi711lka97xcd9f81ylg434hk7jwn9f2s6w11"))))
+        (base32 "1waqxzm7vlc22n92hv8r27anlvvjkkh9slhrky1ww7mdx4mmxwb8"))))
     (build-system asdf-build-system/sbcl)
     (home-page "https://github.com/pmai/md5")
     (synopsis
@@ -5719,22 +5721,7 @@ offered, one SAX-like, the other similar to StAX.")
              (install-file "catalog.dtd"
                            (string-append
                             (assoc-ref outputs "out")
-                            "/lib/" (%lisp-type)))))
-         (add-after 'create-asd 'remove-component
-           ;; XXX: The original .asd has no components, but our build system
-           ;; creates an entry nonetheless.  We need to remove it for the
-           ;; generated .asd to load properly.  See trivia.trivial for a
-           ;; similar problem.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (asd (string-append out "/lib/sbcl/cxml.asd")))
-               (substitute* asd
-                 (("  :components
-")
-                  ""))
-               (substitute* asd
-                 ((" *\\(\\(:compiled-file \"cxml--system\"\\)\\)")
-                  ""))))))))))
+                            "/lib/" (%lisp-type))))))))))
 
 (define-public cl-cxml
   (sbcl-package->cl-source-package sbcl-cxml))
@@ -6136,7 +6123,6 @@ This package uses fare-quasiquote with named-readtable.")))
 (define-public cl-fare-quasiquote-readtable
   (sbcl-package->cl-source-package sbcl-fare-quasiquote-readtable))
 
-;; TODO: Add support for component-less system in asdf-build-system/sbcl.
 (define-public sbcl-fare-quasiquote-extras
   (package
     (inherit sbcl-fare-quasiquote)
@@ -6156,22 +6142,7 @@ This package uses fare-quasiquote with named-readtable.")))
                (install-file "fare-quasiquote-extras.asd" lib)
                (make-file-writable
                 (string-append lib "/fare-quasiquote-extras.asd"))
-               #t)))
-         (add-after 'create-asd-file 'fix-asd-file
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib/" (%lisp-type)))
-                    (asd (string-append lib "/fare-quasiquote-extras.asd")))
-               (substitute* asd
-                 ((":class")
-                  "")
-                 (("asdf/bundle:prebuilt-system")
-                  "")
-                 ((":components")
-                  "")
-                 (("\\(\\(:compiled-file \"fare-quasiquote-extras--system\"\\)\\)")
-                  "")))
-             #t)))))
+               #t))))))
     (description "This library combines @code{fare-quasiquote-readtable} and
 @code{fare-quasiquote-optima}.")))
 
@@ -6247,32 +6218,6 @@ with extensible optimizer interface.")))
     (name "sbcl-trivia.trivial")
     (inputs
      `(("trivia.level2" ,sbcl-trivia.level2)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'create-asd-file
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib/" (%lisp-type)))
-                    (level2 (assoc-ref inputs "trivia.level2")))
-               (mkdir-p lib)
-               (install-file "trivia.trivial.asd" lib)
-               ;; XXX: This .asd does not have any component and the build
-               ;; system fails to work in this case.  We should update the
-               ;; build system to handle component-less .asd.
-               ;; TODO: How do we append to file in Guile?  It seems that
-               ;; (open-file ... "a") gets a "Permission denied".
-               (substitute* (string-append lib "/trivia.trivial.asd")
-                 (("\"\\)")
-                  (string-append "\")
-
-(progn (asdf/source-registry:ensure-source-registry)
-       (setf (gethash
-               \"trivia.level2\"
-               asdf/source-registry:*source-registry*)
-             #p\""
-                                 level2
-                                 "/share/common-lisp/sbcl-bundle-systems/trivia.level2.asd\"))")))))))))
     (description "Trivia is a pattern matching compiler that is compatible
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.
@@ -6350,24 +6295,7 @@ This system contains the CFFI foreign slot access extension.")))
        ("trivia.cffi" ,sbcl-trivia.cffi)
        ("optima" ,sbcl-optima)))
     (arguments
-     `(#:test-asd-file "trivia.test.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'create-asd 'remove-component
-           ;; XXX: The original .asd has no components, but our build system
-           ;; creates an entry nonetheless.  We need to remove it for the
-           ;; generated .asd to load properly.  See trivia.trivial for a
-           ;; similar problem.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (asd (string-append out "/lib/" (%lisp-type) "/trivia.asd")))
-               (substitute* asd
-                 (("  :components
-")
-                  ""))
-               (substitute* asd
-                 ((" *\\(\\(:compiled-file \"trivia--system\"\\)\\)")
-                  ""))))))))
+     `(#:test-asd-file "trivia.test.asd"))
     (description "Trivia is a pattern matching compiler that is compatible
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.")))
@@ -12018,3 +11946,180 @@ tables.")
 
 (define-public cl-rdkafka
   (sbcl-package->cl-source-package sbcl-cl-rdkafka))
+
+(define-public sbcl-acclimation
+  (let ((commit "4d51150902568fcd59335f4cc4cfa022df6116a5"))
+    (package
+      (name "sbcl-acclimation")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/robert-strandh/Acclimation")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1aw7rarjl8ai57h0jxnp9hr3dka7qrs55mmbl1p6rhd6xj8mp9wq"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/robert-strandh/Acclimation")
+      (synopsis "Internationalization library for Common Lisp")
+      (description "This project is meant to provide tools for
+internationalizing Common Lisp programs.
+
+One important aspect of internationalization is of course the language used in
+error messages, documentation strings, etc.  But with this project we provide
+tools for all other aspects of internationalization as well, including dates,
+weight, temperature, names of physical quantitites, etc.")
+      (license license:bsd-2))))
+
+(define-public cl-acclimation
+  (sbcl-package->cl-source-package sbcl-acclimation))
+
+(define-public sbcl-clump-2-3-tree
+  (let ((commit "1ea4dbac1cb86713acff9ae58727dd187d21048a"))
+    (package
+      (name "sbcl-clump-2-3-tree")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/robert-strandh/Clump")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1639msyagsswj85gc0wd90jgh8588j3qg5q70by9s2brf2q6w4lh"))))
+      (arguments
+       '(#:asd-file "2-3-tree/clump-2-3-tree.asd"
+         #:asd-system-name "clump-2-3-tree"))
+      (inputs
+       `(("acclimation" ,sbcl-acclimation)))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/robert-strandh/Clump")
+      (synopsis "Implementation of 2-3 trees for Common Lisp")
+      (description "The purpose of this library is to provide a collection of
+implementations of trees.
+
+In contrast to existing libraries such as cl-containers, it does not impose a
+particular use for the trees.  Instead, it aims for a stratified design,
+allowing client code to choose between different levels of abstraction.
+
+As a consequence of this policy, low-level interfaces are provided where
+the concrete representation is exposed, but also high level interfaces
+where the trees can be used as search trees or as trees that represent
+sequences of objects.")
+      (license license:bsd-2))))
+
+(define-public sbcl-clump-binary-tree
+  (package
+    (inherit sbcl-clump-2-3-tree)
+    (name "sbcl-clump-binary-tree")
+    (arguments
+     '(#:asd-file "Binary-tree/clump-binary-tree.asd"
+       #:asd-system-name "clump-binary-tree"))
+    (synopsis "Implementation of binary trees for Common Lisp")))
+
+(define-public sbcl-clump
+  (package
+    (inherit sbcl-clump-2-3-tree)
+    (name "sbcl-clump")
+    (arguments
+     '(#:asd-file "clump.asd"
+       #:asd-system-name "clump"))
+    (inputs
+     `(("clump-2-3-tree" ,sbcl-clump-2-3-tree)
+       ("clump-binary-tree" ,sbcl-clump-binary-tree)))
+    (synopsis "Collection of tree implementations for Common Lisp")))
+
+(define-public cl-clump
+  (sbcl-package->cl-source-package sbcl-clump))
+
+(define-public sbcl-cluffer-base
+  (let ((commit "4aad29c276a58a593064e79972ee4d77cae0af4a"))
+    (package
+      (name "sbcl-cluffer-base")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/robert-strandh/cluffer")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1bcg13g7qb3dr8z50aihdjqa6miz5ivlc9wsj2csgv1km1mak2kj"))))
+      (arguments
+       '(#:asd-file "Base/cluffer-base.asd"
+         #:asd-system-name "cluffer-base"))
+      (inputs
+       `(("acclimation" ,sbcl-acclimation)))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/robert-strandh/cluffer")
+      (synopsis "Common Lisp library providing a protocol for text-editor buffers")
+      (description "Cluffer is a library for representing the buffer of a text
+editor.  As such, it defines a set of CLOS protocols for client code to
+interact with the buffer contents in various ways, and it supplies different
+implementations of those protocols for different purposes.")
+      (license license:bsd-2))))
+
+(define-public sbcl-cluffer-standard-line
+  (package
+    (inherit sbcl-cluffer-base)
+    (name "sbcl-cluffer-standard-line")
+    (arguments
+     '(#:asd-file "Standard-line/cluffer-standard-line.asd"
+       #:asd-system-name "cluffer-standard-line"))
+    (inputs
+     `(("cluffer-base" ,sbcl-cluffer-base)))))
+
+(define-public sbcl-cluffer-standard-buffer
+  (package
+    (inherit sbcl-cluffer-base)
+    (name "sbcl-cluffer-standard-buffer")
+    (arguments
+     '(#:asd-file "Standard-buffer/cluffer-standard-buffer.asd"
+       #:asd-system-name "cluffer-standard-buffer"))
+    (inputs
+     `(("cluffer-base" ,sbcl-cluffer-base)
+       ("clump" ,sbcl-clump)))))
+
+(define-public sbcl-cluffer-simple-line
+  (package
+    (inherit sbcl-cluffer-base)
+    (name "sbcl-cluffer-simple-line")
+    (arguments
+     '(#:asd-file "Simple-line/cluffer-simple-line.asd"
+       #:asd-system-name "cluffer-simple-line"))
+    (inputs
+     `(("cluffer-base" ,sbcl-cluffer-base)))))
+
+(define-public sbcl-cluffer-simple-buffer
+  (package
+    (inherit sbcl-cluffer-base)
+    (name "sbcl-cluffer-simple-buffer")
+    (arguments
+     '(#:asd-file "Simple-buffer/cluffer-simple-buffer.asd"
+       #:asd-system-name "cluffer-simple-buffer"))
+    (inputs
+     `(("cluffer-base" ,sbcl-cluffer-base)))))
+
+(define-public sbcl-cluffer
+  (package
+    (inherit sbcl-cluffer-base)
+    (name "sbcl-cluffer")
+    (arguments
+     '(#:asd-file "cluffer.asd"
+       #:asd-system-name "cluffer"))
+    (inputs
+     `(("cluffer-base" ,sbcl-cluffer-base)
+       ("cluffer-standard-line" ,sbcl-cluffer-standard-line)
+       ("cluffer-standard-buffer" ,sbcl-cluffer-standard-buffer)
+       ("cluffer-simple-line" ,sbcl-cluffer-simple-line)
+       ("cluffer-simple-buffer" ,sbcl-cluffer-simple-buffer)))))
+
+(define-public cl-cluffer
+  (sbcl-package->cl-source-package sbcl-cluffer))

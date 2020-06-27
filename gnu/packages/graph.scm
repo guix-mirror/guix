@@ -5,6 +5,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Alexander Krotov <krotov@iitp.ru>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlos@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -235,6 +236,58 @@ lines.")
 (define-public python-plotly
   (package
     (name "python-plotly")
+    (version "4.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/plotly/plotly.py.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08ab677gr85m10zhixr6dnmlfws8q6sra7nhyb8nf3r8dx1ffqhz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "packages/python/plotly")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-x" "plotly/tests/test_core")
+             (invoke "pytest" "-x" "plotly/tests/test_io")
+             ;; FIXME: Add optional dependencies and enable their tests.
+             ;; (invoke "pytest" "-x" "plotly/tests/test_optional")
+             (invoke "pytest" "_plotly_utils/tests")))
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (file) (chmod file #o644))
+                 (find-files out "\\.gz"))
+               #t))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-decorator" ,python-decorator)
+       ("python-ipywidgets" ,python-ipywidgets)
+       ("python-pandas" ,python-pandas)
+       ("python-requests" ,python-requests)
+       ("python-retrying" ,python-retrying)
+       ("python-six" ,python-six)
+       ("python-statsmodels" ,python-statsmodels)
+       ("python-xarray" ,python-xarray)))
+    (home-page "https://plotly.com/python/")
+    (synopsis "Interactive plotting library for Python")
+    (description "Plotly's Python graphing library makes interactive,
+publication-quality graphs online.  Examples of how to make line plots, scatter
+plots, area charts, bar charts, error bars, box plots, histograms, heatmaps,
+subplots, multiple-axes, polar charts, and bubble charts. ")
+    (license license:expat)))
+
+(define-public python-plotly-2.4.1
+  (package (inherit python-plotly)
     (version "2.4.1")
     (source
       (origin
@@ -243,26 +296,19 @@ lines.")
         (sha256
          (base32
           "0s9gk2fl53x8wwncs3fwii1vzfngr0sskv15v3mpshqmrqfrk27m"))))
-    (build-system python-build-system)
+   (native-inputs '())
+   (propagated-inputs
+    `(("python-decorator" ,python-decorator)
+      ("python-nbformat" ,python-nbformat)
+      ("python-pandas" ,python-pandas)
+      ("python-pytz" ,python-pytz)
+      ("python-requests" ,python-requests)
+      ("python-six" ,python-six)))
     (arguments
-     '(#:tests? #f)) ; The tests are not distributed in the release
-    (propagated-inputs
-     `(("python-decorator" ,python-decorator)
-       ("python-nbformat" ,python-nbformat)
-       ("python-pandas" ,python-pandas)
-       ("python-pytz" ,python-pytz)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
-    (home-page "https://plot.ly/python/")
-    (synopsis "Interactive plotting library for Python")
-    (description "Plotly's Python graphing library makes interactive,
-publication-quality graphs online.  Examples of how to make line plots, scatter
-plots, area charts, bar charts, error bars, box plots, histograms, heatmaps,
-subplots, multiple-axes, polar charts, and bubble charts. ")
-    (license license:expat)))
+     '(#:tests? #f)))) ; The tests are not distributed in the release
 
 (define-public python2-plotly
-  (package-with-python2 python-plotly))
+  (package-with-python2 python-plotly-2.4.1))
 
 (define-public python-louvain
   (package

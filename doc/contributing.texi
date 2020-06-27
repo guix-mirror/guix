@@ -67,21 +67,6 @@ gpg:                using RSA key 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
 @code{3CE464558A84FDC69DB40CFB090B11993D9AEBB5} (you may need to fetch
 this key from a key server, if you have not done it yet).
 
-From there on, you can authenticate all the commits included in your
-checkout by running:
-
-@example
-make authenticate
-@end example
-
-The first run takes a couple of minutes, but subsequent runs are faster.
-
-@quotation Note
-You are advised to run @command{make authenticate} after every
-@command{git pull} invocation.  This ensures you keep receiving valid
-changes to the repository
-@end quotation
-
 The easiest way to set up a development environment for Guix is, of
 course, by using Guix!  The following command starts a new shell where
 all the dependencies and appropriate environment variables are set up to
@@ -145,6 +130,21 @@ Finally, you have to invoke @code{make check} to run tests
 (@pxref{Running the Test Suite}).  If anything
 fails, take a look at installation instructions (@pxref{Installation})
 or send a message to the @email{guix-devel@@gnu.org, mailing list}.
+
+From there on, you can authenticate all the commits included in your
+checkout by running:
+
+@example
+make authenticate
+@end example
+
+The first run takes a couple of minutes, but subsequent runs are faster.
+
+@quotation Note
+You are advised to run @command{make authenticate} after every
+@command{git pull} invocation.  This ensures you keep receiving valid
+changes to the repository.
+@end quotation
 
 
 @node Running Guix Before It Is Installed
@@ -991,16 +991,16 @@ rebuilding induced, commits go to different branches, along these lines:
 @item 300 dependent packages or less
 @code{master} branch (non-disruptive changes).
 
-@item between 300 and 1,200 dependent packages
+@item between 300 and 1,800 dependent packages
 @code{staging} branch (non-disruptive changes).  This branch is intended
-to be merged in @code{master} every 3 weeks or so.  Topical changes
+to be merged in @code{master} every 6 weeks or so.  Topical changes
 (e.g., an update of the GNOME stack) can instead go to a specific branch
 (say, @code{gnome-updates}).
 
-@item more than 1,200 dependent packages
+@item more than 1,800 dependent packages
 @code{core-updates} branch (may include major and potentially disruptive
 changes).  This branch is intended to be merged in @code{master} every
-2.5 months or so.
+6 months or so.
 @end table
 
 All these branches are @uref{@value{SUBSTITUTE-SERVER},
@@ -1128,18 +1128,20 @@ browse issues:
 
 @itemize
 @item
+@url{https://issues.guix.gnu.org} provides a pleasant
+interface@footnote{The web interface at
+@url{https://issues.guix.gnu.org} is powered by Mumi, a nice piece of
+software written in Guile, and you can help!  See
+@url{https://git.elephly.net/gitweb.cgi?p=software/mumi.git}.} to browse
+bug reports and patches, and to participate in discussions;
+@item
 @url{https://bugs.gnu.org/guix} lists bug reports;
 @item
 @url{https://bugs.gnu.org/guix-patches} lists patch submissions.
 @end itemize
 
-You can also access both of these @i{via} the (nicer)
-@url{https://issues.guix.gnu.org} interface@footnote{The web interface
-at @url{https://issues.guix.gnu.org} is powered by Mumi, a nice piece of
-software written in Guile, and you can help!  See
-@url{https://git.elephly.net/gitweb.cgi?p=software/mumi.git}.}.  To view
-discussions related to issue number @var{n}, go to
-@indicateurl{https://issues.guix.gnu.org/issue/@var{n}} or
+To view discussions related to issue number @var{n}, go to
+@indicateurl{https://issues.guix.gnu.org/@var{n}} or
 @indicateurl{https://bugs.gnu.org/@var{n}}.
 
 If you use Emacs, you may find it more convenient to interact with

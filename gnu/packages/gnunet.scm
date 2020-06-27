@@ -1,11 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
-;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Nikita <nikita@n0.is>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
@@ -180,13 +180,13 @@ authentication and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.69.1")
+   (version "7.70.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gnunet/gnurl-" version ".tar.gz"))
             (sha256
              (base32
-              "0x8m26y3klndis6a28j8i0b7ab04d38q3rmlvgaqa65bjhlfdrp0"))))
+              "0px9la8v4bj1dzxb95fx3yxk0rcjqjrxpj733ga27cza45wwzkqa"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.8 MiB of man3 pages
@@ -245,7 +245,7 @@ supports HTTP, HTTPS and GnuTLS.")
                                   "See COPYING in the distribution."))
    (properties '((ftp-server . "ftp.gnu.org")
                  (ftp-directory . "/gnunet")))
-   (home-page "https://gnunet.org/gnurl")))
+   (home-page "https://gnunet.org/en/gnurl.html")))
 
 (define-public gnunet
   (package

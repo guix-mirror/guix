@@ -24,7 +24,7 @@ set -e
 
 guix environment --version
 
-if ! guile -c '((@@ (guix scripts environment) assert-container-features))'
+if ! guile -c '((@ (guix scripts environment) assert-container-features))'
 then
     # User containers are not supported; skip this test.
     exit 77

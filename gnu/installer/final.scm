@@ -137,12 +137,6 @@ USERS."
   "Remove the store overlay and the bind-mount on /tmp created by the
 cow-store service.  This procedure is very fragile and a better approach would
 be much appreciated."
-
-  ;; Remove when integrated in (gnu services herd).
-  (define (restart-service name)
-    (with-shepherd-action name ('restart) result
-      result))
-
   (catch #t
     (lambda ()
       (let ((tmp-dir "/remove"))

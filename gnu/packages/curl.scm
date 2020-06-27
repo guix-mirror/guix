@@ -52,6 +52,7 @@
   (package
    (name "curl")
    (version "7.69.1")
+   (replacement curl-7.71.0)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
@@ -167,6 +168,31 @@ tunneling, and so on.")
     curl
     (name "curl-minimal")
     (inputs (alist-delete "openldap" (package-inputs curl))))))
+
+;; Replacement package to fix CVE-2020-8169 and CVE-2020-8177.
+(define curl-7.71.0
+  (package
+    (inherit curl)
+    (version "7.71.0")
+    (source (origin
+              (inherit (package-source curl))
+              (uri (string-append "https://curl.haxx.se/download/curl-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0wlppmx9iry8slh4pqcxj7lwc6fqwnlhh9ri2pcym2rx76a8gwfd"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments curl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'check
+             (lambda _
+               ;; Test 1510 is now disabled upstream, and the test runner
+               ;; complains that it can not disable a non-existing test.
+               ;; Thus, override the phase to not delete the test.
+               (substitute* "tests/runtests.pl"
+                 (("/bin/sh") (which "sh")))
+               (invoke "make" "-C" "tests" "test")))))))))
 
 (define-public kurly
   (package

@@ -109,8 +109,8 @@ Let's get started!
 
 Guix uses the Guile implementation of Scheme.  To start playing with the
 language, install it with @code{guix install guile} and start a
-@uref{https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop,
-REPL} by running @code{guile} from the command line.
+@dfn{REPL}---short for @uref{https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop,
+@dfn{read-eval-print loop}}---by running @code{guile} from the command line.
 
 Alternatively you can also run @code{guix environment --ad-hoc guile -- guile}
 if you'd rather not have Guile installed in your user profile.
@@ -118,7 +118,7 @@ if you'd rather not have Guile installed in your user profile.
 In the following examples, lines show what you would type at the REPL;
 lines starting with ``@result{}'' show evaluation results, while lines
 starting with ``@print{}'' show things that get printed.  @xref{Using Guile
-Interactively,,, guile, GNU Guile Reference Manual}), for more details on the
+Interactively,,, guile, GNU Guile Reference Manual}, for more details on the
 REPL.
 
 @itemize
@@ -843,12 +843,32 @@ tags, so if the @code{version} is tagged, then it can be used directly.  Sometim
 the tag is prefixed with a @code{v}, in which case you'd use @code{(commit (string-append
 "v" version))}.
 
-To ensure that the source code from the Git repository is stored in a unique
-directory with a readable name we use @code{(file-name (git-file-name name
+To ensure that the source code from the Git repository is stored in a
+directory with a descriptive name, we use @code{(file-name (git-file-name name
 version))}.
 
-Note that there is also a @code{git-version} procedure that can be used to derive the
-version when packaging programs for a specific commit.
+The @code{git-version} procedure can be used to derive the
+version when packaging programs for a specific commit, following the
+Guix contributor guidelines (@pxref{Version Numbers,,, guix, GNU Guix
+Reference Manual}).
+
+How does one obtain the @code{sha256} hash that's in there, you ask?  By
+invoking @command{guix hash} on a checkout of the desired commit, along
+these lines:
+
+@example
+git clone https://github.com/libgit2/libgit2/
+cd libgit2
+git checkout v0.26.6
+guix hash -rx .
+@end example
+
+@command{guix hash -rx} computes a SHA256 hash over the whole directory,
+excluding the @file{.git} sub-directory (@pxref{Invoking guix hash,,,
+guix, GNU Guix Reference Manual}).
+
+In the future, @command{guix download} will hopefully be able to do
+these steps for you, just like it does for regular downloads.
 
 @subsubsection Snippets
 

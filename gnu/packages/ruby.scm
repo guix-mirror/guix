@@ -20,6 +20,7 @@
 ;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.de>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -4304,6 +4306,54 @@ across multiple CPU cores.")
     (home-page "https://github.com/whitequark/parser")
     (license license:expat)))
 
+(define-public ruby-sexp-processor
+  (package
+    (name "ruby-sexp-processor")
+    (version "4.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sexp_processor" version))
+       (sha256
+        (base32
+         "0d1vks77xnd0m3s94a58f9bkdwlaml5qdkmprx279m2s0pc2gv55"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     ;; TODO: Add ruby-minitest-proveit once available.
+     `(("hoe" ,ruby-hoe)))
+    (synopsis "ParseTree fork which includes generic S-exp processing tools")
+    (description "The sexp_processor package is derived from ParseTree, but
+contrary to ParseTree, it includes all the generic S-exp processing tools.
+Amongst the included tools are @code{Sexp}, @code{SexpProcessor} and
+@code{Environment}")
+    (home-page "https://github.com/seattlerb/sexp_processor")
+    (license license:expat)))
+
+(define-public ruby-ruby-parser
+  (package
+    (name "ruby-ruby-parser")
+    (version "3.14.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby_parser" version))
+       (sha256
+        (base32
+         "09qcdyjjw3p7g6cjm5m9swkms1xnv35ndiy7yw24cas16qrhha6c"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("hoe" ,ruby-hoe)
+       ("racc" ,ruby-racc)
+       ("unifdef" ,unifdef)))
+    (propagated-inputs
+     `(("ruby-sexp-processor" ,ruby-sexp-processor)))
+    (home-page "https://github.com/seattlerb/ruby_parser/")
+    (synopsis "Ruby parser written in pure Ruby")
+    (description "The ruby_parser (RP) package provides a Ruby parser written
+in pure Ruby.  It outputs S-expressions which can be manipulated and converted
+back to Ruby via the @code{ruby2ruby} library.")
+    (license license:expat)))
+
 (define-public ruby-prawn-manual-builder
   (package
     (name "ruby-prawn-manual-builder")
@@ -5950,6 +6000,25 @@ creole to @code{HTML}.")
 creating embedded domain specific languages (EDSLs) that manipulate existing
 Ruby classes.")
     (home-page "https://ms-ati.github.io/docile/")
+    (license license:expat)))
+
+(define-public ruby-middleware
+  (package
+    (name "ruby-middleware")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "middleware" version))
+       (sha256
+        (base32
+         "0703nkf2v371wqr41c04x5qid7ww45cxqv3hnlg07if3b3xrm9xl"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f))          ;no test suite
+    (synopsis "Implementation of a middleware abstraction for Ruby")
+    (description "Middleware is a generalized implementation of a middleware
+abstraction for Ruby.")
+    (home-page "https://github.com/mitchellh/middleware")
     (license license:expat)))
 
 (define-public ruby-gherkin

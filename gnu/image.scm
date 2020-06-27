@@ -67,6 +67,8 @@
 (define-record-type* <image>
   image make-image
   image?
+  (name               image-name ;symbol
+                      (default #f))
   (format             image-format) ;symbol
   (target             image-target
                       (default #f))

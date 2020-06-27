@@ -405,9 +405,11 @@ exception-handling library.")
                  (base32
                   "195rs0kdbs8w62irha1nwy83bccz04wglmk578qrj1mky7fc4rjv"))
                 (patches
-                 ;; Patch submitted to upstream (see:
-                 ;; https://gitlab.com/inkscape/lib2geom/merge_requests/17).
-                 (search-patches "lib2geom-enable-assertions.patch"))
+                 ;; Patches submitted to upstream (see:
+                 ;; https://gitlab.com/inkscape/lib2geom/merge_requests/17,
+                 ;; https://gitlab.com/inkscape/lib2geom/-/merge_requests/32).
+                 (search-patches "lib2geom-enable-assertions.patch"
+                                 "lib2geom-fix-tests.patch"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin

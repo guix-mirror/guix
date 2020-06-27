@@ -801,7 +801,7 @@ users.")
   (package
     (inherit hamlib)
     (name "wsjtx-hamlib")
-    (version "2.1.2")
+    (version "2.2.1")
     (source
      (origin
        (method git-fetch)
@@ -810,18 +810,32 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ksv3cmr1dl45p0pp1panyc9dngd158gvv9ysv25lq4nqv1wn87i"))))
+        (base32 "01h5ps0yq5vi1x9rkw742gx6a5fj02zhbpi89i412qdfbnyk35cv"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("texinfo" ,texinfo)
-       ,@(package-native-inputs hamlib)))))
+       ,@(package-native-inputs hamlib)))
+    (arguments
+     `(#:configure-flags '("--disable-static"
+                           "--with-lua-binding"
+                           "--with-python-binding"
+                           "--with-tcl-binding"
+                           "--with-xml-support")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "tests/testloc.c"
+               (("dmmm2dec\\(deg, mmm, nesw\\);")
+                "dmmm2dec(deg, mmm, 0, nesw);"))
+             #t)))))))
 
 (define-public wsjtx
   (package
     (name "wsjtx")
-    (version "2.1.2")
+    (version "2.2.1")
     (source
      (origin
        (method git-fetch)
@@ -830,7 +844,7 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fnqzjd3dmxp3yjwjvwz2djk9gzb1y2cqfa188f3x8lynxhdhnfs"))
+        (base32 "12i8ch2yhxlbd7lbpl4s4y37ks4i00wasah4j44g104rxrzdny57"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -907,7 +921,7 @@ weak-signal conditions.")
      `(("boost" ,boost)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
-       ("hamlib" ,wsjtx-hamlib)
+       ("hamlib" ,hamlib)
        ("libusb" ,libusb)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
@@ -1069,4 +1083,42 @@ their position, altitude, speed, etc.")
      "This is a generic data receiver, mainly for decoding radio transmissions
 from devices on the 433 MHz, 868 MHz, 315 MHz, 345 MHz and 915 MHz ISM bands.")
     (home-page "https://github.com/merbanan/rtl_433")
+    (license license:gpl2+)))
+
+(define-public multimon-ng
+  (package
+    (name "multimon-ng")
+    (version "1.1.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/EliasOenal/multimon-ng.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1973xfyvzl1viz19zr83cgqlx5laxbjrca35rqabn6dlb6xb5xk8"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("pulseaudio" ,pulseaudio)))
+    (arguments
+     '(#:tests? #f)) ; No test suite
+    (home-page "https://github.com/EliasOenal/multimon-ng")
+    (synopsis "Decoder for digital radio transmission modes")
+    (description "Multimon-ng can decode several digital radio transmission
+modes:
+@itemize
+@item POCSAG512, POCSAG1200, POCSAG2400
+@item FLEX
+@item EAS
+@item UFSK1200, CLIPFSK, AFSK1200, AFSK2400, AFSK2400_2, AFSK2400_3
+@item HAPN4800
+@item FSK9600
+@item DTMF
+@item ZVEI1, ZVEI2, ZVEI3, DZVEI, PZVEI
+@item EEA, EIA, CCIR
+@item MORSE CW
+@item X10
+@end itemize")
     (license license:gpl2+)))

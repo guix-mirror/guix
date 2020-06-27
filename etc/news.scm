@@ -13,6 +13,80 @@
 (channel-news
  (version 0)
 
+ (entry (commit "43badf261f4688c8a7a7a9004a4bff8acb205835")
+        (title (en "@command{guix pull} authenticates channels")
+               (de "@command{guix pull} authentifiziert Kanäle")
+               (fr "@command{guix pull} authentifie les canaux"))
+        (body
+         (en "The @command{guix pull} and @command{guix time-machine} commands
+now authenticate the source code that they pull, unless the new
+@option{--disable-authentication} option is passed.  What this means is that
+Guix ensures that each commit received is cryptographically signed by an
+authorized developer.  This protects you from attempts to tamper with the Guix
+repository and from attempts to ship malicious code to users.
+
+This feature is currently limited to the @code{guix} channel but will soon be
+available to third-party channel authors.")
+         (de "Die Befehle @command{guix pull} und @command{guix time-machine}
+prüfen nun die Authentizität des heruntergeladenen Quellcodes, außer wenn die
+neue Befehlszeilenoption @option{--disable-authentication} angegeben
+wurde. Das bedeutet, Guix stellt sicher, dass jeder empfangene Commit durch
+einen autorisierten Entwickler kryptografisch signiert wurde. Das schützt Sie
+vor Versuchen, das Guix-Repository zu manipulieren oder bösartigen Code an die
+Nutzer auszuliefern.
+
+Diese Funktionalität ist auf den @code{guix}-Kanal beschränkt, sie wird jedoch
+bald auch Autoren dritter Kanäle zur Verfügung stehen.")
+         (fr "Les commandes @command{guix pull} et @command{guix time-machine}
+authentifient dorénavant le code source qu'elles obtiennent, à moins que la
+nouvelle option @option{--disable-authentication} soit utilisée.  Cela
+signifie que Guix s'assure que chaque soumission (@i{commit}) récupéré dispose
+d'une signature cryptographique par un·e développeur·euse autorisé·e.  Cela te
+protège de tentatives de modifications du dépôt Guix et de tentatives de
+livrer du code malintentionné.
+
+Cette fonctionnalité n'est actuellement disponible que pour le canal
+@code{guix} mais le sera bientôt pour les canaux tiers.")))
+
+ (entry (commit "c924e541390f9595d819edc33c19d979917c15ec")
+        (title (en "@command{guix repl} adds support for running Guile scripts")
+               (de "@command{guix repl} kann Guile-Skripte ausführen")
+               (fr "@command{guix repl} permet d'exécuter des scripts en langage Guile"))
+        (body
+         (en "The @command{guix repl} command can now be used to run
+Guile scripts.  Compared to just launching the @command{guile} command,
+@command{guix repl} guarantees that all the Guix modules and all its
+dependencies are available in the search path.  Scripts are run like this:
+
+@example
+guix repl -- my-script,scm --option1 --option2=option-arg arg1 arg2
+@end example
+
+Run @command{info \"(guix) Invoking guix repl\"} for more information.")
+         (de "Der Befehl @command{guix repl} kann jetzt zur Ausführung von
+Guile-Skripten verwendet werden.  Im Vergleich zum Befehl
+@command{guile} garantiert @command{guix repl}, dass alle Guix-Module und
+alle seine Abhängigkeiten im Suchpfad verfügbar sind.  Skripte werden wie
+folgt ausgeführt:
+
+@example
+guix repl -- my-script,scm --option1 --option2 --option2=option-arg arg1 arg2
+@end example
+
+Weitere Informationen erhalten Sie mit
+@command{info \"(guix.de) Aufruf von guix repl\"}.")
+         (fr "La commande @command{guix repl} peut maintenant être utilisée
+pour exécuter des scripts en langage Guile.  Par rapport au simple lancement
+de la commande @command{guile}, @command{guix repl} garantit que tous les
+modules Guix et toutes ses dépendances sont disponibles dans le chemin
+de recherche.  Les scripts sont exécutés comme ceci :
+
+@example
+guix repl -- my-script,scm --option1 --option2=option-arg arg1 arg2
+@end example
+
+Exécutez @command{info \"(guix.fr) Invoquer guix repl\"} pour plus d'informations.")))
+
  (entry (commit "b460ba7992a0b4af2ddb5927dcf062784539ef7b")
         (title (en "Add support to boot from a Btrfs subvolume")
                (de "Unterstützung für Systemstart von einem

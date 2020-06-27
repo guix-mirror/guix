@@ -308,6 +308,19 @@ without requiring the source code to be rewritten.")
             (files '("lib/guile/3.0/site-ccache"
                      "share/guile/site/3.0")))))))
 
+(define-public guile-3.0-latest
+  ;; TODO: Make this 'guile-3.0' on the next rebuild cycle.
+  (package
+    (inherit guile-3.0)
+    (version "3.0.4")
+    (source (origin
+              (inherit (package-source guile-3.0))
+              (uri (string-append "mirror://gnu/guile/guile-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0c8dkyvs6xbxp7rgnhkyakajzhakay7qn9kahj1mj49x5vf4fybb"))))))
+
 (define-public guile-next
   (deprecated-package "guile-next" guile-3.0))
 
@@ -317,7 +330,7 @@ without requiring the source code to be rewritten.")
   ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40525
   (hidden-package
    (package
-     (inherit guile-3.0)
+     (inherit guile-3.0-latest)
      (propagated-inputs
       `(("bdw-gc" ,libgc-7)
         ,@(srfi-1:alist-delete "bdw-gc" (package-propagated-inputs guile-3.0)))))))

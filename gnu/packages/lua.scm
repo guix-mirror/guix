@@ -11,6 +11,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Simon South <simon@simonsouth.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
@@ -292,6 +294,65 @@ directory structure and file attributes.")
 (define-public lua5.2-filesystem
   (make-lua-filesystem "lua5.2-filesystem" lua-5.2))
 
+(define (make-lua-ossl name lua)
+  (package
+    (name name)
+    (version "20170903")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://25thandclement.com/~william/"
+                                  "projects/releases/luaossl-" version ".tgz"))
+              (sha256
+               (base32
+                "10392bvd0lzyibipblgiss09zlqh3a5zgqg1b9lgbybpqb9cv2k3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-api-version ,(version-major+minor (package-version lua))))
+         (list "CC=gcc"
+               "CFLAGS='-D HAVE_SYS_SYSCTL_H=0'" ; sys/sysctl.h is deprecated
+               (string-append "DESTDIR=" out)
+               (string-append "LUA_APIS=" lua-api-version)
+               "prefix="))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (lua-version ,(version-major+minor (package-version lua))))
+               (setenv "LUA_CPATH"
+                       (string-append out "/lib/lua/" lua-version "/?.so;;"))
+               (setenv "LUA_PATH"
+                       (string-append out "/share/lua/" lua-version "/?.lua;;"))
+               (with-directory-excursion "regress"
+                 (for-each (lambda (f)
+                             (invoke "lua" f))
+                           (find-files "." "^[0-9].*\\.lua$"))))
+             #t)))))
+    (inputs
+     `(("lua" ,lua)
+       ("openssl" ,openssl)))
+    (home-page "https://25thandclement.com/~william/projects/luaossl.html")
+    (synopsis "OpenSSL bindings for Lua")
+    (description "The luaossl extension module for Lua provides comprehensive,
+low-level bindings to the OpenSSL library, including support for certificate and
+key management, key generation, signature verification, and deep bindings to the
+distinguished name, alternative name, and X.509v3 extension interfaces.  It also
+binds OpenSSL's bignum, message digest, HMAC, cipher, and CSPRNG interfaces.")
+    (license license:expat)))
+
+(define-public lua-ossl
+  (make-lua-ossl "lua-ossl" lua))
+
+(define-public lua5.1-ossl
+  (make-lua-ossl "lua5.1-ossl" lua-5.1))
+
+(define-public lua5.2-ossl
+  (make-lua-ossl "lua5.2-ossl" lua-5.2))
+
 (define (make-lua-sec name lua)
   (package
     (name name)
@@ -339,6 +400,112 @@ secure session between the peers.")
 
 (define-public lua5.2-sec
   (make-lua-sec "lua5.2-sec" lua-5.2))
+
+(define (make-lua-cqueues name lua lua-ossl)
+  (package
+    (name name)
+    (version "20171014")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://25thandclement.com/~william/"
+                                  "projects/releases/cqueues-" version ".tgz"))
+              (sha256
+               (base32
+                "1dabhpn6r0hlln8vx9hxm34pfcm46qzgpb2apmziwg5z51fi4ksb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 string-fun))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-api-version ,(version-major+minor (package-version lua))))
+         (list "CC=gcc"
+               (string-append "LUA_APIS=" lua-api-version)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (apply invoke "make" "install"
+                      (append make-flags
+                              (list (string-append "DESTDIR=" out)
+                                    "prefix="))))))
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
+             (let*
+                 ((lua-version ,(version-major+minor (package-version lua)))
+                  (env-suffix (if (equal? lua-version "5.1")
+                                  ""
+                                  (string-append
+                                   "_"
+                                   (string-replace-substring lua-version "." "_"))))
+
+                  (lua-ossl (assoc-ref inputs "lua-ossl"))
+                  (out (assoc-ref outputs "out"))
+
+                  (lua-cpath (lambda (p)
+                               (string-append p "/lib/lua/" lua-version "/?.so")))
+                  (lua-path (lambda (p)
+                              (string-append p "/share/lua/" lua-version "/?.lua"))))
+               ;; The test suite sets Lua-version-specific search-path variables
+               ;; when available so we must do the same, as these take
+               ;; precedence over the generic "LUA_CPATH" and "LUA_PATH"
+               (setenv (string-append "LUA_CPATH" env-suffix)
+                       (string-append
+                        (string-join (map lua-cpath (list out lua-ossl)) ";")
+                        ";;"))
+               (setenv (string-append "LUA_PATH" env-suffix)
+                       (string-append
+                        (string-join (map lua-path (list out lua-ossl)) ";")
+                        ";;"))
+
+               ;; Skip regression tests we expect to fail
+               (with-directory-excursion "regress"
+                 (for-each (lambda (f)
+                             (rename-file f (string-append f ".skip")))
+                           (append
+                            ;; Regression tests that require network
+                            ;; connectivity
+                            '("22-client-dtls.lua"
+                              "30-starttls-completion.lua"
+                              "62-noname.lua"
+                              "153-dns-resolvers.lua")
+
+                            ;; Regression tests that require LuaJIT
+                            '("44-resolvers-gc.lua"
+                              "51-join-defunct-thread.lua")
+
+                            ;; Regression tests that require Lua 5.3
+                            (if (not (equal? lua-version "5.3"))
+                                '("152-thread-integer-passing.lua")
+                                '()))))
+
+               (apply invoke "make" "check" make-flags)))))))
+    (native-inputs
+     `(("m4" ,m4)))
+    (inputs
+     `(("lua" ,lua)
+       ("openssl" ,openssl)))
+    (propagated-inputs
+     `(("lua-ossl" ,lua-ossl)))
+    (home-page "https://25thandclement.com/~william/projects/cqueues.html")
+    (synopsis "Event loop for Lua using continuation queues")
+    (description "The cqueues extension module for Lua implements an event loop
+that operates through the yielding and resumption of coroutines.  It is designed
+to be non-intrusive, composable, and embeddable within existing applications.")
+    (license license:expat)))
+
+(define-public lua-cqueues
+  (make-lua-cqueues "lua-cqueues" lua lua-ossl))
+
+(define-public lua5.1-cqueues
+  (make-lua-cqueues "lua5.1-cqueues" lua-5.1 lua5.1-ossl))
+
+(define-public lua5.2-cqueues
+  (make-lua-cqueues "lua5.2-cqueues" lua-5.2 lua5.2-ossl))
 
 (define-public lua-penlight
   (package

@@ -1207,7 +1207,7 @@ made by suckless.")
         ("rust-embed-resource" ,rust-embed-resource-1.3)
         ("rust-http-req" ,rust-http-req-0.5)
         ("rust-zip" ,rust-zip-0.5)
-        ("rust-tempfile" ,rust-tempfile-3.1)
+        ("rust-tempfile" ,rust-tempfile-3)
         ("rust-named-pipe" ,rust-named-pipe-0.4)
         ("rust-winapi" ,rust-winapi-0.3))
        #:phases

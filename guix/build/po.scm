@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,6 @@
 (define-module (guix build po)
   #:use-module (ice-9 match)
   #:use-module (ice-9 peg)
-  #:use-module (ice-9 regex)
   #:use-module (ice-9 textual-ports)
   #:export (read-po-file))
 
@@ -41,12 +41,22 @@
   (and (ignore "\"") (* str-chr) (ignore "\"")
        (? (and (ignore (* whitespace)) content))))
 
+(define (interpret-newline-escape str)
+  "Replace '\\n' sequences in STR with a newline character."
+  (let loop ((str str)
+             (result '()))
+    (match (string-contains str "\\n")
+      (#f (string-concatenate-reverse (cons str result)))
+      (index
+       (let ((prefix (string-take str index)))
+         (loop (string-drop str (+ 2 index))
+               (append (list "\n" prefix) result)))))))
+
 (define (parse-tree->assoc parse-tree)
   "Converts a po PARSE-TREE to an association list."
-  (define regex (make-regexp "\\\\n"))
   (match parse-tree
-    ('() '())
-    ((entry parse-tree ...)
+    (() '())
+    ((entry . parse-tree)
      (match entry
        ((? string? entry)
         (parse-tree->assoc parse-tree))
@@ -57,8 +67,8 @@
        (('entry ('msgid msgid) 'msgstr)
         (parse-tree->assoc parse-tree))
        (('entry ('msgid msgid) ('msgstr msgstr))
-        (acons (regexp-substitute/global #f regex msgid 'pre "\n" 'post)
-               (regexp-substitute/global #f regex msgstr 'pre "\n" 'post)
+        (acons (interpret-newline-escape msgid)
+               (interpret-newline-escape msgstr)
                (parse-tree->assoc parse-tree)))))))
 
 (define (read-po-file port)

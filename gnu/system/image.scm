@@ -53,10 +53,12 @@
   #:use-module (srfi srfi-35)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
-  #:export (esp-partition
+  #:export (root-offset
+            root-label
+
+            esp-partition
             root-partition
 
-            hurd-disk-image
             efi-disk-image
             iso9660-image
 
@@ -94,27 +96,6 @@
    (flags '(boot))
    (initializer (gexp initialize-root-partition))))
 
-(define hurd-initialize-root-partition
-  #~(lambda* (#:rest args)
-      (apply initialize-root-partition
-             (append args
-                     (list #:make-device-nodes
-                           make-hurd-device-nodes)))))
-
-(define hurd-disk-image
-  (image
-   (format 'disk-image)
-   (target "i586-pc-gnu")
-   (partitions
-    (list (partition
-           (size 'guess)
-           (offset root-offset)
-           (label root-label)
-           (file-system "ext2")
-           (file-system-options '("-o" "hurd" "-O" "ext_attr"))
-           (flags '(boot))
-           (initializer hurd-initialize-root-partition))))))
-
 (define efi-disk-image
   (image
    (format 'disk-image)
@@ -127,9 +108,7 @@
     (list (partition
            (size 'guess)
            (label "GUIX_IMAGE")
-           (flags '(boot)))))
-   ;; XXX: Temporarily disable compression to speed-up the tests.
-   (compression? #f)))
+           (flags '(boot)))))))
 
 
 ;;
@@ -255,10 +234,15 @@ used in the image."
              (graph (match inputs
                       (((names . _) ...)
                        names)))
-             (root-builder
+             (type (partition-file-system partition))
+             (image-builder
               (with-imported-modules*
-               (let* ((initializer #$(partition-initializer partition)))
+               (let ((initializer #$(partition-initializer partition))
+                     (inputs '#+(list e2fsprogs fakeroot dosfstools mtools))
+                     (image-root "tmp-root"))
                  (sql-schema #$schema)
+
+                 (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
 
                  ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be
                  ;; decoded.
@@ -266,7 +250,7 @@ used in the image."
                          #+(file-append glibc-utf8-locales "/lib/locale"))
                  (setlocale LC_ALL "en_US.utf8")
 
-                 (initializer #$output
+                 (initializer image-root
                               #:references-graphs '#$graph
                               #:deduplicate? #f
                               #:system-directory #$os
@@ -277,19 +261,12 @@ used in the image."
                               #+(bootloader-installer bootloader)
                               #:bootcfg #$bootcfg
                               #:bootcfg-location
-                              #$(bootloader-configuration-file bootloader)))))
-             (image-root
-              (computed-file "partition-image-root" root-builder
-                             #:options `(#:references-graphs ,inputs)))
-             (type (partition-file-system partition))
-             (image-builder
-              (with-imported-modules*
-               (let ((inputs '#+(list e2fsprogs dosfstools mtools)))
-                 (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+                              #$(bootloader-configuration-file bootloader))
                  (make-partition-image #$(partition->gexp partition)
                                        #$output
-                                       #$image-root)))))
-        (computed-file "partition.img" image-builder)))
+                                       image-root)))))
+        (computed-file "partition.img" image-builder
+                       #:options `(#:references-graphs ,inputs))))
 
     (define (partition->config partition)
       ;; Return the genimage partition configuration for PARTITION.
@@ -324,7 +301,11 @@ image ~a {
 }~%" #$genimage-name #$image-type (list #$@partitions-config))))))))
       (computed-file "genimage.cfg" builder)))
 
-  (let* ((substitutable? (image-substitutable? image))
+  (let* ((image-name (image-name image))
+         (name (if image-name
+                   (symbol->string image-name)
+                   name))
+         (substitutable? (image-substitutable? image))
          (builder
           (with-imported-modules*
            (let ((inputs '#+(list genimage coreutils findutils))
@@ -388,33 +369,31 @@ used in the image. "
          (graph (match inputs
                   (((names . _) ...)
                    names)))
-         (root-builder
-          (with-imported-modules*
-           (sql-schema #$schema)
-
-           ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
-           (setenv "GUIX_LOCPATH"
-                   #+(file-append glibc-utf8-locales "/lib/locale"))
-           (setlocale LC_ALL "en_US.utf8")
-
-           (initialize-root-partition #$output
-                                      #:references-graphs '#$graph
-                                      #:deduplicate? #f
-                                      #:system-directory #$os)))
-         (image-root
-          (computed-file "image-root" root-builder
-                         #:options `(#:references-graphs ,inputs)))
          (builder
           (with-imported-modules*
            (let* ((inputs '#$(list parted e2fsprogs dosfstools xorriso
-                                   sed grep coreutils findutils gawk)))
+                                   sed grep coreutils findutils gawk))
+                  (image-root "tmp-root"))
+             (sql-schema #$schema)
+
+             ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
+             (setenv "GUIX_LOCPATH"
+                     #+(file-append glibc-utf8-locales "/lib/locale"))
+
+             (setlocale LC_ALL "en_US.utf8")
+
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+
+             (initialize-root-partition image-root
+                                        #:references-graphs '#$graph
+                                        #:deduplicate? #f
+                                        #:system-directory #$os)
              (make-iso9660-image #$xorriso
                                  '#$grub-mkrescue-environment
                                  #$bootloader
                                  #$bootcfg
                                  #$os
-                                 #$image-root
+                                 image-root
                                  #$output
                                  #:references-graphs '#$graph
                                  #:register-closures? #$register-closures?
@@ -524,15 +503,15 @@ it can be used for bootloading."
   "Return the derivation of IMAGE.  It can be a raw disk-image or an ISO9660
 image, depending on IMAGE format."
   (define substitutable? (image-substitutable? image))
+  (define target (image-target image))
 
-  (let* ((os (operating-system-for-image image))
-         (image* (image-with-os image os))
-         (target (image-target image))
-         (register-closures? (has-guix-service-type? os))
-         (bootcfg (operating-system-bootcfg os))
-         (bootloader (bootloader-configuration-bootloader
-                      (operating-system-bootloader os))))
-    (with-parameters ((%current-target-system target))
+  (with-parameters ((%current-target-system target))
+    (let* ((os (operating-system-for-image image))
+           (image* (image-with-os image os))
+           (register-closures? (has-guix-service-type? os))
+           (bootcfg (operating-system-bootcfg os))
+           (bootloader (bootloader-configuration-bootloader
+                        (operating-system-bootloader os))))
       (case (image-format image)
         ((disk-image)
          (system-disk-image image*
@@ -569,12 +548,9 @@ addition of the <image> record."
     (_ (cond
         ((and target
               (hurd-triplet? target))
-         hurd-disk-image)
+         (module-ref (resolve-interface '(gnu system images hurd))
+                     'hurd-disk-image))
         (else
          efi-disk-image)))))
-
-;;; Local Variables:
-;;; eval: (put 'maybe-with-target 'scheme-indent-function 1)
-;;; End:
 
 ;;; image.scm ends here

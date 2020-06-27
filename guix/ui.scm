@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1464,16 +1465,13 @@ HYPERLINKS? is true, emit hyperlink escape sequences when appropriate."
           (string-map (match-lambda
                         (#\newline #\space)
                         (chr       chr))
-                      (or (and=> (package-synopsis-string p) P_)
-                          "")))
+                      (or (package-synopsis-string p) "")))
   (format port "~a~%"
           (string->recutils
            (string-trim-right
             (parameterize ((%text-width width*))
-              (texi->plain-text
-               (string-append "description: "
-                              (or (and=> (package-description p) P_)
-                                  ""))))
+              (string-append "description: "
+                             (or (package-description-string p) "")))
             #\newline)))
   (for-each (match-lambda
               ((field . value)
@@ -1520,11 +1518,16 @@ score, the more relevant OBJ is to REGEXPS."
                     (+ relevance (* weight (apply + (map score-regexp lst)))))))))
             0 metrics)))
 
-  (let ((scores (map regexp->score regexps)))
-    ;; Return zero if one of REGEXPS doesn't match.
-    (if (any zero? scores)
-        0
-        (reduce + 0 scores))))
+  (let loop ((regexps regexps)
+             (total-score 0))
+    (match regexps
+      ((head . tail)
+       (let ((score (regexp->score head)))
+         ;; Return zero if one of PATTERNS doesn't match.
+         (if (zero? score)
+             0
+             (loop tail (+ total-score score)))))
+      (() total-score))))
 
 (define %package-metrics
   ;; Metrics used to compute the "relevance score" of a package against a set
@@ -1562,9 +1565,9 @@ zero means that PACKAGE does not match any of REGEXPS."
   (if (isatty?* (current-output-port))
       ;; Set 'LESS' so that 'less' exits if everything fits on the screen (F),
       ;; lets ANSI escapes through (r), does not send the termcap
-      ;; initialization string (X).
-      (let ((pager (with-environment-variables `(("LESS"
-                                                  ,(or (getenv "LESS") "FrX")))
+      ;; initialization string (X).  Set it unconditionally because some
+      ;; distros set it to something that doesn't work here.
+      (let ((pager (with-environment-variables `(("LESS" "FrX"))
                      (open-pipe* OPEN_WRITE
                                  (or (getenv "GUIX_PAGER") (getenv "PAGER")
                                      "less")))))

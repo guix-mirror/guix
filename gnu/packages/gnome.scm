@@ -43,7 +43,7 @@
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
-;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2019, 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2019, 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -1682,7 +1682,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.36.1")
+    (version "3.36.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/evince/"
@@ -1690,7 +1690,7 @@ forgotten when the session ends.")
                                  "evince-" version ".tar.xz"))
              (sha256
               (base32
-               "1msbb66lasikpfjpkwsvi7h22hqmk275850ilpdqwbd0b39vzf4c"))))
+               "0z79jl0j9xq9wgwkfr0d1w1qrdy4447y8shs407n5srr0vixc3bg"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus" "--enable-introspection")
@@ -2174,8 +2174,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                 "023gx8rj51njn8fsb6ma5kz1irjpxi4js0n8rwy22inc4ysldd8r"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:tests? #f ; needs X, GL, and software rendering
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
@@ -2185,18 +2184,27 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                                "/xml/xsl/docbook-xsl-"
                                ,(package-version docbook-xsl)
                                "/manpages/docbook.xsl")))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
              #t)))))
     (inputs
      `(("gtk+" ,gtk+)
        ("libxml2" ,libxml2)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("libxslt" ,libxslt) ;for xsltproc
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
        ("python" ,python-2)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server-for-tests)))
     (home-page "https://glade.gnome.org")
     (synopsis "GTK+ rapid application development tool")
     (description "Glade is a rapid application development (RAD) tool to
@@ -2395,10 +2403,10 @@ library.")
         ("rust-pango-sys" ,rust-pango-sys-0.9)
         ("rust-pangocairo" ,rust-pangocairo-0.8)
         ("rust-phf" ,rust-phf-0.7)
-        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-rctree" ,rust-rctree-0.3)
         ("rust-string-cache" ,rust-string-cache-0.7)
-        ("rust-regex" ,rust-regex-1.3)
+        ("rust-regex" ,rust-regex-1)
         ("rust-url" ,rust-url-2.1)
         ("rust-xml-rs" ,rust-xml-rs-0.8))
        #:cargo-development-inputs
@@ -4558,7 +4566,7 @@ throughout GNOME for API documentation).")
 (define-public cogl
   (package
     (name "cogl")
-    (version "1.22.6")
+    (version "1.22.8")
     (source
      (origin
        (method url-fetch)
@@ -4566,7 +4574,7 @@ throughout GNOME for API documentation).")
                            (version-major+minor version) "/"
                            "cogl-" version ".tar.xz"))
        (sha256
-        (base32 "0x8v4n61q89qy27v824bqswpz6bmn801403w2q3pa1lcwk9ln4vd"))))
+        (base32 "0nfph4ai60ncdx7hy6hl1i1cmp761jgnyjfhagzi0iqq36qb41d8"))))
     ;; NOTE: mutter exports a bundled fork of cogl, so when making changes to
     ;; cogl, corresponding changes may be appropriate in mutter as well.
     (build-system gnu-build-system)
@@ -10034,7 +10042,7 @@ integrate seamlessly with the GNOME desktop.")
 (define-public gnome-boxes
   (package
     (name "gnome-boxes")
-    (version "3.36.4")
+    (version "3.36.5")
     (source
      (origin
        (method url-fetch)
@@ -10042,7 +10050,7 @@ integrate seamlessly with the GNOME desktop.")
                            (version-major+minor version) "/"
                            "gnome-boxes-" version ".tar.xz"))
        (sha256
-        (base32 "16l0mq2ydmywcdya1795mcy8syg4zkmz9ws3pzjcqv5y4m7cjj03"))))
+        (base32 "1khvyhgd3p41fvvknga1hdl0p1ks4kj4cwsiaw28v1sy6nzclm2c"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -10422,3 +10430,37 @@ communicating using the GVariant serialization format instead of JSON when
 both peers support it.  You might want that when communicating on a single
 host to avoid parser overhead and memory-allocator fragmentation.")
     (license license:lgpl2.1+)))
+
+(define-public feedbackd
+  (package
+    (name "feedbackd")
+    (version "0.0.0+git20200527")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://source.puri.sm/Librem5/feedbackd.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wbkzxnqjydfgjvp7vz4ghczcz740zcb1yn90cb6gb5md4n6qx2y"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("gsound" ,gsound)
+       ("json-glib" ,json-glib)
+       ("libgudev" ,libgudev)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; in Requires of libfeedback-0.0.pc
+    (synopsis "Haptic/visual/audio feedback via DBus")
+    (description "Feedbackd provides a DBus daemon to act on events to provide
+haptic, visual and audio feedback.  It offers the libfeedbackd library and
+GObject introspection bindings.")
+     (home-page "https://source.puri.sm/Librem5/feedbackd")
+     (license (list license:lgpl2.1+   ; libfeedbackd
+                    license:lgpl3+)))) ; the rest

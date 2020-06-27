@@ -31,6 +31,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:autoload   (ice-9 pretty-print) (pretty-print)
   #:use-module (web uri)
   #:export (display-profile-content

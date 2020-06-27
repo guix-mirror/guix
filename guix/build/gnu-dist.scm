@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,26 +30,6 @@
 ;;;
 ;;; Code:
 
-(define* (copy-source #:key source #:allow-other-keys)
-  (copy-recursively source "."))
-
-(define* (autoreconf #:rest args)
-  (letrec-syntax ((try-files (syntax-rules (else)
-                               ((_ (else fallback ...))
-                                (begin fallback ...))
-                               ((_ file files ... (else fallback ...))
-                                (if (file-exists? file)
-                                    (begin
-                                      (format #t "bootstrapping with `~a'...~%"
-                                              file)
-                                      (invoke (string-append "./" file)))
-                                    (try-files files ...
-                                               (else fallback ...)))))))
-    (try-files "bootstrap" "bootstrap.sh" "autogen" "autogen.sh"
-               (else
-                (format #t "bootstrapping with `autoreconf'...~%")
-                (invoke "autoreconf" "-vfi")))))
-
 (define* (build #:key build-before-dist? make-flags (dist-target "distcheck")
                 #:allow-other-keys
                 #:rest args)
@@ -60,23 +40,10 @@
   (apply invoke "make" dist-target make-flags))
 
 (define* (install-dist #:key outputs #:allow-other-keys)
-  (let* ((out      (assoc-ref outputs "out"))
-         (meta     (string-append out "/nix-support")) ; Hydra meta-data
-         (tarballs (find-files "." "\\.tar\\.")))
-    (mkdir out)
+  (let ((out (assoc-ref outputs "out")))
     (for-each (lambda (tarball)
-                (copy-file tarball (string-append out "/" tarball)))
-              out)
-
-    (mkdir meta)
-    (call-with-output-file (string-append out "/hydra-build-products")
-      (lambda (port)
-        (for-each (lambda (tarball)
-                    ;; This tells Hydra's what kind of build products we have,
-                    ;; so it can represent them nicely.  See `product-list.tt'
-                    ;; in Hydra for details.
-                    (format port "file source-dist ~a/~a~%" out tarball))
-                  tarballs)))
+                (install-file tarball out))
+              (find-files "." "\\.tar\\."))
     #t))
 
 (define %dist-phases
@@ -84,8 +51,7 @@
   (modify-phases %standard-phases
     (delete 'strip)
     (replace 'install install-dist)
-    (replace 'build build)
-    (add-before 'configure 'autoreconf autoreconf)
-    (replace 'unpack copy-source)))
+    (add-after 'build 'build-dist build)
+    (delete 'build)))
 
 ;;; gnu-dist.scm ends here

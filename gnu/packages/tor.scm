@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,8 +142,28 @@ rejects UDP traffic from the application you're using.")
        ;; $out/etc/privoxy.
        #:configure-flags (list (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
-                                              "/etc/privoxy"))
-       #:tests? #f))
+                                              "/etc/privoxy")
+                               "--localstatedir=/var")
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-default-logging
+           (lambda _
+             (with-fluids ((%default-port-encoding "ISO-8859-1"))
+               ;; Do not create /var/run nor /var/log/privoxy/logfile.
+               (substitute* "GNUmakefile.in"
+                 (("(logfile \\|\\| exit )1" _ match)
+                  (string-append match "0"))
+                 (("(\\$\\(DESTDIR\\)\\$\\(SHARE_DEST\\)) \\\\" _ match)
+                  match)
+                 ((".*\\$\\(LOG_DEST\\) \\$\\(DESTDIR\\)\\$\\(PID_DEST\\).*")
+                  ""))
+               ;; Disable logging in the default configuration to allow for
+               ;; non-root users using it as is.
+               (substitute* "config"
+                 (("^logdir") "#logdir")
+                 (("^logfile") "#logfile")))
+             #t)))))
     (inputs
      `(("w3m" ,w3m)
        ("pcre" ,pcre)

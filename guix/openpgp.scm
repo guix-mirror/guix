@@ -1029,23 +1029,10 @@ there is no limit."
 
 (define (crc24 bv)
   "Compute a CRC24 as described in RFC4880, Section 6.1."
-  (define poly #x1864cfb)
-
-  (let loop ((crc #xb704ce)
-             (index 0))
-    (if (= index (bytevector-length bv))
-        (logand crc #xffffff)
-        (let ((crc (logxor (ash (bytevector-u8-ref bv index) 16)
-                           crc)))
-          (let inner ((i 0)
-                      (crc crc))
-            (if (< i 8)
-                (let ((crc (ash crc 1)))
-                  (inner (+ i 1)
-                         (if (zero? (logand crc #x1000000))
-                             crc
-                             (logxor crc poly))))
-                (loop crc (+ index 1))))))))
+  ;; We used to have it implemented in Scheme but the C version here makes
+  ;; 'load-keyring-from-reference' 18% faster when loading the 72
+  ;; ASCII-armored files of today's Guix keyring.
+  (bytevector->uint (bytevector-hash bv (hash-algorithm crc24-rfc2440))))
 
 (define %begin-block-prefix "-----BEGIN ")
 (define %begin-block-suffix "-----")

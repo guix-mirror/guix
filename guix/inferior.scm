@@ -687,13 +687,16 @@ failing when GUIX is too old and lacks the 'guix repl' command."
 (define* (cached-channel-instance store
                                   channels
                                   #:key
+                                  (authenticate? #t)
                                   (cache-directory (%inferior-cache-directory))
                                   (ttl (* 3600 24 30)))
   "Return a directory containing a guix filetree defined by CHANNELS, a list of channels.
 The directory is a subdirectory of CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.
-This procedure opens a new connection to the build daemon."
+This procedure opens a new connection to the build daemon.  AUTHENTICATE?
+determines whether CHANNELS are authenticated."
   (define instances
-    (latest-channel-instances store channels))
+    (latest-channel-instances store channels
+                              #:authenticate? authenticate?))
 
   (define key
     (bytevector->base32-string
@@ -732,6 +735,8 @@ This procedure opens a new connection to the build daemon."
           (mbegin %store-monad
             (show-what-to-build* (list profile))
             (built-derivations (list profile))
+            ;; Note: Caching is fine even when AUTHENTICATE? is false because
+            ;; we always call 'latest-channel-instances?'.
             (symlink* (derivation->output-path profile) cached)
             (add-indirect-root* cached)
             (return cached))))))

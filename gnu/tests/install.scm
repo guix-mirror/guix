@@ -247,6 +247,8 @@ packages defined in installation-os."
                           (operating-system
                             (operating-system-with-gc-roots
                              os (list target guile-final)))
+                          ;; Do not compress to speed-up the tests.
+                          (compression? #f)
                           ;; Don't provide substitutes; too big.
                           (substitutable? #f)))))
     (define install
@@ -301,7 +303,8 @@ packages defined in installation-os."
               ;; Run SCRIPT.  It typically invokes 'reboot' as a last step and
               ;; thus normally gets killed with SIGTERM by PID 1.
               (let ((status (marionette-eval '(system #$script) marionette)))
-                (exit (or (equal? (status:term-sig status) SIGTERM)
+                (exit (or (eof-object? status)
+                          (equal? (status:term-sig status) SIGTERM)
                           (equal? (status:exit-val status) 0)))))
 
             (when #$(->bool gui-test)

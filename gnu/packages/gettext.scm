@@ -7,7 +7,7 @@
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Miguel <rosen644835@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -148,14 +148,14 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
 (define-public libtextstyle
   (package
     (name "libtextstyle")
-    (version "0.20.1")
+    (version "0.20.2")
     (source (origin
               (inherit (package-source gnu-gettext))
               (uri (string-append "mirror://gnu/gettext/gettext-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0p3zwkk27wm2m2ccfqm57nj7vqkmfpn7ja1nf65zmhz8qqs5chb6"))))
+                "1wc9q3y8rsbd757v985vxqcyqsxs7cxk4x7rzsjmq7d4ij8d1fgc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")

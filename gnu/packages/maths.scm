@@ -4052,6 +4052,7 @@ evaluates expressions using the standard order of operations.")
               (uri (git-reference
                     (url "https://github.com/xaos-project/XaoS")
                     (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "00110p5xscjsmn7avfqgydn656zbmdj3l3y2fpv9b4ihzpid8n7a"))))
