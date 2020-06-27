@@ -258,3 +258,21 @@ other projects as their parent pom.")
              (install-pom-file "spice-parent/pom.xml")))))
       (propagated-inputs
        `(("java-sonatype-forge-parent-pom-10" ,java-sonatype-forge-parent-pom-10))))))
+
+(define-public java-sonatype-spice-parent-pom-12
+  (hidden-package
+    (package
+      (inherit java-sonatype-spice-parent-pom-15)
+      (version "12")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/sonatype/oss-parents")
+                       ;; The only commit where spice-parent is version 12
+                       (commit "95088ae2891f673828351d7d9150240859b4a29a")))
+                (file-name (git-file-name "java-sonatype-spice-parent-pom" version))
+                (sha256
+                 (base32
+                  "0pq5yf6swn43rxdfksnqsky1402zza2xq1aypwma9jkck2yl0vma"))))
+      (propagated-inputs
+       `(("java-sonatype-forge-parent-pom-4" ,java-sonatype-forge-parent-pom-4))))))
