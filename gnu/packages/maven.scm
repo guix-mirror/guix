@@ -2705,3 +2705,30 @@ Maven project dependencies.")
            (install-pom-file "pom.xml")))))
     (propagated-inputs
      `(("maven-parent-pom" ,maven-parent-pom-30)))))
+
+(define-public maven-enforcer-rules
+  (package
+    (inherit maven-enforcer-api)
+    (name "maven-enforcer-rules")
+    (arguments
+     `(#:tests? #f; requires maven-plugin-testing-harness
+       #:jar-name "maven-enforcer-rules.jar"
+       #:source-dir "enforcer-rules/src/main/java"
+       #:test-dir "enforcer-rules/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "enforcer-rules/pom.xml")))))
+    (propagated-inputs
+     `(("maven-artifact" ,maven-artifact)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("maven-core" ,maven-core)
+       ("maven-common-artifact-filters" ,maven-common-artifact-filters)
+       ("java-commons-codec" ,java-commons-codec)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("maven-enforcer-api" ,maven-enforcer-api)
+       ("maven-resolver-util" ,maven-resolver-util)
+       ("java-bsh" ,java-bsh)
+       ("maven-dependency-tree" ,maven-dependency-tree)
+       ("maven-compat" ,maven-3.0-compat)
+       ("maven-enforcer-parent-pom" ,maven-enforcer-parent-pom)))))
