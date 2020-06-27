@@ -6139,6 +6139,28 @@ top of Faraday.")
     (home-page "https://github.com/lostisland/sawyer")
     (license license:expat)))
 
+(define-public ruby-octokit
+  (package
+    (name "ruby-octokit")
+    (version "4.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "octokit" version))
+       (sha256
+        (base32
+         "0zvfr9njmj5svi39fcsi2b0g7pcxb0vamw9dlyas8bg814jlzhi6"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f))          ;no test suite in the gem release
+    (propagated-inputs
+     `(("ruby-faraday" ,ruby-faraday)
+       ("ruby-sawyer" ,ruby-sawyer)))
+    (synopsis "Ruby toolkit for the GitHub API")
+    (description "Octokit wraps the GitHub API in a flat API client that
+follows Ruby conventions and requires little knowledge of REST.")
+    (home-page "https://github.com/octokit/octokit.rb")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
