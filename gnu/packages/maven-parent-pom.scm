@@ -158,3 +158,34 @@
       (synopsis "Pom parent file for weld projects")
       (description "This package contains the parent Maven Pom for weld projects.")
       (license license:asl2.0))))
+
+(define (make-java-sonatype-forge-parent-pom version hash)
+  (hidden-package
+    (package
+      (name "java-sonatype-forge-parent-pom")
+      (version version)
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/sonatype/oss-parents")
+                       (commit (string-append "forge-parent-" version))))
+                (file-name (git-file-name name version))
+                (sha256 (base32 hash))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build)
+           (delete 'configure)
+           (replace 'install
+             (install-pom-file "pom.xml")))))
+      (home-page "https://github.com/sonatype/oss-parents")
+      (synopsis "Sonatype forge parent pom")
+      (description "This package contains a single pom.xml file that is used by
+other projects as their parent pom.")
+      (license license:asl2.0))))
+
+(define-public java-sonatype-forge-parent-pom-4
+  (make-java-sonatype-forge-parent-pom
+    "4" "1gip239ar20qzy6yf37r6ks54bl7gqi1v49p65manrz84cmad0dh"))
