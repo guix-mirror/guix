@@ -2098,3 +2098,55 @@ reporting or the build process.")))
               `("maven-pom" ,maven-3.0-pom)
               input))
         (package-propagated-inputs maven-artifact)))))
+
+(define-public maven-3.0-model
+  (package
+    (inherit maven-model)
+    (version (package-version maven-3.0-pom))
+    (source (package-source maven-3.0-pom))
+    (propagated-inputs
+      (map
+        (lambda (input)
+          (if (equal? (car input) "maven-pom")
+              `("maven-pom" ,maven-3.0-pom)
+              input))
+        (package-propagated-inputs maven-artifact)))
+    (arguments
+     `(#:jar-name "maven-model.jar"
+       #:source-dir "maven-model/src/main/java"
+       #:test-dir "maven-model/src/test"
+       #:modules
+       ((guix build ant-build-system)
+        (guix build java-utils)
+        (guix build syscalls)
+        (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'use-newer-model
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The model has almost not changed, but the newer version is
+             ;; needed to prevent an error in the newer modello we have
+             (let ((source (assoc-ref inputs "maven-source"))
+                   (dir (mkdtemp! "maven-source-XXXXXXXX")))
+               (with-directory-excursion dir
+                 (invoke "tar" "xf" source)
+                 (copy-file (car (find-files "." "maven.mdo"))
+                            "../maven-model/src/main/mdo/maven.mdo")))
+             #t))
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (invoke "java" "org.codehaus.modello.ModelloCli"
+                       file mode "maven-model/src/main/java" version
+                       "false" "true" "UTF-8"))
+             (let ((file "maven-model/src/main/mdo/maven.mdo"))
+               (modello-single-mode file "4.0.0" "java")
+               (modello-single-mode file "4.0.0" "xpp3-reader")
+               (modello-single-mode file "4.0.0" "xpp3-writer")
+               (modello-single-mode file "4.0.0" "xpp3-extended-reader"))
+             #t))
+         (replace 'install
+           (install-from-pom "maven-model/pom.xml")))))
+    (inputs
+      `(("maven-source" ,(package-source maven-pom))
+        ,@(package-inputs maven-model)))))
