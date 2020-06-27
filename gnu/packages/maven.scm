@@ -32,7 +32,8 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages maven-parent-pom)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (ice-9 match))
 
 (define-public java-plexus-component-metadata
   (package
@@ -2163,3 +2164,21 @@ reporting or the build process.")))
               `("maven-pom" ,maven-3.0-pom)
               input))
         (package-propagated-inputs maven-settings)))))
+
+(define-public maven-3.0-settings-builder
+  (package
+    (inherit maven-settings-builder)
+    (version (package-version maven-3.0-pom))
+    (source (package-source maven-3.0-pom))
+    (propagated-inputs
+     `(("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ,@(filter
+           (lambda (a) a)
+           (map
+             (lambda (input)
+               (match (car input)
+                 ("maven-pom" `("maven-pom" ,maven-3.0-pom))
+                 ("maven-settings" `("maven-settings" ,maven-3.0-settings))
+                 ("maven-builder-support" #f)
+                 (_ input)))
+             (package-propagated-inputs maven-settings-builder)))))))
