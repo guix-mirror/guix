@@ -191,7 +191,7 @@ windows in a terminal, colorize, filter and merge.")
 (define-public spdlog
   (package
     (name "spdlog")
-    (version "1.5.0")
+    (version "1.6.1")
     (source
      (origin
        (method git-fetch)
@@ -201,13 +201,14 @@ windows in a terminal, colorize, filter and merge.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0dn44r3xbw1w0bk9yflnxkh3rzdq2bpxkks44skfmqig0rsj1f1x"))))
+         "1b1b3zmbyjgqz5yfdgaasi55x03d37z7l2pasvgikx3mm1gabq5a"))))
     (build-system cmake-build-system)
     ;; TODO run benchmark. Currently not possible, as adding
     ;; (gnu packages benchmark) forms a dependency cycle
     (arguments
      '(#:configure-flags
-       (list "-DSPDLOG_BUILD_BENCH=OFF")))
+       (list "-DSPDLOG_BUILD_BENCH=OFF"
+             "-DSPDLOG_BUILD_TESTS=ON")))
     (home-page "https://github.com/gabime/spdlog")
     (synopsis "Fast C++ logging library")
     (description "Spdlog is a very fast header-only/compiled C++ logging
