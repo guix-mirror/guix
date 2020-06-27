@@ -521,6 +521,23 @@ ease usage of the repository system.")))
     (description "This package contains the API for the maven repository system.")
     (license license:asl2.0)))
 
+(define-public java-eclipse-aether-spi
+  (package
+    (inherit java-eclipse-aether-api)
+    (name "java-eclipse-aether-spi")
+    (arguments
+     `(#:jar-name "aether-spi.jar"
+       #:source-dir "aether-spi/src/main/java"
+       #:test-dir "aether-spi/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-from-pom "aether-spi/pom.xml")))))
+    (propagated-inputs
+     `(("java-eclipse-aether-api" ,java-eclipse-aether-api)))
+    (synopsis "Maven repository system SPI")
+    (description "This package contains the service provider interface (SPI)
+for repository system implementations and repository connectors.")))
+
 (define-public maven-shared-utils
   (package
     (name "maven-shared-utils")
