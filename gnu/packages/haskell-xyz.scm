@@ -8896,6 +8896,26 @@ suitable for inclusion in pandoc YAML metadata.")
                (base32
                 "1d6ygq991ddria71l7hg9yd7lq94sjy4m71rdws1v8hq943c4d0q"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; None of the directory names are actually used.  By generating a
+         ;; simpler module without references to store names we avoid
+         ;; introducing references in the pandoc executable.
+         (add-after 'unpack 'create-simple-paths-module
+           (lambda _
+             (call-with-output-file "Paths_pandoc_types.hs"
+               (lambda (port)
+                 (format port "\
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE NoRebindableSyntax #-}
+{-# OPTIONS_GHC -fno-warn-missing-import-lists #-}
+module Paths_pandoc_types (version) where
+import Data.Version (Version(..))
+version :: Version
+version = Version [~a] []
+" (string-map (lambda (chr) (if (eq? chr #\.) #\, chr)) ,version))))
+             #t)))))
     (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-aeson" ,ghc-aeson)
