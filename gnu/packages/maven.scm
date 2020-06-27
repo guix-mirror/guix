@@ -2414,3 +2414,19 @@ reporting or the build process.")))
        ("java-plexus-container-default" ,java-plexus-container-default)
        ("maven-wagon-provider-api" ,maven-wagon-provider-api)
        ("maven-pom" ,maven-3.0-pom)))))
+
+(define-public maven-shared-utils-3.0
+  (package
+    (inherit maven-shared-utils)
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/maven/shared/"
+                                  "maven-shared-utils-" version "-source-release.zip"))
+              (sha256
+               (base32
+                "0qm8y85kip2hyhnhlkqgj0rhmf83z07s7l7gzsfl5dzl3kvp8nal"))))
+    (propagated-inputs
+     `(("maven-core" ,maven-3.0-core)
+       ("maven-components-parent-pom" ,maven-components-parent-pom-21)
+       ,@(package-propagated-inputs maven-shared-utils)))))
