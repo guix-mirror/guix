@@ -6161,6 +6161,30 @@ follows Ruby conventions and requires little knowledge of REST.")
     (home-page "https://github.com/octokit/octokit.rb")
     (license license:expat)))
 
+(define-public ruby-chandler
+  (package
+    (name "ruby-chandler")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "chandler" version))
+       (sha256
+        (base32
+         "1n8a4mr2jkcz5vaaps45g2rxa2pzy1wb7cylgw85xmmyyp14lnrr"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rubocop" ,ruby-rubocop)))
+    (propagated-inputs
+     `(("ruby-netrc" ,ruby-netrc)
+       ("ruby-octokit" ,ruby-octokit)))
+    (synopsis "Sync CHANGELOG entries to GitHub's release notes")
+    (description "Chandler syncs a project's CHANGELOG file entries to
+GitHub's release notes to remove the need of manually entering release
+notes.")
+    (home-page "https://github.com/mattbrictson/chandler")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
