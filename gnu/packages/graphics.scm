@@ -359,7 +359,7 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.5.0")
+    (version "2.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -368,9 +368,8 @@ many more.")
               (file-name (git-file-name "ilmbase" version))
               (sha256
                (base32
-                "1k50cvi3sk6gf6w713lkk2gv5cvs74vkc7s7k4z6nmyhi4g89w4y"))
-              (patches (search-patches "ilmbase-fix-tests.patch"
-                                       "ilmbase-fix-test-arm.patch"))))
+                "1vf8bqld2bpcdi99jbr043y6vp01cp3fvbiasrn66xn91mf6imbn"))
+              (patches (search-patches "ilmbase-fix-tests.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -589,11 +588,15 @@ graphics.")
            (lambda _
              (chdir "OpenEXR")
              #t))
-         (add-before 'check 'increase-test-timeout
+         (add-after 'change-directory 'increase-test-timeout
            (lambda _
              ;; On armhf-linux, we need to override the CTest default
              ;; timeout of 1500 seconds for the OpenEXR.IlmImf test.
-             (setenv "CTEST_TEST_TIMEOUT" "2000")
+             (substitute* "IlmImfTest/CMakeLists.txt"
+               (("add_test\\(NAME OpenEXR\\.IlmImf.*" all)
+                (string-append
+                 all
+                 "set_tests_properties(OpenEXR.IlmImf PROPERTIES TIMEOUT 2000)")))
              #t))
          ,@(if (not (target-64bit?))
                `((add-after 'change-directory 'disable-broken-test
