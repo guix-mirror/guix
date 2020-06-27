@@ -276,3 +276,32 @@ other projects as their parent pom.")
                   "0pq5yf6swn43rxdfksnqsky1402zza2xq1aypwma9jkck2yl0vma"))))
       (propagated-inputs
        `(("java-sonatype-forge-parent-pom-4" ,java-sonatype-forge-parent-pom-4))))))
+
+(define-public java-sonatype-oss-parent-pom-7
+  (hidden-package
+    (package
+      (name "java-sonatype-oss-parent-pom")
+      (version "7")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/sonatype/oss-parents")
+                       (commit (string-append "oss-parent-" version))))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0lkvkmm51vrrrp79ksq3i2v693279rbn06yxck70ivhjrbq77927"))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build)
+           (delete 'configure)
+           (replace 'install
+             (install-pom-file "pom.xml")))))
+      (home-page "https://github.com/sonatype/oss-parents")
+      (synopsis "Sonatype oss parent pom")
+      (description "This package contains a single pom.xml file that is used by
+other projects as their parent pom.")
+      (license license:asl2.0))))
