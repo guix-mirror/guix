@@ -433,3 +433,16 @@ tool.  This package contains the Maven parent POM.")
           `(modify-phases ,phases
              (delete 'install-plugins)
              (delete 'install-shared))))))))
+
+(define-public maven-parent-pom-15
+  (let ((base (make-maven-parent-pom
+                "15" "154nbc3w9is1dpzlfi1xk03mfksxndnniyzq8mcw2wdbargb5504"
+                apache-parent-pom-6)))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'install-plugins)
+             (delete 'install-shared))))))))
