@@ -3614,3 +3614,48 @@ MOJO.")))
     (description "The Surefire Plugin is used during the test phase of the
 build lifecycle to execute the unit tests of an application.  It generates
 reports in two different file formats, plain text and xml.")))
+
+(define-public maven-jar-plugin
+  (package
+    (name "maven-jar-plugin")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/apache/"
+                                  "maven-jar-plugin/archive/"
+                                  "maven-jar-plugin-" version ".tar.gz"))
+              (sha256
+               (base32
+                "032042n3kfb4g5jf6khzxywn22xfy3jpx57lkq88xsv0lwx9np96"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-jar-plugin.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f; test depends on maven-plugin-test-harness
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-plugin.xml
+           (generate-plugin.xml "pom.xml"
+             "jar"
+             "src/main/java/org/apache/maven/plugins/jar"
+             (list
+               (list "AbstractJarMojo.java" "JarMojo.java")
+               (list "AbstractJarMojo.java" "TestJarMojo.java"))))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-archiver" ,maven-archiver)
+       ("maven-artifact" ,maven-3.0-artifact)
+       ("maven-core" ,maven-3.0-core)
+       ("maven-plugin-api" ,maven-3.0-plugin-api)
+       ("maven-file-management" ,maven-file-management)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("java-plexus-archiver" ,java-plexus-archiver)
+       ("java-plexus-utils" ,java-plexus-utils)))
+    (inputs
+     `(("maven-plugin-annotations" ,maven-plugin-annotations)))
+    (home-page "https://maven.apache.org/plugins/maven-jar-plugin")
+    (synopsis "Jar builder plugin for Maven")
+    (description "This plugin provides the capability to build jars.  If you
+would like to sign jars please use the Maven Jarsigner Plugin instead.")
+    (license license:asl2.0)))
