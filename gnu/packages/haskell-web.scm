@@ -197,7 +197,23 @@ both client and server code).")
        ("ghc-network-uri" ,ghc-network-uri)
        ("ghc-split" ,ghc-split)))
     (arguments
-     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+     `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-simple-paths-module
+           (lambda _
+             (call-with-output-file "Paths_HTTP.hs"
+               (lambda (port)
+                 (format port "\
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE NoRebindableSyntax #-}
+{-# OPTIONS_GHC -fno-warn-missing-import-lists #-}
+module Paths_HTTP (version) where
+import Data.Version (Version(..))
+version :: Version
+version = Version [~a] []
+" (string-map (lambda (chr) (if (eq? chr #\.) #\, chr)) ,version))))
+             #t)))))
     (home-page "https://github.com/haskell/HTTP")
     (synopsis "Library for client-side HTTP")
     (description
