@@ -679,6 +679,16 @@ eq(1)\\}}.")
     (home-page "https://github.com/rspec/rspec-its")
     (license license:expat)))
 
+;;; This variant is used to break a cycle with ruby-protobuf.
+(define-public ruby-rspec-its-minimal
+  (hidden-package
+   (package
+     (inherit ruby-rspec-its)
+     (arguments
+      (substitute-keyword-arguments (package-arguments ruby-rspec-its)
+        ((#:tests? _ #f) #f)))
+     (native-inputs '()))))
+
 (define-public ruby-rspec-mocks
   (package
     (name "ruby-rspec-mocks")
@@ -8197,7 +8207,7 @@ all known public suffixes.")
        ("bundler" ,bundler)
        ("ruby-idn-ruby" ,ruby-idn-ruby)
        ("ruby-sporkmonger-rack-mount" ,ruby-sporkmonger-rack-mount)
-       ("ruby-rspec-its", ruby-rspec-its)
+       ("ruby-rspec-its", ruby-rspec-its-minimal)
        ("ruby-yard" ,ruby-yard)
        ("ruby-simplecov" ,ruby-simplecov)))
     (propagated-inputs
