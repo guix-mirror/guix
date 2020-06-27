@@ -420,6 +420,8 @@ decoding .opus files.")
                (base32
                 "02smwc5ah8nb3a67mnkjzqmrzk43j356hgj2a97s9midq40qd38i"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     ;; Required by opusfile.pc and opusurl.pc.
     (propagated-inputs
      `(("libogg" ,libogg)
