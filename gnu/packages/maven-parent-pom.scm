@@ -201,3 +201,35 @@ other projects as their parent pom.")
 (define-public java-sonatype-forge-parent-pom-10
   (make-java-sonatype-forge-parent-pom
     "10" "1n89wb00q4s9nwpqq6q1h4nzakw1l1rppjygxkl3iid7m5fnj60n"))
+
+(define-public java-sonatype-spice-parent-pom-15
+  (hidden-package
+    (package
+      (name "java-sonatype-spice-parent-pom")
+      (version "15")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/sonatype/oss-parents")
+                       ;; The only commit where spice-parent is version 15
+                       (commit "a4d1169c66fb21b214cb3eff2f056ec3e3695ca7")))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0h62h6m31srmqnd1bhyspz6hdhkkv48knkj0ximq3pzdixgzyxgy"))))
+      (build-system ant-build-system)
+      (propagated-inputs
+       `(("java-sonatype-forge-parent-pom-5" ,java-sonatype-forge-parent-pom-5)))
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build)
+           (delete 'configure)
+           (replace 'install
+             (install-pom-file "pom.xml")))))
+      (home-page "https://github.com/sonatype/oss-parents")
+      (synopsis "Sonatype spice parent pom")
+      (description "This package contains a single pom.xml file that is used by
+other projects as their parent pom.")
+      (license license:asl2.0))))
