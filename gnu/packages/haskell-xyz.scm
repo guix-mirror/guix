@@ -4422,6 +4422,7 @@ Foundation has the following goals:
         (base32
          "0vlf3f2ckl3cr7z2zl8c9c8qkdlfgvmh04gxkp2fg0z9dz80nlyb"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-prelude-extras" ,ghc-prelude-extras)
        ("ghc-profunctors" ,ghc-profunctors)
