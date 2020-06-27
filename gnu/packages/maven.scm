@@ -661,15 +661,34 @@ replacement with improvements.")
     (arguments
      `(#:jar-name "maven-plugin-annotations.jar"
        #:source-dir "maven-plugin-annotations/src/main/java"
-       #:tests? #f))
-    (inputs
-     `(("maven-artifact" ,maven-artifact)))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "maven-plugin-annotations/pom.xml")))))
+    (propagated-inputs
+     `(("maven-artifact" ,maven-artifact)
+       ("maven-plugin-tools-parent-pom" ,maven-plugin-tools-parent-pom)))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://maven.apache.org/plugin-tools/maven-plugin-annotations/")
     (synopsis "Java 5 annotations to use in Mojos")
     (description "This package contains Java 5 annotations for use in Mojos.")
     (license license:asl2.0)))
+
+(define maven-plugin-tools-parent-pom
+  (package
+    (inherit maven-plugin-annotations)
+    (name "maven-plugin-tools-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs '())))
 
 (define-public maven-wagon-provider-api
   (package
