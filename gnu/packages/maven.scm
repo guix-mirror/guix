@@ -2732,3 +2732,32 @@ Maven project dependencies.")
        ("maven-dependency-tree" ,maven-dependency-tree)
        ("maven-compat" ,maven-3.0-compat)
        ("maven-enforcer-parent-pom" ,maven-enforcer-parent-pom)))))
+
+(define-public maven-enforcer-plugin
+  (package
+    (inherit maven-enforcer-api)
+    (name "maven-enforcer-plugin")
+    (arguments
+     `(#:tests? #f
+       #:jar-name "maven-enforcer-plugin.jar"
+       #:source-dir "maven-enforcer-plugin/src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-plugin.xml
+           (generate-plugin.xml "maven-enforcer-plugin/pom.xml"
+             "enforcer"
+             "maven-enforcer-plugin/src/main/java/org/apache/maven/plugins/enforcer/"
+             (list
+               (list "DisplayInfoMojo.java")
+               (list "EnforceMojo.java"))))
+         (replace 'install
+           (install-from-pom "maven-enforcer-plugin/pom.xml")))))
+    (propagated-inputs
+     `(("maven-artifact" ,maven-artifact)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("maven-core" ,maven-core)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("maven-enforcer-api" ,maven-enforcer-api)
+       ("maven-enforcer-rules" ,maven-enforcer-rules)
+       ("maven-plugin-annotations" ,maven-plugin-annotations)
+       ("maven-enforcer-parent-pom" ,maven-enforcer-parent-pom)))))
