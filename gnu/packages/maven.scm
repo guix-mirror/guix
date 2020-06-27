@@ -3102,3 +3102,74 @@ described in Setting the -source and -target of the Java Compiler.
 Other compilers than javac can be used and work has already started on
 AspectJ, .NET, and C#.")
     (license license:asl2.0)))
+
+(define-public java-surefire-logger-api
+  (package
+    (name "java-surefire-logger-api")
+    (version "3.0.0-M4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/surefire/"
+                                  "surefire-" version "-source-release.zip"))
+              (sha256
+               (base32
+                "1s6d4pzk3bjm9l38mj9sfgbgmk145rppdj1dmqwc4d5105mr9q9w"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-surefire-logger-api.jar"
+       #:source-dir "surefire-logger-api/src/main/java"
+       #:tests? #f; require mockito 2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "surefire-logger-api/pom.xml")))))
+    (propagated-inputs
+     `(("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://maven.apache.org/surefire/surefire-logger-api")
+    (synopsis "Interfaces and Utilities related only to internal SureFire Logger API")
+    (description "This package contains interfaces and utilities that are
+internal to the SureFire Logger API.  It is designed to have no dependency.")
+    (license license:asl2.0)))
+
+(define-public java-surefire-parent-pom
+  (package
+    (inherit java-surefire-logger-api)
+    (name "java-surefire-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (add-before 'install 'fix-pom-dependency-versions
+           (lambda _
+             (substitute* "pom.xml"
+               (("1.11") ,(package-version java-commons-compress))
+               (("1.13") ,(package-version java-commons-codec)))
+             (substitute* "pom.xml"
+               (("commonsLang3Version>.*")
+                (string-append
+                  "commonsLang3Version>"
+                  ,(package-version java-commons-lang3)
+                  "</commonsLang3Version>\n"))
+               (("commonsCompress>.*")
+                (string-append
+                  "commonsCompress>"
+                  ,(package-version java-commons-compress)
+                  "</commonsCompress>\n"))
+               (("commonsIoVersion>.*")
+                (string-append
+                  "commonsIoVersion>"
+                  ,(package-version java-commons-io)
+                  "</commonsIoVersion>\n"))
+               (("0.11.0") ,(package-version maven-artifact-transfer))
+               (("1.0.3") ,(package-version java-plexus-java)))
+             #t))
+         (add-after 'install 'install-providers
+           (install-pom-file "surefire-providers/pom.xml"))
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("maven-parent-pom" ,maven-parent-pom-33)))))
