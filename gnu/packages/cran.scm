@@ -22453,3 +22453,36 @@ binary files.  Binary repositories are defined in the YAML format.  Defining
 new pre-download, download and post-download templates allow additional
 repositories to be added.")
     (license license:expat)))
+
+(define-public r-wdman
+  (package
+    (name "r-wdman")
+    (version "0.2.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "wdman" version))
+        (sha256
+          (base32
+            "1yf41lsrr9dbf5n4f5hv9mlmzl736fhnp9gxkm2g9apws6gsig02"))))
+    (properties `((upstream-name . "wdman")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-assertthat" ,r-assertthat)
+        ("r-binman" ,r-binman)
+        ("r-processx" ,r-processx)
+        ("r-semver" ,r-semver)
+        ("r-yaml" ,r-yaml)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://docs.ropensci.org/wdman/")
+    (synopsis "Webdriver/Selenium binary manager")
+    (description
+      "There are a number of binary files associated with the
+Webdriver/Selenium project (see @url{http://www.seleniumhq.org/download/},
+@url{https://sites.google.com/a/chromium.org/chromedriver/},
+@url{https://github.com/mozilla/geckodriver},
+@url{http://phantomjs.org/download.html}, and
+@url{https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver} for
+more information).  This package provides functions to download these binaries
+and to manage processes involving them.")
+    (license license:expat)))
