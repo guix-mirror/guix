@@ -2058,3 +2058,43 @@ management, documentation creation, site publication, and distribution
 publication are all controlled from the @file{pom.xml} declarative file.  Maven
 can be extended by plugins to utilise a number of other development tools for
 reporting or the build process.")))
+
+;; Many plugins require maven 3.0 as a dependency.
+(define maven-3.0-pom
+  (package
+    (inherit maven-pom)
+    (version "3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/apache/maven")
+                     (commit (string-append "maven-" version))))
+              (file-name (git-file-name "maven" version))
+              (sha256
+               (base32
+                "06jdwxx9w24shhv3kca80rlrikynn7kdqcrwg59lv2b7adpllwnh"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.jar$"))
+                  (for-each (lambda (file) (chmod file #o644))
+                            (find-files "." "."))
+                  #t))
+              (patches
+                (search-patches "maven-generate-component-xml.patch"
+                                "maven-generate-javax-inject-named.patch"))))
+    (propagated-inputs
+     `(("maven-parent-pom-15" ,maven-parent-pom-15)))))
+
+(define-public maven-3.0-artifact
+  (package
+    (inherit maven-artifact)
+    (version (package-version maven-3.0-pom))
+    (source (package-source maven-3.0-pom))
+    (propagated-inputs
+      (map
+        (lambda (input)
+          (if (equal? (car input) "maven-pom")
+              `("maven-pom" ,maven-3.0-pom)
+              input))
+        (package-propagated-inputs maven-artifact)))))
