@@ -11343,6 +11343,29 @@ functionality in a modular way, allowing you to extend your panel with your
 own code, responding to click events and updating clock every second.")
     (license license:bsd-3)))
 
+(define-public python2-selectors2
+  (package
+    (name "python2-selectors2")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "selectors2" version))
+              (sha256
+               (base32
+                "110qr00b9axz1f1jm12b495jkvrz80smknxvssqlhwk0dx67rdw1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("python2-mock" ,python2-mock)
+       ("python2-psutil" ,python2-psutil)))
+    (home-page "https://www.github.com/SethMichaelLarson/selectors2")
+    (synopsis "Backport of the selectors module from Python 3.5+")
+    (description
+     "This package provides a drop-in replacement for the @code{selectors}
+module in Python 3.5 and later.")
+    (license license:expat)))
+
 (define-public python-tblib
   (package
     (name "python-tblib")
