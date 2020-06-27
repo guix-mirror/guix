@@ -2568,3 +2568,41 @@ Maven project dependencies.")
     (description "This package provides a tree-based API for resolution of
 Maven project dependencies.")
     (license license:asl2.0)))
+
+(define-public maven-dependency-tree
+  (package
+    (name "maven-dependency-tree")
+    (version "3.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/shared/"
+                                  "maven-dependency-tree-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "0mxfslxvcmjs13jl30zhcg672j970dzn6ihh79w9ajh6sfqmlds2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-dependency-tree.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-core" ,maven-3.0-core)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("maven-parent-pom" ,maven-parent-pom-30)))
+    (inputs
+     `(("java-sonatype-aether-api"  ,java-sonatype-aether-api)
+       ("java-sonatype-aether-util" ,java-sonatype-aether-util)
+       ("java-eclipse-aether-api" ,java-eclipse-aether-api)
+       ("java-eclipse-aether-util" ,java-eclipse-aether-util)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-junit" ,java-junit)))
+    (home-page "https://maven.apache.org/shared/maven-dependency-tree")
+    (synopsis "Tree-based API for resolution of Maven project dependencies")
+    (description "This package provides a tree-based API for resolution of
+Maven project dependencies.")
+    (license license:asl2.0)))
