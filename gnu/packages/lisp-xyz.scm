@@ -675,8 +675,9 @@ antialiased TrueType font rendering using CLX and XRender extension.")
 ;; we expose the union of these as `sbcl-slynk'.  The following variable
 ;; describes the base module.
 (define sbcl-slynk-boot0
-  (let ((revision "2")
-        (commit "cbf84c36c4eca8b032e3fd16177a7bc02df3ec4c"))
+  (let ((revision "3")
+        ;; Update together with emacs-sly.
+        (commit "6a2f543cb21f14104c2253af5a1427b884a987ae"))
     (package
       (name "sbcl-slynk-boot0")
       (version (string-append "1.0.0-beta-" revision "." (string-take commit 7)))
@@ -688,7 +689,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
            (url "https://github.com/joaotavora/sly.git")
            (commit commit)))
          (sha256
-          (base32 "13dyhsravn591p7g6is01mp2ynzjnnj7pwgi57r6xqmd4611y9vh"))
+          (base32 "0wbpg9p9yg2hd62l15pvy50fk3hndq5zzyqlyyf04g368s895144"))
          (file-name (string-append "slynk-" version "-checkout"))
          (modules '((guix build utils)
                     (ice-9 ftw)))
@@ -700,9 +701,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
                (("\\.\\./contrib")
                 "contrib")
                (("\\(defsystem :slynk/util")
-                "(defsystem :slynk/util :depends-on (:slynk)")
-               ((":depends-on \\(:slynk :slynk/util\\)")
-                ":depends-on (:slynk :slynk-util)"))
+                "(defsystem :slynk/util :depends-on (:slynk)"))
              (substitute* "contrib/slynk-trace-dialog.lisp"
                (("\\(slynk::reset-inspector\\)") ; Causes problems on load
                 "nil"))
@@ -728,7 +727,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
       (synopsis "Common Lisp IDE for Emacs")
       (description "SLY is a fork of SLIME, an IDE backend for Common Lisp.
 It also features a completely redesigned REPL based on Emacs's own
-full-featured comint.el, live code annotations, and a consistent interactive
+full-featured @code{comint-mode}, live code annotations, and a consistent interactive
 button interface.  Everything can be copied to the REPL.  One can create
 multiple inspectors with independent history.")
       (home-page "https://github.com/joaotavora/sly")
