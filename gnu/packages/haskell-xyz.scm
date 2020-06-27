@@ -13558,6 +13558,7 @@ for Unix time in Haskell.")
          "02gy1zrxgzg4xmzm8lafsf1nyr3as1q20r8ld73xg3q7rkag9acg"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: hspec-discover not in PATH
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-async" ,ghc-async)
        ("ghc-unliftio-core" ,ghc-unliftio-core)))
