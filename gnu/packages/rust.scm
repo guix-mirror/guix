@@ -420,7 +420,7 @@ test = { path = \"../libtest\" }
      `(("bison" ,bison) ; For the tests
        ("cmake" ,cmake-minimal)
        ("flex" ,flex) ; For the tests
-       ("gdb" ,gdb)   ; For the tests
+       ("gdb" ,gdb-minimal)   ; For the tests
        ("procps" ,procps) ; For the tests
        ("python-2" ,python-2)
        ("rustc-bootstrap" ,mrustc)
