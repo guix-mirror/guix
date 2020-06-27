@@ -4569,6 +4569,7 @@ and @code{withBaseCase}) or implicitly (@code{genericArbitrary'}).")
         (base32
          "160knr2phnzh2gldfv954lz029jzc7y8kz5xpmbf4z3vb5ngm6fw"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-sop-core" ,ghc-sop-core)
        ("ghc-transformers-compat" ,ghc-transformers-compat)))
