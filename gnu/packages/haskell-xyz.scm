@@ -801,6 +801,7 @@ Haskell @code{ByteString}s.")
         (base32
          "0hgvlqcr852hfp52jp99snhbj550mvxxpi8qn15d8ml9aqhyl2lr"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hspec" ,ghc-hspec)
