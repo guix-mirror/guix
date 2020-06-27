@@ -6052,6 +6052,43 @@ figure out how many times to run the code to get interesting data.")
     (home-page "https://github.com/evanphx/benchmark-ips")
     (license license:expat)))
 
+(define-public ruby-ffi-rzmq-core
+  (package
+    (name "ruby-ffi-rzmq-core")
+    (version "1.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ffi-rzmq-core" version))
+       (sha256
+        (base32
+         "0amkbvljpjfnv0jpdmz71p1i3mqbhyrnhamjn566w0c01xd64hb5"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-libzmq-search-path
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((zeromq (assoc-ref inputs "zeromq")))
+                        (substitute* "lib/ffi-rzmq-core/libzmq.rb"
+                          (("/usr/local/lib")
+                           (string-append zeromq "/lib")))
+                        #t)))
+                  (replace 'check
+                    (lambda _
+                      (invoke "rspec"))))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (inputs
+     `(("zeromq" ,zeromq)))
+    (propagated-inputs `(("ruby-ffi" ,ruby-ffi)))
+    (synopsis "Low-level Ruby FFI wrapper for the ZeroMQ networking library")
+    (description "This library only provides the FFI wrapper for the ZeroMQ
+networking library.  It can be used to implement a Ruby API for the ZeroMQ
+library.")
+    (home-page "https://github.com/chuckremes/ffi-rzmq-core")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
