@@ -3241,7 +3241,7 @@ disk space usage.")
 (define-public ghc-distributive
   (package
     (name "ghc-distributive")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
@@ -3251,7 +3251,7 @@ disk space usage.")
              ".tar.gz"))
        (sha256
         (base32
-         "1wnayzzb4vk8rhh9gzhdpd9f64366k4vmbhximavmqqmp3cv2jbp"))))
+         "1j93zkfffm6s16kgr0j0z87y5ds28rw0r2gyc5ncwcylvrqy4kl2"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tagged" ,ghc-tagged)
