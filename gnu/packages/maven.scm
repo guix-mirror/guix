@@ -2474,3 +2474,57 @@ reporting or the build process.")))
     (description "This package provides a tree-based API for resolution of
 Maven project dependencies.")
     (license license:asl2.0)))
+
+(define-public maven-file-management
+  (package
+    (name "maven-file-management")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/shared/"
+                                  "file-management-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "0wisz6sm67axrwvx8a75mb9s03h7kzkzfw8j3aaa4sx4k9ph58da"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-file-management.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes/")
+             #t))
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (invoke "java"
+                       "org.codehaus.modello.ModelloCli"
+                       file mode "src/main/java" version
+                       "false" "true"))
+             (let ((file "src/main/mdo/fileset.mdo"))
+               (modello-single-mode file "1.1.0" "java")
+               (modello-single-mode file "1.1.0" "xpp3-reader")
+               (modello-single-mode file "1.1.0" "xpp3-writer"))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-plugin-api" ,maven-3.0-plugin-api)
+       ("maven-shared-io" ,maven-shared-io)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("maven-components-parent-pom" ,maven-components-parent-pom-22)))
+    (native-inputs
+     `(("java-modello-core" ,java-modello-core)
+       ;; modello plugins:
+       ("java-modellop-plugins-java" ,java-modello-plugins-java)
+       ("java-modellop-plugins-xpp3" ,java-modello-plugins-xpp3)
+       ("unzip" ,unzip)))
+    (home-page "https://maven.apache.org/shared/maven-dependency-tree")
+    (synopsis "Tree-based API for resolution of Maven project dependencies")
+    (description "This package provides a tree-based API for resolution of
+Maven project dependencies.")
+    (license license:asl2.0)))
