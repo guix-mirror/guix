@@ -430,6 +430,26 @@ for repository system implementations and repository connectors.")))
     (description "This package contains a collection of utility classes to
 ease testing of the repository system.")))
 
+(define-public java-sonatype-aether-util
+  (package
+    (inherit java-sonatype-aether-api)
+    (name "java-sonatype-aether-util")
+    (arguments
+     `(#:jar-name "aether-util.jar"
+       #:source-dir "aether-util/src/main/java"
+       #:test-dir "aether-util/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-from-pom "aether-util/pom.xml")))))
+    (propagated-inputs
+     `(("java-sonatype-aether-api" ,java-sonatype-aether-api)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-sonatype-aether-test-util" ,java-sonatype-aether-test-util)))
+    (synopsis "Utility classes for the maven repository system")
+    (description "This package contains a collection of utility classes to
+ease usage of the repository system.")))
+
 (define-public maven-shared-utils
   (package
     (name "maven-shared-utils")
