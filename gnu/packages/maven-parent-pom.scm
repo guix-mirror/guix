@@ -446,3 +446,22 @@ tool.  This package contains the Maven parent POM.")
           `(modify-phases ,phases
              (delete 'install-plugins)
              (delete 'install-shared))))))))
+
+(define-public maven-parent-pom-22
+  (let ((base (make-maven-parent-pom
+                "22" "1kgqbyx7ckashy47n9rgyg4asyrvp933hdiknvnad7msq5d4c2jg"
+                apache-parent-pom-11)))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'install-plugins)
+             (delete 'install-shared)
+             (add-before 'install 'fix-versions
+               (lambda _
+                 (substitute* "pom.xml"
+                   (("1.5.5")
+                    ,(package-version java-plexus-component-annotations)))
+                 #t)))))))))
