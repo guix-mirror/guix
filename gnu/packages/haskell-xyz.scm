@@ -5403,6 +5403,7 @@ package are to parse or generate Haskell 98 code.")
         (base32
          "0q1y8n3d82gid9bcx8wxsqqmj9mq11fg3gp5yzpfbw958dhi3j9f"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("cpphs" ,cpphs)
        ("ghc-happy" ,ghc-happy)
