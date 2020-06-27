@@ -19,6 +19,7 @@
 (define-module (gnu packages maven-parent-pom)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
@@ -305,3 +306,26 @@ other projects as their parent pom.")
       (description "This package contains a single pom.xml file that is used by
 other projects as their parent pom.")
       (license license:asl2.0))))
+
+(define-public java-sonatype-oss-parent-pom-9
+  (hidden-package
+    (package
+      (inherit java-sonatype-oss-parent-pom-7)
+      (version "9")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://repo1.maven.org/maven2/org/sonatype/"
+                                    "oss/oss-parent/" version "/oss-parent-"
+                                    version ".pom"))
+                (sha256
+                 (base32
+                  "0yl2hbwz2kn1hll1i00ddzn8f89bfdcjwdifz0pj2j15k1gjch7v"))))
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'unpack)
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (install-pom-file (assoc-ref %build-inputs "source")))))))))
