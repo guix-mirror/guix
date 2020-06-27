@@ -132,6 +132,7 @@ MODULES =					\
   guix/build-system/haskell.scm			\
   guix/build-system/julia.scm			\
   guix/build-system/linux-module.scm		\
+  guix/build-system/maven.scm			\
   guix/build-system/node.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
@@ -181,6 +182,7 @@ MODULES =					\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
   guix/build/guile-build-system.scm		\
+  guix/build/maven-build-system.scm		\
   guix/build/node-build-system.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\

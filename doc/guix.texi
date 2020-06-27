@@ -6811,6 +6811,48 @@ uuid, the package version, and a list of dependencies specified by their name
 and their uuid.
 @end defvr
 
+@defvr {Scheme Variable} maven-build-system
+This variable is exported by @code{(guix build-system maven)}.  It implements
+a build procedure for @uref{https://maven.apache.org, Maven} packages.  Maven
+is a dependency and lifecycle management tool for Java.  A user of Maven
+specifies dependencies and plugins in a @file{pom.xml} file that Maven reads.
+When Maven does not have one of the dependencies or plugins in its repository,
+it will download them and use them to build the package.
+
+The maven build system ensures that maven will not try to download any
+dependency by running in offline mode.  Maven will fail if a dependency is
+missing.  Before running Maven, the @file{pom.xml} (and subprojects) are
+modified to specify the version of dependencies and plugins that match the
+versions available in the guix build environment.  Dependencies and plugins
+must be installed in the fake maven repository at @file{lib/m2}, and are
+symlinked into a proper repository before maven is run.  Maven is instructed
+to use that repository for the build and installs built artifacts there.
+Changed files are copied to the @file{lib/m2} directory of the package output.
+
+You can specify a @file{pom.xml} file with the @code{#:pom-file} argument,
+or let the build system use the default @file{pom.xml} file in the sources.
+
+In case you need to specify a dependency's version manually, you can use the
+@code{#:local-packages} argument.  It takes an association list where the key
+is the groupId of the package and its value is an association list where the
+key is the artifactId of the package and its value is the version you want to
+override in the @file{pom.xml}.
+
+Some packages use dependencies or plugins that are not useful at runtime nor
+at build time in Guix.  You can alter the @file{pom.xml} file to remove them
+using the @code{#:exclude} argument.  Its value is an association list where
+the key is the groupId of the plugin or dependency you want to remove, and
+the value is a list of artifactId you want to remove.
+
+You can override the default @code{jdk} and @code{maven} packages with the
+corresponding argument, @code{#:jdk} and @code{#:maven}.
+
+The @code{#:maven-plugins} argument is a list of maven plugins used during
+the build, with the same format as the @code{inputs} fields of the package
+declaration.  Its default value is @code{%default-maven-plugins} which is
+also exported.
+@end defvr
+
 @defvr {Scheme Variable} minify-build-system
 This variable is exported by @code{(guix build-system minify)}.  It
 implements a minification procedure for simple JavaScript packages.
