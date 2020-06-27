@@ -415,3 +415,8 @@ tool.  This package contains the Maven parent POM.")
   (make-maven-parent-pom
     "33" "1b0z2gsvpccgcssys9jbdfwlwq8b5imdwr508f87ssdbfs29lh65"
     apache-parent-pom-21))
+
+(define-public maven-parent-pom-30
+  (make-maven-parent-pom
+    "30" "1w463na38v2054wn1cwbfqy095z13fhil4jmn08dsa4drdvdsjdw"
+    apache-parent-pom-18))
