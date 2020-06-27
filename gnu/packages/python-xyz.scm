@@ -15512,6 +15512,52 @@ library.")
     (description
      "This is the Cython-coded accelerator module for PyOpenGL.")))
 
+(define-public python-pyopengl
+  (package
+    (name "python-pyopengl")
+    (version "3.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyOpenGL" version))
+       (sha256
+        (base32
+         "091lp9bpqi8yf1nmyg19xmvw611lrzq2q94cl1k5gnlh0c6vl1s1"))))
+    (build-system python-build-system)
+    (inputs
+     `(("mesa" ,mesa)
+       ("freeglut" ,freeglut)
+       ("glu" ,glu)))
+    (arguments
+     `(#:tests? #f ; Tests fail: AttributeError: 'GLXPlatform' object has no
+                                        ;attribute 'OSMesa'
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* '("OpenGL/platform/ctypesloader.py")
+               (("filenames_to_try = \\[\\]") "filenames_to_try = [name]"))
+             (substitute* '("OpenGL/platform/glx.py" "tests/check_glut_load.py")
+               (("'GL'")
+                (string-append "'" (assoc-ref inputs "mesa") "/lib/libGL.so'"))
+               (("'GLU'")
+                (string-append "'" (assoc-ref inputs "glu") "/lib/libGLU.so'"))
+               (("'glut',")
+                (string-append "'" (assoc-ref inputs "freeglut") "/lib/libglut.so',"))
+               (("'GLESv1_CM'")
+                (string-append "'" (assoc-ref inputs "mesa") "/lib/libGLESv1_CM.so'"))
+               (("'GLESv2'")
+                (string-append "'" (assoc-ref inputs "mesa") "/lib/libGLESv2.so'")))
+               ;; Not providing libgle. It seems to be very old.
+             #t)))))
+    (home-page "http://pyopengl.sourceforge.net")
+    (synopsis "Standard OpenGL bindings for Python")
+    (description
+     "PyOpenGL is the most common cross platform Python binding to OpenGL and
+related APIs.  The binding is created using the standard @code{ctypes}
+library.")
+    (license license:bsd-3)))
+
 (define-public python-rencode
   (package
    (name "python-rencode")
