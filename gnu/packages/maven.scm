@@ -364,6 +364,40 @@ for repositories using URI-based layouts.")))
     (description "This package contains a transport implementation based on
 Maven Wagon, for use in Maven.")))
 
+;; aether is the parent project that was forked into maven-resolver.  It used
+;; to be used with older versions of Maven, and is still required for some
+;; plugins and their dependencies.  This version is required for the plugins,
+;; even though there are newer versions of this project.
+(define-public java-sonatype-aether-api
+  (package
+    (name "java-sonatype-aether-api")
+    (version "1.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sonatype/sonatype-aether")
+                     (commit (string-append "aether-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wn9fv91n40bvlwbzy0dmh0xqibxl2mpzpnbibhqss3c0zlr1ccq"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "aether-api.jar"
+       #:source-dir "aether-api/src/main/java"
+       #:test-dir "aether-api/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'install-parent (install-pom-file "pom.xml"))
+         (replace 'install (install-from-pom "aether-api/pom.xml")))))
+    (propagated-inputs
+     `(("java-sonatype-forge-parent-pom" ,java-sonatype-forge-parent-pom-6)))
+    (native-inputs `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/sonatype/sonatype-aether")
+    (synopsis "Maven repository system API")
+    (description "This package contains the API for the maven repository system.")
+    (license license:asl2.0)))
+
 (define-public maven-shared-utils
   (package
     (name "maven-shared-utils")
