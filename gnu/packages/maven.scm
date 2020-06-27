@@ -492,6 +492,35 @@ ease usage of the repository system.")))
        ("java-plexus-component-metadata" ,java-plexus-component-metadata)
        ("java-sonatype-aether-test-util" ,java-sonatype-aether-test-util)))))
 
+;; Again, this old version is required by some maven plugins
+(define-public java-eclipse-aether-api
+  (package
+    (name "java-eclipse-aether-api")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eclipse/aether-core")
+                     (commit "aether-1.0.2.v20150114")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "14d336nn0kh5ddf23j37va3hd8gaai19llrpxhf4bcc7g7sgdqxs"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "aether-api.jar"
+       #:source-dir "aether-api/src/main/java"
+       #:test-dir "aether-api/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'install-parent (install-pom-file "pom.xml"))
+         (replace 'install (install-from-pom "aether-api/pom.xml")))))
+    (native-inputs `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/sonatype/sonatype-aether")
+    (synopsis "Maven repository system API")
+    (description "This package contains the API for the maven repository system.")
+    (license license:asl2.0)))
+
 (define-public maven-shared-utils
   (package
     (name "maven-shared-utils")
