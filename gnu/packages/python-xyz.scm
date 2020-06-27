@@ -15558,6 +15558,31 @@ related APIs.  The binding is created using the standard @code{ctypes}
 library.")
     (license license:bsd-3)))
 
+(define-public python-pyopengl-accelerate
+  (package
+    (inherit python-pyopengl)
+    (name "python-pyopengl-accelerate")
+    (version "3.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyOpenGL-accelerate" version))
+       (sha256
+        (base32
+         "01iggy5jwxv7lxnj51zbmlbhag9wcb7dvrbwgi97i90n0a5m3r8j"))))
+    (inputs
+     `(("mesa" ,mesa)
+       ("python-numpy" ,python-numpy))) ; for cython module
+                                        ; numpy_formathandler, thus not propagated
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'fix-paths))))
+    (synopsis "Acceleration code for PyOpenGL")
+    (description
+     "This is the Cython-coded accelerator module for PyOpenGL.")))
+
 (define-public python-rencode
   (package
    (name "python-rencode")
