@@ -415,6 +415,21 @@ Maven Wagon, for use in Maven.")))
     (description "This package contains the service provider interface (SPI)
 for repository system implementations and repository connectors.")))
 
+(define-public java-sonatype-aether-test-util
+  (package
+    (inherit java-sonatype-aether-api)
+    (name "java-sonatype-aether-test-util")
+    (arguments
+     `(#:jar-name "java-sonatype-aether-test-util.jar"
+       #:source-dir "aether-test-util/src/main/java"
+       #:test-dir "aether-test-util/src/test"))
+    (inputs
+     `(("java-sonatype-aether-api" ,java-sonatype-aether-api)
+       ("java-sonatype-aether-spi" ,java-sonatype-aether-spi)))
+    (synopsis "Utility classes for testing the maven repository system")
+    (description "This package contains a collection of utility classes to
+ease testing of the repository system.")))
+
 (define-public maven-shared-utils
   (package
     (name "maven-shared-utils")
