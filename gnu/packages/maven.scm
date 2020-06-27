@@ -2280,3 +2280,100 @@ reporting or the build process.")))
        ("maven-pom" ,maven-3.0-pom)))
     (native-inputs
      `(("java-plexus-component-metadata" ,java-plexus-component-metadata)))))
+
+(define-public maven-3.0-core
+  (package
+    (inherit maven-core)
+    (version (package-version maven-3.0-pom))
+    (source (package-source maven-3.0-pom))
+    (arguments
+     `(#:jar-name "maven-core.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             ;; Required for generating components.xml in maven-core
+             (chdir "maven-core")
+             #t))
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (invoke "java" "org.codehaus.modello.ModelloCli"
+                       file mode "src/main/java" version
+                       "false" "true" "UTF-8"))
+             (let ((file "src/main/mdo/toolchains.mdo"))
+               (modello-single-mode file "1.0.0" "java")
+               (modello-single-mode file "1.0.0" "xpp3-reader")
+               (modello-single-mode file "1.0.0" "xpp3-writer"))
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/")
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (define (components file)
+               (let ((sxml (with-input-from-file file
+                             (lambda _ (xml->sxml (current-input-port)
+                                                  #:trim-whitespace? #t)))))
+                 ;; Select the list of <component>s inside the <component-set>
+                 ;; and <components>.
+                 ((@ (ice-9 match) match) sxml
+                  (('*TOP*
+                    ('*PI* foo ...)
+                    ('component-set
+                     ('components x ...))) x))))
+             (use-modules (sxml simple))
+             (delete-file "build/classes/META-INF/plexus/components.xml")
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "build/classes/META-INF/plexus"
+                     "--output" "build/classes/META-INF/plexus/components.t.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes")
+             ;; Now we merge all other components from hand-written xml
+             (let ((generated-xml (components "build/classes/META-INF/plexus/components.t.xml"))
+                   (components-xml (components "src/main/resources/META-INF/plexus/components.xml"))
+                   (artifact-handlers-xml (components "src/main/resources/META-INF/plexus/artifact-handlers.xml")))
+               (with-output-to-file "build/classes/META-INF/plexus/components.xml"
+                 (lambda _
+                   (display "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+                   (sxml->xml
+                     `(component-set
+                        (components
+                          ,@(append generated-xml components-xml
+                                    artifact-handlers-xml)))))))
+             #t))
+         (add-after 'generate-metadata 'rebuild
+           (lambda _
+             (invoke "ant" "jar")
+             #t))
+         (add-before 'install 'fix-pom
+           (lambda _
+             (substitute* "pom.xml"
+               (("org.sonatype.sisu") "org.codehaus.plexus")
+               (("sisu-inject-plexus") "plexus-container-default"))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-model" ,maven-3.0-model)
+       ("maven-settings" ,maven-3.0-settings)
+       ("maven-settings-builder" ,maven-3.0-settings-builder)
+       ("maven-repository-metadata" ,maven-3.0-repository-metadata)
+       ("maven-artifact" ,maven-3.0-artifact)
+       ("maven-model-builder" ,maven-3.0-model-builder)
+       ("maven-aether-provider" ,maven-3.0-aether-provider)
+       ("java-sonatype-aether-impl" ,java-sonatype-aether-impl)
+       ("java-sonatype-aether-api" ,java-sonatype-aether-api)
+       ("java-sonatype-aether-util" ,java-sonatype-aether-util)
+       ("java-plexus-interpolation" ,java-plexus-interpolation)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
+       ("maven-pom" ,maven-3.0-pom)))))
