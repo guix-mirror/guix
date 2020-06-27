@@ -531,3 +531,15 @@ tool.  This package contains the Maven parent POM.")
       (description "This package contains the parent pom files for maven shared
 components.")
       (license license:lgpl2.1+))))
+
+(define-public maven-components-parent-pom-21
+  (package
+    (inherit maven-components-parent-pom-22)
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/org/apache/"
+                                  "maven/shared/maven-shared-components/21/"
+                                  "maven-shared-components-21.pom"))
+              (sha256
+               (base32
+                "0cqa072fz55j5xyvixqv8vbd7jsbhb1cd14bzjvm0hbv2wpd9npf"))))))
