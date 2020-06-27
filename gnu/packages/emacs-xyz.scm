@@ -8235,8 +8235,9 @@ CIDER).")
 ;; There hasn't been a tag or release since 2016, so we take the latest
 ;; commit.
 (define-public emacs-sly
-  (let ((commit "86a63df73360be51529806c7ed9b775b3f02284d")
-        (revision "4"))
+  (let ((commit "6a2f543cb21f14104c2253af5a1427b884a987ae")
+        ;; Update together with sbcl-slynk-boot0.
+        (revision "5"))
     (package
       (name "emacs-sly")
       (version (git-version "1.0.0" revision commit))
@@ -8249,7 +8250,7 @@ CIDER).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0sx6fdckcfcld41db0695svvlvllnfaazwx513686gnykwfd209n"))))
+           "0wbpg9p9yg2hd62l15pvy50fk3hndq5zzyqlyyf04g368s895144"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)))
