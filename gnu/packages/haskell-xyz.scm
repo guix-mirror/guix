@@ -7924,6 +7924,7 @@ the @code{mtl-tf} package.")
         (base32
          "1bqy982lpdb83lacfy76n8kqw5bvd31avxj25kg8gkgycdh0g0ma"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
               ("ghc-hashable" ,ghc-hashable)
               ("ghc-vector" ,ghc-vector)
