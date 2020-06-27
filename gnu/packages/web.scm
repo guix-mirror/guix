@@ -5041,8 +5041,7 @@ written in C.  It is developed as part of the NetSurf project.")
     (inputs
      `(("libyaml" ,libyaml)))
     (native-inputs
-     `(("git", git)
-       ("pkg-config", pkg-config)))
+     `(("pkg-config", pkg-config)))
     (synopsis "C library for reading and writing YAML")
     (description
      "LibCYAML is a C library written in ISO C11 for reading and writing
