@@ -3380,3 +3380,26 @@ POM in Apache Maven Surefire project.")))
        ("java-fest-assert" ,java-fest-assert)))
     (synopsis "Shared JUnit3 provider code for Maven SureFire")
     (description "This package contains shared code for all JUnit providers.")))
+
+(define-public java-surefire-common-junit4
+  (package
+    (inherit java-surefire-logger-api)
+    (name "java-surefire-common-junit4")
+    (arguments
+     `(#:jar-name "java-surefire-common-junit4.jar"
+       #:source-dir "surefire-providers/common-junit4/src/main/java"
+       #:tests? #f; tests require junit 4.0
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "surefire-providers/common-junit4/pom.xml")))))
+    (propagated-inputs
+     `(("java-junit" ,java-junit)
+       ("java-surefire-api" ,java-surefire-api)
+       ("java-surefire-common-java5" ,java-surefire-common-java5)
+       ("java-surefire-common-junit3" ,java-surefire-common-junit3)
+       ("maven-shared-utils" ,maven-shared-utils-3.1)
+       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+    (synopsis "Shared JUnit4 provider code for Maven SureFire")
+    (description "This package contains shared code for all JUnit providers,
+starting from JUnit 4.")))
