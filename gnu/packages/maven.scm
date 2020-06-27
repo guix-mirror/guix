@@ -3185,3 +3185,69 @@ internal to the SureFire Logger API.  It is designed to have no dependency.")
            (install-pom-file "pom.xml")))))
     (propagated-inputs
      `(("maven-parent-pom" ,maven-parent-pom-33)))))
+
+(define-public java-surefire-api
+  (package
+    (inherit java-surefire-logger-api)
+    (name "java-surefire-api")
+    (arguments
+     `(#:tests? #f
+       #:jar-name "java-surefire-api.jar"
+       #:source-dir "surefire-api/src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes")
+             (copy-recursively "surefire-api/src/main/resources" "build/classes")
+             #t))
+         (add-before 'build 'prepare-shade
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "build/classes")
+             (with-directory-excursion "build/classes"
+               (for-each
+                 (lambda (input)
+                   (for-each
+                     (lambda (jar-file)
+                       (invoke "jar" "xf" jar-file)
+                       (delete-file-recursively "META-INF"))
+                     (find-files (assoc-ref inputs input) ".*.jar$")))
+                 '("maven-shared-utils" "java-commons-codec")))
+             #t))
+         (add-after 'build 'shade
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jarjar
+                   (car (find-files (assoc-ref inputs "java-jarjar") ".*.jar$")))
+                   (injar "java-surefire-api.jar")
+                   (outjar "java-surefire-api-shaded.jar"))
+               (with-directory-excursion "build/jar"
+                 (with-output-to-file "rules"
+                   (lambda _
+                     (format #t (string-append
+                                  "rule "
+                                  "org.apache.maven.shared.utils.** "
+                                  "org.apache.maven.surefire.shade.api."
+                                  "org.apache.maven.shared.utils.@1~%"))
+                     (format #t (string-append
+                                  "rule "
+                                  "org.apache.commons.codec.** "
+                                  "org.apache.maven.surefire.shade.api."
+                                  "org.apache.commons.codec.@1~%"))))
+                 (invoke "java" "-jar" jarjar "process" "rules" injar outjar)
+                 (delete-file injar)
+                 (rename-file outjar injar)))
+             #t))
+         (replace 'install
+           (install-from-pom "surefire-api/pom.xml")))))
+    (propagated-inputs
+     `(("java-surefire-logger-api" ,java-surefire-logger-api)
+       ("java-commons-codec" ,java-commons-codec)
+       ("java-surefire-parent-pom" ,java-surefire-parent-pom)
+       ("maven-shared-utils" ,maven-shared-utils-3.1)))
+    (inputs
+     `(("java-jsr305" ,java-jsr305)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-jarjar" ,java-jarjar)))
+    (synopsis "Maven SureFire API")
+    (description "This package contains the API to use Maven SureFire.")))
