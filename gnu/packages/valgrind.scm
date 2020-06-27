@@ -33,7 +33,9 @@
 (define-public valgrind
   (package
     (name "valgrind")
-    (version "3.15.0")
+    ;; Note: check "guix refresh -l -e '(@ (gnu packages valgrind) valgrind)'"
+    ;; when updating this package to find which branch it should go to.
+    (version "3.16.1")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://sourceware.org/pub/valgrind"
@@ -42,7 +44,7 @@
                                         "/valgrind-" version ".tar.bz2")))
               (sha256
                (base32
-                "1ccawxrni8brcvwhygy12iprkvz409hbr9xkk1bd03gnm2fplz21"))
+                "1jik19rcd34ip8a5c9nv5wfj8k8maqb8cyclr4xhznq2gcpkl7y9"))
               (patches (search-patches "valgrind-enable-arm.patch"))))
     (build-system gnu-build-system)
     (outputs '("doc"                              ;16 MB
