@@ -2268,6 +2268,7 @@ concurrent threads.  Can be used for progress displays etc.")
                (base32
                 "18izjgff4pmrknc8py06yvg3g6x27nx0rzmlwjxcflwm5v4szpw4"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
        ("ghc-lifted-base" ,ghc-lifted-base)
