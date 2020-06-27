@@ -6118,6 +6118,27 @@ for FFI.")
     (home-page "https://github.com/chuckremes/ffi-rzmq")
     (license license:expat)))
 
+(define-public ruby-sawyer
+  (package
+    (name "ruby-sawyer")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sawyer" version))
+       (sha256
+        (base32
+         "0yrdchs3psh583rjapkv33mljdivggqn99wkydkjdckcjn43j3cz"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-addressable" ,ruby-addressable)
+       ("ruby-faraday" ,ruby-faraday)))
+    (synopsis "Experimental hypermedia agent for Ruby")
+    (description "Sawyer is an experimental hypermedia agent for Ruby built on
+top of Faraday.")
+    (home-page "https://github.com/lostisland/sawyer")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
