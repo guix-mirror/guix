@@ -4571,7 +4571,9 @@ which behaves as if all files were just created.</description>\n
     </component>\n
   </components>\n
 </component-set>\n")))
-             #t)))))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (inputs
      `(("java-plexus-utils" ,java-plexus-utils)
        ("java-plexus-container-default" ,java-plexus-container-default)))

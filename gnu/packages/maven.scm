@@ -2896,3 +2896,77 @@ build are stored.  By default, it is located within the user's home directory
 (@file{~/.m2/repository}) but the location can be configured in
 @file{~/.m2/settings.xml} using the @code{<localRepository>} element.")
     (license license:asl2.0)))
+
+(define-public maven-filtering
+  (package
+    (name "maven-filtering")
+    (version "3.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/maven/"
+                                  "shared/maven-filtering-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "09wrdhchnszd2l6h4z30ra0bv1a19qyjgac9z8zf1pn0m4nw05yz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-filtering.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       ;; this test comes from sisu-build-api, not this package
+       #:test-exclude (list "**/IncrementalResourceFilteringTest.java"
+                            "**/Abstract*.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             #t))
+         (add-after 'generate-metadata 'rebuild
+           (lambda _
+             (invoke "ant" "jar")
+             #t))
+         (add-before 'check 'decompress-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((build-api-source (assoc-ref inputs "java-sisu-build-api-origin"))
+                    (classes (string-append build-api-source "/src/test/java")))
+               (copy-recursively classes "src/test/"))
+             #t))
+         (add-before 'check 'fix-directory
+           (lambda _
+             (substitute* (find-files "src/test" ".*.java$")
+               (("target/test-classes/") "build/test-classes/"))))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "src/test/resources" "build/test-classes/")
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-core" ,maven-3.0-core)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-interpolation" ,java-plexus-interpolation)
+       ("java-sisu-build-api" ,java-sisu-build-api)
+       ("maven-parent-pom" ,maven-parent-pom-30)))
+    (inputs
+     `(("java-jsr305" ,java-jsr305)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-assertj" ,java-assertj)
+       ("java-junit" ,java-junit)
+       ("java-mockito" ,java-mockito-1)
+       ("java-objenesis" ,java-objenesis)
+       ("java-plexus-component-metadata" ,java-plexus-component-metadata)
+       ("java-sisu-build-api-origin" ,(package-source java-sisu-build-api))))
+    (home-page "https://maven.apache.org/shared/maven-filtering")
+    (synopsis "Shared component for all plugins that needs to filter resources")
+    (description "This component provides an API to filter resources in Maven
+projects.")
+    (license license:asl2.0)))
