@@ -210,6 +210,8 @@ encoding, supporting Unicode version 9.0.0.")
        (sha256
         (base32 "043hqqykpprgrkw9s2hbdlxr308a7yxwsgxj4m8aadg1401hmm8x"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (home-page "https://github.com/martinh/libconfuse")
     (synopsis "Configuration file parser library")
     (description "libconfuse is a configuration file parser library.  It
