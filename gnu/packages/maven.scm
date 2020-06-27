@@ -2836,3 +2836,63 @@ Maven project dependencies.")
     (description "This package contains an API to install, deploy and resolve
 artifacts in Maven 3.")
     (license license:asl2.0)))
+
+(define-public maven-install-plugin
+  (package
+    (name "maven-install-plugin")
+    (version "3.0.0-M1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/plugins/"
+                                  "maven-install-plugin-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "1l9iydxririrair0i5sk2iypn9wspzbb666lc0ddg20yyr8w39dm"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; require maven-plugin-testing-harness
+       #:jar-name "maven-install-plugin.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-pom
+           (lambda _
+             (substitute* "pom.xml"
+               (("maven-project") "maven-core")
+               (("maven-artifact-manager") "maven-artifact")
+               (("2.0.6") "3.0"))
+             #t))
+         (add-before 'build 'generate-plugin.xml
+           (generate-plugin.xml "pom.xml"
+             "install"
+             "src/main/java/org/apache/maven/plugins/install"
+             (list
+               (list "AbstractInstallMojo.java" "InstallFileMojo.java")
+               (list "AbstractInstallMojo.java" "InstallMojo.java"))))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-artifact" ,maven-artifact)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("maven-compat" ,maven-compat)
+       ("maven-artifact-transfer" ,maven-artifact-transfer)
+       ("maven-plugins-pom-23" ,maven-plugins-pom-23)
+       ("java-plexus-digest" ,java-plexus-digest)))
+    (inputs
+     `(("maven-plugin-annotations" ,maven-plugin-annotations)
+       ("java-slf4j-api" ,java-slf4j-api)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://maven.apache.org/plugin/maven-install-plugin")
+    (synopsis "Maven's install plugin")
+    (description "The Install Plugin is used during the install phase to add
+artifact(s) to the local repository.  The Install Plugin uses the information
+in the POM (groupId, artifactId, version) to determine the proper location for
+the artifact within the local repository.
+
+The local repository is the local cache where all artifacts needed for the
+build are stored.  By default, it is located within the user's home directory
+(@file{~/.m2/repository}) but the location can be configured in
+@file{~/.m2/settings.xml} using the @code{<localRepository>} element.")
+    (license license:asl2.0)))
