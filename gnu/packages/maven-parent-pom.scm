@@ -50,6 +50,10 @@
       (description "This package contains the Apache parent POM.")
       (license license:asl2.0))))
 
+(define-public apache-parent-pom-6
+  (make-apache-parent-pom
+    "6" "1bq0ma2ya2cnp2icd4l20sv6y7zxqr9sa35wzv1s49nqsrm38kw3"))
+
 (define-public apache-parent-pom-13
   (make-apache-parent-pom
     "13" "1cfxaz1jy8fbn06sb648qpiq23swpbj3kb5ya7f9g9jmya5fy09z"))
