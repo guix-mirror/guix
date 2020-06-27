@@ -576,6 +576,29 @@ ease testing of the repository system.")))
     (description "This package contains a collection of utility classes to
 ease usage of the repository system.")))
 
+(define-public java-eclipse-aether-impl
+  (package
+    (inherit java-eclipse-aether-api)
+    (name "java-eclipse-aether-impl")
+    (arguments
+     `(#:jar-name "aether-impl.jar"
+       #:source-dir "aether-impl/src/main/java"
+       #:test-dir "aether-impl/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-from-pom "aether-impl/pom.xml")))))
+    (propagated-inputs
+     `(("java-eclipse-aether-api" ,java-eclipse-aether-api)
+       ("java-eclipse-aether-spi" ,java-eclipse-aether-spi)
+       ("java-eclipse-aether-util" ,java-eclipse-aether-util)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-guice" ,java-guice)
+       ("java-slf4j-api" ,java-slf4j-api)))
+    (native-inputs
+     `(("java-eclipse-aether-test-util" ,java-eclipse-aether-test-util)
+       ("java-junit" ,java-junit)))))
+
 (define-public maven-shared-utils
   (package
     (name "maven-shared-utils")
