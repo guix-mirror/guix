@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Danjela Lura <danielaluraa@gmail.com>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
+;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22372,3 +22373,26 @@ using @dfn{SHAP} (Shapley additive explanation) visualization plots for
 and force plot.  It relies on the @code{XGBoost} package to produce SHAP
 values.")
     (license license:expat)))
+
+(define-public r-rismed
+  (package
+    (name "r-rismed")
+    (version "2.1.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "RISmed" version))
+        (sha256
+          (base32
+            "08dmkkxsmwp9b4h2g1bbx03cijn793fsnzkmbima8x9d42vxnm1l"))))
+    (properties `((upstream-name . "RISmed")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/RISmed")
+    (synopsis "Download content from NCBI databases")
+    (description
+      "This package provides a set of tools to extract bibliographic
+content from the National Center for Biotechnology Information (NCBI)
+databases, including PubMed.  The name RISmed is a portmanteau of
+RIS (for Research Information Systems, a common tag format for
+bibliographic data) and PubMed.")
+    (license license:gpl2+)))
