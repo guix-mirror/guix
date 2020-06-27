@@ -22396,3 +22396,29 @@ databases, including PubMed.  The name RISmed is a portmanteau of
 RIS (for Research Information Systems, a common tag format for
 bibliographic data) and PubMed.")
     (license license:gpl2+)))
+
+(define-public r-semver
+  (package
+    (name "r-semver")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "semver" version))
+        (sha256
+          (base32
+            "10wpkyms2cix3bsin2q0qhkbl445pwwpa5gm2s4jjw1989namkxy"))))
+    (properties `((upstream-name . "semver")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-assertthat" ,r-assertthat)
+        ("r-rcpp" ,r-rcpp)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/johndharrison/semver")
+    (synopsis "Parser for Semantic Versioning 2.0.0")
+    (description
+      "This package provides tools and functions for parsing, rendering and
+operating on semantic version strings.  Semantic versioning is a simple set of
+rules and requirements that dictate how version numbers are assigned and
+incremented as outlined at @url{http://semver.org}.")
+    (license license:expat)))
