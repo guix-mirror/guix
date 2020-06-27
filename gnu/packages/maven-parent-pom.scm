@@ -369,3 +369,7 @@ other projects as their parent pom.")
   (make-plexus-parent-pom
     "4.0" "15xbvc3cqhdkli8sj2l4hqkvk6icikbj182fbm86ixkamjh5lyfk"
     java-sonatype-forge-parent-pom-10))
+
+(define-public plexus-parent-pom-5.1
+  (make-plexus-parent-pom
+    "5.1" "1mb87adzyv8lilzd6sw40j5000vhib2p0lgf9zzgggpkh79ddm8v"))
