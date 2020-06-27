@@ -3034,3 +3034,71 @@ unit tests.")
     (description "This package contains various utility classes and plexus
 components for supporting incremental build functionality in maven plugins.")
     (license license:asl2.0)))
+
+(define-public maven-compiler-plugin
+  (package
+    (name "maven-compiler-plugin")
+    (version "3.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/apache/"
+                                  "maven-compiler-plugin/archive/"
+                                  "maven-compiler-plugin-" version ".tar.gz"))
+              (sha256
+               (base32
+                "018d9qwc4cd6k7a8kvhvxjmzbzd2ifdf7m36wqjfq42010js1mv1"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-compiler-plugin.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:tests? #f; test depends on maven-plugin-test-harness
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-plugin.xml
+           (generate-plugin.xml "pom.xml"
+             "compiler"
+             "src/main/java/org/apache/maven/plugin/compiler"
+             (list
+               (list "AbstractCompilerMojo.java" "CompilerMojo.java")
+               (list "AbstractCompilerMojo.java" "TestCompilerMojo.java"))))
+         (add-after 'generate-plugin.xml 'fix-plugin.xml
+           (lambda _
+             (substitute* "build/classes/META-INF/maven/plugin.xml"
+               ;; These are defined in AbstractCompilerMojo.java, but not
+               ;; parsed correctly in the previous phase
+               (("DEFAULT_TARGET") "1.6")
+               (("DEFAULT_SOURCE") "1.6"))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-plugin-api" ,maven-plugin-api)
+       ("maven-artifact" ,maven-artifact)
+       ("maven-core" ,maven-core)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("maven-shared-incremental" ,maven-shared-incremental)
+       ("java-plexus-java" ,java-plexus-java)
+       ("java-plexus-compiler-api" ,java-plexus-compiler-api)
+       ("java-plexus-compiler-manager" ,java-plexus-compiler-manager)
+       ("java-plexus-compiler-javac" ,java-plexus-compiler-javac)
+       ("maven-parent-pom" ,maven-parent-pom-33)))
+    (inputs
+     `(("maven-plugin-annotations" ,maven-plugin-annotations)
+       ("java-commons-io" ,java-commons-io)))
+    (home-page "https://maven.apache.org/plugins/maven-compiler-plugin")
+    (synopsis "Compiler plugin for Maven")
+    (description "The Compiler Plugin is used to compile the sources of your
+project.  Since 3.0, the default compiler is @code{javax.tools.JavaCompiler}
+(if you are using java 1.6) and is used to compile Java sources.  If you want
+to force the plugin using javac, you must configure the plugin option
+@code{forceJavacCompilerUse}.
+
+Also note that at present the default source setting is 1.6 and the default
+target setting is 1.6, independently of the JDK you run Maven with.  You are
+highly encouraged to change these defaults by setting source and target as
+described in Setting the -source and -target of the Java Compiler.
+
+Other compilers than javac can be used and work has already started on
+AspectJ, .NET, and C#.")
+    (license license:asl2.0)))
