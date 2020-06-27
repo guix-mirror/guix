@@ -2229,3 +2229,16 @@ reporting or the build process.")))
     (native-inputs
      `(("java-plexus-container-default" ,java-plexus-container-default)
        ,@(package-native-inputs maven-plugin-api)))))
+
+(define-public maven-3.0-repository-metadata
+  (package
+    (inherit maven-repository-metadata)
+    (version (package-version maven-3.0-pom))
+    (source (package-source maven-3.0-pom))
+    (propagated-inputs
+      (map
+        (lambda (input)
+          (if (equal? (car input) "maven-pom")
+              `("maven-pom" ,maven-3.0-pom)
+              input))
+        (package-propagated-inputs maven-repository-metadata)))))
