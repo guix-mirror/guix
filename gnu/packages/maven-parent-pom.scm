@@ -500,3 +500,34 @@ tool.  This package contains the Maven parent POM.")
       (synopsis "Maven parent pom for maven plugins projects")
       (description "This package contains the parent pom for maven plugins.")
       (license license:asl2.0))))
+
+(define-public maven-components-parent-pom-22
+  (hidden-package
+    (package
+      (name "maven-components-parent-pom")
+      (version "22")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://repo1.maven.org/maven2/org/apache/"
+                                    "maven/shared/maven-shared-components/22/"
+                                    "maven-shared-components-22.pom"))
+                (sha256
+                 (base32
+                  "11skhrjgrrs6z5rw1w39ap1pzhrc99g0czip10kz7wsavg746ibm"))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'unpack)
+           (delete 'build)
+           (delete 'configure)
+           (replace 'install
+             (install-pom-file (assoc-ref %build-inputs "source"))))))
+      (propagated-inputs
+       `(("maven-parent-pom-27" ,maven-parent-pom-27)))
+      (home-page "https://apache.org/maven")
+      (synopsis "Parent pom file for the maven components")
+      (description "This package contains the parent pom files for maven shared
+components.")
+      (license license:lgpl2.1+))))
