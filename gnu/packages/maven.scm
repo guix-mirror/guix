@@ -2430,3 +2430,47 @@ reporting or the build process.")))
      `(("maven-core" ,maven-3.0-core)
        ("maven-components-parent-pom" ,maven-components-parent-pom-21)
        ,@(package-propagated-inputs maven-shared-utils)))))
+
+(define-public maven-shared-io
+  (package
+    (name "maven-shared-io")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/shared/"
+                                  "maven-shared-io-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "0hsyll8gg581802xhs4achdz8fpmfz7y02abx9s4mb8bc6yfh229"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-shared-io.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes/")
+             (copy-recursively "src/test/resources" "build/test-classes/")
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("maven-artifact" ,maven-3.0-artifact)
+       ("maven-compat" ,maven-3.0-compat)
+       ("maven-plugin-api" ,maven-3.0-plugin-api)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("maven-wagon-provider-api" ,maven-wagon-provider-api)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("maven-components-parent-pom" ,maven-components-parent-pom-22)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-junit" ,java-junit)
+       ("java-easymock" ,java-easymock)))
+    (home-page "https://maven.apache.org/shared/maven-dependency-tree")
+    (synopsis "Tree-based API for resolution of Maven project dependencies")
+    (description "This package provides a tree-based API for resolution of
+Maven project dependencies.")
+    (license license:asl2.0)))
