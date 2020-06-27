@@ -2150,3 +2150,16 @@ reporting or the build process.")))
     (inputs
       `(("maven-source" ,(package-source maven-pom))
         ,@(package-inputs maven-model)))))
+
+(define-public maven-3.0-settings
+  (package
+    (inherit maven-settings)
+    (version (package-version maven-3.0-pom))
+    (source (package-source maven-3.0-pom))
+    (propagated-inputs
+      (map
+        (lambda (input)
+          (if (equal? (car input) "maven-pom")
+              `("maven-pom" ,maven-3.0-pom)
+              input))
+        (package-propagated-inputs maven-settings)))))
