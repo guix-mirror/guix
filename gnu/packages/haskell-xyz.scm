@@ -10469,6 +10469,7 @@ normal mtl transformers.")
         (base32
          "1jbqif6k249rkknm2zwk8v8jil3kgi9ar53358v8l4ffx346rm82"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-rebase" ,ghc-rebase)))
     (home-page "https://github.com/nikita-volkov/rerebase")
