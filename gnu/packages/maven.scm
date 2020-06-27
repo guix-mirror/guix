@@ -2406,6 +2406,18 @@ reporting or the build process.")))
        ("maven-components-parent-pom" ,maven-components-parent-pom-21)
        ,@(package-propagated-inputs maven-shared-utils)))))
 
+(define-public maven-shared-utils-3.1
+  (package
+    (inherit maven-shared-utils)
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/maven/shared/"
+                                  "maven-shared-utils-" version "-source-release.zip"))
+              (sha256
+               (base32
+                "0vfaas4g09ch0agrd1dcxcmhdd3w971ssvfr9mx9gi2lp5nv8w66"))))))
+
 (define-public maven-shared-io
   (package
     (name "maven-shared-io")
