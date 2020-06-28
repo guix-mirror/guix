@@ -23420,3 +23420,24 @@ Kaplan-Meier estimator, namely: Petos CI, Rothman CI, CIs based on Greenwoods
 variance, Thomas and Grunkemeier CI and the simultaneous confidence bands by
 Nair and Hall and Wellner.")
     (license license:gpl2+)))
+
+(define-public r-kmsurv
+  (package
+    (name "r-kmsurv")
+    (version "0.1-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "KMsurv" version))
+       (sha256
+        (base32
+         "0hi5vvk584rl70gbrr75w9hc775xmbxnaig0dd6hlpi4071pnqjm"))))
+    (properties `((upstream-name . "KMsurv")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/KMsurv/")
+    (synopsis "Data sets from Klein and Moeschberger (1997), Survival Analysis")
+    (description
+     "This package provides data sets and functions for Klein and Moeschberger
+(1997), \"Survival Analysis, Techniques for Censored and Truncated Data\",
+Springer.")
+    (license license:gpl3+)))
