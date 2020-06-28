@@ -3848,6 +3848,27 @@ intrinsics.")
      "This package provides a crate for demangling C++ symbols.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cpuid-bool-0.1
+  (package
+    (name "rust-cpuid-bool")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cpuid-bool" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1r3v22cxly1shvw8qi0153708kggdqvh8jp0g82wbxi06d1mqdvd"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Lightweight alternative to is_x86_feature_detected")
+    (description
+     "This package provides a lightweight @code{no-std} compatible alternative
+to @code{is_x86_feature_detected}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crates-index-0.13
   (package
     (name "rust-crates-index")
