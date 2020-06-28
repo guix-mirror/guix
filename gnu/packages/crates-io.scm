@@ -10164,7 +10164,7 @@ or response body.")
        #:cargo-inputs
        ;; Haven't packaged rustls and webpki because of license
        (("rust-native-tls" ,rust-native-tls-0.2)
-        ("rust-unicase" ,rust-unicase-2.6))))
+        ("rust-unicase" ,rust-unicase-2))))
     (home-page "https://github.com/jayjamesjay/http_req")
     (synopsis
      "HTTP client with built-in HTTPS support")
@@ -16380,7 +16380,7 @@ function data structures.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-siphasher" ,rust-siphasher-0.3)
-        ("rust-unicase" ,rust-unicase-2.6))))
+        ("rust-unicase" ,rust-unicase-2))))
     (home-page "https://github.com/sfackler/rust-phf")
     (synopsis "Support code shared by PHF libraries")
     (description
@@ -17653,7 +17653,7 @@ stack pointer and inspect the properties of the stack.")
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-getopts" ,rust-getopts-0.2)
         ("rust-memchr" ,rust-memchr-2.2)
-        ("rust-unicase" ,rust-unicase-2.6))
+        ("rust-unicase" ,rust-unicase-2))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-html5ever" ,rust-html5ever-0.23)
@@ -19534,7 +19534,7 @@ console applications.")
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-tempdir" ,rust-tempdir-0.3)
-        ("rust-unicase" ,rust-unicase-2.6)
+        ("rust-unicase" ,rust-unicase-2)
         ("rust-uuid" ,rust-uuid-0.7))))
     (home-page "https://github.com/rusqlite/rusqlite")
     (synopsis "Wrapper for SQLite")
@@ -25537,7 +25537,7 @@ with the Unicode character database.")
      "Unchecked indexing wrapper using regular index syntax.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-unicase-2.6
+(define-public rust-unicase-2
   (package
     (name "rust-unicase")
     (version "2.6.0")
@@ -25563,7 +25563,7 @@ with the Unicode character database.")
 
 (define-public rust-unicase-1
   (package
-    (inherit rust-unicase-2.6)
+    (inherit rust-unicase-2)
     (name "rust-unicase")
     (version "1.4.2")
     (source
