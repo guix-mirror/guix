@@ -28336,3 +28336,29 @@ indicator, a quantitative variable or a survival time.")
 differential expression analysis, RNAseq data and related problems.")
     ;; Any version of the LGPL
     (license license:lgpl3+)))
+
+(define-public r-randomforestsrc
+  (package
+    (name "r-randomforestsrc")
+    (version "2.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "randomForestSRC" version))
+       (sha256
+        (base32
+         "05ifvj49jv0n5p6k46milpgj9r10sc5aw23fypyyibdgwpwvwixw"))))
+    (properties
+     `((upstream-name . "randomForestSRC")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/randomForestSRC/")
+    (synopsis "Random forests for survival, regression, and classification")
+    (description
+     "This package implements fast OpenMP parallel computing of Breiman's
+random forests for survival, competing risks, regression and classification
+based on Ishwaran and Kogalur's popular random survival forests (RSF) package.
+It handles missing data and now includes multivariate, unsupervised forests,
+quantile regression and solutions for class imbalanced data.  It provides a
+fast interface using subsampling and confidence regions for variable
+importance.")
+    (license license:gpl3+)))
