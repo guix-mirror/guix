@@ -121,6 +121,7 @@
             file-hyperlink
             location->hyperlink
 
+            with-paginated-output-port
             relevance
             package-relevance
             display-search-results

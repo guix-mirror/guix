@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -231,7 +231,8 @@ List the current Guix sessions and their processes."))
                 cons
                 '()))
 
-  (for-each (lambda (session)
-              (daemon-session->recutils session (current-output-port))
-              (newline))
-            (daemon-sessions)))
+  (with-paginated-output-port port
+    (for-each (lambda (session)
+                (daemon-session->recutils session port)
+                (newline port))
+              (daemon-sessions))))
