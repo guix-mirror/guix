@@ -9935,8 +9935,38 @@ compile time.")
      `(#:cargo-inputs
        (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.4))))))
 
+(define-public rust-hmac-0.8
+  (package
+    (name "rust-hmac")
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hmac" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0h48wc7iysh4xd6ci4prh8bb7nszijrh9w3blaaq8a6cilk8hs0j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.8)
+        ("rust-digest" ,rust-digest-0.9))
+       #:cargo-development-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.8)
+        ("rust-md-5" ,rust-md-5-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))))
+    (home-page "https://github.com/RustCrypto/MACs")
+    (synopsis "Generic implementation of Hash-based Message Authentication Code")
+    (description
+     "This package provides a generic implementation of @acronym{HMAC,
+Hash-based Message Authentication Code}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hmac-0.7
   (package
+    (inherit rust-hmac-0.8)
     (name "rust-hmac")
     (version "0.7.1")
     (source
@@ -9948,7 +9978,6 @@ compile time.")
         (sha256
          (base32
           "15cnwpssp2n1kdm9x7abir67f2hp3q6rdfj1mcck3hm4rmj5xjsx"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-crypto-mac" ,rust-crypto-mac-0.7)
@@ -9956,13 +9985,7 @@ compile time.")
        #:cargo-development-inputs
        (("rust-crypto-mac" ,rust-crypto-mac-0.7)
         ("rust-md-5" ,rust-md-5-0.8)
-        ("rust-sha2" ,rust-sha2-0.8))))
-    (home-page "https://github.com/RustCrypto/MACs")
-    (synopsis "Generic implementation of Hash-based Message Authentication Code")
-    (description
-     "This package provides a generic implementation of @acronym{HMAC,
-Hash-based Message Authentication Code}.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-sha2" ,rust-sha2-0.8))))))
 
 (define-public rust-hostname-0.1
   (package
