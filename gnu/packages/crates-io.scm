@@ -1891,8 +1891,7 @@ extension of blocks.")
         (base32
          "02fz9wx5dmgpc79ndrb9xfxqlrkk7lg5wki2blz2zqg27spw6kbd"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-byte-tools" ,rust-byte-tools-0.3))))))
 
 (define-public rust-bresenham-0.1
