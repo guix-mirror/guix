@@ -22686,3 +22686,49 @@ regression, time series, binary classification, classification, and
 information retrieval problems.  It has zero dependencies and a consistent,
 simple interface for all functions.")
     (license license:bsd-3)))
+
+(define-public r-iml
+  (package
+    (name "r-iml")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "iml" version))
+       (sha256
+        (base32
+         "0xm3q42qahq798ilgg050df0mahhbdfd3fx3i7cpx606h38si0x7"))))
+    (properties `((upstream-name . "iml")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
+       ("r-formula" ,r-formula)
+       ("r-future" ,r-future)
+       ("r-future-apply" ,r-future-apply)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-metrics" ,r-metrics)
+       ("r-prediction" ,r-prediction)
+       ("r-r6" ,r-r6)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/christophM/iml")
+    (synopsis "Interpretable machine learning")
+    (description
+     "This package provides interpretability methods to analyze the behavior
+and predictions of any machine learning model.  Implemented methods are:
+
+@itemize
+@item Feature importance described by Fisher et al. (2018),
+@item accumulated local effects plots described by Apley (2018),
+@item partial dependence plots described by Friedman (2001),
+@item individual conditional expectation ('ice') plots described by Goldstein
+  et al. (2013) @url{https://doi.org/10.1080/10618600.2014.907095},
+@item local models (variant of 'lime') described by Ribeiro et. al (2016),
+@item the Shapley Value described by Strumbelj et. al (2014)
+  @url{https://doi.org/10.1007/s10115-013-0679-x},
+@item feature interactions described by Friedman et. al
+  @url{https://doi.org/10.1214/07-AOAS148} and tree surrogate models.
+@end itemize
+")
+    (license license:expat)))
