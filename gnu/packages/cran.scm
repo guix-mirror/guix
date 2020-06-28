@@ -23441,3 +23441,36 @@ Nair and Hall and Wellner.")
 (1997), \"Survival Analysis, Techniques for Censored and Truncated Data\",
 Springer.")
     (license license:gpl3+)))
+
+(define-public r-survmisc
+  (package
+    (name "r-survmisc")
+    (version "0.5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "survMisc" version))
+       (sha256
+        (base32
+         "00nvvl8gz4477ab24rd0xvfksm8msv8h021b9ld5c9cizc41n2bm"))))
+    (properties `((upstream-name . "survMisc")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-km-ci" ,r-km-ci)
+       ("r-kmsurv" ,r-kmsurv)
+       ("r-knitr" ,r-knitr)
+       ("r-survival" ,r-survival)
+       ("r-xtable" ,r-xtable)
+       ("r-zoo" ,r-zoo)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/survMisc/")
+    (synopsis "Miscellaneous functions for survival data")
+    (description
+     "This package provides a collection of functions to help in the analysis
+of right-censored survival data.  These extend the methods available in
+the @code{survival} package.")
+    (license license:gpl2)))
