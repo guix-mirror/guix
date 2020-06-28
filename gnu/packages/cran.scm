@@ -23518,3 +23518,43 @@ implementation of the Shift-Algorithm by Streitberg & Roehmel.")
      "This package provides maximally selected rank statistics with several
 p-value approximations.")
     (license license:gpl2+)))
+
+(define-public r-survminer
+  (package
+    (name "r-survminer")
+    (version "0.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "survminer" version))
+       (sha256
+        (base32
+         "1pdj3gs4aii8gn8wf4smbwmjymbzwkjwr3kxf90dxyy6i66mqq3v"))))
+    (properties `((upstream-name . "survminer")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggpubr" ,r-ggpubr)
+       ("r-gridextra" ,r-gridextra)
+       ("r-magrittr" ,r-magrittr)
+       ("r-maxstat" ,r-maxstat)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)
+       ("r-survival" ,r-survival)
+       ("r-survmisc" ,r-survmisc)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://rpkgs.datanovia.com/survminer/index.html")
+    (synopsis "Drawing survival curves using ggplot2")
+    (description
+     "This package contains the function @code{ggsurvplot()} for easily
+drawing beautiful and 'ready-to-publish' survival curves with the 'number at
+risk' table and 'censoring count plot'.  Other functions are also available to
+plot adjusted curves for Cox model and to visually examine Cox model
+assumptions.")
+    (license license:gpl2)))
