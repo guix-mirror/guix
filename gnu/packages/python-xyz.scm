@@ -7410,28 +7410,7 @@ low-level X clients.  It is written entirely in Python.")
     (license license:gpl2+)))
 
 (define-public python2-xlib
-  (package
-    (name "python2-xlib")
-    (version "0.14")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/python-xlib/python-xlib"
-                                  "/" version "/"
-                                  "python-xlib-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1sv0447j0rx8cgs3jhjl695p5pv13ihglcjlrrz1kq05lsvb0wa7"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2                         ;Python 2 only
-       #:tests? #f))                              ;no tests
-    (home-page "http://python-xlib.sourceforge.net/")
-    (synopsis "Python X11 client library")
-    (description
-     "The Python X Library is intended to be a fully functional X client
-library for Python programs.  It is useful to implement low-level X clients.
-It is written entirely in Python.")
-    (license license:gpl2+)))
+  (package-with-python2 python-xlib))
 
 (define-public python-singledispatch
   (package
