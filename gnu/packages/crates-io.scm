@@ -21353,7 +21353,7 @@ for the serde framework.")
   (package
     (inherit rust-sha-1-0.9)
     (name "rust-sha-1")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
@@ -21362,18 +21362,18 @@ for the serde framework.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0s6fdy5wp3x4h2z4fcl2d9vjvrpzr87v4h49r51xcq8nm4qj35i3"))))
+         "1pv387q0r7llk2cqzyq0nivzvkgqgzsiygqzlv7b68z9xl5lvngp"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-block-buffer" ,rust-block-buffer-0.7)
         ("rust-digest" ,rust-digest-0.8)
         ("rust-fake-simd" ,rust-fake-simd-0.1)
         ("rust-opaque-debug" ,rust-opaque-debug-0.2)
+        ("rust-libc" ,rust-libc-0.2)
         ("rust-sha1-asm" ,rust-sha1-asm-0.4))
        #:cargo-development-inputs
        (("rust-digest" ,rust-digest-0.8)
-        ("rust-hex-literal" ,rust-hex-literal-0.2))))))
+        ("rust-hex-literal" ,rust-hex-literal-0.1))))))
 
 (define-public rust-sha1-0.6
   (package
