@@ -12627,8 +12627,37 @@ parallelize and optimize.")
      "This package provides MaybeUninit for friends of backwards compatibility.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-md-5-0.9
+  (package
+    (name "rust-md-5")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "md-5" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "14x7yxfi4pk4qy3zmn9dj69yc18fg3cyind346kribjd93077qij"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-buffer" ,rust-block-buffer-0.8)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-md5-asm" ,rust-md5-asm-0.4)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.2))
+       #:cargo-development-inputs
+       (("rust-digest" ,rust-digest-0.9)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "MD5 hash function")
+    (description "MD5 hash function.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-md-5-0.8
   (package
+    (inherit rust-md-5-0.9)
     (name "rust-md-5")
     (version "0.8.0")
     (source
@@ -12640,7 +12669,6 @@ parallelize and optimize.")
         (sha256
          (base32
           "1j5rfxy2p76xf5f1lgaw85xla0b1bbv2lknvdhv1j0ibmzfg72m1"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-block-buffer" ,rust-block-buffer-0.7)
@@ -12649,11 +12677,7 @@ parallelize and optimize.")
         ("rust-opaque-debug" ,rust-opaque-debug-0.2))
        #:cargo-development-inputs
        (("rust-digest" ,rust-digest-0.8)
-        ("rust-hex-literal" ,rust-hex-literal-0.1))))
-    (home-page "https://github.com/RustCrypto/hashes")
-    (synopsis "MD5 hash function")
-    (description "MD5 hash function.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-hex-literal" ,rust-hex-literal-0.1))))))
 
 (define-public rust-md5-0.6
   (package
