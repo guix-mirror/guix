@@ -8532,16 +8532,12 @@ two-dimensional genome scans.")
 (define-public r-qtl2
   (package
     (name "r-qtl2")
-    (version "0.20")
+    (version "0.22-8")
     (source (origin
-      (method git-fetch)
-      ;; Not yet available in cran.
-      (uri (git-reference
-             (url "https://github.com/rqtl/qtl2.git")
-             (commit version)))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32 "0l1asr28q25jzbwrbg5490962sg3y4sjrd0qf09p78ws1aq8vfs0"))))
+              (method url-fetch)
+              (uri (cran-uri "qtl2" version))
+              (sha256
+               (base32 "07w74s7lyyrfa1l6q6v8sxnfaqwxb4w1x4wawcngf0hr1rwx9lda"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
