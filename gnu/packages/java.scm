@@ -3735,6 +3735,37 @@ JUnit provides assertions for testing expected results, test fixtures for
 sharing common test data, and test runners for running tests.")
     (license license:epl1.0)))
 
+(define-public java-junitparams
+  (package
+    (name "java-junitparams")
+    (version "1.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Pragmatists/JUnitParams")
+                     (commit (string-append "JUnitParams-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rb52xdfp99invyjrras3w0bf0a81cz30yd47rkkiyqcqj0y1q9b"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "junitparams.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:test-exclude (list "**/SuperclassTest.java")))
+    (inputs
+     `(("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-assertj" ,java-assertj)))
+    (home-page "https://github.com/Pragmatists/JUnitParams")
+    (synopsis "Parameterised test support for JUnit")
+    (description "The JUnitParams project adds a new runner to JUnit and
+provides much easier and readable parametrised tests for JUnit.")
+    (license license:asl2.0)))
+
 (define-public java-plexus-utils
   (package
     (name "java-plexus-utils")
