@@ -9650,7 +9650,7 @@ the template engine that renders the official Rust website")
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.5)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-rustc-hash" ,rust-rustc-hash-1.0)
+        ("rust-rustc-hash" ,rust-rustc-hash-1.1)
         ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/rust-lang/hashbrown")
     (synopsis "Rust port of Google's SwissTable hash map")
@@ -19694,37 +19694,11 @@ password hashing function.")
             "1qkc5khrmv5pqi5l5ca9p5nl5hs742cagrndhbrlk3dhlrx3zm08"))))
     (build-system cargo-build-system)
     (arguments `(#:skip-build? #t))
-    (home-page
-      "https://github.com/rust-lang-nursery/rustc-hash")
-    (synopsis
-      "speed, non-cryptographic hash used in rustc")
-    (description
-      "speed, non-cryptographic hash used in rustc")
-    (license (list license:asl2.0 license:expat))))
-
-(define-public rust-rustc-hash-1.0
-  (package
-    (name "rust-rustc-hash")
-    (version "1.0.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "rustc-hash" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "1f4cnbcmz2c3zjidqszc9c4fip37ch4xl74nkkp9dw291j5zqh3m"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3))))
     (home-page "https://github.com/rust-lang/rustc-hash")
     (synopsis "Speedy, non-cryptographic hash used in rustc")
     (description
      "This package provides a speedy, non-cryptographic hash used in rustc.")
-    (license (list license:asl2.0
-                   license:expat))))
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-rustc-serialize-0.3
   (package
@@ -20037,7 +20011,7 @@ rustc compiler.")
         ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
         ("rust-num-cpus" ,rust-num-cpus-1)
         ("rust-ordered-float" ,rust-ordered-float-1.0)
-        ("rust-rustc-hash" ,rust-rustc-hash-1.0)
+        ("rust-rustc-hash" ,rust-rustc-hash-1.1)
         ("rust-stb-truetype" ,rust-stb-truetype-0.3))))
     (home-page "https://gitlab.redox-os.org/redox-os/rusttype")
     (synopsis "Pure Rust alternative to libraries like FreeType")
