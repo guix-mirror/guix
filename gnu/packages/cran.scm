@@ -15159,17 +15159,28 @@ matrix and displays the significance level on the plot.  It also includes a
 function for computing a matrix of correlation p-values.")
     (license license:gpl2)))
 
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
 (define-public r-flexdashboard
   (package
     (name "r-flexdashboard")
-    (version "0.5.1.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "flexdashboard" version))
        (sha256
         (base32
-         "0fy3nbrr67zqgd44r2mc850s5sp0hzfcw3zqs15m8kxzj1aw067x"))))
+         "1bh759llp15fxrx2rwvxd8p3w84vjmkid32ism7zg49a127fjib4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled minified JavaScript files
+           (delete-file "inst/htmlwidgets/lib/raphael/raphael-2.1.4.min.js")
+           (delete-file "inst/www/sly/sly.min.js")
+           (delete-file "inst/www/stickytableheaders/jquery.stickytableheaders.min.js")
+           (delete-file "inst/www/prism/prism.js")
+           #t))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -15212,7 +15223,6 @@ function for computing a matrix of correlation p-values.")
                    (for-each (lambda (source target)
                                (format #t "Processing ~a --> ~a~%"
                                        source target)
-                               (delete-file target)
                                (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
                                  (call-with-output-file target
                                    (lambda (port)
