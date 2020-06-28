@@ -23919,25 +23919,25 @@ snippets for Emacs.")
 (define-public emacs-org-roam
   (package
     (name "emacs-org-roam")
-    (version "1.0.0")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jethrokuan/org-roam")
+             (url "https://github.com/org-roam/org-roam")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08pfa63k194dpk0y2gfa0nzn5lig81q0l9axkq5j4ibj6ifaap4a"))))
+        (base32 "10s7mcyshgj6yva4k1j086xm61k9zck3r586f1maar5b2z6hwvsa"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-company" ,emacs-company)
        ("emacs-dash" ,emacs-dash)
-       ("emacs-emacsql-sqlite" ,emacs-emacsql)
+       ("emacs-emacsql-sqlite3" ,emacs-emacsql-sqlite3)
        ("emacs-f" ,emacs-f)
        ("emacs-org-ref" ,emacs-org-ref)
        ("emacs-s" ,emacs-s)))
-    (home-page "https://github.com/jethrokuan/org-roam/")
+    (home-page "https://github.com/org-roam/org-roam/")
     (synopsis "Non-hierarchical note-taking with Org mode")
     (description "Emacs Org Roam is a solution for taking non-hierarchical
 notes with Org mode.  Notes are captured without hierarchy and are connected
