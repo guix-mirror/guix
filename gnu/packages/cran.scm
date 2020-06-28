@@ -23474,3 +23474,24 @@ Springer.")
 of right-censored survival data.  These extend the methods available in
 the @code{survival} package.")
     (license license:gpl2)))
+
+(define-public r-exactranktests
+  (package
+    (name "r-exactranktests")
+    (version "0.8-31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "exactRankTests" version))
+       (sha256
+        (base32
+         "1154dkcid3njhamdp87qs9bnx7l8bdqkcjsds9q9f2xmizs9x8gw"))))
+    (properties
+     `((upstream-name . "exactRankTests")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/exactRankTests/")
+    (synopsis "Exact distributions for rank and permutation tests")
+    (description
+     "This package computes exact conditional p-values and quantiles using an
+implementation of the Shift-Algorithm by Streitberg & Roehmel.")
+    (license license:gpl2+)))
