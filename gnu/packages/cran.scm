@@ -23495,3 +23495,26 @@ the @code{survival} package.")
      "This package computes exact conditional p-values and quantiles using an
 implementation of the Shift-Algorithm by Streitberg & Roehmel.")
     (license license:gpl2+)))
+
+(define-public r-maxstat
+  (package
+    (name "r-maxstat")
+    (version "0.7-25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "maxstat" version))
+       (sha256
+        (base32
+         "114z1rwxwvk05ijjhdppzm148n1h192fp0w12ky10zkrhf6kphbg"))))
+    (properties `((upstream-name . "maxstat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-exactranktests" ,r-exactranktests)
+       ("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "https://cran.r-project.org/web/packages/maxstat/")
+    (synopsis "Maximally selected rank statistics")
+    (description
+     "This package provides maximally selected rank statistics with several
+p-value approximations.")
+    (license license:gpl2+)))
