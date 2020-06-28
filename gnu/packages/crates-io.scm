@@ -10164,7 +10164,7 @@ or response body.")
        #:cargo-inputs
        ;; Haven't packaged rustls and webpki because of license
        (("rust-native-tls" ,rust-native-tls-0.2)
-        ("rust-unicase" ,rust-unicase-2.4))))
+        ("rust-unicase" ,rust-unicase-2.6))))
     (home-page "https://github.com/jayjamesjay/http_req")
     (synopsis
      "HTTP client with built-in HTTPS support")
@@ -17653,7 +17653,7 @@ stack pointer and inspect the properties of the stack.")
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-getopts" ,rust-getopts-0.2)
         ("rust-memchr" ,rust-memchr-2.2)
-        ("rust-unicase" ,rust-unicase-2.4))
+        ("rust-unicase" ,rust-unicase-2.6))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-html5ever" ,rust-html5ever-0.23)
@@ -19534,7 +19534,7 @@ console applications.")
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-tempdir" ,rust-tempdir-0.3)
-        ("rust-unicase" ,rust-unicase-2.4)
+        ("rust-unicase" ,rust-unicase-2.6)
         ("rust-uuid" ,rust-uuid-0.7))))
     (home-page "https://github.com/rusqlite/rusqlite")
     (synopsis "Wrapper for SQLite")
@@ -25561,31 +25561,9 @@ with the Unicode character database.")
      "This package provides a case-insensitive wrapper around strings.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-unicase-2.4
-  (package
-    (name "rust-unicase")
-    (version "2.4.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "unicase" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "1xmpmkakhhblq7dzab1kwyv925kv7fqjkjsxjspg6ix9n88makm8"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs (("rust-version-check" ,rust-version-check-0.1))))
-    (home-page "https://github.com/seanmonstar/unicase")
-    (synopsis "Case-insensitive wrapper around strings")
-    (description
-     "A case-insensitive wrapper around strings.")
-    (license (list license:asl2.0
-                   license:expat))))
-
 (define-public rust-unicase-1
   (package
-    (inherit rust-unicase-2.4)
+    (inherit rust-unicase-2.6)
     (name "rust-unicase")
     (version "1.4.2")
     (source
