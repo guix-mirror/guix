@@ -2316,19 +2316,20 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "1ihz2qi33lhngl19xdanq0pbmfaacy63794mg8ll7z2lab3yryzp"))))
+         "17fkc6pr8w5z3rpadg692a689p1v4j7xl5ak0y64is7c74cxgljx"))))
     (build-system r-build-system)
     (inputs
      `(("libressl" ,libressl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-askpass" ,r-askpass)))
     (home-page "https://github.com/jeroenooms/openssl")
