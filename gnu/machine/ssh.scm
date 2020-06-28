@@ -37,6 +37,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (gcrypt pk-crypto)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-1)

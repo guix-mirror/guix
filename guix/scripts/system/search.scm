@@ -26,6 +26,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:export (service-type->recutils
