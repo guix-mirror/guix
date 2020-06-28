@@ -4637,7 +4637,7 @@ Code} (MAC) algorithms.")
      `(#:cargo-inputs
        (("rust-memchr" ,rust-memchr-2))
        #:cargo-development-inputs
-       (("rust-arrayvec" ,rust-arrayvec-0.4))))
+       (("rust-arrayvec" ,rust-arrayvec-0.5))))
     (home-page "https://github.com/BurntSushi/rust-csv")
     (synopsis
      "Bare bones CSV parsing with no_std support")
