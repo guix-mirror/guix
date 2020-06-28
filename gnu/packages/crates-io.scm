@@ -4417,8 +4417,34 @@ manipulating terminals.")
 around common WinAPI calls.")
     (license license:expat)))
 
+(define-public rust-crypto-mac-0.8
+  (package
+    (name "rust-crypto-mac")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "crypto-mac" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1axfs4zmy74rn9666p92j7nmcv11zdp2d51yrppc2dv26cqa715m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.14)
+        ("rust-subtle" ,rust-subtle-2))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Trait for Message Authentication Code (MAC) algorithms")
+    (description "This package provides trait for @dfn{Message Authentication
+Code} (MAC) algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crypto-mac-0.7
   (package
+    (inherit rust-crypto-mac-0.8)
     (name "rust-crypto-mac")
     (version "0.7.0")
     (source
@@ -4430,17 +4456,11 @@ around common WinAPI calls.")
        (sha256
         (base32
          "1rbrq6qy9dl0pj4ym2zy33miaaa8vpzdss60p9bdb58xy46l0d24"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-blobby" ,rust-blobby-0.1)
         ("rust-generic-array" ,rust-generic-array-0.12)
-        ("rust-subtle" ,rust-subtle-1.0))))
-    (home-page "https://github.com/RustCrypto/traits")
-    (synopsis "Trait for Message Authentication Code (MAC) algorithms")
-    (description "This package provides trait for @dfn{Message Authentication
-Code} (MAC) algorithms.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-subtle" ,rust-subtle-1.0))))))
 
 (define-public rust-cssparser-0.25
   (package
