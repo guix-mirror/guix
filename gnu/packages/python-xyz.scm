@@ -7371,6 +7371,44 @@ falling into the Python interpreter.")
 (define-public python2-q
   (package-with-python2 python-q))
 
+(define-public python-xlib
+  (package
+    (name "python-xlib")
+    (version "0.27")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python-xlib/python-xlib.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09kimic8rhprx3q8nzalc4aggg42ahqm4v5qcj8dm68yvxfdk986"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               ;; There must be a running X server and make check doesn't
+               ;; start one.  Therefore we must do it.
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
+               #t))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python2-setuptools-scm" ,python2-setuptools-scm)
+       ("python-six" ,python-six)
+       ("xorg-server" ,xorg-server)))
+    (home-page "https://github.com/python-xlib/python-xlib")
+    (synopsis "Python X11 client library")
+    (description
+     "The Python X Library is intended to be a fully functional
+X client library for Python programs.  It is useful to implement
+low-level X clients.  It is written entirely in Python.")
+    (license license:gpl2+)))
+
 (define-public python2-xlib
   (package
     (name "python2-xlib")
