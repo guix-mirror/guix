@@ -1868,8 +1868,7 @@ extension of blocks.")
         (base32
          "12v8wizynqin0hqf140kmp9s38q223mp1b0hkqk8j5pk8720v560"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-block-padding" ,rust-block-padding-0.1)
         ("rust-byte-tools" ,rust-byte-tools-0.3)
         ("rust-byteorder" ,rust-byteorder-1.3)
