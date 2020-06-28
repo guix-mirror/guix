@@ -1252,7 +1252,7 @@ tracebacks.")
 (define-public rust-bincode-1
   (package
     (name "rust-bincode")
-    (version "1.2.1")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
@@ -1261,7 +1261,7 @@ tracebacks.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1gvxm3n67xv1874fwxmnlircdlphlk1hcw75ykrrnw9l2nky4lsp"))))
+          "0vc9pjh6hfp9vfq752sa88rxwg93ydhm0dvvy58rcvx2p8wkl3gk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
