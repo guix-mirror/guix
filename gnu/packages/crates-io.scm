@@ -21499,8 +21499,42 @@ for the serde framework.")
      "Assembly implementation of SHA-1 compression function.")
     (license license:expat)))
 
+(define-public rust-sha2-0.9
+  (package
+    (name "rust-sha2")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sha2" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1hdqrx2d9073hgf34y6ilgw6ni5vv3d5nmccyhkfm9zdvy6kfcr9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-buffer" ,rust-block-buffer-0.9)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cpuid-bool" ,rust-cpuid-bool-0.1)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3)
+        ("rust-sha2-asm" ,rust-sha2-asm-0.5))
+       #:cargo-development-inputs
+       (("rust-digest" ,rust-digest-0.9)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "SHA-2 hash functions")
+    (description
+     "This package provides a pure Rust implementation of the SHA-2 hash
+function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sha2-0.8
   (package
+    (inherit rust-sha2-0.9)
     (name "rust-sha2")
     (version "0.8.1")
     (source
@@ -21510,7 +21544,6 @@ for the serde framework.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1827pplynq0ahxid1xq281kiv56kj2afp7gm97v7gw71sbgll117"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-block-buffer" ,rust-block-buffer-0.7)
@@ -21522,11 +21555,7 @@ for the serde framework.")
        #:cargo-development-inputs
        (("rust-cc" ,rust-cc-1.0) ;; FIXME for rust-sha2-asm, why again?
         ("rust-digest" ,rust-digest-0.8)
-        ("rust-hex-literal" ,rust-hex-literal-0.1))))
-    (home-page "https://github.com/RustCrypto/hashes")
-    (synopsis "SHA-2 hash functions")
-    (description "SHA-2 hash functions")
-    (license (list license:expat license:asl2.0))))
+        ("rust-hex-literal" ,rust-hex-literal-0.1))))))
 
 (define-public rust-sha2-asm-0.5
   (package
