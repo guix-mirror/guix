@@ -8472,17 +8472,38 @@ technique.")
 (define-public ruby-rdoc
   (package
     (name "ruby-rdoc")
-    (version "6.0.4")
+    (version "6.2.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (rubygems-uri "rdoc" version))
-        (sha256
-          (base32
-            "0anv42cqcdc6g4n386mrva7mgav5i0c2ry3yzvzzc6z6hymkmcr7"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ruby/rdoc.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0dhk29nidv93b5vnjvlm9gcixgn4i0jcyzrgxdk6pdg019bw4cj6"))))
     (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-gemspec
+           ;; TODO: Remove after next release is tagged.
+           (lambda _
+             (substitute* "rdoc.gemspec"
+               (("\"lib/rdoc/generator/template/darkfish/js/\
+jquery\\.js\", ") ""))
+             #t))
+         (add-before 'build 'generate
+           ;; 'gem build' doesn't honor Rakefile dependencies (see:
+           ;; https://github.com/ruby/rdoc/issues/432#issuecomment-650808977).
+           (lambda _
+             (invoke "rake" "generate"))))))
     (native-inputs
-     `(("bundler" ,bundler)))
+     `(("bundler" ,bundler)
+       ("ruby-kpeg" ,ruby-kpeg)
+       ("ruby-racc" ,ruby-racc)
+       ("ruby-rubocop" ,ruby-rubocop)))
     (home-page "https://ruby.github.io/rdoc/")
     (synopsis "HTML and command-line documentation utility")
     (description "RDoc produces HTML and command-line documentation for Ruby
