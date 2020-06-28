@@ -1856,8 +1856,29 @@ extension of blocks.")
      "Fixed size buffer for block processing of data.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-block-padding-0.2
+  (package
+    (name "rust-block-padding")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "block-padding" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0x6b2dgink7rc3755r8jl4kmndydy5563h3wz7z9jqrb25ygv2y9"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Padding and unpadding of messages divided into blocks")
+    (description
+     "Padding and unpadding of messages divided into blocks.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-block-padding-0.1
   (package
+    (inherit rust-block-padding-0.2)
     (name "rust-block-padding")
     (version "0.1.4")
     (source
@@ -1869,16 +1890,10 @@ extension of blocks.")
        (sha256
         (base32
          "02fz9wx5dmgpc79ndrb9xfxqlrkk7lg5wki2blz2zqg27spw6kbd"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-byte-tools" ,rust-byte-tools-0.3))))
-    (home-page "https://github.com/RustCrypto/utils")
-    (synopsis "Padding and unpadding of messages divided into blocks")
-    (description
-     "Padding and unpadding of messages divided into blocks.")
-    (license (list license:asl1.1 license:expat))))
+       (("rust-byte-tools" ,rust-byte-tools-0.3))))))
 
 (define-public rust-bresenham-0.1
   (package
