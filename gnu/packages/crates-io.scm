@@ -21446,8 +21446,7 @@ for the serde framework.")
          "1i1i8viy6y30mv9v5hwhg9w6b722qkyh9c6n8bn4d27jpv14pg0s"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
+     `(#:cargo-inputs
        (("rust-cc" ,rust-cc-1.0))))
     (home-page "https://github.com/RustCrypto/asm-hashes")
     (synopsis "Assembly implementation of SHA-1 compression function")
