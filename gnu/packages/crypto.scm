@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
@@ -41,6 +41,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
@@ -69,6 +70,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -169,6 +171,31 @@ OpenBSD tool of the same name.")
                                           "file://base64.c"
                                           "See base64.c in the distribution for
                                            the license from IBM.")))))
+
+(define-public rust-minisign
+  (package
+    (name "rust-minisign")
+    (version "0.5.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "minisign" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0xmcvh2snravghaar8igc6b9r3s1snnmf9qam9l3zyhm4987767y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.1)
+        ("rust-rpassword" ,rust-rpassword-4)
+        ("rust-scrypt" ,rust-scrypt-0.3))))
+    (home-page "https://github.com/jedisct1/rust-minisign")
+    (synopsis "Crate to sign files and verify signatures")
+    (description
+     "This package provides a crate to sign files and verify signatures.")
+    (license license:expat)))
 
 (define-public encfs
   (package
