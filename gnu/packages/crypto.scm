@@ -45,6 +45,7 @@
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libbsd)
@@ -73,6 +74,7 @@
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
@@ -195,6 +197,33 @@ OpenBSD tool of the same name.")
     (synopsis "Crate to sign files and verify signatures")
     (description
      "This package provides a crate to sign files and verify signatures.")
+    (license license:expat)))
+
+(define-public go-minisign
+  (package
+    (name "go-minisign")
+    (version "0.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jedisct1/go-minisign")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0wc0rk5m60yz52f0cncmbgq67yvb1rcx91gvzjg6jpc4mpw2db27"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "vendor") #t))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/jedisct1/go-minisign"))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+    (home-page "https://github.com/jedisct1/go-minisign")
+    (synopsis "Minisign verification library for Golang")
+    (description "A Golang library to verify Minisign signatures.")
     (license license:expat)))
 
 (define-public encfs
