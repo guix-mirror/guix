@@ -8446,6 +8446,29 @@ your application.")
                (base32
                 "1h39zqqxp3k4qk49ajpx0jps1vmvxgkh43mqkb6znk583bl0fv71"))))))
 
+(define-public ruby-kpeg
+  (package
+  (name "ruby-kpeg")
+  (version "1.1.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "kpeg" version))
+      (sha256
+        (base32
+          "0x2kpfrcagj931masm5y1kwbnc6nxl60cqdcd3lyd1d2hz7kzlia"))))
+  (build-system ruby-build-system)
+  (native-inputs
+   `(("ruby-hoe" ,ruby-hoe)))
+  (synopsis "PEG library for Ruby")
+  (description "KPeg is a simple PEG library for Ruby.  It provides an API as
+well as native grammar to build the grammar.  KPeg supports direct left
+recursion of rules via the
+@uref{http://www.vpri.org/pdf/tr2008003_experimenting.pdf,OMeta memoization}
+technique.")
+  (home-page "https://github.com/evanphx/kpeg")
+  (license license:expat)))
+
 (define-public ruby-rdoc
   (package
     (name "ruby-rdoc")
