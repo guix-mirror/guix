@@ -537,22 +537,26 @@ possible (that is if there's a LINUX keyword argument in the build system)."
 value of the SYSTEM-SERVICE-TYPE service."
   (let* ((locale  (operating-system-locale-directory os))
          (kernel  (operating-system-kernel os))
+         (hurd    (operating-system-hurd os))
          (modules (operating-system-kernel-loadable-modules os))
-         (kernel  (profile
-                   (content (packages->manifest
-                             (cons kernel
-                                   (map (lambda (module)
-                                          (if (package? module)
-                                              (package-for-kernel kernel
-                                                                  module)
-                                              module))
-                                        modules))))
-                   (hooks (list linux-module-database))))
-         (initrd  (operating-system-initrd-file os))
+         (kernel  (if hurd
+                      kernel
+                      (profile
+                       (content (packages->manifest
+                                 (cons kernel
+                                       (map (lambda (module)
+                                              (if (package? module)
+                                                  (package-for-kernel kernel
+                                                                      module)
+                                                  module))
+                                            modules))))
+                       (hooks (list linux-module-database)))))
+         (initrd  (and (not hurd) (operating-system-initrd-file os)))
          (params  (operating-system-boot-parameters-file os)))
     `(("kernel" ,kernel)
+      ,@(if hurd `(("hurd" ,hurd)) '())
       ("parameters" ,params)
-      ("initrd" ,initrd)
+      ,@(if initrd `(("initrd" ,initrd)) '())
       ("locale" ,locale))))   ;used by libc
 
 (define (operating-system-default-essential-services os)
@@ -604,23 +608,24 @@ bookkeeping."
                                   (operating-system-firmware os)))))))
 
 (define (hurd-default-essential-services os)
-  (list (service system-service-type '())
-        %boot-service
-        %hurd-startup-service
-        %activation-service
-        %shepherd-root-service
-        (service user-processes-service-type)
-        (account-service (append (operating-system-accounts os)
-                                 (operating-system-groups os))
-                         (operating-system-skeletons os))
-        (root-file-system-service)
-        (service file-system-service-type '())
-        (service fstab-service-type
-                 (filter file-system-needed-for-boot?
-                         (operating-system-file-systems os)))
-        (pam-root-service (operating-system-pam-services os))
-        (operating-system-etc-service os)
-        (service profile-service-type (operating-system-packages os))))
+  (let ((entries (operating-system-directory-base-entries os)))
+    (list (service system-service-type entries)
+          %boot-service
+          %hurd-startup-service
+          %activation-service
+          %shepherd-root-service
+          (service user-processes-service-type)
+          (account-service (append (operating-system-accounts os)
+                                   (operating-system-groups os))
+                           (operating-system-skeletons os))
+          (root-file-system-service)
+          (service file-system-service-type '())
+          (service fstab-service-type
+                   (filter file-system-needed-for-boot?
+                           (operating-system-file-systems os)))
+          (pam-root-service (operating-system-pam-services os))
+          (operating-system-etc-service os)
+          (service profile-service-type (operating-system-packages os)))))
 
 (define* (operating-system-services os)
   "Return all the services of OS, including \"essential\" services."
@@ -1276,7 +1281,13 @@ being stored into the \"parameters\" file)."
                      (kernel #$(boot-parameters-kernel params))
                      (kernel-arguments
                       #$(boot-parameters-kernel-arguments params))
-                     (initrd #$(boot-parameters-initrd params))
+                     #$@(if (boot-parameters-initrd params)
+                            #~((initrd #$(boot-parameters-initrd params)))
+                            #~())
+                     #$@(if (pair? (boot-parameters-multiboot-modules params))
+                            #~((multiboot-modules
+                                #$(boot-parameters-multiboot-modules params)))
+                            #~())
                      (bootloader-name #$(boot-parameters-bootloader-name params))
                      (bootloader-menu-entries
                       #$(map menu-entry->sexp
