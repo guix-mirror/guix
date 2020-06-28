@@ -23581,3 +23581,29 @@ assumptions.")
      "This package provides helper functions with a consistent interface to
 coerce and verify the types and shapes of values for input checking.")
     (license license:asl2.0)))
+
+(define-public r-config
+  (package
+    (name "r-config")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "config" version))
+       (sha256
+        (base32
+         "0l67nfpm42ssnk0bl4jmq6bibz8hawgfgh2s14s5c8mnimv6mpjs"))))
+    (properties `((upstream-name . "config")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/rstudio/config")
+    (synopsis "Manage environment specific configuration values")
+    (description
+     "This package lets you manage configuration values across multiple
+environments (e.g.  development, test, production).  It reads values using a
+function that determines the current environment and returns the appropriate
+value.")
+    (license license:gpl3)))
