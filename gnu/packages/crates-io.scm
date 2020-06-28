@@ -25428,7 +25428,7 @@ serializing Rust str")
 (define-public rust-typenum-1
   (package
     (name "rust-typenum")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
       (origin
         (method url-fetch)
@@ -25436,7 +25436,7 @@ serializing Rust str")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0sc1jirllfhdi52z1xv9yqzxzpk6v7vadd13n7wvs1wnjipn6bb1"))))
+          "0cvbksljz61ian21fnn0h51kphl0pwpzb932bv4s0rwy1wh8lg1p"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/paholg/typenum")
     (synopsis "Rust library for type-level numbers evaluated at compile time")
