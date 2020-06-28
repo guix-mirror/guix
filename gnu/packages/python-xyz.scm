@@ -7398,7 +7398,7 @@ falling into the Python interpreter.")
                #t))))))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python2-setuptools-scm" ,python2-setuptools-scm)
+       ("python-setuptools-scm" ,python-setuptools-scm)
        ("python-six" ,python-six)
        ("xorg-server" ,xorg-server)))
     (home-page "https://github.com/python-xlib/python-xlib")
