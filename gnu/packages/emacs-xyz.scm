@@ -75,6 +75,7 @@
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
 ;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
+;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11709,11 +11710,11 @@ key.  Optionally, a mouse pop-up can be added by binding
     (license license:gpl3+)))
 
 (define-public emacs-idris-mode
-  (let ((commit "acc8835449475d7cd205aba213fdd3d41c38ba40")
+  (let ((commit "b77eadd8ac2048d5c882b4464bd9673e45dd6a59")
         (revision "0"))
     (package
       (name "emacs-idris-mode")
-      (version (git-version "0.9.19" revision commit))
+      (version (git-version "1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -11723,7 +11724,7 @@ key.  Optionally, a mouse pop-up can be added by binding
          (file-name (git-file-name name commit))
          (sha256
           (base32
-           "0n9xbknc68id0mf8hbfmawi8qpvrs47ix807sk9ffv2g3ik32kk6"))))
+           "1v8av6jza1j00ln75zjwaca0vmmv0fhhhi94p84rlfzgzykyb9g1"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-prop-menu" ,emacs-prop-menu)))
@@ -11731,9 +11732,8 @@ key.  Optionally, a mouse pop-up can be added by binding
        "https://github.com/idris-hackers/idris-mode")
       (synopsis "Major mode for editing Idris code")
       (description
-       "This is an Emacs mode for editing Idris code.  It requires the latest
-version of Idris, and some features may rely on the latest Git version of
-Idris.")
+       "This is an Emacs mode for editing Idris code.  It is compatible with
+the latest versions of Idris 1.")
       (license license:gpl3+))))
 
 (define-public emacs-browse-at-remote
