@@ -14627,8 +14627,29 @@ You probably don't want to link to this crate directly; instead check out the
       "This package provides a tiny, robust PRNG implementation.")
     (license license:expat)))
 
+(define-public rust-opaque-debug-0.3
+  (package
+    (name "rust-opaque-debug")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "opaque-debug" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1m8kzi4nd6shdqimn0mgb24f0hxslhnqd1whakyq06wcqd086jk2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Macro for opaque debug trait implementation")
+    (description
+     "This package provides a macro for opaque debug trait implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-opaque-debug-0.2
   (package
+    (inherit rust-opaque-debug-0.3)
     (name "rust-opaque-debug")
     (version "0.2.2")
     (source
@@ -14639,13 +14660,7 @@ You probably don't want to link to this crate directly; instead check out the
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "02942l2gc7w5r4js7i9063x99szic5mzzk1055j83v4diqpbpxck"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/RustCrypto/utils")
-    (synopsis "Macro for opaque Debug trait implementation")
-    (description
-     "Macro for opaque Debug trait implementation.")
-    (license (list license:asl2.0 license:expat))))
+         "02942l2gc7w5r4js7i9063x99szic5mzzk1055j83v4diqpbpxck"))))))
 
 (define-public rust-openssl-0.10
   (package
