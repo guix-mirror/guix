@@ -22631,3 +22631,35 @@ quantile regression, implemented using Barzilai-Borwein gradient descent with
 a Huber regression warm start.  Confidence intervals for regression
 coefficients are constructed using multiplier bootstrap.")
     (license license:gpl3)))
+
+(define-public r-fastshap
+  (package
+    (name "r-fastshap")
+    (version "0.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastshap" version))
+       (sha256
+        (base32
+         "08f25ib5mry6h8lvj0g3clc9kfl5g2wdd8x8bw455wwmbcm6x5vg"))))
+    (properties `((upstream-name . "fastshap")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/bgreenwell/fastshap")
+    (synopsis "Fast approximate Shapley values")
+    (description
+     "This package computes fast (relative to other implementations)
+approximate Shapley values for any supervised learning model.  Shapley values
+help to explain the predictions from any black box model using ideas from game
+theory; see @url{Strumbel and Kononenko (2014),
+doi.org/10.1007/s10115-013-0679-x} for details.")
+    (license license:gpl2+)))
