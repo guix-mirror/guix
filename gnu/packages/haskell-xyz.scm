@@ -50,6 +50,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-apps)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
@@ -71,7 +72,8 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (srfi srfi-1))
 
 (define-public ghc-abstract-deque
   (package
@@ -8834,6 +8836,117 @@ Pandoc extends standard Markdown syntax with footnotes, embedded LaTeX,
 definition lists, tables, and other features.  A compatibility mode is
 provided for those who need a drop-in replacement for Markdown.pl.")
     (license license:gpl2+)))
+
+(define-public pandoc
+  (package
+    (inherit ghc-pandoc)
+    (name "pandoc")
+    (arguments
+     `(#:configure-flags
+       (list "-fstatic"
+             ;; Do not build trypandoc; this is the default but it's better to
+             ;; be explicit.
+             "-f-trypandoc"
+             ;; TODO: Without these we cannot link the Haskell libraries
+             ;; statically.  It would be nice if we could also build the
+             ;; shared libraries.
+             "--disable-shared"
+             "--disable-executable-dynamic"
+             ;; That's where we place all static libraries
+             "--extra-lib-dirs=static-libs/"
+             "--ghc-option=-static")
+       #:modules ((guix build haskell-build-system)
+                  (guix build utils)
+                  (ice-9 match)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-simple-paths-module
+           (lambda* (#:key outputs #:allow-other-keys)
+             (call-with-output-file "Paths_pandoc.hs"
+               (lambda (port)
+                 (format port "\
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE NoRebindableSyntax #-}
+{-# OPTIONS_GHC -fno-warn-missing-import-lists #-}
+module Paths_pandoc (version,getDataDir,getDataFileName) where
+import Prelude
+import Data.Version (Version(..))
+import System.Info
+version :: Version
+version = Version [~a] []
+
+datadir :: FilePath
+datadir = \"~a/share/\" ++
+  arch ++ \"-\" ++
+  os ++ \"-\" ++
+  compilerName ++ \"-~a/pandoc-~a\"
+
+getDataDir :: IO FilePath
+getDataDir = return datadir
+
+getDataFileName :: FilePath -> IO FilePath
+getDataFileName name = do
+  dir <- getDataDir
+  return (dir ++ \"/\" ++ name)
+"
+                         (string-map (lambda (chr) (if (eq? chr #\.) #\, chr))
+                                     ,(package-version ghc-pandoc))
+                         (assoc-ref outputs "out")
+                         ,(package-version ghc)
+                         ,(package-version ghc-pandoc))))
+             #t))
+         (add-after 'unpack 'prepare-static-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p (string-append (getcwd) "/static-libs"))
+             (for-each
+              (lambda (input)
+                (when (or (string-prefix? "static-" (car input))
+                          (string-prefix? "ghc" (car input)))
+                  (match (find-files (cdr input) "\\.a$")
+                    ((and (first . rest) libs)
+                     (for-each (lambda (lib)
+                                 (let ((target (string-append (getcwd) "/static-libs/"
+                                                              (basename lib))))
+                                   (unless (file-exists? target)
+                                     (symlink first target))))
+                               libs))
+                    (_ #f))))
+              inputs)
+             #t))
+         (delete 'check)
+         (add-after 'install 'post-install-check
+           (assoc-ref %standard-phases 'check)))))
+    (outputs '("out" "lib" "static" "doc"))
+    (inputs
+     (let* ((direct-inputs (package-inputs ghc-pandoc))
+            (all-static-inputs
+             (map (lambda (pkg)
+                    (list (string-append "static-" (package-name pkg))
+                          pkg "static"))
+                  (delete-duplicates
+                   (append (map cadr direct-inputs)
+                           (filter (lambda (pkg)
+                                     (string-prefix? "ghc-" (package-name pkg)))
+                                   (package-closure
+                                    (map cadr direct-inputs))))))))
+       `(("zlib:static" ,zlib "static")
+         ,@all-static-inputs
+         ,@direct-inputs)))
+    (native-inputs
+     (let* ((direct-inputs (package-native-inputs ghc-pandoc))
+            (all-static-inputs
+             (map (lambda (pkg)
+                    (list (string-append "static-" (package-name pkg))
+                          pkg "static"))
+                  (delete-duplicates
+                   (append (map cadr direct-inputs)
+                           (filter (lambda (pkg)
+                                     (string-prefix? "ghc-" (package-name pkg)))
+                                   (package-closure
+                                    (map cadr direct-inputs))))))))
+       `(,@all-static-inputs
+         ,@direct-inputs)))))
 
 (define-public ghc-pandoc-citeproc
   (package
