@@ -8547,11 +8547,12 @@ two-dimensional genome scans.")
        ("r-rsqlite" ,r-rsqlite)
        ("r-yaml" ,r-yaml)))
     (home-page "https://kbroman.org/qtl2/")
-    (synopsis
-     "QTL analysis software for high-dimensional data and complex cross designs")
+    (synopsis "Quantitative Trait Locus Mapping in Experimental Crosses")
     (description
-     "R/qtl2 (aka qtl2) is a reimplementation of the QTL analysis software
-R/qtl, to better handle high-dimensional data and complex cross designs.")
+     "This package provides a set of tools to perform @dfn{Quantitative Trait
+Locus} (QTL) analysis in experimental crosses.  It is a reimplementation of the
+@code{R/qtl} package to better handle high-dimensional data and complex cross
+designs.  Broman et al. (2018) <doi:10.1534/genetics.118.301595>.")
     (license license:gpl3)))
 
 (define-public r-zlibbioc
