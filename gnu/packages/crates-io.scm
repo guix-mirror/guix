@@ -21536,14 +21536,14 @@ function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
   (package
     (inherit rust-sha2-0.9)
     (name "rust-sha2")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "sha2" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1827pplynq0ahxid1xq281kiv56kj2afp7gm97v7gw71sbgll117"))))
+        (base32 "0s9yddvyg6anaikdl86wmwfim25c0d4m0xq0y2ghs34alxpg8mm2"))))
     (arguments
      `(#:cargo-inputs
        (("rust-block-buffer" ,rust-block-buffer-0.7)
@@ -21553,8 +21553,7 @@ function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
         ("rust-opaque-debug" ,rust-opaque-debug-0.2)
         ("rust-sha2-asm" ,rust-sha2-asm-0.5))
        #:cargo-development-inputs
-       (("rust-cc" ,rust-cc-1.0) ;; FIXME for rust-sha2-asm, why again?
-        ("rust-digest" ,rust-digest-0.8)
+       (("rust-digest" ,rust-digest-0.8)
         ("rust-hex-literal" ,rust-hex-literal-0.1))))))
 
 (define-public rust-sha2-asm-0.5
