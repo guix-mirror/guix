@@ -7232,7 +7232,10 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
              `(("jemalloc" ,jemalloc))) ; fight nghttpd{,x} heap fragmentation
        ("libev" ,libev)
        ("libxml2" ,libxml2)             ; for ‘nghttp -a’
-       ("openssl" ,openssl)))
+       ("openssl" ,openssl)
+       ,@(if (hurd-target?)
+             `(("openssl-static" ,openssl "static"))
+             '())))
     (arguments
      `(#:configure-flags
        (list (string-append "--libdir=" (assoc-ref %outputs "lib") "/lib")
