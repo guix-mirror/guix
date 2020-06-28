@@ -278,7 +278,7 @@ the Rust programming language.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-memchr" ,rust-memchr-2.2))
+       (("rust-memchr" ,rust-memchr-2.3))
        #:cargo-development-inputs
        (("rust-csv" ,rust-csv-1.1)
         ("rust-docopt" ,rust-docopt-1.1)
@@ -1973,7 +1973,7 @@ Bresenham's line algorithm.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-regex-automata" ,rust-regex-automata-0.1)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
@@ -7864,7 +7864,7 @@ futures-rs library.")
         ("rust-futures-macro" ,rust-futures-macro-0.3)
         ("rust-futures-sink" ,rust-futures-sink-0.3)
         ("rust-futures-task" ,rust-futures-task-0.3)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-pin-utils" ,rust-pin-utils-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
         ("rust-proc-macro-nested" ,rust-proc-macro-nested-0.1)
@@ -7900,7 +7900,7 @@ for the futures-rs library.")
         ("rust-futures-select-macro-preview"
          ,rust-futures-select-macro-preview-0.3)
         ("rust-futures-sink-preview" ,rust-futures-sink-preview-0.3)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-pin-utils" ,rust-pin-utils-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
         ("rust-proc-macro-nested" ,rust-proc-macro-nested-0.1)
@@ -9364,7 +9364,7 @@ loading crate.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-memchr" ,rust-memchr-2.2))
+       (("rust-memchr" ,rust-memchr-2.3))
        #:cargo-development-inputs
        (("rust-regex" ,rust-regex-1))))
     (home-page "https://github.com/BurntSushi/ripgrep")
@@ -10402,7 +10402,7 @@ SystemTime}}.")
         ("rust-globset" ,rust-globset-0.4)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-regex" ,rust-regex-1)
         ("rust-same-file" ,rust-same-file-1.0)
         ("rust-thread-local" ,rust-thread-local-1.0)
@@ -12784,35 +12784,9 @@ compression function.")
 for searching bytes.")
     (license (list license:unlicense license:expat))))
 
-(define-public rust-memchr-2.2
-  (package
-    (name "rust-memchr")
-    (version "2.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "memchr" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "13j6ji9x9ydpi9grbss106gqqr3xn3bcfp28aydqfa4751qrfmw8"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2))
-       #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.8))))
-    (home-page
-     "https://github.com/BurntSushi/rust-memchr")
-    (synopsis "Safe interface to memchr")
-    (description "The @code{memchr} crate provides heavily optimized routines
-for searching bytes.")
-    (license (list license:expat license:unlicense))))
-
 (define-public rust-memchr-1.0
   (package
-    (inherit rust-memchr-2.2)
+    (inherit rust-memchr-2.3)
     (name "rust-memchr")
     (version "1.0.2")
     (source
@@ -13875,7 +13849,7 @@ implementation (which is unstable / requires nightly).")
        #:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-lexical-core" ,rust-lexical-core-0.7)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-regex" ,rust-regex-1)
         ("rust-version-check" ,rust-version-check-0.9))
        #:cargo-development-inputs
@@ -13918,7 +13892,7 @@ combinators library.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-regex" ,rust-regex-1)
         ("rust-version-check" ,rust-version-check-0.1))
        #:cargo-development-inputs
@@ -14668,7 +14642,7 @@ formats.")
        #:cargo-development-inputs
        (("rust-itertools" ,rust-itertools-0.8)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-quickcheck" ,rust-quickcheck-0.8))))
     (home-page "https://github.com/bluss/odds")
     (synopsis "Extra functionality for slices, strings and other things")
@@ -17652,7 +17626,7 @@ stack pointer and inspect the properties of the stack.")
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-getopts" ,rust-getopts-0.2)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-unicase" ,rust-unicase-2))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
@@ -19146,7 +19120,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.6)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-regex-syntax" ,rust-regex-syntax-0.5)
         ("rust-thread-local" ,rust-thread-local-0.3)
         ("rust-utf8-ranges" ,rust-utf8-ranges-1.0))
@@ -19525,7 +19499,7 @@ console applications.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.15)
         ("rust-lru-cache" ,rust-lru-cache-0.1)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-time" ,rust-time-0.1)
         ("rust-url" ,rust-url-1.7)
@@ -24388,7 +24362,7 @@ in Rust.")
         ("rust-iovec" ,rust-iovec-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2.3)
         ("rust-mio" ,rust-mio-0.6)
         ("rust-mio-named-pipes" ,rust-mio-named-pipes-0.1)
         ("rust-mio-uds" ,rust-mio-uds-0.6)
