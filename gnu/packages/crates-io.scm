@@ -21318,8 +21318,40 @@ for the serde framework.")
      "This package provides a Rust wrapper around the FreeType library.")
     (license license:mpl2.0)))  ; build.rs is mpl2.0
 
+(define-public rust-sha-1-0.9
+  (package
+    (name "rust-sha-1")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sha-1" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0w37j7swjkbzgi9mf7ihkw0zfik6vl97fs6jdpqs6r68hvm3c2hp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-buffer" ,rust-block-buffer-0.9)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cpuid-bool" ,rust-cpuid-bool-0.1)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3)
+        ("rust-sha1-asm" ,rust-sha1-asm-0.4))
+       #:cargo-development-inputs
+       (("rust-digest" ,rust-digest-0.9)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "SHA-1 hash function")
+    (description "SHA-1 hash function.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sha-1-0.8
   (package
+    (inherit rust-sha-1-0.9)
     (name "rust-sha-1")
     (version "0.8.1")
     (source
@@ -21331,7 +21363,6 @@ for the serde framework.")
        (sha256
         (base32
          "0s6fdy5wp3x4h2z4fcl2d9vjvrpzr87v4h49r51xcq8nm4qj35i3"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -21342,11 +21373,7 @@ for the serde framework.")
         ("rust-sha1-asm" ,rust-sha1-asm-0.4))
        #:cargo-development-inputs
        (("rust-digest" ,rust-digest-0.8)
-        ("rust-hex-literal" ,rust-hex-literal-0.2))))
-    (home-page "https://github.com/RustCrypto/hashes")
-    (synopsis "SHA-1 hash function")
-    (description "SHA-1 hash function.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))))
 
 (define-public rust-sha1-0.6
   (package
