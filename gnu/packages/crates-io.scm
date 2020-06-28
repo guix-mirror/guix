@@ -8103,7 +8103,7 @@ API library @code{gdi32}.")
     (arguments
      `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1.0)
-        ("rust-typenum" ,rust-typenum-1.10)
+        ("rust-typenum" ,rust-typenum-1)
         ("rust-version-check" ,rust-version-check-0.9))
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1.2)
@@ -8132,7 +8132,7 @@ API library @code{gdi32}.")
     (arguments
      `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1.0)
-        ("rust-typenum" ,rust-typenum-1.10))
+        ("rust-typenum" ,rust-typenum-1))
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1.1)
         ("rust-serde-json" ,rust-serde-json-1.0))))))
@@ -13470,7 +13470,7 @@ checking.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
-        ("rust-typenum" ,rust-typenum-1.10))
+        ("rust-typenum" ,rust-typenum-1))
        #:cargo-development-inputs
        (("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
         ("rust-serde-json" ,rust-serde-json-1.0))))
@@ -25425,7 +25425,7 @@ serializing Rust str")
      "A typesafe store for many value types.")
     (license license:expat)))
 
-(define-public rust-typenum-1.10
+(define-public rust-typenum-1
   (package
     (name "rust-typenum")
     (version "1.10.0")
