@@ -21559,14 +21559,14 @@ function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
 (define-public rust-sha2-asm-0.5
   (package
     (name "rust-sha2-asm")
-    (version "0.5.3")
+    (version "0.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "sha2-asm" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0k3qwv2yl8fyi2i6cprfb8d874ii5kmcmckgnjkwnz2ac9fayyl1"))))
+        (base32 "0y4n8r4362y2fa6p2j0dgny4zfi194gdf01l6j850n9vf8ha3kwj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
