@@ -4472,14 +4472,14 @@ The output can be customized with a formatting system.")
 (define-public ruby-pry
   (package
     (name "ruby-pry")
-    (version "0.11.3")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pry" version))
        (sha256
         (base32
-         "1mh312k3y94sj0pi160wpia0ps8f4kmzvm505i6bvwynfdh7v30g"))))
+         "0iyw4q4an2wmk8v5rn2ghfy2jaz9vmw2nk8415nnpx2s866934qk"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
@@ -4490,7 +4490,7 @@ The output can be customized with a formatting system.")
     (description "Pry is an IRB alternative and runtime developer console for
 Ruby.  It features syntax highlighting, a plugin architecture, runtime
 invocation, and source and documentation browsing.")
-    (home-page "https://pryrepl.org")
+    (home-page "https://cobaltbluemedia.com/pryrepl/")
     (license license:expat)))
 
 (define-public ruby-single-cov
