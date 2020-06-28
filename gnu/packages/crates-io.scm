@@ -20452,8 +20452,38 @@ with one of the implemented strategies.")
          (base32
           "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
 
+(define-public rust-scrypt-0.3
+  (package
+    (name "rust-scrypt")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scrypt" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1apicbvp7cgc1z2nl5l48g8h3kp7p592r4zbkx9vsri2ivnvgv43"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.12)
+        ("rust-hmac" ,rust-hmac-0.8)
+        ("rust-pbkdf2" ,rust-pbkdf2-0.4)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-subtle" ,rust-subtle-2))))
+    (home-page "https://github.com/RustCrypto/password-hashes")
+    (synopsis "Scrypt password-based key derivation function")
+    (description
+     "Scrypt password-based key derivation function.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-scrypt-0.2
   (package
+    (inherit rust-scrypt-0.3)
     (name "rust-scrypt")
     (version "0.2.0")
     (source
@@ -20465,7 +20495,6 @@ with one of the implemented strategies.")
         (sha256
          (base32
           "1pfgqgzdjxjf7c8r1wfka0ackfpv1g8w7wvbr25b42hdx787jv35"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-base64" ,rust-base64-0.9)
@@ -20475,12 +20504,7 @@ with one of the implemented strategies.")
         ("rust-pbkdf2" ,rust-pbkdf2-0.3)
         ("rust-rand" ,rust-rand-0.5)
         ("rust-sha2" ,rust-sha2-0.8)
-        ("rust-subtle" ,rust-subtle-1.0))))
-    (home-page "https://github.com/RustCrypto/password-hashes")
-    (synopsis "Scrypt password-based key derivation function")
-    (description
-     "Scrypt password-based key derivation function.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-subtle" ,rust-subtle-1.0))))))
 
 (define-public rust-scroll-0.10
   (package
