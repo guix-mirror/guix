@@ -22749,8 +22749,31 @@ and Jaro-Winkler.")
      "Parse command line argument by defining a struct, derive crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-subtle-2
+  (package
+    (name "rust-subtle")
+    (version "2.2.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "subtle" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1h9jd7v0imksyl5mvnjk2rw54sa3xrril76z0md61mq2gh056bah"))))
+    (build-system cargo-build-system)
+    (home-page "https://dalek.rs/")
+    (synopsis
+     "Pure-Rust traits and utilities for cryptographic implementations")
+    (description
+     "This package provides Pure-Rust traits and utilities for constant-time
+cryptographic implementations.")
+    (license license:bsd-3)))
+
 (define-public rust-subtle-1.0
   (package
+    (inherit rust-subtle-2)
     (name "rust-subtle")
     (version "1.0.0")
     (source
@@ -22761,15 +22784,7 @@ and Jaro-Winkler.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))
-    (build-system cargo-build-system)
-    (home-page "https://dalek.rs/")
-    (synopsis
-     "Pure-Rust traits and utilities for cryptographic implementations")
-    (description
-     "This package provides Pure-Rust traits and utilities for constant-time
-cryptographic implementations.")
-    (license license:bsd-3)))
+         "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))))
 
 (define-public rust-sval-0.4
   (package
