@@ -8008,8 +8008,38 @@ API library @code{gdi32}.")
     (description "Stackfull Generator Library in Rust.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-generic-array-0.14
+  (package
+    (name "rust-generic-array")
+    (version "0.14.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "generic-array" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "107r1fpm8zcab3lzci4x9par6ik8bra390c60rhxvnmz7dgnlx5c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-typenum" ,rust-typenum-1.10)
+        ("rust-version-check" ,rust-version-check-0.9))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1.2)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/fizyk20/generic-array.git")
+    (synopsis
+     "Generic types implementing functionality of arrays")
+    (description
+     "Generic types implementing functionality of arrays.")
+    (license license:expat)))
+
 (define-public rust-generic-array-0.13
   (package
+    (inherit rust-generic-array-0.14)
     (name "rust-generic-array")
     (version "0.13.2")
     (source
@@ -8021,7 +8051,6 @@ API library @code{gdi32}.")
        (sha256
         (base32
          "1kddwxpd58y807y1r3lijg7sw3gxm6nczl6wp57gamhv6mhygl8f"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -8029,14 +8058,7 @@ API library @code{gdi32}.")
         ("rust-typenum" ,rust-typenum-1.10))
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1.1)
-        ("rust-serde-json" ,rust-serde-json-1.0))))
-    (home-page
-     "https://github.com/fizyk20/generic-array")
-    (synopsis
-     "Generic types implementing functionality of arrays")
-    (description
-     "Generic types implementing functionality of arrays.")
-    (license license:expat)))
+        ("rust-serde-json" ,rust-serde-json-1.0))))))
 
 (define-public rust-generic-array-0.12
   (package
