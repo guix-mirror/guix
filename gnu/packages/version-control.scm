@@ -154,14 +154,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.26.2")
+   (version "2.27.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0j685w6pzkn926z5nf5r8fij4ziipvw4c9yb0wc577nzf4j16rbd"))))
+              "1ybk39ylvs32lywq7ra4l2kdr5izc80r9461hwfnw8pssxs9gjkk"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -178,7 +178,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0rb4f4jc31zrcg4gyjg4fi07dw7nggkjg2nqfiq5p1aayw2f2ga3"))))
+            "176lkcfhjhqin2w8s814j9wwcian9jr6xx6xzn35i5scn14spjz6"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -302,12 +302,12 @@ as well as the classic centralized workflow.")
                 ;; specified in the XML, unlike the above substitution.  Instead it
                 ;; uses a hard-coded URL.  Work around it here, but if this is
                 ;; common perhaps we should hardcode this path in xmlto itself.
-                (("\\$\\(XMLTO\\) -m \\$\\(MANPAGE_XSL\\) man")
+                (("\\$\\(XMLTO\\) -m \\$\\(MANPAGE_XSL\\)")
                  (string-append "$(XMLTO) -x "
                                 (string-append (assoc-ref inputs "docbook-xsl")
                                                "/xml/xsl/docbook-xsl-"
                                                ,(package-version docbook-xsl))
-                                "/manpages/docbook.xsl -m $(MANPAGE_XSL) man")))
+                                "/manpages/docbook.xsl -m $(MANPAGE_XSL)")))
               (invoke "make")
               (invoke "make" "install")
               (invoke "make" "install-doc")
