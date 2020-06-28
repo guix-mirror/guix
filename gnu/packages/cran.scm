@@ -23396,3 +23396,27 @@ It includes methods to simulate and analyze outbreaks.  The methodology is
 described in @url{https://doi.org/10.1093/molbev/msu121,Didelot et al. (2014)}
 and @url{https://doi.org/10.1093/molbev/msw275,Didelot et al. (2017)}.")
     (license license:gpl2+)))
+
+(define-public r-km-ci
+  (package
+    (name "r-km-ci")
+    (version "0.5-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "km.ci" version))
+       (sha256
+        (base32
+         "1l6kw8jppaa1802yc5pbfwwgac56nhwc9p076ivylhms4w7cdf8v"))))
+    (properties `((upstream-name . "km.ci")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/km.ci/")
+    (synopsis "Confidence intervals for the Kaplan-Meier estimator")
+    (description
+     "This package computes various @dfn{confidence intervals} (CI) for the
+Kaplan-Meier estimator, namely: Petos CI, Rothman CI, CIs based on Greenwoods
+variance, Thomas and Grunkemeier CI and the simultaneous confidence bands by
+Nair and Hall and Wellner.")
+    (license license:gpl2+)))
