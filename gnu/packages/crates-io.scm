@@ -1853,6 +1853,27 @@ extension of blocks.")
      "Fixed size buffer for block processing of data.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-block-buffer-0.8
+  (package
+    (inherit rust-block-buffer-0.9)
+    (name "rust-block-buffer")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "block-buffer" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0c9x5b8pk25i13bajqjkzf03bm5hx2y8pi9llfvjpy3nhr295kyv"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-padding" ,rust-block-padding-0.1)
+        ("rust-byte-tools" ,rust-byte-tools-0.3)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-generic-array" ,rust-generic-array-0.14))))))
+
 (define-public rust-block-buffer-0.7
   (package
     (inherit rust-block-buffer-0.9)
