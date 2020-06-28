@@ -7758,14 +7758,14 @@ used to teach mathematics, statistics, computation and modeling.")
 (define-public r-raster
   (package
     (name "r-raster")
-    (version "3.1-5")
+    (version "3.3-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "raster" version))
        (sha256
         (base32
-         "010sq00ijpmwac280ip9rryw0pxk0al8g675v2lc9rdrbgaj4rnv"))))
+         "144mva2dx7ffkq7z0fixr4z76ci1s4lizlyv5r7v07fd4nzg5hby"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
