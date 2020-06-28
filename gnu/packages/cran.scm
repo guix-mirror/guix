@@ -22663,3 +22663,26 @@ help to explain the predictions from any black box model using ideas from game
 theory; see @url{Strumbel and Kononenko (2014),
 doi.org/10.1007/s10115-013-0679-x} for details.")
     (license license:gpl2+)))
+
+(define-public r-metrics
+  (package
+    (name "r-metrics")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Metrics" version))
+       (sha256
+        (base32
+         "0fh8qbjlwzagh272lgwr4bxcqcjb1qpz53mgs8rzlvncax6nk5bk"))))
+    (properties `((upstream-name . "Metrics")))
+    (build-system r-build-system)
+    (home-page "https://github.com/mfrasco/Metrics")
+    (synopsis "Evaluation metrics for machine learning")
+    (description
+     "This package provides an implementation of evaluation metrics in R that
+are commonly used in supervised machine learning.  It implements metrics for
+regression, time series, binary classification, classification, and
+information retrieval problems.  It has zero dependencies and a consistent,
+simple interface for all functions.")
+    (license license:bsd-3)))
