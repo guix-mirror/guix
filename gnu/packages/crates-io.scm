@@ -8052,8 +8052,7 @@ API library @code{gdi32}.")
         (base32
          "1kddwxpd58y807y1r3lijg7sw3gxm6nczl6wp57gamhv6mhygl8f"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1.0)
         ("rust-typenum" ,rust-typenum-1.10))
        #:cargo-development-inputs
