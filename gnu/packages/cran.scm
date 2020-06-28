@@ -23558,3 +23558,26 @@ risk' table and 'censoring count plot'.  Other functions are also available to
 plot adjusted curves for Cox model and to visually examine Cox model
 assumptions.")
     (license license:gpl2)))
+
+(define-public r-forge
+  (package
+    (name "r-forge")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "forge" version))
+       (sha256
+        (base32
+         "0pjfzsc35agkh0zfw2czwajkbsyn6liys5irl5bhz5r1vim3jmwa"))))
+    (properties `((upstream-name . "forge")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-magrittr" ,r-magrittr)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://cran.r-project.org/web/packages/forge/")
+    (synopsis "Cast values into shape")
+    (description
+     "This package provides helper functions with a consistent interface to
+coerce and verify the types and shapes of values for input checking.")
+    (license license:asl2.0)))
