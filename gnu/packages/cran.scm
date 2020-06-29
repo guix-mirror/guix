@@ -23706,3 +23706,33 @@ workflow.  The advantages are:
      "This package provides a computationally stable approach of fitting a
 @dfn{Gaussian Process} (GP) model to a deterministic simulator.")
     (license license:gpl2)))
+
+(define-public r-yardstick
+  (package
+    (name "r-yardstick")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "yardstick" version))
+       (sha256
+        (base32
+         "1qkvbvc0cnwl5mkk47swnd8by84zz0qpy1996fziapn35qxvx9qa"))))
+    (properties `((upstream-name . "yardstick")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
+       ("r-proc" ,r-proc)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
+       ("r-tidyselect" ,r-tidyselect)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/tidymodels/yardstick")
+    (synopsis "Tidy characterizations of model performance")
+    (description
+     "This package provides tidy tools for quantifying how well a model fits
+to a data set such as confusion matrices, class probability curve summaries,
+and regression metrics (e.g., RMSE).")
+    (license license:gpl2)))
