@@ -22662,6 +22662,39 @@ and clustering large sequence datasets using fast alignment-free k-mer
 counting and recursive k-means partitioning.")
     (license license:gpl3)))
 
+(define-public r-hardhat
+  (package
+    (name "r-hardhat")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hardhat" version))
+       (sha256
+        (base32
+         "10x8fw0skaqci03v2qqpbradbra9arm3s5pskcwm4wricd2imr40"))))
+    (properties `((upstream-name . "hardhat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-glue" ,r-glue)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/tidymodels/hardhat")
+    (synopsis "Construct modeling packages")
+    (description
+     "Building modeling packages is hard.  A large amount of effort generally
+goes into providing an implementation for a new method that is efficient,
+fast, and correct, but often less emphasis is put on the user interface.  A
+good interface requires specialized knowledge about S3 methods and formulas,
+which the average package developer might not have.  The goal of
+@code{hardhat} is to reduce the burden around building new modeling packages
+by providing functionality for preprocessing, predicting, and validating
+input.")
+    (license license:expat)))
+
 (define-public r-shapforxgboost
   (package
     (name "r-shapforxgboost")
