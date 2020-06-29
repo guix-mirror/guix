@@ -42,6 +42,9 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -75,6 +78,40 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages xml))
+
+(define-public libdc1394
+  (package
+    (name "libdc1394")
+    (version "2.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://sourceforge.net/projects/" name "/files/"
+                              name "-2" "/" version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1v8gq54n1pg8izn7s15yylwjf8r1l1dmzbm2yvf6pv2fmb4mz41b"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glu" ,glu)
+       ("libraw1394" ,libraw1394)
+       ("libusb" ,libusb)
+       ("libxv" ,libxv)
+       ("linux-headers" ,linux-libre-headers)
+       ("mesa" ,mesa)
+       ("sdl" ,sdl)
+       ("v4l" ,v4l-utils)))
+    (synopsis "1394-Based Digital Camera Control Library")
+    (description "LibDC1394 is a library that provides functionality to control
+any camera that conforms to the 1394-Based Digital Camera Specification written
+by the 1394 Trade Association.  It utilizes the lowlevel functionality provided
+by libraw1394 to communicate with the camera.  It also uses the video1394 kernel
+module for the DMA capture of the video flow.")
+    (home-page "https://damien.douxchamps.net/ieee1394/libdc1394/")
+    (license license:lgpl2.0+)))
 
 (define-public ccextractor
   (package
