@@ -23932,3 +23932,25 @@ final SQL translation of the algorithm.  It currently supports @code{lm()},
 @code{glm()}, @code{randomForest()}, @code{ranger()}, @code{earth()},
 @code{xgb.Booster.complete()}, @code{cubist()}, and @code{ctree()} models.")
     (license license:gpl3)))
+
+(define-public r-janeaustenr
+  (package
+    (name "r-janeaustenr")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "janeaustenr" version))
+       (sha256
+        (base32
+         "1wyn4qc28a3sval8shmyi2d7s4nl3jh96s8pzq871brxcmrncbwr"))))
+    (properties `((upstream-name . "janeaustenr")))
+    (build-system r-build-system)
+    (home-page "https://github.com/juliasilge/janeaustenr")
+    (synopsis "Jane Austen's complete novels")
+    (description
+     "This package provides the full texts for Jane Austen's six completed
+novels, ready for text analysis.  These novels are \"Sense and Sensibility\",
+\"Pride and Prejudice\", \"Mansfield Park\", \"Emma\", \"Northanger Abbey\",
+and \"Persuasion\".")
+    (license license:expat)))
