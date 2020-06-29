@@ -24021,3 +24021,36 @@ vignettes in all common formats.")
                    license:lgpl2.1
                    license:mpl1.1
                    license:expat))))
+
+(define-public r-tidytext
+  (package
+    (name "r-tidytext")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tidytext" version))
+       (sha256
+        (base32
+         "0gck3f039qkpkwn92jlyfan76w0xydg17bh6nsg9qlba7c35kzs6"))))
+    (properties `((upstream-name . "tidytext")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
+       ("r-hunspell" ,r-hunspell)
+       ("r-janeaustenr" ,r-janeaustenr)
+       ("r-matrix" ,r-matrix)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-stopwords" ,r-stopwords)
+       ("r-stringr" ,r-stringr)
+       ("r-tokenizers" ,r-tokenizers)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/juliasilge/tidytext")
+    (synopsis "Text mining using dplyr, ggplot2, and other Tidy tools")
+    (description
+     "This is a package for text mining for word processing and sentiment
+analysis using @code{dplyr}, @code{ggplot2}, and other Tidy tools.")
+    (license license:expat)))
