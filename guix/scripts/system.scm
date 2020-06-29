@@ -482,6 +482,7 @@ list of services."
                             (uuid->string root)
                             root))
            (kernel      (boot-parameters-kernel params))
+           (multiboot-modules (boot-parameters-multiboot-modules params))
            (provenance  (catch 'system-error
                           (lambda ()
                             (call-with-input-file
@@ -510,6 +511,12 @@ list of services."
               (file-system-device->string root-device))
 
       (format #t (G_ "  kernel: ~a~%") kernel)
+
+      (match multiboot-modules
+        (() #f)
+        (((modules . _) ...)
+         (format #t (G_ "  multiboot: ~a~%")
+                 (string-join modules "\n    "))))
 
       (match provenance
         (#f #t)
