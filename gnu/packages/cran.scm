@@ -23820,3 +23820,45 @@ Design} (SFD) and to test their quality.")
 directly estimated from the data).  These tools can be used to define objects
 for creating, simulating, or validating values for such parameters.")
     (license license:gpl2)))
+
+(define-public r-tune
+  (package
+    (name "r-tune")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tune" version))
+       (sha256
+        (base32
+         "0xiidzkl0hbd0f7jh1v2kkg26wdgy33w74c9bmpjgy317ckhsz8h"))))
+    (properties `((upstream-name . "tune")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-dials" ,r-dials)
+       ("r-dplyr" ,r-dplyr)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glue" ,r-glue)
+       ("r-gpfit" ,r-gpfit)
+       ("r-hardhat" ,r-hardhat)
+       ("r-lifecycle" ,r-lifecycle)
+       ("r-parsnip" ,r-parsnip)
+       ("r-purrr" ,r-purrr)
+       ("r-recipes" ,r-recipes)
+       ("r-rlang" ,r-rlang)
+       ("r-rsample" ,r-rsample)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-workflows" ,r-workflows)
+       ("r-yardstick" ,r-yardstick)))
+    (home-page "https://github.com/tidymodels/tune")
+    (synopsis "Tidy tuning tools")
+    (description
+     "The ability to tune models is important.  @code{tune} contains functions
+and classes to be used in conjunction with other @code{tidymodels} packages
+for finding reasonable values of hyper-parameters in models, pre-processing
+methods, and post-processing steps.")
+    (license license:expat)))
