@@ -896,14 +896,14 @@ weak-signal conditions.")
   (package
     (inherit wsjtx)
     (name "js8call")
-    (version "2.1.1")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://files.js8call.com/" version
                            "/js8call-" version ".tgz"))
        (sha256
-        (base32 "034jnv6h172znn9ijl6wpmzx0rqibb69ppg52ndvkxhqlgrbsvyc"))
+        (base32 "149sjwc4zg6ckgq26af93p4fxappa4k9dh7rdy67g8ajfjad4cd8"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -921,7 +921,7 @@ weak-signal conditions.")
      `(("boost" ,boost)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
-       ("hamlib" ,hamlib)
+       ("hamlib" ,wsjtx-hamlib)
        ("libusb" ,libusb)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
