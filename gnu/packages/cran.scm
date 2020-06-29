@@ -23788,3 +23788,35 @@ different types of resampling objects (e.g. bootstrap, cross-validation).")
      "This package provides tools to create some specific @code{Space-Filling
 Design} (SFD) and to test their quality.")
     (license license:gpl3)))
+
+(define-public r-dials
+  (package
+    (name "r-dials")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dials" version))
+       (sha256
+        (base32
+         "0fqxdlgwdwpmni2760yagrzqbniz72yl547fcmlx9kzazhzszgq0"))))
+    (properties `((upstream-name . "dials")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dicedesign" ,r-dicedesign)
+       ("r-dplyr" ,r-dplyr)
+       ("r-glue" ,r-glue)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)
+       ("r-tibble" ,r-tibble)
+       ("r-vctrs" ,r-vctrs)
+       ("r-withr" ,r-withr)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://dials.tidymodels.org/")
+    (synopsis "Tools for creating tuning parameter values")
+    (description
+     "Many models contain tuning parameters (i.e. parameters that cannot be
+directly estimated from the data).  These tools can be used to define objects
+for creating, simulating, or validating values for such parameters.")
+    (license license:gpl2)))
