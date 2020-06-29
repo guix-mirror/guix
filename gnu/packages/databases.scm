@@ -1481,15 +1481,14 @@ extremely small.")
 (define-public perl-dbix-class
   (package
     (name "perl-dbix-class")
-    (version "0.082841")
+    (version "0.082842")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
                            "DBIx-Class-" version ".tar.gz"))
        (sha256
-        (base32
-         "1gf3hgv8f9rnr8bl4ljgsqk4aliphmvljhsk4282kvdc4mcgh1fp"))))
+        (base32 "1rh7idjjbibc1zmiaaarask434lh0lx7f2xyfwmy37k9fa0xcpmh"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
@@ -1517,7 +1516,7 @@ extremely small.")
        ("perl-path-class" ,perl-path-class)
        ("perl-scalar-list-utils" ,perl-scalar-list-utils)
        ("perl-scope-guard" ,perl-scope-guard)
-       ("perl-sql-abstract" ,perl-sql-abstract)
+       ("perl-sql-abstract-classic" ,perl-sql-abstract-classic)
        ("perl-sub-name" ,perl-sub-name)
        ("perl-text-balanced" ,perl-text-balanced)
        ("perl-try-tiny" ,perl-try-tiny)))
