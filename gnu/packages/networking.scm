@@ -119,6 +119,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
@@ -130,6 +131,48 @@
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
+
+(define-public nanomsg
+  (package
+    (name "nanomsg")
+    (version "1.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/nanomsg/nanomsg.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01ddfzjlkf2dgijrmm3j3j8irccsnbgfvjcnwslsfaxnrmrq5s64"))))
+    (build-system cmake-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "-DNN_ENABLE_COVERAGE=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share/doc"))
+               (rename-file
+                (string-append out "/share/doc/nanomsg")
+                (string-append doc "/share/doc/nanomsg"))
+               #t))))))
+    (native-inputs
+     `(("asciidoctor" ,ruby-asciidoctor)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Scalable socket library")
+    (description "Nanomsg is a socket library that provides several common
+communication patterns.  It aims to make the networking layer fast, scalable,
+and easy to use.  Implemented in C, it works on a wide range of operating
+systems with no further dependencies.")
+    (home-page "https://nanomsg.org/")
+    (license (license:non-copyleft "file:///COPYING"))))
 
 (define-public blueman
   (package
