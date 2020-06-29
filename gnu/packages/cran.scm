@@ -24089,3 +24089,33 @@ analysis using @code{dplyr}, @code{ggplot2}, and other Tidy tools.")
 model without having to remember the different argument names across different
 functions or computational engines (e.g. R, Spark, Stan, etc).")
     (license license:gpl2)))
+
+(define-public r-infer
+  (package
+    (name "r-infer")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "infer" version))
+       (sha256
+        (base32
+         "0m00xhzrvmskwj4jwncakwxhzivn9pyiylq4r8s6ny4yiwqg303m"))))
+    (properties `((upstream-name . "infer")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glue" ,r-glue)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/tidymodels/infer")
+    (synopsis "Tidy statistical inference")
+    (description
+     "The objective of this package is to perform inference using an
+expressive statistical grammar that coheres with the Tidy design framework.")
+    (license license:cc0)))
