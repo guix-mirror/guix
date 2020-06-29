@@ -23899,3 +23899,36 @@ the @dfn{root mean squared error} (RMSE) using 10-fold cross-validation, there
 are 10 paired statistics.  These can be used to make comparisons between
 models without involving a test set.")
     (license license:gpl2)))
+
+(define-public r-tidypredict
+  (package
+    (name "r-tidypredict")
+    (version "0.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tidypredict" version))
+       (sha256
+        (base32
+         "1i6zl6wjz6wbpkmkc9z9ikp8zgck3qh38lar0r6q2jzl8fxpimg4"))))
+    (properties `((upstream-name . "tidypredict")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
+       ("r-knitr" ,r-knitr)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://tidypredict.tidymodels.org")
+    (synopsis "Run predictions inside the database")
+    (description
+     "This package parses a fitted R model object, and returns a formula in
+Tidy Eval code that calculates the predictions.  It works with several
+database backends because it leverages @code{dplyr} and @code{dbplyr} for the
+final SQL translation of the algorithm.  It currently supports @code{lm()},
+@code{glm()}, @code{randomForest()}, @code{ranger()}, @code{earth()},
+@code{xgb.Booster.complete()}, @code{cubist()}, and @code{ctree()} models.")
+    (license license:gpl3)))
