@@ -174,7 +174,8 @@ Software Heritage."
   ;; Converts "string or #nil" coming from JSON to "string or #f".
   (match-lambda
     ((? string? str) str)
-    ((? null?) #f)))
+    ((? null?) #f)                                ;Guile-JSON 3.x
+    ('null #f)))                                  ;Guile-JSON 4.x
 
 (define %allow-request?
   ;; Takes a URL and method (e.g., the 'http-get' procedure) and returns true
