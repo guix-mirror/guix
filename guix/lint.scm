@@ -1208,7 +1208,7 @@ Heritage")
                     '())))
                '()))))
       (match-lambda*
-        ((key url method response)
+        (('swh-error url method response)
          (response->warning url method response))
         ((key . args)
          (if (eq? key skip-key)
