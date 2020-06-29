@@ -122,6 +122,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages textutils)
@@ -131,6 +132,49 @@
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
+
+(define-public nng
+  (package
+    (name "nng")
+    (version "1.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/nanomsg/nng.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "042kmqzvdhv8fqmjr9kyi7rirm6akmpidfav6j14zhrab221n06j"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "-DNNG_ENABLE_COVERAGE=ON"
+        "-DNNG_ENABLE_TLS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; These tests require network access.
+             (substitute* "tests/CMakeLists.txt"
+               (("add_nng_test1\\(httpclient 60 NNG_SUPP_HTTP\\)") "")
+               (("add_nng_test1\\(resolv 10 NNG_STATIC_LIB\\)") "")
+               (("add_nng_test\\(tls 60\\)") ""))
+             #t)))))
+    (native-inputs
+     `(("ksh" ,oksh)))
+    (inputs
+     `(("mbedtls" ,mbedtls-apache)))
+    (synopsis "Lightweight messaging library")
+    (description "NNG project is a rewrite of the scalability protocols library
+known as libnanomsg, and adds significant new capabilities, while retaining
+compatibility with the original.  It is a lightweight, broker-less library,
+offering a simple API to solve common recurring messaging problems, such as
+publish/subscribe, RPC-style request/reply, or service discovery.")
+    (home-page "https://nng.nanomsg.org/")
+    (license license:expat)))
 
 (define-public nanomsg
   (package
