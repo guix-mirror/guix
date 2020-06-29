@@ -23683,3 +23683,26 @@ workflow.  The advantages are:
 @end enumerate
 ")
     (license license:expat)))
+
+(define-public r-gpfit
+  (package
+    (name "r-gpfit")
+    (version "1.0-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "GPfit" version))
+       (sha256
+        (base32
+         "05mpiyi2vxv0wqp422n1mnxa8msc4daq40cwpnpngbcwqhlgqkby"))))
+    (properties `((upstream-name . "GPfit")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-lhs" ,r-lhs)))
+    (home-page "https://cran.r-project.org/web/packages/GPfit/")
+    (synopsis "Gaussian Processes modeling")
+    (description
+     "This package provides a computationally stable approach of fitting a
+@dfn{Gaussian Process} (GP) model to a deterministic simulator.")
+    (license license:gpl2)))
