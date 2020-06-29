@@ -371,3 +371,36 @@ It understands mnemonics and generates code for NMOS 6502s (such
 as 6502A, 6504, 6507, 6510, 7501, 8500, 8501, 8502 ...),
  CMOS 6502s (65C02 and Rockwell R65C02) and the 65816.")
     (license license:gpl2)))
+
+(define-public armips
+  (package
+    (name "armips")
+    (version "0.11.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kingcom/armips.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1c4dhjkvynqn9xm2vcvwzymk7yg8h25alnawkz4z1dnn1z1k3r9g"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "./armipstests" "../source/Tests")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "armips" (string-append (assoc-ref outputs "out")
+                                                   "/bin"))
+             #t)))))
+    (home-page "https://github.com/Kingcom/armips")
+    (synopsis "Assembler for various ARM and MIPS platforms")
+    (description
+     "armips is an assembler with full support for the MIPS R3000, MIPS R4000,
+Allegrex and RSP instruction sets, partial support for the EmotionEngine
+instruction set, as well as complete support for the ARM7 and ARM9 instruction
+sets, both THUMB and ARM mode.")
+    (license license:expat)))
