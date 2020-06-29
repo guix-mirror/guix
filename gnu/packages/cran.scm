@@ -23736,3 +23736,35 @@ workflow.  The advantages are:
 to a data set such as confusion matrices, class probability curve summaries,
 and regression metrics (e.g., RMSE).")
     (license license:gpl2)))
+
+(define-public r-rsample
+  (package
+    (name "r-rsample")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rsample" version))
+       (sha256
+        (base32
+         "0s6hgq0rcv3ianyidq3n9z34y5ww51gaggqkwmwns9yyxmwfjcm8"))))
+    (properties `((upstream-name . "rsample")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-furrr" ,r-furrr)
+       ("r-generics" ,r-generics)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://rsample.tidymodels.org")
+    (synopsis "General resampling infrastructure")
+    (description
+     "This package provides classes and functions to create and summarize
+different types of resampling objects (e.g. bootstrap, cross-validation).")
+    (license license:gpl2)))
