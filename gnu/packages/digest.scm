@@ -21,7 +21,8 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (ice-9 match))
 
 (define-public xxhash
   (package
@@ -40,6 +41,11 @@
     (arguments
      `(#:make-flags
        (list ,(string-append "CC=" (cc-for-target))
+             ,(match (or (%current-target-system)
+                         (%current-system))
+                ;; Detect vector instruction set at run time.
+                ((or "i686-linux" "x86_64-linux") "DISPATCH=1")
+                (_ "DISPATCH=0"))
              "XXH_FORCE_MEMORY_ACCESS=1" ; improved performance with GCC
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
