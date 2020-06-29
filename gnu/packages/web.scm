@@ -1225,7 +1225,7 @@ high performance.")
 (define-public wslay
   (package
     (name "wslay")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
@@ -1234,7 +1234,7 @@ high performance.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ak9a6hsanhys40yhv7c2gqkfghpm6jx36j1pnml8ajvgaky5q98"))))
+        (base32 "1w32iljg4inqf0712w5fxxhggvmjh6ipl2lnz0h36dv1xrj0d964"))))
     (build-system gnu-build-system)
     (arguments
      ;; Parallel builds don't reliably succeed.
