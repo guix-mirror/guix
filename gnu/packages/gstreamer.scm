@@ -30,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix utils)
@@ -56,6 +57,7 @@
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages qt)
@@ -73,6 +75,58 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages xml))
+
+(define-public ccextractor
+  (package
+    (name "ccextractor")
+    (version "0.88")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/CCExtractor/ccextractor.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sya45hvv4d46bk7541yimmafgvgyhkpsvwfz9kv6pm4yi1lz6nb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:configure-flags
+       (list
+        "-DWITH_FFMPEG=ON"
+        "-DWITH_OCR=ON"
+        "-DWITH_SHARING=ON"
+        "-DWITH_HARDSUBX=ON")
+       #:phases
+       (modify-phases %standard-phases
+         ;; The package is in a sub-dir of this repo.
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "src")
+             #t))
+         (add-after 'chdir 'fix-build-errors
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("libnanomsg")
+                "nanomsg"))
+             #t)))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("ffmeg" ,ffmpeg-3.4)
+       ("nanomsg" ,nanomsg)
+       ("ocr" ,tesseract-ocr)
+       ("zlib" ,zlib)))
+    (synopsis "Closed Caption Extractor")
+    (description "CCExtractor is a tool that analyzes video files and produces
+independent subtitle files from the closed captions data.  It is portable, small,
+and very fast.")
+    (home-page "https://www.ccextractor.org/")
+    (license license:gpl2+)))
 
 (define-public libvisual
   (package
