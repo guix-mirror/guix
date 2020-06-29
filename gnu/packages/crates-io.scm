@@ -27869,7 +27869,7 @@ color in a Windows console.")
 (define-public rust-x11-dl-2
   (package
     (name "rust-x11-dl")
-    (version "2.18.4")
+    (version "2.18.5")
     (source
      (origin
        (method url-fetch)
@@ -27877,8 +27877,7 @@ color in a Windows console.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0n1w837xagxqgwx2880d7c9ks6l3g1kk00yd75afdaiv58sf2rdy"))))
+        (base32 "1y7yq4sfvv56shk4v3s7gvlrwk9d0migj622fl4i4c5klpiq3y9b"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
