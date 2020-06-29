@@ -9204,13 +9204,14 @@ file when the JVM loads it.")
     (name "java-jcommander")
     (version "1.71")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/cbeust/jcommander/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cbeust/jcommander")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f5k2ckay6qjc3d3w3d7bc0p3cx3c7n6p6zxvw1kibqdr0q98wlx"))))
+                "12vcpc19sd7jhvjgp7xz1qjanfix162xb3x2q5zah93rjklj1h57"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-jcommander.jar"
