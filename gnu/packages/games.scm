@@ -4225,16 +4225,16 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.2")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/pr-starfighter/starfighter/releases"
                     "/download/v" version "/starfighter-"
-                    (version-major+minor version) "-src.tar.gz"))
+                    version "-src.tar.gz"))
               (sha256
                (base32
-                "1ldd9cbvl694ps4sapr8213m3zjrci7gii5x3kjjfalkikmndpd2"))))
+                "0bmrid26z7il42lczfs3j3cv671az9fxi2wkf0s22smmzkhcnnrz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
