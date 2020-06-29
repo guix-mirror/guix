@@ -353,7 +353,10 @@ file system labels."
          (('initrd (? string? file))
           file)))
 
-      (multiboot-modules (or (assq 'multiboot-modules rest) '()))
+      (multiboot-modules
+       (match (assq 'multiboot-modules rest)
+         ((_ args) args)
+         (#f       '())))
 
       (store-device
        ;; Linux device names like "/dev/sda1" are not suitable GRUB device
