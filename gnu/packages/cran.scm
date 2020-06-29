@@ -24054,3 +24054,38 @@ vignettes in all common formats.")
      "This is a package for text mining for word processing and sentiment
 analysis using @code{dplyr}, @code{ggplot2}, and other Tidy tools.")
     (license license:expat)))
+
+(define-public r-parsnip
+  (package
+    (name "r-parsnip")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "parsnip" version))
+       (sha256
+        (base32
+         "1p33absjd2lnq5aikr42him4b724qzxr1pzvdnazg789f763i47l"))))
+    (properties `((upstream-name . "parsnip")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
+       ("r-globals" ,r-globals)
+       ("r-glue" ,r-glue)
+       ("r-magrittr" ,r-magrittr)
+       ("r-prettyunits" ,r-prettyunits)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://parsnip.tidymodels.org")
+    (synopsis "Common API to modeling and analysis functions")
+    (description
+     "This package provides a common interface to allow users to specify a
+model without having to remember the different argument names across different
+functions or computational engines (e.g. R, Spark, Stan, etc).")
+    (license license:gpl2)))
