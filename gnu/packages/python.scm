@@ -401,6 +401,17 @@ data types.")
           ,@(if (hurd-system?)
                 `((delete 'patch-regen-for-hurd)) ;regen was removed after 3.5.9
                 '())
+          ,@(if (hurd-target?)
+                ;; The build system refuses to cross-compile for unknown targets
+                ;; even though it works fine.  Add GNU/Hurd target.
+                ;; TODO: Make it a patch in a future rebuild cycle.
+                '((add-before 'configure 'support-hurd-cross-compile
+                    (lambda _
+                      (substitute* "configure"
+                        (("\\*-\\*-vxworks.*" all)
+                         (string-append "*-*-gnu)\nac_sys_system=GNU\n;;\n" all)))
+                      #t)))
+                '())
           (add-before 'check 'set-TZDIR
             (lambda* (#:key inputs native-inputs #:allow-other-keys)
               ;; test_email requires the Olson time zone database.
