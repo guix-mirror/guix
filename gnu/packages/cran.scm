@@ -24213,3 +24213,26 @@ used for univariate censored data (see data set @code{cosmesis}), and for
 censored data with competing risks (see data set @code{menopause}).  The
 package also provides functions to visualize the observed data and the MLE.")
     (license license:gpl2+)))
+
+(define-public r-perm
+  (package
+    (name "r-perm")
+    (version "1.0-0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "perm" version))
+       (sha256
+        (base32
+         "0075awl66ynv10vypg63fcxk33qzvxddrp8mi4w08ysvimcyxijk"))))
+    (properties `((upstream-name . "perm")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/perm/")
+    (synopsis "Exact or asymptotic permutation tests")
+    (description
+     "This package provides several methods for performing permutation tests.
+It has three main functions, to perform linear permutation tests.  These tests
+are tests where the test statistic is the sum of the product of a
+covariate (usually group indicator) and the scores.")
+    ;; Any version of the GPL
+    (license license:gpl2+)))
