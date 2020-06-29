@@ -23986,3 +23986,38 @@ documents, each with the same number of words.  The tokenizers have a
 consistent interface, and the package is built on the @code{stringi} and
 @code{Rcpp} packages for fast yet correct tokenization in UTF-8 encoding.")
     (license license:expat)))
+
+(define-public r-hunspell
+  (package
+    (name "r-hunspell")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hunspell" version))
+       (sha256
+        (base32
+         "0mwqw5p0ph083plm2hr2hqr50bjg2dw862dpsfm4l2fgyy3rryq1"))))
+    (properties `((upstream-name . "hunspell")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ropensci/hunspell#readme")
+    (synopsis "High-performance stemmer, tokenizer, and spell checker")
+    (description
+     "This package provides a low-level spell checker and morphological
+analyzer based on the famous @code{hunspell} library.  The package can analyze
+or check individual words as well as parse text, LaTeX, HTML or XML documents.
+For a more user-friendly interface use the @code{spelling} package which
+builds on this package to automate checking of files, documentation and
+vignettes in all common formats.")
+    ;; The hunspell library itself is available under one of GPL2, LGPL2.1, or
+    ;; MPL; in addition to these licenses the rest of the R wrapper is also
+    ;; available under the Expat license.
+    (license (list license:gpl2
+                   license:lgpl2.1
+                   license:mpl1.1
+                   license:expat))))
