@@ -24119,3 +24119,49 @@ functions or computational engines (e.g. R, Spark, Stan, etc).")
      "The objective of this package is to perform inference using an
 expressive statistical grammar that coheres with the Tidy design framework.")
     (license license:cc0)))
+
+(define-public r-tidymodels
+  (package
+    (name "r-tidymodels")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tidymodels" version))
+       (sha256
+        (base32
+         "1bi5vh80f6f2ibhyaapgnl7q1mkkx8425vj6ci0ml5rb7l8jhjm8"))))
+    (properties `((upstream-name . "tidymodels")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-dials" ,r-dials)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-infer" ,r-infer)
+       ("r-magrittr" ,r-magrittr)
+       ("r-parsnip" ,r-parsnip)
+       ("r-pillar" ,r-pillar)
+       ("r-purrr" ,r-purrr)
+       ("r-recipes" ,r-recipes)
+       ("r-rlang" ,r-rlang)
+       ("r-rsample" ,r-rsample)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyposterior" ,r-tidyposterior)
+       ("r-tidypredict" ,r-tidypredict)
+       ("r-tidytext" ,r-tidytext)
+       ("r-tune" ,r-tune)
+       ("r-workflows" ,r-workflows)
+       ("r-yardstick" ,r-yardstick)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/tidymodels/tidymodels")
+    (synopsis "Tidy collection for modeling and statistical analysis")
+    (description
+     "The tidy modeling \"verse\" is a collection of packages for modeling and
+statistical analysis that share the underlying design philosophy, grammar, and
+data structures of the tidyverse.")
+    (license license:gpl3)))
