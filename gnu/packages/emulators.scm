@@ -1839,3 +1839,134 @@ performance, features, and ease of use.")
        "Unicorn is a lightweight, multi-platform, multi-architecture CPU emulator
 framework based on QEMU.")
       (license license:gpl2+))))
+
+(define-public ppsspp
+  (package
+    (name "ppsspp")
+    (version "1.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hrydgard/ppsspp.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "02yx1w0ygclnmdl0imsvgj24lkzi55wvxkf47q617j0jgrqhy8yl"))
+       (file-name (git-file-name name version))
+       (patches
+        (search-patches "ppsspp-disable-upgrade-and-gold.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           ;; Unbundle sources.
+           (substitute* (list "Common/Vulkan/VulkanContext.cpp"
+                              "ext/native/thin3d/vulkan_utils.cpp"
+                              "GPU/Common/ShaderCommon.cpp"
+                              "GPU/Common/ShaderTranslation.cpp"
+                              "SDL/SDLMain.cpp")
+             (("ext/glslang/") "")
+             (("ext/SPIRV-Cross/") "spirv_cross/"))
+           ;; Patch CMakeLists.
+           (substitute* "CMakeLists.txt"
+             (("include_directories\\(ext/glslang\\)") "")
+             (("spirv-cross-glsl" all)
+              (string-append all
+                             " spirv-cross-core spirv-cross-cpp"
+                             " spirv-cross-reflect spirv-cross-util")))
+           (substitute* "ext/CMakeLists.txt"
+             (("add_subdirectory\\(glslang\\)") "")
+             (("add_subdirectory\\(SPIRV-Cross-build\\)") ""))
+           (delete-file-recursively "ext/cmake")
+           (substitute* "git-version.cmake"
+             (("unknown") ,version))))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("glew" ,glew)
+       ("glslang" ,glslang)
+       ("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("sdl2" ,sdl2)
+       ("snappy" ,snappy)
+       ("spirv-cross" ,spirv-cross)
+       ("zlib" ,zlib)
+       ;; TODO: unbundle builds.
+       ("armips-source" ,(package-source armips))
+       ("lang"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/hrydgard/ppsspp-lang.git")
+                 (commit "d184ba2b607a03435be579406b816c90add334e6")))
+           (sha256
+            (base32 "0s003x6247nx09qd6a1jz1l2hsk5d6k1zmh8mg3m6hjjhvbvd9j9"))))
+       ("tests"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/hrydgard/pspautotests.git")
+                 (commit "328b839c7243e7f733f9eae88d059485e3d808e7")))
+           (sha256
+            (base32 "1gj1kr5ijxrqwvz7c41phskjr70ndp8iz0gr8c3xxsd8p9z5gdvm"))))))
+    (arguments
+     `(#:out-of-source? #f
+       #:configure-flags (list "-DUSE_DISCORD=OFF"
+                               "-DUSE_SYSTEM_FFMPEG=ON"
+                               ;; For testing.
+                               "-DUNITTEST=ON" "-DHEADLESS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-external-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; TODO: unbundle builds.  Not only should we not copy these
+             ;; sources in, we should also remove as much from "ext/" as we
+             ;; can.
+             (copy-recursively (assoc-ref inputs "armips-source")
+                               "ext/armips")
+             ;; Some tests are externalised, so we add them here.
+             (copy-recursively (assoc-ref inputs "tests")
+                               "pspautotests")
+             ;; i18n is externalised, so we add it here.
+             (copy-recursively (assoc-ref inputs "lang")
+                               "assets/lang")
+             #t))
+         (replace 'check
+           (lambda _
+             (for-each
+              (lambda (t) (invoke "./unitTest" t))
+              '("Arm64Emitter" "ArmEmitter" "X64Emitter" "VertexJit" "Asin"
+                "SinCos" "VFPUSinCos" "MathUtil" "Parsers" "Jit"
+                "MatrixTranspose" "ParseLBN" "QuickTexHash" "CLZ" "MemMap"))
+             (invoke "python3" "test.py" "-g")
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin/ppsspp (string-append out "/bin/ppsspp"))
+                    (share (string-append out "/share/ppsspp")))
+               (copy-recursively "icons/hicolor"
+                                 (string-append out "/share/icons/hicolor"))
+               (install-file "PPSSPPSDL" share)
+               (copy-recursively "assets" (string-append share "/assets"))
+
+               (make-desktop-entry-file
+                (string-append out "/share/applications/ppsspp.desktop")
+                #:name "PPSSPP"
+                #:exec (string-append share "/PPSSPPSDL")
+                #:icon "ppsspp")
+               (mkdir-p (string-append out "/bin"))
+               (with-output-to-file bin/ppsspp
+                 (lambda ()
+                   (format #t "#!~a~%exec ~a/PPSSPPSDL \"$@\""
+                           (which "sh") share)))
+               (chmod bin/ppsspp #o755)
+               #t))))))
+    (home-page "https://www.ppsspp.org/")
+    (synopsis "PSP emulator")
+    (description
+     "PPSSPP is a ``high-level'' emulator simulating the PSP operating
+system.")
+    (license license:gpl2+)))
