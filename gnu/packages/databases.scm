@@ -938,7 +938,7 @@ as a drop-in replacement of MySQL.")
 (define-public mariadb-connector-c
   (package
     (name "mariadb-connector-c")
-    (version "3.1.8")
+    (version "3.1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -947,7 +947,7 @@ as a drop-in replacement of MySQL.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "0yrzhsxmjiwkhchagx8dymzhvxl3k5h40wn9wpicqjvgjb9k8523"))))
+                "1izjzf7yzjqzlk8dkp327fa9lawsv2hnnlnr7g5lshyx5azrk38h"))))
     (inputs
      `(("openssl" ,openssl)))
     (build-system cmake-build-system)
