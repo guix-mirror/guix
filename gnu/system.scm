@@ -351,7 +351,8 @@ file system labels."
          (('initrd ('string-append directory file)) ;the old format
           (string-append directory file))
          (('initrd (? string? file))
-          file)))
+          file)
+         (#f #f)))
 
       (multiboot-modules
        (match (assq 'multiboot-modules rest)
