@@ -1782,6 +1782,42 @@ structures you provide it, so that you don't have to modify your code every
 time your data changes.")
     (license license:perl-license)))
 
+(define-public perl-sql-abstract-classic
+  (package
+    (name "perl-sql-abstract-classic")
+    (version "1.91")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
+                           "SQL-Abstract-Classic-" version ".tar.gz"))
+       (sha256
+        (base32 "0a7g13hs3kdxrjn43sfli09mgsi9d6w0dfw6hlk268av17yisgaf"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-mro-compat" ,perl-mro-compat)
+       ("perl-sql-abstract" ,perl-sql-abstract)))
+    (home-page "https://metacpan.org/release/SQL-Abstract-Classic")
+    (synopsis "Generate SQL from Perl data structures")
+    (description
+     "This module is nearly identical to @code{SQL::Abstract} 1.81, and exists
+to preserve the ability of users to opt into the new way of doing things in
+later versions according to their own schedules.
+
+It is an abstract SQL generation module based on the concepts used by
+@code{DBIx::Abstract}, with several important differences, especially when it
+comes to @code{WHERE} clauses.  These concepts were modified to make the SQL
+easier to generate from Perl data structures.
+
+The underlying idea is for this module to do what you mean, based on the data
+structures you provide it.  You shouldn't have to modify your code every time
+your data changes, as this module figures it out.")
+    (license license:perl-license)))
+
 (define-public perl-sql-splitstatement
   (package
     (name "perl-sql-splitstatement")
