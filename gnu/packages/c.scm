@@ -311,7 +311,7 @@ any other grammar rules.")
 (define-public sparse
   (package
     (name "sparse")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -319,7 +319,7 @@ any other grammar rules.")
                               "sparse-"  version ".tar.xz"))
               (sha256
                (base32
-                "0qavyryxmhd1rf11akgn1nq3r15k11bqa3qajaq36a56r225rc7x"))))
+                "1z11chawwcmf5xxx5v52cj7wrr3warz6q5wlcjvxpif1jbga172i"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
