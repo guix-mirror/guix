@@ -687,47 +687,10 @@ as the 'native-search-paths' field."
          (variable "LIBRARY_PATH")
          (files '("lib" "lib64")))))
 
-(define-public gfortran-4.8
-  (hidden-package
-   (custom-gcc gcc-4.8 "gfortran" '("fortran")
-               %generic-search-paths)))
-
-(define-public gfortran-4.9
-  (hidden-package
-   (custom-gcc gcc-4.9 "gfortran" '("fortran")
-               %generic-search-paths)))
-
-(define-public gfortran-5
-  (hidden-package
-   (custom-gcc gcc-5 "gfortran" '("fortran")
-               %generic-search-paths)))
-
-(define-public gfortran-6
-  (hidden-package
-   (custom-gcc gcc-6 "gfortran" '("fortran")
-               %generic-search-paths)))
-
-(define-public gfortran-7
-  (hidden-package
-   (custom-gcc gcc-7 "gfortran" '("fortran")
-               %generic-search-paths)))
-
-(define-public gfortran-8
-  (hidden-package
-   (custom-gcc gcc-8 "gfortran" '("fortran")
-               %generic-search-paths)))
-
-(define-public gfortran-9
-  (hidden-package
-   (custom-gcc gcc-9 "gfortran" '("fortran")
-               %generic-search-paths)))
-
 (define-public gfortran
-  ;; Note: Update this when GCC changes!  We cannot use
-  ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
-  ;; that is not 'eq?' with GFORTRAN-5, and thus 'fold-packages' would
-  ;; report two gfortran@5 that are in fact identical.
-  gfortran-7)
+  (hidden-package
+   (custom-gcc gcc "gfortran" '("fortran")
+               %generic-search-paths)))
 
 (define-public libgccjit
   (package
