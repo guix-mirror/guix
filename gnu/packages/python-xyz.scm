@@ -11642,15 +11642,15 @@ graphviz.")
                               "known_failures.py" "--ignore" "skipped_tests.txt"))))))
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)
-       ("python-objgraph" ,python-objgraph)))
+       ("python-objgraph" ,python-objgraph)
+       ("python-zope.event" ,python-zope-event)
+       ("python-zope.interface" ,python-zope-interface)))
     (native-inputs
      `(("python-six" ,python-six)
 
        ;; For tests.
        ("python-dnspython" ,python-dnspython)
-       ("python-psutil" ,python-psutil)
-       ("python-zope.event" ,python-zope-event)
-       ("python-zope.interface" ,python-zope-interface)))
+       ("python-psutil" ,python-psutil)))
     (inputs
      `(("c-ares" ,c-ares)
        ("libev" ,libev)))
