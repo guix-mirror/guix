@@ -9172,7 +9172,11 @@ readability and make maintenance of tests easier.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h3zlcyqiaq01fspm69h7vki67raw305w89p4ha8vlhpzw02qifm"))))
+                "0h3zlcyqiaq01fspm69h7vki67raw305w89p4ha8vlhpzw02qifm"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file "javassist.jar")))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-jboss-javassist.jar"
@@ -9184,10 +9188,6 @@ readability and make maintenance of tests easier.")
          (add-after 'unpack 'make-files-writable
            (lambda _
              (for-each make-file-writable (find-files "."))
-             #t))
-         (add-before 'configure 'remove-binary
-           (lambda _
-             (delete-file "javassist.jar")
              #t)))))
     (native-inputs
      `(("junit" ,java-junit)))
