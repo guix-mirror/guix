@@ -26,6 +26,7 @@
 ;;; Copyright © 2020 Rafael Luque Leiva <rafael.luque@osoco.es>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23367,4 +23368,31 @@ distributions.  Any user-defined parametric distribution can be fitted, given
 at least an R function defining the probability density or hazard.  There are
 also tools for fitting and predicting from fully parametric multi-state
 models.")
+    (license license:gpl2+)))
+
+(define-public r-transphylo
+  (package
+    (name "r-transphylo")
+    (version "1.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TransPhylo" version))
+       (sha256
+        (base32
+         "1506c97y8dnhd0c38rgvmg70q0l3xmmn07mjglhnw7hi5n5y9mv9"))))
+    (properties `((upstream-name . "TransPhylo")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/TransPhylo/")
+    (synopsis "Inference of transmission tree from a dated phylogeny")
+    (description
+     "This is a package to infer transmission trees from a dated phylogeny.
+It includes methods to simulate and analyze outbreaks.  The methodology is
+described in @url{https://doi.org/10.1093/molbev/msu121,Didelot et al. (2014)}
+and @url{https://doi.org/10.1093/molbev/msw275,Didelot et al. (2017)}.")
     (license license:gpl2+)))
