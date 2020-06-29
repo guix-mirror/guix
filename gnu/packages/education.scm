@@ -1000,7 +1000,8 @@ machine, and more.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/exercism/cli/exercism"
-       #:unpack-path "github.com/exercism/cli"))
+       #:unpack-path "github.com/exercism/cli"
+       #:install-source? #f))
     (inputs
      `(("github.com/blang/semver" ,go-github-com-blang-semver)
        ("github.com/spf13/cobra" ,go-github-com-spf13-cobra)
