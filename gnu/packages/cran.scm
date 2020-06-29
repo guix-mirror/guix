@@ -23954,3 +23954,35 @@ novels, ready for text analysis.  These novels are \"Sense and Sensibility\",
 \"Pride and Prejudice\", \"Mansfield Park\", \"Emma\", \"Northanger Abbey\",
 and \"Persuasion\".")
     (license license:expat)))
+
+(define-public r-tokenizers
+  (package
+    (name "r-tokenizers")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tokenizers" version))
+       (sha256
+        (base32
+         "006xf1vdrmp9skhpss9ldhmk4cwqk512cjp1pxm2gxfybpf7qq98"))))
+    (properties `((upstream-name . "tokenizers")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-snowballc" ,r-snowballc)
+       ("r-stringi" ,r-stringi)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://lincolnmullen.com/software/tokenizers/")
+    (synopsis "Fast, consistent tokenization of natural language text")
+    (description
+     "This is a package for converting natural language text into tokens.
+It includes tokenizers for shingled n-grams, skip n-grams, words, word stems,
+sentences, paragraphs, characters, shingled characters, lines, tweets, Penn
+Treebank, regular expressions, as well as functions for counting characters,
+words, and sentences, and a function for splitting longer texts into separate
+documents, each with the same number of words.  The tokenizers have a
+consistent interface, and the package is built on the @code{stringi} and
+@code{Rcpp} packages for fast yet correct tokenization in UTF-8 encoding.")
+    (license license:expat)))
