@@ -9068,23 +9068,30 @@ the dependency is said to be unsatisfied, and the application is broken.")
     (name "java-guice")
     (version "4.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/google/guice/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/google/guice")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet
                `(begin
-                  (for-each delete-file (find-files "." ".*.jar"))))
+                  (for-each delete-file (find-files "." ".*.jar")) #t))
               (sha256
                (base32
-                "0dwmqjzlavb144ywqqglj3h68hqszkff8ai0a42hyb5il0qh4rbp"))))
+                "18im5hdfl4q1b9chww2s1ii60sn3ydyyar32a2sf2p2g8zlbdswq"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-guice.jar"
        #:jdk ,icedtea-8
-       #:tests? #f; FIXME: tests are not in a java sub directory
-       #:source-dir "core/src"))
+       #:tests? #f  ; FIXME: tests are not in a java sub directory
+       #:source-dir "core/src"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t)))))
     (inputs
      `(("guava" ,java-guava)
        ("java-cglib" ,java-cglib)
@@ -9093,7 +9100,7 @@ the dependency is said to be unsatisfied, and the application is broken.")
        ("java-asm" ,java-asm)))
     (home-page "https://github.com/google/guice")
     (synopsis "Lightweight dependency injection framework")
-    (description "Guice is a lightweight dependency injection framework fo
+    (description "Guice is a lightweight dependency injection framework for
 Java 6 and above.")
     (license license:asl2.0)))
 
@@ -9105,7 +9112,13 @@ Java 6 and above.")
      `(#:jar-name "guice-servlet.jar"
        #:source-dir "extensions/servlet/src/"
        #:jdk ,icedtea-8
-       #:tests? #f)); FIXME: not in a java subdir
+       #:tests? #f  ; FIXME: not in a java subdir
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t)))))
     (inputs
      `(("guice" ,java-guice)
        ("servlet"  ,java-classpathx-servletapi)
