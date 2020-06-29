@@ -24186,3 +24186,30 @@ model-related packages.")
 statistical analysis that share the underlying design philosophy, grammar, and
 data structures of the tidyverse.")
     (license license:gpl3)))
+
+(define-public r-mlecens
+  (package
+    (name "r-mlecens")
+    (version "0.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MLEcens" version))
+       (sha256
+        (base32
+         "0zlmrcjraypscgs2v0w4s4hm7qccsmaz4hjsgqpn0058vx622945"))))
+    (properties `((upstream-name . "MLEcens")))
+    (build-system r-build-system)
+    (home-page "http://stat.ethz.ch/~maathuis/")
+    (synopsis "Computation of the MLE for bivariate (interval) censored data")
+    (description
+     "This package contains functions to compute the nonparametric
+@dfn{maximum likelihood estimator} (MLE) for the bivariate distribution of
+@code{(X,Y)}, when realizations of @code{(X,Y)} cannot be observed directly.
+To be more precise, we consider the situation where we observe a set of
+rectangles that are known to contain the unobservable realizations of (X,Y).
+We compute the MLE based on such a set of rectangles.  The methods can also be
+used for univariate censored data (see data set @code{cosmesis}), and for
+censored data with competing risks (see data set @code{menopause}).  The
+package also provides functions to visualize the observed data and the MLE.")
+    (license license:gpl2+)))
