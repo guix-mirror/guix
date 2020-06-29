@@ -3828,14 +3828,17 @@ COREUTILS-FINAL vs. COREUTILS, etc."
        '(#:modules ((guix build union))
          #:builder (begin
                      (use-modules (ice-9 match)
+                                  (srfi srfi-1)
                                   (srfi srfi-26)
                                   (guix build union))
 
                      (let ((out (assoc-ref %outputs "out")))
-
-                       (match %build-inputs
-                         (((names . directories) ...)
-                          (union-build out directories)))
+                       (union-build out
+                                    (filter-map (match-lambda
+                                                  (("libc-debug" . _) #f)
+                                                  (("libc-static" . _) #f)
+                                                  ((_ . directory) directory))
+                                                %build-inputs))
 
                        (union-build (assoc-ref %outputs "debug")
                                     (list (assoc-ref %build-inputs
