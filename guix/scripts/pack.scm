@@ -836,9 +836,10 @@ last resort for relocation."
                     (scandir input))
 
           (for-each build-wrapper
-                    (append (find-files (string-append input "/bin"))
-                            (find-files (string-append input "/sbin"))
-                            (find-files (string-append input "/libexec")))))))
+                    ;; Note: Trailing slash in case these are symlinks.
+                    (append (find-files (string-append input "/bin/"))
+                            (find-files (string-append input "/sbin/"))
+                            (find-files (string-append input "/libexec/")))))))
 
   (computed-file (string-append
                   (cond ((package? package)
