@@ -21,6 +21,7 @@
 
 (define-module (gnu packages datastructures)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -55,16 +56,19 @@ and heaps.")
 (define-public marisa
   (package
     (name "marisa")
-    (version "0.2.5")
+    (version "0.2.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/s-yata/marisa-trie"
-                           "/releases/download/v" version "/" name "-"
-                           version ".tar.gz"))
+       (uri (string-append "https://github.com/s-yata/marisa-trie/files/"
+                           "4832504/marisa-" version ".tar.gz"))
        (sha256
-        (base32 "19ifrcmnbr9whaaf4ly3s9ndyiq9sjqhnfkrxbz9zsb44w2n36hf"))))
+        (base32 "1pk6wmi28pa8srb4szybrwfn71jldb61c5vgxsiayxcyg1ya4qqh"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (home-page "https://github.com/s-yata/marisa-trie")
     (synopsis "Trie data structure C++ library")
     (description "Matching Algorithm with Recursively Implemented
