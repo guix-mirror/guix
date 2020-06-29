@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8153,3 +8154,26 @@ user's input and automatically retrieving results from GREAT web server.")
 simulation to eliminate overestimation of @code{K} and can reject the null
 hypothesis @code{K=1}.")
     (license license:agpl3+)))
+
+(define-public r-icens
+  (package
+    (name "r-icens")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Icens" version))
+       (sha256
+        (base32
+         "0fh7wgkrw20f61p06i87nccnbig9wv4m0jcg7cx1rw7g2ndnabgp"))))
+    (properties `((upstream-name . "Icens")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-survival" ,r-survival)))
+    (home-page "https://bioconductor.org/packages/Icens")
+    (synopsis "NPMLE for censored and truncated data")
+    (description
+     "This package provides many functions for computing the
+@dfn{nonparametric maximum likelihood estimator} (NPMLE) for censored and
+truncated data.")
+    (license license:artistic2.0)))
