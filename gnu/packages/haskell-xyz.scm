@@ -9007,6 +9007,108 @@ and also has a mode for converting bibliographic databases a YAML format
 suitable for inclusion in pandoc YAML metadata.")
     (license license:bsd-3)))
 
+(define-public pandoc-citeproc
+  (package (inherit ghc-pandoc-citeproc)
+    (name "pandoc-citeproc")
+    (arguments
+     `(#:configure-flags
+       (list "-fstatic"
+             "--disable-shared"
+             "--disable-executable-dynamic"
+             ;; That's where we place all static libraries
+             "--extra-lib-dirs=static-libs/"
+             "--ghc-option=-static")
+       #:modules ((guix build haskell-build-system)
+                  (guix build utils)
+                  (ice-9 match)
+                  (srfi srfi-1))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Many YAML tests (44) are failing do to changes in ghc-yaml:
+         ;; <https://github.com/jgm/pandoc-citeproc/issues/342>.
+         (add-before 'configure 'patch-tests
+           (lambda _
+             (substitute* "tests/test-pandoc-citeproc.hs"
+               (("let allTests = citeprocTests \\+\\+ biblio2yamlTests")
+                "let allTests = citeprocTests"))))
+         ;; Tests need to be run after installation.
+         (delete 'check)
+         (add-after 'install 'post-install-check
+           (assoc-ref %standard-phases 'check))
+         (add-after 'unpack 'create-simple-paths-module
+           (lambda* (#:key outputs #:allow-other-keys)
+             (call-with-output-file "Paths_pandoc_citeproc.hs"
+               (lambda (port)
+                 (format port "\
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE NoRebindableSyntax #-}
+{-# OPTIONS_GHC -fno-warn-missing-import-lists #-}
+module Paths_pandoc_citeproc (version,getDataFileName) where
+import Prelude
+import Data.Version (Version(..))
+import System.Info
+version :: Version
+version = Version [~a] []
+
+datadir :: FilePath
+datadir = \"~a/share/\" ++
+  arch ++ \"-\" ++
+  os ++ \"-\" ++
+  compilerName ++ \"-~a/pandoc-citeproc-~a\"
+
+getDataDir :: IO FilePath
+getDataDir = return datadir
+
+getDataFileName :: FilePath -> IO FilePath
+getDataFileName name = do
+  dir <- getDataDir
+  return (dir ++ \"/\" ++ name)
+"
+                         (string-map (lambda (chr) (if (eq? chr #\.) #\, chr))
+                                     ,(package-version ghc-pandoc-citeproc))
+                         (assoc-ref outputs "out")
+                         ,(package-version ghc)
+                         ,(package-version ghc-pandoc-citeproc))))
+             #t))
+         (add-after 'unpack 'prepare-static-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p (string-append (getcwd) "/static-libs"))
+             (for-each
+              (lambda (input)
+                (when (or (string-prefix? "static-" (car input))
+                          (string-prefix? "ghc" (car input)))
+                  (match (find-files (cdr input) "\\.a$")
+                    ((and (first . rest) libs)
+                     (for-each (lambda (lib)
+                                 (let ((target (string-append (getcwd) "/static-libs/"
+                                                              (basename lib))))
+                                   (unless (file-exists? target)
+                                     (symlink first target))))
+                               libs))
+                    (_ #f))))
+              inputs)
+             #t)))))
+    (inputs
+     (let* ((direct-inputs
+             (cons `("ghc-pandoc" ,pandoc)
+                   (alist-delete "ghc-pandoc"
+                                 (package-inputs ghc-pandoc-citeproc))))
+            (all-static-inputs
+             (map (lambda (pkg)
+                    (list (string-append "static-" (package-name pkg))
+                          pkg "static"))
+                  (delete-duplicates
+                   (append (map cadr direct-inputs)
+                           (filter (lambda (pkg)
+                                     (string-prefix? "ghc-" (package-name pkg)))
+                                   (package-closure
+                                    (map cadr direct-inputs))))))))
+       `(("zlib:static" ,zlib "static")
+         ("pandoc" ,pandoc "lib")
+         ,@all-static-inputs
+         ,@direct-inputs)))
+    (synopsis "Pandoc filter for bibliographic references")))
+
 (define-public ghc-pandoc-types
   (package
     (name "ghc-pandoc-types")
