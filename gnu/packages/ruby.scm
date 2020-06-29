@@ -8228,14 +8228,14 @@ Markdown.")
 (define-public ruby-rake
   (package
     (name "ruby-rake")
-    (version "12.3.1")
+    (version "13.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rake" version))
        (sha256
         (base32
-         "1idi53jay34ba9j68c3mfr9wwkg3cd9qh0fn9cg42hv72c6q8dyg"))))
+         "0w6qza25bq1s825faaglkx1k6d59aiyjjk3yw3ip5sb463mhhai9"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
