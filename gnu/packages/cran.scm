@@ -23768,3 +23768,23 @@ and regression metrics (e.g., RMSE).")
      "This package provides classes and functions to create and summarize
 different types of resampling objects (e.g. bootstrap, cross-validation).")
     (license license:gpl2)))
+
+(define-public r-dicedesign
+  (package
+    (name "r-dicedesign")
+    (version "1.8-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DiceDesign" version))
+       (sha256
+        (base32
+         "11s1m543kxd6gv4amh8z6pph1n67sj9sfwm6hjy83wfs65syf5vp"))))
+    (properties `((upstream-name . "DiceDesign")))
+    (build-system r-build-system)
+    (home-page "http://dice.emse.fr/")
+    (synopsis "Designs of computer experiments")
+    (description
+     "This package provides tools to create some specific @code{Space-Filling
+Design} (SFD) and to test their quality.")
+    (license license:gpl3)))
