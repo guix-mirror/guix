@@ -23607,3 +23607,46 @@ environments (e.g.  development, test, production).  It reads values using a
 function that determines the current environment and returns the appropriate
 value.")
     (license license:gpl3)))
+
+(define-public r-workflows
+  (package
+    (name "r-workflows")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "workflows" version))
+       (sha256
+        (base32
+         "14lzbszz7ybfzqa5zw1hfh81b8rbwwyza6x8nhpnknl6x4adqfql"))))
+    (properties `((upstream-name . "workflows")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cli" ,r-cli)
+       ("r-ellipsis" ,r-ellipsis)
+       ("r-generics" ,r-generics)
+       ("r-glue" ,r-glue)
+       ("r-hardhat" ,r-hardhat)
+       ("r-parsnip" ,r-parsnip)
+       ("r-rlang" ,r-rlang)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/tidymodels/workflows")
+    (synopsis "Modeling workflows")
+    (description
+     "A workflow is an object that can bundle together your pre-processing,
+modeling, and post-processing requests.  For example, if you have a
+@code{recipe} and @code{parsnip} model, these can be combined into a
+workflow.  The advantages are:
+
+@enumerate
+@item You don’t have to keep track of separate objects in your workspace.
+@item The recipe prepping and model fitting can be executed using a single
+  call to @code{fit()}.
+@item If you have custom tuning parameter settings, these can be defined using
+  a simpler interface when combined with @code{tune}.
+@item In the future, workflows will be able to add post-processing operations,
+  such as modifying the probability cutoff for two-class models.
+@end enumerate
+")
+    (license license:expat)))
