@@ -71,8 +71,8 @@ and heaps.")
        ("libtool" ,libtool)))
     (home-page "https://github.com/s-yata/marisa-trie")
     (synopsis "Trie data structure C++ library")
-    (description "Matching Algorithm with Recursively Implemented
-StorAge (MARISA) is a static and space-efficient trie data structure C++
+    (description "@acronym{MARISA, Matching Algorithm with Recursively
+Implemented StorAge} is a static and space-efficient trie data structure C++
 library.")
 
     ;; Dual-licensed, according to docs/readme.en.html (source files lack
