@@ -9161,14 +9161,18 @@ readability and make maintenance of tests easier.")
     (name "java-jboss-javassist")
     (version "3.21.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jboss-javassist/javassist/"
-                                  "archive/rel_"
-                                  (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
-                                  "_ga.tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jboss-javassist/javassist")
+                     (commit
+                       (string-append "rel_"
+                                      (string-map
+                                        (lambda (x) (if (eq? x #\.) #\_ x)) version)
+                                      "_ga"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "10lpcr3sbf7y6fq6fc2h2ik7rqrivwcy4747bg0kxhwszil3cfmf"))))
+                "0h3zlcyqiaq01fspm69h7vki67raw305w89p4ha8vlhpzw02qifm"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-jboss-javassist.jar"
@@ -9177,6 +9181,10 @@ readability and make maintenance of tests easier.")
        #:tests? #f; FIXME: requires junit-awtui and junit-swingui from junit3
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'configure 'remove-binary
            (lambda _
              (delete-file "javassist.jar")
