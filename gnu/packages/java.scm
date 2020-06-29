@@ -9230,13 +9230,14 @@ annotations.")
     (name "java-bsh")
     (version "2.0b6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/beanshell/beanshell/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/beanshell/beanshell")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bawkxk6jyc75hxvzkpz689h73cn3f222m0ar3nvb0dal2b85kfv"))))
+                "0kz3f0xjack6c9syssi4qjw1rbd3q5963sk5pmr143hiibxa9csw"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "jarall"
