@@ -4184,14 +4184,14 @@ both CSS3 selector and XPath 1.0 support.")
 (define-public ruby-method-source
   (package
     (name "ruby-method-source")
-    (version "0.9.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "method_source" version))
        (sha256
         (base32
-         "0xqj21j3vfq4ldia6i2akhn2qd84m0iqcnsl49kfpq3xk6x0dzgn"))))
+         "1pnyh44qycnf9mzi1j6fywd5fkskv3x7nmsqrrws0rjn5dd4ayfp"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"))
