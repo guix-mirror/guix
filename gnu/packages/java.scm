@@ -9129,13 +9129,14 @@ Java 6 and above.")
     (name "java-assertj")
     (version "3.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/joel-costigliola/"
-                                  "assertj-core/archive/"
-                                  "assertj-core-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/joel-costigliola/assertj-core")
+                     (commit (string-append "assertj-core-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kf124fxskf548rklkg86294w2x6ajqrff94rrhyqns31danqkfz"))))
+                "1k35cg2in7pzk4pbdjryr0pll5lgk1r6ngrn0j8cdlgi7w8zh2d1"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-assertj.jar"
