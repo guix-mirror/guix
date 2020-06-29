@@ -538,6 +538,30 @@ output), and Binutils.")
 (define-public clang clang-9)
 (define-public clang-toolchain clang-toolchain-9)
 
+(define-public lld
+  (package
+    (name "lld")
+    (version (package-version llvm-10))
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-download-uri "lld" version))
+              (sha256
+               (base32
+                "026pwcbczcg0j5c9h7hxxrn3ki81ia9m9sfn0sy0bvzffv2xg85r"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("llvm" ,llvm-10)))
+    (arguments
+     `(#:build-type "Release"
+       ;; TODO: Tests require the lit tool, which isn't installed by the LLVM
+       ;; package.
+       #:tests? #f))
+    (home-page "https://lld.llvm.org/")
+    (synopsis "Linker from the LLVM project")
+    (description "LLD is a high-performance linker, built as a set of reusable
+components which highly leverage existing libraries in the larger LLVM Project.")
+    (license license:asl2.0))) ; With LLVM exception
+
 (define-public llvm-8
   (package
     (inherit llvm)
