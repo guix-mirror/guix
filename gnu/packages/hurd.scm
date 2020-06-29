@@ -264,13 +264,21 @@ Library for GNU/Hurd.")
     (arguments
      '(#:modules ((guix build union))
        #:builder (begin
-                   (use-modules (ice-9 match)
+                   (use-modules (srfi srfi-1)
+                                (srfi srfi-26)
+                                (ice-9 match)
                                 (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
+                   (let ((inputs (filter
+                                  (compose (cute member <> '("gnumach-headers"
+                                                             "hurd-headers"
+                                                             "hurd-minimal"))
+                                           car)
+                                  %build-inputs)))
+                     (match inputs
+                       (((names . directories) ...)
+                        (union-build (assoc-ref %outputs "out")
+                                     directories)
+                        #t))))))
     (inputs `(("gnumach-headers" ,gnumach-headers)
               ("hurd-headers" ,hurd-headers)
               ("hurd-minimal" ,hurd-minimal)))
