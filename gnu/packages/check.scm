@@ -1522,7 +1522,7 @@ have failed since the last commit or what tests are currently failing.")))
     (arguments
      ;; FIXME: 95 tests failed, 539 passed, 6 skipped, 2 errors.
      '(#:tests? #f))
-    (home-page "http://nedbatchelder.com/code/coverage")
+    (home-page "https://coverage.readthedocs.io")
     (synopsis "Code coverage measurement for Python")
     (description
      "Coverage measures code coverage, typically during test execution.  It
