@@ -2747,7 +2747,7 @@ specifications.")
      (origin
        (method url-fetch)
        (uri (string-append "https://ftp.videolan.org/pub/videolan/libaacs/"
-                           version "/" name "-" version ".tar.bz2"))
+                           version "/libaacs-" version ".tar.bz2"))
        (sha256
         (base32 "1kms92i0c7i1yl659kqjf19lm8172pnpik5lsxp19xphr74vvq27"))))
     (inputs
