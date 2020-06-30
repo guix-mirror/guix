@@ -2234,6 +2234,59 @@ into stereotyped or otherwise humorous dialects.  The filters are provided as
 a C library, so they can easily be integrated into other programs.")
     (license license:gpl2+)))
 
+(define-public taisei
+  (package
+    (name "taisei")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/taisei-project/"
+                           "taisei/releases/download/v" version
+                           "/taisei-v" version ".tar.xz"))
+       (sha256
+        (base32 "11f9mlqmzy1lszwcc1nsbar9q1hs4ml6pbm52hqfd4q0f4x3ln46"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:build-type "release"      ;comment out for bug-reporting (and cheats)
+       #:configure-flags
+       (list "-Dr_default=gles30"
+             "-Dr_gles20=true"
+             "-Dr_gles30=true"
+             "-Dshader_transpiler=true")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-docutils" ,python-docutils)
+       ("python-pygments" ,python-pygments)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("libpng" ,libpng)
+       ("libwebp" ,libwebp)
+       ("libzip" ,libzip)
+       ("mesa" ,mesa)
+       ("openssl" ,openssl)
+       ("opusfile" ,opusfile)
+       ("sdl2" ,sdl2)
+       ("sdl2-mixer" ,sdl2-mixer)
+       ("shaderc" ,shaderc)
+       ("spirv-cross" ,spirv-cross)
+       ("zlib" ,zlib)))
+    (home-page "https://taisei-project.org/")
+    (synopsis "Shoot'em up fangame and libre clone of Touhou Project")
+    (description
+     "The player controls a character (one of three: Good, Bad, and Dead),
+dodges the missiles (lots of it cover the screen, but the character's hitbox
+is very small), and shoot at the adversaries that keep appear on the screen.")
+    (license (list ;;game
+                   license:expat
+                   ;;resources/00-taisei.pkgdir/bgm/
+                   ;;atlas/portraits/
+                   license:cc-by4.0
+                   ;;miscellaneous
+                   license:cc0
+                   license:public-domain))))
+
 (define-public cmatrix
   (package
     (name "cmatrix")
