@@ -7008,14 +7008,14 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python-soupsieve
   (package
     (name "python-soupsieve")
-    (version "1.9.5")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "soupsieve" version))
        (sha256
         (base32
-         "1nhd0q0ifwva9wn645s6pn74p1rd97asn3qfg75nphx1wkgcbhg2"))))
+         "0ch2rhvsbwfpvzm4kzy81rclbzr533yv83hzg1gx55byfa0w37d5"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     ;;XXX: 2 tests fail currently despite claming they were to be
@@ -7032,10 +7032,19 @@ some are not yet implemented).")
     (properties `((python2-variant . ,(delay python2-soupsieve))))
     (license license:expat)))
 
+;; This is the last version that supports python-2
 (define-public python2-soupsieve
   (let ((base (package-with-python2 (strip-python2-variant python-soupsieve))))
     (package
       (inherit base)
+      (version "1.9.6")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "soupsieve" version))
+         (sha256
+          (base32
+           "1apgqxngi1216h1cyvrvj9gy3wf45mh1lz4n76j26jf3k36bm1br"))))
       (propagated-inputs
        `(("python2-backports-functools-lru-cache"
           ,python2-backports-functools-lru-cache)
