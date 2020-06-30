@@ -259,7 +259,7 @@ other lower-level build files.")
 (define-public premake5
   (package
     (inherit premake4)
-    (version "5.0.0-alpha14")
+    (version "5.0.0-alpha15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/premake/premake-core/"
@@ -267,11 +267,13 @@ other lower-level build files.")
                                   "/premake-" version "-src.zip"))
               (sha256
                (base32
-                "0236s7bjvxf7x1l5faywmfzjywflpx42ngyhkn0mqqjnh54a97vw"))))
+                "0lyxfyqxyhjqsb3kmx1fyrxinb26i68hb7w7rg8lajczrgkmc3w8"))))
     (arguments
      (substitute-keyword-arguments (package-arguments premake4)
        ((#:phases phases)
         `(modify-phases ,phases
+           (replace 'enter-source
+             (lambda _ (chdir "build/gmake2.unix") #t))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (install-file "../../bin/release/premake5"
