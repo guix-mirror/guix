@@ -567,7 +567,7 @@ different notification systems.")
 (define-public kdeconnect
   (package
     (name "kdeconnect")
-    (version "20.04.1")
+    (version "20.04.2")
     (source
       (origin
         (method url-fetch)
@@ -576,7 +576,7 @@ different notification systems.")
                             version ".tar.xz"))
         (sha256
          (base32
-          "1knhpjdbffw858dfd9kml91a02fkc0rcjydfavcyr79j9x8mv3bq"))))
+          "0yq3afbbcc9gmlcachvh3xz3gdj57092fpagp36l5knw8gr0d9ip"))))
     (build-system qt-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON"
