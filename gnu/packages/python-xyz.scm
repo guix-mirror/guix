@@ -561,7 +561,7 @@ and function call return values in a human-readable way.")
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)))
-    (home-page "https://github.com/binstar/clyent")
+    (home-page "https://github.com/Anaconda-Platform/clyent")
     (synopsis "Command line client library")
     (description "Clyent is a Python command line utility library.  It is used
 by @code{binstar}, @code{binstar-build}, and @code{chalmers}.")
