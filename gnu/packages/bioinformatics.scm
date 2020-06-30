@@ -1327,15 +1327,15 @@ package provides command line tools using the Bio++ library.")
 (define-public blast+
   (package
     (name "blast+")
-    (version "2.7.1")
+    (version "2.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/"
+                    "https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/"
                     version "/ncbi-blast-" version "+-src.tar.gz"))
               (sha256
                (base32
-                "1jlq0afxxgczpp35k6mxh8mn4jzq7vqcnaixk166sfj10wq8v9qh"))
+                "11kvrrl0mcwww6530r55hccpg3x3msmhr3051fwnjbq8rzg2j1qi"))
               (modules '((guix build utils)))
               (snippet
                '(begin
