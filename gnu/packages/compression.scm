@@ -1360,14 +1360,14 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "05ckxap00qvc0j51d3ci38150cxsw82w7s9zgd5fgzspnzmp1vsr"))))
+        (base32 "17nf0r20360i80689bg5ipxbk2413b2dn3z7wj8byqpiddy1rscq"))))
     (build-system gnu-build-system)
     (outputs '("out"                    ;1.2MiB executables and documentation
                "lib"                    ;1.2MiB shared library and headers
@@ -1375,6 +1375,13 @@ or junctions, and always follows hard links.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-bogus-check
+           (lambda _
+             ;; lib/Makefile falsely claims that no .pc file can be created.
+             (substitute* "lib/Makefile"
+               (("error configured .*dir ")
+                "true "))
+             #t))
          (delete 'configure)            ;no configure script
          (add-after 'install 'adjust-library-locations
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1402,6 +1409,9 @@ or junctions, and always follows hard links.")
              (string-append "prefix=" (assoc-ref %outputs "out"))
              (string-append "libdir=" (assoc-ref %outputs "lib") "/lib")
              (string-append "includedir=" (assoc-ref %outputs "lib") "/include")
+             ;; Auto-detection is over-engineered and buggy.
+             "PCLIBDIR=lib"
+             "PCINCDIR=include"
              ;; Skip auto-detection of, and creating a dependency on, the build
              ;; environment's ‘xz’ for what amounts to a dubious feature anyway.
              "HAVE_LZMA=0"
