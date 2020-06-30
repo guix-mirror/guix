@@ -728,115 +728,87 @@ as the 'native-search-paths' field."
               ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
               #:separate-lib-output? #f))
 
+(define %objc-search-paths
+  (list (search-path-specification
+         (variable "OBJC_INCLUDE_PATH")
+         (files '("include")))
+        (search-path-specification
+         (variable "LIBRARY_PATH")
+         (files '("lib" "lib64")))))
+
 (define-public gcc-objc-4.8
   (custom-gcc gcc-4.8 "gcc-objc" '("objc")
-              (list (search-path-specification
-                     (variable "OBJC_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc-search-paths))
 
 (define-public gcc-objc-4.9
   (custom-gcc gcc-4.9 "gcc-objc" '("objc")
-              (list (search-path-specification
-                     (variable "OBJC_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc-search-paths))
 
 (define-public gcc-objc-5
   (custom-gcc gcc-5 "gcc-objc" '("objc")
-              (list (search-path-specification
-                     (variable "OBJC_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc-search-paths))
 
 (define-public gcc-objc-6
   (custom-gcc gcc-6 "gcc-objc" '("objc")
-              (list (search-path-specification
-                     (variable "OBJC_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc-search-paths))
 
 (define-public gcc-objc-7
   (custom-gcc gcc-7 "gcc-objc" '("objc")
-              (list (search-path-specification
-                     (variable "OBJC_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc-search-paths))
 
 (define-public gcc-objc-8
   (custom-gcc gcc-8 "gcc-objc" '("objc")
-              (list (search-path-specification
-                     (variable "OBJC_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc-search-paths))
+
+(define-public gcc-objc-9
+  (custom-gcc gcc-9 "gcc-objc" '("objc")
+              %objc-search-paths))
+
+(define-public gcc-objc-10
+  (custom-gcc gcc-10 "gcc-objc" '("objc")
+              %objc-search-paths))
 
 (define-public gcc-objc gcc-objc-7)
 
+(define %objc++-search-paths
+  (list (search-path-specification
+         (variable "OBJCPLUS_INCLUDE_PATH")
+         (files '("include")))
+        (search-path-specification
+         (variable "LIBRARY_PATH")
+         (files '("lib" "lib64")))))
+
 (define-public gcc-objc++-4.8
   (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")
-              (list (search-path-specification
-                     (variable "OBJCPLUS_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc++-search-paths))
 
 (define-public gcc-objc++-4.9
   (custom-gcc gcc-4.9 "gcc-objc++" '("obj-c++")
-              (list (search-path-specification
-                     (variable "OBJCPLUS_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc++-search-paths))
 
 (define-public gcc-objc++-5
   (custom-gcc gcc-5 "gcc-objc++" '("obj-c++")
-              (list (search-path-specification
-                     (variable "OBJCPLUS_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc++-search-paths))
 
 (define-public gcc-objc++-6
   (custom-gcc gcc-6 "gcc-objc++" '("obj-c++")
-              (list (search-path-specification
-                     (variable "OBJCPLUS_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc++-search-paths))
 
 (define-public gcc-objc++-7
   (custom-gcc gcc-7 "gcc-objc++" '("obj-c++")
-              (list (search-path-specification
-                     (variable "OBJCPLUS_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc++-search-paths))
 
 (define-public gcc-objc++-8
   (custom-gcc gcc-8 "gcc-objc++" '("obj-c++")
-              (list (search-path-specification
-                     (variable "OBJCPLUS_INCLUDE_PATH")
-                     (files '("include")))
-                    (search-path-specification
-                     (variable "LIBRARY_PATH")
-                     (files '("lib" "lib64"))))))
+              %objc++-search-paths))
+
+(define-public gcc-objc++-9
+  (custom-gcc gcc-9 "gcc-objc++" '("obj-c++")
+              %objc++-search-paths))
+
+(define-public gcc-objc++-10
+  (custom-gcc gcc-10 "gcc-objc++" '("obj-c++")
+              %objc++-search-paths))
 
 (define-public gcc-objc++ gcc-objc++-7)
 
