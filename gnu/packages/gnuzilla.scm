@@ -556,8 +556,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "68.9.0-guix0-preview1")
-(define %icecat-build-id "20200602000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "68.10.0-guix0-preview1")
+(define %icecat-build-id "20200630000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -579,11 +579,11 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "01s41p985g6v544lf08zch3myssn5c76jwmkzzd68zd9m3hhalck"))))
+              "0azdinwqjfv2q37gqpxmfvzsk86pvsi6cjaq1310zs26gric5j1f"))))
 
-         (upstream-icecat-base-version "68.9.0") ; maybe older than base-version
+         (upstream-icecat-base-version "68.10.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "d7acf32ad905a3382cb2353577a96d29aa58f589")
+         (gnuzilla-commit "76dced64ce0e72fe3030dc2f7b22cda8e36b165e")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -595,7 +595,7 @@ from forcing GEXP-PROMISE."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "0m49zm05m3n95diij2zyvpm74q66zxjhv9rp8zvaab0h7v2s09n9"))))
+              "0xcg6h0da63qyv7h575xjrbkzqqcjhwjd45x9h9qmpxiaibi9g3d"))))
 
          (makeicecat-patch
           (local-file (search-patch "icecat-makeicecat.patch")))
@@ -648,12 +648,6 @@ from forcing GEXP-PROMISE."
                           "-p1" "--input" #+makeicecat-patch)
                   (invoke "patch" "--force" "--no-backup-if-mismatch"
                           "-p1" "--input" #+gnuzilla-fixes-patch)
-
-                  ;; Remove the bundled tortm-browser-button extension,
-                  ;; which doesn't seem to be working properly.
-                  (delete-file-recursively
-                   "data/extensions/tortm-browser-button@jeremybenthum")
-
                   (patch-shebang "makeicecat")
                   (substitute* "makeicecat"
                     (("^FFMAJOR=(.*)" all ffmajor)
