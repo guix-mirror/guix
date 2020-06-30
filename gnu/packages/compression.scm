@@ -1399,9 +1399,9 @@ or junctions, and always follows hard links.")
                #t))))
        #:make-flags
        (list "CC=gcc"
-             (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             (string-append "LIBDIR=" (assoc-ref %outputs "lib") "/lib")
-             (string-append "INCLUDEDIR=" (assoc-ref %outputs "lib") "/include")
+             (string-append "prefix=" (assoc-ref %outputs "out"))
+             (string-append "libdir=" (assoc-ref %outputs "lib") "/lib")
+             (string-append "includedir=" (assoc-ref %outputs "lib") "/include")
              ;; Skip auto-detection of, and creating a dependency on, the build
              ;; environment's ‘xz’ for what amounts to a dubious feature anyway.
              "HAVE_LZMA=0"
