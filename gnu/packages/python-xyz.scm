@@ -5335,6 +5335,22 @@ a general image processing tool.")
 (define-public python2-pillow
   (package-with-python2 python-pillow))
 
+(define-public python-pillow-2.9
+  (package
+    (inherit python-pillow)
+    (version "2.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Pillow" version))
+        (sha256
+         (base32
+           "0ada7lf3lmbdsqm3b7ja920p1pllyfhmqndr85ikpj77fmz9s5qg"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-pillow)
+       ((#:tests? _ #f) #f)))
+    (properties '((hidden? #t)))))
+
 (define-public python-roifile
   (package
     (name "python-roifile")
