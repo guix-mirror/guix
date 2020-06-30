@@ -48,6 +48,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages digest)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
@@ -1858,25 +1859,69 @@ framework based on QEMU.")
        (modules '((guix build utils)))
        (snippet
         `(begin
-           ;; Unbundle sources.
-           (substitute* (list "Common/Vulkan/VulkanContext.cpp"
-                              "ext/native/thin3d/vulkan_utils.cpp"
-                              "GPU/Common/ShaderCommon.cpp"
-                              "GPU/Common/ShaderTranslation.cpp"
-                              "SDL/SDLMain.cpp")
+           ;; The following is quite a heavy-handed way of unbundling PPSSPP.
+           ;; There are still a number of external sources, that we don't
+           ;; remove here.  Some may be packaged, others are not.
+           ;; First, we patch existing sources to include the right headers.
+           (substitute* (append (list "ext/native/thin3d/vulkan_utils.cpp"
+                                      "ext/native/thin3d/thin3d_vulkan.cpp")
+                                (find-files "Common" ".*\\.(h|cpp)")
+                                (find-files "Core" ".*\\.(h|cpp)")
+                                (find-files "GPU" ".*\\.(h|cpp)")
+                                (find-files "SDL" ".*\\.(h|cpp)")
+                                (find-files "UI" ".*\\.(h|cpp)"))
+             ;; These headers are all hard-coded in the original source.
+             (("ext/cityhash/") "")
              (("ext/glslang/") "")
-             (("ext/SPIRV-Cross/") "spirv_cross/"))
-           ;; Patch CMakeLists.
+             (("ext/SPIRV-Cross/") "spirv_cross/")
+             (("ext/vulkan/") "vulkan/")
+             (("ext/xxhash.h") "xxhash.h")
+             ;; These definitions do not actually exist in the Vulkan headers,
+             ;; but PPSSPP defines them in ext/vulkan.
+             (("VK_FORMAT_BEGIN_RANGE") "VK_FORMAT_UNDEFINED")
+             (("VK_FORMAT_END_RANGE") "VK_FORMAT_ASTC_12x12_SRGB_BLOCK"))
+           ;; Next, we patch CMakeLists.
            (substitute* "CMakeLists.txt"
+             ;; Drop unnecessary includes and targets.
              (("include_directories\\(ext/glslang\\)") "")
+             (("include_directories\\(ext/xxhash\\)") "")
+             (("include_directories\\(ext/cityhash\\)") "")
+             (("set_target_properties\\(cityhash .*\\)") "")
+             ;; Fix linking to GLEW.
+             (("TARGET Ext::GLEW") "true")
+             (("target_link_libraries\\(native Ext::GLEW\\)")
+              "find_package(GLEW)\ntarget_link_libraries(native GLEW::GLEW)")
+             (("Ext::Snappy") "snappy")
+             ;; Don't search for cityhash/xxhash, we already have them.
+             (("add_library\\((city|xx)hash STATIC") "if()\nendif(")
+             (("ext/xxhash\\.[ch]") "")
+             (("ext/native/ext/cityhash/.*\\.(cpp|h)") "")
+             ;; Link all of spirv-cross.
              (("spirv-cross-glsl" all)
               (string-append all
                              " spirv-cross-core spirv-cross-cpp"
                              " spirv-cross-reflect spirv-cross-util")))
            (substitute* "ext/CMakeLists.txt"
+             (("add_subdirectory\\(glew\\)") "")
              (("add_subdirectory\\(glslang\\)") "")
+             (("add_subdirectory\\(snappy\\)") "")
              (("add_subdirectory\\(SPIRV-Cross-build\\)") ""))
-           (delete-file-recursively "ext/cmake")
+           ;; Finally, we can delete the bundled sources.
+           (for-each delete-file-recursively
+                     '("ext/cmake"
+                       "ext/glew"
+                       "ext/glslang" "ext/glslang-build"
+                       "ext/native/ext/cityhash"
+                       "ext/native/ext/libpng17"
+                       "ext/native/ext/libzip"
+                       "ext/snappy"
+                       "ext/SPIRV-Cross" "ext/SPIRV-Cross-build"
+                       "ext/vulkan"
+                       "ext/xxhash.c"
+                       "ext/xxhash.h"
+                       "ext/zlib"))
+           ;; Since we are not including git as an input, PPSSPP is confused
+           ;; about its version.  Let's fix that here.
            (substitute* "git-version.cmake"
              (("unknown") ,version))))))
     (build-system cmake-build-system)
@@ -1884,16 +1929,21 @@ framework based on QEMU.")
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
     (inputs
-     `(("ffmpeg" ,ffmpeg)
+     `(("cityhash" ,cityhash)
+       ("ffmpeg" ,ffmpeg)
        ("glew" ,glew)
        ("glslang" ,glslang)
        ("libpng" ,libpng)
+       ("libzip" ,libzip)
        ("mesa" ,mesa)
        ("sdl2" ,sdl2)
        ("snappy" ,snappy)
        ("spirv-cross" ,spirv-cross)
+       ("vulkan-headers" ,vulkan-headers)
+       ("vulkan-loader" ,vulkan-loader)
+       ("xxhash" ,xxhash)
        ("zlib" ,zlib)
-       ;; TODO: unbundle builds.
+       ;; TODO: unbundle armips.
        ("armips-source" ,(package-source armips))
        ("lang"
         ,(origin
@@ -1915,15 +1965,14 @@ framework based on QEMU.")
      `(#:out-of-source? #f
        #:configure-flags (list "-DUSE_DISCORD=OFF"
                                "-DUSE_SYSTEM_FFMPEG=ON"
-                               ;; For testing.
+                               "-DUSE_SYSTEM_LIBZIP=ON"
+                               ;; for testing
                                "-DUNITTEST=ON" "-DHEADLESS=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-external-sources
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; TODO: unbundle builds.  Not only should we not copy these
-             ;; sources in, we should also remove as much from "ext/" as we
-             ;; can.
+             ;; TODO: unbundle armips.
              (copy-recursively (assoc-ref inputs "armips-source")
                                "ext/armips")
              ;; Some tests are externalised, so we add them here.
