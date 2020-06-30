@@ -563,8 +563,8 @@ and function call return values in a human-readable way.")
      `(("python-mock" ,python-mock)))
     (home-page "https://github.com/binstar/clyent")
     (synopsis "Command line client library")
-    (description "Clyent is a Python command line utiliy library.  It is used
-by @code{binstar}, @code{binstar-build} and @code{chalmers}.")
+    (description "Clyent is a Python command line utility library.  It is used
+by @code{binstar}, @code{binstar-build}, and @code{chalmers}.")
     (license license:bsd-3)))
 
 (define-public python2-clyent
