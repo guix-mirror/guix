@@ -3979,8 +3979,10 @@ text table representation to stdout.")
            (install-file "README.md" doc))
          #t)))
     (home-page "https://github.com/xwmx/hosts/")
-    (synopsis "Bash script for editing @file{/etc/hosts} file")
+    (synopsis "Script for editing a foreign distro's @file{/etc/hosts} file")
     (description "Hosts is a command line program for managing
-@file{/etc/hosts} entries.  @command{hosts} works with existing hosts files
-and entries, providing commands to add, remove, comment, and search.")
+@file{/etc/hosts} entries.  On Guix System, @file{/etc/hosts} is managed from
+the system configuration; hosts only works when using the Guix package manager
+on a foreign distro.  @command{hosts} works with existing hosts files and
+entries, providing commands to add, remove, comment, and search.")
     (license license:expat)))
