@@ -144,13 +144,7 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
     (synopsis "Parser for and converter of SPIR-V to other shader languages")
     (description
      "SPIRV-Cross tries hard to emit readable and clean output from the
-SPIR-V.  The goal is to emit GLSL or MSL that looks like it was written by
-a human and not awkward IR/assembly-like code.
-
-NOTE: Individual features are expected to be mostly complete, but it is
-possible that certain obscure GLSL features are not yet supported.  However,
-most missing features are expected to be ``trivial'' improvements at this
-stage.")
+SPIR-V, aiming to emit GLSL or MSL that looks like human-written code.")
     (license license:asl2.0)))
 
 (define-public glslang
