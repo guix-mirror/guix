@@ -4306,7 +4306,7 @@ to @code{is_x86_feature_detected}.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))
     (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-utils")
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-queue")
     (synopsis "Concurrent queues in Rust")
     (description
      "This crate provides concurrent queues that can be shared among threads.")
