@@ -14266,7 +14266,7 @@ editors.")
 (define-public python2-backports-functools-lru-cache
   (package
     (name "python2-backports-functools-lru-cache")
-    (version "1.5")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
@@ -14274,7 +14274,7 @@ editors.")
        (uri (pypi-uri "backports.functools_lru_cache" version))
        (sha256
         (base32
-         "06jgv8gib4fhky0p5cmxdghvsgjyzcdgk48k8pxb1ccf11znk64x"))))
+         "0jidrkk2w6bhjm197plxiaxrav64mgcrign0bfyr7md2ilc5zplg"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-setuptools-scm" ,python2-setuptools-scm)))
