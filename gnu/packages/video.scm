@@ -135,6 +135,7 @@
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
@@ -4165,3 +4166,60 @@ brightness, contrast, and frame rate.")
 
     ;; 'COPYING' is GPLv3 but source headers say GPLv2+.
     (license license:gpl2+)))
+
+(define-public get-iplayer
+  (package
+    (name "get-iplayer")
+    (version "3.26")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/get-iplayer/get_iplayer")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0lsz5hz1ia5j612540rb0f31y7j2k5gf7x5i43l8k06b90wi73d6"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f  ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "get_iplayer" bin)
+               (install-file "get_iplayer.cgi" bin)
+               (install-file "get_iplayer.1" man))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (perllib (string-append out "/lib/perl5/site_perl/"
+                                            ,(package-version perl))))
+               (wrap-program (string-append out "/bin/get_iplayer")
+                 `("PERL5LIB" ":"
+                   prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
+               (wrap-program (string-append out "/bin/get_iplayer.cgi")
+                 `("PERL5LIB" ":"
+                   prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
+               #t))))))
+    (inputs
+     `(("perl-mojolicious" ,perl-mojolicious)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "https://github.com/get-iplayer/get_iplayer")
+    (synopsis "Download or stream available BBC iPlayer TV and radio programmes")
+    (description "@code{get_iplayer} lists, searches and records BBC iPlayer
+TV/Radio, BBC Podcast programmes.  Other third-party plugins may be available.
+@code{get_iplayer} has three modes: recording a complete programme for later
+playback, streaming a programme directly to a playback application, such as
+mplayer; and as a @dfn{Personal Video Recorder} (PVR), subscribing to search
+terms and recording programmes automatically.  It can also stream or record live
+BBC iPlayer output.")
+    (license license:gpl3+)))
