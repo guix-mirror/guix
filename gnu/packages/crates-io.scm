@@ -4288,7 +4288,7 @@ to @code{is_x86_feature_detected}.")
 (define-public rust-crossbeam-queue-0.2
   (package
     (name "rust-crossbeam-queue")
-    (version "0.2.1")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
@@ -4296,8 +4296,7 @@ to @code{is_x86_feature_detected}.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1nwkjh185bdwjrv1zj2g7an9lglv8sp4459268m4fwvi3v5fx5f6"))))
+        (base32 "0w15z68nz3ac4f2s4djhwha8vmlwsh9dlfrmsl4x84y2ah5acjvp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
