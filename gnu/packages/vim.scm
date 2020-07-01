@@ -214,13 +214,6 @@ with the editor vim.")))
        ,@(substitute-keyword-arguments (package-arguments vim)
            ((#:phases phases)
             `(modify-phases ,phases
-               (add-before 'check 'skip-previewpopup
-                 ;; This test fails when the path to the source is long. See:
-                 ;; https://github.com/vim/vim/issues/5615
-                 (lambda _
-                   (substitute* "src/testdir/test_popupwin.vim"
-                     ((".*Test_previewpopup.*" line)
-                      (string-append line "return\n")))))
                (add-before 'check 'skip-test87
                  ;; This test fails for unknown reasons after switching
                  ;; to a git checkout.
