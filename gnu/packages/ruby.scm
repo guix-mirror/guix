@@ -6239,6 +6239,40 @@ notes.")
     (home-page "https://github.com/mattbrictson/chandler")
     (license license:expat)))
 
+(define-public ruby-pry-byebug
+  (package
+    (name "ruby-pry-byebug")
+    (version "3.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deivid-rodriguez/pry-byebug.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1kchrwccai92068p50zyd6mh524ywqnm0jw5g3lks7iwmf0xkmgc"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-home
+                    (lambda _
+                      (setenv "HOME" (getcwd))
+                      #t)))))
+    (native-inputs
+     `(("ruby-chandler" ,ruby-chandler)
+       ("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (propagated-inputs
+     `(("ruby-byebug" ,ruby-byebug-11)
+       ("ruby-pry" ,ruby-pry)))
+    (synopsis "Step-by-step debugging and stack navigation in Pry")
+    (description "This package adds step-by-step debugging and stack
+navigation capabilities to @code{pry}, using @code{byebug}.")
+    (home-page "https://github.com/deivid-rodriguez/pry-byebug")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
