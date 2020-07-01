@@ -3673,10 +3673,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
               (("'--prefix' in sys\\.argv")
                "len([x.startswith('--prefix=') for x in sys.argv]) > 0"))
              #t))
-         (replace 'build
-           (lambda _
-             (invoke "python" "setup.py" "build")))
-         (add-before 'check 'setenv-PATH
+         (add-before 'build 'setenv-PATH
            (lambda _
              (setenv "PYTHONPATH" (string-append "lib:" (getenv "PYTHONPATH")))
              #t)))))
