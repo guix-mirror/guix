@@ -172,6 +172,40 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public tslib
+  (package
+    (name "tslib")
+    (version "1.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/libts/tslib.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ph51vpfp92rpa2vs6wkz1b1pcs3z334p1i33sprsi8mjlwvkbzc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "tests"
+       #:configure-flags
+       (list
+        "--with-sdl2")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("linux-headers" ,linux-libre-headers)
+       ("sdl2" ,sdl2)))
+    (synopsis "Touchscreen access library")
+    (description "TSLib is a cross-platform library that provides access to
+touchscreen devices and the ability to apply filters to their input events.")
+    (home-page "http://www.tslib.org/")
+    (license license:lgpl2.1+)))
+
 (define-public libmpeg3
   (package
     (name "libmpeg3")
