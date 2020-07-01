@@ -6338,6 +6338,55 @@ variable length integers (varint) in Ruby Protocol Buffers.")
     (home-page "https://github.com/liquidm/varint")
     (license license:bsd-3)))
 
+(define-public ruby-ruby-prof
+  (package
+    (name "ruby-ruby-prof")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby-prof" version))
+       (sha256
+        (base32
+         "12cd91m08ih0imfpy4k87618hd4mhyz291a6bx2hcskza4nf6d27"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-rakefile
+           ;; This fixes the following error: "NameError: uninitialized
+           ;; constant Bundler::GemHelper" (see:
+           ;; https://github.com/ruby-prof/ruby-prof/issues/274).
+           (lambda _
+             (substitute* "Rakefile"
+               ((".*require \"bundler/setup\".*" all)
+                (string-append all "  require 'bundler/gem_tasks'\n")))
+             #t))
+         (add-before 'check 'compile
+          (lambda _
+            (invoke "rake" "compile"))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-rdoc" ,ruby-rdoc)))
+    (synopsis "Fast code profiler for Ruby")
+    (description "RubyProf is a fast code profiler for Ruby.  Its features
+include:
+@table @asis
+@item Speed
+Being a C extension, it is many times faster than the standard Ruby profiler.
+@item Measurement Modes
+It can measure program wall time, process time, object allocations and memory
+usage.
+@item Reports
+A variety of text and cross-referenced HTML reports can be generated.
+@item Threads
+Profiling multiple threads simultaneously is supported.
+@end table")
+    (home-page "https://github.com/ruby-prof/ruby-prof")
+    (license license:bsd-2)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
