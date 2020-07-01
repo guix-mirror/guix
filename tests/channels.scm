@@ -468,7 +468,8 @@
             'failed))))))
 
 (unless (gpg+git-available?) (test-skip 1))
-(test-assert "authenticate-channel, .guix-authorizations"
+(test-equal "authenticate-channel, .guix-authorizations"
+  #t
   (with-fresh-gnupg-setup (list %ed25519-public-key-file
                                 %ed25519-secret-key-file
                                 %ed25519bis-public-key-file
