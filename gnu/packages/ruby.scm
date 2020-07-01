@@ -5548,6 +5548,60 @@ other things and it comes with a command line interface.")
     (home-page "https://github.com/deivid-rodriguez/byebug")
     (license license:bsd-2)))
 
+;;; TODO: Make it the default byebug in core-updates.
+(define-public ruby-byebug-11
+  (package
+    (inherit ruby-byebug)
+    (name "ruby-byebug")
+    (version "11.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deivid-rodriguez/byebug.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0vyy3k2s7dcndngj6m8kxhs1vxc2c93dw8b3yyand3srsg9ffpij"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove wrappers that try to setup a bundle environment.
+           (with-directory-excursion "bin"
+             (for-each delete-file '("bundle" "rake" "rubocop"))
+             ;; ruby-minitest doesn't come with a launcher, so fix the one
+             ;; provided.
+             (substitute* "minitest"
+               (("load File\\.expand_path\\(\"bundle\".*") "")
+               (("require \"bundler/setup\".*") "")))
+           #t))))
+    (arguments
+     `(#:tests? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-tmp-path-sensitive-test
+           (lambda _
+             (substitute* "test/commands/where_test.rb"
+               (("unless /cygwin\\|mswin\\|mingw\\|darwin/.*")
+                "unless true\n"))
+             #t))
+         (add-before 'build 'compile
+           (lambda _
+             (invoke "rake" "compile")))
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-chandler" ,ruby-chandler)
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-yard" ,ruby-yard)))))
+
 (define-public ruby-netrc
   (package
     (name "ruby-netrc")
