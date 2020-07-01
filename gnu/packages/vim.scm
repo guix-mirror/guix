@@ -70,7 +70,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.0411")
+    (version "8.2.1101")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -79,7 +79,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0idjbf15yqk5jz2dqbh2lzj7glxcwn1jl5pp9kk908ps02vzqyai"))))
+               "170k855vscixnk6rz01i3k22crjiz8b2h83fnm2b2ccha0jyn9mf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -92,15 +92,21 @@
                (("/usr/bin/nawk") (which "gawk")))
              (substitute* '("src/testdir/Makefile"
                             "src/testdir/test_normal.vim"
+                            "src/testdir/test_system.vim"
                             "src/testdir/test_terminal.vim")
                (("/bin/sh") (which "sh")))
+             (substitute* "src/testdir/test_autocmd.vim"
+               (("/bin/kill") (which "kill")))
              #t))
-         (add-before 'check 'set-TZDIR
+         (add-before 'check 'set-environment-variables
            (lambda* (#:key inputs #:allow-other-keys)
              ;; One of the tests tests timezone-dependent functions.
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
+
+             ;; Make sure the TERM environment variable is set for the tests
+             (setenv "TERM" "xterm")
              #t))
          (add-before 'check 'skip-failing-tests
            (lambda _
@@ -112,6 +118,14 @@
              ;; 32-bit value and hope it never shows up in the test environment.
              (substitute* "src/testdir/test_swap.vim"
                (("if !IsRoot\\(\\)") "if 0"))
+
+             ;; These tests fail on upstream's CI on FreeBSD because they are
+             ;; run as root.  They fail for us because PID 1 and the test suite
+             ;; are run by the same user.
+             (substitute* '("src/testdir/test_backup.vim"
+                            "src/testdir/test_writefile.vim")
+               (("CheckNotBSD") "throw 'Skipped: this test fails on Guix'")
+               (("'bsd'") "'unix'"))
 
              ;; This test checks how the terminal looks after executing some
              ;; actions.  The path of the bash binary is shown, which results in
