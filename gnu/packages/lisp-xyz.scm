@@ -74,30 +74,29 @@
   #:use-module (srfi srfi-19))
 
 (define-public sbcl-alexandria
-  (let ((commit "5e5c7d83090cc0fbf32c4628362ac3ce2c50dc59"))
-    (package
-      (name "sbcl-alexandria")
-      (version "1.0.1")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://gitlab.common-lisp.net/alexandria/alexandria.git")
-               (commit commit)))
-         (sha256
-          (base32
-           "010w8829dq28jf8ajfzas9nfvpxa5bal04mg299xq6y9spihc2iz"))
-         (file-name (git-file-name name version))))
-      (build-system asdf-build-system/sbcl)
-      (native-inputs
-       `(("rt" ,sbcl-rt)))
-      (synopsis "Collection of portable utilities for Common Lisp")
-      (description
-       "Alexandria is a collection of portable utilities.  It does not contain
+  (package
+   (name "sbcl-alexandria")
+   (version "1.1")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://gitlab.common-lisp.net/alexandria/alexandria.git")
+           (commit (string-append "v" version))))
+     (sha256
+      (base32
+       "1zanb3xa98js0i66iqcmx3gp123p1m2d1fxn8d7bfzyfad5f6xn2"))
+     (file-name (git-file-name name version))))
+   (build-system asdf-build-system/sbcl)
+   (native-inputs
+    `(("rt" ,sbcl-rt)))
+   (synopsis "Collection of portable utilities for Common Lisp")
+   (description
+    "Alexandria is a collection of portable utilities.  It does not contain
 conceptual extensions to Common Lisp.  It is conservative in scope, and
 portable between implementations.")
-      (home-page "https://common-lisp.net/project/alexandria/")
-      (license license:public-domain))))
+   (home-page "https://common-lisp.net/project/alexandria/")
+   (license license:public-domain)))
 
 (define-public cl-alexandria
   (sbcl-package->cl-source-package sbcl-alexandria))
