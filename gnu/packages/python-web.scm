@@ -2010,7 +2010,9 @@ library.")
      `(("python-gevent" ,python-gevent)
        ("python-requests" ,python-requests)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)
+       ("python-zope.interface" ,python-zope-interface)
+       ("python-zope.event" ,python-zope-event)))
     (home-page "https://github.com/kennethreitz/grequests")
     (synopsis "Python library for asynchronous HTTP requests")
     (description "GRequests is a Python library that allows you to use
