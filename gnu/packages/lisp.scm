@@ -372,14 +372,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.0.5")
+    (version "2.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1jz26w1i3riv032aa35vww4cv7cjk2ww7dp70c7wk4r8s66zhl00"))))
+        (base32 "1bnxmmq2yvwj6hb4d96v3k82bcmwhfqx5jixzr14zk4p3m6dd4px"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -397,12 +397,13 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;     ABCL and ECL (as well as CCL, CMUCL, CLISP and SBCL itself)
      ;;
      ;; CCL is not bootstrappable so it won't do.  CLISP 2.49 seems to work.
-     ;; ECL too.  ECL builds SBCL about 20% slower than CLISP.  As of
-     ;; 2019-09-05, ECL was last updated in 2020 while CLISP was last updated
-     ;; in 2010.
+     ;; ECL too.  As of 2020-07-01, ECL was last updated in 2020 while CLISP
+     ;; was last updated in 2010, and both take about the same time to build SBCL.
      ;;
-     ;; For now we stick to CLISP for all systems.  We keep the `match' here to
-     ;; make it easier to change the host compiler for various architectures.
+     ;; For now we stick to CLISP for all systems.  We keep the `match' here
+     ;; to make it easier to change the host compiler for various
+     ;; architectures.  Consider switching to ECL if it gets faster than CLISP
+     ;; (maybe post 2020 release).
      `(,@(match (%current-system)
            ((or "x86_64-linux" "i686-linux")
             `(("clisp" ,clisp)))
