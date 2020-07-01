@@ -173,14 +173,14 @@ interactive development model in mind.")
 (define-public sbcl-bordeaux-threads
   (package
     (name "sbcl-bordeaux-threads")
-    (version "0.8.7")
+    (version "0.8.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/sionescu/bordeaux-threads.git")
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "1whpfmyxp2fsw6viqj45fqgsifgr534c575bfh5vaqw5m84b6alp"))
+               (base32 "19i443fz3488v1pbbr9x24y8h8vlyhny9vj6c9jk5prm702awrp6"))
               (file-name
                (git-file-name "bordeaux-threads" version))))
     (inputs `(("alexandria" ,sbcl-alexandria)))
