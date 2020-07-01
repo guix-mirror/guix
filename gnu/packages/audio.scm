@@ -128,6 +128,37 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public libtimidity
+  (package
+    (name "libtimidity")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/" name "/files/"
+                       name "/" version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0p2px0m907gi1zpdr0l9adq25jl89j85c11ag9s2g4yc6n1nhgfm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))       ; XXX: LibTiMidity could not be initialised
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ao" ,ao)))
+    (synopsis "MIDI to WAVE converter library")
+    (description "LibTiMidity is a MIDI to WAVE converter library that uses
+Gravis Ultrasound-compatible patch files to generate digital audio data from
+General MIDI files.")
+    (home-page "http://libtimidity.sourceforge.net/")
+    (license
+     ;; This project is dual-licensed.
+     ;; Either of the following licenses can be exercised.
+     (list
+      license:lgpl2.1+
+      license:artistic2.0))))
+
 (define-public vo-amrwbenc
   (package
     (name "vo-amrwbenc")
