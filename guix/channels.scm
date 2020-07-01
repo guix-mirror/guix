@@ -223,6 +223,14 @@ introduction, add it."
     (#f      `(branch . ,(channel-branch channel)))
     (commit  `(commit . ,(channel-commit channel)))))
 
+(define sexp->channel-introduction
+  (match-lambda
+    (('channel-introduction ('version 0)
+                            ('commit commit) ('signer signer)
+                            _ ...)
+     (make-channel-introduction commit (openpgp-fingerprint signer)))
+    (x #f)))
+
 (define (read-channel-metadata port)
   "Read from PORT channel metadata in the format expected for the
 '.guix-channel' file.  Return a <channel-metadata> record, or raise an error
@@ -250,7 +258,9 @@ if valid metadata could not be read from PORT."
                     (name name)
                     (branch branch)
                     (url url)
-                    (commit (get 'commit))))))
+                    (commit (get 'commit))
+                    (introduction (and=> (get 'introduction)
+                                         sexp->channel-introduction))))))
              dependencies)
         news-file
         keyring-reference
@@ -948,14 +958,6 @@ to 'latest-channel-instances'."
 (define (profile-channels profile)
   "Return the list of channels corresponding to entries in PROFILE.  If
 PROFILE is not a profile created by 'guix pull', return the empty list."
-  (define sexp->channel-introduction
-    (match-lambda
-      (('channel-introduction ('version 0)
-                              ('commit commit) ('signer signer)
-                              _ ...)
-       (make-channel-introduction commit (openpgp-fingerprint signer)))
-      (x #f)))
-
   (filter-map (lambda (entry)
                 (match (assq 'source (manifest-entry-properties entry))
                   (('source ('repository ('version 0)
