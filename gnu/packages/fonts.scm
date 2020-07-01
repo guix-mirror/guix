@@ -1172,7 +1172,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
   (package
     (name "font-iosevka")
     ;; When updating, also update the hash of the Iosevka variant(s) below.
-    (version "3.1.1")
+    (version "3.2.2")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1180,7 +1180,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
                            "/releases/download/v" version
                            "/ttc-iosevka-" version ".zip"))
        (sha256
-        (base32 "1xnkfr11rdjnin2fvgkp9vxxigfbfdncr0wy6n78mlm3p1pqwfrm"))))
+        (base32 "16iqr4zjlshrgzcs3sjp3gz777gpi069r7p7scqi6vap9acqjvph"))))
     (build-system font-build-system)
     (home-page "https://be5invis.github.io/Iosevka/")
     (synopsis "Coders' typeface, built from code")
@@ -1203,7 +1203,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-slab-" version ".zip"))
        (sha256
-        (base32 "1n3lh015mvsdbyygpg3p3yqjpqdn1fdvjh1bhi2ggjanhifjsgzh"))))))
+        (base32 "0knsb1b0wqv50r7f9128xvq344x7hnvgm7kh1dxaahlck910z62x"))))))
 
 (define-public font-iosevka-term
   (package
@@ -1218,7 +1218,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/ttf-iosevka-term-" version ".zip"))
        (sha256
         (base32
-         "1mwzwpdppmcf03fgb5q6ksj0kk93wwaz2isk24wj1cm66r8psxk0"))))
+         "0nyq6iq9xjn9nqwh1fh4v0pvblycmm8ssw7y3vcjv1ymbkdqfqhr"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1240,7 +1240,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/ttf-iosevka-term-slab-" version ".zip"))
        (sha256
         (base32
-         "0fiwxkf2gv38ia695wh8cvnb58sqs3fixjd33q1pp9cps94wzjpg"))))
+         "1blhhbnk2hyaxjrz88icd2gwyniq5idxd0h6rqx6vjcack6094z0"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1261,7 +1261,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-aile-" version ".zip"))
        (sha256
-        (base32 "15kz8ahlynnb79s2d367a1fallc4l3j3957yj43qrymayagkh8sv"))))))
+        (base32 "1zg0gn4gcf3w8n8jzf93y9ninyn3bci31c5zss3mxzz1lzfm8zd5"))))))
 
 (define-public font-iosevka-etoile
   (package
@@ -1275,7 +1275,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-etoile-" version ".zip"))
        (sha256
-        (base32 "0q9299mc595m251v9zj9b0zparl2qq8dwx090l0jkfpr2az9xr8q"))))))
+        (base32 "1061yaf35f19dcym4k552q1yzbsbc98r3glm9frslirra9f33sl2"))))))
 
 (define-public font-iosevka-sparkle
   (package
@@ -1289,7 +1289,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-sparkle-" version ".zip"))
        (sha256
-        (base32 "0nhvcnvl11iqmsxsyrxlbnwy9z1vdhqv6p3g7fig9ra6n5j9k5kn"))))))
+        (base32 "1c1s9j6qgyhn4md0kql0x2201nbs5jx3612jf8q020gm484xqq03"))))))
 
 (define-public font-sarasa-gothic
   (package
