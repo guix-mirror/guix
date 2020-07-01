@@ -603,13 +603,13 @@ containing both Producer and Consumer support.")
     (version "1.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://libndp.org/files/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "https://libndp.org/files/"
+                                  "libndp-" version ".tar.gz"))
               (sha256
                (base32
                 "1dlinhl39va00v55qygjc9ap77yqf7xvn4rwmvdr49xhzzxhlj1c"))))
     (build-system gnu-build-system)
-    (home-page "http://libndp.org/")
+    (home-page "https://libndp.org/")
     (synopsis "Library for Neighbor Discovery Protocol")
     (description
      "libndp contains a library which provides a wrapper for IPv6 Neighbor
