@@ -107,10 +107,11 @@ clients.")
        ("python-urllib3" ,python-urllib3)
        ("python-wsgi-intercept" ,python-wsgi-intercept)
        ("radicale" ,radicale)))
+    (inputs
+     `(;; XXX https://github.com/mitsuhiko/click/issues/200
+       ("python-click" ,python-click-5)))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
-       ;; XXX https://github.com/mitsuhiko/click/issues/200
-       ("python-click" ,python-click-5)
        ("python-click-log" ,python-click-log)
        ("python-click-threading" ,python-click-threading)
        ("python-requests-toolbelt" ,python-requests-toolbelt)))
