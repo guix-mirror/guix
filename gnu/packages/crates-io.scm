@@ -4299,10 +4299,10 @@ to @code{is_x86_feature_detected}.")
         (base32 "0w15z68nz3ac4f2s4djhwha8vmlwsh9dlfrmsl4x84y2ah5acjvp"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))
     (home-page
