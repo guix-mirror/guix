@@ -6084,7 +6084,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.9.5")
+    (version "0.9.6")
     (source
      (origin
        (method url-fetch)
@@ -6093,7 +6093,7 @@ used by nftables.")
                   (string-append "https://www.nftables.org/projects/nftables"
                                  "/files/nftables-" version ".tar.bz2")))
        (sha256
-        (base32 "05kyri19q776mymkbcxq3786l6nrf4xg7f3n8my0aw63mdz9bhgj"))))
+        (base32 "0vmn6xwqa1nq6crfxshh049b199d0aj6hfgin7k068xhibzgvmk8"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
