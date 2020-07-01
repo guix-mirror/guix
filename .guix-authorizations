@@ -58,12 +58,8 @@
    (name "daviwil"))
   ("6909 6DFD D702 8BED ACC5  884B C5E0 51C7 9C0B ECDB"
    (name "dvc"))
-  ("5F43 B681 0437 2F4B A898  A64B 33B9 E9FD E28D 2C23"
-   (name "dvc (old)"))
   ("A28B F40C 3E55 1372 662D  14F7 41AA E7DC CA3D 8351"
    (name "efraim"))
-  ("9157 41FE B22F A4E3 3B6E  8F8D F4C1 D391 7EAC EE93"
-   (name "efraim (old)"))
   (;; primary: "2453 02B1 BAB1 F867 FDCA  96BC 8F3F 861F 82EB 7A9A"
    "CBC5 9C66 EC27 B971 7940  6B3E 6BE8 208A DF21 FE3F"
    (name "glv"))
@@ -76,13 +72,8 @@
   (;; primary: "66A5 6D9C 9A98 BE7F 719A  B401 2652 5665 AE72 7D37"
    "0325 78A6 8298 94E7 2AA2  66F5 D415 BF25 3B51 5976"
    (name "iyzsong"))
-
-  ;; https://lists.gnu.org/archive/html/guix-devel/2018-04/msg00229.html
-  ("DB34 CB51 D25C 9408 156F  CDD6 A12F 8797 8D70 1B99"
-   (name "janneke (old)"))
   ("1A85 8392 E331 EAFD B8C2  7FFB F3C1 A0D9 C1D6 5273"
    (name "janneke"))
-
   (;; primary: "1BA4 08C5 8BF2 0EA7 3179  635A 865D C0A3 DED9 B5D0"
    "E31D 9DDE EBA5 4A14 8A20  4550 DA45 97F9 47B4 1025"
    (name "jlicht"))
