@@ -370,20 +370,21 @@ dictionaries.  HexChat can be extended with multiple addons.")
 (define-public ngircd
   (package
     (name "ngircd")
-    (version "25")
+    (version "26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://arthur.barton.de/pub/ngircd/ngircd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0kpf5qi98m9f833r4rx9n6h9p31biwk798jwc1mgzmix7sp7r6f4"))
+                "1ijmv18fa648y7apxb9vp4j9iq6fxq850kz5v36rysaq614cdp2n"))
               (patches (search-patches "ngircd-handle-zombies.patch"))))
     (build-system gnu-build-system)
     ;; Needed for the test suite.
     (native-inputs `(("procps" ,procps)
                      ("expect" ,expect)
-                     ("inetutils" ,inetutils)))
+                     ("inetutils" ,inetutils)
+                     ("openssl" ,openssl)))
     ;; XXX Add libident.
     (inputs `(("zlib" ,zlib)
               ("libwrap" ,tcp-wrappers)
