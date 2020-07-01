@@ -12197,8 +12197,8 @@ online linear classification written in Common Lisp.")
   (sbcl-package->ecl-package sbcl-cl-online-learning))
 
 (define-public sbcl-cl-random-forest
-  (let ((commit "85fbdd4596d40e824f70f1b7cf239cf544e49d51")
-        (revision "0"))
+  (let ((commit "fedb36ce99bb6f4d7e3a7dd6d8b058f331308f91")
+        (revision "1"))
     (package
       (name "sbcl-cl-random-forest")
       (version (git-version "0.1" revision commit))
@@ -12211,7 +12211,7 @@ online linear classification written in Common Lisp.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "097xv60i1ndz68sg9p4pc7c5gvyp9i1xgw966b4wwfq3x6hbz421"))))
+           "0wqh4dxy5hrvm14jgyfypwhdw35f24rsksid4blz5a6l2z16rlmq"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("prove" ,sbcl-prove)
