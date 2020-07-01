@@ -173,7 +173,11 @@ is used in some video games and movies.")
              (base32
               "07w3asqxx89wl2wfv1z3cak8v83h3ys3b39mq9qq4gyf3xdhs76n"))))
    (build-system gnu-build-system)
-   (native-inputs `(("asciidoc" ,asciidoc)))
+   (inputs
+    `(("libpng" ,libpng)))
+   (native-inputs
+    `(("asciidoc" ,asciidoc)
+      ("pkg-config" ,pkg-config)))
    (home-page "https://github.com/Doom-Utils/deutex")
    (synopsis "WAD file composer for Doom and related games")
    (description
