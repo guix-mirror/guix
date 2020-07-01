@@ -47,6 +47,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -62,13 +64,16 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
@@ -86,8 +91,10 @@
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -98,6 +105,76 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public directfb
+  (package
+    (name "directfb")
+    (version "1.7.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/deniskropp/DirectFB.git")
+         (commit "DIRECTFB_1_7_7")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0bs3yzb7hy3mgydrj8ycg7pllrd2b6j0gxj596inyr7ihssr3i0y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-configure-during-bootstrap
+           (lambda _
+             (substitute* "autogen.sh"
+               (("^.*\\$srcdir/configure.*") ""))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("ffmpeg" ,ffmpeg)
+       ("freetype" ,freetype)
+       ("glu" ,glu)
+       ("gstreamer" ,gstreamer)
+       ("imlib2" ,imlib2)
+       ("jasper" ,jasper)
+       ("jpeg" ,libjpeg-turbo)
+       ("libcddb" ,libcddb)
+       ("libdrm" ,libdrm)
+       ("libtimidity" ,libtimidity)
+       ("linux-headers" ,linux-libre-headers)
+       ("mad" ,libmad)
+       ("mng" ,libmng)
+       ("mpeg2" ,libmpeg2)
+       ("mpeg3" ,libmpeg3)
+       ("opengl" ,mesa)
+       ("png" ,libpng)
+       ("sdl" ,sdl)
+       ("svg" ,librsvg)
+       ("tiff" ,libtiff)
+       ("tslib" ,tslib)
+       ("vdpau" ,libvdpau)
+       ("vorbisfile" ,libvorbis)
+       ("wayland" ,wayland)
+       ("webp" ,libwebp)
+       ("x11" ,libx11)
+       ("xcomposite" ,libxcomposite)
+       ("xext" ,libxext)
+       ("xproto" ,xorgproto)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("flux" ,flux)))
+    (synopsis "DFB Graphics Library")
+    (description "DirectFB is a graphics library which was designed with embedded
+systems in mind.  It offers maximum hardware accelerated performance at a
+minimum of resource usage and overhead.")
+    (home-page "http://www.directfb.org/")
+    (license license:lgpl2.1+)))
 
 (define-public flux
   (package
