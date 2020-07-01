@@ -6297,6 +6297,28 @@ frames in the call stack and can evaluate code in that context.")
     (home-page "https://github.com/banister/binding_of_caller")
     (license license:expat)))
 
+(define-public ruby-pry-stack-explorer
+  (package
+    (name "ruby-pry-stack-explorer")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "pry-stack_explorer" version))
+       (sha256
+        (base32
+         "157rd2n9pfvcmmicm0xkq8z4p6famaj13syrpra6b4032qpb1wn0"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f))          ;no test suite in gem release
+    (propagated-inputs
+     `(("ruby-binding-of-caller" ,ruby-binding-of-caller)
+       ("ruby-pry" ,ruby-pry)))
+    (synopsis "Call-stack navigation plugin for the Pry REPL")
+    (description "@code{pry-stack_explorer} is a plugin for the Pry REPL that
+add support to navigate the call-stack.")
+    (home-page "https://github.com/pry/pry-stack_explorer")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
