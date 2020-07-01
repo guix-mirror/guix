@@ -6319,6 +6319,25 @@ add support to navigate the call-stack.")
     (home-page "https://github.com/pry/pry-stack_explorer")
     (license license:expat)))
 
+(define-public ruby-varint
+  (package
+    (name "ruby-varint")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "varint" version))
+       (sha256
+        (base32
+         "1y0l2qc64cwsyv76ygg9bbjnk86riz2kq73kmn87gdrlmpiyrdac"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f))          ;no test suite
+    (synopsis "Variable length integers (varint) C extension for Ruby")
+    (description "This package provides a small C extension to speed up
+variable length integers (varint) in Ruby Protocol Buffers.")
+    (home-page "https://github.com/liquidm/varint")
+    (license license:bsd-3)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
