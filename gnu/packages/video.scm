@@ -172,6 +172,55 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public libmpeg3
+  (package
+    (name "libmpeg3")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/heroines/files/"
+                       "releases/081108/" name "-" version "-src.tar.bz2"))
+       (sha256
+        (base32 "1i53vv0wm5qfwgg1z7j9g14s6c7gxxkiy4vbdkq3lijjyyz50vv5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list
+        (string-append "A52DIR=" (assoc-ref %build-inputs "liba52"))
+        (string-append "DST=" (assoc-ref %outputs "out") "/bin"))
+     #:phases
+     (modify-phases %standard-phases
+       (add-after 'unpack 'delete-bundled-a52dec
+         (lambda _
+           (delete-file-recursively "a52dec-0.7.3")
+           (substitute* "Makefile"
+             (("include Makefile\\.a52")
+              "")
+             (("\\(A52DIR\\)/include")
+              "(A52DIR)/include/a52dec")
+             (("LIBS = " match)
+              (string-append match "-la52 ")))
+           #t))
+       (add-before 'install 'create-destination-directory
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((out (string-append (assoc-ref outputs "out"))))
+             (mkdir-p (string-append out "/bin"))
+             #t))))))
+  (native-inputs
+   `(("nasm" ,nasm)))
+  (inputs
+   `(("liba52" ,liba52)))
+  (synopsis "Advanced MPEG editing and manipulation library")
+  (description "Libmpeg3 decodes MP2, MP3, AC3, MPEG-1 video, MPEG-2 video,
+and DVD footage in a single library.  It supports many esoteric features like
+parallel video decoding, frame-accurate editing, YUV 4:2:2, and ATSC transport
+stream decoding")
+  (home-page "http://heroinewarrior.com/libmpeg3.php")
+  (license license:gpl2+)))
+
 (define-public aalib
   (package
     (name "aalib")
