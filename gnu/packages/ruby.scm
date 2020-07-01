@@ -6273,6 +6273,30 @@ navigation capabilities to @code{pry}, using @code{byebug}.")
     (home-page "https://github.com/deivid-rodriguez/pry-byebug")
     (license license:expat)))
 
+(define-public ruby-binding-of-caller
+  (package
+    (name "ruby-binding-of-caller")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "binding_of_caller" version))
+       (sha256
+        (base32
+         "05syqlks7463zsy1jdfbbdravdhj9hpj5pv2m74blqpv8bq4vv5g"))))
+    (build-system ruby-build-system)
+    ;; Attempting to run the test suite fails with a rake deprecation error
+    ;; (see: https://github.com/banister/binding_of_caller/issues/76).
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-debug-inspector" ,ruby-debug-inspector)))
+    (synopsis "Retrieve the binding of a method's caller")
+    (description "The @code{binding_of_caller} module provides the
+@code{Binding#of_caller} method.  It allows accessing bindings from upper
+frames in the call stack and can evaluate code in that context.")
+    (home-page "https://github.com/banister/binding_of_caller")
+    (license license:expat)))
+
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
