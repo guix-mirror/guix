@@ -99,6 +99,32 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
+(define-public flux
+  (package
+    (name "flux")
+    (version "1.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/deniskropp/flux.git")
+         (commit "e45758a")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11f3ypg0sdq5kj69zgz6kih1yrzgm48r16spyvzwvlswng147410"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Interface description language")
+    (description "Flux is an interface description language used by DirectFB.
+Fluxcomp compiles .flux files to .cpp or .c files.")
+    (home-page "http://www.directfb.org/")
+    (license license:lgpl2.1+))) ; Same as DirectFB
+
 (define-public fox
   (package
     (name "fox")
