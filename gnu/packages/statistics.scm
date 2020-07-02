@@ -5305,14 +5305,14 @@ normals.")
 (define-public r-mnormt
   (package
     (name "r-mnormt")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
         (uri (cran-uri "mnormt" version))
         (sha256
           (base32
-           "1gxhma0zqsx5pkc0871vszq1y7akwdmpm8rhws5b3gr6w9mx4agf"))))
+           "00nn0b6nksn2jbpg0np5wphryp4f9v95vqxf5v628yysnawgkcwq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-tmvnsim" ,r-tmvnsim)))
