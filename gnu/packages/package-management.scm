@@ -478,6 +478,23 @@ the Nix package manager.")
 (define-public guile3.0-guix
   (deprecated-package "guile3.0-guix" guix))
 
+(define-public guix-minimal
+  ;; A version of Guix which is built with the minimal set of dependencies, as
+  ;; outlined in the README "Requirements" section.  Intended as a CI job, so
+  ;; marked as hidden.
+  (hidden-package
+   (package
+     (inherit guix)
+     (name "guix-minimal")
+     (native-inputs
+      (fold alist-delete
+            (package-native-inputs guix)
+            '("guile-ssh")))
+     (propagated-inputs
+      (fold alist-delete
+            (package-propagated-inputs guix)
+            '("guile-ssh"))))))
+
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
 generated file."
