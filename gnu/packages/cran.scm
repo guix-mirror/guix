@@ -15724,14 +15724,14 @@ engine (Salmon et al., 2011) as provided by the package @code{sitmo}.")
 (define-public r-ingredients
   (package
     (name "r-ingredients")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ingredients" version))
        (sha256
         (base32
-         "1q196y9xzn4wk44fa1bvh0hcbizgm93rwir82nyk31k5pgixk967"))))
+         "1mp1rgi3nnr8mjddpbyi24zvqcbihz0d8np2j13cbjc089n6jci8"))))
     (properties `((upstream-name . "ingredients")))
     (build-system r-build-system)
     (propagated-inputs
