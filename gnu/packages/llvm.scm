@@ -514,6 +514,7 @@ output), and Binutils.")
          "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))
        (patch-flags '("-p2"))
        (patches (search-patches
+                  "llvm-9-fix-bitcast-miscompilation.patch"
                   "llvm-9-fix-scev-miscompilation.patch"
                   "llvm-9-fix-lpad-miscompilation.patch"))))))
 
