@@ -9,7 +9,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2019, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
@@ -370,8 +370,7 @@ to @code{cabal repl}).")
              ;; Factor out necessary build logic from the provided
              ;; `Setup.hs' script.  The script as-is does not work because
              ;; it cannot find its dependencies, and there is no obvious way
-             ;; to tell it where to look.  Note that we do not preserve the
-             ;; code that installs man pages here.
+             ;; to tell it where to look.
              (call-with-output-file "PreConf.hs"
                (lambda (out)
                  (format out "import qualified Build.Configure as Configure~%")
@@ -385,6 +384,18 @@ to @code{cabal repl}).")
            (lambda _
              (invoke "runhaskell" "PreConf.hs")
              #t))
+         (add-after 'build 'build-manpages
+           (lambda _
+             ;; The Setup.hs rewrite above removed custom code for building
+             ;; the man pages.  In addition to that code, git-annex's source
+             ;; tree has a file that's not included in the tarball but is used
+             ;; by the Makefile to build man pages.  Copy the core bits here.
+             (call-with-output-file "Build/MakeMans.hs"
+               (lambda (out)
+                 (format out "module Main where~%")
+                 (format out "import Build.Mans~%")
+                 (format out "main = buildMansOrWarn~%")))
+             (invoke "runhaskell" "Build/MakeMans.hs")))
          (replace 'check
            (lambda _
              ;; We need to set the path so that Git recognizes
@@ -400,6 +411,14 @@ to @code{cabal repl}).")
              ;; Undo `patch-shell-for-tests'.
              (copy-file "/tmp/Shell.hs" "Utility/Shell.hs")
              (apply (assoc-ref %standard-phases 'build) args)))
+         (add-after 'install 'install-manpages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((man (string-append (assoc-ref outputs "out")
+                                       "/man/man1/")))
+               (mkdir-p man)
+               (for-each (lambda (file) (install-file file man))
+                         (find-files "man")))
+             #t))
          (add-after 'install 'install-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -465,7 +484,8 @@ to @code{cabal repl}).")
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-rerun" ,ghc-tasty-rerun)))
+       ("ghc-tasty-rerun" ,ghc-tasty-rerun)
+       ("perl" ,perl)))
     (home-page "https://git-annex.branchable.com/")
     (synopsis "Manage files with Git, without checking in their contents")
     (description "This package allows managing files with Git, without
