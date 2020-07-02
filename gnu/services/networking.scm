@@ -130,7 +130,6 @@
             usb-modeswitch-configuration-usb-modeswitch-data
             usb-modeswitch-service-type
 
-            <wpa-supplicant-configuration>
             wpa-supplicant-configuration
             wpa-supplicant-configuration?
             wpa-supplicant-configuration-wpa-supplicant
