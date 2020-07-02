@@ -2008,7 +2008,7 @@ UTF-8.")
   (package
     (inherit rust-bumpalo-3)
     (name "rust-bumpalo")
-    (version "2.5.0")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -2017,9 +2017,9 @@ UTF-8.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "018b5calz3895v04shk9bn7i73r4zf8yf7p1dqg92s3xya13vm1c"))))
+         "020psxs5dlm0gdbs83rx2rcavibdshdr0fpzk3mmw65zq8ppz05d"))))
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f      ; cargo_readme_up_to_date test fails
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.8))))))
