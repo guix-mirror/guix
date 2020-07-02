@@ -2004,7 +2004,7 @@ UTF-8.")
      "This package provides a fast bump allocation arena for Rust.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-bumpalo-2.5
+(define-public rust-bumpalo-2
   (package
     (inherit rust-bumpalo-3)
     (name "rust-bumpalo")
