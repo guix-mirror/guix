@@ -18451,14 +18451,13 @@ time-or-computationally-expensive properties quick and easy and works in Python
 (define-public python-folium
   (package
     (name "python-folium")
-    (version "0.10.1")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "folium" version))
        (sha256
-        (base32
-         "0gcc267wxwxr57ry86pqpbiyfvl0g48hfvgy0f2mz9s58g87kgzd"))))
+        (base32 "19sclsq3xcjfa7bavzjpyn6rl9b15jbc76n5aag4cwhqqamqj1sl"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-branca" ,python-branca)
