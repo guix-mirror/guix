@@ -420,7 +420,9 @@ test = { path = \"../libtest\" }
      `(("bison" ,bison) ; For the tests
        ("cmake" ,cmake-minimal)
        ("flex" ,flex) ; For the tests
-       ("gdb" ,gdb-minimal)   ; For the tests
+       ;; FIXME: Rust 1.27 and some later versions require GDB 8.2 specifically.
+       ;; See <https://bugs.gnu.org/37810>.  Use it on all Rusts for simplicity.
+       ("gdb" ,gdb-8.2) ; For the tests
        ("procps" ,procps) ; For the tests
        ("python-2" ,python-2)
        ("rustc-bootstrap" ,mrustc)
@@ -825,11 +827,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                        "rust-bootstrap-stage0-test.patch"
                                        "rust-1.25-accept-more-detailed-gdb-lines.patch"
                                        "rust-reproducible-builds.patch")))))
-      (native-inputs
-       ;; FIXME: Rust 1.27 and some later versions require GDB 8.2 specifically.
-       ;; See <https://bugs.gnu.org/37810>.
-       (alist-replace "gdb" (list gdb-8.2)
-                      (package-native-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
