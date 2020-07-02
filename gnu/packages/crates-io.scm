@@ -4326,11 +4326,10 @@ to @code{is_x86_feature_detected}.")
         (base32
          "0jsa9dbxnwqcxfws09vaschf92d4imlbbikmcn4ka8z7rzb9r5vw"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))))
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossbeam-utils-0.7
   (package
