@@ -131,9 +131,9 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
 
 ;; This version of GDB is required by some of the Rust compilers, see
 ;; <https://bugs.gnu.org/37810>.
-(define-public gdb-minimal-8.2
+(define-public gdb-8.2
   (package
-    (inherit gdb-minimal)
+    (inherit gdb)
     (version "8.2.1")
     (source (origin
               (method url-fetch)
