@@ -4171,8 +4171,7 @@ to @code{is_x86_feature_detected}.")
         (base32
          "1ylyzb1m9qbvd1nd3vy38x9073wdmcy295ncjs7wf7ap476pzv68"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
        #:cargo-development-inputs
        (("rust-num-cpus" ,rust-num-cpus-1)
