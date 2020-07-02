@@ -4098,7 +4098,7 @@ to @code{is_x86_feature_detected}.")
 (define-public rust-crossbeam-0.7
   (package
     (name "rust-crossbeam")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
@@ -4107,19 +4107,18 @@ to @code{is_x86_feature_detected}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0g5jysq5x4gndc1v5sq9n3f1m97k7qihwdpigw6ar6knj14qm09d"))))
+         "13kzn2d49n2qn5q42y2dj48kyv6aln2d9smq8x9n675l3zzknck9"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.3)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4)
         ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
-        ("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.7)
-        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
+        ("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.8)
+        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.2)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
+       (("rust-rand" ,rust-rand-0.6))))
     (home-page "https://github.com/crossbeam-rs/crossbeam")
     (synopsis "Tools for concurrent programming")
     (description "Tools for concurrent programming.")
