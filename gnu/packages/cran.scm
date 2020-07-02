@@ -9207,14 +9207,14 @@ back to file after modifications.")
 (define-public r-fs
   (package
     (name "r-fs")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fs" version))
        (sha256
         (base32
-         "0kksig9pk8aid9l6r250na8z8j9919jvs20lj0s6m9bcybgh74df"))))
+         "09rpazjba9jy448j6rq989fw3wv3xhng7fn8p8gr22gyx0n0y1zr"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
