@@ -637,8 +637,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/images/hurd.scm			\
 						\
   %D%/machine.scm				\
-  %D%/machine/digital-ocean.scm			\
-  %D%/machine/ssh.scm				\
 						\
   %D%/build/accounts.scm			\
   %D%/build/activation.scm			\
@@ -715,6 +713,14 @@ INSTALLER_MODULES =                             \
   %D%/installer/newt/utils.scm			\
   %D%/installer/newt/welcome.scm		\
   %D%/installer/newt/wifi.scm
+
+if HAVE_GUILE_SSH
+
+GNU_SYSTEM_MODULES +=         			\
+  %D%/machine/digital-ocean.scm			\
+  %D%/machine/ssh.scm
+
+endif HAVE_GUILE_SSH
 
 # Always ship the installer modules but compile them only when
 # ENABLE_INSTALLER is true.
