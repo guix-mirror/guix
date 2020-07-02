@@ -4363,7 +4363,7 @@ to @code{is_x86_feature_detected}.")
   (package
     (inherit rust-crossbeam-utils-0.7)
     (name "rust-crossbeam-utils")
-    (version "0.6.5")
+    (version "0.6.6")
     (source
      (origin
        (method url-fetch)
@@ -4372,14 +4372,13 @@ to @code{is_x86_feature_detected}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0p5aa8k3wpsn17md4rx038ac2azm9354knbxdfvn7dd7yk76yc7q"))))
+         "1rk0r9n04bmq4a3g2q5qhvvlmrmx780gc6h9lmc94mwndslkz5q4"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))))
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossterm-0.13
   (package
