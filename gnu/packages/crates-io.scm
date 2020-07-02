@@ -4229,7 +4229,7 @@ to @code{is_x86_feature_detected}.")
 (define-public rust-crossbeam-epoch-0.8
   (package
     (name "rust-crossbeam-epoch")
-    (version "0.8.0")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
@@ -4238,15 +4238,15 @@ to @code{is_x86_feature_detected}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1b2mgc2gxxvyzyxgd5wvn9k42gr6f9phi2swwjawpqswy3dynr2h"))))
+         "1knsf0zz7rgzxn0nwz5gajjcrivxpw3zrdcp946gdhdgr9sd53h5"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-0.1)
+     `(#:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-1.0)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0)
         ("rust-memoffset" ,rust-memoffset-0.5)
         ("rust-scopeguard" ,rust-scopeguard-1.0))
        #:cargo-development-inputs
