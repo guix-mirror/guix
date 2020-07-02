@@ -947,6 +947,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/fontconfig-hurd-path-max.patch		\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
+  %D%/packages/patches/ganeti-deterministic-manual.patch	\
+  %D%/packages/patches/ganeti-disable-version-symlinks.patch	\
+  %D%/packages/patches/ganeti-drbd-compat.patch			\
+  %D%/packages/patches/ganeti-haskell-pythondir.patch		\
+  %D%/packages/patches/ganeti-os-disk-size.patch		\
+  %D%/packages/patches/ganeti-preserve-PYTHONPATH.patch		\
+  %D%/packages/patches/ganeti-shepherd-master-failover.patch	\
+  %D%/packages/patches/ganeti-shepherd-support.patch		\
   %D%/packages/patches/gash-utils-ls-test.patch			\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
