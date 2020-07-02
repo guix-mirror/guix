@@ -943,6 +943,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fontconfig-hurd-path-max.patch		\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
+  %D%/packages/patches/gash-utils-ls-test.patch			\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\

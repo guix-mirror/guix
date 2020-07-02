@@ -140,7 +140,7 @@ pure Scheme to Tar and decompression in one easy step.")
     (name "gash-boot")
     (source (origin
               (inherit (package-source gash))
-              (modules '())))
+              (snippet #f)))            ;discard snippet for Guile 3.0 support
     (arguments
      `(#:implicit-inputs? #f
        #:tests? #f
@@ -170,6 +170,10 @@ pure Scheme to Tar and decompression in one easy step.")
   (package
     (inherit gash-utils)
     (name "gash-utils-boot")
+    (source (origin
+              (inherit (package-source gash-utils))
+              (patches '())
+              (snippet #f)))            ;discard snippet for Guile 3.0 support
     (arguments
      `(#:implicit-inputs? #f
        #:tests? #f
