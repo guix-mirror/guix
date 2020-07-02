@@ -6788,8 +6788,7 @@ Compatible with Cisco VPN concentrators configured to use IPsec.")
                                              "/bin/modprobe"))
                     (pretty-ovpn (string-append "\"" openconnect "\"")))
                (substitute* "src/nm-openconnect-service.c"
-                 (("\"/usr/local/sbin/openconnect\"") pretty-ovpn)
-                 (("\"/usr/sbin/openconnect\"") pretty-ovpn)
+                 (("\"/usr(/local)?/s?bin/openconnect\"") pretty-ovpn)
                  (("/sbin/modprobe") modprobe)))
              #t)))))
     (native-inputs
