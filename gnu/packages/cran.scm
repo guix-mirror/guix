@@ -13724,14 +13724,14 @@ datum transformations.")
 (define-public r-spdep
   (package
     (name "r-spdep")
-    (version "1.1-3")
+    (version "1.1-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spdep" version))
        (sha256
         (base32
-         "1f8cjffqqc6rnb3n4qym70ca6nz2kvrsd3g587wrqdr79nnbwnrk"))))
+         "0pbd7wrg5v44p2yxsjp774lpyzap3madir5mn5p3ix7ibk7ldjs7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
@@ -13746,6 +13746,8 @@ datum transformations.")
        ("r-sf" ,r-sf)
        ("r-sp" ,r-sp)
        ("r-spdata" ,r-spdata)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-spatial/spdep/")
     (synopsis "Spatial dependence: weighting schemes, statistics and models")
     (description
