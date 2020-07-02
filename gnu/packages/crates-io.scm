@@ -4181,7 +4181,7 @@ to @code{is_x86_feature_detected}.")
 (define-public rust-crossbeam-deque-0.7
   (package
     (name "rust-crossbeam-deque")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
@@ -4190,13 +4190,13 @@ to @code{is_x86_feature_detected}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1jm3rqb3qfpfywrakyy81f61xnl4jsim7lam9digw6w6cdfr9an3"))))
+         "11c2c0x5grdba3ah3g94yn6b8s47xi8qwm85h8hq5vmf9nbsy0lz"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.8)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))
     (home-page
