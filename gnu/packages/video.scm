@@ -1270,6 +1270,53 @@ audio/video codec library.")
     (inputs (alist-delete "dav1d" (alist-delete "libaom" (alist-delete "rav1e"
                            (package-inputs ffmpeg)))))))
 
+(define-public ffmpeg-2.8
+  (package
+    (inherit ffmpeg)
+    (version "2.8.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "14n0xg22yz1r4apif2idm91s3avcmkz4sl8gyj5763gcy415k2bb"))))
+    (arguments
+     `(#:tests? #f               ; XXX: Enable them later, if required
+       #:configure-flags
+       (list
+        "--disable-static"
+        "--enable-shared"
+        "--extra-cflags=-DFF_API_OLD_ENCODE_VIDEO -DFF_API_OLD_ENCODE_AUDIO")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs configure-flags #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "configure"
+                 (("#! /bin/sh") (string-append "#!" (which "sh"))))
+                ;; configure does not work followed by "SHELL=..." and
+                ;; "CONFIG_SHELL=..."; set environment variables instead.
+               (setenv "SHELL" (which "bash"))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (apply invoke
+                      "./configure"
+                      (string-append "--prefix=" out)
+                      ;; Add $libdir to the RUNPATH of all the binaries.
+                      (string-append "--extra-ldflags=-Wl,-rpath="
+                                     out "/lib")
+                      configure-flags))))
+         (add-before
+             'check 'set-ld-library-path
+           (lambda _
+             ;; Allow $(top_builddir)/ffmpeg to find its dependencies when
+             ;; running tests.
+             (let* ((dso  (find-files "." "\\.so$"))
+                    (path (string-join (map dirname dso) ":")))
+               (format #t "setting LD_LIBRARY_PATH to ~s~%" path)
+               (setenv "LD_LIBRARY_PATH" path)
+               #t))))))))
+
 (define-public ffmpeg-for-stepmania
   (hidden-package
    (package
