@@ -4127,7 +4127,7 @@ to @code{is_x86_feature_detected}.")
 (define-public rust-crossbeam-channel-0.4
   (package
     (name "rust-crossbeam-channel")
-    (version "0.4.0")
+    (version "0.4.2")
     (source
       (origin
         (method url-fetch)
@@ -4136,12 +4136,12 @@ to @code{is_x86_feature_detected}.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "135ncx9680afs8jkjz8g3iq3naay9rn7942gxrdg2n9m1cxrmv5c"))))
+          "0qd05n5bcwafkmbzq1lspwrfi29xnzlw46qarg1sl0lwj68qdvfc"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
+     `(#:cargo-inputs
+        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+         ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
         #:cargo-development-inputs
         (("rust-num-cpus" ,rust-num-cpus-1)
          ("rust-rand" ,rust-rand-0.6)
