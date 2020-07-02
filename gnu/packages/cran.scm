@@ -12353,14 +12353,14 @@ chosen parallel environment and associated foreach backend.")
 (define-public r-blockmodeling
   (package
     (name "r-blockmodeling")
-    (version "0.3.6")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "blockmodeling" version))
        (sha256
         (base32
-         "12paf76l3wlxad14bkxn37lw9rg6ka473m86wlcf3yhriw8kbaiz"))))
+         "1z4w2kq0id0gb5d0lqcdaw3clplhzywarkpvvx3drivdypzl237i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
