@@ -128,6 +128,39 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public libopenmpt
+  (package
+    (name "libopenmpt")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://download.openmpt.org/archive/" name "/src/"
+                       name "-" version "+release.autotools.tar.gz"))
+       (sha256
+        (base32 "0zl3djy9z7cpqk8g8pxrzmmikxsskb0y5qdabg6c683j7x5abjs3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("flac" ,flac)
+       ("mpg123" ,mpg123)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl2" ,sdl2)
+       ("sndfile" ,libsndfile)
+       ("vorbis" ,libvorbis)
+       ("zlib" ,zlib)))
+    (synopsis "Audio tracking library")
+    (description "LibOpenMPT is a cross-platform C++ and C module playback
+library.  It is based on the player code of the Open ModPlug Tracker project.")
+    (home-page "https://openmpt.org/")
+    (license (license:non-copyleft "file:///LICENSE"))))
+
 (define-public libofa
   (package
     (name "libofa")
