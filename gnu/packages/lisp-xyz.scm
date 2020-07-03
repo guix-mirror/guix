@@ -12236,3 +12236,33 @@ includes an implementation of Global Refinement of Random Forest.")
 
 (define-public ecl-cl-random-forest
   (sbcl-package->ecl-package sbcl-cl-random-forest))
+
+(define-public sbcl-bordeaux-fft
+  (let ((commit "4a1f5600cae59bdabcb32de4ee2d7d73a9450d6e")
+        (revision "0"))
+    (package
+      (name "sbcl-bordeaux-fft")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ahefner/bordeaux-fft.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0j584w6kq2k6r8lp2i14f9605rxhp3r15s33xs08iz1pndn6iwqf"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "http://vintage-digital.com/hefner/software/bordeaux-fft/")
+      (synopsis "Fast Fourier Transform for Common Lisp")
+      (description
+       "The Bordeaux-FFT library provides a reasonably efficient implementation
+of the Fast Fourier Transform and its inverse for complex-valued inputs, in
+portable Common Lisp.")
+      (license license:gpl2+))))
+
+(define-public cl-bordeaux-fft
+  (sbcl-package->cl-source-package sbcl-bordeaux-fft))
+
+(define-public ecl-bordeaux-fft
+  (sbcl-package->ecl-package sbcl-bordeaux-fft))
