@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -207,14 +207,17 @@ network to check in GNU's database."
                 (member host '("www.gnu.org" "gnu.org"))))))
 
       (or (gnu-home-page? package)
-          (let ((url  (and=> (package-source package) origin-uri))
-                (name (package-upstream-name package)))
-            (case (and (string? url) (mirror-type url))
-              ((gnu) #t)
-              ((non-gnu) #f)
-              (else
-               (and (member name (map gnu-package-name (official-gnu-packages)))
-                    #t))))))))
+          (match (package-source package)
+            ((? origin? origin)
+             (let ((url  (origin-uri origin))
+                   (name (package-upstream-name package)))
+               (case (and (string? url) (mirror-type url))
+                 ((gnu) #t)
+                 ((non-gnu) #f)
+                 (else
+                  (and (member name (map gnu-package-name (official-gnu-packages)))
+                       #t)))))
+            (_ #f))))))
 
 
 ;;;
