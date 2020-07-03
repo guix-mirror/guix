@@ -3302,6 +3302,45 @@ everyone's screenshots nowadays.")
       (description "This package provides a tiny system info utility.")
       (license license:isc))))
 
+(define-public pfetch
+  (let ((commit "e18a0959ab98b963744755ec4687e59dc11db3c5")
+        (revision "0"))
+    (package
+      (name "pfetch")
+      (version (git-version "0.7.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dylanaraps/pfetch")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1md40av6i3xvvwig5jzhy4kf3s5sgxxk35r0vcyrjd8qyndk927l"))))
+      (build-system trivial-build-system)
+      (inputs `(("bash" ,bash)))
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let* ((source (lambda (f)
+                            (string-append (assoc-ref %build-inputs "source") "/" f)))
+                  (output (assoc-ref %outputs "out"))
+                  (docdir (string-append output "/share/doc/pfetch-" ,version)))
+             (install-file (source "LICENSE.md") docdir)
+             (install-file (source "README.md") docdir)
+             (install-file (source "pfetch") (string-append output "/bin"))
+             (patch-shebang
+              (string-append output "/bin/pfetch")
+              (list (string-append (assoc-ref %build-inputs "bash") "/bin")))
+             #t))))
+      (home-page "https://github.com/dylanaraps/pfetch")
+      (synopsis "System information tool")
+      (description "This package provides a simple, configurable system
+information tool.")
+      (license license:expat))))
+
 (define-public nnn
   (package
     (name "nnn")
