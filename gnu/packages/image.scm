@@ -94,6 +94,38 @@
   #:use-module (guix deprecation)
   #:use-module (srfi srfi-1))
 
+(define-public iqa
+  (package
+    (name "iqa")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/iqa/files/"
+                       "1.1.2%20Release/iqa_1.1.2_src.tar.gz/download"))
+       (sha256
+        (base32 "00mgwy031ammab6bwmd1whhvqv3fxy1cs1igabq0n3ag12zhjs77"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (install-file "build/debug/libiqa.a" lib)
+               #t))))))
+    (synopsis "Image Quality Assessment")
+    (description "IQA is a C library for objectively measuring image/video
+quality.  It implements many popular algorithms, such as MS-SSIM, MS-SSIM*,
+SIMM, MSE, and PSNR.  It is designed to be fast, accurate, and reliable.  All
+code is Valgrind-clean and unit tested.")
+    (home-page "https://sourceforge.net/projects/iqa/")
+    (license license:bsd-4)))
+
 (define-public libpng
   (package
    (name "libpng")
