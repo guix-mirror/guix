@@ -128,6 +128,38 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public libofa
+  (package
+    (name "libofa")
+    (version "0.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://storage.googleapis.com/"
+                       "google-code-archive-downloads/v2/code.google.com/"
+                       "musicip-libofa/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "184ham039l7lwhfgg0xr2vch2xnw1lwh7sid432mh879adhlc5h2"))
+       (patches
+        (search-patches
+         "libofa-ftbfs-1.diff"
+         "libofa-curl.diff"
+         "libofa-ftbfs-2.diff"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("expat" ,expat)))
+    (propagated-inputs
+     `(("fftw" ,fftw)))
+    (synopsis "Open Fingerprint Architecture")
+    (description "LibOFA is an audio fingerprint library, created and provided
+by MusicIP.")
+    (home-page "https://code.google.com/archive/p/musicip-libofa/")
+    (license license:gpl2+)))
+
 (define-public faac
   (package
     (name "faac")
