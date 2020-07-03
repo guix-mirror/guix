@@ -114,6 +114,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -127,6 +128,35 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public tinyalsa
+  (package
+    (name "tinyalsa")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/tinyalsa/tinyalsa.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ajyvml5bnzvhiyyrn42gqwgg23ssxkfh09rvsnywhzxhd0xai4h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))
+       #:make-flags
+       (list
+        (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (synopsis "ALSA interfacing library")
+    (description "TinyALSA is a small library to interface with ALSA in the
+Linux kernel.")
+    (home-page "https://github.com/tinyalsa/tinyalsa")
+    (license (license:non-copyleft "file:///NOTICE"))))
 
 (define-public libopenmpt
   (package
