@@ -10446,3 +10446,48 @@ GObject introspection bindings.")
      (home-page "https://source.puri.sm/Librem5/feedbackd")
      (license (list license:lgpl2.1+   ; libfeedbackd
                     license:lgpl3+)))) ; the rest
+
+(define-public sysprof
+  (package
+    (name "sysprof")
+    (version "3.34.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1l4kr1av7933vb4zql9c5lgzivlw64hyky4nr8xin1v5if6vnjw4"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-Dsystemdunitdir="
+                            %output
+                            "/share/systemd"))
+       #:tests? #f ; 3/4 test-model-filter barfs some dbus nonsense
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-install-script
+           (lambda _
+             (substitute* "build-aux/meson/post_install.sh"
+               (("gtk-update-icon-cache") "true")
+               (("update-desktop-database") "true"))
+             #t)))))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libdazzle" ,libdazzle)
+       ("polkit" ,polkit)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (home-page "http://www.sysprof.com/")
+    (synopsis "System-wide performance profiler")
+    (description "Sysprof is a sampling profiler that uses a kernel module
+to generate stacktraces which are then interpreted by the userspace program
+@command{sysprof}.")
+    (license license:gpl3+)))
