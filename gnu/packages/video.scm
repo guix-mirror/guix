@@ -172,6 +172,55 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public schroedinger
+  (package
+    (name "schroedinger")
+    (version "1.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://launchpad.net/" name "/trunk/" version
+                       "/+download/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04prr667l4sn4zx256v1z36a0nnkxfdqyln48rbwlamr6l3jlmqy"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
+    (native-inputs
+     `(("dash" ,dash)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glew" ,glew)
+       ("opengl" ,mesa)))
+    (propagated-inputs
+     `(("orc" ,orc)))
+    (synopsis "Dirac video codec")
+    (description "Schroedinger is a project implementing the Dirac video codec in
+ANSI C code.  It is meant to be highly optimized and portable.  It is developed
+as a joint effort between the BBC and Fluendo.")
+    (home-page "https://launchpad.net/schroedinger")
+    (license
+     ;; This library is licensed under 4 different licenses,
+     ;; and you can choose to use it under the terms of any one of them.
+     (list
+      license:gpl2+
+      license:lgpl2.0+
+      license:expat
+      license:mpl1.1))))
+
 (define-public libmms
   (package
     (name "libmms")
