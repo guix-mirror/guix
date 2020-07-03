@@ -12266,3 +12266,30 @@ portable Common Lisp.")
 
 (define-public ecl-bordeaux-fft
   (sbcl-package->ecl-package sbcl-bordeaux-fft))
+
+(define-public sbcl-napa-fft3
+  (let ((commit "f2d9614c7167da327c9ceebefb04ff6eae2d2236")
+        (revision "0"))
+    (package
+      (name "sbcl-napa-fft3")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pkhuong/Napa-FFT3.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1hxjf599xgwm28gbryy7q96j9ys6hfszmv0qxpr5698hxnhknscp"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/pkhuong/Napa-FFT3")
+      (synopsis "Fast Fourier Transform routines in Common Lisp")
+      (description
+       "Napa-FFT3 provides Discrete Fourier Transform (DFT) routines, but also
+buildings blocks to express common operations that involve DFTs: filtering,
+convolutions, etc.")
+      (license license:bsd-3))))
+
+(define-public cl-napa-fft3
+  (sbcl-package->cl-source-package sbcl-napa-fft3))
