@@ -805,13 +805,13 @@ With the package comes a plugin to use vifm as a vim file selector.")
 (define-public python-pynvim
   (package
     (name "python-pynvim")
-    (version "0.3.2")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pynvim" version))
               (sha256
                (base32
-                "01dybk4vs452pljn1q3il5z2sd313ki0lgiglc0xmjc6wp290r6g"))))
+                "0n2cx22lrmbq7xk7356lyn6k77ryqvkxplw9k0fglk35ckb1isam"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)
