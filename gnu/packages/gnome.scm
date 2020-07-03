@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
-;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
@@ -3962,6 +3962,47 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
     (description
      "Mines (previously gnomine) is a puzzle game where you locate mines
 floating in an ocean using only your brain and a little bit of luck.")
+    (license license:gpl2+)))
+
+(define-public gnome-multi-writer
+  (package
+    (name "gnome-multi-writer")
+    (version "3.35.90")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/gnome-multi-writer/"
+                           (version-major+minor version) "/"
+                           "gnome-multi-writer-" version ".tar.xz"))
+       (sha256
+        (base32
+         "07vgzjjdrxcp7h73z13h9agafxb4vmqx5i81bcfyw0ilw9kkdzmp"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-post-install
+           (lambda _
+             (substitute* "meson.build"
+               (("meson.add_install_script" &) (string-append "# " &)))
+             #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("glib" ,glib)                   ; for gio
+       ("gusb" ,gusb)
+       ("udisks" ,udisks)
+       ("libgudev" ,libgudev)
+       ("libcanberra" ,libcanberra)
+       ("polkit" ,polkit)))
+    (home-page "https://wiki.gnome.org/Apps/MultiWriter")
+    (synopsis "Write to multiple USB devices at once")
+    (description
+     "MultiWriter can be used to write an ISO file to multiple USB devices at
+once.")
     (license license:gpl2+)))
 
 (define-public gnome-sudoku
