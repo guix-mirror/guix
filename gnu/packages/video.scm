@@ -172,6 +172,25 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public libmms
+  (package
+    (name "libmms")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/" name "/files/"
+                       name "/" version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kvhxr5hkabj9v7ah2rzkbirndfqdijd9hp8v52c1z6bxddf019w"))))
+    (build-system gnu-build-system)
+    (synopsis "MMS stream protocol library")
+    (description "Libmms is a library for streaming media files using the mmst
+and mmsh protocols.")
+    (home-page "https://sourceforge.net/projects/libmms/")
+    (license license:lgpl2.1+)))
+
 (define-public libvideogfx
   (package
     (name "libvideogfx")
