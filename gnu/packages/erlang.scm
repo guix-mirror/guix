@@ -511,6 +511,23 @@ testing of stateful systems.")
     (description "This package provides an Erlang providers library.")
     (license license:asl2.0)))
 
+(define-public erlang-rebar3-raw-deps
+  (package
+    (name "erlang-rebar3-raw-deps")
+    (version "2.0.0")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "rebar3_raw_deps" version))
+       (sha256
+        (base32 "1w8whb86yl2mpv67biqnwaam8xpm4pq8yyidifzj1svjyd37hxv7"))))
+    (build-system rebar3-build-system)
+    (home-page "https://github.com/soranoba/rebar3_raw_deps")
+    (synopsis "Rebar3 plugin for supporting \"raw\" dependencies")
+    (description "This plugin adds support for \"raw\" dependencies to
+rebar3.")
+    (license license:expat)))
+
 (define-public erlang-relx
   (package
     (name "erlang-relx")
