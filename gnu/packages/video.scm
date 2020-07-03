@@ -172,6 +172,107 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public transcode
+  (package
+    (name "transcode")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sources.archlinux.org/other/community/"
+                       name "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "14ha9xjsjrj131f35jd56z5v1jb4rbsrj1nril5shqnxw3c74khy"))
+       (patches
+        (search-patches "transcode-ffmpeg.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--enable-libv4l2"
+        "--enable-libmpeg2"
+        "--enable-libmpeg2convert"
+        "--enable-v4l"
+        ;;; XXX: Not available.
+        ;"--enable-bktr"
+        ;"--enable-sunau"
+        "--enable-oss"
+        "--enable-alsa"
+        ;;; XXX: Not available.
+        ;"--enable-libpostproc"
+        "--enable-freetype2"
+        "--enable-xvid"
+        "--enable-x264"
+        "--enable-ogg"
+        "--enable-vorbis"
+        "--enable-theora"
+        ;;; XXX: Not available.
+        ;"--enable-pvm3"
+        "--enable-libdv"
+        "--enable-libquicktime"
+        "--enable-lzo"
+        "--enable-a52"
+        "--enable-faac"
+        "--enable-libxml2"
+        ;;; XXX: Not available.
+        ;"--enable-ibp"
+        ;;"--enable-mjpegtools"
+        "--enable-sdl"
+        "--enable-imagemagick"
+        ;;; XXX: Not available.
+        ;"--enable-libjpegmmx"
+        "--enable-libjpeg")))
+        ;;; XXX: Not available.
+        ;"--enable-bsdav"
+        ;"--enable-pv3"
+        ;"--enable-nuv"
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("iconv" ,libiconv)
+       ("libtool" ,libtool)
+       ("libxml2" ,libxml2)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("faac" ,faac)
+       ("ffmpeg" ,ffmpeg)
+       ("freetype" ,freetype)
+       ("imagemagick" ,imagemagick)
+       ("lame" ,lame)
+       ("liba52" ,liba52)
+       ("libdv" ,libdv)
+       ("libdvdread" ,libdvdread)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libmpeg2" ,libmpeg2)
+       ("libogg" ,libogg)
+       ("libquicktime" ,libquicktime)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("lzo" ,lzo)
+       ("mjepgtools" ,mjpegtools)
+       ("sdl" ,sdl)
+       ("v4l-utils" ,v4l-utils)
+       ("x11" ,libx11)
+       ("x264" ,libx264)
+       ("xaw" ,libxaw)
+       ("xext" ,libxext)
+       ("xpm" ,libxpm)
+       ("xv" ,libxv)
+       ("xvid" ,xvid)
+       ("zlib" ,zlib)))
+    (synopsis "Audio/Video Transcoder")
+    (description "Transcode is a fast, versatile and command-line based
+audio/video everything to everything converter primarily focussed on producing
+AVI video files with MP3 audio, but also including a program to read all the
+video and audio streams from a DVD.")
+    (home-page
+     "http://linuxfromscratch.org/blfs/view/svn/multimedia/transcode.html")
+    (license license:gpl2+)))
+
 (define-public svt-hevc
   (package
     (name "svt-hevc")
