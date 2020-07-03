@@ -543,6 +543,23 @@ testing of stateful systems.")
 a git checkout.")
     (license license:expat)))
 
+(define-public erlang-rebar3-proper
+  (package
+    (name "erlang-rebar3-proper")
+    (version "0.12.1")
+    (source
+      (origin
+        (method hexpm-fetch)
+        (uri (hexpm-uri "rebar3_proper" version))
+        (sha256
+          (base32 "0j3a9byxbdrfinynq2xdz5mz7s4vpdlsmv7lln80lpqxswnafpfv"))))
+    (build-system rebar3-build-system)
+    (home-page "https://github.com/ferd/rebar3_proper")
+    (synopsis "Rebar3 PropEr plugin")
+    (description "This plugin allows running PropEr test suites from within
+rebar3.")
+    (license license:bsd-3)))
+
 (define-public erlang-rebar3-raw-deps
   (package
     (name "erlang-rebar3-raw-deps")
