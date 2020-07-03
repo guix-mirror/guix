@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016, 2018, 2019 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -3252,6 +3252,55 @@ you are running, what theme or icon set you are using, etc.")
 generate those nifty terminal theme information and ASCII distribution logos in
 everyone's screenshots nowadays.")
     (license license:gpl3)))
+
+(define-public ufetch
+  (let ((commit "98b622023e03fe24dbc137e9a68104dfe1fbd04a")
+        (revision "1"))
+    (package
+      (name "ufetch")
+      (version (git-version "0.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/jschx/ufetch.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09c4zmikza16xpydinnqbi3hmcibfrrn10wij7j0j1wv1pj2sl2l"))))
+      (build-system trivial-build-system)
+      (inputs
+       `(("bash" ,bash)
+         ("tput" ,ncurses)))
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let* ((source (assoc-ref %build-inputs "source"))
+                  (output (assoc-ref %outputs "out"))
+                  (bindir (string-append output "/bin"))
+                  (docdir (string-append output "/share/doc/ufetch-" ,version))
+                  (tput (string-append (assoc-ref %build-inputs "tput") "/bin/tput")))
+             (install-file (string-append source "/LICENSE") docdir)
+             (setenv "PATH" (string-append (assoc-ref %build-inputs "bash") "/bin"))
+             (mkdir-p bindir)
+             (for-each (lambda (src)
+                         (let ((dst (string-append bindir "/" (basename src))))
+                           (copy-file src dst)
+                           (patch-shebang dst)
+                           (substitute* dst (("tput") tput))))
+                       (find-files source "ufetch-[[:alpha:]]*$"))
+             ;; Note: the `ufetch` we create below will only work if run under
+             ;; the Guix System.  I.e. a user trying to run `ufetch` on a
+             ;; foreign distro will not get great results.  The `screenfetch`
+             ;; program does actual runtime detection of the operating system,
+             ;; and would be a better choice in such a situation.
+             (symlink "ufetch-guix" (string-append bindir "/ufetch"))))))
+      (home-page "https://gitlab.com/jschx/ufetch")
+      (synopsis "Tiny system info")
+      (description "This package provides a tiny system info utility.")
+      (license license:isc))))
 
 (define-public nnn
   (package
