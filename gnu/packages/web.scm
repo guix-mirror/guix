@@ -7372,7 +7372,8 @@ compressed JSON header blocks.
          ("uglify-js" ,uglify-js)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
+       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+         ("guix" ,guix)))
       (propagated-inputs
        `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("guile-commonmark" ,guile-commonmark)
