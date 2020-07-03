@@ -465,6 +465,32 @@ specifications.")
 Erlang.")
     (license license:asl2.0)))
 
+(define-public erlang-proper
+  (package
+    (name "erlang-proper")
+    (version "1.4.0")
+    (source
+      (origin
+        (method hexpm-fetch)
+        (uri (hexpm-uri "proper" version))
+        (sha256
+          (base32 "1b0srk0swbns6807vxwhj1hfrql7r14arysaax99kvl12f4q3qci"))))
+    (build-system rebar3-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-covertool
+           (lambda _
+             (substitute* "rebar.config"
+               (("\\{plugins, \\[covertool\\]\\}\\." _) "")))))))
+    (home-page "https://proper-testing.github.io/")
+    (synopsis "QuickCheck-inspired property-based testing tool for Erlang")
+    (description "PropEr is a tool for the automated, semi-random,
+property-based testing of Erlang programs.  It is fully integrated with
+Erlang's type language, and can also be used for the model-based random
+testing of stateful systems.")
+    (license license:gpl3+)))
+
 (define-public erlang-providers
   (package
     (name "erlang-providers")
