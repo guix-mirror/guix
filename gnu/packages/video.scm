@@ -221,6 +221,46 @@ as a joint effort between the BBC and Fluendo.")
       license:expat
       license:mpl1.1))))
 
+(define-public libquicktime
+  (package
+    (name "libquicktime")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/" name "/files/"
+                       name "/" version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0s3kshzl3zfjw3phzv73r91fkr9z8q8kc3dhsys4f4xk6ff3alqw"))
+       (patches
+        (search-patches "libquicktime-ffmpeg.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("ffmpeg" ,ffmpeg)
+       ("gtk+-2" ,gtk+-2)
+       ("lame" ,lame)
+       ("libdv" ,libdv)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("opengl" ,mesa)
+       ("schroedinger" ,schroedinger)
+       ("x11" ,libx11)
+       ("x264" ,libx264)
+       ("xaw" ,libxaw)
+       ("xv" ,libxv)))
+    (synopsis "Quick Time Library")
+    (description "The goal of this project is to enhance the quicktime4linux
+library.")
+    (home-page "http://libquicktime.sourceforge.net/")
+    (license license:lgpl2.1+)))
+
 (define-public libmms
   (package
     (name "libmms")
