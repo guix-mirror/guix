@@ -51,6 +51,7 @@
             upstream-source-archive-types
             upstream-source-input-changes
 
+            url-predicate
             url-prefix-predicate
             coalesce-sources
 
@@ -161,23 +162,27 @@ S-expression PACKAGE-SEXP."
                              current-propagated new-propagated))))))
     (_ '())))
 
+(define* (url-predicate matching-url?)
+  "Return a predicate that returns true when passed a package whose source is
+an <origin> with the URL-FETCH method, and one of its URLs passes
+MATCHING-URL?."
+  (lambda (package)
+    (match (package-source package)
+      ((? origin? origin)
+       (and (eq? (origin-method origin) url-fetch)
+            (match (origin-uri origin)
+              ((? string? url)
+               (matching-url? url))
+              (((? string? urls) ...)
+               (any matching-url? urls))
+              (_
+               #f))))
+      (_ #f))))
+
 (define (url-prefix-predicate prefix)
   "Return a predicate that returns true when passed a package where one of its
 source URLs starts with PREFIX."
-  (lambda (package)
-    (define matching-uri?
-      (match-lambda
-        ((? string? uri)
-         (string-prefix? prefix uri))
-        (_
-         #f)))
-
-    (match (package-source package)
-      ((? origin? origin)
-       (match (origin-uri origin)
-         ((? matching-uri?) #t)
-         (_                 #f)))
-      (_ #f))))
+  (url-predicate (cut string-prefix? prefix <>)))
 
 (define (upstream-source-archive-types release)
   "Return the available types of archives for RELEASE---a list of strings such

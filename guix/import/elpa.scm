@@ -281,13 +281,11 @@ type '<elpa-package>'."
      (urls (list url))
      (signature-urls (list (string-append url ".sig"))))))
 
-(define (package-from-gnu.org? package)
-  "Return true if PACKAGE is from elpa.gnu.org."
-  (match (and=> (package-source package) origin-uri)
-    ((? string? uri)
-     (let ((uri (string->uri uri)))
-       (and uri (string=? (uri-host uri) "elpa.gnu.org"))))
-    (_ #f)))
+(define package-from-gnu.org?
+  (url-predicate (lambda (url)
+                   (let ((uri (string->uri url)))
+                     (and uri
+                          (string=? (uri-host uri) "elpa.gnu.org"))))))
 
 (define %elpa-updater
   ;; The ELPA updater.  We restrict it to packages hosted on elpa.gnu.org

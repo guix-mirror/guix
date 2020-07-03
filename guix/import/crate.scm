@@ -262,16 +262,8 @@ latest version of CRATE-NAME."
 ;;; Updater
 ;;;
 
-(define (crate-package? package)
-  "Return true if PACKAGE is a Rust crate from crates.io."
-  (let ((source-url (and=> (package-source package) origin-uri))
-        (fetch-method (and=> (package-source package) origin-method)))
-    (and (eq? fetch-method download:url-fetch)
-         (match source-url
-           ((? string?)
-            (crate-url? source-url))
-           ((source-url ...)
-            (any crate-url? source-url))))))
+(define crate-package?
+  (url-predicate crate-url?))
 
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."
