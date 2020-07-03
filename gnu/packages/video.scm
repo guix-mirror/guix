@@ -172,6 +172,48 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public mediasdk
+  (package
+    (name "mediasdk")
+    (version "20.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Intel-Media-SDK/MediaSDK.git")
+         (commit (string-append "intel-" name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0blwcxr5j8762nylx2cxrq0h53bpgnk859dbs6crq4wr9fcxlx9z"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "-DENABLE_X11=ON"
+        "-DENABLE_X11_DRI3=ON"
+        "-DENABLE_WAYLAND=ON"
+        "-DENABLE_TEXTLOG=ON"
+        "-DENABLE_STAT=ON"
+        "-DBUILD_TESTS=ON"
+        "-DBUILD_TOOLS=ON"
+        (string-append "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libva" ,libva)
+       ("pciaccess" ,libpciaccess)
+       ("wayland" ,wayland)
+       ("x11" ,libx11)))
+    (synopsis "Intel Media SDK")
+    (description "MediaSDK provides a plain C API to access hardware-accelerated
+video decode, encode and filtering on Intel's Gen graphics hardware platforms.")
+    (home-page "http://mediasdk.intel.com/")
+    (license (license:non-copyleft "file:///LICENSE"))))
+
 (define-public schroedinger
   (package
     (name "schroedinger")
