@@ -172,6 +172,34 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public svt-hevc
+  (package
+    (name "svt-hevc")
+    (version "1.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/OpenVisualCloud/SVT-HEVC.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sqh3dciqm2p1b66kngcpxqy5fx3ramxlxy8gfcbdwn2i3rsqhs7"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; Test script is stand-alone
+    (native-inputs
+     `(("yasm" ,yasm)))
+    (synopsis "SVT HEVC encoder")
+    (description "Scalable Video Technology (SVT) is a software-based video
+coding technology that is highly optimized for Intel's Xeon processors.  Using
+the SVT-HEVC encoder, it is possible to spread video encoding processing across
+multiple Intel's Xeon processors to achieve a real advantage of processing
+efficiency.")
+    (home-page "https://01.org/svt")
+    (license (license:non-copyleft "file:///LICENSE.md"))))
+
 (define-public mediasdk
   (package
     (name "mediasdk")
