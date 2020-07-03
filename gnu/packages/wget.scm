@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,10 +57,10 @@
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn2" ,libidn2)
-       ("libpsl" ,libpsl)
-       ("lzip" ,lzip)))
+       ("libpsl" ,libpsl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("lzip" ,lzip)
+       ("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ("python" ,python)               ;for testenv suite
        ("perl-http-daemon" ,perl-http-daemon)
