@@ -6359,43 +6359,17 @@ by side to an Org buffer with your notes relevant to the current page.")
 (define-public emacs-ivy
   (package
     (name "emacs-ivy")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/abo-abo/swiper.git")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/ivy-" version ".tar"))
        (sha256
-        (base32
-         "0ghcwrg8a6r5q6fw2x8s08cwlmnz2d8qjhisnjwbnc2l4cgqpd9p"))))
+        (base32 "0n0ixhdykbdpis4krkqq6zncbby28p34742q96n0l91w0p19slcx"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (info (string-append out "/share/info")))
-               (with-directory-excursion "doc"
-                 (invoke "makeinfo" "ivy.texi")
-                 (install-file "ivy.info" info)
-                 #t))))
-         (add-before 'check 'make-dummy-git-directory
-           (lambda _
-             (mkdir-p ".git")))
-         (add-after 'check 'delete-dummy-git-directory
-           (lambda _
-             (delete-file-recursively ".git"))))
-       #:tests? #t
-       #:test-command '("make" "test")))
     (propagated-inputs
      `(("emacs-hydra" ,emacs-hydra)))
-    (native-inputs
-     `(("texinfo" ,texinfo)
-       ("emacs-wgrep" ,emacs-wgrep)))
-    (home-page "http://oremacs.com/swiper/")
+    (home-page "https://github.com/abo-abo/swiper")
     (synopsis "Incremental vertical completion for Emacs")
     (description
      "This package provides @code{ivy-read} as an alternative to
