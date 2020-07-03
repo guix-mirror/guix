@@ -261,6 +261,32 @@ library.")
     (home-page "http://libquicktime.sourceforge.net/")
     (license license:lgpl2.1+)))
 
+(define-public mjpegtools
+  (package
+    (name "mjpegtools")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/" name "/files/"
+                       name "/" version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kvhxr5hkabj9v7ah2rzkbirndfqdijd9hp8v52c1z6bxddf019w"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libdv" ,libdv)
+       ("libpng" ,libpng)
+       ("libquicktime" ,libquicktime)
+       ("sdl" ,sdl)))
+    (synopsis "Tools for handling MPEG")
+    (description "Mjpeg tools is a suite of programs which support video capture,
+editing, playback, and compression to MPEG of MJPEG video.  Edit, play and
+compression software is hardware independent.")
+    (home-page "http://mjpeg.sourceforge.net/")
+    (license license:gpl2+)))
+
 (define-public libmms
   (package
     (name "libmms")
