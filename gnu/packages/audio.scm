@@ -129,6 +129,42 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public wildmidi
+  (package
+    (name "wildmidi")
+    (version "0.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Mindwerks/wildmidi.git")
+         (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01f4a9c5xlap5a4pkfnlgkzk5pjlk43zkq6fnw615ghya04g6hrl"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; No target
+       #:configure-flags
+       (list
+        "-DWANT_ALSA=ON"
+        "-DWANT_OSS=ON"
+        "-DWANT_OPENAL=ON")))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("openal" ,openal)))
+    (synopsis "Software Synthesizer")
+    (description "WildMIDI is a simple software midi player which has a core
+softsynth library that can be use with other applications.")
+    (home-page "https://www.mindwerks.net/projects/wildmidi/")
+    (license
+     (list
+      ;; Library.
+      license:lgpl3+
+      ;; Player.
+      license:gpl3+))))
+
 (define-public webrtc-audio-processing
   (package
     (name "webrtc-audio-processing")
