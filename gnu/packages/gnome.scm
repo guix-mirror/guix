@@ -10491,3 +10491,69 @@ GObject introspection bindings.")
 to generate stacktraces which are then interpreted by the userspace program
 @command{sysprof}.")
     (license license:gpl3+)))
+
+(define-public gnome-builder
+  (package
+    (name "gnome-builder")
+    (version "3.36.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "17pvmd5jypar8dkr6w56hvf7jnq4l1wih2wwgkrv7sblr7rkkar2"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags (list "-Dnetwork_tests=false"
+                               ;; TODO: Enable all plugins...
+                               "-Dplugin_clang=false"
+                               "-Dplugin_flatpak=false"
+                               "-Dplugin_glade=false"
+                               ;; ... except this one.
+                               "-Dplugin_update_manager=false")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-meson
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build-aux/meson/post_install.py"
+               (("gtk-update-icon-cache") "true")
+               (("update-desktop-database") "true"))
+             (substitute* "src/libide/meson.build"
+               (("/usr/lib")
+                (string-append (assoc-ref inputs "python-pygobject")
+                               "/lib")))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             #t)))))
+    (inputs
+     `(("devhelp" ,devhelp)
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("jsonrpc-glib" ,jsonrpc-glib)
+       ("libdazzle" ,libdazzle)
+       ("libgit2-glib" ,libgit2-glib)
+       ("libpeas" ,libpeas)
+       ("python-pygobject" ,python-pygobject)
+       ("sysprof" ,sysprof)
+       ("template-glib" ,template-glib)
+       ("vte" ,vte)
+       ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(("gtksourceview" ,gtksourceview)))         ;needed for settings
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
+       ("glib:bin" ,glib "bin")
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (home-page "https://wiki.gnome.org/Apps/Builder")
+    (synopsis "Toolsmith for GNOME-based applications")
+    (description "Builder aims to be an IDE for writing GNOME-based software.")
+    (license license:gpl3+)))
