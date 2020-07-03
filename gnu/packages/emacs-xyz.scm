@@ -1666,6 +1666,31 @@ like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
 
+(define-public emacs-bluetooth
+  (package
+    (name "emacs-bluetooth")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "bluetooth-" version ".el"))
+       (sha256
+        (base32 "1vp2vpyq0ybjni35ics1mg1kiwgvc7x12dlmvygy78sqp52sfkcv"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("bluez" ,bluez)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://gitlab.com/rstocker/emacs-bluetooth")
+    (synopsis "Manage Bluetooth devices using Emacs")
+    (description
+     "This package implements basic Bluetooth management functionality, such
+as connecting and disconnecting devices, setting properties and aliases,
+putting the adapter in discovery mode and controlling its power supply.  It
+also includes a pairing agent.")
+    (license license:gpl3+)))
+
 (define-public emacs-aggressive-indent
   (package
     (name "emacs-aggressive-indent")
