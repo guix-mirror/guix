@@ -135,6 +135,41 @@
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
+(define-public rtmpdump
+  (package
+    (name "rtmpdump")
+    (version "2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://rtmpdump.mplayerhq.hu/download/"
+                       name "-" version ".tgz"))
+       (sha256
+        (base32 "0b2b49a57kpz9gi8dx1x3cs8b0gjx8x0c89x0q96kkl2knlvff7g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests
+       #:make-flags
+       (list
+        (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("openssl" ,openssl-1.0)
+       ("zlib" ,zlib)))
+    (synopsis "Tools and library for handling RTMP streams")
+    (description "RTMPdump is a toolkit for RTMP streams.  All forms of RTMP are
+supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
+    (home-page "https://rtmpdump.mplayerhq.hu/")
+    (license
+     (list
+      ;; Library.
+      license:lgpl2.1+
+      ;; Others.
+      license:gpl2+))))
+
 (define-public srt
   (package
     (name "srt")
