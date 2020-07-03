@@ -321,6 +321,23 @@ printing extending the io:format syntax to add colours.")
 outputs you want to be readable around all that noise they contain.")
     (license license:bsd-3)))
 
+(define-public erlang-edown
+  (package
+    (name "erlang-edown")
+    (version "0.8.4")
+    (source
+      (origin
+        (method hexpm-fetch)
+        (uri (hexpm-uri "edown" version))
+        (sha256
+          (base32 "1khk5yxqjix2irsr02i0zpkv52myakpw4ahsr4fcy81l3xlk58dx"))))
+    (build-system rebar3-build-system)
+    (home-page "https://github.com/uwiger/edown")
+    (synopsis "Markdown extension for EDoc")
+    (description "This package provides an extension for EDoc for generating
+Markdown.")
+    (license license:asl2.0)))
+
 (define-public erlang-erlware-commons
   (package
     (name "erlang-erlware-commons")
