@@ -227,7 +227,8 @@ from a mounted filesystem.")
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
-         (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+         (list ,(string-append "VERSION=" version) ; bogus vX.Y-nogit otherwise
+               (string-append "PREFIX=" (assoc-ref %outputs "out"))
                "INITRAMFS_DIR=$(PREFIX)/share/initramfs-tools"
                "CC=gcc"
                "PYTEST=pytest")
