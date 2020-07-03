@@ -20452,6 +20452,38 @@ Dash docsets.")
 through Dash docsets.")
       (license license:expat))))
 
+(define-public emacs-calibredb
+  (package
+    (name "emacs-calibredb")
+    (version "2.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chenyanming/calibredb.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0c6y3n51djajhfj4k6g0r58brls0fhyw6d7c6h4zi5jl1hw64vj6"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-org" ,emacs-org)
+       ("emacs-s" ,emacs-s)
+       ("emacs-transient" ,emacs-transient)))
+    (home-page "https://github.com/chenyanming/calibredb.el")
+    (synopsis "Yet another calibre client for Emacs")
+    (description "This package integrates calibre into Emacs.
+@enumerate
+@item Powerful ebook dashboard.
+@item Manage ebooks, actually not only ebooks!
+@item Manage Ebook libraries.
+@item Another bookmarks solution, by setting the tags and comments.
+@item Quick search, filter, make actions on items with ivy and helm.
+@item Org-ref support.
+@end enumerate")
+    (license license:gpl3)))
+
 (define-public emacs-el-patch
   (package
     (name "emacs-el-patch")
