@@ -670,8 +670,9 @@ patch could not be found."
               (%make-warning package (condition-message c)
                              #:field 'patch-file-names))))
     (define patches
-      (or (and=> (package-source package) origin-patches)
-          '()))
+      (match (package-source package)
+        ((? origin? origin) (origin-patches origin))
+        (_ '())))
 
     (define (starts-with-package-name? file-name)
       (and=> (string-contains file-name (package-name package))
@@ -792,7 +793,7 @@ descriptions maintained upstream."
             (loop rest (cons warning warnings))))))))
 
   (let ((origin (package-source package)))
-    (if (and origin
+    (if (and (origin? origin)
              (eqv? (origin-method origin) url-fetch))
         (let* ((uris     (append-map (cut maybe-expand-mirrors <> %mirrors)
                                      (map string->uri (origin-uris origin))))
@@ -828,7 +829,7 @@ descriptions maintained upstream."
            (not (string-match (string-append "^v?" version) file-name)))))
 
   (let ((origin (package-source package)))
-    (if (or (not origin) (origin-file-name-valid? origin))
+    (if (or (not (origin? origin)) (origin-file-name-valid? origin))
         '()
         (list
          (make-warning package
