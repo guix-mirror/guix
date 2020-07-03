@@ -129,6 +129,25 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public vo-aacenc
+  (package
+    (name "vo-aacenc")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/opencore-amr/files/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dhghm3c8pqrriwwyj5x9i0yf52fmdfijbgqqkvqvwarldvp86p5"))))
+    (build-system gnu-build-system)
+    (synopsis "VisualOn AAC Encoder")
+    (description "VO-AACENC is the VisualOn implementation of Advanced Audio
+Coding (AAC) encoder.")
+    (home-page "https://sourceforge.net/projects/opencore-amr/")
+    (license license:asl2.0)))
+
 (define-public tinyalsa
   (package
     (name "tinyalsa")
