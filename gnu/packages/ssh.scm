@@ -405,6 +405,12 @@ authentication scheme.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-FHS-file-names
+           (lambda _
+             (substitute* "scripts/mosh.pl"
+               (("/bin/sh")
+                (which "sh")))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure 'mosh' can find 'mosh-client' and
