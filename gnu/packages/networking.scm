@@ -125,13 +125,56 @@
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
+
+(define-public srt
+  (package
+    (name "srt")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Haivision/srt.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01xaq44j95kbgqfl41pnybvqy0yq6wd4wdw88ckylzf0nzp977xz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "-DCMAKE_INSTALL_BINDIR="
+                       (assoc-ref %outputs "out") "/bin")
+        (string-append "-DCMAKE_INSTALL_LIBDIR="
+                       (assoc-ref %outputs "out") "/lib")
+        (string-append "-DINSTALL_SHARED_DIR="
+                       (assoc-ref %outputs "out") "/lib")
+        (string-append "-DCMAKE_INSTALL_INCLUDEDIR="
+                       (assoc-ref %outputs "out") "/include")
+        "-DENABLE_UNITTESTS=ON"
+        "-DENABLE_CODE_COVERAGE=ON")))
+    (native-inputs
+     `(("git" ,git-minimal)
+       ("gtest" ,googletest)
+       ("pkg-config" ,pkg-config)
+       ("tclsh" ,tcl)))
+    (propagated-inputs
+     `(("openssl" ,openssl)))
+    (synopsis "Secure Reliable Transport")
+    (description "SRT is a transport technology that optimizes streaming
+performance across unpredictable networks, such as the Internet.")
+    (home-page "https://www.srtalliance.org/")
+    (license license:mpl2.0)))
 
 (define-public lksctp-tools
   (package
