@@ -7158,7 +7158,7 @@ provides the following features:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zm1j4w0f3h01bmmpsv4j4mh6i13nnl8fcqlj2hsa1ncy1lgi8q7"))))
+        (base32 "0g0ja4h651yfabm3k6gbw4y8w7wibc9283fyfzb33kjj38ivl5d7"))))
     (build-system emacs-build-system)
     (home-page "https://jblevins.org/projects/markdown-mode/")
     (synopsis "Emacs Major mode for Markdown files")
