@@ -38,6 +38,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages wxwidgets))
 
@@ -510,6 +511,37 @@ testing of stateful systems.")
     (synopsis "Erlang providers library")
     (description "This package provides an Erlang providers library.")
     (license license:asl2.0)))
+
+(define-public erlang-rebar3-git-vsn
+  (package
+    (name "erlang-rebar3-git-vsn")
+    (version "1.1.1")
+    (source
+      (origin
+        (method hexpm-fetch)
+        (uri (hexpm-uri "rebar3_git_vsn" version))
+        (sha256
+          (base32 "1ra4xjyc40r97aqb8aq2rll1v8wkf9jyisnbk34xdqcgv9s9iw7d"))))
+    (build-system rebar3-build-system)
+    (inputs
+     `(("git" ,git)))
+    (arguments
+     `(;; Running the tests require binary artifact (tar-file containing
+       ;; samples git repos)
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((git (assoc-ref inputs "git")))
+               (substitute* "src/rebar3_git_vsn.erl"
+                 (("rebar_utils:sh\\(\"git " _)
+                  (string-append "rebar_utils:sh(\"" git "/bin/git ")))))))))
+    (home-page "https://github.com/soranoba/rebar3_git_vsn")
+    (synopsis "Rebar3 plugin for generating the version from git")
+    (description "This plugin adds support for generating the version from
+a git checkout.")
+    (license license:expat)))
 
 (define-public erlang-rebar3-raw-deps
   (package
