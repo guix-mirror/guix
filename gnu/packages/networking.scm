@@ -133,6 +133,41 @@
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
+(define-public lksctp-tools
+  (package
+    (name "lksctp-tools")
+    (version "1.0.18")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/sctp/lksctp-tools.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x4fwzrlzvfa3vcpja97m8w5g9ir2zrh4zs7zksminrnmdrs0dsr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("linux-headers" ,linux-libre-headers)))
+    (synopsis "Linux SCTP helper library")
+    (description "Lksctp-tools project provides a user space library for SCTP
+(libsctp) including C language header files (netinet/sctp.h) for accessing SCTP
+specific application programming interfaces not provided by the standard
+sockets, and also some helper utilities around SCTP.")
+    (home-page "http://lksctp.sourceforge.net/")
+    (license
+     (list
+      ;; Library.
+      license:lgpl2.1+
+      ;; Others.
+      license:gpl2+))))
+
 (define-public nng
   (package
     (name "nng")
