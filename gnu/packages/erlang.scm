@@ -423,6 +423,29 @@ arguments using the GNU getopt syntax.")
 specifications.")
     (license license:asl2.0)))
 
+(define-public erlang-jsone
+  (package
+    (name "erlang-jsone")
+    (version "1.6.1")
+    (source
+      (origin
+        (method hexpm-fetch)
+        (uri (hexpm-uri "jsone" version))
+        (sha256
+          (base32 "1wdbj4a736bg2fh4qk7y3h6lsdi84ivvypgbkphzy0mfz7nkc97p"))))
+    (build-system rebar3-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-covertool
+           (lambda _
+             (substitute* "rebar.config"
+               (("\\{project_plugins, \\[covertool\\]\\}\\." _) "")))))))
+    (home-page "https://github.com/sile/jsone/")
+    (synopsis "Erlang JSON Library")
+    (description "An Erlang library for encoding and decoding JSON data.")
+    (license license:expat)))
+
 (define-public erlang-parse-trans
   (package
     (name "erlang-parse-trans")
