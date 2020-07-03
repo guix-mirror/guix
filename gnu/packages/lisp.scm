@@ -369,6 +369,8 @@ high-level, object-oriented functional programming language.  CLISP includes
 an interpreter, a compiler, a debugger, and much more.")
     (license license:gpl2+)))
 
+;; NOTE: SBCL 2.0.6 breaks named-readtables and consequently many Common Lisp packages.
+;; See https://github.com/melisgl/named-readtables/issues/19.
 (define-public sbcl
   (package
     (name "sbcl")
