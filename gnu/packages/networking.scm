@@ -95,6 +95,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libevent)
@@ -106,6 +107,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -134,6 +136,60 @@
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
+
+(define-public libnice
+  (package
+    (name "libnice")
+    (version "0.1.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://libnice.freedesktop.org/releases/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "09lm0rxwvbr53svi3inaharlq96iwbs3s6957z69qp4bqpga0lhr"))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:configure-flags
+       (list
+        "-Dgtk_doc=enabled")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("libnsl" ,libnsl)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)))
+    (synopsis "GLib ICE implementation")
+    (description "LibNice is a library that implements the Interactive
+Connectivity Establishment (ICE) standard (RFC 5245 & RFC 8445).  It provides a
+GLib-based library, libnice, as well as GStreamer elements to use it.")
+    (home-page "https://libnice.freedesktop.org/")
+    (license
+     ;; This project is dual-licensed.
+     (list
+      license:lgpl2.1+
+      license:mpl1.1))))
 
 (define-public rtmpdump
   (package
