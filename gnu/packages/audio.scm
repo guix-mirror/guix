@@ -129,6 +129,26 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public webrtc-audio-processing
+  (package
+    (name "webrtc-audio-processing")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://freedesktop.org/software/pulseaudio/"
+                       name "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1gsx7k77blfy171b6g3m0k0s0072v6jcawhmx1kjs9w5zlwdkzd0"))))
+    (build-system gnu-build-system)
+    (synopsis "WebRTC's Audio Processing Library")
+    (description "WebRTC-Audio-Processing library based on Google's
+implementation of WebRTC.")
+    (home-page
+     "https://freedesktop.org/software/pulseaudio/webrtc-audio-processing/")
+    (license (license:non-copyleft "file:///COPYING"))))
+
 (define-public vo-aacenc
   (package
     (name "vo-aacenc")
