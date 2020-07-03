@@ -76,6 +76,7 @@
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
 ;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3548,6 +3549,31 @@ naming style of a symbol.  It supports different naming conventions such as:
      "This Emacs package adds faces to add stripes to list buffers and org
 tables.")
     (license license:gpl2+)))
+
+(define-public emacs-org-beautify-theme
+  ;; Latest release (0.4) is not tagged, use commit hash.
+  (let ((commit "df6a1114fda313e1689363e196c8284fbe2a2738")
+        (revision "0"))
+    (package
+      (name "emacs-org-beautify-theme")
+      (version "0.4")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jonnay/org-beautify-theme")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1lkz7736swimad12khwbbqc4gxjydgr1k45p4mx03s25pv1w920y"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jonnay/org-beautify-theme")
+      (synopsis "Theme to make Org mode look more beautiful")
+      (description
+       "The theme adds padding between headings, increases the size of titles,
+strike through completed TODO headings, changes Org blocks, changes Org check
+boxes, and more.")
+      (license license:gpl3+))))
 
 (define-public emacs-org-rich-yank
   (package
