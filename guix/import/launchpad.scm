@@ -32,7 +32,7 @@
   "Return the extension of the archive e.g. '.tar.gz' given a URL, or
 false if none is recognized"
   (find (lambda (x) (string-suffix? x url))
-        (list ".tar.gz" ".tar.bz2" ".tar.xz"
+        (list ".orig.tar.gz" ".tar.gz" ".tar.bz2" ".tar.xz"
               ".zip" ".tar" ".tgz" ".tbz" ".love")))
 
 (define (updated-launchpad-url old-package new-version)
