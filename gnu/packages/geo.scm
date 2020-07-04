@@ -6,7 +6,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
-;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018, 2019, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
@@ -1159,6 +1159,51 @@ persisted.
 integrates an OSM map view into your Java application.  It is maintained as
 an independent project by the JOSM team.")
     (license license:gpl2)))
+
+(define-public java-opening-hours-parser
+  (package
+    (name "java-opening-hours-parser")
+    (version "0.21.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/simonpoole/OpeningHoursParser")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1m8sp0jbjyv1nq3ddj8rk6rf3sva3mkacc6vw7rsj0c2n57k3i50"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-opening-hours-parser.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (add-before 'build 'generate-parser
+           (lambda* _
+             (let* ((dir "src/main/java/ch/poole/openinghoursparser")
+                    (file (string-append dir "/OpeningHoursParser.jj")))
+               (invoke "javacc" "-DEBUG_PARSER=false"
+                       "-DEBUG_TOKEN_MANAGER=false" "-JDK_VERSION=1.8"
+                       "-GRAMMAR_ENCODING=UTF-8"
+                       (string-append "-OUTPUT_DIRECTORY=" dir)
+                       file))
+             #t)))))
+    (inputs
+     `(("java-jetbrains-annotations" ,java-jetbrains-annotations)))
+    (native-inputs
+     `(("javacc" ,javacc)
+       ("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://github.com/simonpoole/OpeningHoursParser")
+    (synopsis "Java parser for the OpenStreetMap opening hour format")
+    (description "This is a very simplistic parser for string values according
+to the OSM opening hours specification.")
+    (license license:expat)))
 
 (define-public josm
   (package
