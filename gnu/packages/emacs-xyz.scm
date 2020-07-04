@@ -20500,8 +20500,8 @@ Dash docsets.")
       (license license:gpl3+))))
 
 (define-public emacs-counsel-dash
-  (let ((commit "7027868d483b51d949b9f20fb8f34b122ca61520")
-        (revision "3"))
+  (let ((commit "370d5f6f14b5294d0eb717f7b2a6a8e93df1ed24")
+        (revision "4"))
     (package
       (name "emacs-counsel-dash")
       (version (git-version "0.1.3" revision commit))
@@ -20513,21 +20513,11 @@ Dash docsets.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0h3f5pxnmb21pq4hh7k4w8jzflz1k2ap7nwpjc222w0q6x6jrbjp"))))
+          (base32 "1fn38vbz46ijarjvhgw7iy7dj9s2a2miy95fyy9f8b5sj8nrdfvz"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-dash-docs" ,emacs-dash-docs)
-         ("emacs-ivy" ,emacs-ivy)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'require-ivy
-             (lambda _
-               (substitute* "counsel-dash.el"
-                 (("^\\(require 'cl-lib\\)")
-                  "(require 'cl-lib)\n(require 'ivy)\n(require 'subr-x)"))
-               #t)))))
+       `(("emacs-counsel" ,emacs-counsel)
+         ("emacs-dash-docs" ,emacs-dash-docs)))
       (home-page "https://github.com/dash-docs-el/counsel-dash")
       (synopsis "Offline documentation browser for APIs using Dash docsets")
       (description "This package uses @code{ivy-mode} to install and navigate
