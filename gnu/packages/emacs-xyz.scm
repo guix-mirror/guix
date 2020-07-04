@@ -20627,7 +20627,7 @@ well as an option for visually flashing evaluated s-expressions.")
 (define-public emacs-counsel-tramp
   (package
     (name "emacs-counsel-tramp")
-    (version "0.6.3")
+    (version "0.7.5")
     (source
      (origin
        (method git-fetch)
@@ -20636,15 +20636,14 @@ well as an option for visually flashing evaluated s-expressions.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1qy9lf7cyv6hp9mmpwh92cpdcffbxzyzchx6878d5pmk9qh6xy92"))))
+        (base32 "18qlwyjqxap2qfbz14ma6yqp4p3v4q2y8idc355s4szjdd2as2lr"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-ivy" ,emacs-ivy)))
+     `(("emacs-counsel" ,emacs-counsel)))
     (home-page "https://github.com/masasam/emacs-counsel-tramp")
     (synopsis "Ivy interface for TRAMP")
-    (description "This package allows @code{ivy-mode} to display and filter
-SSH servers.")
+    (description
+     "This package allows @code{ivy-mode} to display and filter SSH servers.")
     (license license:gpl3+)))
 
 (define-public emacs-tramp
