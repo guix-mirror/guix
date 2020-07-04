@@ -10791,9 +10791,9 @@ other operations.")
          "03l3dl7s1qys1kkh40rm1sfx7axy1b8sf5f6nyksj9ps6d30p5i4"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-exwm" ,emacs-exwm)
+     `(("emacs-counsel" ,emacs-counsel)
+       ("emacs-exwm" ,emacs-exwm)
        ("emacs-switch-window" ,emacs-switch-window)
-       ("emacs-ivy" ,emacs-ivy)
        ("emacs-use-package" ,emacs-use-package)))
     (inputs
      `(("xhost" ,xhost)
