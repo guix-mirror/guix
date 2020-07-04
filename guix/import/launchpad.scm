@@ -46,15 +46,35 @@ false if none is recognized"
                (version (package-version old-package))
                (repo (launchpad-repository url)))
            (cond
-            ((and
-              (>= (length (string-split version #\.)) 2)
-              (string=? (string-append "https://launchpad.net/"
-                                       repo "/" (version-major+minor version)
-                                       "/" version "/+download/" repo "-" version ext)
-                        url))
+            ((< (length (string-split version #\.)) 2) #f)
+            ((string=? (string-append "https://launchpad.net/"
+                                      repo "/" (version-major+minor version)
+                                      "/" version "/+download/" repo "-" version ext)
+                       url)
              (string-append "https://launchpad.net/"
                             repo "/" (version-major+minor new-version)
                             "/" new-version "/+download/" repo "-" new-version ext))
+            ((string=? (string-append "https://launchpad.net/"
+                                      repo "/" (version-major+minor version)
+                                      "/" version "/+download/" repo "_" version ext)
+                       url)
+             (string-append "https://launchpad.net/"
+                            repo "/" (version-major+minor new-version)
+                            "/" new-version "/+download/" repo "-" new-version ext))
+            ((string=? (string-append "https://launchpad.net/"
+                                      repo "/trunk/" version "/+download/"
+                                      repo "-" version ext)
+                       url)
+             (string-append "https://launchpad.net/"
+                            repo "/trunk/" new-version
+                            "/+download/" repo "-" new-version ext))
+            ((string=? (string-append "https://launchpad.net/"
+                                      repo "/trunk/" version "/+download/"
+                                      repo "_" version ext)
+                       url)
+             (string-append "https://launchpad.net/"
+                            repo "/trunk/" new-version
+                            "/+download/" repo "_" new-version ext))
             (#t #f))))) ; Some URLs are not recognised.
 
   (match (package-source old-package)
