@@ -12050,3 +12050,28 @@ Isolation and Durability) properties.")
 for the JVM.  It supports colors, autocompletion, subcommands, and more.  Written
 in Java, usable from Groovy, Kotlin, Scala, etc.")
     (license license:asl2.0)))
+
+(define-public java-jetbrains-annotations
+  (package
+    (name "java-jetbrains-annotations")
+    (version "19.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/JetBrains/java-annotations")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0z6i1xs60cd5ffz23c49sq68wn5mphhs3xpar1n93ppama2ng80v"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jetbrains-annotations.jar"
+       #:source-dir "common/src/main/java:java8/src/main/java"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/JetBrains/java-annotations")
+    (synopsis "Annotations for Java and other JVM languages")
+    (description "This package contains a set of Java annotations which can be
+used in JVM-based languages.  They serve as an additional documentation and
+can be interpreted by IDEs and static analysis tools to improve code analysis.")
+    (license license:expat)))
