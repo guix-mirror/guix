@@ -82,6 +82,7 @@
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8830,6 +8831,26 @@ a hash value.")
 
 (define-public python2-termcolor
   (package-with-python2 python-termcolor))
+
+(define-public python-terminaltables
+  (package
+    (name "python-terminaltables")
+    (version "3.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "terminaltables" version))
+        (sha256
+         (base32
+          "109vhldk6nv1z3hzp4dyqf6rjvlhl0y2k5k7qcm9fcrq5swhxszk"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Robpol86/terminaltables")
+    (synopsis
+     "Generate simple tables in terminals from a nested list of strings")
+    (description
+     "This package makes it easy to draw tables in terminal/console
+applications from a list of lists of strings.  It supports multi-line rows.")
+    (license license:expat)))
 
 (define-public python-libarchive-c
   (package
