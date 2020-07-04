@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,7 +66,7 @@ false if none is recognized"
               ((? string?)
                (updated-url source-uri))
               ((source-uri ...)
-               (find updated-url source-uri))))))
+               (any updated-url source-uri))))))
     (_ #f)))
 
 (define (launchpad-package? package)
