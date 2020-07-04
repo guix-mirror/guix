@@ -6431,6 +6431,31 @@ splitting the input text by spaces and re-building it into a regular
 expression.")
     (license license:gpl3+)))
 
+(define-public emacs-swiper
+  (package
+    (name "emacs-swiper")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "swiper-" version ".el"))
+       (sha256
+        (base32 "06ild7kck0x5ry8bf0al24nh04q01q3jhj6jjl4xz8n2s6jnn70y"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)))
+    (home-page "https://github.com/abo-abo/swiper")
+    (synopsis "Isearch with an overview")
+    (description
+     "This package gives an overview of the current regex search candidates.
+The search regex can be split into groups with a space.  Each group is
+highlighted with a different face.
+
+It can double as a quick `regex-builder', although only single lines will be
+matched.")
+    (license license:gpl3+)))
+
 (define-public emacs-ivy-xref
   (let ((commit "1a35fc0f070388701b05b0a455cbe262e924d547")
         (revision "1"))
