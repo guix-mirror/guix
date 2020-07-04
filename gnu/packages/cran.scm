@@ -15790,14 +15790,14 @@ classification and regression models.")
 (define-public r-dalex
   (package
     (name "r-dalex")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "DALEX" version))
        (sha256
         (base32
-         "0lx8nasm1zgh1ckz8nw3ysp6xjv3dsj39hzhr6k3xhh6i8pm9rxk"))))
+         "1azbnykaddsfp2qmxmhpjz76zg78msxv6n2jqkq4gwbgqa5vdfd2"))))
     (properties `((upstream-name . "DALEX")))
     (build-system r-build-system)
     (propagated-inputs
