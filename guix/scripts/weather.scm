@@ -190,7 +190,7 @@ Return the coverage ratio, an exact number between 0 and 1."
                                  narinfos))
           (time      (+ (time-second time)
                         (/ (time-nanosecond time) 1e9))))
-      (format #t (G_ "  ~2,1f% substitutes available (~h out of ~h)~%")
+      (format #t (G_ "  ~,1f% substitutes available (~h out of ~h)~%")
               (* 100. (/ obtained requested 1.))
               obtained requested)
       (let ((total (/ (reduce + 0 sizes) MiB)))
