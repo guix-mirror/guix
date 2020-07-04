@@ -11,7 +11,7 @@
 ;;; Copyright © 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -35,6 +35,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system texlive)
@@ -6005,22 +6006,30 @@ other things it comes with full Unicode support.")
 (define-public rubber
   (package
     (name "rubber")
-    (version "1.1")
+    (version "1.5.1")
     (source (origin
-             (method url-fetch)
-             (uri (list (string-append "https://launchpad.net/rubber/trunk/"
-                                       version "/+download/rubber-"
-                                       version ".tar.gz")
-                        (string-append "http://ebeffara.free.fr/pub/rubber-"
-                                       version ".tar.gz")))
-             (sha256
-              (base32
-               "1xbkv8ll889933gyi2a5hj7hhh216k04gn8fwz5lfv5iz8s34gbq"))))
-    (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ; no `check' target
+              (method url-fetch)
+              (uri (list (string-append "https://launchpad.net/rubber/trunk/"
+                                        version "/+download/rubber-"
+                                        version ".tar.gz")
+                         (string-append "http://ebeffara.free.fr/pub/rubber-"
+                                        version ".tar.gz")))
+              (sha256
+               (base32
+                "178dmrp0mza5gqjiqgk6dqs0c10s0c517pk6k9pjbam86vf47a1p"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f ; no `check' target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; texlive is required to build the PDF documentation; do not
+             ;; build it.
+             (invoke "python" "setup.py" "build" "--pdf=False" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))))))))
     (native-inputs `(("texinfo" ,texinfo)))
-    (inputs `(("python" ,python-2) ; incompatible with Python 3 (print syntax)
-              ("which" ,which)))
     (home-page "https://launchpad.net/rubber")
     (synopsis "Wrapper for LaTeX and friends")
     (description
