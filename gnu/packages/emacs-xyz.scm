@@ -6726,9 +6726,9 @@ navigate code in a tree-like fashion.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ace-window" ,emacs-ace-window)
-       ("emacs-iedit" ,emacs-iedit)
-       ("emacs-ivy" ,emacs-ivy)
        ("emacs-hydra" ,emacs-hydra)
+       ("emacs-iedit" ,emacs-iedit)
+       ("emacs-swiper" ,emacs-swiper)
        ("emacs-zoutline" ,emacs-zoutline)))
     (native-inputs
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
