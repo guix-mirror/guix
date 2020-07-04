@@ -42,6 +42,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -608,6 +609,37 @@ RDBMS systems (which are deep in functionality).")
     (license (list license:agpl3
                    ;; Some parts are licensed under the Apache License
                    license:asl2.0))))
+
+(define-public mycli
+  (package
+    (name "mycli")
+    (version "1.21.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mycli" version))
+        (sha256
+          (base32
+            "1q9p0yik9cpvpxjs048anvhicfcna84mpl7axv9bwgr48w40lqwg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ; tests expect a running MySQL
+    (propagated-inputs
+      `(("python-cli-helpers" ,python-cli-helpers)
+        ("python-click" ,python-click)
+        ("python-configobj" ,python-configobj)
+        ("python-cryptography" ,python-cryptography)
+        ("python-prompt-toolkit" ,python-prompt-toolkit)
+        ("python-pygments" ,python-pygments)
+        ("python-pymysql" ,python-pymysql)
+        ("python-sqlparse" ,python-sqlparse)))
+    (home-page "http://mycli.net")
+    (synopsis
+      "Terminal Client for MySQL with AutoCompletion and Syntax Highlighting")
+    (description
+      "MyCLI is a command line interface for MySQL, MariaDB, and Percona with
+auto-completion and syntax highlighting.")
+    (license license:bsd-3)))
 
 ;; XXX When updating, check whether boost-for-mysql is still needed.
 ;; It might suffice to patch ‘cmake/boost.cmake’ as done in the past.
