@@ -265,6 +265,54 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public libcloudproviders
+  (package
+    (name "libcloudproviders")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0aars24myf6n8b8hm1n12hsgcm54097kpbpm4ba31zp1l4y22qs7"))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:configure-flags
+       (list
+        "-Denable-gtk-doc=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)))
+    (synopsis "Cloudproviders Integration API")
+    (description "Libcloudproviders is a DBus API that allows cloud storage sync
+clients to expose their services.  Clients such as file managers and desktop
+environments can then provide integrated access to the cloud providers
+services.")
+    (home-page "https://csorianognome.wordpress.com/2015/07/07/cloud-providers/")
+    (license license:lgpl3+)))
+
 (define-public libgrss
   (package
     (name "libgrss")
