@@ -6431,6 +6431,39 @@ splitting the input text by spaces and re-building it into a regular
 expression.")
     (license license:gpl3+)))
 
+(define-public emacs-counsel
+  (package
+    (name "emacs-counsel")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "counsel-" version ".el"))
+       (sha256
+        (base32 "1y3hr3j5bh5mbyh1cqzxx04181qpvj4xyv1gym2gxcjd30nfllli"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-swiper" ,emacs-swiper)))
+    (home-page "https://github.com/abo-abo/swiper")
+    (synopsis "Various completion functions using Ivy")
+    (description
+     "Just call one of the interactive functions in a file to complete the
+corresponding thing using Ivy.
+
+The following completions are currently available:
+@itemize
+@item Symbol completion for Elisp, Common Lisp, Python, Clojure, C, C++.
+@item Describe functions for Elisp: function, variable, library, command,
+@item bindings, theme.
+@item Navigation functions: imenu, ace-line, semantic, outline.
+@item Git utilities: git-files, git-grep, git-log, git-stash, git-checkout.
+@item Grep utilities: grep, ag, pt, recoll, ack, rg.
+@item System utilities: process list, rhythmbox, linux-app.
+@item Many more.
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public emacs-swiper
   (package
     (name "emacs-swiper")
