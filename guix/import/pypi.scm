@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +64,7 @@
   (match-lambda
     ("" #f)
     ((? string? str) str)
-    ((or #nil #f) #f)))
+    ((or 'null #f) #f)))
 
 ;; PyPI project.
 (define-json-mapping <pypi-project> make-pypi-project pypi-project?
