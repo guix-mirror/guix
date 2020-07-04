@@ -6891,7 +6891,7 @@ The purpose of this library is to wrap all the quirks and hassle of
                 "1inc4ndl0ysfwvxk4avbgpj4qi9rc93da6476a5c81xmwpsv8wmq"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-ivy" ,emacs-ivy)
+     `(("emacs-counsel" ,emacs-counsel)
        ("emacs-projectile" ,emacs-projectile)))
     (home-page "https://github.com/ericdanan/counsel-projectile")
     (synopsis "Enhance Projectile with Ivy")
