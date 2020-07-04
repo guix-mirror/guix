@@ -6744,14 +6744,14 @@ there are functions for discretizing continuous random variables.")
 (define-public r-abn
   (package
     (name "r-abn")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abn" version))
        (sha256
         (base32
-         "11nbg6dwvbj0ac7qvr203vzjnw5zc1a8cibb9l6rzzr7yfg16xzc"))))
+         "1wwnzv5yir8cyl0f0arxagbsg9ndgs0799m42wbjkpr8cg9sfdhc"))))
     (build-system r-build-system)
     (inputs
      `(("gsl" ,gsl)))
