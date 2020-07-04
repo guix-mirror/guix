@@ -1208,7 +1208,7 @@ to the OSM opening hours specification.")
 (define-public josm
   (package
     (name "josm")
-    (version "15937")
+    (version "16731")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1217,7 +1217,7 @@ to the OSM opening hours specification.")
                      (recursive? #f)))
               (sha256
                (base32
-                "00b8sw0wgkcf7xknmdpn5s521ax8x2660figidcrry37sgq3x946"))
+                "036kdb1ckhym5f7lj5ydzblli7f1i1pl8z00hxvagf2rczdf5fi3"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
@@ -1234,6 +1234,7 @@ to the OSM opening hours specification.")
        ("java-jsonp-api" ,java-jsonp-api)
        ("java-jsonp-impl" ,java-jsonp-impl); runtime dependency
        ("java-metadata-extractor" ,java-metadata-extractor)
+       ("java-opening-hours-parser" ,java-opening-hours-parser)
        ("java-openjfx-media" ,java-openjfx-media)
        ("java-signpost-core" ,java-signpost-core)
        ("java-svg-salamander" ,java-svg-salamander)))
@@ -1254,6 +1255,14 @@ to the OSM opening hours specification.")
                    (string-append "<info><entry><commit revision=\"" ,version "\">"
                                   "<date>1970-01-01 00:00:00 +0000</date>"
                                   "</commit></entry></info>"))))
+             #t))
+         (add-before 'build 'fix-jcs
+           (lambda _
+             ;; This version of JOSM uses an unreleased version of commons-jcs,
+             ;; which has renamed its classes to another namespace.  Rename them
+             ;; back so they can be used with our version of jcs.
+             (substitute* (find-files "." ".*.java$")
+               (("jcs3") "jcs"))
              #t))
          (add-before 'build 'fix-classpath
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1288,10 +1297,9 @@ to the OSM opening hours specification.")
              (invoke "java" "-cp" "build/classes:scripts:."
                      "BuildProjectionDefinitions" ".")
              #t))
-         (add-after 'generate-epsg 'copy-data
+         (add-after 'generate-epsg 'copy-resources
            (lambda _
-             (mkdir-p "build/classes")
-             (rename-file "data" "build/classes/data")
+             (copy-recursively "resources" "build/classes")
              #t))
          (add-before 'install 'regenerate-jar
            (lambda _
@@ -1299,16 +1307,6 @@ to the OSM opening hours specification.")
              (delete-file "build/jar/josm.jar")
              (invoke "jar" "-cf" "build/jar/josm.jar" "-C"
                      "build/classes" ".")
-             #t))
-         (add-before 'build 'copy-styles
-           (lambda _
-             (mkdir-p "build/classes")
-             (rename-file "styles" "build/classes/styles")
-             #t))
-         (add-before 'build 'copy-images
-           (lambda _
-             (mkdir-p "build/classes")
-             (rename-file "images" "build/classes/images")
              #t))
          (add-before 'build 'copy-revision
            (lambda _
