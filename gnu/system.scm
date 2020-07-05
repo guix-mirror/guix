@@ -1221,7 +1221,7 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
   "Return a monadic <boot-parameters> record that describes the boot
 parameters of OS.  When SYSTEM-KERNEL-ARGUMENTS? is true, add kernel arguments
 such as '--root' and '--load' to <boot-parameters>."
-  (let* ((initrd          (and (not (hurd-target?))
+  (let* ((initrd          (and (not (operating-system-hurd os))
                                (operating-system-initrd-file os)))
          (store           (operating-system-store-file-system os))
          (bootloader      (bootloader-configuration-bootloader
