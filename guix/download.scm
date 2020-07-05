@@ -140,7 +140,7 @@
       (apache             ; from http://www.apache.org/mirrors/dist.html
        "http://www.eu.apache.org/dist/"
        "http://www.us.apache.org/dist/"
-       "http://apache.belnet.be/"
+       "https://ftp.nluug.nl/internet/apache/"
        "http://apache.mirror.iweb.ca/"
        "http://mirrors.ircam.fr/pub/apache/"
        "http://apache.mirrors.ovh.net/ftp.apache.org/dist/"
