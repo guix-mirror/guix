@@ -949,28 +949,32 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
      `(#:tests? #f))
     (inputs
      `(("llvm"
-        ,(package
-           (inherit llvm-7)
-           (source (origin
-                     (inherit (package-source llvm-7))
-                     (patches
-                      (list
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append "https://raw.githubusercontent.com/numba/"
-                                             "llvmlite/v" version "/conda-recipes/"
-                                             "D47188-svml-VF.patch"))
-                         (sha256
-                          (base32
-                           "0wxhgb61k17f0zg2m0726sf3hppm41f8jar2kkg2n8sl5cnjj9mr")))
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append "https://raw.githubusercontent.com/numba/"
-                                             "llvmlite/v" version "/conda-recipes/"
-                                             "twine_cfg_undefined_behavior.patch"))
-                         (sha256
-                          (base32
-                           "07h71n2m1mn9zcfgw04zglffknplb233zqbcd6pckq0wygkrxflp")))))))))))
+        ,(let ((patches-commit "486edd5fb2a6667feb5c865f300c0da73785434a"))
+           (package
+             (inherit llvm-7)
+             (source
+              (origin
+                (inherit (package-source llvm-7))
+                (patches
+                 (list
+                  (origin
+                    (method url-fetch)
+                    (uri (string-append
+                          "https://raw.githubusercontent.com/numba/"
+                          "llvmlite/" patches-commit "/conda-recipes/"
+                          "D47188-svml-VF.patch"))
+                    (sha256
+                     (base32
+                      "0wxhgb61k17f0zg2m0726sf3hppm41f8jar2kkg2n8sl5cnjj9mr")))
+                  (origin
+                    (method url-fetch)
+                    (uri (string-append
+                          "https://raw.githubusercontent.com/numba/"
+                          "llvmlite/" patches-commit "/conda-recipes/"
+                          "twine_cfg_undefined_behavior.patch"))
+                    (sha256
+                     (base32
+                      "07h71n2m1mn9zcfgw04zglffknplb233zqbcd6pckq0wygkrxflp"))))))))))))
     (home-page "http://llvmlite.pydata.org")
     (synopsis "Wrapper around basic LLVM functionality")
     (description
