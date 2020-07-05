@@ -315,100 +315,44 @@ result is unspecified."
 (define commit-short-id
   (compose (cut string-take <> 7) oid->string commit-id))
 
-(define (verify-introductory-commit repository introduction keyring)
-  "Raise an exception if the first commit described in INTRODUCTION doesn't
-have the expected signer."
-  (define commit-id
-    (channel-introduction-first-signed-commit introduction))
-
-  (define actual-signer
-    (openpgp-public-key-fingerprint
-     (commit-signing-key repository (string->oid commit-id)
-                         keyring)))
-
-  (define expected-signer
-    (channel-introduction-first-commit-signer introduction))
-
-  (unless (bytevector=? expected-signer actual-signer)
-    (raise (condition
-            (&message
-             (message (format #f (G_ "initial commit ~a is signed by '~a' \
-instead of '~a'")
-                              commit-id
-                              (openpgp-format-fingerprint actual-signer)
-                              (openpgp-format-fingerprint expected-signer))))))))
-
 (define* (authenticate-channel channel checkout commit
                                #:key (keyring-reference-prefix "origin/"))
   "Authenticate the given COMMIT of CHANNEL, available at CHECKOUT, a
 directory containing a CHANNEL checkout.  Raise an error if authentication
 fails."
+  (define intro
+    (channel-introduction channel))
+
+  (define cache-key
+    (string-append "channels/" (symbol->string (channel-name channel))))
+
+  (define keyring-reference
+    (channel-metadata-keyring-reference
+     (read-channel-metadata-from-source checkout)))
+
+  (define (make-reporter start-commit end-commit commits)
+    (format (current-error-port)
+            (G_ "Authenticating channel '~a', commits ~a to ~a (~h new \
+commits)...~%")
+            (channel-name channel)
+            (commit-short-id start-commit)
+            (commit-short-id end-commit)
+            (length commits))
+
+    (progress-reporter/bar (length commits)))
+
   ;; XXX: Too bad we need to re-open CHECKOUT.
   (with-repository checkout repository
-    (define start-commit
-      (commit-lookup repository
-                     (string->oid
-                      (channel-introduction-first-signed-commit
-                       (channel-introduction channel)))))
-
-    (define end-commit
-      (commit-lookup repository (string->oid commit)))
-
-    (define cache-key
-      (string-append "channels/" (symbol->string (channel-name channel))))
-
-    (define keyring-reference
-      (channel-metadata-keyring-reference
-       (read-channel-metadata-from-source checkout)))
-
-    (define keyring
-      (load-keyring-from-reference repository
-                                   (string-append keyring-reference-prefix
-                                                  keyring-reference)))
-
-    (define authenticated-commits
-      ;; Previously-authenticated commits that don't need to be checked again.
-      (filter-map (lambda (id)
-                    (false-if-exception
-                     (commit-lookup repository (string->oid id))))
-                  (previously-authenticated-commits cache-key)))
-
-    (define commits
-      ;; Commits to authenticate, excluding the closure of
-      ;; AUTHENTICATED-COMMITS.
-      (commit-difference end-commit start-commit
-                         authenticated-commits))
-
-    (define reporter
-      (progress-reporter/bar (length commits)))
-
-    ;; When COMMITS is empty, it's because END-COMMIT is in the closure of
-    ;; START-COMMIT and/or AUTHENTICATED-COMMITS, in which case it's known to
-    ;; be authentic already.
-    (unless (null? commits)
-      (format (current-error-port)
-              (G_ "Authenticating channel '~a', \
-commits ~a to ~a (~h new commits)...~%")
-              (channel-name channel)
-              (commit-short-id start-commit)
-              (commit-short-id end-commit)
-              (length commits))
-
-      ;; If it's our first time, verify CHANNEL's introductory commit.
-      (when (null? authenticated-commits)
-        (verify-introductory-commit repository
-                                    (channel-introduction channel)
-                                    keyring))
-
-      (call-with-progress-reporter reporter
-        (lambda (report)
-          (authenticate-commits repository commits
-                                #:keyring keyring
-                                #:report-progress report)))
-
-      (cache-authenticated-commit cache-key
-                                  (oid->string
-                                   (commit-id end-commit))))))
+    (authenticate-repository repository
+                             (string->oid
+                              (channel-introduction-first-signed-commit intro))
+                             (channel-introduction-first-commit-signer intro)
+                             #:end (string->oid commit)
+                             #:keyring-reference
+                             (string-append keyring-reference-prefix
+                                            keyring-reference)
+                             #:make-reporter make-reporter
+                             #:cache-key cache-key)))
 
 (define* (latest-channel-instance store channel
                                   #:key (patches %patches)
