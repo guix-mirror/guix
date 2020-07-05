@@ -15458,7 +15458,7 @@ auto-login session.
 @cindex Xorg, configuration
 @deftp {Data Type} xorg-configuration
 This data type represents the configuration of the Xorg graphical display
-server.  Note that there is not Xorg service; instead, the X server is started
+server.  Note that there is no Xorg service; instead, the X server is started
 by a ``display manager'' such as GDM, SDDM, and SLiM.  Thus, the configuration
 of these display managers aggregates an @code{xorg-configuration} record.
 
