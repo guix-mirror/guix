@@ -52,7 +52,7 @@ Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
-Copyright @copyright{} 2017, 2018, 2019 Arun Isaac@*
+Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
@@ -24926,39 +24926,41 @@ access to exported@footnote{By creating the magic file
 Data type representing the configuration for @code{git-daemon-service}.
 
 @table @asis
-@item @code{package} (default: @var{git})
+@item @code{package} (default: @code{git})
 Package object of the Git distributed version control system.
 
-@item @code{export-all?} (default: @var{#f})
+@item @code{export-all?} (default: @code{#f})
 Whether to allow access for all Git repositories, even if they do not
 have the @file{git-daemon-export-ok} file.
 
 @item @code{base-path} (default: @file{/srv/git})
 Whether to remap all the path requests as relative to the given path.
-If you run git daemon with @var{(base-path "/srv/git")} on example.com,
-then if you later try to pull @code{git://example.com/hello.git}, git
-daemon will interpret the path as @code{/srv/git/hello.git}.
+If you run @command{git daemon} with @code{(base-path "/srv/git")} on
+@samp{example.com}, then if you later try to pull
+@indicateurl{git://example.com/hello.git}, git daemon will interpret the
+path as @file{/srv/git/hello.git}.
 
-@item @code{user-path} (default: @var{#f})
+@item @code{user-path} (default: @code{#f})
 Whether to allow @code{~user} notation to be used in requests.  When
-specified with empty string, requests to @code{git://host/~alice/foo} is
-taken as a request to access @code{foo} repository in the home directory
-of user @code{alice}.  If @var{(user-path "path")} is specified, the
-same request is taken as a request to access @code{path/foo} repository
-in the home directory of user @code{alice}.
+specified with empty string, requests to
+@indicateurl{git://host/~alice/foo} is taken as a request to access
+@code{foo} repository in the home directory of user @code{alice}.  If
+@code{(user-path "@var{path}")} is specified, the same request is taken
+as a request to access @file{@var{path}/foo} repository in the home
+directory of user @code{alice}.
 
-@item @code{listen} (default: @var{'()})
+@item @code{listen} (default: @code{'()})
 Whether to listen on specific IP addresses or hostnames, defaults to
 all.
 
-@item @code{port} (default: @var{#f})
+@item @code{port} (default: @code{#f})
 Whether to listen on an alternative port, which defaults to 9418.
 
-@item @code{whitelist} (default: @var{'()})
+@item @code{whitelist} (default: @code{'()})
 If not empty, only allow access to this list of directories.
 
-@item @code{extra-options} (default: @var{'()})
-Extra options will be passed to @code{git daemon}, please run
+@item @code{extra-options} (default: @code{'()})
+Extra options will be passed to @command{git daemon}, please run
 @command{man git-daemon} for more information.
 
 @end table
@@ -24990,14 +24992,14 @@ Package object of the Git distributed version control system.
 @item @code{git-root} (default: @file{/srv/git})
 Directory containing the Git repositories to expose to the world.
 
-@item @code{export-all?} (default: @var{#f})
+@item @code{export-all?} (default: @code{#f})
 Whether to expose access for all Git repositories in @var{git-root},
 even if they do not have the @file{git-daemon-export-ok} file.
 
-@item @code{uri-path} (default: @file{/git/})
-Path prefix for Git access.  With the default @code{/git/} prefix, this
-will map @code{http://@var{server}/git/@var{repo}.git} to
-@code{/srv/git/@var{repo}.git}.  Requests whose URI paths do not begin
+@item @code{uri-path} (default: @samp{/git/})
+Path prefix for Git access.  With the default @samp{/git/} prefix, this
+will map @indicateurl{http://@var{server}/git/@var{repo}.git} to
+@file{/srv/git/@var{repo}.git}.  Requests whose URI paths do not begin
 with this prefix are not passed on to this Git instance.
 
 @item @code{fcgiwrap-socket} (default: @code{127.0.0.1:9000})
