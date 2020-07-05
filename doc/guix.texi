@@ -5616,7 +5616,7 @@ turned into concrete build actions.
 Build actions are performed by the Guix daemon, on behalf of users.  In a
 standard setup, the daemon has write access to the store---the
 @file{/gnu/store} directory---whereas users do not.  The recommended
-setup also has the daemon perform builds in chroots, under a specific
+setup also has the daemon perform builds in chroots, under specific
 build users, to minimize interference with the rest of the system.
 
 @cindex derivation
