@@ -1205,43 +1205,48 @@ and creates the dependency graph of all these kernel modules.
 This is meant to be used as a profile hook."
   (define kmod                                    ; lazy reference
     (module-ref (resolve-interface '(gnu packages linux)) 'kmod))
+
+  (define guile-zlib
+    (module-ref (resolve-interface '(gnu packages guile)) 'guile-zlib))
+
   (define build
     (with-imported-modules (source-module-closure
                             '((guix build utils)
                               (gnu build linux-modules)))
-      #~(begin
-          (use-modules (ice-9 ftw)
-                       (ice-9 match)
-                       (srfi srfi-1)              ; append-map
-                       (gnu build linux-modules))
+      (with-extensions (list guile-zlib)
+        #~(begin
+            (use-modules (ice-9 ftw)
+                         (ice-9 match)
+                         (srfi srfi-1)              ; append-map
+                         (gnu build linux-modules))
 
-          (let* ((inputs '#$(manifest-inputs manifest))
-                 (module-directories
-                  (map (lambda (directory)
-                         (string-append directory "/lib/modules"))
-                       inputs))
-                 (directory-entries
-                  (lambda (directory)
-                    (or (scandir directory
-                                 (lambda (basename)
-                                   (not (string-prefix? "." basename))))
-                        '())))
-                 ;; Note: Should usually result in one entry.
-                 (versions (delete-duplicates
-                            (append-map directory-entries
-                                        module-directories))))
-            (match versions
-              ((version)
-               (let ((old-path (getenv "PATH")))
-                 (setenv "PATH" #+(file-append kmod "/bin"))
-                 (make-linux-module-directory inputs version #$output)
-                 (setenv "PATH" old-path)))
-              (()
-               ;; Nothing here, maybe because this is a kernel with
-               ;; CONFIG_MODULES=n.
-               (mkdir #$output))
-              (_ (error "Specified Linux kernel and Linux kernel modules
-are not all of the same version")))))))
+            (let* ((inputs '#$(manifest-inputs manifest))
+                   (module-directories
+                    (map (lambda (directory)
+                           (string-append directory "/lib/modules"))
+                         inputs))
+                   (directory-entries
+                    (lambda (directory)
+                      (or (scandir directory
+                                   (lambda (basename)
+                                     (not (string-prefix? "." basename))))
+                          '())))
+                   ;; Note: Should usually result in one entry.
+                   (versions (delete-duplicates
+                              (append-map directory-entries
+                                          module-directories))))
+              (match versions
+                ((version)
+                 (let ((old-path (getenv "PATH")))
+                   (setenv "PATH" #+(file-append kmod "/bin"))
+                   (make-linux-module-directory inputs version #$output)
+                   (setenv "PATH" old-path)))
+                (()
+                 ;; Nothing here, maybe because this is a kernel with
+                 ;; CONFIG_MODULES=n.
+                 (mkdir #$output))
+                (_ (error "Specified Linux kernel and Linux kernel modules
+are not all of the same version"))))))))
   (gexp->derivation "linux-module-database" build
                     #:local-build? #t
                     #:substitutable? #f

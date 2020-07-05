@@ -141,7 +141,7 @@
            (match (package-transitive-propagated-inputs package)
              (((labels packages) ...)
               packages))))
-   (list guile-gcrypt guile-sqlite3)))
+   (list guile-gcrypt guile-sqlite3 guile-zlib)))
 
 (define-syntax-rule (with-imported-modules* gexp* ...)
   (with-extensions gcrypt-sqlite3&co

@@ -77,6 +77,9 @@ the derivations referenced by EXP are automatically copied to the initrd."
     (program-file "init" exp #:guile guile))
 
   (define builder
+    ;; Do not use "guile-zlib" extension here, otherwise it would drag the
+    ;; non-static "zlib" package to the initrd closure.  It is not needed
+    ;; anyway because the modules are stored uncompressed within the initrd.
     (with-imported-modules (source-module-closure
                             '((gnu build linux-initrd)))
       #~(begin
@@ -111,34 +114,49 @@ the derivations referenced by EXP are automatically copied to the initrd."
 (define (flat-linux-module-directory linux modules)
   "Return a flat directory containing the Linux kernel modules listed in
 MODULES and taken from LINUX."
+  (define imported-modules
+    (source-module-closure '((gnu build linux-modules)
+                             (guix build utils))))
+
   (define build-exp
-    (with-imported-modules (source-module-closure
-                            '((gnu build linux-modules)))
-      #~(begin
-          (use-modules (gnu build linux-modules)
-                       (srfi srfi-1)
-                       (srfi srfi-26))
+    (with-imported-modules imported-modules
+      (with-extensions (list guile-zlib)
+        #~(begin
+            (use-modules (gnu build linux-modules)
+                         (guix build utils)
+                         (srfi srfi-1)
+                         (srfi srfi-26))
 
-          (define module-dir
-            (string-append #$linux "/lib/modules"))
+            (define module-dir
+              (string-append #$linux "/lib/modules"))
 
-          (define modules
-            (let* ((lookup  (cut find-module-file module-dir <>))
-                   (modules (map lookup '#$modules)))
-              (append modules
-                      (recursive-module-dependencies modules
-                                                     #:lookup-module lookup))))
+            (define modules
+              (let* ((lookup  (cut find-module-file module-dir <>))
+                     (modules (map lookup '#$modules)))
+                (append modules
+                        (recursive-module-dependencies
+                         modules
+                         #:lookup-module lookup))))
 
-          (mkdir #$output)
-          (for-each (lambda (module)
-                      (format #t "copying '~a'...~%" module)
-                      (copy-file module
-                                 (string-append #$output "/"
-                                                (basename module))))
-                    (delete-duplicates modules))
+            (define (maybe-uncompress file)
+              ;; If FILE is a compressed module, uncompress it, as the initrd
+              ;; is already gzipped as a whole.
+              (cond
+               ((string-contains file ".ko.gz")
+                (invoke #+(file-append gzip "/bin/gunzip") file))))
 
-          ;; Hyphen or underscore?  This database tells us.
-          (write-module-name-database #$output))))
+            (mkdir #$output)
+            (for-each (lambda (module)
+                        (let ((out-module
+                               (string-append #$output "/"
+                                              (basename module))))
+                          (format #t "copying '~a'...~%" module)
+                          (copy-file module out-module)
+                          (maybe-uncompress out-module)))
+                      (delete-duplicates modules))
+
+            ;; Hyphen or underscore?  This database tells us.
+            (write-module-name-database #$output)))))
 
   (computed-file "linux-modules" build-exp))
 

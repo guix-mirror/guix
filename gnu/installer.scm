@@ -342,7 +342,8 @@ selected keymap."
     ;; packages …), etc. modules.
     (with-extensions (list guile-gcrypt guile-newt
                            guile-parted guile-bytestructures
-                           guile-json-3 guile-git guix)
+                           guile-json-3 guile-git guile-zlib
+                           guix)
       (with-imported-modules `(,@(source-module-closure
                                   `(,@modules
                                     (gnu services herd)

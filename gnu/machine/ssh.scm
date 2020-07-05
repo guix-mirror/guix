@@ -21,6 +21,7 @@
   #:use-module (gnu bootloader)
   #:use-module (gnu machine)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
+  #:autoload   (gnu packages guile) (guile-zlib)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system uuid)
@@ -248,22 +249,24 @@ not available in the initrd."
                                 '((gnu build file-systems)
                                   (gnu build linux-modules)
                                   (gnu system uuid)))
-          #~(begin
-              (use-modules (gnu build file-systems)
-                           (gnu build linux-modules)
-                           (gnu system uuid))
+          (with-extensions (list guile-zlib)
+            #~(begin
+                (use-modules (gnu build file-systems)
+                             (gnu build linux-modules)
+                             (gnu system uuid))
 
-              (define dev
-                #$(cond ((string? device) device)
-                        ((uuid? device) #~(find-partition-by-uuid
-                                           (string->uuid
-                                            #$(uuid->string device))))
-                        ((file-system-label? device)
-                         #~(find-partition-by-label
-                            #$(file-system-label->string device)))))
+                (define dev
+                  #$(cond ((string? device) device)
+                          ((uuid? device) #~(find-partition-by-uuid
+                                             (string->uuid
+                                              #$(uuid->string device))))
+                          ((file-system-label? device)
+                           #~(find-partition-by-label
+                              #$(file-system-label->string device)))))
 
-              (missing-modules dev '#$(operating-system-initrd-modules
-                                       (machine-operating-system machine)))))))
+                (missing-modules dev
+                                 '#$(operating-system-initrd-modules
+                                     (machine-operating-system machine))))))))
 
     (remote-let ((missing remote-exp))
       (unless (null? missing)

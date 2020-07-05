@@ -34,6 +34,7 @@
   #:use-module ((gnu packages admin)
                 #:select (shadow))
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages guile)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -324,11 +325,12 @@ accounts among ACCOUNTS+GROUPS."
          (start (with-imported-modules (source-module-closure
                                         '((gnu build activation)
                                           (gnu system accounts)))
-                  #~(lambda ()
-                      (activate-user-home
-                       (map sexp->user-account
-                            (list #$@(map user-account->gexp accounts))))
-                      #t)))                       ;success
+                  (with-extensions (list guile-zlib)
+                    #~(lambda ()
+                        (activate-user-home
+                         (map sexp->user-account
+                              (list #$@(map user-account->gexp accounts))))
+                        #t))))                       ;success
          (documentation "Create user home directories."))))
 
 (define (shells-file shells)
