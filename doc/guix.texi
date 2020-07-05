@@ -3981,6 +3981,7 @@ Before that, some security considerations.
 
 @subsection Channel Authentication
 
+@anchor{channel-authentication}
 @cindex authentication, of channel code
 The @command{guix pull} and @command{guix time-machine} commands
 @dfn{authenticate} the code retrieved from channels: they make sure each
@@ -4200,6 +4201,7 @@ add a meta-data file @file{.guix-channel} that contains:
 @cindex channel authorizations
 @subsection Specifying Channel Authorizations
 
+@anchor{channel-authorizations}
 As we saw above, Guix ensures the source code it pulls from channels
 comes from authorized developers.  As a channel author, you need to
 specify the list of authorized developers in the
@@ -4258,6 +4260,18 @@ page.  The channel introduction, as we saw above, is the commit/key
 pair---i.e., the commit that introduced @file{.guix-authorizations}, and
 the fingerprint of the OpenPGP used to sign it.
 @end enumerate
+
+Before pushing to your public Git repository, you can run @command{guix
+git-authenticate} to verify that you did sign all the commits you are
+about to push with an authorized key:
+
+@example
+guix git authenticate @var{commit} @var{signer}
+@end example
+
+@noindent
+where @var{commit} and @var{signer} are your channel introduction.
+@xref{Invoking guix git authenticate}, for details.
 
 Publishing a signed channel requires discipline: any mistake, such as an
 unsigned commit or a commit signed by an unauthorized key, will prevent
@@ -4862,9 +4876,10 @@ pack} command allows you to create @dfn{application bundles} that can be
 easily distributed to users who do not run Guix.
 
 @menu
-* Invoking guix environment::  Setting up development environments.
-* Invoking guix pack::         Creating software bundles.
-* The GCC toolchain::          Working with languages supported by GCC.
+* Invoking guix environment::   Setting up development environments.
+* Invoking guix pack::          Creating software bundles.
+* The GCC toolchain::           Working with languages supported by GCC.
+* Invoking guix git authenticate:: Authenticating Git repositories.
 @end menu
 
 @node Invoking guix environment
@@ -5601,6 +5616,68 @@ wrapper to refuse to link against libraries not in the store by setting the
 The package @code{gfortran-toolchain} provides a complete GCC toolchain
 for Fortran development.  For other languages, please use
 @samp{guix search gcc toolchain} (@pxref{guix-search,, Invoking guix package}).
+
+
+@node Invoking guix git authenticate
+@section Invoking @command{guix git authenticate}
+
+The @command{guix git authenticate} command authenticates a Git checkout
+following the same rule as for channels (@pxref{channel-authentication,
+channel authentication}).  That is, starting from a given commit, it
+ensures that all subsequent commits are signed by an OpenPGP key whose
+fingerprint appears in the @file{.guix-authorizations} file of its
+parent commit(s).
+
+You will find this command useful if you maintain a channel.  But in
+fact, this authentication mechanism is useful in a broader context, so
+you might want to use it for Git repositories that have nothing to do
+with Guix.
+
+The general syntax is:
+
+@example
+guix git authenticate @var{commit} @var{signer} [@var{options}@dots{}]
+@end example
+
+By default, this command authenticates the Git checkout in the current
+directory; it outputs nothing and exits with exit code zero on success
+and non-zero on failure.  @var{commit} above denotes the first commit
+where authentication takes place, and @var{signer} is the OpenPGP
+fingerprint of public key used to sign @var{commit}.  Together, they
+form a ``channel introduction'' (@pxref{channel-authentication, channel
+introduction}).  The options below allow you to fine-tune the process.
+
+@table @code
+@item --repository=@var{directory}
+@itemx -r @var{directory}
+Open the Git repository in @var{directory} instead of the current
+directory.
+
+@item --keyring=@var{reference}
+@itemx -k @var{reference}
+Load OpenPGP keyring from @var{reference}, the reference of a branch
+such as @code{origin/keyring} or @code{my-keyring}.  The branch must
+contain OpenPGP public keys in @file{.key} files, either in binary form
+or ``ASCII-armored''.  By default the keyring is loaded from the branch
+named @code{keyring}.
+
+@item --stats
+Display commit signing statistics upon completion.
+
+@item --cache-key=@var{key}
+Previously-authenticated commits are cached in a file under
+@file{~/.cache/guix/authentication}.  This option forces the cache to be
+stored in file @var{key} in that directory.
+
+@item --historical-authorizations=@var{file}
+By default, any commit whose parent commit(s) lack the
+@file{.guix-authorizations} file is considered inauthentic.  In
+contrast, this option considers the authorizations in @var{file} for any
+commit that lacks @file{.guix-authorizations}.  The format of @var{file}
+is the same as that of @file{.guix-authorizations}
+(@pxref{channel-authorizations, @file{.guix-authorizations} format}).
+@end table
+
 
 @c *********************************************************************
 @node Programming Interface

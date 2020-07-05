@@ -281,6 +281,8 @@ MODULES =					\
   guix/scripts/publish.scm			\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
+  guix/scripts/git.scm				\
+  guix/scripts/git/authenticate.scm		\
   guix/scripts/graph.scm			\
   guix/scripts/weather.scm			\
   guix/scripts/container.scm			\
@@ -463,6 +465,7 @@ SH_TESTS =					\
   tests/guix-build-branch.sh			\
   tests/guix-download.sh			\
   tests/guix-gc.sh				\
+  tests/guix-git-authenticate.sh		\
   tests/guix-hash.sh				\
   tests/guix-pack.sh				\
   tests/guix-pack-localstatedir.sh		\
