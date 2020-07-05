@@ -552,6 +552,7 @@ EXTRA_DIST +=						\
   etc/news.scm						\
   etc/release-manifest.scm				\
   etc/system-tests.scm					\
+  etc/historical-authorizations				\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
