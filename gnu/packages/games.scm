@@ -11294,20 +11294,21 @@ and chess engines.")
 (define-public chessx
   (package
     (name "chessx")
-    (version "1.5.0")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/chessx/chessx/"
                            version "/chessx-" version ".tgz"))
        (sha256
-        (base32 "09rqyra28w3z9ldw8sx07k5ap3sjlli848p737maj7c240rasc6i"))))
+        (base32 "1a3541vl5hp6jllgx998w9kjh9kp3wrl80yfwkxmq1bc5bzsrnz2"))))
     (build-system qt-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
+       ("qtspeech" ,qtspeech)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (arguments
@@ -11318,7 +11319,12 @@ and chess engines.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "chessx.pro"
                (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
-                (string-append (assoc-ref inputs "qttools") "/bin/lrelease")))
+                (string-append (assoc-ref inputs "qttools") "/bin/lrelease"))
+               ;; Fix missing translations.
+               (("TRANSLATIONS = i18n/chessx_de.ts")
+                "TRANSLATIONS = i18n/chessx_de.ts i18n/chessx_da.ts \\
+i18n/chessx_fr.ts i18n/chessx_it.ts i18n/chessx_cz.ts i18n/chessx_ru.ts \\
+i18n/chessx_es.ts"))
              #t))
          (add-after 'fix-paths 'make-qt-deterministic
            (lambda _
