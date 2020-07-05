@@ -3253,6 +3253,26 @@ column by drawing a thin line down the length of the editing window.")
      "This Emacs package allows managing multiple grep buffers.")
     (license license:gpl3+)))
 
+(define-public emacs-fd
+  (package
+    (name "emacs-fd")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/yqrashawn/fd-dired.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1fas0fpvym2lyzybwm44gly9jz6a2fpp72yxnwfbqqjkfgk9910y"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/yqrashawn/fd-dired")
+    (synopsis "Dired-mode interface for fd result")
+    (description "This package provides a dired-mode interface for fd's
+result.")
+    (license license:gpl3+)))
+
 (define-public emacs-rg
   (package
     (name "emacs-rg")
