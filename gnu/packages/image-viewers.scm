@@ -10,7 +10,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
+;;; Copyright © 2019, 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
@@ -531,19 +531,21 @@ preloading.")
 (define-public chafa
   (package
     (name "chafa")
-    (version "1.2.2")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hpjansson.org/chafa/releases/chafa-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0aa7119514rhsak5i0kgvwllb9z74lnfzfn7dzfhs27fc8cvx1dg"))))
+                "18rb82bfqj1sj2g4irazx4lwq9q4b4k7my1r0q714vf9yhs41ls6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
+     `(("freetype" ,freetype)
+       ("libjpeg" ,libjpeg-turbo)
+       ("glib" ,glib)
        ("imagemagick" ,imagemagick)))
     (synopsis "Convert images to ANSI/Unicode characters")
     (description
