@@ -15446,10 +15446,10 @@ normally prevent moving a type that has been borrowed from.")
      "Automatically implement traits from the palette crate.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-pango-0.7
+(define-public rust-pango-0.8
   (package
     (name "rust-pango")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
       (origin
         (method url-fetch)
@@ -15458,12 +15458,12 @@ normally prevent moving a type that has been borrowed from.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "11np7nxb69g3kid2l78b7k519x1wk1c3f9yy7swgzy24n5qs0grr"))))
+          "0xq50950il3228grzs4xvc5s6phxcl5l50grz6syvs0vixr6p70y"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib" ,rust-glib-0.9)
         ("rust-glib-sys" ,rust-glib-sys-0.9)
         ("rust-gobject-sys" ,rust-gobject-sys-0.9)
         ("rust-lazy-static" ,rust-lazy-static-1)
@@ -15479,6 +15479,33 @@ normally prevent moving a type that has been borrowed from.")
     (description
      "Rust bindings for the Pango library.")
     (license license:expat)))
+
+(define-public rust-pango-0.7
+  (package
+    (inherit rust-pango-0.8)
+    (name "rust-pango")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pango" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "11np7nxb69g3kid2l78b7k519x1wk1c3f9yy7swgzy24n5qs0grr"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango-sys" ,rust-pango-sys-0.9)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
 (define-public rust-pango-sys-0.9
   (package
