@@ -569,7 +569,6 @@ EXTRA_DIST +=						\
   build-aux/check-channel-news.scm			\
   build-aux/compile-as-derivation.scm			\
   build-aux/generate-authors.scm			\
-  build-aux/git-authenticate.scm			\
   build-aux/test-driver.scm				\
   build-aux/update-guix-package.scm			\
   build-aux/update-NEWS.scm				\
@@ -641,14 +640,17 @@ install-data-hook:
 # Commit corresponding to the 'v1.0.0' tag.
 commit_v1_0_0 = 6298c3ffd9654d3231a6f25390b056483e8f407c
 
+# Introduction of the 'guix' channel.  Keep in sync with (guix channels)!
+channel_intro_commit = 9edb3f66fd807b096b48283debdcddccfea34bad
+channel_intro_signer = BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA
+
 # Authenticate the current Git checkout by checking signatures on every commit
 # starting from $(commit_v1_0_0).
 authenticate: guix/openpgp.go guix/git-authenticate.go guix/git.go
 	$(AM_V_at)echo "Authenticating Git checkout..." ;	\
-	"$(top_builddir)/pre-inst-env" $(GUILE)			\
-	  --no-auto-compile -e git-authenticate			\
-	  "$(top_srcdir)/build-aux/git-authenticate.scm"	\
-	  "$(commit_v1_0_0)"
+	"$(top_builddir)/pre-inst-env" guix git authenticate	\
+	    --cache-key=channels/guix --stats			\
+	    "$(channel_intro_commit)" "$(channel_intro_signer)"
 
 # Assuming Guix is already installed and the daemon is up and running, this
 # rule builds from $(srcdir), creating and building derivations.
