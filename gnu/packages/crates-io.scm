@@ -4505,14 +4505,34 @@ Code} (MAC) algorithms.")
        (("rust-difference" ,rust-difference-2.0)
         ("rust-encoding-rs" ,rust-encoding-rs-0.8)
         ("rust-serde-json" ,rust-serde-json-1.0))))
+
+(define-public rust-cssparser-macros-0.6
+  (package
+    (name "rust-cssparser-macros")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cssparser-macros" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0vp13g4blyjvhg3j4r9b7vrwhnfi1y2fmhv8hxgficpjazg7bbnz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))))
     (home-page "https://github.com/servo/rust-cssparser")
-    (synopsis "Rust implementation of CSS Syntax Level 3")
+    (synopsis "Procedural macros for cssparser")
     (description
-     "This package contains a Rust implementation of CSS Syntax Level 3.")
+     "This package provides the procedural macros for rust-cssparser.")
     (license license:mpl2.0)))
 
 (define-public rust-cssparser-macros-0.3
   (package
+    (inherit rust-cssparser-macros-0.6)
     (name "rust-cssparser-macros")
     (version "0.3.6")
     (source
@@ -4524,19 +4544,13 @@ Code} (MAC) algorithms.")
         (sha256
          (base32
           "1vqyc5xm8a4va92vs1nn0cc46c930l2n21gccijnc5y7hx7cicav"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-phf-codegen" ,rust-phf-codegen-0.7)
         ("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-procedural-masquerade" ,rust-procedural-masquerade-0.1)
         ("rust-quote" ,rust-quote-1.0)
-        ("rust-syn" ,rust-syn-1.0))))
-    (home-page "https://github.com/servo/rust-cssparser")
-    (synopsis "Procedural macros for cssparser")
-    (description
-     "This package provides the procedural macros for rust-cssparser.")
-    (license license:mpl2.0)))
+        ("rust-syn" ,rust-syn-1.0))))))
 
 (define-public rust-csv-1.1
   (package
