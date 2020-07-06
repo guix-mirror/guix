@@ -23300,15 +23300,37 @@ configurable byte storage.")
         ("rust-string-cache-shared" ,rust-string-cache-shared-0.3))
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4))))
+
+(define-public rust-string-cache-codegen-0.5
+  (package
+    (name "rust-string-cache-codegen")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "string-cache-codegen" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "15vbk5i7kkj5bbx7f0fi477js4svw5py39gi4rk74anj35g8wk7j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-phf-generator" ,rust-phf-generator-0.8)
+        ("rust-phf-shared" ,rust-phf-shared-0.8)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0))))
     (home-page "https://github.com/servo/string-cache")
-    (synopsis "String interning library for Rust")
+    (synopsis "Codegen library for string-cache")
     (description
-     "This package provides a string interning library for Rust,
+     "This package provides a codegen library for string-cache,
 developed as part of the Servo project.")
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-string-cache-codegen-0.4
   (package
+    (inherit rust-string-cache-codegen-0.5)
     (name "rust-string-cache-codegen")
     (version "0.4.4")
     (source
@@ -23320,21 +23342,13 @@ developed as part of the Servo project.")
        (sha256
         (base32
          "1ik78h9gs874i24rkyh0myg6x4ni2a9cazbv5yzs9yavnv8mxx7h"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-phf-generator" ,rust-phf-generator-0.7)
         ("rust-phf-shared" ,rust-phf-shared-0.7)
         ("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-quote" ,rust-quote-1.0)
-        ("rust-string-cache-shared"
-         ,rust-string-cache-shared-0.3))))
-    (home-page "https://github.com/servo/string-cache")
-    (synopsis "Codegen library for string-cache")
-    (description
-     "This package provides a codegen library for string-cache,
-developed as part of the Servo project.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-string-cache-shared" ,rust-string-cache-shared-0.3))))))
 
 (define-public rust-string-cache-shared-0.3
   (package
