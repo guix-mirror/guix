@@ -11674,13 +11674,13 @@ to provide a high-level synchronous API on top of the libev event loop.")
 (define-public python-fastimport
   (package
     (name "python-fastimport")
-    (version "0.9.6")
+    (version "0.9.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fastimport" version))
         (sha256
-          (base32 "1aqjsin4rmqm7ln4j0p73fzxifws6c6ikgyhav7r137m2ixsxl43"))))
+          (base32 "1fb3b7y3sw55f6wykxx478ybkirz0l52lgdqmbhmc0h0jzmyiwmj"))))
     (build-system python-build-system)
     (home-page "https://github.com/jelmer/python-fastimport")
     (synopsis "VCS fastimport parser and generator in Python")
