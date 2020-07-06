@@ -19232,30 +19232,31 @@ the standard @code{Dockerfile} file format.")
 (define-public emacs-lsp-mode
   (package
     (name "emacs-lsp-mode")
-    (version "6.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/emacs-lsp/lsp-mode.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "125rpmhlyd6wmq7p71j54x3rzmk07vn1hdcvvdjjip5481raxcwx"))))
+    (version "7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-lsp/lsp-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1kw32dcm73i0kg1fncp6vwgar3dwva7dh3gkg5cr45gavn6rq34i"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)
        ("emacs-ht" ,emacs-ht)
+       ("emacs-hydra" ,emacs-hydra)
        ("emacs-markdown-mode" ,emacs-markdown-mode)
-       ("emacs-spinner" ,emacs-spinner)
-       ("emacs-hydra" ,emacs-hydra)))
+       ("emacs-spinner" ,emacs-spinner)))
     (home-page "https://emacs-lsp.github.io/lsp-mode/")
     (synopsis "Emacs client and library for the Language Server Protocol")
-    (description "@code{LSP-mode} is a client and library implementation for
-the Language Server Protocol.  This mode aims to provide an IDE-like
-experience by providing optional integration with other popular Emacs packages
-like @code{company}, @code{flycheck}, and @code{projectile}.")
+    (description
+     "LSP mode is a client and library implementation for the Language Server
+Protocol.  This mode creates an IDE-like experience by providing optional
+integration with other popular Emacs packages like Company, Flycheck, and
+Projectile.")
     (license license:gpl3+)))
 
 (define-public emacs-pfuture
