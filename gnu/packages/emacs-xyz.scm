@@ -5905,6 +5905,37 @@ The goal of this game is to create a tile with value 2048.  The size of the
 board and goal value can be customized.")
     (license license:gpl3+)))
 
+(define-public emacs-chess
+  (package
+    (name "emacs-chess")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "chess-" version ".tar"))
+       (sha256
+        (base32 "1sq1bjmp513vldfh7hc2bbfc54665abqiz0kqgqq3gijckaxn5js"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-pieces
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pieces
+                     (string-append out "/share/emacs/site-lisp/pieces")))
+               (mkdir-p site-lisp)
+               (copy-recursively "pieces" pieces)
+               #t))))))
+    (home-page "https://elpa.gnu.org/packages/chess.html")
+    (synopsis "Play chess in GNU Emacs")
+    (description
+     "Chess is an Emacs Lisp library and several clients on top of the
+underlying library functionality for performing various activities related to
+the game of chess.")
+    (license license:gpl3+)))
+
 (define-public emacs-4clojure
   ;; There is no release.  Base version is extracted from Version keyword in
   ;; the main file.
