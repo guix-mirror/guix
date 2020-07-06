@@ -19510,6 +19510,35 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rgb-0.8
+  (package
+    (name "rust-rgb")
+    (version "0.8.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rgb" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "15hrf0gb1l1a8rhx7b6gzrcmb43xlll4r1ym0mq55c7068dhc537"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://lib.rs/crates/rgb")
+    (synopsis "Struct for sharing pixels between crates")
+    (description
+     "This package provides @code{struct RGB/RGBA/etc.} for sharing pixels
+between crates + convenience methods for color manipulation.  It allows no-copy
+high-level interoperability.  It also adds common convenience methods and
+implements standard Rust traits to make `RGB`/`RGBA` pixels and slices
+first-class Rust objects.")
+    (license license:expat)))
+
 (define-public rust-ring-0.16
   (package
     (name "rust-ring")
