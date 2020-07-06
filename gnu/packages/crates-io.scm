@@ -21796,6 +21796,29 @@ for the serde framework.")
     (description "YAML support for Serde.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-serial-test-derive-0.1
+  (package
+    (name "rust-serial-test-derive")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serial-test-derive" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "17fkqrba233sjhdak986y4w3z4yjxa4idjkh46l7zxgcgjlvrnic"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/palfrey/serial_test/")
+    (synopsis "Helper crate for serial_test")
+    (description "This package provides a helper crate for @code{serial_test}.")
+    (license license:expat)))
+
 (define-public rust-servo-arc-0.1
   (package
     (name "rust-servo-arc")
