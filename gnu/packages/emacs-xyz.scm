@@ -22701,6 +22701,37 @@ pattern guessed from thing under current cursor position.
 @end itemize\n")
       (license license:gpl3+))))
 
+(define-public emacs-helm-selector
+  (package
+    (name "emacs-helm-selector")
+    (version "0.2")
+    (home-page "https://github.com/emacs-helm/helm-selector")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c7xhrq1mivldyq3rglpmfypbz44dcm7zrgyha6x09cfixlyfbcp"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (synopsis "Convenient related-buffer selection for Emacs Helm")
+    (description "Helm Selector is a collection of Helm helper functions for
+convenient buffer selection.
+
+It is especially helpful to create Helm sessions to navigate buffers of a
+given mode in a “do what I mean” fashion:
+
+If current buffer is not of mode X, switch to last buffer of mode X.  If
+current buffer is of mode X, show a Helm session of all buffers in mode X.  In
+the Helm session, it’s also possible to input an arbitrary name which will be
+used for the creation of a new buffer of mode X.")
+    (license license:gpl3+)))
+
 (define-public emacs-metal-mercury-mode
   (let ((commit "99e2d8fb7177cae3bfa2dec2910fc28216d5f5a8")
 	(revision "1")
