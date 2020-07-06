@@ -13436,8 +13436,52 @@ checking.")
     (description "Run NASM during your Cargo build.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-nalgebra-0.19
+  (package
+    (name "rust-nalgebra")
+    (version "0.19.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "nalgebra" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0i87k57nav221lnr9z7ljlwxh8073qsx33bajdm146y00q805fqa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-abomonation" ,rust-abomonation-0.7)
+        ("rust-alga" ,rust-alga-0.9)
+        ("rust-approx" ,rust-approx-0.3)
+        ("rust-generic-array" ,rust-generic-array-0.13)
+        ("rust-matrixmultiply" ,rust-matrixmultiply-0.2)
+        ("rust-mint" ,rust-mint-0.5)
+        ("rust-num-complex" ,rust-num-complex-0.2)
+        ("rust-num-rational" ,rust-num-rational-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-pest" ,rust-pest-2.1)
+        ("rust-pest-derive" ,rust-pest-derive-2.1)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-distr" ,rust-rand-distr-0.2)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-typenum" ,rust-typenum-1))
+       #:cargo-development-inputs
+       (("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://nalgebra.org")
+    (synopsis "Linear algebra library")
+    (description
+     "This package provides a linear algebra library with transformations and
+statically-sized or dynamically-sized matrices.")
+    (license license:bsd-3)))
+
 (define-public rust-nalgebra-0.18
   (package
+    (inherit rust-nalgebra-0.19)
     (name "rust-nalgebra")
     (version "0.18.1")
     (source
@@ -13449,7 +13493,6 @@ checking.")
         (sha256
          (base32
           "18i1npny8s45ff67p5qpdwwsn36fp23mal8847fkb32cqgdzvada"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-abomonation" ,rust-abomonation-0.7)
@@ -13470,13 +13513,7 @@ checking.")
         ("rust-typenum" ,rust-typenum-1))
        #:cargo-development-inputs
        (("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
-        ("rust-serde-json" ,rust-serde-json-1.0))))
-    (home-page "https://nalgebra.org")
-    (synopsis "Linear algebra library")
-    (description
-     "This package provides a linear algebra library with transformations and
-statically-sized or dynamically-sized matrices.")
-    (license license:bsd-3)))
+        ("rust-serde-json" ,rust-serde-json-1.0))))))
 
 (define-public rust-named-pipe-0.4
   (package
