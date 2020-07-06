@@ -21145,19 +21145,19 @@ proven statistical guarantees.")
      `(#:skip-build? #t
        #:cargo-inputs (("rust-num" ,rust-num-0.2))))))
 
-(define-public rust-serde-big-array-0.1
+(define-public rust-serde-big-array-0.2
   (package
     (name "rust-serde-big-array")
-    (version "0.1.5")
+    (version "0.2.0")
     (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "serde-big-array" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0gkyqxk760mp1lfcg6lhjk95ajc89nr0qdd0vl4ic0g8pyxcy9mr"))))
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde-big-array" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0kj0h99y7ma9nsayv87fj2n680bcrwv2mrcbmc774lgak18ywgl8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -21169,6 +21169,21 @@ proven statistical guarantees.")
     (synopsis "Big array helper for serde")
     (description "This package provides a big array helper for serde.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-serde-big-array-0.1
+  (package
+    (inherit rust-serde-big-array-0.2)
+    (name "rust-serde-big-array")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-big-array" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gkyqxk760mp1lfcg6lhjk95ajc89nr0qdd0vl4ic0g8pyxcy9mr"))))))
 
 (define-public rust-serde-bytes-0.11
   (package
