@@ -991,8 +991,46 @@ Mac, and Unix.")
           "1chwgimpx5z7xbag7krr9d8asxfqbh683qhgl9kn3hxk2l0djj8x"))))
     (arguments '(#:skip-build? #t))))
 
+(define-public rust-average-0.10
+  (package
+    (name "rust-average")
+    (version "0.10.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "average" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1dmsxqcr1n0i20qr9g2g6j89kkx8dy6w18dbqzx1wi42wj1chgvh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-conv" ,rust-conv-0.3)
+        ("rust-float-ord" ,rust-float-ord-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-big-array" ,rust-serde-big-array-0.2)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-quantiles" ,rust-quantiles-0.7)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-distr" ,rust-rand-distr-0.2)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.4)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-streaming-stats" ,rust-streaming-stats-0.2))))
+    (home-page "https://github.com/vks/average")
+    (synopsis "Calculate statistics iteratively")
+    (description "This crate provides for calculating statistics iteratively
+in Rust.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-average-0.9
   (package
+    (inherit rust-average-0.10)
     (name "rust-average")
     (version "0.9.4")
     (source
@@ -1003,7 +1041,6 @@ Mac, and Unix.")
        (sha256
         (base32
          "1f8ya00bv6qki9m7b4lb3bn845rj473mx02qpm7wgy5qc1yp75xs"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-conv" ,rust-conv-0.3)
@@ -1018,12 +1055,7 @@ Mac, and Unix.")
         ("rust-quantiles" ,rust-quantiles-0.7)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-serde-json" ,rust-serde-json-1.0)
-        ("rust-streaming-stats" ,rust-streaming-stats-0.2))))
-    (home-page "https://github.com/vks/average")
-    (synopsis "Calculate statistics iteratively")
-    (description "This crate provides for calculating statistics iteratively
-in Rust.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-streaming-stats" ,rust-streaming-stats-0.2))))))
 
 (define-public rust-backtrace-0.3
   (package
@@ -18707,6 +18739,32 @@ useful types and distributions, and some randomness-related algorithms.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-rand-core" ,rust-rand-core-0.3))))))
+
+(define-public rust-rand-distr-0.2
+  (package
+    (name "rust-rand-distr")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand-distr" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1cpz577qid09lirjjhhn98yqdwsv0c01jf973pxpcr9svp5pm5wn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand" ,rust-rand-0.7))
+       #:cargo-development-inputs
+       (("rust-average" ,rust-average-0.10)
+        ("rust-rand-pcg" ,rust-rand-pcg-0.2))))
+    (home-page "https://crates.io/crates/rand_distr")
+    (synopsis "Sampling from random number distributions")
+    (description
+     "Sampling from random number distributions.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-rand-hc-0.2
   (package
