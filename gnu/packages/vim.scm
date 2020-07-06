@@ -70,7 +70,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.1101")
+    (version "8.2.1145")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -79,21 +79,22 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "170k855vscixnk6rz01i3k22crjiz8b2h83fnm2b2ccha0jyn9mf"))))
+               "01z5hgi7m8d63gl1fgfn4p9rsdaqbl5xn4vr247nbxjq5x5hrs7a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'configure 'patch-config-files
+         (add-after 'configure 'patch-absolute-paths
            (lambda _
              (substitute* "runtime/tools/mve.awk"
                (("/usr/bin/nawk") (which "gawk")))
              (substitute* '("src/testdir/Makefile"
                             "src/testdir/test_normal.vim"
                             "src/testdir/test_system.vim"
-                            "src/testdir/test_terminal.vim")
+                            "src/testdir/test_terminal.vim"
+                            "src/testdir/test_terminal2.vim")
                (("/bin/sh") (which "sh")))
              (substitute* "src/testdir/test_autocmd.vim"
                (("/bin/kill") (which "kill")))
@@ -214,19 +215,6 @@ with the editor vim.")))
        ,@(substitute-keyword-arguments (package-arguments vim)
            ((#:phases phases)
             `(modify-phases ,phases
-               (add-before 'check 'skip-test87
-                 ;; This test fails for unknown reasons after switching
-                 ;; to a git checkout.
-                 (lambda _
-                   (delete-file "src/testdir/test87.ok")
-                   (delete-file "src/testdir/test87.in")
-                   (substitute* '("src/Makefile"
-                                  "src/testdir/Make_vms.mms")
-                     (("test87") ""))
-                   (substitute* "src/testdir/Make_all.mak"
-                     (("test86.out \\\\") "test86")
-                     (("test87.out") ""))
-                   #t))
                (add-before 'check 'start-xserver
                  (lambda* (#:key inputs #:allow-other-keys)
                    ;; Some tests require an X server, but does not start one.
