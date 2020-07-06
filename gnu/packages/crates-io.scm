@@ -25617,8 +25617,7 @@ with the Unicode character database.")
         (base32 "1kxxb5ndb5dzyp1flajjdxnbwyjw6ml9xvy0pz7b8srjn9ky4qdm"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-smallvec" ,rust-smallvec-1))))
     (home-page "https://github.com/unicode-rs/unicode-normalization")
     (synopsis
