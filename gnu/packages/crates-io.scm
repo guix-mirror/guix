@@ -15972,6 +15972,24 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
 in Rust.")
     (license license:expat)))
 
+(define-public rust-peg-0.5
+  (package
+    (inherit rust-peg-0.6)
+    (name "rust-peg")
+    (version "0.5.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "peg" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "11az3bs3ngvfip920xfr0zwblfkyg6cjgz1v9hmfsdnqw7fi5ps0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-quote" ,rust-quote-0.3))))))
+
 (define-public rust-peg-macros-0.6
   (package
     (name "rust-peg-macros")
