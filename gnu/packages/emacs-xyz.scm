@@ -19250,7 +19250,7 @@ the standard @code{Dockerfile} file format.")
        ("emacs-markdown-mode" ,emacs-markdown-mode)
        ("emacs-spinner" ,emacs-spinner)
        ("emacs-hydra" ,emacs-hydra)))
-    (home-page "https://github.com/emacs-lsp/lsp-mode")
+    (home-page "https://emacs-lsp.github.io/lsp-mode/")
     (synopsis "Emacs client and library for the Language Server Protocol")
     (description "@code{LSP-mode} is a client and library implementation for
 the Language Server Protocol.  This mode aims to provide an IDE-like
