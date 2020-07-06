@@ -4481,6 +4481,26 @@ library, libgit2 implements Git plumbing.")
     ;; GPL2.0 only, with linking exception.
     (license license:gpl2)))
 
+(define-public python-patiencediff
+  (package
+    (name "python-patiencediff")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "patiencediff" version))
+        (sha256
+         (base32
+          "0yjk50lsd4gnllxls925xbcdxwvmda37w2a1shk0p1nvl3fcha6q"))))
+    (build-system python-build-system)
+    (home-page "https://www.breezy-vcs.org/")
+    (synopsis "Python implementation of the patiencediff algorithm")
+    (description
+     "This package contains a Python implementation of the @code{patiencediff}
+algorithm.  Patiencediff provides a good balance of performance, nice output for
+humans, and implementation simplicity.")
+    (license license:gpl2)))
+
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
