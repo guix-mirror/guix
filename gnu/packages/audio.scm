@@ -129,6 +129,68 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public opensles
+  (package
+    (name "opensles")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/KhronosGroup/OpenSL-ES-Registry.git")
+         (commit "ea5104bf37bf525c25e6ae2386586048179d0fda")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0j5bm7h3ahz66f23i9abwc0y10agfkpksnj6y078x2nichq66h4f"))
+       (patches
+        (search-patches "opensles-add-license-file.patch"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'clean
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/etc"))
+               (mkdir-p (string-append out "/include"))
+               (mkdir-p (string-append out "/share"))
+               (rename-file
+                (string-append out "/api/1.1/OpenSLES_IID.c")
+                (string-append out "/etc/OpenSLES_IID.c"))
+               (rename-file
+                (string-append out "/api/1.1/OpenSLES.h")
+                (string-append out "/include/OpenSLES.h"))
+               (rename-file
+                (string-append out "/api/1.1/OpenSLES_Platform.h")
+                (string-append out "/include/OpenSLES_Platform.h"))
+               (rename-file
+                (string-append out "/api/1.1/README.txt")
+                (string-append out "/share/README.txt"))
+               (rename-file
+                (string-append out "/LICENSE.txt")
+                (string-append out "/share/LICENSE.txt"))
+               (for-each delete-file-recursively
+                         (list
+                          (string-append out "/api")
+                          (string-append out "/specs")))
+               (for-each delete-file
+                         (list
+                          (string-append out "/CODE_OF_CONDUCT.md")
+                          (string-append out "/index.php")
+                          (string-append out "/README.md"))))
+             #t)))))
+    (synopsis "Embedded Audio Acceleration")
+    (description "OpenSLES is a royalty-free, cross-platform,
+hardware-accelerated audio API tuned for embedded systems.  It provides a
+standardized, high-performance, low-latency method to access audio
+functionality for developers of native applications on embedded mobile
+multimedia devices, enabling straightforward cross-platform deployment of
+hardware and software audio capabilities, reducing implementation effort, and
+promoting the market for advanced audio.")
+    (home-page "https://www.khronos.org/opensles/")
+    (license (license:non-copyleft "file:///LICENSE.txt"))))
+
 (define-public wildmidi
   (package
     (name "wildmidi")

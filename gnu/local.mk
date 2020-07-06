@@ -1371,6 +1371,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssh-hurd.patch			\
   %D%/packages/patches/openresolv-restartcmd-guix.patch	\
   %D%/packages/patches/openscad-parser-boost-1.72.patch	\
+  %D%/packages/patches/opensles-add-license-file.patch			\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
