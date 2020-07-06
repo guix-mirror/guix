@@ -24,10 +24,12 @@
   #:use-module (guix channels)
   #:use-module (guix store)
   #:use-module (guix status)
+  #:use-module ((guix git)
+                #:select (with-git-error-handling))
   #:use-module ((guix utils)
                 #:select (%current-system))
   #:use-module ((guix scripts pull)
-                #:select (with-git-error-handling channel-list))
+                #:select (channel-list))
   #:use-module ((guix scripts build)
                 #:select (%standard-build-options
                           show-build-options-help

@@ -29,6 +29,7 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix sets)
+  #:use-module ((guix diagnostics) #:select (leave))
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -39,6 +40,7 @@
             honor-system-x509-certificates!
 
             with-repository
+            with-git-error-handling
             false-if-git-not-found
             update-cached-checkout
             url+commit->name
@@ -208,6 +210,23 @@ OID (roughly the commit hash) corresponding to REF."
 dynamic extent of EXP."
   (call-with-repository directory
                         (lambda (repository) exp ...)))
+
+(define (report-git-error error)
+  "Report the given Guile-Git error."
+  ;; Prior to Guile-Git commit b6b2760c2fd6dfaa5c0fedb43eeaff06166b3134,
+  ;; errors would be represented by integers.
+  (match error
+    ((? integer? error)                           ;old Guile-Git
+     (leave (G_ "Git error ~a~%") error))
+    ((? git-error? error)                         ;new Guile-Git
+     (leave (G_ "Git error: ~a~%") (git-error-message error)))))
+
+(define-syntax-rule (with-git-error-handling body ...)
+  (catch 'git-error
+    (lambda ()
+      body ...)
+    (lambda (key err)
+      (report-git-error err))))
 
 (define (load-git-submodules)
   "Attempt to load (git submodules), which was missing until Guile-Git 0.2.0.
