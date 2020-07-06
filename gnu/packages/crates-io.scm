@@ -21156,6 +21156,40 @@ proven statistical guarantees.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-selectors-0.22
+  (package
+    (name "rust-selectors")
+    (version "0.22.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "selectors" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1zhjpvww238lh4nz7kdw4ywlpmjbmzvrm76w1jyacjxci4c0ycnz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cssparser" ,rust-cssparser-0.27)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-phf" ,rust-phf-0.8)
+        ("rust-precomputed-hash" ,rust-precomputed-hash-0.1)
+        ("rust-servo-arc" ,rust-servo-arc-0.1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-thin-slice" ,rust-thin-slice-0.1))
+       #:cargo-development-inputs
+       (("rust-phf-codegen" ,rust-phf-codegen-0.8))))
+    (home-page "https://github.com/servo/servo")
+    (synopsis "CSS Selectors matching for Rust")
+    (description "This package provides CSS Selectors matching for Rust.")
+    (license license:mpl2.0)))
+
 (define-public rust-sema-0.1
   (package
     (name "rust-sema")
