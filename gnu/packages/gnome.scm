@@ -2352,7 +2352,7 @@ library.")
   (package
     (inherit librsvg)
     (name "librsvg")
-    (version "2.46.4")
+    (version "2.48.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/librsvg/"
@@ -2360,13 +2360,10 @@ library.")
                                   "librsvg-" version ".tar.xz"))
               (sha256
                (base32
-                "0afc82nsxc6kw136xid4vcq9kmq4rmgzzk8bh2pvln2cnvirwnxl"))
+                "14i6xzghcidv64cyd3g0wdjbl82rph737yxn9s3x29nzpcjs707l"))
               (modules '((guix build utils)))
               (snippet
                '(begin (delete-file-recursively "vendor")
-                       ;; Don't demand an exact version for string_cache
-                       (substitute* "rsvg_internals/Cargo.toml"
-                         (("\"=") "\""))
                        #t))))
     (build-system cargo-build-system)
     (arguments
@@ -2376,48 +2373,49 @@ library.")
        #:vendor-dir "vendor"
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-cairo-rs" ,rust-cairo-rs-0.7)
+        ("rust-cairo-rs" ,rust-cairo-rs-0.8)
         ("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.9)
-        ("rust-cssparser" ,rust-cssparser-0.25)
+        ("rust-cast" ,rust-cast-0.2)
+        ("rust-cssparser" ,rust-cssparser-0.27)
         ("rust-data-url" ,rust-data-url-0.1)
         ("rust-downcast-rs" ,rust-downcast-rs-1.1)
         ("rust-encoding" ,rust-encoding-0.2)
-        ("rust-float-cmp" ,rust-float-cmp-0.5)
-        ("rust-gdk-pixbuf" ,rust-gdk-pixbuf-0.7)
+        ("rust-float-cmp" ,rust-float-cmp-0.6)
+        ("rust-gdk-pixbuf" ,rust-gdk-pixbuf-0.8)
         ("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.9)
-        ("rust-gio" ,rust-gio-0.7)
+        ("rust-gio" ,rust-gio-0.8)
         ("rust-gio-sys" ,rust-gio-sys-0.9)
-        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib" ,rust-glib-0.9)
         ("rust-glib-sys" ,rust-glib-sys-0.9)
         ("rust-gobject-sys" ,rust-gobject-sys-0.9)
         ("rust-itertools" ,rust-itertools-0.8)
         ("rust-language-tags" ,rust-language-tags-0.2)
-        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-locale-config" ,rust-locale-config-0.3)
-        ("rust-markup5ever" ,rust-markup5ever-0.9)
-        ("rust-nalgebra" ,rust-nalgebra-0.18)
+        ("rust-markup5ever" ,rust-markup5ever-0.10)
+        ("rust-nalgebra" ,rust-nalgebra-0.19)
         ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-once-cell" ,rust-once-cell-1.2)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-pango" ,rust-pango-0.7)
+        ("rust-pango" ,rust-pango-0.8)
         ("rust-pango-sys" ,rust-pango-sys-0.9)
-        ("rust-pangocairo" ,rust-pangocairo-0.8)
-        ("rust-phf" ,rust-phf-0.7)
+        ("rust-pangocairo" ,rust-pangocairo-0.9)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-rctree" ,rust-rctree-0.3)
-        ("rust-string-cache" ,rust-string-cache-0.7)
+        ("rust-rgb" ,rust-rgb-0.8)
         ("rust-regex" ,rust-regex-1)
+        ("rust-selectors" ,rust-selectors-0.22)
         ("rust-url" ,rust-url-2.1)
-        ("rust-xml-rs" ,rust-xml-rs-0.8))
+        ("rust-xml5ever" ,rust-xml5ever-0.16))
        #:cargo-development-inputs
-       (("rust-cairo-rs" ,rust-cairo-rs-0.7)
-        ("rust-criterion" ,rust-criterion-0.2))
+       (("rust-cairo-rs" ,rust-cairo-rs-0.8)
+        ("rust-criterion" ,rust-criterion-0.3))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-for-build
            (lambda _
              ;; In lieu of #:make-flags
-             (setenv "CC" "gcc")
+             (setenv "CC" ,(cc-for-target))
              ;; Something about the build environment resists building
              ;; successfully with the '--locked' flag.
              (substitute* '("Makefile.am"
@@ -2458,28 +2456,10 @@ library.")
              ((assoc-ref gnu:%standard-phases 'check)
               #:test-target "check")))
          (replace 'install
-           (assoc-ref gnu:%standard-phases 'install))
-         (add-before 'check 'remove-failing-tests
-           (lambda _
-             (with-directory-excursion "tests/fixtures/reftests"
-               (for-each delete-file
-                         '(;; The images produced by these tests differ slightly
-                           ;; from their reference counterparts due to differences
-                           ;; in the build environment (missing fonts, etc).  See
-                           ;; <tests/README.md> for details.
-                           ;; These fail on x86_64.
-                           "svg1.1/coords-viewattr-02-b.svg"
-                           "svg1.1/filters-composite-04-f.svg"
-                           "svg1.1/filters-image-01-b.svg"
-                           "svg1.1/filters-conv-02-f.svg"
-                           "svg1.1/filters-conv-04-f.svg"
-                           ;; This test fails on i686:
-                           "svg1.1/masking-path-04-b.svg"
-                           ;; This test fails on armhf:
-                           "svg1.1/masking-mask-01-b.svg"
-                           ;; This test fails on aarch64:
-                           "bugs/777834-empty-text-children.svg")))
-             #t)))))
+           (assoc-ref gnu:%standard-phases 'install)))))
+    (inputs
+     `(("pango" ,pango)
+       ,@(alist-delete "pango" (package-inputs librsvg))))
     (license license:lgpl2.1+)))
 
 (define-public libidl
