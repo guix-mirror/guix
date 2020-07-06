@@ -23274,8 +23274,37 @@ crate.")
 configurable byte storage.")
     (license license:expat)))
 
+(define-public rust-string-cache-0.8
+  (package
+    (name "rust-string-cache")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "string-cache" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "12i0synp8l0qpnzi5qki4pjq3jx28ykikyffjjjg6fsfxddwfh19"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-new-debug-unreachable" ,rust-new-debug-unreachable-1.0)
+        ("rust-phf-shared" ,rust-phf-shared-0.8)
+        ("rust-precomputed-hash" ,rust-precomputed-hash-0.1)
+        ("rust-serde" ,rust-serde-1.0))))
+    (home-page "https://github.com/servo/string-cache")
+    (synopsis "String interning library for Rust")
+    (description
+     "This package provides a string interning library for Rust,
+developed as part of the Servo project.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-string-cache-0.7
   (package
+    (inherit rust-string-cache-0.8)
     (name "rust-string-cache")
     (version "0.7.5")
     (source
@@ -23287,7 +23316,6 @@ configurable byte storage.")
        (sha256
         (base32
          "0rrdb822gc1fs3qq4camgj3kh4182bs79hpqxhdrpmlz5yl5ih49"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
@@ -23299,7 +23327,7 @@ configurable byte storage.")
         ("rust-string-cache-codegen" ,rust-string-cache-codegen-0.4)
         ("rust-string-cache-shared" ,rust-string-cache-shared-0.3))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
+       (("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-string-cache-codegen-0.5
   (package
