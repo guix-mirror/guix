@@ -716,35 +716,66 @@ par compared to the rest.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gstreamer.freedesktop.org/src/"
-                           name "/" name "-" version ".tar.xz"))
+       (uri
+        (string-append "https://gstreamer.freedesktop.org/src/"
+                       name "/" name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "1jpvc32x6q01zjkfgh6gmq6aaikiyfwwnhj7bmvn52syhrdl202m"))))
+        (base32 "1jpvc32x6q01zjkfgh6gmq6aaikiyfwwnhj7bmvn52syhrdl202m"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  ,@%common-gstreamer-phases)))
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* "plugins/gst-plugins-ugly-plugins-docs.sgml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-before
+             'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Tests look for $XDG_RUNTIME_DIR.
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
-     `(("gst-plugins-base" ,gst-plugins-base)
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
        ("liba52" ,liba52)
        ("libcdio" ,libcdio)
+       ("libdvdread" ,libdvdread)
        ("libmpeg2" ,libmpeg2)
        ("libdvdread" ,libdvdread)
        ("libx264" ,libx264)
-       ;; TODO:
-       ;; * opencore-amr (for the AMR-NB decoder and encoder and the
-       ;;   AMR-WB decoder) <http://sourceforge.net/projects/opencore-amr/>
+       ("opencore-amr" ,opencore-amr)
        ("orc" ,orc)))
-    (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)
-       ("python-wrapper" ,python-wrapper)))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (synopsis "GStreamer plugins and helper libraries")
+    (description "Gst-Plugins-Ugly are the ones that might have a patent noose
+around their neck, or a lock-up license, or any other problem that makes you
+think twice about shipping them.")
     (home-page "https://gstreamer.freedesktop.org/")
-    (synopsis "GStreamer plugins from the \"ugly\" set")
-    (description "GStreamer Ugly Plug-ins.  This set contains those plug-ins
-which the developers consider to have good quality code but that might pose
-distribution problems in some jurisdictions, e.g. due to patent threats.")
     (license license:lgpl2.0+)))
 
 (define-public gst-libav
