@@ -21796,6 +21796,29 @@ for the serde framework.")
     (description "YAML support for Serde.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-serial-test-0.1
+  (package
+    (name "rust-serial-test")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serial-test" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0qywhzjc4jh6dqqng90maai0mjlmafk9aa5rrl9g3d2g01wdn8ms"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
+    (home-page "https://github.com/palfrey/serial_test/")
+    (synopsis "Serialised Rust tests")
+    (description
+     "Allows for the creation of serialised Rust tests.")
+    (license license:expat)))
+
 (define-public rust-serial-test-derive-0.1
   (package
     (name "rust-serial-test-derive")
