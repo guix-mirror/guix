@@ -77,6 +77,7 @@
 ;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,6 +123,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages haskell-apps)
+  #:use-module (gnu packages ibus)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -22351,6 +22353,53 @@ current buffer.")
     (synopsis "Switch to and from current major mode's REPL")
     (description "This package provides a function to switch to and from a
 REPL appropriate to the current major mode.")
+    (license license:gpl3+)))
+
+(define-public emacs-rime
+  (package
+    (name "emacs-rime")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DogLooksGood/emacs-rime.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08rzkiqwcl8j3i2yyibll5lcsj8720plzm9zfdgmxgkw7vhcyix5"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-rime-data-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (make-file-writable "rime.el")
+             (emacs-substitute-variables "rime.el"
+               ("rime-share-data-dir"
+                (string-append (assoc-ref inputs "rime-data")
+                               "/share/rime-data")))
+             #t))
+         (add-before 'install 'build-emacs-module
+           (lambda _
+             (invoke "make" "lib")))
+         (add-after 'install 'install-emacs-module
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "librime-emacs.so"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/emacs/site-lisp"))
+             #t)))))
+    (inputs
+     `(("librime" ,librime)
+       ("rime-data" ,rime-data)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-popup" ,emacs-popup)
+       ("emacs-posframe" ,emacs-posframe)))
+    (home-page "https://github.com/DogLooksGood/emacs-rime")
+    (synopsis "Rime input method in Emacs")
+    (description
+     "Rime is an Emacs input method built upon Rime input method engine.")
     (license license:gpl3+)))
 
 (define-public emacs-blackout
