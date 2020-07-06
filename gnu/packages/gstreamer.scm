@@ -73,8 +73,11 @@
   #:use-module (gnu packages shells)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages ruby)
+  #:use-module (gnu packages speech)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages telephony)
@@ -764,7 +767,6 @@ par compared to the rest.")
        ("libcdio" ,libcdio)
        ("libdvdread" ,libdvdread)
        ("libmpeg2" ,libmpeg2)
-       ("libdvdread" ,libdvdread)
        ("libx264" ,libx264)
        ("opencore-amr" ,opencore-amr)
        ("orc" ,orc)))
@@ -782,35 +784,49 @@ think twice about shipping them.")
   (package
     (name "gst-libav")
     (version "1.16.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://gstreamer.freedesktop.org/src/" name "/"
-                    name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1wpfilc98bad9nsv3y1qapxp35dvn2mvwvrmqwrsj58cf09gc967"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Drop bundled ffmpeg.
-                  (delete-file-recursively "gst-libs/ext/libav")
-                  #t))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://gstreamer.freedesktop.org/src/" name "/"
+         name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1wpfilc98bad9nsv3y1qapxp35dvn2mvwvrmqwrsj58cf09gc967"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Drop bundled ffmpeg.
+           (delete-file-recursively "gst-libs/ext/libav")
+           #t))))
     (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* "plugins/gst-libav-plugins-docs.sgml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("ruby" ,ruby)))
     (inputs
-     `(("gst-plugins-base" ,gst-plugins-base)
-       ("ffmpeg" ,ffmpeg)
-       ("orc" ,orc)
-       ("zlib" ,zlib)))
+     `(("ffmpeg" ,ffmpeg)))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (synopsis "GStreamer plugins and helper libraries")
+    (description "Gst-Libav contains a GStreamer plugin for using the encoders,
+decoders, muxers, and demuxers provided by FFmpeg.")
     (home-page "https://gstreamer.freedesktop.org/")
-    (synopsis "Plugins for the GStreamer multimedia library")
-    (description
-     "This GStreamer plugin supports a large number of audio and video
-compression formats through the use of the libav library.")
-    (license license:gpl2+)))
+    (license license:lgpl2.0+)))
 
 (define-public gst-editing-services
   (package
