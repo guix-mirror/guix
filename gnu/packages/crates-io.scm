@@ -24493,6 +24493,27 @@ handle Unicode characters correctly.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
+(define-public rust-thin-slice-0.1
+  (package
+    (name "rust-thin-slice")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "thin-slice" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0g4z51g3yarah89ijpakbwhrrknw6d7k3ry0m1zqcn3hbhiq3alf"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/heycam/thin-slice")
+    (synopsis
+     "Owned slice that packs the slice storage into a single word when possible")
+    (description
+     "An owned slice that packs the slice storage into a single word when possible.")
+    (license license:mpl2.0)))
+
 (define-public rust-thiserror-1.0
   (package
     (name "rust-thiserror")
