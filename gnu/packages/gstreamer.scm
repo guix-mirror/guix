@@ -53,8 +53,12 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages iso-codes)
+  #:use-module (gnu packages java)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
@@ -78,6 +82,44 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages xml))
+
+(define-public openni2
+  (package
+    (name "openni2")
+    (version "2.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/occipital/OpenNI2.git")
+         (commit (string-append "v" version "-debian"))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mfnyzpq53wnzgjfx91xcbx0nrl0lp1vrk1rk20a3gb3kshsr675"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("graphviz" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("openjdk" ,openjdk14)
+       ("openjdk:jdk" ,openjdk14 "jdk")
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("freeglut3" ,freeglut)
+       ("libudev" ,eudev)
+       ("libusb" ,libusb)))
+    (synopsis "Framework for sensor-based 'Natural Interaction")
+    (description "OpenNI is a framework for getting data to support
+'Natural Interaction', i.e. skeleton tracking, gesture tracking, and similar
+ways of getting data from humans.  It provides the interface for physical devices
+and for middleware components.")
+    (home-page "https://structure.io/openni")
+    (license license:asl2.0)))
 
 (define-public libdc1394
   (package
