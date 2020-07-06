@@ -21796,6 +21796,32 @@ for the serde framework.")
     (description "YAML support for Serde.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-servo-arc-0.1
+  (package
+    (name "rust-servo-arc")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "servo-arc" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0cjljr9znwahry6p95xvd3p4pmy24wlf6gbfidnmglg002w3i0nr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nodrop" ,rust-nodrop-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1))))
+    (home-page "https://github.com/servo/servo")
+    (synopsis "Fork of std::sync::Arc with some extra functionality")
+    (description
+     "This package provides a fork of @code{std::sync::Arc} with some extra
+functionality and without weak references.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-servo-fontconfig-0.4
   (package
     (name "rust-servo-fontconfig")
