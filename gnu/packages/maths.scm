@@ -2411,32 +2411,26 @@ bindings to almost all functions of SLEPc.")
     (license license:bsd-3)))
 
 (define-public metamath
-  ;; Upstream pushed a commit on top of v0.182 that fixes a bug in Makefile.am.
-  ;; Using this commit lets us avoid directly including the patch here.  In the
-  ;; next version bump, we should be able to replace this and directly use the
-  ;; version tag.
-  (let ((commit "5df616efe4119ff88daf77e7041d45b6fa39c578")
-        (revision "0"))
-    (package
-      (name "metamath")
-      (version (git-version "0.182" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/metamath/metamath-exe.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0amjdgy42c7jypf6sz98iczlxcyl9bqx67ws1q8w2zdqk2izsyjp"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)))
-      (home-page "http://us.metamath.org/")
-      (synopsis "Proof verifier based on a minimalistic formalism")
-      (description
-       "Metamath is a tiny formal language and that can express theorems in
+  (package
+    (name "metamath")
+    (version "0.183")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/metamath/metamath-exe.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jjf4fy6j53i40dh0yv0f9sngnw4gs24cig99vsg3q0303pwrhg7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "http://us.metamath.org/")
+    (synopsis "Proof verifier based on a minimalistic formalism")
+    (description
+     "Metamath is a tiny formal language and that can express theorems in
 abstract mathematics, with an accompyaning @command{metamath} executable that
 verifies databases of these proofs.  There is a public database,
 @url{https://github.com/metamath/set.mm, set.mm}, implementing first-order
@@ -2444,7 +2438,7 @@ logic and Zermelo-Frenkel set theory with Choice, along with a large swath of
 associated, high-level theorems, e.g.@: the fundamental theorem of arithmetic,
 the Cauchy-Schwarz inequality, Stirling's formula, etc.  See the Metamath
 book.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public mumps
   (package
