@@ -2438,12 +2438,13 @@ library.")
                 "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))
              #t))
          (add-after 'configure 'gnu-configure
-           (assoc-ref gnu:%standard-phases 'configure))
-           ;(lambda* (#:key outputs #:allow-other-keys)
-           ;  ((assoc-ref gnu:%standard-phases 'configure)
-           ;   #:outputs outputs
-           ;   #:configure-flags ("--disable-static"
-           ;                      "--enable-vala"))))
+           (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
+             ((assoc-ref gnu:%standard-phases 'configure)
+              #:native-inputs native-inputs
+              #:inputs inputs
+              #:outputs outputs
+              #:configure-flags (list "--disable-static"
+                                      "--enable-vala"))))
          (add-after 'configure 'dont-vendor-self
            (lambda* (#:key vendor-dir #:allow-other-keys)
              ;; Don't keep the whole tarball in the vendor directory
