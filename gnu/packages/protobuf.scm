@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,13 +29,15 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system emacs)
+  #:use-module (guix build-system ruby)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-xyz))
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages ruby))
 
 (define-public fstrm
   (package
@@ -254,3 +257,86 @@ mechanism for serializing structured data.")
      "This package provides an Emacs major mode for editing Protocol Buffer
 source files.")
     (license license:bsd-3)))
+
+(define-public ruby-protobuf
+  (package
+    (name "ruby-protobuf")
+    (version "3.10.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ruby-protobuf/protobuf.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1yzz7jgpp6qip5d6qhzbkf5gqaydfk3z3c1ngccwzp6w6wa75g8a"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-use-bundler-for-tests
+           (lambda _
+             (substitute* "spec/spec_helper.rb"
+               (("Bundler\\.setup.*") ""))
+             #t))
+         (add-after 'unpack 'relax-version-requirements
+           (lambda _
+             (substitute* ((@@ (guix build ruby-build-system) first-gemspec))
+               (("'rake',.*")
+                "'rake'\n")
+               (("\"rubocop\",.*")
+                "'rubocop'\n")
+               (("\"parser\",.*")
+                "'parser'\n"))
+             #t))
+         (add-after 'unpack 'patch-protoc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((protoc (assoc-ref inputs "protobuf")))
+               (substitute* "lib/protobuf/tasks/compile.rake"
+                 (("\"protoc\"")
+                  (string-append "\"" protoc "/bin/protoc" "\"")))
+               #t)))
+         (add-after 'unpack 'skip-failing-test
+           ;; See: https://github.com/ruby-protobuf/protobuf/issues/419
+           (lambda _
+             (substitute* "spec/lib/protobuf/rpc/connectors/ping_spec.rb"
+               (("expect\\(::IO\\)\\.to receive\\(:select\\).*" all)
+                (string-append "        pending\n" all)))
+             #t))
+         (add-after 'replace-git-ls-files 'replace-more-git-ls-files
+           (lambda _
+             (substitute* ((@@ (guix build ruby-build-system) first-gemspec))
+               (("`git ls-files -- \\{test,spec,features\\}/*`")
+                "`find test spec features -type f | sort`")
+               (("`git ls-files -- bin/*`")
+                "`find bin -type f | sort`"))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "rspec"))))))
+    (native-inputs
+     `(("ruby-benchmark-ips" ,ruby-benchmark-ips)
+       ("ruby-ffi-rzmq" ,ruby-ffi-rzmq)
+       ("ruby-parser" ,ruby-parser)
+       ("ruby-pry-byebug" ,ruby-pry-byebug)
+       ("ruby-pry-stack-explorer" ,ruby-pry-stack-explorer)
+       ("ruby-rake" ,ruby-rake)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-ruby-prof" ,ruby-ruby-prof)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-timecop" ,ruby-timecop)
+       ("ruby-varint" ,ruby-varint)
+       ("ruby-yard" ,ruby-yard)))
+    (inputs
+     `(("protobuf" ,protobuf)))
+    (propagated-inputs
+     `(("ruby-activesupport" ,ruby-activesupport)
+       ("ruby-middleware" ,ruby-middleware)
+       ("ruby-thor" ,ruby-thor)))
+    (home-page "https://github.com/ruby-protobuf/protobuf")
+    (synopsis "Implementation of Google's Protocol Buffers in Ruby")
+    (description "Protobuf is an implementation of Google's Protocol Buffers
+in pure Ruby.")
+    (license license:expat)))
