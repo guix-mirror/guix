@@ -60,6 +60,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages node)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ragel)
@@ -6386,6 +6387,49 @@ Profiling multiple threads simultaneously is supported.
 @end table")
     (home-page "https://github.com/ruby-prof/ruby-prof")
     (license license:bsd-2)))
+
+(define-public ruby-cucumber-messages
+  (package
+    (name "ruby-cucumber-messages")
+    (version "12.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cucumber/messages-ruby.git")
+                    (commit "12cd07eac87bce7843fd1bb0bf64bc4da09f097c")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "16wwqfpsq7crvxc3q08lphgyh12cl2d83p1c79p312q4jmy9cn5a"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-protobuf.rb
+                    (lambda _
+                      (substitute* "rake/protobuf.rb"
+                        (("load 'protobuf/tasks/compile.rake'")
+                         "require 'protobuf/tasks'"))
+                      #t))
+                  (add-before 'build 'compile
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("bundle exec ") "")
+                        (("include default.mk.*" all)
+                         (string-append "#" all)))
+                      (invoke "make")))
+                  (replace 'check
+                    (lambda _
+                      (invoke "rspec"))))))
+    (propagated-inputs
+     `(("ruby-protobuf" ,ruby-protobuf-cucumber)))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/cucumber/messages-ruby")
+    (synopsis "Cucumber Messages for Ruby (Protocol Buffers)")
+    (description "Cucumber Messages for Ruby is a library which allows
+serialization and deserialization of the protocol buffer messages used in
+Cucumber.")
+    (license license:expat)))
 
 (define-public ruby-gherkin
   (package
