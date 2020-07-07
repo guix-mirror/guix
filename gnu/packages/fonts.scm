@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 Simen Endsjø <simendsjo@gmail.com>
+;;; Copyright © 2020 Tim Van den Langenbergh <tmt_vdl@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -383,6 +384,35 @@ weights, and with a Small Capitals version of the regular typeface.  Linux
 Biolinum is available in both Regular and Bold weights.")
     ;; The fonts are released under either of these licenses.
     (license (list license:gpl2+ license:silofl1.1))))
+
+(define-public font-libertinus
+  (package
+    (name "font-libertinus")
+    (version "6.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/alerque/libertinus/releases"
+                           "/download/v" version "/libertinus-" version
+                           ".zip"))
+       (sha256
+        (base32 "06pcsd5pijjid7xjxak35jla089krm5hqnbglv8ldncq475q7kb2"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/alerque/libertinus")
+    (synopsis "Font family based on Linux Libertine")
+    (description
+     "The Libertinus font family is a fork of Linux Libertine that addresses
+many bugs in the unmaintained original and adds a new mathematical companion
+font for use with OpenType math-capable applications like LuaTex or XeTeX.
+
+The unified Libertinus family consists of:
+@enumerate
+@item Libertinus Serif, forked from Linux Libertine;
+@item Libertinus Sans Serif, forked from Linux Biolinum;
+@item Libertinus Mono, forked from Linux Libertine Mono; and
+@item Libertinus Math, an original matching OpenType math font.
+@end enumerate\n")
+    (license license:silofl1.1)))
 
 (define-public font-terminus
   (package
