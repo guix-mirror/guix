@@ -5927,7 +5927,7 @@ board and goal value can be customized.")
              (let* ((out (assoc-ref outputs "out"))
                     (pieces
                      (string-append out "/share/emacs/site-lisp/pieces")))
-               (mkdir-p site-lisp)
+               (mkdir-p pieces)
                (copy-recursively "pieces" pieces)
                #t))))))
     (home-page "https://elpa.gnu.org/packages/chess.html")
