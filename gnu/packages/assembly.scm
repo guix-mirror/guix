@@ -382,6 +382,7 @@ as 6502A, 6504, 6507, 6510, 7501, 8500, 8501, 8502 ...),
        (uri (git-reference
              (url "https://github.com/Kingcom/armips.git")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1c4dhjkvynqn9xm2vcvwzymk7yg8h25alnawkz4z1dnn1z1k3r9g"))))
     (build-system cmake-build-system)
