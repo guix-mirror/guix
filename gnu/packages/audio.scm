@@ -4147,7 +4147,7 @@ in the package.")
 (define-public libaudec
   (package
     (name "libaudec")
-    (version "0.2")
+    (version "0.2.2")
     (source
       (origin
         (method git-fetch)
@@ -4157,7 +4157,7 @@ in the package.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "0lfydvs92b0hr72z71ci3yi356rjzi162pgms8dphgg18bz8dazv"))))
+            "04mpmfmqc43asw0m3zxhb6jj4qms7x4jw7mx4xb1d3lh16xllniz"))))
    (build-system meson-build-system)
    (arguments
     `(#:configure-flags `("-Denable_tests=true -Denable_ffmpeg=true")))
