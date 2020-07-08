@@ -2003,13 +2003,13 @@ you to rapidly iterate while developing a package.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "1.0.4.6")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "00mk23zmrqn1c4mk9d6csjcbnl12wd7yicjk2ikmw5dyvdfngbs5"))))
+        (base32 "012wbj446k1wz6bp6bpf6h77ypvcsw69xvnax6qf6vyc7dj2qimq"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
