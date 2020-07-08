@@ -5457,6 +5457,42 @@ automation that comes as an LV2 plugin bundle with a custom UI.")
     (home-page "https://git.zrythm.org/cgit/ZLFO/")
     (license license:agpl3+)))
 
+(define-public remid-lv2
+  (package
+    (name "remid-lv2")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ssj71/reMID.lv2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "062kriniidsrhzwrf89kfxm9wb0cmgrl07asnlmgil8vcl7gl9y5"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no tests included
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("glib" ,glib)
+       ("jack" ,jack-1)
+       ("lv2" ,lv2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/ssj71/reMID.lv2")
+    (synopsis
+     "MIDI-controlled implementation of the SID 6581 chip used in the
+Commodore 64")
+    (description
+     "The 6581 SID chip is the sound chip used in the Commodore 64 computer.
+reMID is a MIDI implementation of the 6581 SID chip using the reSID library
+to provide a virtual SID-based synthesizer, controllable in real-time via
+MIDI.  It includes support for scripted instruments that allow complex sonic
+control of the chip.")
+    (license license:gpl2+)))
+
 (define-public vl1-emulator
   (package
     (name "vl1-emulator")
