@@ -9,6 +9,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -196,6 +197,37 @@ submodule @code{scipy.weave}.  It is Python 2.x only, and is provided for
 users that need new versions of Scipy but have existing code that still
 depends on @code{scipy.weave}.  For new code, users are recommended to use
 Cython.")
+    (license license:bsd-3)))
+
+(define-public python-scikit-fuzzy
+  (package
+    (name "python-scikit-fuzzy")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scikit-fuzzy" version))
+       (sha256
+        (base32 "0bp1n771fj44kdp7a00bcvfwirvv2rc803b7g6yf3va7v0j29c8s"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "nosetests" "-s" "-v" "skfuzzy")
+             #t)))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://github.com/scikit-fuzzy/scikit-fuzzy")
+    (synopsis "Fuzzy logic toolkit for SciPy")
+    (description
+     "This package implements many useful tools for projects involving fuzzy
+logic, also known as grey logic.")
     (license license:bsd-3)))
 
 (define-public python-scikit-image
