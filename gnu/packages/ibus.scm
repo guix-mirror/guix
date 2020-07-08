@@ -623,7 +623,7 @@ traditional Chinese output.")
     (synopsis "Schema data of Rime Input Method Engine")
     (description "@dfn{rime-data} provides the schema data of Rime Input
 Method Engine.")
-    (license lgpl3+)))
+    (license lgpl3)))
 
 (define-public ibus-rime
   (package
