@@ -6085,6 +6085,27 @@ from macros.")
 parameters, associated types, and type constraints.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-downcast-rs-1.2
+  (package
+    (name "rust-downcast-rs")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "downcast-rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l36kgxqd5djhqwf5abxjmgasdw8n0qsjvw3jdvhi91nj393ba4y"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/marcianx/downcast-rs")
+    (synopsis "Trait object downcasting support using only safe Rust")
+    (description
+     "Trait object downcasting support using only safe Rust.  It supports type
+parameters, associated types, and type constraints.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dogged-0.2
   (package
     (name "rust-dogged")
