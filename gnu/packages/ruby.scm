@@ -6766,20 +6766,22 @@ and trust on your team.")
 (define-public ruby-cucumber-expressions
   (package
     (name "ruby-cucumber-expressions")
-    (version "6.0.1")
+    (version "10.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "cucumber-expressions" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cucumber/cucumber-expressions-ruby.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zwmv6hznyz9vk81f5dhwcr9jhxx2vmbk8yyazayvllvhy0fkpdw"))))
+         "1aivhcpjrmbvp9bg0y7g6zxh2swfvylvg0sapq5jc4i1y74k8npd"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
+     `(("ruby-rspec" ,ruby-rspec)
        ("ruby-simplecov" ,ruby-simplecov)))
     (synopsis "Simpler alternative to Regular Expressions")
     (description "Cucumber Expressions offer similar functionality to Regular
