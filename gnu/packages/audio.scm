@@ -4148,6 +4148,7 @@ as is the case with audio plugins.")
        ("file" ,file)
        ("liblo" ,liblo)
        ("libsndfile" ,libsndfile)
+       ("gtk2" ,gtk+-2)   ;needed for bridging GTK2 plugins in GTK3 hosts
        ("gtk+" ,gtk+)
        ("python-pyliblo" ,python-pyliblo)
        ("python-pyqt" ,python-pyqt)
