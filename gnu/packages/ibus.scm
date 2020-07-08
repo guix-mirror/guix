@@ -363,7 +363,9 @@ traditional Chinese output.")
         (base32 "06ad5c4m7xsfr4if5ywshfj2aj5g5b5hwzh38dzccn7c1l2ibi0z"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                  ; no tests
+     `(#:modules ((ice-9 match)
+                  ,@%gnu-build-system-modules)
+       #:tests? #f                  ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "no_update=1")
        #:phases
@@ -376,40 +378,21 @@ traditional Chinese output.")
                (("^\\.DEFAULT_GOAL := preset")
                 ".DEFAULT_GOAL := all"))
              #t))
-         ;; Add schema packages into "package/rime" directory.
-         (add-after 'unpack 'add-packages
+         ;; Copy Rime schemas into the "package/rime" directory.
+         (add-after 'unpack 'copy-rime-schemas
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((dest-dir "package/rime"))
+             (let ((dest-dir "package/rime"))
                (mkdir-p dest-dir)
-               (for-each (lambda (pkg)
-                           (symlink (assoc-ref inputs
-                                               (string-append "rime-" pkg))
-                                    (string-append dest-dir "/" pkg)))
-                         '("array"
-                           "bopomofo"
-                           "cangjie"
-                           "cantonese"
-                           "combo-pinyin"
-                           "double-pinyin"
-                           "emoji"
-                           "essay"
-                           "ipa"
-                           "jyutping"
-                           "luna-pinyin"
-                           "middle-chinese"
-                           "pinyin-simp"
-                           "prelude"
-                           "quick"
-                           "scj"
-                           "soutzoe"
-                           "stenotype"
-                           "stroke"
-                           "terra-pinyin"
-                           "wubi"
-                           "wugniu")))
+               (for-each
+                (match-lambda
+                  ((name . path)
+                   (if (string-prefix? "rime-" name)
+                       (let ((schema (substring name (string-length "rime-"))))
+                         (symlink path (string-append dest-dir "/" schema))))))
+                inputs))
              #t))
          (delete 'configure))))
-    (native-inputs
+    (inputs
      `(("rime-array"
         ,(origin
            (method git-fetch)
