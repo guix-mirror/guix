@@ -3273,9 +3273,9 @@ memoized as a function of '%current-system'."
             `(modify-phases ,phases
                (add-before 'configure 'pre-configure
                  (lambda* (#:key inputs #:allow-other-keys)
-                   ;; Don't clobber CPATH with the bootstrap libc.
-                   (setenv "NATIVE_CPATH" (getenv "CPATH"))
-                   (unsetenv "CPATH")
+                   ;; Don't clobber include paths with the bootstrap libc.
+                   (unsetenv "C_INCLUDE_PATH")
+                   (unsetenv "CPLUS_INCLUDE_PATH")
 
                    ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
                    ,@(if (hurd-system?)
@@ -3286,13 +3286,6 @@ memoized as a function of '%current-system'."
                                            (assoc-ref %build-inputs "kernel-headers")
                                            "/lib/libihash.a\n"))))
                        '())
-
-                   ;; 'rpcgen' needs native libc headers to be built.
-                   (substitute* "sunrpc/Makefile"
-                     (("sunrpc-CPPFLAGS =.*" all)
-                      (string-append "CPATH = $(NATIVE_CPATH)\n"
-                                     "export CPATH\n"
-                                     all "\n")))
                    #t)))))))
     (propagated-inputs `(("kernel-headers" ,(kernel-headers-boot0))))
     (native-inputs
