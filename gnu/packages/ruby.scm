@@ -6665,24 +6665,38 @@ in already-indented code.")
 (define-public ruby-cucumber-core
   (package
     (name "ruby-cucumber-core")
-    ;; Stick to major version 3, until version 4 of Cucumber is released.
-    (version "3.2.1")
+    (version "7.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "cucumber-core" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cucumber/cucumber-ruby-core.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1iavlh8hqj9lwljbpkw06259gdicbr1bdb6pbj5yy3n8szgr8k3c"))))
+         "1p5wb6wbggbw37ariyag4kxpiczznvgm3c8cnz1744dmbj79q1rn"))))
     (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'relax-version-requirements
+           (lambda _
+             (substitute* "cucumber-core.gemspec"
+               (("'cucumber-tag-expressions',.*")
+                 "'cucumber-tag-expressions', '>=2.0.0'\n"))
+             #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-coveralls" ,ruby-coveralls)
+       ("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-unindent" ,ruby-unindent)))
     (propagated-inputs
-     `(("ruby-backports" ,ruby-backports)
+     `(("ruby-cucumber-messages" ,ruby-cucumber-messages)
        ("ruby-gherkin" ,ruby-gherkin)
        ("ruby-cucumber-tag-expressions" ,ruby-cucumber-tag-expressions)))
-    (native-inputs
-     `(("bundler" ,bundler)))
-    (arguments
-     '(#:tests? #f)) ; needs simplecov, among others
     (synopsis "Core library for the Cucumber BDD app")
     (description "Cucumber is a tool for running automated tests
 written in plain language.  Because they're written in plain language,
