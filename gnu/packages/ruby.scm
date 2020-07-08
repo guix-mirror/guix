@@ -6558,6 +6558,29 @@ language.")
                        (package-propagated-inputs ruby-aruba))))
     (native-inputs '())))
 
+(define-public ruby-sys-uname
+  (package
+  (name "ruby-sys-uname")
+  (version "1.2.1")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "sys-uname" version))
+      (sha256
+        (base32
+          "00p3wwvkdbg6pl38bchaagncv3i4fq4y0ks470imwykjanpy2ic0"))))
+  (build-system ruby-build-system)
+  (arguments
+   `(#:test-target "spec"))
+  (propagated-inputs `(("ruby-ffi" ,ruby-ffi)))
+  (native-inputs `(("ruby-rspec" ,ruby-rspec)))
+  (synopsis "Ruby interface for gathering system information")
+  (description "The sys-uname library provides an interface for gathering
+information about your current platform.  It allows retrieving information
+such as the OS name, OS version, system name, etc.")
+  (home-page "https://github.com/djberg96/sys-uname")
+  (license license:asl2.0)))
+
 (define-public ruby-cucumber
   (package
     (name "ruby-cucumber")
