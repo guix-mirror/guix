@@ -372,11 +372,17 @@ traditional Chinese output.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
            (lambda _
-             ;; Set .DEFAULT_GOAL to `all'.
-             ;; Don't build binary schemas. The output is not deterministic.
+             ;; Don't build binary Rime schema.  The binary Rime schema files
+             ;; are platform dependent and contains timestamp information.
+             ;; Thus they are not reproducible.
+
+             ;; Change `.DEFAULT_GOAL' to `all'.
              (substitute* "Makefile"
                (("^\\.DEFAULT_GOAL := preset")
                 ".DEFAULT_GOAL := all"))
+             ;; Disable git operations.
+             (substitute* "scripts/install-packages.sh"
+               ((".*update-package\\.sh.*") ""))
              #t))
          ;; Copy Rime schemas into the "package/rime" directory.
          (add-after 'unpack 'copy-rime-schemas
