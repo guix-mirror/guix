@@ -22813,6 +22813,48 @@ the Helm session, it’s also possible to input an arbitrary name which will be
 used for the creation of a new buffer of mode X.")
     (license license:gpl3+)))
 
+(define-public emacs-helm-wordnut
+  (let ((commit "6c64bd1220258d45f1b872cb1edb3071d16b2bc5"))
+    (package
+      (name "emacs-helm-wordnut")
+      (version "0.1")
+      (home-page "https://github.com/emacs-helm/helm-wordnut")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1a5gfzvc272lxnpzz14dsya387hgy7rrxxmkhmpxyng4rdg6gc4f"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("wordnet" ,wordnet)))
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((wn (assoc-ref inputs "wordnet")))
+                 ;; .el is read-only in git.
+                 (chmod "helm-wordnut.el" #o644)
+                 ;; Specify the absolute file names of the various
+                 ;; programs so that everything works out-of-the-box.
+                 (emacs-substitute-variables "helm-wordnut.el"
+                   ("helm-wordnut-prog" (string-append wn "/bin/wn"))
+                   ("helm-wordnut-wordnet-location"
+                    (string-append wn "/dict")))))))))
+      (synopsis "Emacs Helm interface for Wordnet")
+      (description "This package is merely a combination of two other Emacs
+packages: @code{helm-wordnet} and @code{wordnut}.  It features word completion
+with Helm and displays a buffer of all the different result types available to
+Wordnet.")
+      (license license:gpl3+))))
+
 (define-public emacs-metal-mercury-mode
   (let ((commit "99e2d8fb7177cae3bfa2dec2910fc28216d5f5a8")
 	(revision "1")
