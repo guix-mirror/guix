@@ -2911,7 +2911,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "2.0.0")
+    (version "2.1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2920,7 +2920,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q1fwk8wwk9r6bp0indpr60ql668lsk16ykslacyhrh7kg97kvhr"))))
+                "1ax26ri1ifb6s8ppd28jmanka9yf8mw3np65q2h4djhhik0phhal"))))
     ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
     (build-system cmake-build-system)
     (inputs
