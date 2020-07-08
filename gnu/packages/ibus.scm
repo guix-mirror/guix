@@ -689,7 +689,7 @@ various input schemas including glyph-based input methods, romanization-based
 input methods as well as those for Chinese dialects.  It has the ability to
 compose phrases and sentences intelligently and provide very accurate
 traditional Chinese output.")
-    (license gpl3+)))
+    (license gpl3)))
 
 (define-public libhangul
   (package
