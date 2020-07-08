@@ -4074,6 +4074,45 @@ stream to one or more IceCast and/or ShoutCast servers.")
     (home-page "https://x42.github.io/libltc/")
     (license license:lgpl3+)))
 
+(define-public ttaenc
+  (package
+    (name "ttaenc")
+    (version "3.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tta/"
+                           "tta/ttaenc-src"
+                           "/ttaenc-" version "-src.tgz"))
+       (sha256
+        (base32
+         "1iixpr4b89g9g1hwn8ak8k8iflcww3r5f09a117qdidc2nqcijdj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "INSDIR=" (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure
+         (add-before 'install 'make-bindir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               #t))))))
+    (synopsis "TTA lossless audio encoder")
+    (description
+     "TTA performs lossless compression on multichannel 8,16 and 24 bits
+data of the Wav audio files.  Being lossless means that no data-
+quality is lost in the compression - when uncompressed, the data will
+be identical to the original.  The compression ratios of TTA depend on
+the type of music file being compressed, but the compression size
+will generally range between 30% - 70% of the original.  TTA format
+supports both of ID3v1/v2 and APEv2 tags.")
+    (home-page "http://tausoft.org/")
+    (license license:gpl2+)))
+
 (define-public redkite
   (package
     (name "redkite")
