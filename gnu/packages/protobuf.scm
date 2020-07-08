@@ -340,3 +340,20 @@ source files.")
     (description "Protobuf is an implementation of Google's Protocol Buffers
 in pure Ruby.")
     (license license:expat)))
+
+;;; This is a modified ruby-protobuf package used by ruby-cucumber-messages
+;;; until https://github.com/ruby-protobuf/protobuf/pull/411 and
+;;; https://github.com/ruby-protobuf/protobuf/pull/415 are merged upstream.
+(define-public ruby-protobuf-cucumber
+  (hidden-package
+   (package
+     (inherit ruby-protobuf)
+     (name "ruby-protobuf-cucumber")
+     (version "3.10.8")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "protobuf-cucumber" version))
+        (sha256
+         (base32
+          "1rd6naabhpfb1i5dr6fp5mqwaawsx0mqm73h5ycwkgbm1n2si872")))))))
