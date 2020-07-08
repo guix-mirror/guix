@@ -6643,6 +6643,25 @@ API.")
     (home-page "https://coveralls.io")
     (license license:expat)))
 
+(define-public ruby-unindent
+  (package
+  (name "ruby-unindent")
+  (version "1.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "unindent" version))
+      (sha256
+        (base32
+          "1wqh3rzv8589yzibigminxx3qpmj2nqj28f90xy1sczk1pijmcrd"))))
+  (build-system ruby-build-system)
+  (synopsis "Ruby method to unindent strings")
+  (description "This module provides a @code{String#unindent} Ruby method to
+unindent strings, which can be useful to unindent multiline strings embedded
+in already-indented code.")
+  (home-page "https://github.com/mynyml/unindent")
+  (license license:expat)))
+
 (define-public ruby-cucumber-core
   (package
     (name "ruby-cucumber-core")
