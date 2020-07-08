@@ -2392,6 +2392,36 @@ files.")
 (define-public python2-pyld
   (package-with-python2 python-pyld))
 
+(define-public python-cli-helpers
+  (package
+    (name "python-cli-helpers")
+    (version "2.0.1")
+    (source
+     (origin
+       ;; There's no source tarball on PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dbcli/cli_helpers.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bg2iw9l5dip0kbs00hajdk2v18wvhssbnq8hdf71278qf0wks5l"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-wcwidth" ,python-wcwidth)
+       ("python-configobj" ,python-configobj)
+       ("python-tabulate" ,python-tabulate)
+       ("python-terminaltables" ,python-terminaltables)))
+    (home-page "https://github.com/dbcli/cli_helpers")
+    (synopsis "Helpers for building command-line apps")
+    (description
+     "CLI Helpers is a Python package that makes it easy to perform common
+tasks when building command-line apps.  It's a helper library for command-line
+interfaces.")
+    (license license:bsd-3)))
+
 (define-public python-click
   (package
     (name "python-click")
