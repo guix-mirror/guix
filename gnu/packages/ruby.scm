@@ -6434,24 +6434,27 @@ Cucumber.")
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
-    (version "5.1.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (rubygems-uri "gherkin" version))
-        (sha256
-          (base32
-            "1cgcdchwwdm10rsk44frjwqd4ihprhxjbm799nscqy2q1raqfj5s"))))
+    (version "14.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cucumber/gherkin-ruby")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1dwa8632nc6kijv8p257jl64rsjmc0fimlaqvxlkdi2h9n1nympb"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)))
+     `(("ruby-cucumber-messages" ,ruby-cucumber-messages)
+       ("ruby-rspec" ,ruby-rspec)))
     (arguments
-     '(#:tests? #f)) ; needs simplecov, among others
+     `(#:test-target "spec"))
     (synopsis "Gherkin parser for Ruby")
     (description "Gherkin is a parser and compiler for the Gherkin language.
 It is intended be used by all Cucumber implementations to parse
 @file{.feature} files.")
-    (home-page "https://github.com/cucumber-attic/gherkin")
+    (home-page "https://github.com/cucumber/gherkin-ruby")
     (license license:expat)))
 
 (define-public ruby-gherkin-ruby
