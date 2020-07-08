@@ -5295,8 +5295,15 @@ plugin support, JACK support and chord assistance.")
                                     (string-append lv2 "/" (basename file))))
                 (find-files "bin" "\\.lv2$" #:directories? #t))
                ;; Install executables.
-               (install-file "bin/DragonflyRoomReverb" bin)
-               (install-file "bin/DragonflyHallReverb" bin)
+               (for-each
+                 (lambda (file)
+                   (install-file file bin))
+                 (find-files "bin"
+                             (lambda (name stat)
+                               (and
+                                 (equal? (dirname name) "bin")
+                                 (not (string-suffix? ".so" name))
+                                 (not (string-suffix? ".lv2" name))))))
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
