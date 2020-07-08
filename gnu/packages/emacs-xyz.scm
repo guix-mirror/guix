@@ -20140,9 +20140,9 @@ be used in @code{dired-mode}.")
       (license license:gpl3+))))
 
 (define-public emacs-exwm-edit
-  (let ((commit "bc25ba094b383be3c650ca0b7e1534efe2bb154f")
+  (let ((commit "e1291e311840f1049106fe98cec032a1c75efd2b")
         (version "0.0.1")
-        (revision "2"))
+        (revision "3"))
     (package
       (name "emacs-exwm-edit")
       (version (git-version version revision commit))
@@ -20155,7 +20155,7 @@ be used in @code{dired-mode}.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1z1ya9xgknka3dy3b3x8zzfkxdx5jqsi8q5aqkvxjxa6n7mmqdwv"))))
+           "031cb8fvv5n30djr9lpl6vz3rl15zykfvjlgkjc8l33a3l5mw8j0"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-exwm" ,emacs-exwm)))
