@@ -397,7 +397,10 @@ absolute file name to the state directory of the store being initialized.
 Return #t on success.
 
 Use with care as it directly modifies the store!  This is primarily meant to
-be used internally by the daemon's build hook."
+be used internally by the daemon's build hook.
+
+PATH must be protected from GC and locked during execution of this, typically
+by adding it as a temp-root."
   (define db-file
     (store-database-file #:prefix prefix
                          #:state-directory state-directory))
@@ -423,7 +426,9 @@ be used internally by the daemon's build hook."
   "Register all of ITEMS, a list of <store-info> records as returned by
 'read-reference-graph', in DB.  ITEMS must be in topological order (with
 leaves first.)  REGISTRATION-TIME must be the registration time to be recorded
-in the database; #f means \"now\".  Write a progress report to LOG-PORT."
+in the database; #f means \"now\".  Write a progress report to LOG-PORT.  All
+of ITEMS must be protected from GC and locked during execution of this,
+typically by adding them as temp-roots."
   (define store-dir
     (if prefix
         (string-append prefix %storedir)
