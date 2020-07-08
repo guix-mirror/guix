@@ -375,19 +375,20 @@ integrate Windows applications into your desktop.")
     (name "wine-staging")
     (version (package-version wine-staging-patchset-data))
     (source
-     (origin
-       (method url-fetch)
-       (uri (let ((dir (string-append
-                        (version-major version)
-                        (if (string-suffix? ".0" (version-major+minor version))
-                            ".0"
-                            ".x"))))
-              (string-append
-               "https://dl.winehq.org/wine/source/" dir
-               "/wine-" version ".tar.xz")))
-       (file-name (string-append name "-" version ".tar.xz"))
-       (sha256
-        (base32 "1krk68lsfvisi0zpx7890cz0z5bp7jl7rka5d70vwyj3c7109bfb"))))
+     (let* ((wine-version (version-major+minor version))
+            (subdirectory (string-append
+                           (version-major version)
+                           (if (string-suffix? ".0" wine-version)
+                               ".0"
+                               ".x"))))
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://dl.winehq.org/wine/source/"
+                             subdirectory "/"
+                             "wine-" wine-version ".tar.xz"))
+         (file-name (string-append name "-" wine-version ".tar.xz"))
+         (sha256
+          (base32 "1krk68lsfvisi0zpx7890cz0z5bp7jl7rka5d70vwyj3c7109bfb")))))
     (inputs `(("autoconf" ,autoconf)    ; for autoreconf
               ("ffmpeg" ,ffmpeg)
               ("gtk+" ,gtk+)
