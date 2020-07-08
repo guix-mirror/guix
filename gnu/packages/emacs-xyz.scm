@@ -4950,6 +4950,30 @@ on context.")
 characters and asynchronous fetching of completion candidates.")
     (license license:gpl3+)))
 
+(define-public emacs-scala-mode
+  (package
+    (name "emacs-scala-mode")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hvesalai/emacs-scala-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1072lsin7dxadc0xyhy42wd0cw549axbbd4dy95wfmfcc1xbzjwv"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/hvesalai/emacs-scala-mode")
+    (synopsis "Emacs major mode for Scala")
+    (description
+     "This package provides basic Emacs support for the Scala language,
+including: local indenting of code, comments and multi-line strings, motion
+commands and highlighting.")
+    ;; There are no copyright headers in the source code.  The LICENSE file
+    ;; indicates GPL3.
+    (license license:gpl3)))
+
 (define-public emacs-scheme-complete
   (let ((commit "9b5cf224bf2a5994bc6d5b152ff487517f1a9bb5"))
     (package
