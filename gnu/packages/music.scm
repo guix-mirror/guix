@@ -1267,125 +1267,46 @@ your own lessons.")
     (license license:gpl3+)))
 
 (define-public powertabeditor
-  (package
-    (name "powertabeditor")
-    (version "2.0.0-alpha10")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/powertab/powertabeditor.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1z4fhdp71ck9synr12rg1p6365xnypd8ih40c5icj4si36khvksk"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove bundled sources for external libraries
-                  (delete-file-recursively "external")
-                  ;; Use only system libraries
-                  (substitute* "CMakeLists.txt"
-                    (("include\\( PTE_ThirdParty \\)")
-                     "\
-include(third_party/Qt)
-include(third_party/boost)
-add_library( Catch INTERFACE IMPORTED )
-add_library( rapidjson INTERFACE IMPORTED )"))
-                  #t))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:modules ((guix build cmake-build-system)
-                  (guix build utils)
-                  (ice-9 match))
-       #:configure-flags
-       ;; CMake appears to lose the RUNPATH for some reason, so it has to be
-       ;; explicitly set with CMAKE_INSTALL_RPATH.
-       (list "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
-             (string-append "-DCMAKE_INSTALL_RPATH="
-                            (string-join (map (match-lambda
-                                                ((name . directory)
-                                                 (string-append directory "/lib")))
-                                              %build-inputs) ";"))
-             "-DPTE_DATA_DIR=share/powertabeditor")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (invoke "bin/pte_tests"
-                     ;; FIXME: these tests fail
-                     "exclude:Actions/EditStaff"
-                     "exclude:Formats/PowerTabOldImport/MergeMultiBarRests"
-                     "exclude:Score/ViewFilter/FilterRule"
-                     "exclude:Score/ViewFilter/ViewFilter"
-                     "exclude:Formats/PowerTabOldImport/Directions")
-             #t))
-         ;; FIXME: This bug has been fixed upstream, but no release has been
-         ;; made yet.  See https://github.com/powertab/powertabeditor/issues/257
-         (add-after 'unpack 'fix-boost-bug
-           (lambda _
-             (substitute* "source/score/voiceutils.cpp"
-               (("boost::rational<int> duration\\(4, pos.getDurationType\\(\\)\\);")
-                "boost::rational<int> duration(4, static_cast<int>(pos.getDurationType()));"))
-             #t))
-         ;; Fix build with Qt 5.11.
-         (add-after 'unpack 'add-missing-headers
-           (lambda _
-             (substitute* (find-files "source/dialogs/" "\\.h$")
-               (("#include <QDialog>" m)
-                (string-append m "\n#include <QButtonGroup>")))
-             (substitute* "source/widgets/mixer/mixeritem.h"
-               (("#include <QWidget>" m)
-                (string-append m "\n#include <QStyle>")))
-             (substitute* "source/widgets/playback/playbackwidget.h"
-               (("#include <QWidget>" m)
-                (string-append m "\n#include <QButtonGroup>\n#include <QAction>")))
-             #t))
-         ;; FIXME: Finding RtMidi was fixed upstream so we should be able to
-         ;; remove this hack when a release is made.
-         ;; See https://github.com/powertab/powertabeditor/issues/255
-         (add-after 'unpack 'fix-rtmidi-header
-           (lambda _
-             (substitute* "source/audio/midioutputdevice.cpp"
-               (("#include <RtMidi.h>") "#include <rtmidi/RtMidi.h>"))
-             #t))
-         (add-before 'configure 'remove-third-party-libs
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Link with required static libraries, because we're not
-             ;; using the bundled version of withershins.
-             ;; Also add pthread for fixing a linker error.
-             (substitute* "source/build/CMakeLists.txt"
-               (("withershins" line)
-                (string-append line "\n"
-                               (assoc-ref inputs "binutils")
-                               "/lib/libbfd.a\n"
-                               (assoc-ref inputs "libiberty")
-                               "/lib/libiberty.a\n"
-                               "dl\n"
-                               "pthread\n"
-                               "z\n")))
-             #t)))))
-    (inputs
-     `(("boost" ,boost)
-       ("alsa-lib" ,alsa-lib)
-       ("qtbase" ,qtbase)
-       ("withershins" ,withershins)
-       ("libiberty" ,libiberty) ;for withershins
-       ("binutils" ,binutils) ;for -lbfd and -liberty (for withershins)
-       ("timidity" ,timidity++)
-       ("pugixml" ,pugixml)
-       ("rtmidi" ,rtmidi)
-       ("rapidjson" ,rapidjson)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("catch" ,catch-framework)
-       ("pkg-config" ,pkg-config)))
-    (home-page "http://powertabs.net")
-    (synopsis "Guitar tablature editor")
-    (description
-     "Power Tab Editor 2.0 is the successor to the famous original Power Tab
+  ;; This commit is after the switch from catch2 to doctest; I couldn't build
+  ;; powertabeditor with catch2.
+  (let ((commit "c5d39b25b75bf87ec693a3ac5018823b1d87f277")
+        (revision "1"))
+    (package
+      (name "powertabeditor")
+      (version (git-version "2.0.0-alpha12" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/powertab/powertabeditor.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "16qhqfvk14bp7s8cwr8ds8zfd80pq603d7aymr7967pnb49kic5z"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check (lambda _ (invoke "bin/pte_tests"))))))
+      (inputs
+       `(("alsa-lib" ,alsa-lib)
+         ("boost" ,boost)
+         ("minizip" ,minizip)
+         ("pugixml" ,pugixml)
+         ("qtbase" ,qtbase)
+         ("rapidjson" ,rapidjson)
+         ("rtmidi" ,rtmidi)
+         ("timidity" ,timidity++)
+         ("zlib" ,zlib)))
+      (native-inputs
+       `(("doctest" ,doctest)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/powertab/powertabedito")
+      (synopsis "Guitar tablature editor")
+      (description
+       "Power Tab Editor 2.0 is the successor to the famous original Power Tab
 Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public jalv-select
   (package
