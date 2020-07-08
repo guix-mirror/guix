@@ -912,6 +912,71 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
                    ;; demo and player directories are under the Expat license
                    license:expat))))
 
+(define-public ninjas2
+  (package
+    (name "ninjas2")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/clearly-broken-software/ninjas2")
+         (commit (string-append "v" version))
+         ;; Bundles a specific commit of the DISTRHO plugin framework.
+         (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1kwp6pmnfar2ip9693gprfbcfscklgri1k1ycimxzlqr61nkd2k9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure target
+         (replace 'install              ;no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lv2 (string-append out "/lib/lv2")))
+               ;; Install LV2.
+               (for-each
+                (lambda (file)
+                  (copy-recursively file
+                                    (string-append lv2 "/" (basename file))))
+                (find-files "bin" "\\.lv2$" #:directories? #t))
+               ;; Install executables.
+               (for-each
+                 (lambda (file)
+                   (install-file file bin))
+                 (find-files "bin"
+                             (lambda (name stat)
+                               (and
+                                 (equal? (dirname name) "bin")
+                                 (not (string-suffix? ".so" name))
+                                 (not (string-suffix? ".lv2" name))))))
+               #t))))))
+    (inputs
+     `(("fftwf" ,fftwf)
+       ("jack" ,jack-1)                 ; for the standalone JACK application
+       ("libsamplerate" ,libsamplerate)
+       ("mesa" ,mesa)
+       ("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("ladspa" ,ladspa)
+       ("lv2" ,lv2)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Sample slicer audio plugin")
+    (description
+     "Ninjas 2 is a rewrite of the Ninjas sample slicer audio plugin.
+Its goal is to be an easy to use sample slicer with quick slicing of samples
+and auto-mapping slices to MIDI note numbers.")
+    (home-page "https://github.com/clearly-broken-software/ninjas2")
+    (license license:gpl3+)))
+
 (define-public lilypond
   (package
     (name "lilypond")
