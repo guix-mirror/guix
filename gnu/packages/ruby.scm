@@ -6617,6 +6617,32 @@ software development workflow.")
     (native-inputs
      '())))
 
+(define-public ruby-coveralls
+  (package
+    (name "ruby-coveralls")
+    (version "0.8.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "coveralls" version))
+       (sha256
+        (base32
+         "1mv4fn5lfxhy7bc2f1lpnc5yp9mvv97az77j4r7jgrxcqwn8fqxc"))))
+    (build-system ruby-build-system)
+    ;; The test suite depends on ruby-vcr, which cannot be included in Guix
+    ;; because of its nonfree, Hippocratic derived license.
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-json" ,ruby-json)
+       ("ruby-term-ansicolor" ,ruby-term-ansicolor)
+       ("ruby-thor" ,ruby-thor)
+       ("ruby-tins" ,ruby-tins)))
+    (synopsis "Ruby implementation of the Coveralls API")
+    (description "This package provides a Ruby implementation of the Coveralls
+API.")
+    (home-page "https://coveralls.io")
+    (license license:expat)))
+
 (define-public ruby-cucumber-core
   (package
     (name "ruby-cucumber-core")
