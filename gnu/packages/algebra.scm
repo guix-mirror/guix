@@ -351,7 +351,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.5.0-87")
+    (version "1.6.0-7")
     (source
      (origin
        (method url-fetch)
@@ -363,7 +363,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "1d0h1yb7qvh9x7wwv9yrzmcp712f49w1iljkxp4y6g9pzsmg1mmv"))))
+        (base32 "1pvgp137zcl0rbhdn1j41xxfml7fp771a7x4ph8qrhhlx0hxzn3p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -403,7 +403,7 @@ precision.")
                (delete-file (string-append out "/bin/xcasnew"))
                #t))))))
     (inputs
-     ;;; TODO: Add libnauty.
+;;; TODO: Add libnauty.
      `(("fltk" ,fltk)
        ("glpk" ,glpk)
        ("gmp" ,gmp)
