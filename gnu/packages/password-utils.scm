@@ -121,7 +121,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.5.4")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -129,11 +129,14 @@ human.")
                            "/releases/download/" version "/keepassxc-"
                            version "-src.tar.xz"))
        (sha256
-        (base32 "0jndssyvpl8bc5i2q3d6kq1ppynchxx9nvp1qhd2pc0qqc0hhpm5"))))
+        (base32 "0fpx6pq336g1xwjl5yzvsky6vqvaa38zb8pwkgswph9slybkvlnh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_ALL=YES"
                            "-DWITH_XC_UPDATECHECK=NO")))
+    (native-inputs
+     `(("asciidoctor" ,ruby-asciidoctor)
+       ("qttools" ,qttools)))
     (inputs
      `(("argon2" ,argon2)
        ("libgcrypt" ,libgcrypt)
@@ -149,8 +152,6 @@ human.")
        ("readline" ,readline)
        ("yubikey-personalization" ,yubikey-personalization) ; XC_YUBIKEY
        ("zlib" ,zlib)))
-    (native-inputs
-     `(("qttools" ,qttools)))
     (home-page "https://www.keepassxc.org")
     (synopsis "Password manager")
     (description "KeePassXC is a password manager or safe which helps you to
