@@ -23393,6 +23393,32 @@ for the serde framework.")
 functionality and without weak references.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serial-test-derive-0.4
+  (package
+    (name "rust-serial-test-derive")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serial_test_derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05b5xr36zi8damfg3bmbh1kwdxc3k1y2r8b8pmi7q8jb0bc3i0yh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page
+     "https://github.com/palfrey/serial_test_derive/")
+    (synopsis "Serialising Rust tests")
+    (description "Serialising Rust tests")
+    (license license:expat)))
+
 (define-public rust-servo-fontconfig-0.4
   (package
     (name "rust-servo-fontconfig")
