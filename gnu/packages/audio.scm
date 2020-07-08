@@ -3256,7 +3256,7 @@ provide high-quality sample rate conversion.")
 (define-public zita-alsa-pcmi
   (package
     (name "zita-alsa-pcmi")
-    (version "0.2.0")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3265,19 +3265,21 @@ provide high-quality sample rate conversion.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1rgv332g82rrrlm4vdam6p2pyrisxbi7b3izfaa0pcjglafsy7j9"))))
+                "12d7vdg74yh21w69qi0wg57iz4876j94qbiq09bvscih6xz9y78s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "SUFFIX="))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-makefile-and-enter-directory
            (lambda _
-             (substitute* "libs/Makefile"
+             (substitute* "source/Makefile"
                (("ldconfig") "true")
                (("^LIBDIR =.*") "LIBDIR = lib\n"))
-             (chdir "libs")
+             (chdir "source")
              #t))
          (add-after 'install 'install-symlink
            (lambda _
