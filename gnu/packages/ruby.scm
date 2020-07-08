@@ -6648,7 +6648,7 @@ master/html-formatter/ruby")
 (define-public ruby-cucumber
   (package
     (name "ruby-cucumber")
-    (version "3.1.2")
+    (version "4.1.0")
     (source
      (origin
        (method git-fetch)
@@ -6658,41 +6658,40 @@ master/html-formatter/ruby")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0764wp2cjg60qa3l69q1dxda5g06a01n5w92szqbf89d2hgl47n3"))))
+         "0g9rqfslbzkkrq2kvl14fgknrhfbji3bjjpjxff5nc9wzd3hd549"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"
        #:phases
        (modify-phases %standard-phases
-         ;; Don't run or require rubocop, the code linting tool, as this is a
-         ;; bit unnecessary.
-         (add-after 'unpack 'dont-run-rubocop
+         (add-after 'extract-gemspec 'strip-version-requirements
            (lambda _
-             (substitute* "Rakefile"
-               ((".*rubocop/rake\\_task.*") "")
-               ((".*RuboCop.*") ""))
+             (substitute* "cucumber.gemspec"
+               (("(.*add_.*dependency '[_A-Za-z0-9-]+').*" _ stripped)
+                (string-append stripped "\n")))
              #t)))))
     (propagated-inputs
      `(("ruby-builder" ,ruby-builder)
        ("ruby-cucumber-core" ,ruby-cucumber-core)
+       ("ruby-cucumber-create-meta" ,ruby-cucumber-create-meta)
+       ("ruby-cucumber-html-formatter" ,ruby-cucumber-html-formatter)
+       ("ruby-cucumber-messages" ,ruby-cucumber-messages)
        ("ruby-cucumber-wire" ,ruby-cucumber-wire)
-       ("ruby-cucumber-expressions" ,ruby-cucumber-expressions)
        ("ruby-diff-lcs" ,ruby-diff-lcs)
        ("ruby-gherkin" ,ruby-gherkin)
        ("ruby-multi-json" ,ruby-multi-json)
        ("ruby-multi-test" ,ruby-multi-test)))
     (native-inputs
-     `(("bundler" ,bundler)
-       ;; Use a untested version of aruba, to avoid a circular dependency, as
+     `(;; Use a untested version of aruba, to avoid a circular dependency, as
        ;; ruby-aruba depends on ruby-cucumber.
        ("ruby-aruba", ruby-aruba-without-tests)
        ("ruby-rspec" ,ruby-rspec)
        ("ruby-pry" ,ruby-pry)
-       ("ruby-nokogiri" ,ruby-nokogiri)))
+       ("ruby-nokogiri" ,ruby-nokogiri)
+       ("ruby-rubocop" ,ruby-rubocop)))
     (synopsis "Describe automated tests in plain language")
-    (description
-     "Cucumber is a tool for running automated tests written in plain
-language.  It's designed to support a Behaviour Driven Development (BDD)
+    (description "Cucumber is a tool for running automated tests written in
+plain language.  It's designed to support a Behaviour Driven Development (BDD)
 software development workflow.")
     (home-page "https://cucumber.io/")
     (license license:expat)))
