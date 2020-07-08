@@ -1270,6 +1270,31 @@ B.Choppr is the successor of B.Slizr.")
     (home-page "https://github.com/sjaehn/BShapr")
     (license license:gpl3+)))
 
+(define-public bjumblr
+  (package
+    (inherit bsequencer)
+    (name "bjumblr")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sjaehn/BJumblr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14z8113zkwykbhm1a8h2xs972dgifvlfij92b08jckyc7cbz84ys"))))
+    (inputs
+     `(("cairo", cairo)
+       ("libsndfile", libsndfile)
+       ("lv2", lv2)))
+    (synopsis "Pattern-controlled audio stream/sample re-sequencer LV2 plugin")
+    (description "B.Jumblr is a pattern-controlled audio stream / sample
+re-sequencer LV2 plugin.")
+    (home-page "https://github.com/sjaehn/BJumblr")
+    (license license:gpl3+)))
+
 (define-public solfege
   (package
     (name "solfege")
