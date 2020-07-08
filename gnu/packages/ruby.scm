@@ -6793,35 +6793,31 @@ Expressions are extensible with parameter types.")
 (define-public ruby-cucumber-wire
   (package
     (name "ruby-cucumber-wire")
-    ;; Package version 0.0.1 initially, as this is what's needed by Cucumber
-    ;; 3, and Cucumber 4 hasn't been released yet.
-    (version "0.0.1")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "cucumber-wire" version))
        (sha256
         (base32
-         "09ymvqb0sbw2if1nxg8rcj33sf0va88ancq5nmp8g01dfwzwma2f"))))
+         "0z1n13lqv70zb2lcrvs2263lm0gsb3gz8gbv890kxzwp8cvd433k"))))
     (build-system ruby-build-system)
     (arguments
-     '(;; TODO: Currently, the tests can't be run as cucumber is required,
-       ;; which would lead to a circular dependency.
-       #:tests? #f
-       #:test-target "default"
+     '(#:tests? #f                      ;tests use cucumber, causing a cycle
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-CUCUMBER_USE_RELEASED_GEMS
+         (add-after 'extract-gemspec 'relax-version-requirements
            (lambda _
-             (setenv "CUCUMBER_USE_RELEASED_GEMS" "true")
+             (substitute* ".gemspec"
+               ((" 10\\.1") " 10.2"))
              #t)))))
-    (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-cucumber-core" ,ruby-cucumber-core)
+       ("ruby-cucumber-expressions" ,ruby-cucumber-expressions)
+       ("ruby-cucumber-messages" ,ruby-cucumber-messages)))
     (synopsis "Cucumber wire protocol plugin")
-    (description
-     "Cucumber's wire protocol allows step definitions to be implemented and
-invoked on any platform.")
+    (description "Cucumber's wire protocol allows step definitions to be
+implemented and invoked on any platform.")
     (home-page "https://github.com/cucumber/cucumber-ruby-wire")
     (license license:expat)))
 
