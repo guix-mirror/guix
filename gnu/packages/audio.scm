@@ -3203,7 +3203,7 @@ engine.")
 (define-public zita-resampler
   (package
     (name "zita-resampler")
-    (version "1.3.0")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3213,26 +3213,28 @@ engine.")
               (snippet
                ;; Don't optimize for a specific processor architecture.
                '(begin
-                  (substitute* '("apps/Makefile" "libs/Makefile")
+                  (substitute* '("apps/Makefile" "source/Makefile")
                     (("^CXXFLAGS \\+= -march=native") ""))
                   #t))
               (modules '((guix build utils)))
               (sha256
                (base32
-                "0r9ary5sc3y8vba5pad581ha7mgsrlyai83w7w4x2fmhfy64q0wq"))))
+                "1my5k2dh2dkvjp6xjnf9qy6i7s28z13kw1n9pwa4a2cpwbzawfr3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "SUFFIX="))
        #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'patch-makefile-and-enter-directory
           (lambda _
-            (substitute* "libs/Makefile"
+            (substitute* "source/Makefile"
               (("ldconfig") "true")
               (("^LIBDIR =.*") "LIBDIR = lib\n"))
-            (chdir "libs")
+            (chdir "source")
             #t))
          (add-after
           'install 'install-symlink
