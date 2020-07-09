@@ -3908,7 +3908,7 @@ intrinsics.")
 (define-public rust-cpp-demangle-0.2
   (package
     (name "rust-cpp-demangle")
-    (version "0.2.14")
+    (version "0.2.16")
     (source
      (origin
        (method url-fetch)
@@ -3917,12 +3917,12 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1mm064x84868q06r4m4b7byf999nrkbhx7iyc4nchyssaxpsy5a1"))))
+         "0bamx2c78xzjhhvpg6p9bjarl6qm6j8npm6756kiqdh784w29j8k"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-afl" ,rust-afl-0.4)
+       (("rust-afl" ,rust-afl-0.8)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-glob" ,rust-glob-0.3))
        #:cargo-development-inputs
