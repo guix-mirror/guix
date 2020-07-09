@@ -7581,44 +7581,40 @@ display width of strings in Ruby.")
 (define-public ruby_version
   (package
     (name "ruby_version")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "ruby_version" version))
        (sha256
         (base32
-         "0854i1bjy56176anr05l5m0vc81nl53c7fyfg7sljj62m1d64dgj"))))
+         "0lvc7bd5ps3w2vq2wb02i0pi3vfcx2rnckx2ix4rjym1qf52kb2j"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'fix-dependencies
            (lambda _
              ;; Remove the Gemfile.lock, as we want to use Guix packages at
              ;; whatever versions.
              (delete-file "Gemfile.lock")
-             ;; Remove the incldued gem file as it's unnecessary.
-             (delete-file "pkg/ruby_version-1.0.0.gem")
+             ;; Remove the included gem files as they unnecessary.
+             (delete-file-recursively "pkg/")
+             ;; Accept any version of rake, rdoc and rspec
              (substitute* "ruby_version.gemspec"
-               ;; Don't require rdoc and rubygems-tasks as they're unnecessary
-               ((".*rdoc.*") "\n")
-               ((".*rubygems-tasks.*") "\n")
-               ;; Accept any version of rake and rspec
                (("%q<rake.*") "%q<rake>)\n")
+               (("%q<rdoc.*") "%q<rdoc>)\n")
                (("%q<rspec.*") "%q<rspec>)\n"))
-             ;; Remove the use of rubygems-tasks from the Rakefile, as it's
-             ;; unnecessary.
+             ;; Do not use bundler.
              (substitute* "Rakefile"
-               (("^require 'rubygems/tasks'") "")
-               (("Gem::Tasks.new") ""))
+               (("Bundler\\.setup.*") "nil\n"))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     `(("ruby-rdoc" ,ruby-rdoc)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rubygems-tasks", ruby-rubygems-tasks)))
     (synopsis "Ruby library to help check the Ruby version")
-    (description
-     "@code{ruby_version} provides a @code{RubyVersion} module to simplify
+    (description "@code{ruby_version} provides a @code{RubyVersion} module to simplify
 checking for the right Ruby version in software.")
     (home-page "https://github.com/janlelis/ruby_version")
     (license license:expat)))
