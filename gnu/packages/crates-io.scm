@@ -20268,7 +20268,8 @@ It is automatically published using the compiler repository at
          "0fhppy18n1i2iykdihfs05d6s1ivwz882ipc9cpnjcvqcsbhj4yj"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
