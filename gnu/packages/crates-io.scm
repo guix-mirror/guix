@@ -241,6 +241,7 @@ the Rust programming language.")
 
 (define-public rust-afl-0.4
   (package
+    (inherit rust-afl-0.5)
     (name "rust-afl")
     (version "0.4.3")
     (source
@@ -251,21 +252,7 @@ the Rust programming language.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0g2chc18ji7qxi0d03n2ai140qdcww958v5si6rcjnnhmri1vyfb"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-cc" ,rust-cc-1.0)
-        ("rust-clap" ,rust-clap-2)
-        ("rust-rustc-version" ,rust-rustc-version-0.2)
-        ("rust-xdg" ,rust-xdg-2.2))))
-    (home-page "https://github.com/rust-fuzz/afl.rs")
-    (synopsis
-     "Fuzzing Rust code with american-fuzzy-lop")
-    (description
-     "Fuzz Rust code with american-fuzzy-lop.")
-    (license license:asl2.0)))
+         "0g2chc18ji7qxi0d03n2ai140qdcww958v5si6rcjnnhmri1vyfb"))))))
 
 (define-public rust-aho-corasick-0.7
   (package
