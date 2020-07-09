@@ -3421,15 +3421,21 @@ CMAKE environmental variable is set.")
           "0nbc1czs512h1k696y7glv1kjrb2b914zpxraic6q5fgv80wizzl"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f
        #:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1))
        #:cargo-development-inputs
        (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ;("rust-rspec" ,rust-rspec-1.0)
-        )))
+        ("rust-rspec" ,rust-rspec-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-requirements
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("1.0.0-beta.3") ,(package-version rust-rspec-1)))
+             #t)))))
     (home-page "https://github.com/mackwic/colored")
     (synopsis "Add colors in your terminal")
     (description
@@ -3446,8 +3452,7 @@ CMAKE environmental variable is set.")
        (uri (crate-uri "colored" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0fildacm47g86acmx44yvxx6cka8fdym5qkgfm8x8gh2hsrghc7r"))))
-    (build-system cargo-build-system)))
+        (base32 "0fildacm47g86acmx44yvxx6cka8fdym5qkgfm8x8gh2hsrghc7r"))))))
 
 ;; This package requires features which are unavailable
 ;; on the stable releases of Rust.
