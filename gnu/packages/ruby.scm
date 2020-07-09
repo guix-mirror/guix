@@ -9961,15 +9961,25 @@ entities.")
 (define-public ruby-sinatra
   (package
     (name "ruby-sinatra")
-    (version "2.0.5")
+    (version "2.0.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "sinatra" version))
        (sha256
         (base32
-         "1gasgn5f15myv08k10i16p326pchxjsy37pgqfw0xm66kcc5d7ry"))))
+         "0riy3hwjab1mr73jcqx3brmbmwspnw3d193j06a5f0fy1w35z15q"))))
     (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; See: https://github.com/sinatra/sinatra/issues/1578.
+         (add-after 'extract-gemspec 'fix-slow-doc-generation
+           (lambda _
+             (substitute* "sinatra.gemspec"
+               (("\"README.rdoc\"\\.freeze," all)
+                (string-append all " \"--exclude=.*\\.md\".freeze,")))
+             #t)))))
     (propagated-inputs
      `(("ruby-mustermann" ,ruby-mustermann)
        ("ruby-rack" ,ruby-rack)
