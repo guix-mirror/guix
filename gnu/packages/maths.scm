@@ -5715,6 +5715,6 @@ cli.")
 multi-purpose GUI desktop calculator.  It provides basic and advanced
 functionality.  Features include customizable functions, unit calculations,
 and conversions, physical constants, symbolic calculations (including
-integrals and equations), arbitrary precision, uncertainity propagation,
+integrals and equations), arbitrary precision, uncertainty propagation,
 interval arithmetic, plotting.")
     (license license:gpl2+)))
