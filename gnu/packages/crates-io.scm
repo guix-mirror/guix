@@ -17862,7 +17862,7 @@ macro use case.")
 (define-public rust-procedural-masquerade-0.1
   (package
     (name "rust-procedural-masquerade")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
       (origin
         (method url-fetch)
@@ -17871,7 +17871,7 @@ macro use case.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1l098px1hwdzqnxl376a9hfxb9q8kmj2n0y0s8k7plrz3jjp85cs"))))
+          "17dnfdk0qadh2h38bkwcy14cq8a1ild3j3hqmh1yjbq9ykgq64wg"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/servo/rust-cssparser")
     (synopsis "Macro rules for proc-macro-derive")
