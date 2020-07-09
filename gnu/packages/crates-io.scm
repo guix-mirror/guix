@@ -26869,7 +26869,7 @@ untrusted inputs in Rust.")
 (define-public rust-urlocator-0.1
  (package
    (name "rust-urlocator")
-   (version "0.1.2")
+   (version "0.1.3")
    (source
     (origin
       (method url-fetch)
@@ -26878,7 +26878,7 @@ untrusted inputs in Rust.")
        (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1xzhwmqrqyk8p3s5npqpidrn0gjapqx5fshrx633fk56j7cm8qm1"))))
+        "0r5ig00np3svjpvb1gha3ni798cwj2w7rnlwrc8jrrw7bvlb2yri"))))
    (build-system cargo-build-system)
    (home-page "https://github.com/chrisduerr/urlocator.git")
    (synopsis "Locate URLs in character streams")
