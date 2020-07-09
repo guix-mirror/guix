@@ -19991,7 +19991,7 @@ Rust Language Server.")
 (define-public rust-ron-0.4
   (package
     (name "rust-ron")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
@@ -20000,7 +20000,7 @@ Rust Language Server.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1mrqdgw3w0yypg24jyq9mphp4zr9lr0ks7yam82m4n34x6njijyr"))))
+         "13ypx80ac1minrmn9w9sgnbxlknwiv7qhx5n50azh0s484j2mx8p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -20009,7 +20009,7 @@ Rust Language Server.")
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-serde-bytes" ,rust-serde-bytes-0.11)
+       (;("rust-serde-bytes" ,rust-serde-bytes-0.10)
         ("rust-serde-json" ,rust-serde-json-1.0))))
     (home-page "https://github.com/ron-rs/ron")
     (synopsis "Rusty Object Notation")
