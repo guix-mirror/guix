@@ -1980,14 +1980,13 @@ reading from and writing to ZIP archives. ")
 (define-public zutils
   (package
     (name "zutils")
-    ;; Check and remove the lint-hidden-cve property when updating.
-    (version "1.8")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/zutils/zutils-" version ".tar.lz"))
        (sha256
-        (base32 "0dx35mv78fgqgz6sszs05ng8ipz2xy09ry9vpmka2rmy08b7x907"))))
+        (base32 "0y2wm8wqr1wi1b1fv45dn50njv4q81p6ifx0279ji1bq56qkrn2r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1995,8 +1994,7 @@ reading from and writing to ZIP archives. ")
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'disable-failing-tests
-           ;; XXX ‘zgrep -L’ inverts the exit status too, which the test suite
-           ;; doesn't expect.  Bug report probably stuck in moderation.
+           ;; XXX https://lists.nongnu.org/archive/html/zutils-bug/2020-07/msg00005.html
            (lambda _
              (substitute* "testsuite/check.sh"
                (("\"\\$\\{ZGREP\\}\" -N -L \"GNU\"") "true")
@@ -2011,7 +2009,6 @@ reading from and writing to ZIP archives. ")
     (native-inputs
      ;; Needed to extract the source tarball and run the test suite.
      `(("lzip" ,lzip)))
-    (properties `((lint-hidden-cve . ("CVE-2018-1000637"))))
     (home-page "https://www.nongnu.org/zutils/zutils.html")
     (synopsis "Utilities that transparently operate on compressed files")
     (description
