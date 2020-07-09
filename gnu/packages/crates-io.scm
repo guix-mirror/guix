@@ -17769,7 +17769,7 @@ formatted tables in terminal.")
 (define-public rust-proc-macro-nested-0.1
   (package
     (name "rust-proc-macro-nested")
-    (version "0.1.3")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -17778,9 +17778,8 @@ formatted tables in terminal.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0bmlksm8vl44wkwihmwr7jsjznhbg0n7aibcw1cs2jgjcp86x6in"))))
+         "0nnwm9bvp1fmr8nqjp8ynrkj97yzpsdh3062li8b0f4hzgd818gb"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
     (home-page "https://github.com/dtolnay/proc-macro-hack")
     (synopsis
      "Support for nested proc-macro-hack invocations")
