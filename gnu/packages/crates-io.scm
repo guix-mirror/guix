@@ -28487,7 +28487,7 @@ UTF-32 types are provided, including support for malformed encoding.")
 (define-public rust-winapi-0.3
   (package
     (name "rust-winapi")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
       (origin
         (method url-fetch)
@@ -28495,7 +28495,7 @@ UTF-32 types are provided, including support for malformed encoding.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1ii9j9lzrhwri0902652awifzx9fpayimbp6hfhhc296xcg0k4w0"))))
+          "06gl025x418lchw1wxj64ycr7gha83m44cjr5sarhynd9xkrm0sw"))))
     (build-system cargo-build-system)
     ;; This package depends unconditionally on these two crates.
     (arguments
