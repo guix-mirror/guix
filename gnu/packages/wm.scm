@@ -1743,7 +1743,7 @@ rendering.")
          (add-after 'unpack 'chdir
            (lambda _ (chdir "util/pass") #t)))))
     (home-page "https://github.com/stumpwm/stumpwm-contrib")
-    (synopsis "Integrate @code{pass} wih StumpWM")
+    (synopsis "Integrate @code{pass} with StumpWM")
     (description "This package provides an interface which integrates
 password-store into StumpWM.")
     (license (list license:gpl2+ license:gpl3+ license:bsd-2))))
