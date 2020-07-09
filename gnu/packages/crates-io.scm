@@ -12744,6 +12744,29 @@ platform-independently.")
         (base32
          "08ayl9aqjnmf7ly1ipy6dk3wjvyfn4w51l40jzh1fh984ykldbzi"))))))
 
+(define-public rust-match-cfg-0.1
+  (package
+    (name "rust-match-cfg")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "match-cfg" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1r5j3zqc3qr8ybcx95bk8q57mkizmgmffj5lmicd4i8d9riyigpz"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/gnzlbg/match_cfg")
+    (synopsis
+     "Define an item depending on a large number of `#[cfg]` parameters")
+    (description
+     "This package provides a convenience macro to ergonomically define an item
+depending on a large number of @code{#[cfg]} parameters.  Structured like match
+statement, the first matching branch is the item that gets emitted.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-matches-0.1
   (package
     (name "rust-matches")
