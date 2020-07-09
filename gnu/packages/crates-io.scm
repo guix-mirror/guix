@@ -2749,7 +2749,7 @@ used in argon2rs' bench suite.")
           "065m2fphrv5csy8hvv37msi3a739mfkgw7pcg71dfw9jwnr6z87r"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f
        #:cargo-inputs
        (("rust-jobserver" ,rust-jobserver-0.1))
        #:cargo-development-inputs
