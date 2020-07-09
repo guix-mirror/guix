@@ -22838,10 +22838,10 @@ used for the creation of a new buffer of mode X.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-wordnut
-  (let ((commit "6c64bd1220258d45f1b872cb1edb3071d16b2bc5"))
+  (let ((commit "9681a9535a839cd5d042c302945ae595852fe7bf"))
     (package
       (name "emacs-helm-wordnut")
-      (version "0.1")
+      (version (git-version "0.1" "1" commit))
       (home-page "https://github.com/emacs-helm/helm-wordnut")
       (source
        (origin
@@ -22852,7 +22852,7 @@ used for the creation of a new buffer of mode X.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1a5gfzvc272lxnpzz14dsya387hgy7rrxxmkhmpxyng4rdg6gc4f"))))
+           "0msj7nbsb363pxamxi7n2z08cp5jizkpjbwia8f5a161wjglrihs"))))
       (build-system emacs-build-system)
       (inputs
        `(("wordnet" ,wordnet)))
