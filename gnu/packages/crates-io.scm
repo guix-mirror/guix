@@ -17980,7 +17980,7 @@ macro use case.")
 (define-public rust-psm-0.1
   (package
     (name "rust-psm")
-    (version "0.1.6")
+    (version "0.1.10")
     (source
       (origin
         (method url-fetch)
@@ -17989,7 +17989,7 @@ macro use case.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1q1hdbnp2j3zz1vhzp1xhds6ynan3mg5bhjlhfy5m1sg8n5wckxi"))))
+          "1kr9sal8g9zil4ch8ra0ry96d5cl15xslk1p0wnqk1504ib3hb89"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
