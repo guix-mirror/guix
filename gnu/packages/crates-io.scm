@@ -19446,7 +19446,7 @@ functionality.")
 (define-public rust-ref-cast-1.0
   (package
     (name "rust-ref-cast")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -19455,7 +19455,7 @@ functionality.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vy378bdzb4kcz13kh96c5n5qw1jinhfrya5j4bf9rxz65x1jzq7"))))
+         "08r6qz7228k55nlyl5v7ykdzxrasnawgzmb1jrbfbnkx2s3ifp3l"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
