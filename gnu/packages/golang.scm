@@ -1536,7 +1536,7 @@ compatible with the standard library logger.")
     (home-page "https://github.com/rifflock/lfshook")
     (synopsis "Local File System hook for Logrus logger")
     (description "This package provides a hook for Logrus to write directly to
-a file on the filesystem.  The log levels are dynamic at instantiation of the
+a file on the file system.  The log levels are dynamic at instantiation of the
 hook, so it is capable of logging at some or all levels.")
     (license license:expat)))
 
