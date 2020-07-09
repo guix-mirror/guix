@@ -28567,7 +28567,7 @@ i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
 (define-public rust-winapi-util-0.1
   (package
     (name "rust-winapi-util")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
       (origin
         (method url-fetch)
@@ -28575,7 +28575,7 @@ i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0vj3984cxwnf1ys3fdz6bpl7p0kdsgykpzbhmcmwi759cd8mqlgs"))))
+          "0y71bp7f6d536czj40dhqk0d55wfbbwqfp2ymqf1an5ibgl6rv3h"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
