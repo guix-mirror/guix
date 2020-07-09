@@ -202,10 +202,10 @@ is corrupted you'll lose the affected file(s) but not the whole back-up.")
      `(("fuse" ,fuse)
        ("glib" ,glib)
        ("libgphoto2" ,libgphoto2)))
-    (synopsis "Virtual filesystem for libgphoto2 using FUSE")
-    (description "GPhotoFS is a FUSE filesystem module to mount your camera as
-a filesystem on Linux.  This allow using your camera with any tool able to read
-from a mounted filesystem.")
+    (synopsis "Virtual file system for libgphoto2 using FUSE")
+    (description "GPhotoFS is a FUSE file system module to mount your camera as
+a file system on Linux.  This allow using your camera with any tool able to read
+from a mounted file system.")
     (home-page "http://www.gphoto.org/proj/gphotofs/")
     (license license:gpl2+)))
 
