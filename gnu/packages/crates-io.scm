@@ -26776,7 +26776,7 @@ whitespace from a string.")
 (define-public rust-untrusted-0.7
   (package
     (name "rust-untrusted")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
       (origin
         (method url-fetch)
@@ -26784,7 +26784,7 @@ whitespace from a string.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1kmfykcwif6ashkwg54gcnhxj03kpba2i9vc7z5rpr0xlgvrwdk0"))))
+          "0jkbqaj9d3v5a91pp3wp9mffvng1nhycx6sh4qkdd9qyr62ccmm1"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/briansmith/untrusted")
     (synopsis "Zero-allocation parsing of untrusted inputs in Rust")
