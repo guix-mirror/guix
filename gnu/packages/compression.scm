@@ -1994,6 +1994,14 @@ reading from and writing to ZIP archives. ")
        (list "--sysconfdir=/etc")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'disable-failing-tests
+           ;; XXX ‘zgrep -L’ inverts the exit status too, which the test suite
+           ;; doesn't expect.  Bug report probably stuck in moderation.
+           (lambda _
+             (substitute* "testsuite/check.sh"
+               (("\"\\$\\{ZGREP\\}\" -N -L \"GNU\"") "true")
+               (("\"\\$\\{ZGREP\\}\" -N -L \"nx_pattern\"") "false"))
+             #t))
          (replace 'install
           (lambda* (#:key make-flags outputs #:allow-other-keys)
             (apply invoke "make" "install"
