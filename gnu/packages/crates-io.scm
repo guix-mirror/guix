@@ -27161,7 +27161,7 @@ Unix users and groups.")
 (define-public rust-vec-map-0.8
   (package
     (name "rust-vec-map")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
       (origin
         (method url-fetch)
@@ -27169,7 +27169,7 @@ Unix users and groups.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06n8hw4hlbcz328a3gbpvmy0ma46vg1lc0r5wf55900szf3qdiq5"))))
+          "1481w9g1dw9rxp3l6snkdqihzyrd2f8vispzqmwjwsdyhw8xzggi"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
