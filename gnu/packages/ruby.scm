@@ -6994,35 +6994,23 @@ A modified copy of yajl is used, and included in the package.")
        (method git-fetch)
        ;; Tests do not pass if we build from the distributed gem.
        (uri (git-reference
-              (url "https://github.com/lsegal/yard")
-              (commit (string-append "v" version))))
+             (url "https://github.com/lsegal/yard")
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
          "1v48zz8hzazrg79jksj9siys21d2axvzijvkxw2j42zh86syi1wi"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             ;; Delete the Gemfile to avoid errors relating to it
-             (delete-file "Gemfile")
-             ;; $HOME needs to be set to somewhere writeable for tests to run
-             (setenv "HOME" "/tmp")
-             ;; Run tests without using 'rake' to avoid dependencies.
-             (invoke "rspec"))))))
-    (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-rack" ,ruby-rack)
-       ("ruby-redcloth" ,ruby-redcloth)
-       ("ruby-asciidoc" ,ruby-asciidoctor)))
+     ;; Note: Tests are willfully disabled to alleviate dependency cycle
+     ;; problems.
+     `(#:tests? #f))
     (synopsis "Documentation generation tool for Ruby")
-    (description
-     "YARD is a documentation generation tool for the Ruby programming
-language.  It enables the user to generate consistent, usable documentation
-that can be exported to a number of formats very easily, and also supports
-extending for custom Ruby constructs such as custom class level definitions.")
+    (description "YARD is a documentation generation tool for the Ruby
+programming language.  It enables the user to generate consistent, usable
+documentation that can be exported to a number of formats very easily, and
+also supports extending for custom Ruby constructs such as custom class level
+definitions.")
     (home-page "https://yardoc.org")
     (license license:expat)))
 
