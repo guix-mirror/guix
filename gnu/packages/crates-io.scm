@@ -3007,8 +3007,7 @@ for computer graphics.")
          "00pr17g6q6i752acrkycg0hkq3lm0p634anm41g3m6lqg8q83s75"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))))
     (home-page "https://github.com/sagiegurari/ci_info")
