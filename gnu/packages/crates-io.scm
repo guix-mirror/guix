@@ -28461,7 +28461,7 @@ Locate installed executable in cross platforms.")
 (define-public rust-widestring-0.4
   (package
     (name "rust-widestring")
-    (version "0.4.0")
+    (version "0.4.2")
     (source
       (origin
         (method url-fetch)
@@ -28469,7 +28469,7 @@ Locate installed executable in cross platforms.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1dhx6dndjsz1y7c9w06922412kdxyrrkqblvggm76mh8z17hxz7g"))))
+          "13565qy4jhpg4x0xw8mwxzzsh0p8c93p5208lh6kpwp0q01y6qx7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
