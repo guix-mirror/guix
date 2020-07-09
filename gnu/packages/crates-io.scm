@@ -18892,7 +18892,7 @@ generator based on timing jitter.")
 (define-public rust-rand-os-0.2
   (package
     (name "rust-rand-os")
-    (version "0.2.0")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
@@ -18901,7 +18901,7 @@ generator based on timing jitter.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "06is69f8rfzs620g5b54k6cgy5yaycrsyqg55flyfrsf8g88733f"))))
+         "12m59l42aa07khcjnhq8lkw2332brj4d7gqr3jxgqv39vczax257"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
