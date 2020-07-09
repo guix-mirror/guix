@@ -3047,7 +3047,6 @@ library.")
 
 (define-public librsvg-next
   (package
-    (inherit librsvg)
     (name "librsvg")
     (version "2.48.8")
     (source (origin
@@ -3063,11 +3062,12 @@ library.")
                '(begin (delete-file-recursively "vendor")
                        #t))))
     (build-system cargo-build-system)
+    (outputs '("out" "doc"))
     (arguments
-     `(#:modules ((guix build cargo-build-system)
-                  (guix build utils)
-                  ((guix build gnu-build-system) #:prefix gnu:))
-       #:vendor-dir "vendor"
+     `(#:modules
+       ((guix build cargo-build-system)
+        (guix build utils)
+        ((guix build gnu-build-system) #:prefix gnu:))
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-cairo-rs" ,rust-cairo-rs-0.8)
@@ -3109,14 +3109,21 @@ library.")
         ("rust-criterion" ,rust-criterion-0.3))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc"
+               (substitute* "rsvg-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.3/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
          (add-after 'unpack 'prepare-for-build
            (lambda _
              ;; In lieu of #:make-flags
              (setenv "CC" ,(cc-for-target))
              ;; Something about the build environment resists building
              ;; successfully with the '--locked' flag.
-             (substitute* '("Makefile.am"
-                            "Makefile.in")
+             (substitute* '("Makefile.am" "Makefile.in")
                (("--locked") ""))
              #t))
          (add-before 'configure 'pre-configure
@@ -3127,7 +3134,7 @@ library.")
                (("gdk_pixbuf_moduledir = .*$")
                 (string-append "gdk_pixbuf_moduledir = "
                                "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
-                                "loaders\n"))
+                               "loaders\n"))
                ;; Drop the 'loaders.cache' file, it's in gdk-pixbuf+svg.
                (("gdk_pixbuf_cache_file = .*$")
                 "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))
@@ -3138,13 +3145,17 @@ library.")
               #:native-inputs native-inputs
               #:inputs inputs
               #:outputs outputs
-              #:configure-flags (list "--disable-static"
-                                      "--enable-vala"))))
+              #:configure-flags
+              (list "--disable-static"
+                    "--enable-vala"
+               (string-append "--with-html-dir="
+                              (assoc-ref %outputs "doc")
+                              "/share/gtk-doc/html")))))
          (add-after 'configure 'dont-vendor-self
            (lambda* (#:key vendor-dir #:allow-other-keys)
              ;; Don't keep the whole tarball in the vendor directory
              (delete-file-recursively
-               (string-append vendor-dir "/" ,name "-" ,version ".tar.xz"))
+              (string-append vendor-dir "/" ,name "-" ,version ".tar.xz"))
              #t))
          (replace 'build
            (assoc-ref gnu:%standard-phases 'build))
@@ -3154,9 +3165,33 @@ library.")
               #:test-target "check")))
          (replace 'install
            (assoc-ref gnu:%standard-phases 'install)))))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.3)
+       ("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("ruby" ,ruby)
+       ("vala" ,vala)))
     (inputs
-     `(("pango" ,pango)
-       ,@(alist-delete "pango" (package-inputs librsvg))))
+     `(("bzip2" ,bzip2)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("harfbuzz" ,harfbuzz)
+       ("libcroco" ,libcroco)
+       ("libgsf" ,libgsf)
+       ("libxml2" ,libxml2)
+       ("pango" ,pango)))
+    (propagated-inputs
+     `(("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)))
+    (synopsis "SVG rendering library")
+    (description "Librsvg is a library to render SVG images to Cairo surfaces.
+GNOME uses this to render SVG icons.  Outside of GNOME, other desktop
+environments use it for similar purposes.  Wikimedia uses it for Wikipedia's SVG
+diagrams.")
+    (home-page "https://wiki.gnome.org/LibRsvg")
     (license license:lgpl2.1+)))
 
 (define-public libidl
