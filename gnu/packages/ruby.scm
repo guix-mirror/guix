@@ -7014,6 +7014,33 @@ definitions.")
     (home-page "https://yardoc.org")
     (license license:expat)))
 
+(define-public ruby-yard-with-tests
+  (package
+    (inherit ruby-yard)
+    (name "ruby-yard-with-tests")
+    (arguments
+     (substitute-keyword-arguments (package-arguments ruby-yard)
+       ((#:tests? _ #t) #t)
+       ((#:test-target _ "default") "default")
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'prepare-for-tests
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (substitute* "Rakefile"
+                   ((".*[Ss]amus.*") ""))
+                 ;; Delete the Gemfile to avoid errors relating to it.
+                 (delete-file "Gemfile")
+                 ;; $HOME needs to be set to somewhere writeable for tests to
+                 ;; run.
+                 (setenv "HOME" "/tmp"))
+               #t))))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-rack" ,ruby-rack)
+       ("ruby-redcloth" ,ruby-redcloth)
+       ("ruby-asciidoc" ,ruby-asciidoctor)))))
+
 (define-public ruby-clap
   (package
     (name "ruby-clap")
