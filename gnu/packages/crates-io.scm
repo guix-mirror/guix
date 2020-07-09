@@ -26618,6 +26618,29 @@ in Rust.")
      "Simple, lightweight template engine.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-tinyvec-0.3
+  (package
+    (name "rust-tinyvec")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tinyvec" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vgg2z317kq75bpd0nfda2v507qjpd7g2cjahjgivn2s78nkv5ak"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://crates.io/crates/tinyvec")
+    (synopsis "Tiny vec-like types for Rust")
+    (description
+     "A 100% safe crate of vec-like types.")
+    (license license:zlib)))
+
 (define-public rust-tokio-0.2
   (package
     (name "rust-tokio")
