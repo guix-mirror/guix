@@ -9655,7 +9655,7 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
     (synopsis "Stamp drawing toy")
     (description "KTuberling is a drawing toy intended for small children and
 adults who remain young at heart.  The game has no winner; the only purpose is
-to make the funniest faces you can.  Several activites are possible, e.g.:
+to make the funniest faces you can.  Several activities are possible, e.g.:
 
 @itemize
 @item Give the potato a funny face, clothes, and other goodies
