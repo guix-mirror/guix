@@ -19498,7 +19498,7 @@ functionality.")
 (define-public rust-ref-cast-impl-1.0
   (package
     (name "rust-ref-cast-impl")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -19507,7 +19507,7 @@ functionality.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "07rc752npmkyc5b8xcqk2ydbl3gxi1n4fzrq0wx9wz5qd4mvavn3"))))
+         "0i1i3an8si070aqg2mvz6yqc6y2pl9zhd6dd2piz17l7mdsv88bx"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
