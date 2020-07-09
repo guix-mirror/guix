@@ -17498,7 +17498,7 @@ applications.")
 (define-public rust-ppv-lite86-0.2
   (package
     (name "rust-ppv-lite86")
-    (version "0.2.6")
+    (version "0.2.8")
     (source
       (origin
         (method url-fetch)
@@ -17506,7 +17506,7 @@ applications.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06zs492wbms7j5qhy58cs3976c7kyc47rx0d6fn63rgvp580njbl"))))
+          "1shj4q7jwj0azssr8cg51dk3kh7d4lg9rmbbz1kbqk971vc5wyi3"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/cryptocorrosion/cryptocorrosion")
     (synopsis "Implementation of the crypto-simd API for x86")
