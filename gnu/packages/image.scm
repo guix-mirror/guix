@@ -996,7 +996,7 @@ more modular, simple, and flexible.")
     (home-page
      ;; This vanished page is universally accepted as giblib's home despite not
      ;; mentioning the package once.
-     (string-append "https://web.archive.org/web/20140907071208"
+     (string-append "https://web.archive.org/web/20140907071208/"
                     "https://linuxbrit.co.uk/software/"))
     (synopsis "Wrapper library for imlib2")
     (description
