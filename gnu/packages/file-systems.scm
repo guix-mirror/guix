@@ -801,8 +801,8 @@ community.")
     ;; mergerfs bundles a heavily modified copy of libfuse.
     (inputs `(("util-linux" ,util-linux)))
     (home-page "https://github.com/trapexit/mergerfs")
-    (synopsis "Featureful union filesystem")
-    (description "mergerfs is a union filesystem geared towards simplifying
+    (synopsis "Featureful union file system")
+    (description "mergerfs is a union file system geared towards simplifying
 storage and management of files across numerous commodity storage devices.  It
 is similar to mhddfs, unionfs, and aufs.")
     (license (list
