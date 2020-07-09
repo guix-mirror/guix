@@ -18495,8 +18495,7 @@ fashion.  It is mostly used in Racer.")
           "00sdaimkbz491qgi6qxkv582yivl32m2jd401kzbn94vsiwicsva"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-getrandom" ,rust-getrandom-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
