@@ -6320,7 +6320,7 @@ variables.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-indexmap" ,rust-indexmap-1.3))))
+       (("rust-indexmap" ,rust-indexmap-1))))
     (home-page "https://github.com/sagiegurari/envmnt")
     (synopsis "Environment variables utility functions")
     (description
@@ -8587,7 +8587,7 @@ retrieving random data from system source.")
         ("rust-stable-deref-trait"
          ,rust-stable-deref-trait-1.1)
         ("rust-smallvec" ,rust-smallvec-1)
-        ("rust-indexmap" ,rust-indexmap-1.3)
+        ("rust-indexmap" ,rust-indexmap-1)
         ("rust-byteorder" ,rust-byteorder-1.3))))
     (home-page "https://github.com/gimli-rs/gimli")
     (synopsis "Library for reading and writing the DWARF debugging format")
@@ -8614,7 +8614,7 @@ retrieving random data from system source.")
        (("rust-arrayvec" ,rust-arrayvec-0.4)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
-        ("rust-indexmap" ,rust-indexmap-1.3)
+        ("rust-indexmap" ,rust-indexmap-1)
         ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1))
        #:cargo-development-inputs
        (("rust-crossbeam" ,rust-crossbeam-0.7)
@@ -9730,7 +9730,7 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
         ("rust-fnv" ,rust-fnv-1.0)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-http" ,rust-http-0.1)
-        ("rust-indexmap" ,rust-indexmap-1.3)
+        ("rust-indexmap" ,rust-indexmap-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-slab" ,rust-slab-0.4)
         ("rust-string" ,rust-string-0.2)
@@ -10231,7 +10231,7 @@ Hash-based Message Authentication Code}.")
         ("rust-itoa" ,rust-itoa-0.4))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-indexmap" ,rust-indexmap-1.3)
+        ("rust-indexmap" ,rust-indexmap-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-seahash" ,rust-seahash-3.0)
@@ -10263,7 +10263,7 @@ requests and responses.")
         ("rust-fnv" ,rust-fnv-1.0)
         ("rust-itoa" ,rust-itoa-0.4))
        #:cargo-development-inputs
-       (("rust-indexmap" ,rust-indexmap-1.3)
+       (("rust-indexmap" ,rust-indexmap-1)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-rand" ,rust-rand-0.4)
         ("rust-seahash" ,rust-seahash-3.0)
@@ -10684,7 +10684,7 @@ for the most common image formats.")
         ("rust-num-complex" ,rust-num-complex-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.6))))))
 
-(define-public rust-indexmap-1.3
+(define-public rust-indexmap-1
   (package
     (name "rust-indexmap")
     (version "1.3.2")
@@ -14769,7 +14769,7 @@ Foundation framework.")
         ("rust-uuid" ,rust-uuid-0.8)
         ("rust-flate2" ,rust-flate2-1.0)
         ("rust-crc32fast" ,rust-crc32fast-1.2)
-        ("rust-indexmap" ,rust-indexmap-1.3))))
+        ("rust-indexmap" ,rust-indexmap-1))))
     (home-page "https://github.com/gimli-rs/object")
     (synopsis "Unified interface for reading and writing object file formats")
     (description "This package provides a unified interface for reading and
@@ -21626,7 +21626,7 @@ for the serde framework.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-indexmap" ,rust-indexmap-1.3)
+       (("rust-indexmap" ,rust-indexmap-1)
         ("rust-itoa" ,rust-itoa-0.4)
         ("rust-ryu" ,rust-ryu-1.0)
         ("rust-serde" ,rust-serde-1.0))
@@ -25807,7 +25807,7 @@ pool.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-        (("rust-indexmap" ,rust-indexmap-1.3)
+        (("rust-indexmap" ,rust-indexmap-1)
          ("rust-serde" ,rust-serde-1.0))
         #:cargo-development-inputs
         (("rust-serde-derive" ,rust-serde-derive-1.0)
