@@ -10177,8 +10177,36 @@ Hash-based Message Authentication Code}.")
         ("rust-md-5" ,rust-md-5-0.8)
         ("rust-sha2" ,rust-sha2-0.8))))))
 
+(define-public rust-hostname-0.3
+  (package
+    (name "rust-hostname")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hostname" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0rz8yf70cvzl3nry71m4bz9w6x4j9kdz3qng6pnwhk2h20z1qwrw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-match-cfg" ,rust-match-cfg-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-version-sync" ,rust-version-sync-0.8))))
+    (home-page "https://github.com/svartalf/hostname")
+    (synopsis "Get hostname for Rust")
+    (description
+     "Get hostname for Rust.")
+    (license license:expat)))
+
 (define-public rust-hostname-0.1
   (package
+    (inherit rust-hostname-0.3)
     (name "rust-hostname")
     (version "0.1.5")
     (source
@@ -10189,17 +10217,11 @@ Hash-based Message Authentication Code}.")
         (sha256
          (base32
           "0kprf862qaa7lwdms6aw7f3275h0j2rwhs9nz5784pm8hdmb9ki1"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-winutil" ,rust-winutil-0.1))))
-    (home-page "https://github.com/svartalf/hostname")
-    (synopsis "Get hostname for Rust")
-    (description
-     "Get hostname for Rust.")
-    (license license:expat)))
+        ("rust-winutil" ,rust-winutil-0.1))))))
 
 (define-public rust-html5ever-0.23
   (package
