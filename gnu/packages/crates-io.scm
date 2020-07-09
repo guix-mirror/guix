@@ -17478,7 +17478,7 @@ applications.")
 (define-public rust-podio-0.1
   (package
     (name "rust-podio")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
@@ -17487,9 +17487,8 @@ applications.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ga5arhwakj5rwrqzf9410zrbwnf24jd59af8kr9rgwbd6vb83vq"))))
+         "06bzjxrl0h8rp5860n51dlr1g143grg2jmx4g6y1mdn2ignyz2xi"))))
     (build-system cargo-build-system)
-    ;(arguments '(#:skip-build? #t))
     (home-page "https://github.com/mvdnes/podio.git")
     (synopsis "Additional trait to read and write Plain Old Data")
     (description
