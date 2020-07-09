@@ -12036,9 +12036,10 @@ graphics and video games.")
           "1ffa2whkyh9mwvdlpk6v8pjkg8p8mlzyjfymq5adll9a18sl80zk"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-safemem" ,rust-safemem-0.3))))
+     `(#:cargo-inputs
+       (("rust-safemem" ,rust-safemem-0.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.5))))
     (home-page "https://bitbucket.org/marshallpierce/line-wrap-rs/src")
     (synopsis "Efficiently insert line separators")
     (description
