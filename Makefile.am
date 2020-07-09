@@ -523,7 +523,7 @@ check-system: $(GOBJECTS)
 
 # Public keys used to sign substitutes.
 dist_pkgdata_DATA =				\
-  etc/substitutes/berlin.guixsd.org.pub		\
+  etc/substitutes/berlin.guix.gnu.org.pub	\
   etc/substitutes/ci.guix.gnu.org.pub		\
   etc/substitutes/ci.guix.info.pub
 
