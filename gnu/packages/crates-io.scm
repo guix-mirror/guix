@@ -17698,7 +17698,7 @@ formatted tables in terminal.")
 (define-public rust-proc-macro-hack-0.5
   (package
     (name "rust-proc-macro-hack")
-    (version "0.5.15")
+    (version "0.5.16")
     (source
      (origin
        (method url-fetch)
@@ -17707,7 +17707,7 @@ formatted tables in terminal.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0qqbfm1byabjkph56r2rlvv4cliz4960j6hav3ljazyjqvkryr8d"))))
+         "1r657v7d9vh1ivrvq65rvg9gjb29dpa0l3zg2fgrn5j8znz5c13y"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
