@@ -27135,7 +27135,7 @@ Unix users and groups.")
 (define-public rust-vcpkg-0.2
   (package
     (name "rust-vcpkg")
-    (version "0.2.8")
+    (version "0.2.10")
     (source
       (origin
         (method url-fetch)
@@ -27143,7 +27143,7 @@ Unix users and groups.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0s1ijdrsg6917imja2hb07l0z4vbx7ydm8m2i1n9g62fg7r3ki1z"))))
+          "132hlmsc4maava91vl4lh677sl1c7vr8ccl53fnr5w41y6dh4m34"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Tests want mysql, harfbuzz, graphite2.
