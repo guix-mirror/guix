@@ -20897,22 +20897,22 @@ uses finite automata and guarantees linear time matching on all inputs.")
 (define-public rust-rgb-0.8
   (package
     (name "rust-rgb")
-    (version "0.8.18")
+    (version "0.8.20")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "rgb" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "15hrf0gb1l1a8rhx7b6gzrcmb43xlll4r1ym0mq55c7068dhc537"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rgb" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32
+         "1620mn5dp1rr9fpvd9wbr3b8l2g4zrij8zjri1x34cg1bas59vwh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-serde" ,rust-serde-1))
+       (("rust-bytemuck" ,rust-bytemuck-1.2)
+        ("rust-serde", rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-serde-json" ,rust-serde-json-1))))
+       (("rust-serde-json" ,rust-serde-json-1.0))))
     (home-page "https://lib.rs/crates/rgb")
     (synopsis "Struct for sharing pixels between crates")
     (description
