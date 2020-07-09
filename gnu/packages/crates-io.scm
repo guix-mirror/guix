@@ -26639,7 +26639,7 @@ boundaries according to Unicode Standard Annex #29 rules.")
 (define-public rust-unicode-xid-0.2
   (package
     (name "rust-unicode-xid")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
       (origin
         (method url-fetch)
@@ -26648,7 +26648,7 @@ boundaries according to Unicode Standard Annex #29 rules.")
           (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0z09fn515xm7zyr0mmdyxa9mx2f7azcpv74pqmg611iralwpcvl2"))))
+          "0r6mknipyy9vpz8mwmxvkx65ff2ha1n2pxqjj6f46lcn8yrhpzpp"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/unicode-rs/unicode-xid")
     (synopsis "Determine Unicode XID related properties")
