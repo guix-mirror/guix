@@ -2616,28 +2616,17 @@ sparse system of linear equations A x = b using Gaussian elimination.")
 (define-public ruby-asciimath
   (package
     (name "ruby-asciimath")
-    (version "1.0.4")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "asciimath" version))
        (sha256
         (base32
-         "1d80kiph5mc78zps7si1hv48kv4k12mzaq8jk5kb3pqpjdr72qmc"))))
+         "1aapydwwkydbwgz07n7ma3a5jy9n3v0shy6q6j8mi4wr3crhx45a"))))
     (build-system ruby-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; Apply this patch
-         ;; https://github.com/asciidoctor/asciimath/commit/1c06fdc8086077f4785479f78b0823a4a72d7948
-         (add-after 'unpack 'patch-remove-spurious-backslashes
-           (lambda _
-             (substitute* "spec/parser_spec.rb"
-               (("\\\\\"")
-                "\""))
-             #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
+     `(("ruby-nokogiri" ,ruby-nokogiri)
        ("ruby-rspec" ,ruby-rspec)))
     (synopsis "AsciiMath parsing and conversion library")
     (description
