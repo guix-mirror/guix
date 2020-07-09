@@ -315,7 +315,7 @@ get_machine.")
       (description
        "M2-Planet, the PLAtform NEutral Transpiler, when combined with
 mescc-tools, compiles a subset of the C language into working binaries with
-introspective steps inbetween.  It is self-hosting and for bootstrapping it
+introspective steps in between.  It is self-hosting and for bootstrapping it
 also has an implementation in the M1 macro assembly language.  M2-Planet is
 built as Phase-5 of the full source bootstrapping process and is capable of
 building GNU Mes.")
