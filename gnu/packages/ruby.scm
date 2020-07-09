@@ -4255,7 +4255,7 @@ then be analyzed or manipulated more easily than the underlying AST layer.")
 (define-public ruby-parallel-tests
   (package
     (name "ruby-parallel-tests")
-    (version "2.32.0")
+    (version "3.0.0")
     (home-page "https://github.com/grosser/parallel_tests")
     (source (origin
               (method git-fetch)
@@ -4265,7 +4265,7 @@ then be analyzed or manipulated more easily than the underlying AST layer.")
               (file-name (string-append name version))
               (sha256
                (base32
-                "0l2rjz9fnxv7hvz679v7a75mghsh9x9qpvbyapiavqsx21v42l7m"))))
+                "08a6ndqn2dqacmc7yg48k0dh2rfrynvhkd5hiay16dl9m1r9q8pz"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "default"
@@ -4303,6 +4303,7 @@ then be analyzed or manipulated more easily than the underlying AST layer.")
     (native-inputs
      `(("ruby-bump" ,ruby-bump)
        ("ruby-cucumber" ,ruby-cucumber)
+       ("ruby-cuke-modeler" ,ruby-cuke-modeler)
        ("ruby-minitest" ,ruby-minitest)
        ("ruby-rake" ,ruby-rake)
        ("ruby-rspec" ,ruby-rspec)
