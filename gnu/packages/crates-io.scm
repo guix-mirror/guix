@@ -22975,7 +22975,7 @@ data type.")
 (define-public rust-smallvec-1
   (package
     (name "rust-smallvec")
-    (version "1.2.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
@@ -22984,7 +22984,7 @@ data type.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1z6f47i3qpg9pdjzzvb0g5i1vvdm2ymk3kqc1mdnl8fdkgnb4bsw"))))
+         "0gqgmbfj8228lc55xxg331flizzwq6hfyy6gw4j2y6hni6fwnmrp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
