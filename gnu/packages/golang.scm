@@ -1243,8 +1243,9 @@ incoming requests with their respective handler.")
     (propagated-inputs
      `(("golang.org/x/text" ,go-golang-org-x-text)))
     (home-page "https://github.com/spf13/afero")
-    (synopsis "Filesystem abstraction for Go")
-    (description "Filesystem abstraction for Go")
+    (synopsis "File system abstraction for Go")
+    (description
+     "This package provides a file system abstraction for Go.")
     (license license:asl2.0)))
 
 (define-public go-github-com-spf13-cast
