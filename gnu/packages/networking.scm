@@ -781,7 +781,7 @@ intended as a substitute for the PPPStatus and EthStatus projects.")
 configuration, troubleshooting, or servers.  Utilities included are:
 
 @itemize @bullet
-@item @command{arping}: Ping hosts using the @dfn{Adress Resolution Protocol}.
+@item @command{arping}: Ping hosts using the @dfn{Address Resolution Protocol}.
 @item @command{clockdiff}: Compute time difference between network hosts
 using ICMP TSTAMP messages.
 @item @command{ninfod}: Daemon that responds to IPv6 Node Information Queries.
