@@ -19872,7 +19872,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
           "0jlzifww1h7j23jnjj49xz8q0fpd9rqpd0ks8c4y651vgw9lx0qi"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f  ; Not all test files included.
        #:cargo-inputs
        (("rust-quick-error" ,rust-quick-error-1.2)
         ("rust-hostname" ,rust-hostname-0.3))))
