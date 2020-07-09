@@ -28611,7 +28611,7 @@ x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
 (define-public rust-wincolor-1.0
   (package
     (name "rust-wincolor")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
       (origin
         (method url-fetch)
@@ -28619,7 +28619,7 @@ x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1agaf3hcav113i86912ajnw6jxcy4rvkrgyf8gdj8kc031mh3xcn"))))
+          "017x33ljndwc76cp5z9llgndn0nh7v8jcjaykbizkawmwy9n3pyp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
