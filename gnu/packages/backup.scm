@@ -1053,12 +1053,12 @@ is format-agnostic, so you can feed virtually any files to it.")
        ("util-linux" ,util-linux "lib")
        ("e2fsprogs" ,e2fsprogs)))
     (home-page "https://dump.sourceforge.io/")
-    (synopsis "Ext2/3/4 filesystem dump/restore utilities")
-    (description "Dump examines files in a filesystem, determines which ones
+    (synopsis "Ext2/3/4 file system dump/restore utilities")
+    (description "Dump examines files in a file system, determines which ones
 need to be backed up, and copies those files to a specified disk, tape or
 other storage medium.  Subsequent incremental backups can then be layered on
 top of the full backup.  The restore command performs the inverse function of
-dump; it can restore a full backup of a filesystem.  Single files and
+dump; it can restore a full backup of a file system.  Single files and
 directory subtrees may also be restored from full or partial backups in
 interractive mode.")
     (license license:bsd-3)))
