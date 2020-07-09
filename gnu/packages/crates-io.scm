@@ -26951,7 +26951,7 @@ untrusted inputs in Rust.")
        (base32
         "0r5ig00np3svjpvb1gha3ni798cwj2w7rnlwrc8jrrw7bvlb2yri"))))
    (build-system cargo-build-system)
-   (home-page "https://github.com/chrisduerr/urlocator.git")
+   (home-page "https://github.com/alacritty/urlocator")
    (synopsis "Locate URLs in character streams")
    (description "Locate URLs in character streams.")
    (license (list license:expat license:asl2.0))))
