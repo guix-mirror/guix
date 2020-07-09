@@ -4759,13 +4759,11 @@ Transparency logs for use with sct crate.")
           "1qgwkwyxishpp3wkbwq5i27zdxz539ii0sz129xj061ffnnfbia7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-syn" ,rust-syn-1.0)
         ("rust-quote" ,rust-quote-1.0))
-       ;#:cargo-development-inputs
-       ;(("rust-libc-print" ,rust-libc-print-0.1))
-       ))
+       #:cargo-development-inputs
+       (("rust-libc-print" ,rust-libc-print-0.1))))
     (home-page "https://github.com/mmastrac/rust-ctor")
     (synopsis "__attribute__((constructor)) for Rust")
     (description
