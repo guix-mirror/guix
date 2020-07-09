@@ -1097,31 +1097,50 @@ syntax to the minimum while remaining clear.")
 (define-public ruby-asciidoctor
   (package
     (name "ruby-asciidoctor")
-    (version "1.5.7.1")
+    (version "2.0.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "asciidoctor" version))
+       (method git-fetch)               ;the gem release lacks a Rakefile
+       (uri (git-reference
+             (url "https://github.com/asciidoctor/asciidoctor.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0v52bzc72cvg7zfgq27pa4mgyf29dx9m20fghrw1xmvwgd519n1w"))))
+         "0jaxpnsdnx3qyjw5p2lsx1swny12q1i2vxw2kgdp4vlsyjv95z95"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "test:all"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'remove-circular-tests
+         (replace 'replace-git-ls-files
            (lambda _
-             ;; Remove tests that require circular dependencies to load or pass.
-             (delete-file "test/invoker_test.rb")
-             (delete-file "test/converter_test.rb")
-             (delete-file "test/options_test.rb")
+             ;; TODO: Remove after the fix of using 'cut' to better mimic the
+             ;; git ls-files output is merged in ruby-build-system.
+             (substitute* "asciidoctor.gemspec"
+               (("`git ls-files -z`")
+                "`find . -type f -print0 |sort -z|cut -zc3-`"))
+             #t))
+         (add-after 'extract-gemspec 'strip-version-requirements
+           (lambda _
+             (delete-file "Gemfile")
+             (substitute* "asciidoctor.gemspec"
+               (("(.*add_.*dependency '[_A-Za-z0-9-]+').*" _ stripped)
+                (string-append stripped "\n")))
              #t)))))
     (native-inputs
-     `(("ruby-minitest" ,ruby-minitest)
+     `(("ruby-erubis" ,ruby-erubis)
+       ("ruby-minitest" ,ruby-minitest)
        ("ruby-nokogiri" ,ruby-nokogiri)
        ("ruby-asciimath" ,ruby-asciimath)
-       ("ruby-coderay" ,ruby-coderay)))
+       ("ruby-coderay" ,ruby-coderay)
+       ("ruby-cucumber" ,ruby-cucumber)
+       ("ruby-haml" ,ruby-haml)
+       ("ruby-rouge" ,ruby-rouge)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-slim" ,ruby-slim)
+       ("ruby-tilt" ,ruby-tilt)))
     (synopsis "Converter from AsciiDoc content to other formats")
     (description "Asciidoctor is a text processor and publishing toolchain for
 converting AsciiDoc content to HTML5, DocBook 5 (or 4.5), PDF, and other
