@@ -3320,7 +3320,7 @@ pitfalls in Rust.")
 (define-public rust-cmake-0.1
   (package
     (name "rust-cmake")
-    (version "0.1.42")
+    (version "0.1.44")
     (source
       (origin
         (method url-fetch)
@@ -3328,11 +3328,10 @@ pitfalls in Rust.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0qkwibkvx5xjazvv9v8gvdlpky2jhjxvcz014nrixgzqfyv2byw1"))))
+          "1fv346ipxmvff6qrnh78rild0s8k72ilfjkdsrk869562y62cmhf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-cc" ,rust-cc-1.0))))
+     `(#:cargo-inputs (("rust-cc" ,rust-cc-1.0))))
     (home-page "https://github.com/alexcrichton/cmake-rs")
     (synopsis "Rust build dependency for running cmake")
     (description
