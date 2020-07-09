@@ -18412,9 +18412,8 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
          (base32
           "1s01fh0jl8qv4xggs85yahw0h507nzrxkjbf7vay3zw8d3kcyjcr"))))
     (arguments
-      `(#:skip-build? #t
-        #:cargo-inputs
-        (("rust-proc-macro2" ,rust-proc-macro2-0.3))))))
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.3))))))
 
 (define-public rust-quote-0.3
   (package
