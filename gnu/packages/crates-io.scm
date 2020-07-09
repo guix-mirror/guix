@@ -12049,7 +12049,7 @@ graphics and video games.")
 (define-public rust-linked-hash-map-0.5
   (package
     (name "rust-linked-hash-map")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -12058,11 +12058,10 @@ graphics and video games.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10qgbvh00q36ql0jh00rxh2jlq6qvl11n6mig0cvkpf4xf5bd4df"))))
+         "0jih3za0p1mywlnwcakc462q1byk6z8vnrzdm36hg6cxk7asdmcd"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-clippy" ,rust-clippy-0.0)
         ("rust-heapsize" ,rust-heapsize-0.4)
         ("rust-serde" ,rust-serde-1.0)
