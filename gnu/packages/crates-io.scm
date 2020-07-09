@@ -27824,13 +27824,12 @@ the wayland protocol, client side.")
         ("rust-quote" ,rust-quote-0.6)
         ("rust-xml-rs" ,rust-xml-rs-0.8))))
     (home-page "https://github.com/smithay/wayland-rs")
-    (synopsis
-     "Wayland Scanner for generating rust APIs from XML wayland protocol files")
+    (synopsis "Generate Rust APIs from XML Wayland protocol files")
     (description
-     "Wayland Scanner for generating rust APIs from XML wayland protocol files.
-Intented for use with wayland-sys.  You should only need this crate if
-you are working on custom wayland protocol extensions.
-Look at the crate wayland-client for usable bindings.")
+     "Wayland Scanner generates Rust APIs from XML Wayland protocol files.
+It is intended for use with wayland-sys.  You should only need this crate if
+you are working on custom Wayland protocol extensions.
+Look at the wayland-client crate for usable bindings.")
     (license license:expat)))
 
 (define-public rust-wayland-scanner-0.21
