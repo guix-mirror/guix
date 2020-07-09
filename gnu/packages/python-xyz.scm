@@ -19016,9 +19016,9 @@ essential tools are located.")
     (synopsis
      "Parallel graph management and execution in heterogeneous computing")
     (description
-     "Python-pathos is a framework for heterogenous computing.  It provides a
+     "Python-pathos is a framework for heterogeneous computing.  It provides a
 consistent high-level interface for configuring and launching parallel
-computations across heterogenous resources.  Python-pathos provides configurable
+computations across heterogeneous resources.  Python-pathos provides configurable
 launchers for parallel and distributed computing, where each launcher contains
 the syntactic logic to configure and launch jobs in an execution environment.")
     (license license:bsd-3)))
