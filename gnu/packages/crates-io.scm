@@ -29069,7 +29069,7 @@ to XDG Base Directory specification")
 (define-public rust-y4m-0.5
   (package
     (name "rust-y4m")
-    (version "0.5.0")
+    (version "0.5.3")
     (source
       (origin
         (method url-fetch)
@@ -29077,10 +29077,12 @@ to XDG Base Directory specification")
         (file-name
           (string-append name "-" version ".tar.gz"))
         (sha256
-          (base32
-            "06g8c53qk4cla3xczywx5qlklvzsw54x77vm727mhizlsp5n93ar"))))
+         (base32
+          "1933677by64y06zfgip2yq8b2dza8xnljhaksx93czq90b54kscz"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-resize" ,rust-resize-0.3))))
     (home-page "https://github.com/image-rs/y4m")
     (synopsis "YUV4MPEG2 (.y4m) Encoder/Decoder.")
     (description "YUV4MPEG2 (.y4m) Encoder/Decoder.")
