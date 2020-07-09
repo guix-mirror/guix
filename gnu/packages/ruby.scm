@@ -6615,6 +6615,36 @@ system-specific @code{Meta} messages for Cucumber Ruby.")
     (home-page "https://github.com/cucumber/cucumber/tree/master/create-meta/ruby")
     (license license:expat)))
 
+(define-public ruby-cucumber-html-formatter
+  (package
+    (name "ruby-cucumber-html-formatter")
+    (version "7.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cucumber-html-formatter" version))
+       (sha256
+        (base32
+         "0lshj4sw9jw7687wrhknyb9kffblai3l843zgrznyqij3ga0bc62"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "rspec"))))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-cucumber-messages" ,ruby-cucumber-messages)))
+    (synopsis "HTML formatter for Cucumber")
+    (description "Cucumber HTML Formatter produces a HTML report for Cucumber
+runs.  It is built on top of cucumber-react and works with any Cucumber
+implementation with a protocol buffer formatter that outputs Cucumber
+messages.")
+    (home-page "https://github.com/cucumber/cucumber/tree/\
+master/html-formatter/ruby")
+    (license license:expat)))
+
 (define-public ruby-cucumber
   (package
     (name "ruby-cucumber")
