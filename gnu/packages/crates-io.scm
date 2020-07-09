@@ -6320,7 +6320,7 @@ variables.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-indexmap" ,rust-indexmap-1.0))))
+       (("rust-indexmap" ,rust-indexmap-1.3))))
     (home-page "https://github.com/sagiegurari/envmnt")
     (synopsis "Environment variables utility functions")
     (description
@@ -8614,7 +8614,7 @@ retrieving random data from system source.")
        (("rust-arrayvec" ,rust-arrayvec-0.4)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
-        ("rust-indexmap" ,rust-indexmap-1.0)
+        ("rust-indexmap" ,rust-indexmap-1.3)
         ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1))
        #:cargo-development-inputs
        (("rust-crossbeam" ,rust-crossbeam-0.7)
@@ -9730,7 +9730,7 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
         ("rust-fnv" ,rust-fnv-1.0)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-http" ,rust-http-0.1)
-        ("rust-indexmap" ,rust-indexmap-1.0)
+        ("rust-indexmap" ,rust-indexmap-1.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-slab" ,rust-slab-0.4)
         ("rust-string" ,rust-string-0.2)
@@ -10231,7 +10231,7 @@ Hash-based Message Authentication Code}.")
         ("rust-itoa" ,rust-itoa-0.4))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-indexmap" ,rust-indexmap-1.0)
+        ("rust-indexmap" ,rust-indexmap-1.3)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-seahash" ,rust-seahash-3.0)
@@ -10263,7 +10263,7 @@ requests and responses.")
         ("rust-fnv" ,rust-fnv-1.0)
         ("rust-itoa" ,rust-itoa-0.4))
        #:cargo-development-inputs
-       (("rust-indexmap" ,rust-indexmap-1.0)
+       (("rust-indexmap" ,rust-indexmap-1.3)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-rand" ,rust-rand-0.4)
         ("rust-seahash" ,rust-seahash-3.0)
@@ -10715,48 +10715,6 @@ hash table functionality, it preserves insertion order except after
 removals, and it allows lookup of its elements by either hash table key
 or numerical index.  A corresponding hash set type is also provided.")
     (license (list license:asl2.0 license:expat))))
-
-(define-public rust-indexmap-1.0
-  (package
-    (name "rust-indexmap")
-    (version "1.0.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "indexmap" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "13f5k1kl2759y4xfy0vhays35fmrkmhqngbr2ny8smvrbz0ag0by"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-serde" ,rust-serde-1.0))
-       #:cargo-development-inputs
-       (("rust-fnv" ,rust-fnv-1.0)
-        ("rust-itertools" ,rust-itertools-0.8)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rand" ,rust-rand-0.4)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
-    (home-page "https://github.com/bluss/indexmap")
-    (synopsis
-     "Hash table with consistent order and fast iteration")
-    (description
-     "This package provides a hash table with consistent order and fast iteration.
-
-The indexmap is a hash table where the iteration order of the
-key-value pairs is independent of the hash values of the keys.  It has
-the usual hash table functionality, it preserves insertion order
-except after removals, and it allows lookup of its elements by either
-hash table key or numerical index.  A corresponding hash set type is
-also provided.
-
-This crate was initially published under the name ordermap, but it was
-renamed to indexmap.")
-    (license (list license:expat license:asl2.0))))
 
 (define-public rust-inflate-0.4
   (package
@@ -25849,7 +25807,7 @@ pool.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-        (("rust-indexmap" ,rust-indexmap-1.0)
+        (("rust-indexmap" ,rust-indexmap-1.3)
          ("rust-serde" ,rust-serde-1.0))
         #:cargo-development-inputs
         (("rust-serde-derive" ,rust-serde-derive-1.0)
