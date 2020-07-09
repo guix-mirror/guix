@@ -26688,14 +26688,14 @@ or XID_Continue properties according to Unicode Standard Annex #31.")
 (define-public rust-unindent-0.1
   (package
     (name "rust-unindent")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "unindent" version))
         (file-name (string-append name "-" version ".crate"))
         (sha256
-         (base32 "14s97blyqgf9hzxk22iazrghj60midajkw2801dfspz3n2iqmwb3"))))
+         (base32 "0hl9l4w9mhv5qacx7cirm6rarrphw35b5syw2plx13vz884dfhdg"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/dtolnay/indoc")
     (synopsis "Remove a column of leading whitespace from a string")
