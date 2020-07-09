@@ -18067,6 +18067,27 @@ interactive applications.")
      "This package provides a library for window abstraction.")
     (license license:expat)))
 
+(define-public rust-pin-project-0.4
+  (package
+    (name "rust-pin-project")
+    (version "0.4.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pin-project" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05wwxy46j9z27ibbiisjqk0rivf0z00h4al1f92mwjp9pz6sdqqj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ; XXX: Fix-me.
+       #:cargo-inputs
+       (("rust-pin-project-internal" ,rust-pin-project-internal-0.4))))
+    (home-page "https://crates.io/crates/pin-project")
+    (synopsis "A crate for safe and ergonomic pin-projection")
+    (description "A crate for safe and ergonomic pin-projection.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pin-project-internal-0.4
   (package
     (name "rust-pin-project-internal")
