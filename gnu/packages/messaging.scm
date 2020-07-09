@@ -1695,14 +1695,14 @@ are both supported).")
 (define-public profanity
   (package
     (name "profanity")
-    (version "0.8.1")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://profanity-im.github.io/profanity-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15yrx2ir2bilxpjfaxpjb93yjpvpvcvh5r7wbsjx6kmmy7qg2zvb"))))
+                "00j9l9v62rz9hprgiy1vrz8v3v59ph18h8kskqxr31fgqvjv5xr3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1721,7 +1721,8 @@ are both supported).")
        ("libotr" ,libotr)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
-       ("readline" ,readline)))
+       ("readline" ,readline)
+       ("sqlite" ,sqlite)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)
