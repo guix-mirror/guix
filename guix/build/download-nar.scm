@@ -19,7 +19,7 @@
 (define-module (guix build download-nar)
   #:use-module (guix build download)
   #:use-module (guix build utils)
-  #:use-module (guix serialization)
+  #:use-module ((guix serialization) #:hide (dump-port*))
   #:use-module (guix zlib)
   #:use-module (guix progress)
   #:use-module (web uri)
