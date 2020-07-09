@@ -181,8 +181,42 @@ the Rust programming language.")
     (license (list license:bsd-3
                    license:zlib))))
 
+(define-public rust-afl-0.8
+  (package
+    (name "rust-afl")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "afl" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1rw11hycfjhqbc7z1smn75m0sczq519msjwimxh7b8s6n4pzk5r7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1.0)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-xdg" ,rust-xdg-2.2))
+       #:cargo-development-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-xdg" ,rust-xdg-2.2))))
+    (home-page "https://github.com/rust-fuzz/afl.rs")
+    (synopsis
+     "Fuzzing Rust code with american-fuzzy-lop")
+    (description
+     "Fuzz Rust code with american-fuzzy-lop.")
+    (license license:asl2.0)))
+
 (define-public rust-afl-0.5
   (package
+    (inherit rust-afl-0.8)
     (name "rust-afl")
     (version "0.5.2")
     (source
@@ -194,20 +228,16 @@ the Rust programming language.")
         (sha256
          (base32
           "0azpi917l8nhvx25n2v670nvkxkrhcwmddfi85qnr6kchmi6y946"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-cc" ,rust-cc-1.0)
         ("rust-xdg" ,rust-xdg-2.2)
-        ("rust-clap" ,rust-clap-2))))
-    (home-page "https://github.com/rust-fuzz/afl.rs")
-    (synopsis
-     "Fuzzing Rust code with american-fuzzy-lop")
-    (description
-     "Fuzz Rust code with american-fuzzy-lop.")
-    (license license:asl2.0)))
+        ("rust-clap" ,rust-clap-2))
+       #:cargo-development-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-xdg" ,rust-xdg-2.2))))))
 
 (define-public rust-afl-0.4
   (package
