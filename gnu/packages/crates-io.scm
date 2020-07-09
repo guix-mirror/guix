@@ -19787,6 +19787,29 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (description "File reopening utility.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-resize-0.3
+  (package
+    (name "rust-resize")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "resize" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1ai83laz5yvg4r7z9q8d1m0vq0fqj2ycyprw5fxzxyzaj3im7rmr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-png" ,rust-png-0.15))))
+    (home-page "https://github.com/PistonDevelopers/resize")
+    (synopsis "Simple image resampling library in pure Rust")
+    (description
+     "This package provides a simple image resampling library in pure Rust.")
+    (license license:expat)))
+
 (define-public rust-resolv-conf-0.6
   (package
     (name "rust-resolv-conf")
