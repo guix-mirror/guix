@@ -19861,7 +19861,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
 (define-public rust-resolv-conf-0.6
   (package
     (name "rust-resolv-conf")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
       (origin
         (method url-fetch)
@@ -19869,13 +19869,13 @@ uses finite automata and guarantees linear time matching on all inputs.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1jvdsmksdf6yiipm3aqahyv8n1cjd7wqc8sa0p0gzsax3fmb8qxj"))))
+          "0jlzifww1h7j23jnjj49xz8q0fpd9rqpd0ks8c4y651vgw9lx0qi"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-quick-error" ,rust-quick-error-1.2)
-        ("rust-hostname", rust-hostname-0.1))))
+        ("rust-hostname" ,rust-hostname-0.3))))
     (home-page "https://github.com/tailhook/resolv-conf")
     (synopsis "Parser for /etc/resolv.conf")
     (description
