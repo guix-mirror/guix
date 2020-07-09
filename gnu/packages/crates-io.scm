@@ -17657,8 +17657,32 @@ replacements, adding colorful diffs.")
 replacements, adding colorful diffs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-pretty-env-logger-0.4
+  (package
+    (name "rust-pretty-env-logger")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pretty-env-logger" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "17gva1rlf9fhgr0jr19kv39f8bir3f4pa4jz02qbhl9qanwkcvcj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-log" ,rust-log-0.4))))
+    (home-page "https://github.com/seanmonstar/pretty-env-logger")
+    (synopsis "Visually pretty env_logger")
+    (description "This package provides a visually pretty env_logger.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pretty-env-logger-0.3
   (package
+    (inherit rust-pretty-env-logger-0.4)
     (name "rust-pretty-env-logger")
     (version "0.3.1")
     (source
@@ -17670,17 +17694,12 @@ replacements, adding colorful diffs.")
         (sha256
          (base32
           "0x4hyjlnvvhyk9m74iypzybm22w3dl2k8img4b956239n5vf8zki"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-log" ,rust-log-0.4)
         ("rust-chrono" ,rust-chrono-0.4)
-        ("rust-env-logger" ,rust-env-logger-0.6))))
-    (home-page "https://github.com/seanmonstar/pretty-env-logger")
-    (synopsis "Visually pretty env_logger")
-    (description "This package provides a visually pretty env_logger.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-env-logger" ,rust-env-logger-0.6))))))
 
 (define-public rust-prettytable-rs-0.8
   (package
