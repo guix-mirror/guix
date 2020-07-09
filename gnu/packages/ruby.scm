@@ -4837,13 +4837,13 @@ current line in an external editor.")
 (define-public ruby-sdoc
   (package
     (name "ruby-sdoc")
-    (version "0.4.2")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "sdoc" version))
               (sha256
                (base32
-                "0qhvy10vnmrqcgh8494m13kd5ag9c3sczzhfasv8j0294ylk679n"))))
+                "1am73dldx1fqlw2xny5vyk00pgkisg6bvs0pa8jjd7c19drjczrd"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
