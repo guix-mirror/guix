@@ -3555,7 +3555,7 @@ according to Bitorrent BEP003.")
          ("texinfo" ,texinfo)))
       (inputs
        `(("gnutls" ,gnutls)
-         ("guile" ,guile-2.2)))
+         ("guile" ,guile-3.0)))
       (home-page "https://github.com/rekado/guile-irc")
       (synopsis "IRC library for Guile")
       (description "This package provides a Guile library for @dfn{Internet
