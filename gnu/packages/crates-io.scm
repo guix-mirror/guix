@@ -2778,11 +2778,20 @@ archive to be linked into Rustcode.")
          "07fdfj4ff2974y33yixrb657riq9zl9b9h9lr0h7ridhhvxvbrgw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-nom" ,rust-nom-4.2))
        #:cargo-development-inputs
-       (("rust-clang-sys" ,rust-clang-sys-0.28))))
+       (("rust-clang-sys" ,rust-clang-sys-0.28))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))
+    (inputs
+     `(("libclang" ,clang)))
     (home-page "https://github.com/jethrogb/rust-cexpr")
     (synopsis "C expression parser and evaluator")
     (description
@@ -2816,9 +2825,7 @@ archive to be linked into Rustcode.")
              (let ((clang (assoc-ref inputs "libclang")))
                (setenv "LIBCLANG_PATH"
                        (string-append clang "/lib")))
-             #t)))))
-    (inputs
-     `(("libclang" ,clang)))))
+             #t)))))))
 
 (define-public rust-cfg-if-0.1
   (package
