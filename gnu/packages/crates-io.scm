@@ -29155,7 +29155,7 @@ to XDG Base Directory specification")
 (define-public rust-zip-0.5
   (package
     (name "rust-zip")
-    (version "0.5.4")
+    (version "0.5.6")
     (source
      (origin
        (method url-fetch)
@@ -29164,7 +29164,7 @@ to XDG Base Directory specification")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1biv5kh4fl7wpjlsxfczvgrdjlybf0xjaw7s36didql8lxxz67z4"))))
+         "0zfv0ascxl8gqqxgjck99kypcb0f67lg2k1a3zwza1w5swl7qa2q"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
