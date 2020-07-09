@@ -11049,8 +11049,46 @@ immutable interval tree.")
     (description "Parsing ISO8601 dates using nom.")
     (license license:expat)))
 
+(define-public rust-itertools-0.9
+  (package
+    (name "rust-itertools")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "itertools" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0jyml7ygr7kijkcjdl3fk5f34y5h5jsavclim7l13zjiavw1hkr8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-either" ,rust-either-1.5))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-permutohedron" ,rust-permutohedron-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("=0.3.0") "0.3"))
+             #t)))))
+    (home-page
+     "https://github.com/rust-itertools/itertools")
+    (synopsis
+     "Extra iterator adaptors, iterator methods, free functions, and macros")
+    (description
+     "Extra iterator adaptors, iterator methods, free functions, and macros.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-itertools-0.8
   (package
+    (inherit rust-itertools-0.9)
     (name "rust-itertools")
     (version "0.8.2")
     (source
@@ -11062,7 +11100,6 @@ immutable interval tree.")
        (sha256
         (base32
          "1154j48aw913v5jnyhpxialxhdn2sfpl4d7bwididyb1r05jsspm"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -11070,14 +11107,7 @@ immutable interval tree.")
        #:cargo-development-inputs
        (("rust-permutohedron" ,rust-permutohedron-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.7)
-        ("rust-rand" ,rust-rand-0.6))))
-    (home-page
-     "https://github.com/rust-itertools/itertools")
-    (synopsis
-     "Extra iterator adaptors, iterator methods, free functions, and macros")
-    (description
-     "Extra iterator adaptors, iterator methods, free functions, and macros.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-itertools-0.7
   (package
