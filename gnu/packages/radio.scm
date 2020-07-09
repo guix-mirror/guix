@@ -665,7 +665,7 @@ or USB connection.")
        ("libxft" ,libxft)))
     (synopsis "Tool for AMP file transfer")
     (description
-     "FLAMP is a program for transfering files by radio waves using AMP
+     "FLAMP is a program for transferring files by radio waves using AMP
 (Amateur Multicast Protocol).")
     (home-page "http://www.w1hkj.com/")
     (license license:gpl3+)))
