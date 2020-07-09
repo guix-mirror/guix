@@ -4226,6 +4226,32 @@ for select languages.")
     (home-page "http://coderay.rubychan.de")
     (license license:expat)))
 
+(define-public ruby-cuke-modeler
+  (package
+    (name "ruby-cuke-modeler")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cuke_modeler" version))
+       (sha256
+        (base32
+         "19smj3g3wvz0203l549sadpcxgh0ir350a6k78gq0bmlv9cchmjb"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f))          ;no test suite in gem
+    (propagated-inputs
+     `(("ruby-gherkin" ,ruby-gherkin)))
+    (synopsis "Gherkin test suite analysis tool")
+    (description "CukeModeler facilitates modeling a test suite that is
+written in Gherkin (e.g.  Cucumber, SpecFlow, Lettuce, etc.).  It does this by
+providing an abstraction layer on top of the Abstract Syntax Tree (AST) that
+the @code{cucumber-gherkin} generates when parsing features, as well as
+providing models for feature files and directories in order to be able to have
+a fully traversable model tree of a test suite's structure.  These models can
+then be analyzed or manipulated more easily than the underlying AST layer.")
+    (home-page "https://github.com/enkessler/cuke_modeler")
+    (license license:expat)))
+
 (define-public ruby-parallel-tests
   (package
     (name "ruby-parallel-tests")
