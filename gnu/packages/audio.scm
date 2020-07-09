@@ -3586,14 +3586,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "20.4")
+    (version "20.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "0irdizlng2s3akmxdbfxcbd93bbjz9543nh7fisszim6v0ks59d9"))))
+                "1frg64q2d8cia6v7jia7kahzx0apwdl0z252mzlbwqdz5960nv90"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
