@@ -113,7 +113,7 @@ mathematical operations, and much more.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "git://git.osmocom.org/rtl-sdr.git")
+             (url "https://git.osmocom.org/rtl-sdr/")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
