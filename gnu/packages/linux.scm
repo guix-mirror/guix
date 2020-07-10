@@ -443,6 +443,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256
      (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f"))))
 
+(define %linux-libre-fix-atheros-9271-patch
+  (search-patch "linux-libre-fix-atheros-9271.patch"))
+
 (define (source-with-patches source patches)
   (origin
     (inherit source)
@@ -452,12 +455,14 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-5.7-source
   (source-with-patches linux-libre-5.7-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             %linux-libre-fix-atheros-9271-patch)))
 
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch
+                             %linux-libre-fix-atheros-9271-patch
                              ;; Pinebook Pro patch from linux-next,
                              ;; can be dropped for linux-libre 5.7
                              (search-patch
@@ -466,19 +471,23 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-4.19-source
   (source-with-patches linux-libre-4.19-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             %linux-libre-fix-atheros-9271-patch)))
 
 (define-public linux-libre-4.14-source
   (source-with-patches linux-libre-4.14-pristine-source
-                       (list %boot-logo-patch)))
+                       (list %boot-logo-patch
+                             %linux-libre-fix-atheros-9271-patch)))
 
 (define-public linux-libre-4.9-source
   (source-with-patches linux-libre-4.9-pristine-source
-                       (list %boot-logo-patch)))
+                       (list %boot-logo-patch
+                             %linux-libre-fix-atheros-9271-patch)))
 
 (define-public linux-libre-4.4-source
   (source-with-patches linux-libre-4.4-pristine-source
-                       (list %boot-logo-patch)))
+                       (list %boot-logo-patch
+                             %linux-libre-fix-atheros-9271-patch)))
 
 
 ;;;

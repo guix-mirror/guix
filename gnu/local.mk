@@ -1238,6 +1238,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
   %D%/packages/patches/linkchecker-tests-require-network.patch	\
   %D%/packages/patches/linphoneqt-tabbutton.patch		\
+  %D%/packages/patches/linux-libre-fix-atheros-9271.patch	\
   %D%/packages/patches/linux-libre-support-for-Pinebook-Pro.patch \
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
