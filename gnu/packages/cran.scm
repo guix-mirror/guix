@@ -21142,20 +21142,23 @@ using the @code{rstan} and @code{rstanarm} packages).")
 (define-public r-rstantools
   (package
     (name "r-rstantools")
-    (version "2.0.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rstantools" version))
        (sha256
         (base32
-         "1il0pn4ksbdkska5fmhvgaicvwnnc6cs08g6ags9fj1xkjiqmrsa"))))
+         "0b9x8rzj3dr4m7yjx476nn42z22xd1xnw85m9frfwxy5ivg1any9"))))
     (properties `((upstream-name . "rstantools")))
     (build-system r-build-system)
     (inputs `(("pandoc" ,ghc-pandoc)))
     (propagated-inputs
      `(("r-desc" ,r-desc)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppparallel" ,r-rcppparallel)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://mc-stan.org/rstantools/")
     (synopsis "Tools for developing R packages interfacing with Stan")
     (description
