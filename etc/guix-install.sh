@@ -350,6 +350,8 @@ sys_enable_guix_daemon()
                   cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/gnu-store.mount" \
                      /etc/systemd/system/;
                   chmod 664 /etc/systemd/system/gnu-store.mount;
+                  systemctl daemon-reload &&
+                      systemctl enable gnu-store.mount;
               fi
 
               cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/guix-daemon.service" \
@@ -367,8 +369,8 @@ sys_enable_guix_daemon()
 	      fi;
 
               systemctl daemon-reload &&
-                  systemctl start  gnu-store.mount guix-daemon &&
-                  systemctl enable gnu-store.mount guix-daemon; } &&
+                  systemctl enable guix-daemon &&
+                  systemctl start  guix-daemon; } &&
                 _msg "${PAS}enabled Guix daemon via systemd"
             ;;
         sysv-init)
