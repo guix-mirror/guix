@@ -1,0 +1,73 @@
+Remove fixed search paths from autotools.
+
+--- a/m4/package_utilies.m4	1970-01-01 01:00:01.000000000 +0100
++++ b/m4/package_utilies.m4	2020-07-07 12:41:48.871661042 +0200
+@@ -23,32 +23,32 @@
+     AC_PACKAGE_NEED_UTILITY($1, "$cc", cc, [C compiler])
+ 
+     if test -z "$MAKE"; then
+-        AC_PATH_PROG(MAKE, gmake,, /usr/bin:/usr/freeware/bin)
++        AC_PATH_PROG(MAKE, gmake)
+     fi
+     if test -z "$MAKE"; then
+-        AC_PATH_PROG(MAKE, make,, /usr/bin)
++        AC_PATH_PROG(MAKE, make)
+     fi
+     make=$MAKE
+     AC_SUBST(make)
+     AC_PACKAGE_NEED_UTILITY($1, "$make", make, [GNU make])
+ 
+     if test -z "$LIBTOOL"; then
+-	AC_PATH_PROG(LIBTOOL, glibtool,, /usr/bin)
++	AC_PATH_PROG(LIBTOOL, glibtool)
+     fi
+     if test -z "$LIBTOOL"; then
+-	AC_PATH_PROG(LIBTOOL, libtool,, /usr/bin:/usr/local/bin:/usr/freeware/bin)
++	AC_PATH_PROG(LIBTOOL, libtool)
+     fi
+     libtool=$LIBTOOL
+     AC_SUBST(libtool)
+     AC_PACKAGE_NEED_UTILITY($1, "$libtool", libtool, [GNU libtool])
+ 
+     if test -z "$TAR"; then
+-        AC_PATH_PROG(TAR, tar,, /usr/freeware/bin:/bin:/usr/local/bin:/usr/bin)
++        AC_PATH_PROG(TAR, tar)
+     fi
+     tar=$TAR
+     AC_SUBST(tar)
+     if test -z "$ZIP"; then
+-        AC_PATH_PROG(ZIP, gzip,, /bin:/usr/local/bin:/usr/freeware/bin)
++        AC_PATH_PROG(ZIP, gzip)
+     fi
+ 
+     zip=$ZIP
+@@ -61,25 +61,25 @@
+     AC_SUBST(makedepend)
+ 
+     if test -z "$AWK"; then
+-        AC_PATH_PROG(AWK, awk,, /bin:/usr/bin)
++        AC_PATH_PROG(AWK, awk)
+     fi
+     awk=$AWK
+     AC_SUBST(awk)
+ 
+     if test -z "$SED"; then
+-        AC_PATH_PROG(SED, sed,, /bin:/usr/bin)
++        AC_PATH_PROG(SED, sed)
+     fi
+     sed=$SED
+     AC_SUBST(sed)
+ 
+     if test -z "$ECHO"; then
+-        AC_PATH_PROG(ECHO, echo,, /bin:/usr/bin)
++        AC_PATH_PROG(ECHO, echo)
+     fi
+     echo=$ECHO
+     AC_SUBST(echo)
+ 
+     if test -z "$SORT"; then
+-        AC_PATH_PROG(SORT, sort,, /bin:/usr/bin)
++        AC_PATH_PROG(SORT, sort)
+     fi
+     sort=$SORT
+     AC_SUBST(sort)
