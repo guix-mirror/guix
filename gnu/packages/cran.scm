@@ -20933,14 +20933,14 @@ Haberman's interaction model when all items are dichotomously scored.")
 (define-public r-iheatmapr
   (package
     (name "r-iheatmapr")
-    (version "0.4.12")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "iheatmapr" version))
        (sha256
         (base32
-         "0s479j9l35xiss599vablxgvg6i2j9zq9sxphsq4vdk3bafg84bw"))))
+         "0s2lc088rq2siy2wzmg1y6nss68rs33mf7w2izqqmg6kbx6d7y9h"))))
     (properties `((upstream-name . "iheatmapr")))
     (build-system r-build-system)
     (propagated-inputs
@@ -20950,10 +20950,10 @@ Haberman's interaction model when all items are dichotomously scored.")
        ("r-jsonlite" ,r-jsonlite)
        ("r-knitr" ,r-knitr)
        ("r-magrittr" ,r-magrittr)
-       ("r-plyr" ,r-plyr)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-s4vectors" ,r-s4vectors)
        ("r-scales" ,r-scales)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://docs.ropensci.org/iheatmapr")
     (synopsis "Interactive, Complex Heatmaps")
     (description
