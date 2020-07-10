@@ -32,6 +32,7 @@
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -250,7 +251,7 @@ supports HTTP, HTTPS and GnuTLS.")
 (define-public gnunet
   (package
    (name "gnunet")
-   (version "0.12.2")
+   (version "0.13.0")
    (source
     (origin
       (method url-fetch)
@@ -258,7 +259,7 @@ supports HTTP, HTTPS and GnuTLS.")
                           ".tar.gz"))
       (sha256
        (base32
-        "1mwcy7fj1rpd39w7j7k3jdwlil5s889b2qlhfdggqmhigl28na5c"))))
+        "0g2zp8rj4yzz9xj4b5k9bdflmmpqxdgxvkr1vk5cq0jlz3vqmxx3"))))
    (build-system gnu-build-system)
    (inputs
     `(("bluez" ,bluez)
@@ -274,6 +275,7 @@ supports HTTP, HTTPS and GnuTLS.")
       ("libltdl" ,libltdl)
       ("libmicrohttpd" ,libmicrohttpd)
       ("libogg" ,libogg)
+      ("libsodium" ,libsodium)
       ("libunistring" ,libunistring)
       ("miniupnpc" ,miniupnpc)
       ("opus" ,opus)
@@ -282,7 +284,8 @@ supports HTTP, HTTPS and GnuTLS.")
       ("zbar" ,zbar)
       ("zlib" ,zlib)))
    (native-inputs
-    `(("pkg-config" ,pkg-config)
+    `(("curl" ,curl)
+      ("pkg-config" ,pkg-config)
       ("python" ,python)
       ("xxd" ,xxd)
       ("which" ,(@ (gnu packages base) which))))
@@ -311,8 +314,9 @@ supports HTTP, HTTPS and GnuTLS.")
               (("test_transport_blacklisting_multiple_plugins\\$\\(EXEEXT\\) \\\\\n") ""))
             (substitute* "src/testbed/Makefile"
               (("test_testbed_api_2peers_1controller\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_testbed_api_test\\$\\(EXEEXT\\) \\\\\n") "")
               (("test_testbed_api_statistics\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_testbed_api_test\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_testbed_api_test_timeout\\$\\(EXEEXT\\) \\\\\n") "")
               (("test_testbed_api_topology\\$\\(EXEEXT\\) \\\\\n") "")
               (("test_testbed_api_topology_clique\\$\\(EXEEXT\\) \\\\\n") ""))
             (substitute* "src/topology/Makefile"
