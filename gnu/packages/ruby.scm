@@ -7253,6 +7253,36 @@ TomDoc format.")
     (home-page "http://rubyworks.github.com/tomparse/")
     (license license:bsd-2)))
 
+(define-public ruby-yard-tomdoc
+  (package
+    (name "ruby-yard-tomdoc")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "yard-tomdoc" version))
+       (sha256
+        (base32
+         "1725gs8b8klpwhrvnf2wwp7dw3zxs9vz2la983l2d8c4r4fn1j2z"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "rubytest" "-Ilib" "-Itest" "test/"))))))
+    (native-inputs
+     `(("ruby-rubytest-cli" ,ruby-rubytest-cli)
+       ("ruby-spectroscope" ,ruby-spectroscope)
+       ("ruby-ae" ,ruby-ae)))
+    (propagated-inputs
+     `(("ruby-tomparse" ,ruby-tomparse)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "TomDoc syntax for YARD")
+    (description "This module adds support for the TomDoc documentation format
+to YARD, a documentation generation tool for Ruby.")
+    (home-page "http://rubyworks.github.com/yard-tomdoc/")
+    (license license:expat)))
+
 (define-public ruby-clap
   (package
     (name "ruby-clap")
