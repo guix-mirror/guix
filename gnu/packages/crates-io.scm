@@ -3061,10 +3061,10 @@ for computer graphics.")
      "This package provides current CI environment information.")
     (license license:asl2.0)))
 
-(define-public rust-clang-sys-0.28
+(define-public rust-clang-sys-0.29
   (package
     (name "rust-clang-sys")
-    (version "0.28.1")
+    (version "0.29.3")
     (source
       (origin
         (method url-fetch)
@@ -3072,7 +3072,7 @@ for computer graphics.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0ls8zcqi5bmmrvrk3b6r1ym4wlivinbv590d2dvg2xn9f44mbpl1"))))
+          "02nibl74zbz5x693iy5vdbhnfckja47m7j1mp2bj7fjw3pgkfs7y"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -3094,6 +3094,20 @@ for computer graphics.")
     (description
      "This package provides Rust bindings for @code{libclang}.")
     (license license:asl2.0)))
+
+(define-public rust-clang-sys-0.28
+  (package
+    (inherit rust-clang-sys-0.29)
+    (name "rust-clang-sys")
+    (version "0.28.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clang-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ls8zcqi5bmmrvrk3b6r1ym4wlivinbv590d2dvg2xn9f44mbpl1"))))))
 
 (define-public rust-clang-sys-0.26
   (package
