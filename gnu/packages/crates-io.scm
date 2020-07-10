@@ -540,7 +540,7 @@ text or blue underlined text, on ANSI terminals.")
 (define-public rust-aom-sys-0.1
   (package
     (name "rust-aom-sys")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
       (origin
         (method url-fetch)
@@ -549,12 +549,11 @@ text or blue underlined text, on ANSI terminals.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0ix3djcf84kk53h6fac73n7jc614745n7kbmikxwi3s73b6vzgsr"))))
+          "1bqcpkycv1d67r6jcl9npfbw6rkl829rdq9w6vlpb0rjqxp0xzsn"))))
     (build-system cargo-build-system)
     (arguments
-     `(;#:skip-build? #t
-       #:cargo-inputs
-       (("rust-bindgen" ,rust-bindgen-0.51)
+     `(#:cargo-inputs
+       (("rust-bindgen" ,rust-bindgen-0.53)
         ("rust-metadeps" ,rust-metadeps-1.1))
        #:phases
        (modify-phases %standard-phases
