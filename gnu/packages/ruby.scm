@@ -7230,6 +7230,29 @@ used, such as Assay or AE.")
     (home-page "http://rubyworks.github.com/spectroscope/")
     (license license:bsd-2)))
 
+(define-public ruby-tomparse
+  (package
+    (name "ruby-tomparse")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "tomparse" version))
+       (sha256
+        (base32
+         "06xakk41f1kgj6j1ahkwn4r6cvidixvm4phhlrvmwb7c3pr8ygc8"))))
+    (build-system ruby-build-system)
+    ;; TODO: Tests require citron and rulebow, not yet packaged.
+    (arguments '(#:tests? #f))
+    (synopsis "TomDoc parser for Ruby")
+    (description "TomParse is a TomDoc parser for Ruby.  It takes a code
+comment as input and parses it into a convenient object-oriented structure in
+accordance with the TomDoc standard.  See
+@url{https://github.com/mojombo/tomdoc, TomDoc} for more information about the
+TomDoc format.")
+    (home-page "http://rubyworks.github.com/tomparse/")
+    (license license:bsd-2)))
+
 (define-public ruby-clap
   (package
     (name "ruby-clap")
