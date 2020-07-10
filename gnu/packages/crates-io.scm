@@ -2780,23 +2780,23 @@ archive to be linked into Rustcode.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-cexpr-0.3
+(define-public rust-cexpr-0.4
   (package
     (name "rust-cexpr")
-    (version "0.3.6")
+    (version "0.4.0")
     (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "cexpr" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "07fdfj4ff2974y33yixrb657riq9zl9b9h9lr0h7ridhhvxvbrgw"))))
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cexpr" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09qd1k1mrhcqfhqmsz4y1bya9gcs29si7y3w96pqkgid4y2dpbpl"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-nom" ,rust-nom-4.2))
+       (("rust-nom" ,rust-nom-5))
        #:cargo-development-inputs
        (("rust-clang-sys" ,rust-clang-sys-0.28))
        #:phases
@@ -2814,6 +2814,34 @@ archive to be linked into Rustcode.")
     (description
      "This package provides a C expression parser and evaluator.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-cexpr-0.3
+  (package
+    (inherit rust-cexpr-0.4)
+    (name "rust-cexpr")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cexpr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07fdfj4ff2974y33yixrb657riq9zl9b9h9lr0h7ridhhvxvbrgw"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nom" ,rust-nom-4.2))
+       #:cargo-development-inputs
+       (("rust-clang-sys" ,rust-clang-sys-0.28))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))))
 
 (define-public rust-cexpr-0.2
   (package
