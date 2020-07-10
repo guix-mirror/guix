@@ -1048,6 +1048,52 @@ more.")
     (home-page "https://github.com/xwmx/pandoc-ruby")
     (license license:expat)))
 
+(define-public ruby-slim
+  (package
+    (name "ruby-slim")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "slim" version))
+       (sha256
+        (base32
+         "0gjx30g84c82qzg32bd7giscvb4206v7mvg56kc839w9wjagn36n"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; See: https://github.com/slim-template/slim/issues/857 and
+         ;; https://github.com/slim-template/slim/issues/858.
+         (add-after 'unpack 'skip-broken-tests
+           (lambda _
+             (substitute* "test/core/test_embedded_engines.rb"
+               (("def test_render_with_markdown")
+                "def skipped_test_render_with_markdown"))
+             (substitute* "test/translator/test_translator.rb"
+               (("raise (\"Missing test for.*)" _ tail)
+                (string-append "print " tail)))
+             #t))
+         ;; See: https://salsa.debian.org/ruby-team/ruby-slim/-/commit/
+         ;; 824862bd99d1675bc699d8fc71ba965a785c1f44.
+         (add-after 'unpack 'prevent-bundler-interference
+           (lambda _
+             (substitute* "Rakefile"
+               (("require 'bundler/setup'") "nil")
+               (("Bundler::GemHelper\\.install_tasks") "nil"))
+             #t)))))
+    (native-inputs
+     `(("ruby-rack-test" ,ruby-rack-test)
+       ("ruby-sinatra" ,ruby-sinatra)))
+    (propagated-inputs
+     `(("ruby-temple" ,ruby-temple)
+       ("ruby-tilt" ,ruby-tilt)))
+    (synopsis "Minimalist template language for Ruby")
+    (description "Slim is a template language for Ruby that aims to reduce the
+syntax to the minimum while remaining clear.")
+    (home-page "http://slim-lang.com/")
+    (license license:expat)))
+
 (define-public ruby-asciidoctor
   (package
   (name "ruby-asciidoctor")
