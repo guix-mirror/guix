@@ -35,7 +35,7 @@
 (define-public cryptsetup
   (package
    (name "cryptsetup")
-   (version "2.3.1")
+   (version "2.3.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/linux/utils/cryptsetup/v"
@@ -43,7 +43,7 @@
                                 "/cryptsetup-" version ".tar.xz"))
             (sha256
              (base32
-              "1lp7kwakm3ssp8ww1y33plvfmpas5krf14pdz91p1kx2b7as9awj"))))
+              "1pw2bq4nv2z3xyycckxkbp7dp9kkp2n6bspna3plryg277z4zjiv"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
@@ -58,7 +58,7 @@
     `(("pkg-config" ,pkg-config)))
    (inputs
     `(("argon2" ,argon2)
-      ("json-c" ,json-c-0.13)   ;XXX update this for cryptsetup >= 2.3
+      ("json-c" ,json-c)
       ("libgcrypt" ,libgcrypt)
       ("lvm2" ,lvm2)                    ; device-mapper
       ("popt" ,popt)
