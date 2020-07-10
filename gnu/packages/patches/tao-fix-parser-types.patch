@@ -1,0 +1,26 @@
+Taken from Debian:
+https://salsa.debian.org/multimedia-team/taopm/-/raw/master/debian/patches/02-fix-parser-yyerror.diff
+
+Description: Use a constant char, dummy comment.
+Author: Tiago Bortoletto Vaz <tiago@debian.org>
+Last-Update: 2013-04-17
+--- a/taoparse/taoparser.yy
++++ b/taoparse/taoparser.yy
+@@ -23,7 +23,7 @@
+ #include <stdio.h>
+ #include "taoparserdefs.h"
+ 
+-int yyerror(char *s);
++int yyerror(const char *s);
+ 
+ //#ifdef LINUX
+ int yylex(void);
+@@ -2924,7 +2924,7 @@
+     } 
+ 
+ 
+-int yyerror (char *s)
++int yyerror (const char *s)
+     {
+     parse_error(what_I_expected_here);
+     std::cout << "PARSE_FAILED";

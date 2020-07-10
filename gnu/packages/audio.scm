@@ -70,6 +70,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnunet) ; libmicrohttpd
@@ -860,6 +861,76 @@ classes include: dynamics (compressor, limiter), time (delay, chorus,
 flanger), ringmodulator, distortion, filters, pitchshift, oscillators,
 emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
     (license license:gpl3+)))
+
+(define-public tao
+  (package
+    (name "tao")
+    (version "1.0-beta-10May2006")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/taopm/Tao/"
+                                  "tao-" version "/"
+                                  "tao-" version ".tar.gz"))
+              (sha256
+               (base32
+                "156py3g6mmglldfd0j76bn7n242hdwf49diaprjpj7crp8vgf2pz"))
+              (patches
+               (search-patches "tao-add-missing-headers.patch"
+                               "tao-fix-parser-types.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "configure"
+                    (("SHELL=/bin/sh") ""))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("TAO_RELEASE=-beta")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-references
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "user-scripts/tao.in"
+               (("taoparse")
+                (string-append (assoc-ref outputs "out") "/bin/taoparse"))
+               (("grep") (which "grep"))
+               (("sed -f \\$distdir/user-scripts/")
+                (string-append (which "sed") " -f $distdir/"))
+               (("distdir=.*")
+                (string-append "distdir="
+                               (assoc-ref outputs "out") "/share/tao")))
+             #t))
+         (add-after 'install 'install-extra-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/tao/"))
+                    (inc (string-append out "/include/tao/")))
+               (mkdir-p share)
+               (mkdir-p inc)
+               (install-file "user-scripts/error.parse" share)
+               (copy-recursively "examples" (string-append share "examples"))
+               (for-each (lambda (file) (install-file file inc))
+                         (find-files "include" "\\.h"))
+               #t))))))
+    (inputs
+     `(("audiofile" ,audiofile)
+       ("libxi" ,libxi)
+       ("libxmu" ,libxmu)
+       ("mesa" ,mesa)
+       ("glut" ,freeglut)
+       ("flex" ,flex)
+       ("bison" ,bison)
+       ("sed" ,sed)
+       ("grep" ,grep)))
+    (home-page "http://taopm.sourceforge.net/")
+    (synopsis "Sound Synthesis with Physical Models")
+    (description "Tao is a software package for sound synthesis using physical
+models.  It provides a virtual acoustic material constructed from masses and
+springs which can be used as the basis for building quite complex virtual
+musical instruments.  Tao comes with a synthesis language for creating and
+playing instruments and a C++ API for those who would like to use it as an
+object library.")
+    (license license:gpl2+)))
 
 (define-public csound
   (package
