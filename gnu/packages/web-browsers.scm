@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -343,7 +344,7 @@ access.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "1.12.0")
+    (version "1.13.0")
     (source
      (origin
        (method url-fetch)
@@ -351,7 +352,7 @@ access.")
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
-        (base32 "0pywyhi4v6ymxpn85grrdr1agmcxsnm5jfqf3rlxqx5swbnxbfs1"))))
+        (base32 "1xq0a0mcssc1ss4fvhhwr75dhlh3nr9w46i2gmqczzh5cynk1sfk"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-attrs" ,python-attrs))) ; for tests
