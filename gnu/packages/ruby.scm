@@ -2725,14 +2725,14 @@ localization.")
 (define-public ruby-temple
   (package
     (name "ruby-temple")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "temple" version))
        (sha256
         (base32
-         "158d7ygbwcifqnvrph219p7m78yjdjazhykv5darbkms7bxm5y09"))))
+         "060zzj7c2kicdfk6cpnn40n9yjnhfrr13d0rsbdhdij68chp2861"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-tilt" ,ruby-tilt)
