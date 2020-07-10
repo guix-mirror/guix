@@ -10555,5 +10555,8 @@ to generate stacktraces which are then interpreted by the userspace program
        ("xorg-server" ,xorg-server-for-tests)))
     (home-page "https://wiki.gnome.org/Apps/Builder")
     (synopsis "Toolsmith for GNOME-based applications")
-    (description "Builder aims to be an IDE for writing GNOME-based software.")
+    (description "Builder aims to be an integrated development
+environment (IDE) for writing GNOME-based software.  It features fuzzy search,
+auto-completion, a mini code map, documentation browsing, Git integration, an
+integrated profiler via Sysprof, debugging support, and more.")
     (license license:gpl3+)))
