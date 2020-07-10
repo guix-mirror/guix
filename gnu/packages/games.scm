@@ -7035,7 +7035,7 @@ online.")
 (define-public chocolate-doom
   (package
     (name "chocolate-doom")
-    (version "3.0.0")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.chocolate-doom.org/downloads/"
@@ -7045,7 +7045,7 @@ online.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1f6sw6qa9z0a70dsjh5cs45fkyyxw68s7vkqlykihz8cjcisdbkk"))))
+                "1iy8rx7kjvi1zjiw4zh77szzmd1sgpqajvbhprh1sj93fhbxcdfl"))))
     (build-system gnu-build-system)
     (inputs `(("sdl2-net" ,sdl2-net)
               ("sdl2-mixer" , sdl2-mixer)
