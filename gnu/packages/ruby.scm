@@ -6688,14 +6688,26 @@ master/html-formatter/ruby")
          "0g9rqfslbzkkrq2kvl14fgknrhfbji3bjjpjxff5nc9wzd3hd549"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:test-target "spec"
+     '(#:test-target "default"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-rubocop
+           ;; Rubocop lint check fails with our more recent version.
+           (lambda _
+             (substitute* "Rakefile"
+               (("spec cucumber rubocop")
+                "spec cucumber"))
+             #t))
          (add-after 'extract-gemspec 'strip-version-requirements
            (lambda _
+             (delete-file "Gemfile")    ;do not use Bundler
              (substitute* "cucumber.gemspec"
                (("(.*add_.*dependency '[_A-Za-z0-9-]+').*" _ stripped)
                 (string-append stripped "\n")))
+             #t))
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" (getcwd))
              #t)))))
     (propagated-inputs
      `(("ruby-builder" ,ruby-builder)
