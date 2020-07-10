@@ -4752,13 +4752,15 @@ define executable specifications of your code.")
                ;; the Gemfile instead.
                (("group :secondary") "[].each"))
              #t)))))
+    (propagated-inputs
+     `(("ruby-pandoc-ruby" ,ruby-pandoc-ruby)
+       ("ruby-sassc" ,ruby-sassc)))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-yard" ,ruby-yard)
        ("ruby-builder" ,ruby-builder)
        ("ruby-erubis" ,ruby-erubis)
-       ("ruby-markaby" ,ruby-markaby)
-       ("ruby-sassc" ,ruby-sassc)))
+       ("ruby-markaby" ,ruby-markaby)))
     (synopsis "Generic interface to multiple Ruby template engines")
     (description
      "Tilt is a thin interface over a number of different Ruby template
