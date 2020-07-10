@@ -781,6 +781,28 @@ images of initially unknown height.")
     (license (list license:isc          ; pbmtools/p?m.5
                    license:gpl2+))))    ; the rest
 
+(define-public openjpeg-data
+  (package
+    (name "openjpeg-data")
+    (version "2020.05.19")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/uclouvain/openjpeg-data.git")
+         (commit "c5c4a8c")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jp84gbhw8q5b8mhc322ql9410hjf32w9hg10x4isfa9j59mnncb"))))
+    (build-system copy-build-system)
+    (synopsis "Test files for OpenJPEG")
+    (description "OpenJPEG-Data contains all files required to run the openjpeg
+test suite, including conformance tests (following Rec. ITU-T T.803 | ISO/IEC
+15444-4 procedures), non-regression tests and unit tests.")
+    (home-page "https://github.com/uclouvain/openjpeg-data")
+    (license license:bsd-2)))
+
 (define-public openjpeg
   (package
     (name "openjpeg")
