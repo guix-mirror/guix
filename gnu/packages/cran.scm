@@ -4948,17 +4948,19 @@ applied econometric analysis.")
 (define-public r-cubature
   (package
     (name "r-cubature")
-    (version "2.0.4")
+    (version "2.0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cubature" version))
        (sha256
         (base32
-         "0jpyq8j7x06dpiz29w48av879ygldzgls9z810192hsymkmfaz6r"))))
+         "006la36gxdikvmdnq4ny7ik7r30id4z3b3fqsl57dpqwkpsbsgrq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/bnaras/cubature")
     (synopsis "Adaptive multivariate integration over hypercubes")
     (description
