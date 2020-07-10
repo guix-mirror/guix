@@ -3024,44 +3024,10 @@ enemies in different game modes such as space ball, death match, team death
 match, cannon keep, and grave-itation pit.")
       (license license:gpl3+))))
 
-(define minetest-data
-  (package
-    (name "minetest-data")
-    (version "5.1.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/minetest/minetest_game")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1r9fxz2j24q74a9injvbxbf2xk67fzabv616i676zw2cvgv9hn39"))))
-    (build-system trivial-build-system)
-    (native-inputs
-     `(("source" ,source)))
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-                   (let ((install-dir (string-append
-                                       %output
-                                       "/share/minetest/games/minetest_game")))
-                     (mkdir-p install-dir)
-                     (copy-recursively
-                       (assoc-ref %build-inputs "source")
-                       install-dir)
-                     #t))))
-    (synopsis "Main game data for the Minetest game engine")
-    (description
-     "Game data for the Minetest infinite-world block sandbox game.")
-    (home-page "https://www.minetest.net/")
-    (license license:lgpl2.1+)))
-
 (define-public minetest
   (package
     (name "minetest")
-    (version "5.1.1")
+    (version "5.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3070,7 +3036,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0cjj63333b7j4ydfq0h9yc6d2jvmyjd7n7zbd08yrf0rcibrj2k0"))
+                "03ga3j3cg38w4lg4d4qxasmnjdl8n3lbizidrinanvyfdyvznyh6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3123,6 +3089,40 @@ various types of blocks in a three-dimensional open world.  This allows
 forming structures in every possible creation, on multiplayer servers or as a
 single player.  Mods and texture packs allow players to personalize the game
 in different ways.")
+    (home-page "https://www.minetest.net/")
+    (license license:lgpl2.1+)))
+
+(define minetest-data
+  (package
+    (name "minetest-data")
+    (version (package-version minetest))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/minetest/minetest_game")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1liciwlh013z5h08ib0psjbwn5wkvlr937ir7kslfk4vly984cjx"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("source" ,source)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((install-dir (string-append
+                                       %output
+                                       "/share/minetest/games/minetest_game")))
+                     (mkdir-p install-dir)
+                     (copy-recursively
+                       (assoc-ref %build-inputs "source")
+                       install-dir)
+                     #t))))
+    (synopsis "Main game data for the Minetest game engine")
+    (description
+     "Game data for the Minetest infinite-world block sandbox game.")
     (home-page "https://www.minetest.net/")
     (license license:lgpl2.1+)))
 
