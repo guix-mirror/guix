@@ -6524,6 +6524,14 @@ variable length integers (varint) in Ruby Protocol Buffers.")
                ((".*require \"bundler/setup\".*" all)
                 (string-append all "  require 'bundler/gem_tasks'\n")))
              #t))
+         ;; The LineNumbersTest test fails non-deterministically (see:
+         ;; https://github.com/ruby-prof/ruby-prof/issues/276).
+         (add-after 'extract-gemspec 'delete-flaky-test
+           (lambda _
+             (delete-file "test/line_number_test.rb")
+             (substitute* "ruby-prof.gemspec"
+               (("\"test/line_number_test\\.rb\"\\.freeze, ") ""))
+             #t))
          (add-before 'check 'compile
           (lambda _
             (invoke "rake" "compile"))))))
