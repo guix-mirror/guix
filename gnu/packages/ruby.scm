@@ -51,6 +51,7 @@
   #:use-module (gnu packages rails)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
@@ -983,6 +984,69 @@ line of code.")
     ;; "Saikuro uses the BSD license", but the LICENSE file contains the text
     ;; of the Expat license.
     (license license:bsd-3)))
+
+(define-public ruby-pandoc-ruby
+  (package
+    (name "ruby-pandoc-ruby")
+    (version "2.1.4")
+    (source
+     (origin
+       (method git-fetch)               ;the gem lacks many test files
+       (uri (git-reference
+             (url "https://github.com/xwmx/pandoc-ruby.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03a11clhycyn0jhc7g9davpqd83sn60jqwjy1y145ag9sq6sp935"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           ;; TODO: Remove this phase after ghc-pandoc gets upgraded to 2.9.2+
+           ;; (see: https://github.com/xwmx/pandoc-ruby/issues/39).
+           (lambda _
+             (substitute* "test/test_conversions.rb"
+               (("next if from == to.*" all)
+                (string-append
+                 all
+                 "      next if ['plain', 'beamer'].include? to\n")))
+             #t))
+         (add-after 'unpack 'patch-pandoc-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((pandoc (string-append (assoc-ref inputs "ghc-pandoc")
+                                          "/bin/pandoc")))
+               (substitute* "lib/pandoc-ruby.rb"
+                 (("@@pandoc_path = 'pandoc'")
+                  (format #f "@@pandoc_path = '~a'" pandoc)))
+               (substitute* "test/test_pandoc_ruby.rb"
+                 (("('|\")pandoc" _ quote)
+                  (string-append quote pandoc))
+                 (("\\^pandoc")
+                  ".*pandoc"))
+               #t)))
+         (add-after 'extract-gemspec 'remove-Gemfile.lock
+           (lambda _
+             (delete-file "Gemfile.lock")
+             (substitute* "pandoc-ruby.gemspec"
+               (("Gemfile\\.lock") ""))
+             #t)))))
+    (native-inputs
+     `(("ruby-mocha" ,ruby-mocha)))
+    (inputs
+     `(("ghc-pandoc" ,ghc-pandoc)))
+    (synopsis "Ruby wrapper for Pandoc")
+    (description "PandocRuby is a wrapper for Pandoc, a Haskell library with
+command line tools for converting one markup format to another.  Pandoc can
+convert documents from a variety of formats including markdown,
+reStructuredText, textile, HTML, DocBook, LaTeX, and MediaWiki markup to a
+variety of other formats, including markdown, reStructuredText, HTML, LaTeX,
+ConTeXt, PDF, RTF, DocBook XML, OpenDocument XML, ODT, GNU Texinfo, MediaWiki
+markup, groff man pages, HTML slide shows, EPUB, Microsoft Word docx, and
+more.")
+    (home-page "https://github.com/xwmx/pandoc-ruby")
+    (license license:expat)))
 
 (define-public ruby-asciidoctor
   (package
