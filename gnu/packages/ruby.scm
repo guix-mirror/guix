@@ -4720,14 +4720,17 @@ define executable specifications of your code.")
 (define-public ruby-tilt
   (package
     (name "ruby-tilt")
-    (version "2.0.9")
+    (version "2.0.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "tilt" version))
+       (method git-fetch)               ;the distributed gem lacks tests
+       (uri (git-reference
+             (url "https://github.com/rtomayko/tilt.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ca4k0clwf0rkvy7726x4nxpjxkpv67w043i39saxgldxd97zmwz"))))
+         "0adb7fg7925n2rd9a8kkqz3mgylw2skp9hkh9qc1rnph72mqsm6r"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
