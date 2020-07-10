@@ -11449,7 +11449,7 @@ protect you.")
 (define-public 7kaa
   (package
     (name "7kaa")
-    (version "2.15.3")
+    (version "2.15.4")
     (source
      (origin
        (method url-fetch)
@@ -11457,7 +11457,7 @@ protect you.")
                            "releases/download/v" version "/"
                            "7kaa-" version ".tar.xz"))
        (sha256
-        (base32 "0blj47mcsfw1sn3465j6iham8m6ki07iggnq4q8nnaqnryx710jc"))))
+        (base32 "0n0bn6xshv3cwk8j0lkl65a1vqd1xkkzlhvwxm32va80nc16d5ds"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
