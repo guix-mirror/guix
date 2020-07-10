@@ -2108,7 +2108,7 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
 (define-public xwallpaper
   (package
     (name "xwallpaper")
-    (version "0.6.4")
+    (version "0.6.5")
     (source
      (origin
        (method git-fetch)
@@ -2117,8 +2117,7 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "175fzifvia58vah2x7509drvfn3xfv5d9szgh9x1w1a1w8rcs2hx"))))
+        (base32 "121ai4dc0v65qk12gn9w62ixly8hc8a5qrygkbb82vy8ck4jqxj7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
