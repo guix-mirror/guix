@@ -102,20 +102,20 @@
     (build-system gnu-build-system)
     (home-page "https://github.com/six-ddc/hss/")
     (synopsis "Interactive SSH client for multiple servers")
-    (description "@command{hss} is an interactive SSH client for multiple
-servers.  It will provide almost the same experience as in the Bash
-environment.  It supports:
+    (description
+     "@command{hss} is an interactive SSH client for multiple servers.  Commands
+are executed on all servers in parallel.  Execution on one server does not need
+to wait for that on another server to finish before starting.  One can run a
+command on hundreds of servers at the same time, with almost the same experience
+as a local Bash shell.
 
+It supports:
 @itemize @bullet
-@item interactive input: based on @code{libreadline}.
-@item history: responding to the @key{C-r} key.
-@item auto-completion: completion from remote server on the @key{TAB} key, for
-commands and paths.
-@end itemize
-
-Command is executed on all servers in parallel.  Execution on one server does
-not need to wait for that on another server to finish before starting.  So we
-can run a command on hundreds of servers at the same time.")
+@item interactive input: based on GNU readline.
+@item history: responding to the @kbd{C-r} key.
+@item auto-completion: @key{TAB}-completion from remote servers for commands and
+file names.
+@end itemize\n")
     (license license:expat)))
 
 (define-public libssh
