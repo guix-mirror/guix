@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -165,6 +166,37 @@ library authors.  Namely, it enables manipulation of batches of numbers with
 the same arithmetic operators as for single values.  It also provides
 accelerated implementation of common mathematical functions operating on
 batches.")
+    (license license:bsd-3)))
+
+(define-public chaiscript
+  (package
+    (name "chaiscript")
+    (version "6.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ChaiScript/ChaiScript")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0i1c88rn1wwz8nf3dpapcdkk4w623m3nksfy5yjai10k9irkzy3c"))))
+    (build-system cmake-build-system)
+    (home-page "https://chaiscript.com/")
+    (synopsis "Embedded scripting language designed for C++")
+    (description
+     "ChaiScript is one of the only embedded scripting language designed from
+the ground up to directly target C++ and take advantage of modern C++
+development techniques.  Being a native C++ application, it has some advantages
+over existing embedded scripting languages:
+
+@enumerate
+@item Uses a header-only approach, which makes it easy to integrate with
+existing projects.
+@item Maintains type safety between your C++ application and the user scripts.
+@item Supports a variety of C++ techniques including callbacks, overloaded
+functions, class methods, and stl containers.
+@end enumerate\n")
     (license license:bsd-3)))
 
 (define-public fifo-map
