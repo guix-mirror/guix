@@ -88,15 +88,14 @@
      `(("readline" ,readline)))
     (arguments
      `(#:make-flags
-       (list ,(string-append "CC=" (cc-for-target)))
+       (list ,(string-append "CC=" (cc-for-target))
+             (string-append "INSTALL_BIN=" (assoc-ref %outputs "out") "/bin"))
        #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "Makefile"
-               (("/usr/local/bin")
-                (string-append (assoc-ref outputs "out") "/bin"))
                (("/usr/local/opt/readline")
                 (assoc-ref inputs "readline")))
              #t))
