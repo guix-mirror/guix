@@ -280,7 +280,7 @@ zabbix||{}
              '(file-exists? "/var/run/nginx/pid")
              marionette))
 
-          ;; Make sure we can access pages that correspond to our repository.
+          ;; Make sure we can access pages that correspond to our Zabbix instance.
           (letrec-syntax ((test-url
                            (syntax-rules ()
                              ((_ path code)
