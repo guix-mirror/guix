@@ -801,7 +801,7 @@ users.")
   (package
     (inherit hamlib)
     (name "wsjtx-hamlib")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method git-fetch)
@@ -835,7 +835,7 @@ users.")
 (define-public wsjtx
   (package
     (name "wsjtx")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method git-fetch)
@@ -844,7 +844,7 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12i8ch2yhxlbd7lbpl4s4y37ks4i00wasah4j44g104rxrzdny57"))
+        (base32 "0fhws44gg05d9y2al0pcdnxwxwh4bazcfl0g5mq2ks1r7w23wi5x"))
        (modules '((guix build utils)))
        (snippet
         '(begin
