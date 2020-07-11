@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,53 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
+
+(define-public hss
+  (package
+    (name "hss")
+    (version "1.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/six-ddc/hss.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rpysj65j9ls30bf2c5k5hykzzjfknrihs58imp178bx1wqzw4jl"))))
+    (inputs
+     `(("readline" ,readline)))
+    (arguments
+     `(#:tests? #f ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/local/bin")
+                (string-append (assoc-ref outputs "out") "/bin"))
+               (("/usr/local/opt/readline")
+                (assoc-ref inputs "readline")))
+             (setenv "CC" "gcc")))
+         (delete 'configure))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/six-ddc/hss/")
+    (synopsis "Interactive SSH client for multiple servers")
+    (description "@command{hss} is an interactive SSH client for multiple
+servers.  It will provide almost the same experience as in the Bash
+environment.  It supports:
+
+@itemize @bullet
+@item interactive input: based on @code{libreadline}.
+@item history: responding to the @key{C-r} key.
+@item auto-completion: completion from remote server on the @key{TAB} key, for
+commands and paths.
+@end itemize
+
+Command is executed on all servers in parallel.  Execution on one server does
+not need to wait for that on another server to finish before starting.  So we
+can run a command on hundreds of servers at the same time.")
+    (license license:expat)))
 
 (define-public libssh
   (package
