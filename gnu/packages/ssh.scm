@@ -99,7 +99,8 @@
                 (string-append (assoc-ref outputs "out") "/bin"))
                (("/usr/local/opt/readline")
                 (assoc-ref inputs "readline")))
-         (delete 'configure))))
+             #t))
+         (delete 'configure))))         ; no configure script
     (build-system gnu-build-system)
     (home-page "https://github.com/six-ddc/hss/")
     (synopsis "Interactive SSH client for multiple servers")
