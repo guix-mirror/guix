@@ -618,14 +618,14 @@ hardware.")
 (define-public flrig
   (package
     (name "flrig")
-    (version "1.3.50")
+    (version "1.3.51")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.w1hkj.com/files/flrig/flrig-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0fzrknzzi8kmzmrcfpc8rxr7v4a4ny6z6z5q5qwh95sp2kn2qzp9"))))
+        (base32 "0aq4x0ai9q08ypfhzfj2inc4z3q39zq1l6h9as1kil9yn4zbay61"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
