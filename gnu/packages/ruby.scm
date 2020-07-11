@@ -6988,7 +6988,7 @@ A modified copy of yajl is used, and included in the package.")
 (define-public ruby-yard
   (package
     (name "ruby-yard")
-    (version "0.9.20")
+    (version "0.9.25")
     (source
      (origin
        (method git-fetch)
@@ -6999,7 +6999,7 @@ A modified copy of yajl is used, and included in the package.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1v48zz8hzazrg79jksj9siys21d2axvzijvkxw2j42zh86syi1wi"))))
+         "1x7y4s557hrnq439lih7nqg1y7ximardw75jx9i92x3yzpviqqwa"))))
     (build-system ruby-build-system)
     (arguments
      ;; Note: Tests are willfully disabled to alleviate dependency cycle
