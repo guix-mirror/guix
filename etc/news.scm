@@ -13,6 +13,22 @@
 (channel-news
  (version 0)
 
+ (entry (commit "a98712785e0b042a290420fd74e5a4a5da4fc68f")
+        (title (en "New @command{guix git authenticate} command"))
+        (body
+         (en "The new @command{guix git authenticate} command authenticates a
+Git repository by verifying commit signatures and ensuring they all come from
+authorized parties, exactly like @command{guix pull} now does.
+
+This command is primarily useful to developers of channels.  It allows them to
+ensure, before pushing, that the channel only contains commits signed with
+authorized keys.  But this command is also useful anytime you use Git and want
+to allow people to authenticate code fetched from your repository.
+
+Run @command{info \"(guix) Invoking guix git authenticate\"} for more info,
+and see @uref{https://guix.gnu.org/blog/2020/securing-updates/} for details on
+these mechanisms.")))
+
  (entry (commit "43badf261f4688c8a7a7a9004a4bff8acb205835")
         (title (en "@command{guix pull} authenticates channels")
                (de "@command{guix pull} authentifiziert Kanäle")
