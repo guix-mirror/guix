@@ -5519,6 +5519,31 @@ Cucumber tool) user stories.  Also known by the name @code{cucumber.el}.")
 @code{org-mode} to be rendered as UTF-8 characters.")
     (license license:gpl3+)))
 
+(define-public emacs-org-drill
+  (package
+    (name "emacs-org-drill")
+    (version "2.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/phillord/org-drill")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13y302lyscdqrba1sfx60yf5ji2xi7fbsvjsjbw7hiz63kg6rccy"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-org" ,emacs-org)
+       ("emacs-persist" ,emacs-persist)))
+    (home-page "https://gitlab.com/phillord/org-drill")
+    (synopsis "Flash card memorization system using Org mode")
+    (description
+     "This package uses spaced repetition algorithms to conduct interactive
+drill sessions to aid in memorization.  In these sessions you are shown flash
+cards created in Org mode.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-superstar
   (package
     (name "emacs-org-superstar")
