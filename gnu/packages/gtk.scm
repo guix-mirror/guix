@@ -254,6 +254,38 @@ representing trie.  Trie is a kind of digital search tree.")
     (home-page "https://linux.thai.net/~thep/datrie/datrie.html")
     (license license:lgpl2.1+)))
 
+(define-public libthai
+  (package
+    (name "libthai")
+    (version "0.1.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://linux.thai.net/pub/thailinux/software/"
+                       "libthai/libthai-" version ".tar.xz"))
+       (sha256
+        (base32 "04g93bgxrcnay9fglpq2lj9nr7x1xh06i60m7haip8as9dxs3q7z"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-html-docdir="
+                       (assoc-ref %outputs "doc")
+                       "/share/doc/libthai/html"))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("datrie" ,libdatrie)))
+    (synopsis "Thai language support library")
+    (description "LibThai is a set of Thai language support routines aimed to
+ease developers’ tasks to incorporate Thai language support in their
+applications.")
+    (home-page "https://linux.thai.net/projects/libthai")
+    (license license:lgpl2.1+)))
+
 (define-public pango
   (package
    (name "pango")
