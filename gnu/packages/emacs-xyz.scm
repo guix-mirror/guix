@@ -3541,6 +3541,34 @@ in Lisp modes.")
       (description "This package provides dynamic evaluation in Emacs.")
       (license license:gpl3+))))
 
+(define-public emacs-literate-calc-mode
+  (let ((commit "e855bd718fa7d0d70b8f43264e10664369dd3a37")
+        (revision "0"))
+    (package
+      (name "emacs-literate-calc-mode")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sulami/literate-calc-mode.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0mk4cig8g8ibz97mvyan79fkypyanh7r0h7h20ibafq09nb0mw01"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/sulami/literate-calc-mode.el")
+      (synopsis "Literate programming for Emacs Calc")
+      (description
+       "This library provides literate programming for Calc.  There is both
+a major and a minor mode.  The major mode does some basic syntax highlighting,
+while the minor mode only evaluates all Calc statements while typing.  In
+particular, the minor mode works quite well with Org or Markdown modes, or
+other markup language major modes.")
+      (license license:gpl3+))))
+
 (define-public emacs-string-inflection
   (package
     (name "emacs-string-inflection")
