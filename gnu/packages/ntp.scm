@@ -107,20 +107,20 @@ time-stamping or reference clock, sub-microsecond accuracy is possible.")
 (define-public ntp
   (package
    (name "ntp")
-   (version "4.2.8p14")
+   (version "4.2.8p15")
    (source
      (origin
        (method url-fetch)
        (uri (list (string-append
-                    "http://archive.ntp.org/ntp4/ntp-"
-                    (version-major+minor version)
-                    "/ntp-" version ".tar.gz")
+                   "https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-"
+                   (version-major+minor version)
+                   "/ntp-" version ".tar.gz")
                   (string-append
-                    "https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-"
-                    (version-major+minor version)
-                    "/ntp-" version ".tar.gz")))
+                   "http://archive.ntp.org/ntp4/ntp-"
+                   (version-major+minor version)
+                   "/ntp-" version ".tar.gz")))
        (sha256
-        (base32 "1dsfbrad5adwjnm3k0y0ip8dzs7r2nmw66vjil8gvapnh7qf8q0r"))
+        (base32 "06cwhimm71safmwvp6nhxp6hvxsg62whnbgbgiflsqb8mgg40n7n"))
        (modules '((guix build utils)))
        (snippet
         '(begin
