@@ -61,6 +61,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -223,6 +224,35 @@ affine transformation (scale, rotation, shear, etc.).")
    (license (license:x11-style "file://COPYING"
                        "See 'COPYING' in the distribution."))
    (home-page "https://www.freedesktop.org/wiki/Software/HarfBuzz/")))
+
+(define-public libdatrie
+  (package
+    (name "libdatrie")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://linux.thai.net/pub/ThaiLinux/software/"
+                       "libthai/libdatrie-" version ".tar.xz"))
+       (sha256
+        (base32 "0jz9k0dd8jim4iyk5xrhkkdm4zq2ly6aw317ydjss44ymg97nz2l"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-html-docdir="
+                       (assoc-ref %outputs "doc")
+                       "/share/doc/datrie/html"))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Double-Array Trie Library")
+    (description "Libdatrie is an implementation of double-array structure for
+representing trie.  Trie is a kind of digital search tree.")
+    (home-page "https://linux.thai.net/~thep/datrie/datrie.html")
+    (license license:lgpl2.1+)))
 
 (define-public pango
   (package
