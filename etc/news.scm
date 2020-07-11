@@ -14,7 +14,8 @@
  (version 0)
 
  (entry (commit "a98712785e0b042a290420fd74e5a4a5da4fc68f")
-        (title (en "New @command{guix git authenticate} command"))
+        (title (en "New @command{guix git authenticate} command")
+               (de "Neuer Befehl @command{guix git authenticate}"))
         (body
          (en "The new @command{guix git authenticate} command authenticates a
 Git repository by verifying commit signatures and ensuring they all come from
@@ -27,7 +28,22 @@ to allow people to authenticate code fetched from your repository.
 
 Run @command{info \"(guix) Invoking guix git authenticate\"} for more info,
 and see @uref{https://guix.gnu.org/blog/2020/securing-updates/} for details on
-these mechanisms.")))
+these mechanisms.")
+         (de "Mit dem neuen Befehl @command{guix git authenticate} können Sie
+ein Git-Repository authentifizieren. Dazu werden alle Commit-Signaturen
+verifiziert und geprüft, dass jede von einer autorisierten Quelle kommt, genau
+wie es @command{guix pull} nun tut.
+
+Dieser Befehl hilft in erster Linie den Entwicklern von Kanälen. Mit ihm kann
+vor einem Push sichergestellt werden, dass der Kanal nur Commits enthält, die
+mit autorisierten Schlüsseln signiert worden sind. Aber der Befehl kann auch
+helfen, wann immer Sie Git verwenden und ermöglichen wollen, dass Nutzer von
+Ihrem Repository geladenen Code authentifizieren können.
+
+Führen Sie @command{info \"(guix) Invoking guix git authenticate\"} aus, um
+mehr Informationen zu erhalten, und lesen Sie
+@uref{https://guix.gnu.org/blog/2020/securing-updates/} für die Details dieser
+Mechanismen.")))
 
  (entry (commit "43badf261f4688c8a7a7a9004a4bff8acb205835")
         (title (en "@command{guix pull} authenticates channels")
