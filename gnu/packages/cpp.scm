@@ -328,7 +328,7 @@ maintained anymore.")
 (define-public gperftools
   (package
     (name "gperftools")
-    (version "2.7")
+    (version "2.8")
     (source
      (origin
        (method git-fetch)
@@ -336,14 +336,14 @@ maintained anymore.")
              (url "https://github.com/gperftools/gperftools")
              (commit (string-append "gperftools-" version))))
        (sha256
-        (base32 "0amvwrzn5qc0b0jpxpy5g6zkmj97zjh4hhjrd130hsg2lwwcwhy1"))
+        (base32 "1rnc53kaxlljgbpsff906vdsry9jl9gcvcnmxgkprwzxq1wipyd0"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ;; For tests:
+       ;; For tests.
        ("perl" ,perl)))
     (home-page "https://github.com/gperftools/gperftools")
     (synopsis "Multi-threaded malloc() and performance analysis tools for C++")
