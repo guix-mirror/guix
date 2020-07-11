@@ -46,6 +46,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,6 +74,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cpio)
@@ -3402,6 +3404,37 @@ mapper.  Kernel components are part of Linux-libre.")
                  (("-ldevmapper") ""))
                #t))))))
     (synopsis "Logical volume management for Linux (statically linked)")))
+
+(define-public thin-provisioning-tools
+  (package
+    (name "thin-provisioning-tools")
+    (version "0.8.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jthornber/thin-provisioning-tools.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01wl8c0cjbx1smbhj8dx6av5bnw5775m58gasc3vqwvsj0s9hq19"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; Doesn't build with --enable-testing due to a function name collision
+     ;; with glibc. Fixed upstream. TODO: Enable tests when 0.9.0 is released.
+     `(#:tests? #f))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoreconf" ,autoconf)))
+    (inputs
+     `(("boost" ,boost)
+       ("expat" ,expat)
+       ("libaio" ,libaio)))
+    (synopsis "Tools for manipulating the metadata of device-mapper targets")
+    (description "A suite of tools for manipulating the metadata of the
+dm-thin, dm-cache and dm-era device-mapper targets.")
+    (home-page "https://github.com/jthornber/thin-provisioning-tools")
+    (license license:gpl3+)))
 
 (define-public wireless-tools
   (package
