@@ -4,7 +4,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
@@ -158,16 +158,16 @@ etc. via a Web interface.  Features include:
 (define-public zabbix-agentd
   (package
     (name "zabbix-agentd")
-    (version "4.4.6")
+    (version "5.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://sourceforge/zabbix/ZABBIX%20Latest%20Stable/" version
-             "/zabbix-" version ".tar.gz"))
+             "https://cdn.zabbix.com/zabbix/sources/stable/"
+             (version-major+minor version) "/zabbix-" version ".tar.gz"))
        (sha256
         (base32
-         "03mf4sklnw1x0ixp41vnibkz0794yi9jhws7ixld8jj2czk2ifr2"))))
+         "1djkm3261plr36khvh49fbjpb67wxi5v08a5waxzqkrmy9f9x890"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -201,7 +201,7 @@ solution (client-side agent)")
                         (front-end-conf (string-append php "/conf"))
                         (etc (string-append php "/etc")))
                    (mkdir-p php)
-                   (copy-recursively "frontends/php" php)
+                   (copy-recursively "ui" php)
                    ;; Make front-end write config to ‘/etc/zabbix’ directory.
                    (rename-file front-end-conf
                                 (string-append front-end-conf "-example"))
