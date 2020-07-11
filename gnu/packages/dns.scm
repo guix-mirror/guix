@@ -966,11 +966,7 @@ known public suffixes.")
      `(#:tests? #f                      ; need to be root to run tests
        #:make-flags
        (list
-        (string-append "CC="
-                       (if ,(%current-target-system)
-                           (string-append (assoc-ref %build-inputs "cross-gcc")
-                                          "/bin/" ,(%current-target-system) "-gcc")
-                           "gcc"))
+        ,(string-append "CC=" (cc-for-target))
         (string-append "PREFIX=" %output)
         (string-append "RPM_BUILD_ROOT=" %output))
        #:phases
