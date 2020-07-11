@@ -181,6 +181,7 @@
   #:use-module (gnu packages wordnet)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages uml)
+  #:use-module (gnu packages finance)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -4101,6 +4102,41 @@ repetitions for example).")
     (description
      "This package provides a Flycheck checker for GNU Guile using @code{guild
 compile}.")
+    (license license:gpl3+)))
+
+(define-public emacs-flycheck-ledger
+  (package
+    (name "emacs-flycheck-ledger")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/flycheck-ledger.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1djrj3is0dzrl2703bw7bclf33dp4xqmy144q7xj5pvpb9v3kf50"))))
+    (inputs `(("ledger" ,ledger)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((ledger (assoc-ref inputs "ledger")))
+               ;; Specify the absolute executable location of ledger.
+               (substitute* "flycheck-ledger.el"
+                 (("\"ledger\"") (string-append "\"" ledger "\""))))
+             #t)))))
+    (propagated-inputs
+     `(("emacs-flycheck" ,emacs-flycheck)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/flycheck-ledger")
+    (synopsis "Ledger support for Flycheck")
+    (description
+     "This Flycheck checker uses the output of @code{ledger balance} on the
+current file to find errors such as unbalanced transactions and syntax
+errors.")
     (license license:gpl3+)))
 
 (define-public emacs-flycheck-rust
