@@ -87,17 +87,18 @@
     (inputs
      `(("readline" ,readline)))
     (arguments
-     `(#:tests? #f ;no tests
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'set-env
+         (add-after 'unpack 'patch-file-names
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "Makefile"
                (("/usr/local/bin")
                 (string-append (assoc-ref outputs "out") "/bin"))
                (("/usr/local/opt/readline")
                 (assoc-ref inputs "readline")))
-             (setenv "CC" "gcc")))
          (delete 'configure))))
     (build-system gnu-build-system)
     (home-page "https://github.com/six-ddc/hss/")
