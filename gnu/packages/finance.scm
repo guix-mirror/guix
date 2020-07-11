@@ -72,6 +72,7 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunwind)
@@ -1239,7 +1240,7 @@ Trezor wallet.")
 (define-public bitcoin-abc
   (package
     (name "bitcoin-abc")
-    (version "0.21.6")
+    (version "0.21.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.bitcoinabc.org/"
@@ -1247,7 +1248,7 @@ Trezor wallet.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1w3c397h2mxsi9471fwyc3yjxw7s4jgvr4q3w2qfh49bhr4wygqj"))))
+                "0cgr416cp7p14mlnfryxfjfcxys5hksfjhi0i4amxl4fbnpgjwk0"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1257,6 +1258,7 @@ Trezor wallet.")
     (inputs
      `(("bdb" ,bdb-5.3)
        ("boost" ,boost)
+       ("jemalloc" ,jemalloc)
        ("libevent" ,libevent)
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
