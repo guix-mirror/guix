@@ -7187,6 +7187,49 @@ definitions.")
        ("ruby-redcloth" ,ruby-redcloth)
        ("ruby-asciidoc" ,ruby-asciidoctor)))))
 
+(define-public ruby-spectroscope
+  (package
+    (name "ruby-spectroscope")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "spectroscope" version))
+       (sha256
+        (base32
+         "0iiid9sm110qhx0i1zkds710cvsnmhd308wbqa7slkzbq2akrb3y"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (with-output-to-file ".test"
+               (lambda _
+                 (display
+                  "\
+require 'ae/should'
+require 'rspec'
+
+include RSpec
+
+Test.run :default do |run|
+  run.files << 'spec/*_spec.rb'
+end")))
+             (invoke "ruby" "-Ilib" "-rrubytest" ".test"))))))
+    (native-inputs
+     `(("ruby-ae" ,ruby-ae)
+       ("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-rubytest" ,ruby-rubytest)))
+    (synopsis "Behavior-Driven Development (BDD) framework built on RubyTest")
+    (description "Spectroscope is a Behavior-Driven Development (BDD)
+framework built on RubyTest, designed to emulate RSpec in most respects.  It
+is assertion framework independent so any number of assertion systems can be
+used, such as Assay or AE.")
+    (home-page "http://rubyworks.github.com/spectroscope/")
+    (license license:bsd-2)))
+
 (define-public ruby-clap
   (package
     (name "ruby-clap")
