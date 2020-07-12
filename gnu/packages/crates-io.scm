@@ -26799,6 +26799,26 @@ serializing Rust str")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-treeline-0.1
+  (package
+    (name "rust-treeline")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "treeline" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0hcdgyk5xzcx2ylm0fr9czzs9cjznm7l9q5qz51qi97i82r43xx7"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/softprops/treeline")
+    (synopsis "Library for visualizing tree structured data")
+    (description
+     "This package provides a library for visualizing tree structured data.")
+    (license license:expat)))
+
 (define-public rust-try-from-0.3
   (package
     (name "rust-try-from")
