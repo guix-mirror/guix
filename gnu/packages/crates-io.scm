@@ -9410,6 +9410,33 @@ the process of matching one or more glob patterns against a single candidate
 path simultaneously, and returning all of the globs that matched.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-globwalk-0.5
+  (package
+    (name "rust-globwalk")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "globwalk" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09axyql26s09z60sgi3y3lkin9swy2b5km3b0v6mm84xhlljxyl9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ignore" ,rust-ignore-0.4)
+        ("rust-walkdir" ,rust-walkdir-2.2))
+       #:cargo-development-inputs
+       (("rust-docmatic" ,rust-docmatic-0.1)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/gilnaa/globwalk")
+    (synopsis "Glob-matched recursive file system walking")
+    (description
+     "Glob-matched recursive file system walking.")
+    (license license:expat)))
+
 (define-public rust-glutin-0.22
   (package
     (name "rust-glutin")
