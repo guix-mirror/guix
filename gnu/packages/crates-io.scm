@@ -5192,8 +5192,37 @@ and arithmetic.")
      "Decimal floating point arithmetic for Rust.")
     (license license:asl2.0)))
 
+(define-public rust-deflate-0.8
+  (package
+    (name "rust-deflate")
+    (version "0.8.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "deflate" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0x6iqlayg129w63999kz97m279m0jj4x4sm6gkqlvmp73y70yxvk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; not all test files included
+       #:cargo-inputs
+       (("rust-adler32" ,rust-adler32-1)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-gzip-header" ,rust-gzip-header-0.3))
+       #:cargo-development-inputs
+       (("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))
+    (home-page "https://github.com/image-rs/deflate-rs")
+    (synopsis "DEFLATE, zlib and gzip encoder written in rust")
+    (description
+     "This package provides a DEFLATE, zlib and gzip encoder written in rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-deflate-0.7
   (package
+    (inherit rust-deflate-0.8)
     (name "rust-deflate")
     (version "0.7.20")
     (source
@@ -5205,18 +5234,12 @@ and arithmetic.")
        (sha256
         (base32
          "1d7d9fpmgjnznrksmd3vlv3dyw01wsrm11ifil6ag22871xnlyvh"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-adler32" ,rust-adler32-1)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-gzip-header" ,rust-gzip-header-0.3)
-        ("rust-flate2" ,rust-flate2-1.0))))
-    (home-page "https://github.com/image-rs/deflate-rs")
-    (synopsis "DEFLATE, zlib and gzip encoder written in rust")
-    (description
-     "This package provides a DEFLATE, zlib and gzip encoder written in rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-flate2" ,rust-flate2-1.0))))))
 
 (define-public rust-defmac-0.2
   (package
