@@ -3711,8 +3711,40 @@ harness.")
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-console-0.11
+  (package
+    (name "rust-console")
+    (version "0.11.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "console" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0nmwkbb1j1zjb2z4akk83rqgnbv7j3dla4nxv0ibk9xvavk982cc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-encode-unicode" ,rust-encode-unicode-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-terminal-size" ,rust-terminal-size-0.1)
+        ("rust-termios" ,rust-termios-0.3)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-winapi-util" ,rust-winapi-util-0.1))))
+    (home-page "https://github.com/mitsuhiko/console")
+    (synopsis "Terminal and console abstraction for Rust")
+    (description
+     "This package provides a terminal and console abstraction for Rust")
+    (license license:expat)))
+
 (define-public rust-console-0.9
   (package
+    (inherit rust-console-0.11)
     (name "rust-console")
     (version "0.9.2")
     (source
@@ -3724,7 +3756,6 @@ harness.")
         (sha256
          (base32
           "1h765951c9mywff534f0191slazykmif4290g2yarcwhd2cg7q25"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-unicode-width" ,rust-unicode-width-0.1)
@@ -3734,12 +3765,7 @@ harness.")
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-clicolors-control" ,rust-clicolors-control-1.0)
         ("rust-regex" ,rust-regex-1)
-        ("rust-lazy-static" ,rust-lazy-static-1))))
-    (home-page "https://github.com/mitsuhiko/console")
-    (synopsis "Terminal and console abstraction for Rust")
-    (description
-     "This package provides a terminal and console abstraction for Rust")
-    (license license:expat)))
+        ("rust-lazy-static" ,rust-lazy-static-1))))))
 
 (define-public rust-console-0.7
   (package
