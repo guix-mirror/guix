@@ -18017,6 +18017,36 @@ for x86.")
 dependency to expose a precomputed hash.")
     (license license:expat)))
 
+(define-public rust-predicates-1
+  (package
+    (name "rust-predicates")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "predicates" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0c0hafd7z7v97218na8nampmy64f7fw61yvjk2y3dri11dpinyil"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-difference" ,rust-difference-2.0)
+        ("rust-float-cmp" ,rust-float-cmp-0.6)
+        ("rust-normalize-line-endings" ,rust-normalize-line-endings-0.3)
+        ("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-regex" ,rust-regex-1))
+       #:cargo-development-inputs
+       (("rust-predicates-tree" ,rust-predicates-tree-1))))
+    (home-page "https://github.com/assert-rs/predicates-rs")
+    (synopsis
+     "Implementation of boolean-valued predicate functions")
+    (description
+     "An implementation of boolean-valued predicate functions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-predicates-core-1
   (package
     (name "rust-predicates-core")
