@@ -6751,6 +6751,34 @@ variables.")
      `(#:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3))))))
 
+(define-public rust-escargot-0.5
+  (package
+    (name "rust-escargot")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "escargot" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0vd9phbpd6yrnsksn2as8flvq8ykzvck2zlz143xpp42qaz9dkvl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; not all test files included
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))
+       #:cargo-development-inputs
+       (("rust-assert-fs" ,rust-assert-fs-0.11))))
+    (home-page "https://github.com/crate-ci/escargot")
+    (synopsis "Cargo API written in Paris")
+    (description "Cargo API written in Paris.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-euclid-0.20
   (package
     (name "rust-euclid")
