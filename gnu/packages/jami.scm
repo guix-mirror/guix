@@ -142,8 +142,10 @@
              ;; against pjproject-jami:
              ;;   relocation R_X86_64_32S against `.rodata' can not be used when
              ;;   making a shared object;
-             "CFLAGS=-fPIC"
-             "CXXFLAGS=-fPIC")
+             ;; -DNDEBUG is needed to prevent assertion from happening and
+             ;; stopping the daemon.
+             "CFLAGS=-fPIC -DNDEBUG"
+             "CXXFLAGS=-fPIC -DNDEBUG")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-git-checkout-writable
