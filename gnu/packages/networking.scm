@@ -2918,6 +2918,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
                     (url "https://github.com/savoirfairelinux/opendht.git")
                     (commit version)))
               (file-name (git-file-name name version))
+              (patches (search-patches "opendht-fix-jami.patch"))
               (sha256
                (base32
                 "1ax26ri1ifb6s8ppd28jmanka9yf8mw3np65q2h4djhhik0phhal"))))
