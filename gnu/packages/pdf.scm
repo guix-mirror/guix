@@ -312,7 +312,7 @@ Poppler PDF rendering library.")
    (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/libharu/libharu.git")
+                   (url "https://github.com/libharu/libharu")
                    (commit (string-append
                             "RELEASE_"
                             (string-join (string-split version #\.) "_")))))
@@ -827,7 +827,7 @@ using a stylus.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xournalpp/xournalpp.git")
+             (url "https://github.com/xournalpp/xournalpp")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1064,7 +1064,7 @@ the framebuffer.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dawbarton/pdf2svg.git")
+                    (url "https://github.com/dawbarton/pdf2svg")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1161,7 +1161,7 @@ python-pypdf2 instead.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jeromerobert/pdfarranger.git")
+             (url "https://github.com/jeromerobert/pdfarranger")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1261,7 +1261,7 @@ multiple files.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pdfpc/pdfpc.git")
+             (url "https://github.com/pdfpc/pdfpc")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

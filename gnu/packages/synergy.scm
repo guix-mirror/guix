@@ -42,7 +42,7 @@
      (origin
       (method git-fetch)
       (uri (git-reference
-            (url "https://github.com/symless/synergy-core.git")
+            (url "https://github.com/symless/synergy-core")
             (commit (string-append "v" version "-stable"))))
       (file-name (git-file-name name version))
       (sha256

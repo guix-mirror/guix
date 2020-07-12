@@ -1108,7 +1108,7 @@ C++ programming language.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/leethomason/tinyxml2.git")
+             (url "https://github.com/leethomason/tinyxml2")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1216,7 +1216,7 @@ elements to their parents
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dilshod/xlsx2csv.git")
+             (url "https://github.com/dilshod/xlsx2csv")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1628,7 +1628,7 @@ with XPath too.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/elharo/xom.git")
+                    (url "https://github.com/elharo/xom")
                     (commit (string-append "XOM_" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1767,7 +1767,7 @@ package is in maintenance mode.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dom4j/dom4j.git")
+                    (url "https://github.com/dom4j/dom4j")
                     (commit (string-append "version-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1840,7 +1840,7 @@ low memory footprint.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/stefanhaustein/kxml2.git")
+                    (url "https://github.com/stefanhaustein/kxml2")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1914,7 +1914,7 @@ and from a Java application.  It provides a standard pull parser interface.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/codehaus/jettison.git")
+                    (url "https://github.com/codehaus/jettison")
                     (commit (string-append "jettison-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1946,7 +1946,7 @@ implements @code{XMLStreamWriter} and @code{XMLStreamReader} and supports
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/hunterhacker/jdom.git")
+                    (url "https://github.com/hunterhacker/jdom")
                     (commit (string-append "JDOM-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1974,7 +1974,7 @@ outputting XML data from Java code.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/x-stream/xstream.git")
+             (url "https://github.com/x-stream/xstream")
              (commit (string-append
                       "XSTREAM_"
                       (string-map (lambda (x) (if (eq? x #\.) #\_ x))

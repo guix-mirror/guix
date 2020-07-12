@@ -85,7 +85,7 @@ provides the Maven plugin generating the component metadata.")))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/apache/maven-resolver.git")
+                    (url "https://github.com/apache/maven-resolver")
                     (commit (string-append "maven-resolver-" version))))
               (file-name (git-file-name name version))
               (sha256

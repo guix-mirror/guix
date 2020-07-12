@@ -45,7 +45,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pengutronix/genimage.git")
+                    (url "https://github.com/pengutronix/genimage")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256

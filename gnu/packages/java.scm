@@ -2654,7 +2654,7 @@ OpenJFX distribution.")))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/javacc/javacc.git")
+                    (url "https://github.com/javacc/javacc")
                     (commit "release_41")))
               (file-name (string-append "javacc-" version "-checkout"))
               (sha256
@@ -2703,7 +2703,7 @@ debugging, etc.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/javacc/javacc.git")
+             (url "https://github.com/javacc/javacc")
              (commit version)))
        (file-name (git-file-name "javacc" version))
        (sha256
@@ -3329,7 +3329,7 @@ API and version 2.1 of the Java ServerPages API.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/javaee/servlet-spec.git")
+                      (url "https://github.com/javaee/servlet-spec")
                       (commit version)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -4598,7 +4598,7 @@ complex transformations and code analysis tools.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cglib/cglib.git")
+             (url "https://github.com/cglib/cglib")
              (commit (string-append
                       "RELEASE_"
                       (string-map (lambda (c) (if (char=? c #\.) #\_ c))
@@ -8984,7 +8984,7 @@ the subsequent value resolution at any given level.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/nhatminhle/cofoja.git")
+                    (url "https://github.com/nhatminhle/cofoja")
                     (commit (string-append "v" version))))
               (file-name (string-append "java-cofoja-" version "-checkout"))
               (sha256
@@ -9386,7 +9386,7 @@ those in Perl and JavaScript.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/cbeust/testng.git")
+                    (url "https://github.com/cbeust/testng")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -9464,7 +9464,7 @@ to use.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/neilalexander/jnacl.git")
+                      (url "https://github.com/neilalexander/jnacl")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -10047,7 +10047,7 @@ protocol-independent framework to build mail and messaging applications.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/zeromq/jeromq.git")
+                    (url "https://github.com/zeromq/jeromq")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -10834,7 +10834,7 @@ features that bring it on par with the Z shell line editor.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                  (url "https://github.com/xmlunit/test-resources.git")
+                  (url "https://github.com/xmlunit/test-resources")
                   (commit "a590d2ae865c3e0455691d76ba8eefccc2215aec")))
            (file-name "java-xmlunit-test-resources")
            (sha256
@@ -11439,7 +11439,7 @@ OSGi Service Registry is a goal of this project.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/eclipse/sisu.plexus.git")
+                     (url "https://github.com/eclipse/sisu.plexus")
                      (commit (string-append "releases/" version))))
               (file-name (git-file-name name version))
               (sha256

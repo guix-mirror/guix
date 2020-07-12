@@ -187,7 +187,7 @@ and EFI variable management.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mfleming/efilinux.git")
+                    (url "https://github.com/mfleming/efilinux")
                     (commit (string-append "efilinux-" version))))
               (file-name (git-file-name name version))
               (sha256

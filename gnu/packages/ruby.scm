@@ -224,7 +224,7 @@ a focus on simplicity and productivity.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mruby/mruby.git")
+             (url "https://github.com/mruby/mruby")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -632,7 +632,7 @@ outcomes of a code example.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rspec/rspec-its.git")
+             (url "https://github.com/rspec/rspec-its")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -993,7 +993,7 @@ line of code.")
      (origin
        (method git-fetch)               ;the gem lacks many test files
        (uri (git-reference
-             (url "https://github.com/xwmx/pandoc-ruby.git")
+             (url "https://github.com/xwmx/pandoc-ruby")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1102,7 +1102,7 @@ syntax to the minimum while remaining clear.")
      (origin
        (method git-fetch)               ;the gem release lacks a Rakefile
        (uri (git-reference
-             (url "https://github.com/asciidoctor/asciidoctor.git")
+             (url "https://github.com/asciidoctor/asciidoctor")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1206,7 +1206,7 @@ It does this through immutable data structures.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/sporkmonger/rack-mount.git")
+                      (url "https://github.com/sporkmonger/rack-mount")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1662,7 +1662,7 @@ support.")
        ;; fetch from github as the gem does not contain testing code
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rails/execjs.git")
+             (url "https://github.com/rails/execjs")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2195,7 +2195,7 @@ standard output stream.")
        ;; the tests.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/thekompanee/fuubar.git")
+             (url "https://github.com/thekompanee/fuubar")
              (commit (string-append "releases/v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3108,7 +3108,7 @@ specs for Ruby implementations in ruby/spec.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/brianmario/mysql2.git")
+             (url "https://github.com/brianmario/mysql2")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -3533,7 +3533,7 @@ with processes on remote servers, via SSH2.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/net-ssh/net-scp.git")
+             (url "https://github.com/net-ssh/net-scp")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3705,7 +3705,7 @@ is to be run.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/adammck/minitest-pretty_diff.git")
+                      (url "https://github.com/adammck/minitest-pretty_diff")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -4215,7 +4215,7 @@ Extensions} type detection using magic numbers, filenames, and extensions")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/halostatue/minitar.git")
+               (url "https://github.com/halostatue/minitar")
                (commit commit)))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
@@ -4790,7 +4790,7 @@ define executable specifications of your code.")
      (origin
        (method git-fetch)               ;the distributed gem lacks tests
        (uri (git-reference
-             (url "https://github.com/rtomayko/tilt.git")
+             (url "https://github.com/rtomayko/tilt")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5378,7 +5378,7 @@ a native C extension.")
        ;; repository.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/guard/listen.git")
+             (url "https://github.com/guard/listen")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5518,7 +5518,7 @@ multibyte strings, internationalization, time zones, and testing.")
               ;; published gem and the tarball on Github is outdated.
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rubys/nokogumbo.git")
+                    (url "https://github.com/rubys/nokogumbo")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -5720,7 +5720,7 @@ other things and it comes with a command line interface.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/deivid-rodriguez/byebug.git")
+             (url "https://github.com/deivid-rodriguez/byebug")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5836,7 +5836,7 @@ including comments and whitespace.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/postmodern/tdiff.git")
+                      (url "https://github.com/postmodern/tdiff")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -5863,7 +5863,7 @@ tree-like structures.  It is similar to Ruby's built-in @code{TSort} module.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/postmodern/nokogiri-diff.git")
+                      (url "https://github.com/postmodern/nokogiri-diff")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -6409,7 +6409,7 @@ notes.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/deivid-rodriguez/pry-byebug.git")
+             (url "https://github.com/deivid-rodriguez/pry-byebug")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6564,7 +6564,7 @@ Profiling multiple threads simultaneously is supported.
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/cucumber/messages-ruby.git")
+                    (url "https://github.com/cucumber/messages-ruby")
                     (commit "12cd07eac87bce7843fd1bb0bf64bc4da09f097c")))
               (file-name (git-file-name name version))
               (sha256
@@ -6822,7 +6822,7 @@ master/html-formatter/ruby")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cucumber/cucumber-ruby.git")
+             (url "https://github.com/cucumber/cucumber-ruby")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6937,7 +6937,7 @@ in already-indented code.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cucumber/cucumber-ruby-core.git")
+             (url "https://github.com/cucumber/cucumber-ruby-core")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6981,7 +6981,7 @@ and trust on your team.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cucumber/cucumber-expressions-ruby.git")
+             (url "https://github.com/cucumber/cucumber-expressions-ruby")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -7039,7 +7039,7 @@ implemented and invoked on any platform.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cucumber/tag-expressions-ruby.git")
+             (url "https://github.com/cucumber/tag-expressions-ruby")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -9155,7 +9155,7 @@ technique.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ruby/rdoc.git")
+             (url "https://github.com/ruby/rdoc")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -9270,7 +9270,7 @@ strings or files.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sass/sass-spec.git")
+             (url "https://github.com/sass/sass-spec")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -9457,7 +9457,7 @@ interface.  It allows Jekyll to rebuild your site when a file changes.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/grosser/parallel.git")
+             (url "https://github.com/grosser/parallel")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -9870,7 +9870,7 @@ indentation will probably be an issue and hence this gem.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dtao/safe_yaml.git")
+             (url "https://github.com/dtao/safe_yaml")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -10395,7 +10395,7 @@ then check out http://127.0.0.1:1080 to see the mail.")
        ;; The gem does not include test code, so fetch from the Git repository.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/castwide/backport.git")
+             (url "https://github.com/castwide/backport")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

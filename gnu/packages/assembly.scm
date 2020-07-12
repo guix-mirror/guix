@@ -263,7 +263,7 @@ runtime")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rednex/rgbds.git")
+                    (url "https://github.com/rednex/rgbds")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -310,7 +310,7 @@ package for the Game Boy and Game Boy Color.  It consists of:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vhelin/wla-dx.git")
+                    (url "https://github.com/vhelin/wla-dx")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -380,7 +380,7 @@ as 6502A, 6504, 6507, 6510, 7501, 8500, 8501, 8502 ...),
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Kingcom/armips.git")
+             (url "https://github.com/Kingcom/armips")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

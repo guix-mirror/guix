@@ -263,7 +263,7 @@ triangulations.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/cvxopt/cvxopt.git")
+                    (url "https://github.com/cvxopt/cvxopt")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -840,7 +840,7 @@ plotting engine by third-party applications like Octave.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OkoSanto/GCTP.git")
+             (url "https://github.com/OkoSanto/GCTP")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1340,7 +1340,7 @@ Swath).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Blosc/hdf5-blosc.git")
+             (url "https://github.com/Blosc/hdf5-blosc")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1823,7 +1823,7 @@ script files.")
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/tpaviot/oce.git")
+              (url "https://github.com/tpaviot/oce")
               (commit (string-append "OCE-" version))))
         (file-name (git-file-name name version))
         (patches (search-patches "opencascade-oce-glibc-2.26.patch"))
@@ -2023,7 +2023,7 @@ ASCII text files using Gmsh's own scripting language.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/gerddie/maxflow.git")
+                    (url "https://github.com/gerddie/maxflow")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2418,7 +2418,7 @@ bindings to almost all functions of SLEPc.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/metamath/metamath-exe.git")
+             (url "https://github.com/metamath/metamath-exe")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3218,7 +3218,7 @@ point numbers.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wxMaxima-developers/wxmaxima.git")
+             (url "https://github.com/wxMaxima-developers/wxmaxima")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3326,7 +3326,7 @@ associated functions (e.g., contiguous and non-contiguous submatrix views).")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/beltoforion/muparser.git")
+               (url "https://github.com/beltoforion/muparser")
                (commit (string-append "v" upstream-version))))
          (file-name (git-file-name name version))
          (sha256
@@ -3527,7 +3527,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/JuliaLang/openlibm.git")
+             (url "https://github.com/JuliaLang/openlibm")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3566,7 +3566,7 @@ environments.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/JuliaLang/openspecfun.git")
+             (url "https://github.com/JuliaLang/openspecfun")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3604,7 +3604,7 @@ Fresnel integrals, and similar related functions as well.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/DrTimothyAldenDavis/SuiteSparse.git")
+             (url "https://github.com/DrTimothyAldenDavis/SuiteSparse")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4140,7 +4140,7 @@ set.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LLNL/hypre.git")
+             (url "https://github.com/LLNL/hypre")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4596,7 +4596,7 @@ symmetric matrices.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/elemental/Elemental.git")
+                     (url "https://github.com/elemental/Elemental")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -5569,7 +5569,7 @@ fields of knowledge.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/niklasso/minisat.git")
+               (url "https://github.com/niklasso/minisat")
                (commit commit)))
          (file-name (string-append name "-" version "-checkout"))
          (sha256

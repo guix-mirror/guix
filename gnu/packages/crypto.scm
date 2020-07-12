@@ -513,7 +513,7 @@ attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/technion/libscrypt.git")
+             (url "https://github.com/technion/libscrypt")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -907,7 +907,7 @@ security.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/vstakhov/asignify.git")
+                       (url "https://github.com/vstakhov/asignify")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

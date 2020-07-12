@@ -1063,7 +1063,7 @@ data structures in C++.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rstudio/shiny.git")
+             (url "https://github.com/rstudio/shiny")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1437,7 +1437,7 @@ R objects into the JSON format that the d3.js library expects.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/fbreitwieser/sankeyD3.git")
+               (url "https://github.com/fbreitwieser/sankeyD3")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -16234,7 +16234,7 @@ multiple plots.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/MacoskoLab/liger.git")
+             (url "https://github.com/MacoskoLab/liger")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

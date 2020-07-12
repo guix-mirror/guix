@@ -63,7 +63,7 @@
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/HowardHinnant/date.git")
+               (url "https://github.com/HowardHinnant/date")
                (commit "9a0ee2542848ab8625984fc8cdbfb9b5414c0082")))
          (file-name (git-file-name name version))
          (sha256

@@ -121,7 +121,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/baskerville/bspwm.git")
+             (url "https://github.com/baskerville/bspwm")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -403,7 +403,7 @@ Despite the name it should work with any X11 window manager.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vivien/i3blocks.git")
+                    (url "https://github.com/vivien/i3blocks")
                     (commit version)))
               (sha256
                (base32
@@ -458,7 +458,7 @@ You can then subscribe to events or send messages and receive their replies.")
        ;; for years.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ziberna/i3-py.git")
+             (url "https://github.com/ziberna/i3-py")
              (commit "27f88a616e9ecc340e7d041d3d00782f8a1964c1")))
        (sha256
         (base32
@@ -503,7 +503,7 @@ subscribe to events.")
          ;; instead of the release.
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/proxypoke/quickswitch-for-i3.git")
+               (url "https://github.com/proxypoke/quickswitch-for-i3")
                (commit commit)))
          (sha256
           (base32
@@ -541,7 +541,7 @@ prompt.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/PandorasFox/i3lock-color.git")
+             (url "https://github.com/PandorasFox/i3lock-color")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -584,7 +584,7 @@ Features include:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/meskarune/i3lock-fancy.git")
+             (url "https://github.com/meskarune/i3lock-fancy")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1109,7 +1109,7 @@ Keybinder works with GTK-based applications using the X Window System.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/conformal/spectrwm.git")
+             (url "https://github.com/conformal/spectrwm")
              (commit
               (string-append "SPECTRWM_"
                              (string-join (string-split version #\.) "_")))))
@@ -1317,7 +1317,7 @@ functionality to display information about the most commonly used services.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/swaywm/wlroots.git")
+             (url "https://github.com/swaywm/wlroots")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1362,7 +1362,7 @@ modules for building a Wayland compositor.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/swaywm/sway.git")
+             (url "https://github.com/swaywm/sway")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1414,7 +1414,7 @@ modules for building a Wayland compositor.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/swaywm/swayidle.git")
+             (url "https://github.com/swaywm/swayidle")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1440,7 +1440,7 @@ modules for building a Wayland compositor.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/swaywm/swaylock.git")
+             (url "https://github.com/swaywm/swaylock")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1468,7 +1468,7 @@ modules for building a Wayland compositor.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/swaywm/swaybg.git")
+             (url "https://github.com/swaywm/swaybg")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1493,7 +1493,7 @@ modules for building a Wayland compositor.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Alexays/Waybar.git")
+             (url "https://github.com/Alexays/Waybar")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1531,7 +1531,7 @@ Wlroots based compositors.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/emersion/mako.git")
+             (url "https://github.com/emersion/mako")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1559,7 +1559,7 @@ compositors that support the layer-shell protocol.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/stumpwm/stumpwm.git")
+             (url "https://github.com/stumpwm/stumpwm")
              (commit version)))
        (file-name (git-file-name "stumpwm" version))
        (sha256
@@ -1669,7 +1669,7 @@ productive, customizable lisp based systems.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (url "https://github.com/stumpwm/stumpwm-contrib")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

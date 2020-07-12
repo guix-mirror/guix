@@ -400,7 +400,7 @@ engineers, musicians, soundtrack editors and composers.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/audacity/audacity.git")
+             (url "https://github.com/audacity/audacity")
              (commit (string-append "Audacity-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -718,7 +718,7 @@ tools (analyzer, mono/stereo tools, crossovers).")
              ;; Actually https://github.com/moddevices/caps-lv2.git, but it's
              ;; missing fixes for newer glibc, so using the origin of a pull
              ;; request regarding this issue:
-             (url "https://github.com/jujudusud/caps-lv2.git")
+             (url "https://github.com/jujudusud/caps-lv2")
              (commit "9c9478b7fbd8f9714f552ebe2a6866398b0babfb")))
        (file-name (git-file-name name version))
        (sha256
@@ -754,7 +754,7 @@ generators of mostly elementary and occasionally exotic nature.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ssj71/infamousPlugins.git")
+                    (url "https://github.com/ssj71/infamousPlugins")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -793,7 +793,7 @@ envelope follower, distortion effects, tape effects and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/swh/ladspa.git")
+                    (url "https://github.com/swh/ladspa")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -823,7 +823,7 @@ envelope follower, distortion effects, tape effects and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/swh/lv2.git")
+                    (url "https://github.com/swh/lv2")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -869,7 +869,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/csound/csound.git")
+             (url "https://github.com/csound/csound")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1259,7 +1259,7 @@ follower.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/FluidSynth/fluidsynth.git")
+                    (url "https://github.com/FluidSynth/fluidsynth")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1339,7 +1339,7 @@ PS, and DAB+.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/grame-cncm/faust.git")
+                    (url "https://github.com/grame-cncm/faust")
                     (commit (string-append "v"
                                            (string-map (lambda (c)
                                                          (if (char=? c #\.) #\- c))
@@ -2100,7 +2100,7 @@ software.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/lvtk/lvtk.git")
+                   (url "https://github.com/lvtk/lvtk")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -2302,7 +2302,7 @@ into various outputs and to start, stop and configure jackd")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/orouits/qjackrcd.git")
+                    (url "https://github.com/orouits/qjackrcd")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2337,7 +2337,7 @@ background file post-processing.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/supercollider/supercollider.git")
+                    (url "https://github.com/supercollider/supercollider")
                     (commit (string-append "Version-" version))
                     ;; for nova-simd, nova-tt, hidapi, TLSF, oscpack
                     (recursive? #t)))
@@ -3084,7 +3084,7 @@ synthesizer written in C++.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Themaister/RSound.git")
+             (url "https://github.com/Themaister/RSound")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3123,7 +3123,7 @@ with a much different focus than most other audio daemons.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/johnhldavis/xjackfreak.git")
+                    (url "https://github.com/johnhldavis/xjackfreak")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3308,7 +3308,7 @@ point audio data.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/svend/cuetools.git")
+                   (url "https://github.com/svend/cuetools")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -3358,7 +3358,7 @@ use them split WAVE data into multiple files.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/foo86/dcadec.git")
+                    (url "https://github.com/foo86/dcadec")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3436,7 +3436,7 @@ loudness of audio and video files to the same level.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/irungentoo/filter_audio.git")
+               (url "https://github.com/irungentoo/filter_audio")
                (commit commit)))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
@@ -3545,7 +3545,7 @@ mixers.")
               ;; bootstrapped build system.
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Arkq/bluez-alsa.git")
+                    (url "https://github.com/Arkq/bluez-alsa")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3654,7 +3654,7 @@ the Snd sources), Ruby, or Forth.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/lucianodato/noise-repellent.git")
+                    (url "https://github.com/lucianodato/noise-repellent")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3699,7 +3699,7 @@ the following features:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dpayne/cli-visualizer.git")
+             (url "https://github.com/dpayne/cli-visualizer")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3744,7 +3744,7 @@ representations.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/karlstav/cava.git")
+                    (url "https://github.com/karlstav/cava")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3897,7 +3897,7 @@ library.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/FNA-XNA/FAudio.git")
+             (url "https://github.com/FNA-XNA/FAudio")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -4040,7 +4040,7 @@ as is the case with audio plugins.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/falkTX/Carla.git")
+         (url "https://github.com/falkTX/Carla")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4291,7 +4291,7 @@ minimum.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/drowe67/codec2.git")
+             (url "https://github.com/drowe67/codec2")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4324,7 +4324,7 @@ digital radio.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Ableton/link.git")
+                    (url "https://github.com/Ableton/link")
                     (commit (string-append "Link-" version))))
               (file-name (git-file-name name version))
               (sha256

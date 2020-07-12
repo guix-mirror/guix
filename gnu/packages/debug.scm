@@ -402,7 +402,7 @@ server and embedded PowerPC, and S390 guests.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/lanl/stress-make.git")
+               (url "https://github.com/lanl/stress-make")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -606,7 +606,7 @@ fun.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dlbeer/mspdebug.git")
+                    (url "https://github.com/dlbeer/mspdebug")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

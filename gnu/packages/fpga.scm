@@ -127,7 +127,7 @@ For synthesis, the compiler generates netlists in the desired format.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/cliffordwolf/yosys.git")
+                    (url "https://github.com/cliffordwolf/yosys")
                     (commit (string-append "yosys-" version))
                     (recursive? #t))) ; for the ‘iverilog’ submodule
               (sha256
@@ -223,7 +223,7 @@ For synthesis, the compiler generates netlists in the desired format.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/cliffordwolf/icestorm.git")
+                     (url "https://github.com/cliffordwolf/icestorm")
                      (commit commit)))
               (file-name (git-file-name name version))
               (sha256
@@ -304,7 +304,7 @@ FOSS FPGA place and route tool.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/YosysHQ/arachne-pnr.git")
+                     (url "https://github.com/YosysHQ/arachne-pnr")
                      (commit commit)))
               (file-name (git-file-name name version))
               (sha256

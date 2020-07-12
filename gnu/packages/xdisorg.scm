@@ -221,7 +221,7 @@ used to further tweak the behaviour of the different profiles.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Cloudef/bemenu.git")
+             (url "https://github.com/Cloudef/bemenu")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -265,7 +265,7 @@ with X11 or Wayland, or in a text terminal with ncurses.")
   (source (origin
             (method git-fetch)
             (uri (git-reference
-                   (url "https://github.com/hluk/CopyQ.git")
+                   (url "https://github.com/hluk/CopyQ")
                    (commit (string-append "v" version))))
             (file-name (git-file-name name version))
             (sha256
@@ -296,7 +296,7 @@ application.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/astrand/xclip.git")
+             (url "https://github.com/astrand/xclip")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -633,7 +633,7 @@ move windows, switch between desktops, etc.).")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/resurrecting-open-source-projects/scrot.git")
+         (url "https://github.com/resurrecting-open-source-projects/scrot")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -665,7 +665,7 @@ of the screen selected by mouse.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/naelstrof/slop.git")
+                    (url "https://github.com/naelstrof/slop")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -698,7 +698,7 @@ selection's dimensions to stdout.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/naelstrof/maim.git")
+                    (url "https://github.com/naelstrof/maim")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1051,7 +1051,7 @@ within a single process.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/alols/xcape.git")
+                    (url "https://github.com/alols/xcape")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1244,7 +1244,7 @@ color temperature should be set to match the lamps in your room.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/minus7/redshift.git")
+                      (url "https://github.com/minus7/redshift")
                       (commit commit)))
                 (file-name (string-append name "-" version))
                 (sha256
@@ -1552,7 +1552,7 @@ actions, a built-in clock, a battery monitor and a system tray.")
      (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/robm/dzen.git")
+                    (url "https://github.com/robm/dzen")
                     (commit commit)))
               (file-name (string-append name "-" version))
               (sha256
@@ -1722,7 +1722,7 @@ invert colors on a specific display/screen.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dusxmt/nxbelld.git")
+                    (url "https://github.com/dusxmt/nxbelld")
                     (commit version)))
               (sha256
                (base32
@@ -1918,7 +1918,7 @@ to automatically turn it on on login.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/zoltanp/xrandr-invert-colors.git")
+                    (url "https://github.com/zoltanp/xrandr-invert-colors")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2053,7 +2053,7 @@ binary to setuid-binaries:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/bugaevc/wl-clipboard.git")
+             (url "https://github.com/bugaevc/wl-clipboard")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2103,7 +2103,7 @@ The cutbuffer and clipboard selection are always synchronized.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/johanmalm/jgmenu.git")
+             (url "https://github.com/johanmalm/jgmenu")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2222,7 +2222,7 @@ Xwrits hides itself until you should take another break.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/derat/xsettingsd.git")
+             (url "https://github.com/derat/xsettingsd")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2288,7 +2288,7 @@ configuring visual settings in different UI toolkits separately.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cdown/clipnotify.git")
+             (url "https://github.com/cdown/clipnotify")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2339,7 +2339,7 @@ tools to complement clipnotify.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/cdown/clipmenu.git")
+               (url "https://github.com/cdown/clipmenu")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -2418,7 +2418,7 @@ After selection, the clip is put onto the PRIMARY and CLIPBOARD X selections.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/qnikst/kbdd.git")
+             (url "https://github.com/qnikst/kbdd")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2454,7 +2454,7 @@ create layout indicator widgets.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/enkore/j4-dmenu-desktop.git")
+                    (url "https://github.com/enkore/j4-dmenu-desktop")
                     (commit (string-append "r" version))))
               (file-name (git-file-name name version))
               (sha256

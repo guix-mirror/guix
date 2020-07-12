@@ -611,7 +611,7 @@
                              (origin
                                (method git-fetch)
                                (uri (git-reference
-                                     (url "https://github.com/archive/example.git")
+                                     (url "https://github.com/archive/example")
                                      (commit "0")))
                                (sha256 %null-sha256))))))
     (check-source-unstable-tarball pkg)))

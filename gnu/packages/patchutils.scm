@@ -325,7 +325,7 @@ you to figure out what is going on in that merge you keep avoiding.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/getpatchwork/patchwork.git")
+                    (url "https://github.com/getpatchwork/patchwork")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

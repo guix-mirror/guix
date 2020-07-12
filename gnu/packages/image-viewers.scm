@@ -191,7 +191,7 @@ It is the default image viewer on LXDE desktop environment.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/muennich/sxiv.git")
+                    (url "https://github.com/muennich/sxiv")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -237,7 +237,7 @@ it and customize it for your needs.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/hellosiyan/Viewnior.git")
+               (url "https://github.com/hellosiyan/Viewnior")
                (commit (string-append name "-" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -289,7 +289,7 @@ your images.  Among its features are:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/posva/catimg.git")
+             (url "https://github.com/posva/catimg")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -488,7 +488,7 @@ For PDF support, install the @emph{mupdf} package.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jurplel/qView.git")
+             (url "https://github.com/jurplel/qView")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

@@ -485,7 +485,7 @@ operations.")
               (method git-fetch)
               (uri
                (git-reference
-                (url "https://github.com/Yubico/libu2f-server.git")
+                (url "https://github.com/Yubico/libu2f-server")
                 (commit (string-append "libu2f-server-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -528,7 +528,7 @@ verifying the cryptographic operations.")
               (method git-fetch)
               (uri
                (git-reference
-                (url "https://github.com/Yubico/pam-u2f.git")
+                (url "https://github.com/Yubico/pam-u2f")
                 (commit (string-append "pam_u2f-" version))))
               (file-name (git-file-name name version))
               (sha256

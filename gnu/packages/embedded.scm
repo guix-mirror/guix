@@ -596,7 +596,7 @@ with a layered architecture of JTAG interface and TAP support.")
       (source (origin (inherit (package-source xbinutils))
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/parallaxinc/propgcc.git")
+                      (url "https://github.com/parallaxinc/propgcc")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
@@ -632,7 +632,7 @@ with a layered architecture of JTAG interface and TAP support.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/totalspectrum/gcc-propeller.git")
+                      (url "https://github.com/totalspectrum/gcc-propeller")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
@@ -667,7 +667,7 @@ with a layered architecture of JTAG interface and TAP support.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/parallaxinc/propgcc.git")
+                      (url "https://github.com/parallaxinc/propgcc")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
@@ -709,7 +709,7 @@ with a layered architecture of JTAG interface and TAP support.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/parallaxinc/propgcc.git")
+                      (url "https://github.com/parallaxinc/propgcc")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
@@ -828,7 +828,7 @@ code.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/parallaxinc/propgcc.git")
+                      (url "https://github.com/parallaxinc/propgcc")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
@@ -913,7 +913,7 @@ larger).")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/parallaxinc/spinsim.git")
+                      (url "https://github.com/parallaxinc/spinsim")
                       (commit commit)))
                 (file-name (string-append name "-" commit "-checkout"))
                 (sha256
@@ -969,7 +969,7 @@ simulator.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/puppeh/binutils-vc4.git")
+                       (url "https://github.com/puppeh/binutils-vc4")
                        (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -997,7 +997,7 @@ simulator.")
           ,(origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/puppeh/cgen.git")
+                       (url "https://github.com/puppeh/cgen")
                        (commit "d8e2a9eb70425f180fdd5bfd032884b0855f2032")))
                 (sha256
                  (base32
@@ -1021,7 +1021,7 @@ the Raspberry Pi chip.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/puppeh/gcc-vc4.git")
+                      (url "https://github.com/puppeh/gcc-vc4")
                       (commit commit)))
                 (file-name (string-append name
                                           "-"
@@ -1045,7 +1045,7 @@ the Raspberry Pi chip."))))
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/daym/libmpsse.git")
+              (url "https://github.com/daym/libmpsse")
               (commit (string-append "v" version))))
         (file-name "libmpsse-checkout")
         (sha256

@@ -155,7 +155,7 @@ line applications.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fplll/fplll.git")
+                    (url "https://github.com/fplll/fplll")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -205,7 +205,7 @@ the real span of the lattice.")
        ;; Github instead.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fplll/fpylll.git")
+             (url "https://github.com/fplll/fpylll")
              (commit (string-append version "dev"))))
        (file-name (git-file-name name version))
        (sha256
@@ -499,7 +499,7 @@ fast arithmetic.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fredrik-johansson/arb.git")
+                    (url "https://github.com/fredrik-johansson/arb")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -544,7 +544,7 @@ real and complex numbers, with automatic, rigorous error control.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fredrik-johansson/python-flint.git")
+                    (url "https://github.com/fredrik-johansson/python-flint")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -737,7 +737,7 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/extemporelang/kiss_fft.git")
+                    (url "https://github.com/extemporelang/kiss_fft")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -843,7 +843,7 @@ cosine/ sine transforms or DCT/DST).")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vkostyukov/la4j.git")
+                    (url "https://github.com/vkostyukov/la4j")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -965,7 +965,7 @@ algorithms from the FORTRAN library MINPACK.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/symengine/symengine.git")
+             (url "https://github.com/symengine/symengine")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1084,7 +1084,7 @@ features, and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/QuantStack/xtensor.git")
+                    (url "https://github.com/QuantStack/xtensor")
                     (commit version)))
               (sha256
                (base32

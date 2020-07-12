@@ -59,7 +59,7 @@
               ;; do not use auto-generated tarballs
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/matricks/bam.git")
+                    (url "https://github.com/matricks/bam")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

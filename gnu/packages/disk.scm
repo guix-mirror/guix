@@ -96,7 +96,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/IgnorantGuru/udevil.git")
+         (url "https://github.com/IgnorantGuru/udevil")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -486,7 +486,7 @@ systems.  Output format is completely customizable.")
      (origin
       (method git-fetch)
       (uri (git-reference
-            (url "https://github.com/AltraMayor/f3.git")
+            (url "https://github.com/AltraMayor/f3")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
@@ -524,7 +524,7 @@ a card with a smaller capacity than stated.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dcantrell/pyparted.git")
+             (url "https://github.com/dcantrell/pyparted")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -565,7 +565,7 @@ a card with a smaller capacity than stated.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/markfasheh/duperemove.git")
+             (url "https://github.com/markfasheh/duperemove")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1scz76pvpljvrpfn176125xwaqwyy4pirlm11sc9spb2hyzknw2z"))
@@ -695,7 +695,7 @@ passphrases.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pmem/ndctl.git")
+                    (url "https://github.com/pmem/ndctl")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -918,7 +918,7 @@ on your file system and offers to remove it.  @command{rmlint} can find:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/gokcehan/lf.git")
+                    (url "https://github.com/gokcehan/lf")
                     (commit (string-append "r" version))))
               (file-name (git-file-name name version))
               (sha256

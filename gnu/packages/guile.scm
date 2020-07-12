@@ -596,7 +596,7 @@ specification.  These are the main features:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ijp/guile-gdbm.git")
+                    (url "https://github.com/ijp/guile-gdbm")
                     (commit "fa1d5b6231d0e4d096687b378c025f2148c5f246")))
               (file-name (string-append name "-" version "-checkout"))
               (patches (search-patches

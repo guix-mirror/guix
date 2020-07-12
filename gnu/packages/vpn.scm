@@ -227,7 +227,7 @@ the entire VPN in a network namespace accessible only through SSH.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/cernekee/ocproxy.git")
+                     (url "https://github.com/cernekee/ocproxy")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -327,7 +327,7 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
        ;; Thus, fetch code from Git.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ProtonVPN/linux-cli.git")
+             (url "https://github.com/ProtonVPN/linux-cli")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -462,7 +462,7 @@ with configuration options for most of @command{sshuttle}’s features.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ambrop72/badvpn.git")
+             (url "https://github.com/ambrop72/badvpn")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

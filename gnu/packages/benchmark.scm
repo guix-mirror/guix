@@ -131,7 +131,7 @@ is to write a job file matching the I/O load one wants to simulate.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/intel/mpi-benchmarks.git")
+                    (url "https://github.com/intel/mpi-benchmarks")
                     (commit (string-append "IMB-v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -217,7 +217,7 @@ This can give a much better understanding of the command's performance.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/google/benchmark.git")
+                    (url "https://github.com/google/benchmark")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

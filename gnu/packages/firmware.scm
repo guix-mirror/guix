@@ -50,7 +50,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/qca/open-ath9k-htc-firmware.git")
+                    (url "https://github.com/qca/open-ath9k-htc-firmware")
                     (commit version)))
               (sha256
                (base32
@@ -197,7 +197,7 @@ by the b43-open driver of Linux-libre.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/riscv/opensbi.git")
+             (url "https://github.com/riscv/opensbi")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

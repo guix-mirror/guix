@@ -160,7 +160,7 @@ Lucene library, a high-performance, full-featured text search engine.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/swh/LRDF.git")
+                    (url "https://github.com/swh/LRDF")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

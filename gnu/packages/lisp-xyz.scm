@@ -146,7 +146,7 @@ In order to make one or several variables file-local, use the macros
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sionescu/fiveam.git")
+             (url "https://github.com/sionescu/fiveam")
              (commit (string-append "v" version))))
        (file-name (git-file-name "fiveam" version))
        (sha256
@@ -176,7 +176,7 @@ interactive development model in mind.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/sionescu/bordeaux-threads.git")
+                    (url "https://github.com/sionescu/bordeaux-threads")
                     (commit (string-append "v" version))))
               (sha256
                (base32 "19i443fz3488v1pbbr9x24y8h8vlyhny9vj6c9jk5prm702awrp6"))
@@ -209,7 +209,7 @@ support.")
          (method git-fetch)
          (uri
           (git-reference
-           (url "https://github.com/trivial-gray-streams/trivial-gray-streams.git")
+           (url "https://github.com/trivial-gray-streams/trivial-gray-streams")
            (commit commit)))
          (sha256
           (base32 "0b1pxlccmnagk9cbh4cy8s5k66g3x0gwib5shjwr24xvrji6lp94"))
@@ -240,7 +240,7 @@ thin compatibility layer for gray streams.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/joaotavora/fiasco.git")
+               (url "https://github.com/joaotavora/fiasco")
                (commit commit)))
          (file-name (git-file-name "fiasco" version))
          (sha256
@@ -274,7 +274,7 @@ logical continuation of Stefil.  It focuses on interactive debugging.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/edicl/flexi-streams.git")
+             (url "https://github.com/edicl/flexi-streams")
              (commit (string-append "v" version))))
        (file-name (git-file-name "flexi-streams" version))
        (sha256
@@ -311,7 +311,7 @@ streams which are similar to string streams.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/edicl/cl-ppcre.git")
+             (url "https://github.com/edicl/cl-ppcre")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cl-ppcre" version))
        (sha256
@@ -338,7 +338,7 @@ compatible with ANSI-compliant Common Lisp implementations.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/edicl/cl-unicode.git")
+                    (url "https://github.com/edicl/cl-unicode")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -382,7 +382,7 @@ ANSI-compliant Common Lisp implementations.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xach/zpb-ttf.git")
+             (url "https://github.com/xach/zpb-ttf")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -495,7 +495,7 @@ anti-aliased vectorial paths.")))
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/rpav/spatial-trees.git")
+               (url "https://github.com/rpav/spatial-trees")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -532,7 +532,7 @@ spatially-extended data.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/robert-strandh/Flexichain.git")
+               (url "https://github.com/robert-strandh/Flexichain")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -564,7 +564,7 @@ a sequence (or chain) of such elements.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/mbattyani/cl-pdf.git")
+               (url "https://github.com/mbattyani/cl-pdf")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -596,7 +596,7 @@ files.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/sharplispers/clx.git")
+         (url "https://github.com/sharplispers/clx")
          (commit version)))
        (sha256
         (base32
@@ -685,7 +685,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
          (method git-fetch)
          (uri
           (git-reference
-           (url "https://github.com/joaotavora/sly.git")
+           (url "https://github.com/joaotavora/sly")
            (commit commit)))
          (sha256
           (base32 "0wbpg9p9yg2hd62l15pvy50fk3hndq5zzyqlyyf04g368s895144"))
@@ -1043,7 +1043,7 @@ It is similar to the @code{CL:LOOP} macro, with these distinguishing marks:
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/mishoo/cl-uglify-js.git")
+               (url "https://github.com/mishoo/cl-uglify-js")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1164,7 +1164,7 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/trivial-features/trivial-features.git")
+               (url "https://github.com/trivial-features/trivial-features")
                (commit commit)))
          (file-name (git-file-name "trivial-features" version))
          (sha256
@@ -1250,7 +1250,7 @@ with a focus on interactive development.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/cl-babel/babel.git")
+               (url "https://github.com/cl-babel/babel")
                (commit commit)))
          (file-name (git-file-name "babel" version))
          (sha256
@@ -1754,7 +1754,7 @@ streams, support is included for convenient stream wrappers.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/melisgl/named-readtables.git")
+               (url "https://github.com/melisgl/named-readtables")
                (commit commit)))
          (sha256
           (base32 "01l4831m7k84qvhzyx0qgdl50isr4zmp40qf6dfq2iqcaj8y4h3n"))
@@ -2520,7 +2520,7 @@ non-consing thread safe queues and fibonacci priority queues.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cffi/cffi.git")
+             (url "https://github.com/cffi/cffi")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cffi-bootstrap" version))
        (sha256
@@ -2805,7 +2805,7 @@ precisely controls the behavior of the parser via Common Lisp restarts.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/trivial-garbage/trivial-garbage.git")
+             (url "https://github.com/trivial-garbage/trivial-garbage")
              (commit (string-append "v" version))))
        (file-name (git-file-name "trivial-garbage" version))
        (sha256
@@ -3521,7 +3521,7 @@ client and server.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/gwkkwg/trivial-backtrace.git")
+             (url "https://github.com/gwkkwg/trivial-backtrace")
              (commit commit)))
        (file-name (git-file-name "trivial-backtrace" version))
        (sha256
@@ -3566,7 +3566,7 @@ backtrace portably.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jdz/rfc2388.git")
+             (url "https://github.com/jdz/rfc2388")
              (commit commit)))
        (file-name (git-file-name "rfc2388" version))
        (sha256
@@ -3618,7 +3618,7 @@ RFC 1321 by R. Rivest, published April 1992.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/cl-plus-ssl/cl-plus-ssl.git")
+               (url "https://github.com/cl-plus-ssl/cl-plus-ssl")
                (commit commit)))
          (file-name (git-file-name "cl+ssl" version))
          (sha256
@@ -3727,7 +3727,7 @@ encoding table that uses only URI-compatible characters.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/edicl/chunga.git")
+              (url "https://github.com/edicl/chunga")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3756,7 +3756,7 @@ defined in RFC 2616.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/edicl/cl-who.git")
+               (url "https://github.com/edicl/cl-who")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -3788,7 +3788,7 @@ as good or bad as the next one.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/froydnj/chipz.git")
+               (url "https://github.com/froydnj/chipz")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -3820,7 +3820,7 @@ the format used by the popular compression tool bzip2.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/edicl/drakma.git")
+             (url "https://github.com/edicl/drakma")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3860,7 +3860,7 @@ sockets, SSL, continuable uploads, file uploads, cookies, and more.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/edicl/hunchentoot.git")
+             (url "https://github.com/edicl/hunchentoot")
              (commit (string-append "v" version))))
        (file-name (git-file-name "hunchentoot" version))
        (sha256
@@ -3900,7 +3900,7 @@ connections (keep-alive), and SSL.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/m2ym/trivial-types.git")
+             (url "https://github.com/m2ym/trivial-types")
              (commit "ee869f2b7504d8aa9a74403641a5b42b16f47d88")))
        (file-name (git-file-name name version))
        (sha256
@@ -3924,7 +3924,7 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/m2ym/cl-syntax.git")
+             (url "https://github.com/m2ym/cl-syntax")
              (commit "03f0c329bbd55b8622c37161e6278366525e2ccc")))
        (file-name (git-file-name "cl-syntax" version))
        (sha256
@@ -3954,7 +3954,7 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/m2ym/cl-annot.git")
+               (url "https://github.com/m2ym/cl-annot")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -4087,7 +4087,7 @@ addition, removal, and random selection.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/fukamachi/quri.git")
+               (url "https://github.com/fukamachi/quri")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -4123,7 +4123,7 @@ Lisp. It is intended to be a replacement of PURI.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/myway.git")
+             (url "https://github.com/fukamachi/myway")
              (commit commit)))
        (file-name (git-file-name "myway" version))
        (sha256
@@ -4266,7 +4266,7 @@ Lisp.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sionescu/static-vectors.git")
+             (url "https://github.com/sionescu/static-vectors")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4300,7 +4300,7 @@ memory.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wlbr/cl-marshal.git")
+             (url "https://github.com/wlbr/cl-marshal")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
@@ -4327,7 +4327,7 @@ Only minimal changes required to make your CLOS objects serializable.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/rpav/CheckL.git")
+               (url "https://github.com/rpav/CheckL")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -4365,7 +4365,7 @@ against the last run.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rpav/fast-io.git")
+             (url "https://github.com/rpav/fast-io")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
@@ -4404,7 +4404,7 @@ streams (though primarily the former, while wrapping the latter).")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Rudolph-Miller/jonathan.git")
+             (url "https://github.com/Rudolph-Miller/jonathan")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
@@ -4516,7 +4516,7 @@ reset to 0 and you're able to read it again.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/lack.git")
+             (url "https://github.com/fukamachi/lack")
              (commit commit)))
        (file-name (git-file-name "lack-request" version))
        (sha256
@@ -4557,7 +4557,7 @@ performance and simplicity in mind.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dlowe-net/local-time.git")
+             (url "https://github.com/dlowe-net/local-time")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
@@ -4592,7 +4592,7 @@ Long Painful History of Time\".")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/lack.git")
+             (url "https://github.com/fukamachi/lack")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
@@ -4633,7 +4633,7 @@ performance and simplicity in mind.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/lack.git")
+             (url "https://github.com/fukamachi/lack")
              (commit commit)))
        (file-name (git-file-name "lack-component" version))
        (sha256
@@ -4669,7 +4669,7 @@ performance and simplicity in mind.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/lack.git")
+             (url "https://github.com/fukamachi/lack")
              (commit commit)))
        (file-name (git-file-name "lack-util" version))
        (sha256
@@ -4707,7 +4707,7 @@ performance and simplicity in mind.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/lack.git")
+             (url "https://github.com/fukamachi/lack")
              (commit commit)))
        (file-name (git-file-name "lack-middleware-backtrace" version))
        (sha256
@@ -4743,7 +4743,7 @@ performance and simplicity in mind.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/Shinmera/trivial-mimes.git")
+               (url "https://github.com/Shinmera/trivial-mimes")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -4790,7 +4790,7 @@ mime-type of a file.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/lack.git")
+             (url "https://github.com/fukamachi/lack")
              (commit commit)))
        (file-name (git-file-name "lack-middleware-static" version))
        (sha256
@@ -4830,7 +4830,7 @@ performance and simplicity in mind.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/lack.git")
+             (url "https://github.com/fukamachi/lack")
              (commit commit)))
        (file-name (git-file-name "lack" version))
        (sha256
@@ -4867,7 +4867,7 @@ performance and simplicity in mind.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/fukamachi/ningle.git")
+               (url "https://github.com/fukamachi/ningle")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -4930,7 +4930,7 @@ performance and simplicity in mind.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/clack.git")
+             (url "https://github.com/fukamachi/clack")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
@@ -5026,7 +5026,7 @@ port within a range.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/tgutu/clunit.git")
+               (url "https://github.com/tgutu/clunit")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -5059,7 +5059,7 @@ experience.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/bendudson/py4cl.git")
+               (url "https://github.com/bendudson/py4cl")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -5158,7 +5158,7 @@ high-level way.  This library provides such operators.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/mcandre/cl-quickcheck.git")
+               (url "https://github.com/mcandre/cl-quickcheck")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -5189,7 +5189,7 @@ high-level way.  This library provides such operators.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/snmsts/burgled-batteries3.git")
+               (url "https://github.com/snmsts/burgled-batteries3")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -5254,7 +5254,7 @@ CPython implementation of Python) and Common Lisp.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/gwkkwg/metabang-bind.git")
+               (url "https://github.com/gwkkwg/metabang-bind")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6633,7 +6633,7 @@ programming style and the efficiency of an iterative programming style.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/jwiegley/periods.git")
+               (url "https://github.com/jwiegley/periods")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6686,7 +6686,7 @@ providing functions compatible with the series Common Lisp library.")))
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/gwkkwg/metatilities-base.git")
+               (url "https://github.com/gwkkwg/metatilities-base")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6718,7 +6718,7 @@ which implements a set of utilities.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/gwkkwg/cl-containers.git")
+               (url "https://github.com/gwkkwg/cl-containers")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6807,7 +6807,7 @@ on the XPTest package by Craig Brozensky and the JUnit package by Kent Beck.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/jwiegley/cambl.git")
+               (url "https://github.com/jwiegley/cambl")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6865,7 +6865,7 @@ purpose of financial calculations."))))
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ledger/cl-ledger.git")
+               (url "https://github.com/ledger/cl-ledger")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6910,7 +6910,7 @@ system.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/glv2/bst.git")
+               (url "https://github.com/glv2/bst")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6941,7 +6941,7 @@ can contain any kind of values.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/glv2/cl-octet-streams.git")
+             (url "https://github.com/glv2/cl-octet-streams")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6976,7 +6976,7 @@ cl-plumbing libraries.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/glv2/cl-lzlib.git")
+               (url "https://github.com/glv2/cl-lzlib")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -7021,7 +7021,7 @@ compression/decompression using bindings to the lzlib C library.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/zkat/chanl.git")
+               (url "https://github.com/zkat/chanl")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -7056,7 +7056,7 @@ threads.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/skypher/cl-store.git")
+               (url "https://github.com/skypher/cl-store")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -7365,7 +7365,7 @@ Clojure, as well as several expansions on the idea.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/glv2/simple-parallel-tasks.git")
+               (url "https://github.com/glv2/simple-parallel-tasks")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -7429,7 +7429,7 @@ binary heap and a Fibonacci heap) as well as an efficient priority queue.")
          (method git-fetch)
          (uri
           (git-reference
-           (url "https://github.com/eschulte/curry-compose-reader-macros.git")
+           (url "https://github.com/eschulte/curry-compose-reader-macros")
            (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -7460,7 +7460,7 @@ of function partial application and composition.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/phmarek/yason.git")
+             (url "https://github.com/phmarek/yason")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -7537,7 +7537,7 @@ interactive development.")
          (method git-fetch)
          (uri
           (git-reference
-           (url "https://github.com/eschulte/graph.git")
+           (url "https://github.com/eschulte/graph")
            (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -7640,7 +7640,7 @@ results.")
          (method git-fetch)
          (uri
           (git-reference
-           (url "https://github.com/Shinmera/documentation-utils.git")
+           (url "https://github.com/Shinmera/documentation-utils")
            (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -7978,7 +7978,7 @@ intending to program in Lisp.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/edicl/cl-interpol.git")
+               (url "https://github.com/edicl/cl-interpol")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -8018,7 +8018,7 @@ doesn't support them.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/AccelerationNet/symbol-munger.git")
+               (url "https://github.com/AccelerationNet/symbol-munger")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -8057,7 +8057,7 @@ and camel-case rules.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/AccelerationNet/lisp-unit2.git")
+               (url "https://github.com/AccelerationNet/lisp-unit2")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -8090,7 +8090,7 @@ by Chris Riesbeck.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/AccelerationNet/symbol-munger.git")
+               (url "https://github.com/AccelerationNet/symbol-munger")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -8146,7 +8146,7 @@ and camel-case rules.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/AccelerationNet/cl-csv.git")
+               (url "https://github.com/AccelerationNet/cl-csv")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -8185,7 +8185,7 @@ from/to strings, streams and files.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/sellout/external-program.git")
+               (url "https://github.com/sellout/external-program")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -8221,7 +8221,7 @@ sacrificing much in the way of power.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ghollisjr/cl-ana.git")
+             (url "https://github.com/ghollisjr/cl-ana")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
@@ -9302,7 +9302,7 @@ visualization.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/sharplispers/archive.git")
+                      (url "https://github.com/sharplispers/archive")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -9470,7 +9470,7 @@ transforming Common Lisp code to continuation passing style.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/takagi/cl-coroutine.git")
+               (url "https://github.com/takagi/cl-coroutine")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -9517,7 +9517,7 @@ continuations of the @code{cl-cont} library.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/orthecreedence/vom.git")
+               (url "https://github.com/orthecreedence/vom")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -9548,7 +9548,7 @@ has a small codebase that's easy to understand and use.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/orthecreedence/cl-libuv.git")
+               (url "https://github.com/orthecreedence/cl-libuv")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -9598,7 +9598,7 @@ has a small codebase that's easy to understand and use.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/orthecreedence/cl-async.git")
+               (url "https://github.com/orthecreedence/cl-async")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -9726,7 +9726,7 @@ Common Lisp.  It uses the libuv library as backend.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/orthecreedence/blackbird.git")
+               (url "https://github.com/orthecreedence/blackbird")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -9761,7 +9761,7 @@ the successor to the now-deprecated cl-async-future project.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/orthecreedence/cl-async-future.git")
+               (url "https://github.com/orthecreedence/cl-async-future")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -9796,7 +9796,7 @@ to cl-async.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/thezerobit/green-threads.git")
+               (url "https://github.com/thezerobit/green-threads")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -9844,7 +9844,7 @@ possible.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/hargettp/cl-base32.git")
+               (url "https://github.com/hargettp/cl-base32")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -9875,7 +9875,7 @@ defined in RFC4648.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/glv2/cl-z85.git")
+               (url "https://github.com/glv2/cl-z85")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -9906,7 +9906,7 @@ ZeroMQ.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/herth/ltk.git")
+             (url "https://github.com/herth/ltk")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -9992,7 +9992,7 @@ from the one running the Lisp program by using a TCP connection.")))
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/djr7C4/cl-lex.git")
+               (url "https://github.com/djr7C4/cl-lex")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10094,7 +10094,7 @@ the library does not depend on X11).
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/sharplispers/cl-jpeg.git")
+               (url "https://github.com/sharplispers/cl-jpeg")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10174,7 +10174,7 @@ ones.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xach/salza2.git")
+             (url "https://github.com/xach/salza2")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -10204,7 +10204,7 @@ respectively.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/Ramarren/png-read.git")
+               (url "https://github.com/Ramarren/png-read")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10233,7 +10233,7 @@ respectively.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xach/zpng.git")
+             (url "https://github.com/xach/zpng")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -10260,7 +10260,7 @@ respectively.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jnjcc/cl-qrencode.git")
+             (url "https://github.com/jnjcc/cl-qrencode")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -10293,7 +10293,7 @@ them as PNG files.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/hdfgroup/hdf5-cffi.git")
+               (url "https://github.com/hdfgroup/hdf5-cffi")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10354,7 +10354,7 @@ them as PNG files.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lvaruzza/cl-randist.git")
+             (url "https://github.com/lvaruzza/cl-randist")
              (commit "f088a54b540a7adefab7c04094a6103f9edda3d0")))
        (file-name (git-file-name name version))
        (sha256
@@ -10386,7 +10386,7 @@ generation functions from the GSL library.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Shinmera/float-features.git")
+             (url "https://github.com/Shinmera/float-features")
              (commit "d3ef60181635b0849aa28cfc238053b7ca4644b0")))
        (file-name (git-file-name name version))
        (sha256
@@ -10420,7 +10420,7 @@ covered by the Common Lisp standard.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/AccelerationNet/function-cache.git")
+             (url "https://github.com/AccelerationNet/function-cache")
              (commit "6a5ada401e57da2c8abf046f582029926e61fce8")))
        (file-name (git-file-name name version))
        (sha256
@@ -10462,7 +10462,7 @@ caching based on arguments (an expanded form of memoization).")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/guicho271828/type-r.git")
+               (url "https://github.com/guicho271828/type-r")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10499,7 +10499,7 @@ the elements in compound type specifier, e.g. @code{dimensions} in
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/guicho271828/trivialib.type-unify.git")
+               (url "https://github.com/guicho271828/trivialib.type-unify")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10538,7 +10538,7 @@ correctly.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/numcl/specialized-function.git")
+               (url "https://github.com/numcl/specialized-function")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10580,7 +10580,7 @@ code.  The main target of this macro is speed.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/numcl/constantfold.git")
+               (url "https://github.com/numcl/constantfold")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10618,7 +10618,7 @@ additional form that is considered as a candidate for a constant.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/numcl/gtype.git")
+               (url "https://github.com/numcl/gtype")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10658,7 +10658,7 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/numcl/numcl.git")
+               (url "https://github.com/numcl/numcl")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10705,7 +10705,7 @@ and usefulness, not speed.  Track the progress at
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/orivej/pzmq.git")
+               (url "https://github.com/orivej/pzmq")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10752,7 +10752,7 @@ lightweight messaging kernel.")
          (method git-fetch)
          (uri
           (git-reference
-           (url "https://github.com/Shinmera/clss.git")
+           (url "https://github.com/Shinmera/clss")
            (commit commit)))
          (sha256
           (base32 "0la4dbcda78x29szanylccrsljqrn9d1mhh569sqkyp44ni5fv91"))
@@ -10784,7 +10784,7 @@ selectors.  It makes use of the Plump-DOM and is used by lQuery.")
          (method git-fetch)
          (uri
           (git-reference
-           (url "https://github.com/Shinmera/lquery.git")
+           (url "https://github.com/Shinmera/lquery")
            (commit commit)))
          (sha256
           (base32 "0520mcpxc2d6fdm8z61arpgd2z38kan7cf06qs373n5r64rakz6w"))
@@ -10823,7 +10823,7 @@ approach to templating.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/hackinghat/cl-mysql.git")
+               (url "https://github.com/hackinghat/cl-mysql")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10865,7 +10865,7 @@ approach to templating.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/marijnh/Postmodern.git")
+               (url "https://github.com/marijnh/Postmodern")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -10984,7 +10984,7 @@ foreign libraries.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/cl-dbi.git")
+             (url "https://github.com/fukamachi/cl-dbi")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -11505,7 +11505,7 @@ accompaniment to the standard ANSI facilities.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/laynor/clx-xembed.git")
+               (url "https://github.com/laynor/clx-xembed")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -11568,7 +11568,7 @@ Streams in ICDE’05.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/deadtrickster/prometheus.cl.git")
+             (url "https://github.com/deadtrickster/prometheus.cl")
              (commit "7352b92296996ff383503e19bdd3bcea30409a15")))
        (file-name (git-file-name name version))
        (sha256
@@ -11680,7 +11680,7 @@ Streams in ICDE’05.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/dardoria/uuid.git")
+               (url "https://github.com/dardoria/uuid")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -11712,7 +11712,7 @@ Streams in ICDE’05.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/Shinmera/dissect.git")
+               (url "https://github.com/Shinmera/dissect")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -11746,7 +11746,7 @@ and active restarts.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fukamachi/rove.git")
+             (url "https://github.com/fukamachi/rove")
              (commit "f3695db08203bf26f3b861dc22ac0f4257d3ec21")))
        (file-name (git-file-name name version))
        (sha256
@@ -11780,7 +11780,7 @@ This is intended to be a successor of Prove.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/death/exponential-backoff.git")
+               (url "https://github.com/death/exponential-backoff")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -11810,7 +11810,7 @@ learn about each of the parameters.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/fukamachi/sxql.git")
+               (url "https://github.com/fukamachi/sxql")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -11849,7 +11849,7 @@ learn about each of the parameters.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/lmj/1am.git")
+               (url "https://github.com/lmj/1am")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -11879,7 +11879,7 @@ learn about each of the parameters.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/telephil/cl-ascii-table.git")
+               (url "https://github.com/telephil/cl-ascii-table")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -11906,7 +11906,7 @@ tables.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/SahilKang/cl-rdkafka.git")
+             (url "https://github.com/SahilKang/cl-rdkafka")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -12133,7 +12133,7 @@ implementations of those protocols for different purposes.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/masatoi/cl-libsvm-format.git")
+               (url "https://github.com/masatoi/cl-libsvm-format")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -12168,7 +12168,7 @@ format.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/masatoi/cl-online-learning.git")
+               (url "https://github.com/masatoi/cl-online-learning")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -12207,7 +12207,7 @@ online linear classification written in Common Lisp.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/masatoi/cl-random-forest.git")
+               (url "https://github.com/masatoi/cl-random-forest")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -12249,7 +12249,7 @@ includes an implementation of Global Refinement of Random Forest.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ahefner/bordeaux-fft.git")
+               (url "https://github.com/ahefner/bordeaux-fft")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -12279,7 +12279,7 @@ portable Common Lisp.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/pkhuong/Napa-FFT3.git")
+               (url "https://github.com/pkhuong/Napa-FFT3")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

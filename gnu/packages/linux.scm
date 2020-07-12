@@ -1005,7 +1005,7 @@ It has been modified to remove all non-free binary blobs.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/teleshoes/acpi_call.git")
+               (url "https://github.com/teleshoes/acpi_call")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1048,7 +1048,7 @@ and should be used with caution, especially on untested models.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/aircrack-ng/rtl8812au.git")
+               (url "https://github.com/aircrack-ng/rtl8812au")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1094,7 +1094,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/tomaspinho/rtl8821ce.git")
+               (url "https://github.com/tomaspinho/rtl8821ce")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1217,7 +1217,7 @@ supported under @file{/sys/class/backlight/}.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/umlaeute/v4l2loopback.git")
+                    (url "https://github.com/umlaeute/v4l2loopback")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3038,7 +3038,7 @@ for systems using the Linux kernel.  This includes commands such as
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rvoicilas/inotify-tools.git")
+                    (url "https://github.com/rvoicilas/inotify-tools")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3117,7 +3117,7 @@ from the module-init-tools project.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rfjakob/earlyoom.git")
+                    (url "https://github.com/rfjakob/earlyoom")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3413,7 +3413,7 @@ mapper.  Kernel components are part of Linux-libre.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jthornber/thin-provisioning-tools.git")
+             (url "https://github.com/jthornber/thin-provisioning-tools")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3652,7 +3652,7 @@ country-specific regulations for the wireless spectrum.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/groeck/lm-sensors.git")
+             (url "https://github.com/groeck/lm-sensors")
              (commit (string-append "V" (string-join
                                          (string-split version #\.) "-")))))
        (file-name (git-file-name name version))
@@ -5056,7 +5056,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/vmatare/thinkfan.git")
+             (url "https://github.com/vmatare/thinkfan")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -5114,7 +5114,7 @@ from userspace.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/teleshoes/tpacpi-bat.git")
+             (url "https://github.com/teleshoes/tpacpi-bat")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5456,7 +5456,7 @@ cpufreq sub-system is enabled or not.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jirka-h/haveged.git")
+             (url "https://github.com/jirka-h/haveged")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5733,7 +5733,7 @@ developers.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/clbr/radeontop.git")
+             (url "https://github.com/clbr/radeontop")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5887,7 +5887,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/haikarainen/light.git")
+             (url "https://github.com/haikarainen/light")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1a70zcf88ifsnwll486aicjnh48zisdf8f7vi34ihw61kdadsq9s"))
@@ -5975,7 +5975,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/linrunner/TLP.git")
+             (url "https://github.com/linrunner/TLP")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -6207,7 +6207,7 @@ userspace queueing component and the logging subsystem.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/proot-me/PRoot.git")
+             (url "https://github.com/proot-me/PRoot")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6650,7 +6650,7 @@ interface to this kernel feature.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dgraziotin/mbpfan.git")
+             (url "https://github.com/dgraziotin/mbpfan")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6685,7 +6685,7 @@ privileges.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/intel/opa-psm2.git")
+                    (url "https://github.com/intel/opa-psm2")
                     (commit (string-append "PSM2_" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -6803,7 +6803,7 @@ management tools in userspace.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vishvananda/netlink.git")
+                    (url "https://github.com/vishvananda/netlink")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -6875,7 +6875,7 @@ file systems.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/jeremie-koenig/genext2fs.git")
+                    (url "https://github.com/jeremie-koenig/genext2fs")
                     ;; 1.4.1-3 had a VCS tag but 1.4.1-4 doesn't.
                     (commit "9ee43894634998b0b2b309d636f25c64314c9421")))
               (file-name (git-file-name name version))
@@ -7028,7 +7028,7 @@ set as @code{LD_PRELOAD} to override the C library file system functions.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/linuxwacom/input-wacom.git")
+                    (url "https://github.com/linuxwacom/input-wacom")
                     (commit (string-append "input-wacom-" version))))
               (file-name (git-file-name name version))
               (sha256

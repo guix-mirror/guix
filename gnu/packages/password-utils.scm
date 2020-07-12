@@ -203,7 +203,7 @@ algorithms AES or Twofish.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pwsafe/pwsafe.git")
+             (url "https://github.com/pwsafe/pwsafe")
              (commit version)))
        (sha256
         (base32 "1ka7xsl63v0559fzf3pwc1iqr37gwr4vq5iaxa2hzar2g28hsxvh"))
@@ -587,7 +587,7 @@ key URIs using the standard otpauth:// scheme.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/IJHack/QtPass.git")
+             (url "https://github.com/IJHack/QtPass")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -711,7 +711,7 @@ using password-store through rofi interface:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/browserpass/browserpass-native.git")
+             (url "https://github.com/browserpass/browserpass-native")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

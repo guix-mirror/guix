@@ -160,7 +160,7 @@ objects!")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/autotrace/autotrace.git")
+                      (url "https://github.com/autotrace/autotrace")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -301,7 +301,7 @@ application can be customized via its API for Python scripting.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/assimp/assimp.git")
+                    (url "https://github.com/assimp/assimp")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -511,7 +511,7 @@ other vector formats such as:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OGRECave/ogre.git")
+             (url "https://github.com/OGRECave/ogre")
              (commit (string-append "v" version))
              (recursive? #t)))          ;for Dear ImGui submodule
        (file-name (git-file-name name version))
@@ -628,7 +628,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/OpenImageIO/oiio.git")
+                    (url "https://github.com/OpenImageIO/oiio")
                     (commit (string-append "Release-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -948,7 +948,7 @@ output.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/wdas/brdf.git")
+                      (url "https://github.com/wdas/brdf")
                       (commit commit)))
                 (sha256
                  (base32
@@ -1217,7 +1217,7 @@ and GPU architectures.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/floriankirsch/OpenCSG.git")
+               (url "https://github.com/floriankirsch/OpenCSG")
                (commit (string-append "opencsg-"
                                       (string-map dot-to-dash version)
                                       "-release"))))

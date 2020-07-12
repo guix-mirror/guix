@@ -71,7 +71,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/axoloti/axoloti.git")
+             (url "https://github.com/axoloti/axoloti")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -367,7 +367,7 @@ patcher application.")))
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/axoloti/axoloti.git")
+             (url "https://github.com/axoloti/axoloti")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -607,7 +607,7 @@ patcher application.")))
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/JohannesTaelman/elfloader.git")
+                   (url "https://github.com/JohannesTaelman/elfloader")
                    (commit commit)))
              (file-name (git-file-name "elfloader" commit))
              (sha256

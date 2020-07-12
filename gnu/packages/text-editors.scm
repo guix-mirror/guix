@@ -502,7 +502,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/wereturtle/ghostwriter.git")
+                    (url "https://github.com/wereturtle/ghostwriter")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -559,7 +559,7 @@ environment with Markdown markup.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/olivierkes/manuskript.git")
+             (url "https://github.com/olivierkes/manuskript")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -661,7 +661,7 @@ in plain text file format.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/editorconfig/editorconfig-core-c.git")
+               (url "https://github.com/editorconfig/editorconfig-core-c")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -903,7 +903,7 @@ card.  It offers:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vigna/ne.git")
+                    (url "https://github.com/vigna/ne")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

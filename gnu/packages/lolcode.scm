@@ -34,7 +34,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/justinmeza/lci.git")
+             (url "https://github.com/justinmeza/lci")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

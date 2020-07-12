@@ -456,7 +456,7 @@ support.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/bjorn/tiled.git")
+                    (url "https://github.com/bjorn/tiled")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -503,7 +503,7 @@ clone.")
               ;; http://mirror0.sfml-dev.org/files/ because files there seem
               ;; to be changed in place.
               (uri (git-reference
-                    (url "https://github.com/SFML/SFML.git")
+                    (url "https://github.com/SFML/SFML")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -593,7 +593,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/alemart/surgescript.git")
+             (url "https://github.com/alemart/surgescript")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1403,7 +1403,7 @@ painted with a mouse.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wgois/OIS.git")
+             (url "https://github.com/wgois/OIS")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1933,7 +1933,7 @@ of the others")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ioquake/ioq3.git")
+               (url "https://github.com/ioquake/ioq3")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -2051,7 +2051,7 @@ double-buffering.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/FNA-XNA/FNA.git")
+             (url "https://github.com/FNA-XNA/FNA")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2103,7 +2103,7 @@ focuses solely on developing a fully accurate XNA4 runtime for the desktop.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/danfis/libccd.git")
+             (url "https://github.com/danfis/libccd")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2179,7 +2179,7 @@ computer games, 3D authoring tools and simulation tools.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/slembcke/Chipmunk2D.git")
+             (url "https://github.com/slembcke/Chipmunk2D")
              (commit (string-append "Chipmunk-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2206,7 +2206,7 @@ rigid body physics library written in C.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/libtcod/libtcod.git")
+                    (url "https://github.com/libtcod/libtcod")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

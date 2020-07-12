@@ -198,7 +198,7 @@ and its related documentation.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/GrahamDumpleton/mod_wsgi.git")
+                    (url "https://github.com/GrahamDumpleton/mod_wsgi")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -423,7 +423,7 @@ documentation.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/giom/nginx_accept_language_module.git")
+               (url "https://github.com/giom/nginx_accept_language_module")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -647,7 +647,7 @@ APIs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/gnosek/fcgiwrap.git")
+             (url "https://github.com/gnosek/fcgiwrap")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -844,7 +844,7 @@ It aims to conform to RFC 7159.")
               ;; do not use auto-generated tarballs
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/udp/json-parser.git")
+                    (url "https://github.com/udp/json-parser")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -874,7 +874,7 @@ project)
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/flavio/qjson.git")
+                    (url "https://github.com/flavio/qjson")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -914,7 +914,7 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ayoy/qoauth.git")
+                    (url "https://github.com/ayoy/qoauth")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1045,7 +1045,7 @@ current version of any major web browser.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Tencent/rapidjson.git")
+                    (url "https://github.com/Tencent/rapidjson")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1086,7 +1086,7 @@ style API.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/lloyd/yajl.git")
+                    (url "https://github.com/lloyd/yajl")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1117,7 +1117,7 @@ parser written in ANSI C and a small validating JSON generator.")
               ;; things from Git.
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/warmcat/libwebsockets.git")
+                    (url "https://github.com/warmcat/libwebsockets")
                     (commit (string-append "v" version
                                            "-chrome37-firefox30"))))
               (sha256
@@ -1196,7 +1196,7 @@ other systems that want to manipulate WebAssembly files.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/zaphoyd/websocketpp.git")
+             (url "https://github.com/zaphoyd/websocketpp")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1230,7 +1230,7 @@ high performance.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tatsuhiro-t/wslay.git")
+             (url "https://github.com/tatsuhiro-t/wslay")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1406,7 +1406,7 @@ of people.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/novnc/websockify.git")
+                    (url "https://github.com/novnc/websockify")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1667,7 +1667,7 @@ minimum to provide high performance operation.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/sass/libsass.git")
+                    (url "https://github.com/sass/libsass")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1701,7 +1701,7 @@ stylesheets, you'll need to use another program that uses this library,
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/sass/sassc.git")
+                    (url "https://github.com/sass/sassc")
                     (commit  version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1758,7 +1758,7 @@ language known as SASS.")
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/sass/libsass.git")
+                   (url "https://github.com/sass/libsass")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -5021,7 +5021,7 @@ written in C.  It is developed as part of the NetSurf project.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tlsa/libcyaml.git")
+             (url "https://github.com/tlsa/libcyaml")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5747,7 +5747,7 @@ additional capabilities.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/openSUSE/xinetd.git")
+             (url "https://github.com/openSUSE/xinetd")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -7311,7 +7311,7 @@ compressed JSON header blocks.
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/UMCUGenetics/hpcguix-web.git")
+                      (url "https://github.com/UMCUGenetics/hpcguix-web")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

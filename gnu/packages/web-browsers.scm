@@ -219,7 +219,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/luakit/luakit.git")
+                     (url "https://github.com/luakit/luakit")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256

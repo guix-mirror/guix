@@ -723,7 +723,7 @@ write native speed custom Git applications in any language with bindings.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/AGWA/git-crypt.git")
+             (url "https://github.com/AGWA/git-crypt")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -971,7 +971,7 @@ repository")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/davisp/ghp-import.git")
+             (url "https://github.com/davisp/ghp-import")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1102,7 +1102,7 @@ either a pure Python implementation, or the faster, but more resource intensive
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/kward/shflags.git")
+                     (url "https://github.com/kward/shflags")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1185,7 +1185,7 @@ lot easier.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ctmarinas/stgit.git")
+             (url "https://github.com/ctmarinas/stgit")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1237,7 +1237,7 @@ manipulate them in various ways.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/RichiH/vcsh.git")
+             (url "https://github.com/RichiH/vcsh")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1312,7 +1312,7 @@ also walk each side of a merge and test those changes individually.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sitaramc/gitolite.git")
+             (url "https://github.com/sitaramc/gitolite")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2058,7 +2058,7 @@ output of the @code{git} command.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/0-wiz-0/findnewest.git")
+             (url "https://github.com/0-wiz-0/findnewest")
              (commit (string-append "findnewest-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2130,7 +2130,7 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/DanielDent/git-annex-remote-rclone.git")
+             (url "https://github.com/DanielDent/git-annex-remote-rclone")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2399,7 +2399,7 @@ how information about the merge is displayed.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mhagger/git-imerge.git")
+             (url "https://github.com/mhagger/git-imerge")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

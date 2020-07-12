@@ -47,7 +47,7 @@
               ;; pre-compiled files, so we use this snapshot of the source
               ;; repository.
               (uri (git-reference
-                    (url "https://github.com/erlang/otp.git")
+                    (url "https://github.com/erlang/otp")
                     (commit (string-append "OTP-" version))))
               (file-name (git-file-name name version))
               (sha256

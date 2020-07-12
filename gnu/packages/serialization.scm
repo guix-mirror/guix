@@ -60,7 +60,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/USCiLab/cereal.git")
+             (url "https://github.com/USCiLab/cereal")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -145,7 +145,7 @@ serialization.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tarruda/libmpack.git")
+             (url "https://github.com/tarruda/libmpack")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -175,7 +175,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/libmpack/libmpack-lua.git")
+             (url "https://github.com/libmpack/libmpack-lua")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -267,7 +267,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jbeder/yaml-cpp.git")
+             (url "https://github.com/jbeder/yaml-cpp")
              (commit (string-append "yaml-cpp-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -321,7 +321,7 @@ it a convenient format to store user input files.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/open-source-parsers/jsoncpp.git")
+                    (url "https://github.com/open-source-parsers/jsoncpp")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

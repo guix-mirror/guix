@@ -122,7 +122,7 @@ operating system functions.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/aseba-community/dashel.git")
+             (url "https://github.com/aseba-community/dashel")
              (commit version)))
        (sha256
         (base32 "0anks2l2i2qp0wlzqck1qgpq15a3l6dg8lw2h8s4nsj7f61lffwy"))
@@ -147,7 +147,7 @@ combination of these streams.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/QuantStack/xsimd.git")
+             (url "https://github.com/QuantStack/xsimd")
              (commit version)))
        (sha256
         (base32 "1ny2qin1j4h35mljivh8z52kwdyjxf4yxlzb8j52ji91v2ccc88j"))
@@ -268,7 +268,7 @@ intuitive syntax and trivial integration.")
               (method git-fetch)
               (uri
                (git-reference
-                (url "https://github.com/QuantStack/xtl.git")
+                (url "https://github.com/QuantStack/xtl")
                 (commit version)))
               (sha256
                (base32
@@ -404,7 +404,7 @@ and make @code{cpplint} usable in wider contexts.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Stiffstream/sobjectizer.git")
+             (url "https://github.com/Stiffstream/sobjectizer")
              (commit (string-append "v." version))))
        (sha256
         (base32 "0jfai7sqxnnjkms38krm7mssj5l79nb3pllkbyj4j581a7l5j6l5"))
@@ -435,7 +435,7 @@ development of concurrent and multithreaded applications in C++.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mobius3/tweeny.git")
+             (url "https://github.com/mobius3/tweeny")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -462,7 +462,7 @@ point and then, after each tween step, plugging back the result.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/abseil/abseil-cpp.git")
+                    (url "https://github.com/abseil/abseil-cpp")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -506,7 +506,7 @@ Google's C++ code base.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/taocpp/PEGTL.git")
+                    (url "https://github.com/taocpp/PEGTL")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

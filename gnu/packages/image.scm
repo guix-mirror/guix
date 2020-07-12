@@ -309,7 +309,7 @@ Currently all documentation resides in @file{pnglite.h}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ImageOptim/libimagequant.git")
+             (url "https://github.com/ImageOptim/libimagequant")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -333,7 +333,7 @@ and other PNG optimizers.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/kornelski/pngquant.git")
+             (url "https://github.com/kornelski/pngquant")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -589,7 +589,7 @@ collection of tools for doing simple manipulations of TIFF images.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/DanBloomberg/leptonica.git")
+             (url "https://github.com/DanBloomberg/leptonica")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1357,7 +1357,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mdadams/jasper.git")
+                    (url "https://github.com/mdadams/jasper")
                     (commit (string-append "version-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1380,7 +1380,7 @@ ISO/IEC 15444-1).")
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/sekrit-twc/zimg.git")
+              (url "https://github.com/sekrit-twc/zimg")
               (commit (string-append "release-" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -1408,7 +1408,7 @@ the programmer.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/myint/perceptualdiff.git")
+             (url "https://github.com/myint/perceptualdiff")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1482,7 +1482,7 @@ changed, making the embedding resistant against first-order statistical tests.")
       (source
        (origin (method git-fetch)
                (uri (git-reference
-                     (url "https://github.com/extemporelang/stb.git")
+                     (url "https://github.com/extemporelang/stb")
                      (commit commit)))
                (sha256
                 (base32
@@ -1688,7 +1688,7 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/thezbyg/gpick.git")
+                    (url "https://github.com/thezbyg/gpick")
                     (commit (string-append name "-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1751,7 +1751,7 @@ parsing, viewing, modifying, and saving this metadata.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lupoDharkael/flameshot.git")
+             (url "https://github.com/lupoDharkael/flameshot")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1864,7 +1864,7 @@ identical visual appearance.")
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://github.com/emersion/grim.git")
+           (url "https://github.com/emersion/grim")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
@@ -1890,7 +1890,7 @@ identical visual appearance.")
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://github.com/emersion/slurp.git")
+           (url "https://github.com/emersion/slurp")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256

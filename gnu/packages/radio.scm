@@ -82,7 +82,7 @@
     (source
      (origin (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/jgaeddert/liquid-dsp.git")
+                   (url "https://github.com/jgaeddert/liquid-dsp")
                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256
@@ -548,7 +548,7 @@ to the fix block above.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/csete/gqrx.git")
+             (url "https://github.com/csete/gqrx")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -712,7 +712,7 @@ for correctness.")
       (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mossmann/hackrf.git")
+             (url "https://github.com/mossmann/hackrf")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
@@ -1025,7 +1025,7 @@ gain and standing wave ratio.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/flightaware/dump1090.git")
+             (url "https://github.com/flightaware/dump1090")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1067,7 +1067,7 @@ their position, altitude, speed, etc.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/merbanan/rtl_433.git")
+             (url "https://github.com/merbanan/rtl_433")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1093,7 +1093,7 @@ from devices on the 433 MHz, 868 MHz, 315 MHz, 345 MHz and 915 MHz ISM bands.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/EliasOenal/multimon-ng.git")
+             (url "https://github.com/EliasOenal/multimon-ng")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

@@ -41,7 +41,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/elementary/granite.git")
+                    (url "https://github.com/elementary/granite")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -79,7 +79,7 @@ in apps built for the Pantheon desktop.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/elementary/calculator.git")
+             (url "https://github.com/elementary/calculator")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -120,7 +120,7 @@ desktop.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/elementary/sideload.git")
+             (url "https://github.com/elementary/sideload")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

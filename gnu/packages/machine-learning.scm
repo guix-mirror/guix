@@ -93,7 +93,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/libfann/fann.git")
+                      (url "https://github.com/libfann/fann")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -315,7 +315,7 @@ networks) based on simulation of (stochastic) flow in graphs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fhcrc/mcl.git")
+             (url "https://github.com/fhcrc/mcl")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -584,7 +584,7 @@ in terms of new algorithms.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ReactiveX/RxCpp.git")
+             (url "https://github.com/ReactiveX/RxCpp")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1rdpa3jlc181jd08nk437aar085h28i45s6nzrv65apb3xyyz0ij"))
@@ -803,7 +803,7 @@ computing environments.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/scikit-learn/scikit-learn.git")
+             (url "https://github.com/scikit-learn/scikit-learn")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -860,7 +860,7 @@ data analysis.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/scikit-learn/scikit-learn.git")
+                      (url "https://github.com/scikit-learn/scikit-learn")
                       (commit version)))
                 (file-name (git-file-name "python-scikit-learn" version))
                 (sha256
@@ -1064,7 +1064,7 @@ association studies (GWAS) on extremely large data sets.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/kaldi-asr/kaldi.git")
+                      (url "https://github.com/kaldi-asr/kaldi")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1175,7 +1175,7 @@ written in C++.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/alumae/gst-kaldi-nnet2-online.git")
+                      (url "https://github.com/alumae/gst-kaldi-nnet2-online")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1247,7 +1247,7 @@ automatically.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/alumae/kaldi-gstreamer-server.git")
+                      (url "https://github.com/alumae/kaldi-gstreamer-server")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1351,7 +1351,7 @@ Python.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tensorflow/tensorflow.git")
+             (url "https://github.com/tensorflow/tensorflow")
              (commit (string-append "v" version))))
        (file-name (string-append "tensorflow-" version "-checkout"))
        (sha256
@@ -1681,7 +1681,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/google/double-conversion.git")
+                   (url "https://github.com/google/double-conversion")
                    (commit commit)))
              (file-name
               (git-file-name "double-conversion"
@@ -1726,7 +1726,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/google/highwayhash.git")
+                   (url "https://github.com/google/highwayhash")
                    (commit commit)))
              (file-name (string-append "highwayhash-0-" revision
                                        (string-take commit 7)
@@ -1974,7 +1974,7 @@ that:
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/facebookincubator/gloo.git")
+               (url "https://github.com/facebookincubator/gloo")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

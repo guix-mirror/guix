@@ -149,7 +149,7 @@ installation of Haskell libraries and programs.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/jameysharp/corrode.git")
+               (url "https://github.com/jameysharp/corrode")
                (commit "b6699fb2fa552a07c6091276285a44133e5c9789")))
          (file-name (git-file-name name version))
          (sha256
@@ -624,7 +624,7 @@ and mIRC chat codes.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/david-janssen/kmonad.git")
+             (url "https://github.com/david-janssen/kmonad")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

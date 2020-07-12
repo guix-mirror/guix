@@ -1741,7 +1741,7 @@ misspelled words in a GtkTextView widget.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/CristianHenzel/ClipIt.git")
+             (url "https://github.com/CristianHenzel/ClipIt")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1856,7 +1856,7 @@ independent of your desktop environment, and supports global key bindings.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/v1cont/yad.git")
+             (url "https://github.com/v1cont/yad")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

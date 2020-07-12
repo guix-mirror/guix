@@ -65,7 +65,7 @@
      (origin
       (method git-fetch)
       (uri (git-reference
-            (url "https://github.com/daym/android-make-stub.git")
+            (url "https://github.com/daym/android-make-stub")
             (commit (string-append "v" version))))
       (file-name (string-append "android-make-stub-"
                                 version "-checkout"))
@@ -99,7 +99,7 @@ use their packages mostly unmodified in our Android NDK build system.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/google/googletest.git")
+              (url "https://github.com/google/googletest")
               (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256

@@ -43,7 +43,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/gpodder/gpodder.git")
+             (url "https://github.com/gpodder/gpodder")
              (commit version)))
        (sha256
         (base32

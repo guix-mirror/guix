@@ -3094,7 +3094,7 @@ this bundle for use independent of ConTeXt.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/lualatex/luaotfload.git")
+                    (url "https://github.com/lualatex/luaotfload")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

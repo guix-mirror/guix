@@ -222,7 +222,7 @@ score, keyboard, guitar, drum and controller views.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/clementine-player/Clementine.git")
+                      (url "https://github.com/clementine-player/Clementine")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -329,7 +329,7 @@ playing your music.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/cmus/cmus.git")
+                    (url "https://github.com/cmus/cmus")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -463,7 +463,7 @@ background while you work.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/kode54/dumb.git")
+             (url "https://github.com/kode54/dumb")
              (commit version)))
        (sha256
         (base32 "1cnq6rb14d4yllr0yi32p9jmcig8avs3f43bvdjrx4r1mpawspi6"))
@@ -508,7 +508,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/hydrogen-music/hydrogen.git")
+             (url "https://github.com/hydrogen-music/hydrogen")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -631,7 +631,7 @@ MusePack, Monkey's Audio, and WavPack files.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/digego/extempore.git")
+                    (url "https://github.com/digego/extempore")
                     (commit (string-append "v" version))))
               (sha256
                (base32
@@ -1136,7 +1136,7 @@ complete studio.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/sjaehn/BSEQuencer.git")
+                    (url "https://github.com/sjaehn/BSEQuencer")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1172,7 +1172,7 @@ with a selectable pattern matrix size.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/sjaehn/BChoppr.git")
+               (url "https://github.com/sjaehn/BChoppr")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
@@ -1277,7 +1277,7 @@ your own lessons.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/powertab/powertabeditor.git")
+                      (url "https://github.com/powertab/powertabeditor")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1315,7 +1315,7 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/brummer10/jalv_select.git")
+                    (url "https://github.com/brummer10/jalv_select")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1860,7 +1860,7 @@ projects.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/libpd/libpd.git")
+                    (url "https://github.com/libpd/libpd")
                     (commit version)
                     (recursive? #t)))   ; for the 'pure-data' submodule
               (file-name (string-append name "-" version "-checkout"))
@@ -1941,7 +1941,7 @@ using a system-independent interface.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/extemporelang/portmidi.git")
+                      (url "https://github.com/extemporelang/portmidi")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -2283,7 +2283,7 @@ allows you to send JACK MIDI events (i.e. play) using your PC keyboard.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/kmatheussen/jack_capture.git")
+                    (url "https://github.com/kmatheussen/jack_capture")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -2474,7 +2474,7 @@ follows a traditional multi-track tape recorder control paradigm.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/blablack/ams-lv2.git")
+             (url "https://github.com/blablack/ams-lv2")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2515,7 +2515,7 @@ and hold, etc.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/brummer10/gxtuner.git")
+                    (url "https://github.com/brummer10/gxtuner")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2603,7 +2603,7 @@ socket or command line.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/chronitis/curseradio.git")
+                      (url "https://github.com/chronitis/curseradio")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -2638,7 +2638,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/PromyLOPh/pianobar.git")
+                    (url "https://github.com/PromyLOPh/pianobar")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2860,7 +2860,7 @@ websites such as Libre.fm.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/yask123/Instant-Music-Downloader.git")
+                      (url "https://github.com/yask123/Instant-Music-Downloader")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -2978,7 +2978,7 @@ websites such as Libre.fm.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/milkytracker/MilkyTracker.git")
+                    (url "https://github.com/milkytracker/MilkyTracker")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3023,7 +3023,7 @@ websites such as Libre.fm.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/schismtracker/schismtracker.git")
+                    (url "https://github.com/schismtracker/schismtracker")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3211,7 +3211,7 @@ standard MIDI file with the csvmidi program.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/brummer10/GxGuvnor.lv2.git")
+                    (url "https://github.com/brummer10/GxGuvnor.lv2")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3335,7 +3335,7 @@ simulation of a push pull transistor fuzz effect with added high octave."))))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/brummer10/GxSuppaToneBender.lv2.git")
+                    (url "https://github.com/brummer10/GxSuppaToneBender.lv2")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3374,7 +3374,7 @@ saturation effect."))))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/brummer10/GxHyperion.lv2.git")
+                    (url "https://github.com/brummer10/GxHyperion.lv2")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3392,7 +3392,7 @@ simulation of the Hyperion Fuzz pedal.")))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/brummer10/GxVoodoFuzz.lv2.git")
+                    (url "https://github.com/brummer10/GxVoodoFuzz.lv2")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3412,7 +3412,7 @@ parallel with a DarkBooster, followed by a volume control.")))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/brummer10/GxSuperFuzz.lv2.git")
+                    (url "https://github.com/brummer10/GxSuperFuzz.lv2")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3432,7 +3432,7 @@ adjusts the amount of harmonics.")))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/brummer10/GxVintageFuzzMaster.lv2.git")
+                    (url "https://github.com/brummer10/GxVintageFuzzMaster.lv2")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3493,7 +3493,7 @@ a simulation of an analog Wah pedal with switchless activation."))))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/ssj71/rkrlv2.git")
+                      (url "https://github.com/ssj71/rkrlv2")
                       (commit commit)))
                 (sha256
                  (base32
@@ -3523,7 +3523,7 @@ maintainer these will get merged into the original project.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/moddevices/mod-utilities.git")
+                      (url "https://github.com/moddevices/mod-utilities")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -3807,7 +3807,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LMMS/lmms.git")
+             (url "https://github.com/LMMS/lmms")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3859,7 +3859,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/mjansson/rpmalloc.git")
+                 (url "https://github.com/mjansson/rpmalloc")
                  (commit "b5bdc18051bb74a22f0bde4bcc90b01cf590b496")))
            (sha256
             (base32
@@ -3896,7 +3896,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/musescore/MuseScore.git")
+             (url "https://github.com/musescore/MuseScore")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3969,7 +3969,7 @@ sample library.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/muse-sequencer/muse.git")
+                    (url "https://github.com/muse-sequencer/muse")
                     (commit (string-append "muse_"
                                            (string-map (lambda (c)
                                                          (if (char=? c #\.)
@@ -4153,7 +4153,7 @@ notation and includes basic support for digital audio.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/OpenMusicKontrollers/patchmatrix.git")
+                    (url "https://github.com/OpenMusicKontrollers/patchmatrix")
                     (commit version)))
               (file-name (git-file-name "patchmatrix" version))
               (sha256
@@ -4224,7 +4224,7 @@ the electronic or dubstep genre.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pedrolcl/Linux-SonivoxEas.git")
+                    (url "https://github.com/pedrolcl/Linux-SonivoxEas")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -4437,7 +4437,7 @@ at @code{musicbrainz.org}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/trizen/clyrics.git")
+             (url "https://github.com/trizen/clyrics")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -4732,7 +4732,7 @@ complete without obstructing your daily work.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/altdesktop/playerctl.git")
+                    (url "https://github.com/altdesktop/playerctl")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -4800,7 +4800,7 @@ and reverb.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/sadko4u/lsp-plugins.git")
+               (url "https://github.com/sadko4u/lsp-plugins")
                (commit (string-append "lsp-plugins-" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -4871,7 +4871,7 @@ and debugging of event signal flows inside plugin graphs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jpcima/spectacle.git")
+             (url "https://github.com/jpcima/spectacle")
              (commit (string-append "v" version))
              ;; Bundles a specific commit of the DISTRHO plugin framework.
              (recursive? #t)))
@@ -4968,7 +4968,7 @@ audio and MIDI plugins that can also run as standalone JACK applications.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/zamaudio/zam-plugins.git")
+         (url "https://github.com/zamaudio/zam-plugins")
          (commit version)
          ;; Recursive to fetch the DISTRHO plugin framework. This
          ;; framework is intended to be included in the sources
@@ -5060,7 +5060,7 @@ It can also play and mix samples.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/DISTRHO/DPF-Plugins.git")
+         (url "https://github.com/DISTRHO/DPF-Plugins")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5107,7 +5107,7 @@ Soul Force), MVerb, Nekobi, and ProM.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/x42/avldrums.lv2.git")
+             (url "https://github.com/x42/avldrums.lv2")
              (commit (string-append "v" version))
              ;; This plugin expects the robtk submodule's source files to be
              ;; there in order to build.
@@ -5151,7 +5151,7 @@ MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
         (method git-fetch)
         (uri
           (git-reference
-            (url "https://github.com/mtytel/helm.git")
+            (url "https://github.com/mtytel/helm")
             (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -5269,7 +5269,7 @@ plugin support, JACK support and chord assistance.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/michaelwillis/dragonfly-reverb.git")
+         (url "https://github.com/michaelwillis/dragonfly-reverb")
          (commit version)
          ;; Bundles a specific commit of the DISTRHO plugin framework.
          (recursive? #t)))
@@ -5355,7 +5355,7 @@ automation that comes as an LV2 plugin bundle with a custom UI.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/linuxmao-org/VL1-emulator.git")
+             (url "https://github.com/linuxmao-org/VL1-emulator")
              (commit (string-append "v" version))
              ;; bundles a specific commit of the DISTRHO plugin framework
              (recursive? #t)))
@@ -5395,7 +5395,7 @@ standalone JACK application.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/linuxmao-org/regrader.git")
+             (url "https://github.com/linuxmao-org/regrader")
              (commit (string-append "v" version))
              ;; bundles a specific commit of the DISTRHO plugin framework
              (recursive? #t)))
@@ -5447,7 +5447,7 @@ plugin and a standalone JACK application.")
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://github.com/moddevices/tap-lv2.git")
+                 (url "https://github.com/moddevices/tap-lv2")
                  (commit commit)))
           (file-name (git-file-name name version))
           (sha256
@@ -5487,7 +5487,7 @@ plugin and a standalone JACK application.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/pdesaulniers/wolf-shaper.git")
+               (url "https://github.com/pdesaulniers/wolf-shaper")
                (commit (string-append "v" version))
                ;; Bundles a specific commit of the DISTRHO plugin framework.
                (recursive? #t)))
@@ -5569,7 +5569,7 @@ It is provided as an LV2 plugin and as a standalone Jack application.")
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://github.com/linuxmao-org/shiru-plugins.git")
+                 (url "https://github.com/linuxmao-org/shiru-plugins")
                  (commit commit)
                  ;; Bundles a specific commit of the DISTRHO plugin framework.
                  (recursive? #t)))

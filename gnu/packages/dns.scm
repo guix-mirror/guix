@@ -762,7 +762,7 @@ LuaJIT, both a resolver library and a daemon.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ddclient/ddclient.git")
+             (url "https://github.com/ddclient/ddclient")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -929,7 +929,7 @@ local networks.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/publicsuffix/list.git")
+                      (url "https://github.com/publicsuffix/list")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

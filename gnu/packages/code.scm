@@ -238,7 +238,7 @@ COCOMO model or user-provided parameters.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/AlDanial/cloc.git")
+             (url "https://github.com/AlDanial/cloc")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -422,7 +422,7 @@ expressions, and its ability to generate emacs-style TAGS files.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cameronwhite/withershins.git")
+             (url "https://github.com/cameronwhite/withershins")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -482,7 +482,7 @@ stack traces.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/linux-test-project/lcov.git")
+                      (url "https://github.com/linux-test-project/lcov")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -574,7 +574,7 @@ possible to collect coverage information without special compiler switches.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Andersbakken/rtags.git")
+             (url "https://github.com/Andersbakken/rtags")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (patches (search-patches "rtags-separate-rct.patch"))
@@ -626,7 +626,7 @@ importantly we give you proper follow-symbol and find-references support.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pagekite/Colormake.git")
+             (url "https://github.com/pagekite/Colormake")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -676,7 +676,7 @@ produce colored output.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lindenb/makefile2graph.git")
+             (url "https://github.com/lindenb/makefile2graph")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

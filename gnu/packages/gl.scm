@@ -193,7 +193,7 @@ Polygon meshes, and Extruded polygon meshes.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/divVerent/s2tc.git")
+             (url "https://github.com/divVerent/s2tc")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -833,7 +833,7 @@ and surfaces, receiving input and events.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/extemporelang/nanovg.git")
+                      (url "https://github.com/extemporelang/nanovg")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -893,7 +893,7 @@ mixed vector/bitmap output.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/VirtualGL/virtualgl.git")
+             (url "https://github.com/VirtualGL/virtualgl")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

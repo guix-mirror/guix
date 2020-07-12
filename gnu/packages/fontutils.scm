@@ -177,7 +177,7 @@ Converts WOFF fonts to OpenType fonts
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wget/ttf2eot.git")
+             (url "https://github.com/wget/ttf2eot")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -266,7 +266,7 @@ work with most software requiring Type 1 fonts.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/google/woff2.git")
+                    (url "https://github.com/google/woff2")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version ".git"))
               (sha256

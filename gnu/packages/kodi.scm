@@ -90,7 +90,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/graeme-hill/crossguid.git")
+                      (url "https://github.com/graeme-hill/crossguid")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -140,7 +140,7 @@ generator library for C++.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/xbmc/libdvdnav.git")
+                      (url "https://github.com/xbmc/libdvdnav")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -175,7 +175,7 @@ generator library for C++.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/xbmc/libdvdread.git")
+                      (url "https://github.com/xbmc/libdvdread")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -210,7 +210,7 @@ generator library for C++.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/xbmc/libdvdcss.git")
+                      (url "https://github.com/xbmc/libdvdcss")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -273,7 +273,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/xbmc/xbmc.git")
+                    (url "https://github.com/xbmc/xbmc")
                     (commit (string-append version "-Leia"))))
               (file-name (git-file-name name version))
               (sha256

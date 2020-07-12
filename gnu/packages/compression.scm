@@ -679,7 +679,7 @@ This package is mostly for compatibility and historical interest.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/raboof/sfArkLib.git")
+                     (url "https://github.com/raboof/sfArkLib")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -715,7 +715,7 @@ with the sfArk algorithm.")
                 ;; commit at this time.
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/raboof/sfarkxtc.git")
+                      (url "https://github.com/raboof/sfarkxtc")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1004,7 +1004,7 @@ smaller than those produced by @code{Xdelta}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jmacd/xdelta.git")
+             (url "https://github.com/jmacd/xdelta")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1078,7 +1078,7 @@ well as bzip2.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/google/snappy.git")
+              (url "https://github.com/google/snappy")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1816,7 +1816,7 @@ non-Windows systems without running the actual installer using wine.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/google/brotli.git")
+             (url "https://github.com/google/brotli")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1947,7 +1947,7 @@ download times, and other distribution and storage costs.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/stachenov/quazip.git")
+                    (url "https://github.com/stachenov/quazip")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2112,7 +2112,7 @@ file compression algorithm.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ib/xarchiver.git")
+             (url "https://github.com/ib/xarchiver")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2142,7 +2142,7 @@ archiver is not installed.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/AQUAOSOTech/tarsplitter.git")
+                    (url "https://github.com/AQUAOSOTech/tarsplitter")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2176,7 +2176,7 @@ chunks.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Blosc/c-blosc.git")
+                    (url "https://github.com/Blosc/c-blosc")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

@@ -412,7 +412,7 @@ WSGI and the node exporter textfile collector.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/prometheus/node_exporter.git")
+                    (url "https://github.com/prometheus/node_exporter")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -434,7 +434,7 @@ written in Go with pluggable metric collectors.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                      (url "https://github.com/emcrisostomo/fswatch.git")
+                      (url "https://github.com/emcrisostomo/fswatch")
                       (commit version)))
               (file-name (git-file-name name version))
               (sha256

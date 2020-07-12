@@ -61,7 +61,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/JuliaLang/libuv.git")
+                       (url "https://github.com/JuliaLang/libuv")
                        (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -196,7 +196,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/vtjnash/libwhich.git")
+             (url "https://github.com/vtjnash/libwhich")
              ;; fixes linux-vdso.so related tests
              (commit "87cffe10080c98e7b5786c5166e420bf1ada1d41")))
        (file-name (string-append name "-" version "-checkout"))

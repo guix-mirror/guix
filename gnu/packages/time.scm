@@ -247,7 +247,7 @@ datetime module, available in Python 2.3+.")
        (method git-fetch)
        ;; The PyPi distribution doesn't include the tests.
        (uri (git-reference
-             (url "https://github.com/closeio/ciso8601.git")
+             (url "https://github.com/closeio/ciso8601")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

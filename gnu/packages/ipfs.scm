@@ -37,7 +37,7 @@
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://github.com/ipfs/go-ipfs-cmdkit.git")
+                 (url "https://github.com/ipfs/go-ipfs-cmdkit")
                  (commit commit)))
           (file-name (git-file-name name version))
           (sha256
@@ -65,7 +65,7 @@ that are shared between @command{go-ipfs/commands} and its rewrite
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ipfs/go-ipfs-api.git")
+               (url "https://github.com/ipfs/go-ipfs-api")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -110,7 +110,7 @@ that are shared between @command{go-ipfs/commands} and its rewrite
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/whyrusleeping/gx.git")
+             (url "https://github.com/whyrusleeping/gx")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

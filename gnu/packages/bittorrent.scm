@@ -192,7 +192,7 @@ XML-RPC over SCGI.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/tremc/tremc.git")
+               (url "https://github.com/tremc/tremc")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -223,7 +223,7 @@ Transmission BitTorrent daemon.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fagga/transmission-remote-cli.git")
+                    (url "https://github.com/fagga/transmission-remote-cli")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -347,7 +347,7 @@ downloads, download scheduling, download rate limiting.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Rudde/mktorrent.git")
+                    (url "https://github.com/Rudde/mktorrent")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -421,7 +421,7 @@ desktops.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/qbittorrent/qBittorrent.git")
+             (url "https://github.com/qbittorrent/qBittorrent")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256

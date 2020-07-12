@@ -51,7 +51,7 @@
                 (method git-fetch)
                 (uri
                  (git-reference
-                  (url "https://github.com/TigerVNC/tigervnc.git")
+                  (url "https://github.com/TigerVNC/tigervnc")
                   (commit commit)))
                 (sha256
                  (base32
@@ -238,7 +238,7 @@ where the server is installed.")))
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LibVNC/libvncserver.git")
+             (url "https://github.com/LibVNC/libvncserver")
              (commit (string-append "LibVNCServer-" version))))
        (file-name (git-file-name name version))
        (sha256

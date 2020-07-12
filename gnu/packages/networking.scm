@@ -615,7 +615,7 @@ written in the C programming language.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/edenhill/librdkafka.git")
+                    (url "https://github.com/edenhill/librdkafka")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1064,7 +1064,7 @@ virtual machines, and certificates.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/vishvananda/netns.git")
+                      (url "https://github.com/vishvananda/netns")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1090,7 +1090,7 @@ handling network namespaces in Go.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/ishidawataru/sctp.git")
+                      (url "https://github.com/ishidawataru/sctp")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1221,7 +1221,7 @@ reusing frequently-requested web pages.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/vgropp/bwm-ng.git")
+             (url "https://github.com/vgropp/bwm-ng")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1783,7 +1783,7 @@ library remains flexible, portable, and easily embeddable.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/yrutschle/sslh.git")
+             (url "https://github.com/yrutschle/sslh")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2194,7 +2194,7 @@ updates to the zebra daemon.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/vanhauser-thc/thc-ipv6.git")
+                       (url "https://github.com/vanhauser-thc/thc-ipv6")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -2505,7 +2505,7 @@ networks using zeromq.  It has these key characteristics:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/linux-can/can-utils.git")
+                    (url "https://github.com/linux-can/can-utils")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2686,7 +2686,7 @@ SNMP v3 using both IPv4 and IPv6.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/GNS3/ubridge.git")
+             (url "https://github.com/GNS3/ubridge")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2725,7 +2725,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ZerBea/hcxtools.git")
+             (url "https://github.com/ZerBea/hcxtools")
              (commit version)))
        (sha256
         (base32 "0k2qlq9hz5zc21nyc6yrnfqzga7hydn5mm0x3rpl2fhkwl81lxcn"))
@@ -2759,7 +2759,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ZerBea/hcxdumptool.git")
+             (url "https://github.com/ZerBea/hcxdumptool")
              (commit version)))
        (sha256
         (base32 "1b4d543y64ib92w9gcmiyjn5hz2vyjqmxk3f3yr1zk04fhw16gmf"))
@@ -2873,7 +2873,7 @@ communication over HTTP.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Stiffstream/restinio.git")
+                    (url "https://github.com/Stiffstream/restinio")
                     (commit (string-append "v." version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2915,7 +2915,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/savoirfairelinux/opendht.git")
+                    (url "https://github.com/savoirfairelinux/opendht")
                     (commit version)))
               (file-name (git-file-name name version))
               (patches (search-patches "opendht-fix-jami.patch"))
@@ -3085,7 +3085,7 @@ module @code{batman-adv}, for Layer 2.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pagekite/PyPagekite.git")
+             (url "https://github.com/pagekite/PyPagekite")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

@@ -2532,7 +2532,7 @@ on the command line.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/maxcountryman/flask-login.git")
+             (url "https://github.com/maxcountryman/flask-login")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2764,7 +2764,7 @@ for Flask programs that are using @code{python-alembic}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/edgewall/genshi.git")
+             (url "https://github.com/edgewall/genshi")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

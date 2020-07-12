@@ -458,7 +458,7 @@ trouble using them, because you do not have to remember each snippet name.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/tpope/vim-fugitive.git")
+               (url "https://github.com/tpope/vim-fugitive")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -574,7 +574,7 @@ are detected, the user is notified.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/editorconfig/editorconfig-vim.git")
+               (url "https://github.com/editorconfig/editorconfig-vim")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256

@@ -90,7 +90,7 @@ manner.  It also features an interactive interpreter.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/SWI-Prolog/swipl-devel.git")
+                    (url "https://github.com/SWI-Prolog/swipl-devel")
                     (recursive? #t) ; TODO: Determine if this can be split out.
                     (commit (string-append "V" version))))
               (file-name (git-file-name name version))

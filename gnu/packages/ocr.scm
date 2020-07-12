@@ -93,7 +93,7 @@ monospaced or proportional.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/taku910/zinnia.git")
+               (url "https://github.com/taku910/zinnia")
                (commit commit)))
          (sha256
           (base32

@@ -473,7 +473,7 @@ operating systems.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/neomutt/neomutt.git")
+             (url "https://github.com/neomutt/neomutt")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -879,7 +879,7 @@ attachments, create new maildirs, and so on.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/kspi/notifymuch.git")
+               (url "https://github.com/kspi/notifymuch")
                (commit commit)))
          (sha256
           (base32
@@ -999,7 +999,7 @@ ing, and tagging large collections of email messages.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/aperezdc/notmuch-addrlookup-c.git")
+                    (url "https://github.com/aperezdc/notmuch-addrlookup-c")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -1838,7 +1838,7 @@ program's primary purpose.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/andywingo/esmtp.git")
+             (url "https://github.com/andywingo/esmtp")
              (commit "01bf9fc")))
        (sha256
         (base32
@@ -2931,7 +2931,7 @@ PGP handling, multiple servers, and secure connections.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lefcha/imapfilter.git")
+             (url "https://github.com/lefcha/imapfilter")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2991,7 +2991,7 @@ replacement for the @code{urlview} program.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/verdammelt/tnef.git")
+             (url "https://github.com/verdammelt/tnef")
              (commit version)))
        (sha256
         (base32 "104g48mcm00bgiyzas2vf86331w7bnw7h3bc11ib4lp7rz6zqfck"))
@@ -3077,7 +3077,7 @@ replacement for the @code{urlview} program.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Yeraze/ytnef.git")
+                    (url "https://github.com/Yeraze/ytnef")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

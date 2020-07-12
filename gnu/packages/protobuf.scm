@@ -188,7 +188,7 @@ code.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mapbox/protozero.git")
+             (url "https://github.com/mapbox/protozero")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -265,7 +265,7 @@ source files.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ruby-protobuf/protobuf.git")
+                    (url "https://github.com/ruby-protobuf/protobuf")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

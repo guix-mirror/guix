@@ -470,7 +470,7 @@ has been designed to be fast, light and unintrusive.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/go-check/check.git")
+                      (url "https://github.com/go-check/check")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -576,7 +576,7 @@ test coverage and has a web user interface that will refresh automatically.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/google/googletest.git")
+             (url "https://github.com/google/googletest")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -600,7 +600,7 @@ generation.")
    (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/google/googletest.git")
+                   (url "https://github.com/google/googletest")
                    (commit (string-append "release-" version))))
              (file-name (git-file-name "googletest" version))
              (sha256

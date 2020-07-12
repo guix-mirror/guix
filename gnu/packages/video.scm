@@ -1170,7 +1170,7 @@ audio/video codec library.")
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/stepmania/ffmpeg.git")
+              (url "https://github.com/stepmania/ffmpeg")
               (commit "eda6effcabcf9c238e4635eb058d72371336e09b")))
         (sha256
          (base32 "1by8rmbva8mfrivdbbkr2gx4kga89zqygkd4cfjl76nr8mdcdamb"))
@@ -1196,7 +1196,7 @@ audio/video codec library.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dirkvdb/ffmpegthumbnailer.git")
+                    (url "https://github.com/dirkvdb/ffmpegthumbnailer")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1469,7 +1469,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mpv-player/mpv.git")
+                    (url "https://github.com/mpv-player/mpv")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1798,7 +1798,7 @@ other site that youtube-dl supports.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/soimort/you-get.git")
+                    (url "https://github.com/soimort/you-get")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1837,7 +1837,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/trizen/youtube-viewer.git")
+                    (url "https://github.com/trizen/youtube-viewer")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2221,7 +2221,7 @@ capabilities.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vapoursynth/vapoursynth.git")
+                    (url "https://github.com/vapoursynth/vapoursynth")
                     (commit (string-append "R" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2326,7 +2326,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/BasioMeusPuga/twitchy.git")
+               (url "https://github.com/BasioMeusPuga/twitchy")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -2369,7 +2369,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mltframework/mlt.git")
+                    (url "https://github.com/mltframework/mlt")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2462,7 +2462,7 @@ be used for realtime video capture via Linux-specific APIs.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/obsproject/obs-studio.git")
+                    (url "https://github.com/obsproject/obs-studio")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2631,7 +2631,7 @@ making @dfn{screencasts}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/MaartenBaert/ssr.git")
+             (url "https://github.com/MaartenBaert/ssr")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2771,7 +2771,7 @@ Content System specification.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mps-youtube/mps-youtube.git")
+             (url "https://github.com/mps-youtube/mps-youtube")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3226,7 +3226,7 @@ and ITU-T H.222.0.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/FFMS/ffms2.git")
+                    (url "https://github.com/FFMS/ffms2")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3328,7 +3328,7 @@ tools for styling them, including a built-in real-time video preview.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pitivi/gst-transcoder.git")
+             (url "https://github.com/pitivi/gst-transcoder")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -3442,7 +3442,7 @@ It counts more than 100 plugins.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Motion-Project/motion.git")
+                    (url "https://github.com/Motion-Project/motion")
                     (commit (string-append "release-" version))))
               (sha256
                (base32
@@ -3489,7 +3489,7 @@ changed.  Or in other words, it can detect motion.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/alexanderwink/subdl.git")
+                      (url "https://github.com/alexanderwink/subdl")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -3523,7 +3523,7 @@ save it to the appropriate filename.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/l-smash/l-smash.git")
+                    (url "https://github.com/l-smash/l-smash")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3587,7 +3587,7 @@ online.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/georgmartius/vid.stab.git")
+                      (url "https://github.com/georgmartius/vid.stab")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -3763,7 +3763,7 @@ speed and correctness.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/atomnuker/wlstream.git")
+               (url "https://github.com/atomnuker/wlstream")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -3860,7 +3860,7 @@ to convenience of translating and batch processing of multiple documents.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/FNA-XNA/Theorafile.git")
+               (url "https://github.com/FNA-XNA/Theorafile")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -3921,7 +3921,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/OpenVisualCloud/SVT-AV1.git")
+                     (url "https://github.com/OpenVisualCloud/SVT-AV1")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -4065,7 +4065,7 @@ result in several formats:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/phw/peek.git")
+             (url "https://github.com/phw/peek")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -4099,7 +4099,7 @@ can also directly record to WebM or MP4 if you prefer.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ammen99/wf-recorder.git")
+                    (url "https://github.com/ammen99/wf-recorder")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

@@ -5630,7 +5630,7 @@ parameters.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/Gibbsdavidl/CatterPlots.git")
+                      (url "https://github.com/Gibbsdavidl/CatterPlots")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -5653,7 +5653,7 @@ shaped points?  Now you can!")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jalvesaq/colorout.git")
+             (url "https://github.com/jalvesaq/colorout")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

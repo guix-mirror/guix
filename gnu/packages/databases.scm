@@ -148,7 +148,7 @@
     (source (origin
       (method git-fetch)
       (uri (git-reference
-             (url "https://github.com/4store/4store.git")
+             (url "https://github.com/4store/4store")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
@@ -1433,7 +1433,7 @@ which uses SQL to describe changes.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/coffeeandscripts/sqlcrush.git")
+                      (url "https://github.com/coffeeandscripts/sqlcrush")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -2192,7 +2192,7 @@ virtual address space — not physical RAM.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/drycpp/lmdbxx.git")
+             (url "https://github.com/drycpp/lmdbxx")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2421,7 +2421,7 @@ for ODBC.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/brianb/mdbtools.git")
+             (url "https://github.com/brianb/mdbtools")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -3157,7 +3157,7 @@ transforms idiomatic python function calls to well-formed SQL queries.")
     (source
      (origin (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/kayak/pypika.git")
+                   (url "https://github.com/kayak/pypika")
                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256

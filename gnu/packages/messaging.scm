@@ -235,7 +235,7 @@ identi.ca and status.net).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sm00th/bitlbee-discord.git")
+             (url "https://github.com/sm00th/bitlbee-discord")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1005,7 +1005,7 @@ and prevent message loss.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/irungentoo/toxcore.git")
+                      (url "https://github.com/irungentoo/toxcore")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -1040,7 +1040,7 @@ and prevent message loss.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/TokTok/c-toxcore.git")
+             (url "https://github.com/TokTok/c-toxcore")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1071,7 +1071,7 @@ messenger protocol.")
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://github.com/uTox/uTox.git")
+           (url "https://github.com/uTox/uTox")
            (commit (string-append "v" version))
            (recursive? #t))) ;; Needed for 'minini' git submodule.
      (file-name (string-append name "-" version "-checkout"))
@@ -1195,7 +1195,7 @@ connect with friends and family without anyone else listening in.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Bitmessage/PyBitmessage.git")
+             (url "https://github.com/Bitmessage/PyBitmessage")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
@@ -1639,7 +1639,7 @@ is also scriptable and extensible via Guile.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/boothj5/libmesode.git")
+                    (url "https://github.com/boothj5/libmesode")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1670,7 +1670,7 @@ manual SSL certificate verification.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/strophe/libstrophe.git")
+             (url "https://github.com/strophe/libstrophe")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1778,7 +1778,7 @@ building the IRC clients and bots.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/JFreegman/toxic.git")
+             (url "https://github.com/JFreegman/toxic")
              (commit (string-append "v" version))))
        (sha256
         (base32 "09l2j3lwvrq7bf3051vjsnml9w63790ly3iylgf26gkrmld6k31w"))
@@ -1863,7 +1863,7 @@ QMatrixClient project.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Nheko-Reborn/mtxclient.git")
+             (url "https://github.com/Nheko-Reborn/mtxclient")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1913,7 +1913,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Nheko-Reborn/nheko.git")
+             (url "https://github.com/Nheko-Reborn/nheko")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2153,7 +2153,7 @@ Telegram messenger.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/tdlib/td.git")
+                      (url "https://github.com/tdlib/td")
                       (commit commit)))
                 (sha256
                  (base32

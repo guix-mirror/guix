@@ -98,7 +98,7 @@ programmer devices.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pali/0xffff.git")
+             (url "https://github.com/pali/0xffff")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -216,7 +216,7 @@ firmware from it.")
        (origin
          (method git-fetch)
          (uri (git-reference
-                (url "https://github.com/PaulStoffregen/teensy_loader_cli.git")
+                (url "https://github.com/PaulStoffregen/teensy_loader_cli")
                 (commit commit)))
          (sha256 (base32 "0sssim56pwsxp5cp5dlf6mi9h5fx2592m6j1g7abnm0s09b0lpdx"))
          (file-name (git-file-name name version))
@@ -266,7 +266,7 @@ non-root users.")
         (origin
           (method git-fetch)
           (uri (git-reference
-                (url "https://github.com/linux-rockchip/rkflashtool.git")
+                (url "https://github.com/linux-rockchip/rkflashtool")
                 (commit commit)))
           (file-name (git-file-name name version))
           (sha256
@@ -345,7 +345,7 @@ referred to as the \"Odin 3 protocol\".")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/coreboot/coreboot.git")
+                    (url "https://github.com/coreboot/coreboot")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -419,7 +419,7 @@ Management Engine (ME).  You need to @code{sudo rmmod mei_me} and
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/corna/me_cleaner.git")
+                     (url "https://github.com/corna/me_cleaner")
                      (commit (string-append "v" version))))
               (sha256
                (base32
@@ -451,7 +451,7 @@ ME as far as possible (it only edits ME firmware image files).")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/LongSoft/UEFITool.git")
+                     (url "https://github.com/LongSoft/UEFITool")
                      (commit version)))
               (sha256
                (base32

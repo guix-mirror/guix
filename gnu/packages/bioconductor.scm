@@ -2934,7 +2934,7 @@ qPCR data, but could be used with other types as well.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cole-trapnell-lab/monocle3.git")
+             (url "https://github.com/cole-trapnell-lab/monocle3")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -6509,7 +6509,7 @@ accessibility data.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/cole-trapnell-lab/cicero-release.git")
+               (url "https://github.com/cole-trapnell-lab/cicero-release")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6530,7 +6530,7 @@ accessibility data.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/aertslab/cisTopic.git")
+               (url "https://github.com/aertslab/cisTopic")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

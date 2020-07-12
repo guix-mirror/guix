@@ -146,7 +146,7 @@ spying and/or modification by the server.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Parchive/par2cmdline.git")
+                    (url "https://github.com/Parchive/par2cmdline")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -310,7 +310,7 @@ random access nor for in-place modification.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/miekg/rdup.git")
+             (url "https://github.com/miekg/rdup")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -999,7 +999,7 @@ precious backup space.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/zbackup/zbackup.git")
+             (url "https://github.com/zbackup/zbackup")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

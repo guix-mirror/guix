@@ -1309,7 +1309,7 @@ bits instead of primitive data types like @code{char}, @code{int}, etc.")
        ;; not included with the PyPI archive.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/eerimoq/cantools.git")
+             (url "https://github.com/eerimoq/cantools")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2049,7 +2049,7 @@ and is not compatible with JSON.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/SCons/scons.git")
+                   (url "https://github.com/SCons/scons")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -2401,7 +2401,7 @@ files.")
        ;; There's no source tarball on PyPI.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dbcli/cli_helpers.git")
+             (url "https://github.com/dbcli/cli_helpers")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3428,7 +3428,7 @@ software version simply.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tantale/deprecated.git")
+             (url "https://github.com/tantale/deprecated")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3464,7 +3464,7 @@ to deprecate classes, functions or methods.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/PyGithub/PyGithub.git")
+             (url "https://github.com/PyGithub/PyGithub")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3531,7 +3531,7 @@ ecosystem, but can naturally be used also by other projects.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/robotframework/robotframework.git")
+             (url "https://github.com/robotframework/robotframework")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3580,7 +3580,7 @@ process automation (RPA).")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/boakley/robotframework-lint.git")
+               (url "https://github.com/boakley/robotframework-lint")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -3611,7 +3611,7 @@ utility, a static analysis tool (linter) for Robot Framework source files.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/robotframework/SSHLibrary.git")
+             (url "https://github.com/robotframework/SSHLibrary")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4016,7 +4016,7 @@ and is very extensible.")
        ;; git-reference because tests are not included in pypi source tarball
        ;; https://issues.guix.gnu.org/issue/36755#2
        (uri (git-reference
-             (url "https://github.com/projectmallard/mallard-ducktype.git")
+             (url "https://github.com/projectmallard/mallard-ducktype")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -4422,7 +4422,7 @@ color scales, and color space conversion easy.  It has support for:
         ,(origin ; The build script expects scipy-sphinx-theme as a git submodule
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/scipy/scipy-sphinx-theme.git")
+                 (url "https://github.com/scipy/scipy-sphinx-theme")
                  (commit "c466764e2231ba132c09826b5b138fffa1cfcec3")))
            (sha256
             (base32
@@ -4669,7 +4669,7 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/njsmith/colorspacious.git")
+             (url "https://github.com/njsmith/colorspacious")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5063,7 +5063,7 @@ as the original project seems to have been abandoned circa 2007.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pagekite/PySocksipyChain.git")
+             (url "https://github.com/pagekite/PySocksipyChain")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5286,7 +5286,7 @@ Python's distutils.")
        ;; source from a (semi-arbitrary, i.e. latest as of now) git commit.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dieterv/elib.intl.git")
+             (url "https://github.com/dieterv/elib.intl")
              (commit "d09997cfef")))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
@@ -5850,7 +5850,7 @@ memoizing PEG/Packrat parser in Python.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pygridtools/gridmap.git")
+             (url "https://github.com/pygridtools/gridmap")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5881,7 +5881,7 @@ cluster without needing to write any wrapper code yourself.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/nickstenning/honcho.git")
+             (url "https://github.com/nickstenning/honcho")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -7468,7 +7468,7 @@ falling into the Python interpreter.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/python-xlib/python-xlib.git")
+             (url "https://github.com/python-xlib/python-xlib")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -8801,7 +8801,7 @@ Python Package Index (PyPI).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/trendmicro/tlsh.git")
+             (url "https://github.com/trendmicro/tlsh")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -12893,7 +12893,7 @@ discovery, monitoring and configuration.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/schematics/schematics.git")
+             (url "https://github.com/schematics/schematics")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -15284,7 +15284,7 @@ Swagger 2.0).")
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/rochacbruno/flasgger.git")
+              (url "https://github.com/rochacbruno/flasgger")
               (commit version)))
         (file-name (git-file-name name version))
         (sha256
@@ -15817,7 +15817,7 @@ executed more than a given number of times during a given period.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/kovidgoyal/dukpy.git")
+             (url "https://github.com/kovidgoyal/dukpy")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -16284,7 +16284,7 @@ and works only with Python 2 and NumPy < 1.9.")
      (origin (method git-fetch)
              ;; Source tarball on PyPI doesn't include tests.
              (uri (git-reference
-                   (url "https://github.com/hsoft/send2trash.git")
+                   (url "https://github.com/hsoft/send2trash")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -16413,7 +16413,7 @@ functions by partial application of operators.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Suor/funcy.git")
+             (url "https://github.com/Suor/funcy")
              (commit version)))
        (sha256
         (base32 "1s98vkjnq3zq71737hn8xa15kssvmy1sfzsll3vrlv53902418mw"))
@@ -16532,7 +16532,7 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/python/typed_ast.git")
+             (url "https://github.com/python/typed_ast")
              (commit version)))
        (sha256
         (base32 "0l0hz809f7i356kmqkvfsaswiidb98j9hs9rrjnfawzqcbffzgyb"))
@@ -16973,7 +16973,7 @@ manager compatible with @code{asyncio}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/miracle2k/python-glob2.git")
+             (url "https://github.com/miracle2k/python-glob2")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -17163,7 +17163,7 @@ user-space file systems in Python.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pybind/pybind11.git")
+                    (url "https://github.com/pybind/pybind11")
                     (commit (string-append "v" version))))
               (sha256
                (base32
@@ -18061,7 +18061,7 @@ on regular expressions.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rholder/retrying.git")
+             (url "https://github.com/rholder/retrying")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -18858,7 +18858,7 @@ bindings for Python 2.5+ and 3.")))
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/oinume/iocapture.git")
+               (url "https://github.com/oinume/iocapture")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -18898,7 +18898,7 @@ standard error channel (stderr) in your program.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/neithere/argh.git")
+               (url "https://github.com/neithere/argh")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -19788,7 +19788,7 @@ HTML-containing files.")
        ;; sample.json5 is missing from PyPi source tarball
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dpranke/pyjson5.git")
+             (url "https://github.com/dpranke/pyjson5")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -19830,7 +19830,7 @@ replacement for dictionaries where immutability is desired.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/matrix-org/python-unpaddedbase64.git")
+             (url "https://github.com/matrix-org/python-unpaddedbase64")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

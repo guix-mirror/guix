@@ -345,7 +345,7 @@ mouse and joystick control, and original music.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/carstene1ns/alex4.git")
+             (url "https://github.com/carstene1ns/alex4")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -416,7 +416,7 @@ physics settings to tweak as well.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/viewizard/astromenace.git")
+             (url "https://github.com/viewizard/astromenace")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -476,7 +476,7 @@ regret their insolence.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fph/bastet.git")
+             (url "https://github.com/fph/bastet")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -655,7 +655,7 @@ high a score as possible.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/CleverRaven/Cataclysm-DDA.git")
+             (url "https://github.com/CleverRaven/Cataclysm-DDA")
              (commit version)))
        (sha256
         (base32 "15l6w6lxays7qmsv0ci2ry53asb9an9dh7l7fc13256k085qcg68"))
@@ -720,7 +720,7 @@ want what you have.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/CorsixTH/CorsixTH.git")
+             (url "https://github.com/CorsixTH/CorsixTH")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -775,7 +775,7 @@ more.  This package does @emph{not} provide the game assets.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/tnalpgge/rank-amateur-cowsay.git")
+                     (url "https://github.com/tnalpgge/rank-amateur-cowsay")
                      (commit (string-append name "-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -818,7 +818,7 @@ tired of cows, a variety of other ASCII-art messengers are available.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/jaseg/lolcat.git")
+               (url "https://github.com/jaseg/lolcat")
                (commit commit)))
          (sha256
           (base32
@@ -986,7 +986,7 @@ The game features:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/freedoom/freedoom.git")
+             (url "https://github.com/freedoom/freedoom")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1184,7 +1184,7 @@ automata.  The following features are available:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/bvschaik/julius.git")
+             (url "https://github.com/bvschaik/julius")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1291,7 +1291,7 @@ shadow mimic them to reach blocks you couldn't reach alone.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/alemart/opensurge.git")
+             (url "https://github.com/alemart/opensurge")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1980,7 +1980,7 @@ can be explored and changed freely.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dulsi/seahorse-adventures.git")
+             (url "https://github.com/dulsi/seahorse-adventures")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2092,7 +2092,7 @@ and defeat them with your bubbles!")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/notapixelstudio/superstarfighter.git")
+             (url "https://github.com/notapixelstudio/superstarfighter")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2437,7 +2437,7 @@ properly.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/nevat/abbayedesmorts-gpl.git")
+             (url "https://github.com/nevat/abbayedesmorts-gpl")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2668,7 +2668,7 @@ is very small), and shoot at the adversaries that keep appear on the screen.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/abishekvashok/cmatrix.git")
+             (url "https://github.com/abishekvashok/cmatrix")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2985,7 +2985,7 @@ for common mesh file formats, and collision detection.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/thelaui/M.A.R.S..git")
+                      (url "https://github.com/thelaui/M.A.R.S.")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -4065,7 +4065,7 @@ Transport Tycoon Deluxe.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OpenRCT2/OpenRCT2.git")
+             (url "https://github.com/OpenRCT2/OpenRCT2")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4273,7 +4273,7 @@ http://lavachat.symlynx.com/unix/")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/redeclipse/base.git")
+               (url "https://github.com/redeclipse/base")
                (commit (string-append "v" release))
                (recursive? #t))) ; for game data
          (file-name (git-file-name name version))
@@ -5087,7 +5087,7 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
     (source
      (origin (method git-fetch)
              (uri (git-reference
-                    (url "https://github.com/sgimenez/laby.git")
+                    (url "https://github.com/sgimenez/laby")
                     (commit (string-append name "-" version))))
              (file-name (git-file-name name version))
              (sha256
@@ -5430,7 +5430,7 @@ into the Space Age.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/bartobri/no-more-secrets.git")
+             (url "https://github.com/bartobri/no-more-secrets")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5545,7 +5545,7 @@ Magic, Egypt, Indians, Norsemen, Persian or Romans.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/freegish/freegish.git")
+                      (url "https://github.com/freegish/freegish")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -5602,7 +5602,7 @@ emerges from a sewer hole and pulls her below ground.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cxong/cdogs-sdl.git")
+             (url "https://github.com/cxong/cdogs-sdl")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -5739,7 +5739,7 @@ small robot living in the nano world, repair its maker.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/teeworlds/teeworlds.git")
+                    (url "https://github.com/teeworlds/teeworlds")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -6581,7 +6581,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Novum/vkQuake.git")
+             (url "https://github.com/Novum/vkQuake")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -6716,7 +6716,7 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/the-butterfly-effect/tbe.git")
+              (url "https://github.com/the-butterfly-effect/tbe")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6768,7 +6768,7 @@ elements to achieve a simple goal in the most complex way possible.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pioneerspacesim/pioneer.git")
+                    (url "https://github.com/pioneerspacesim/pioneer")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -6815,7 +6815,7 @@ whatever you make of it.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/umayr/badass.git")
+                     (url "https://github.com/umayr/badass")
                      (commit commit)))
               (file-name (git-file-name name version))
               (sha256
@@ -6840,7 +6840,7 @@ Github or Gitlab.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/colobot/colobot.git")
+             (url "https://github.com/colobot/colobot")
              (commit (string-append "colobot-gold-" version))
              (recursive? #t)))          ;for "data/" subdir
        (file-name (git-file-name name version))
@@ -6915,7 +6915,7 @@ You can save humanity and get programming skills!")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/coelckers/gzdoom.git")
+             (url "https://github.com/coelckers/gzdoom")
              (commit (string-append "g" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -7077,7 +7077,7 @@ affect gameplay).")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fabiangreffrath/crispy-doom.git")
+                    (url "https://github.com/fabiangreffrath/crispy-doom")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -7119,7 +7119,7 @@ original.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/shlomif/rinutils.git")
+                    (url "https://github.com/shlomif/rinutils")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -7642,7 +7642,7 @@ when packaged in Blorb container files or optionally from individual files.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/kthakore/frozen-bubble.git")
+               (url "https://github.com/kthakore/frozen-bubble")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -7871,7 +7871,7 @@ civilized than your own.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/stepmania/stepmania.git")
+             (url "https://github.com/stepmania/stepmania")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -8106,7 +8106,7 @@ and cooperative.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ryanakca/slingshot.git")
+             (url "https://github.com/ryanakca/slingshot")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -8409,7 +8409,7 @@ fight each other on an arena-like map.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/flareteam/flare-engine.git")
+                    (url "https://github.com/flareteam/flare-engine")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -8437,7 +8437,7 @@ action RPGs.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/flareteam/flare-game.git")
+                    (url "https://github.com/flareteam/flare-game")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -8563,7 +8563,7 @@ Orcus Dome from evil.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/HackerPoet/MarbleMarcher.git")
+                      (url "https://github.com/HackerPoet/MarbleMarcher")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -9501,7 +9501,7 @@ remake of that series or any other game.")
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://github.com/leela-zero/leela-zero.git")
+           (url "https://github.com/leela-zero/leela-zero")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
@@ -9549,7 +9549,7 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
    (source (origin
             (method git-fetch)
             (uri (git-reference
-                  (url "https://github.com/bernds/q5Go.git")
+                  (url "https://github.com/bernds/q5Go")
                   (commit (string-append "q5go-" version))))
             (file-name (git-file-name name version))
             (sha256
@@ -11165,7 +11165,7 @@ This package is part of the KDE games module.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/xmoto/xmoto.git")
+             (url "https://github.com/xmoto/xmoto")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -11257,7 +11257,7 @@ the more difficult challenges.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fbergo/eboard.git")
+             (url "https://github.com/fbergo/eboard")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -11359,7 +11359,7 @@ etc.  You can also play games on FICS or against an engine.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/official-stockfish/Stockfish.git")
+             (url "https://github.com/official-stockfish/Stockfish")
              (commit (string-append "sf_" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -11491,7 +11491,7 @@ kingdom.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/Neverball/neverball.git")
+               (url "https://github.com/Neverball/neverball")
                (commit commit)))
          (sha256
           (base32

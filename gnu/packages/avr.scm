@@ -176,7 +176,7 @@ C++.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ryansuchocki/microscheme.git")
+             (url "https://github.com/ryansuchocki/microscheme")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1r3ng4pw1s9yy1h5rafra1rq19d3vmb5pzbpcz1913wz22qdd976"))

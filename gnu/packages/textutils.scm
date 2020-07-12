@@ -259,7 +259,7 @@ the Hannon Lab.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/google/cityhash.git")
+                      (url "https://github.com/google/cityhash")
                       (commit commit)))
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
@@ -710,7 +710,7 @@ categories.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/williamh/dotconf.git")
+                    (url "https://github.com/williamh/dotconf")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -878,7 +878,7 @@ source code.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/aflc/editdistance.git")
+               (url "https://github.com/aflc/editdistance")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1087,7 +1087,7 @@ Mainland China, Taiwan, and Hong-Kong.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/nurse/nkf.git")
+                      (url "https://github.com/nurse/nkf")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

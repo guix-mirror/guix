@@ -38,7 +38,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pixel/hexedit.git")
+                    (url "https://github.com/pixel/hexedit")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

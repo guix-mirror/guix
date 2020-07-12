@@ -140,7 +140,7 @@
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/dolphin-emu/dolphin.git")
+               (url "https://github.com/dolphin-emu/dolphin")
                (commit commit)))
          (file-name (git-file-name name version))
          (modules '((guix build utils)))
@@ -289,7 +289,7 @@ older games.")
       (source (origin
                 (method git-fetch) ; no tarball available
                 (uri (git-reference
-                      (url "https://github.com/Aloshi/EmulationStation.git")
+                      (url "https://github.com/Aloshi/EmulationStation")
                       (commit commit))) ; no version tag
                 (file-name (git-file-name name version))
                 (sha256
@@ -323,7 +323,7 @@ and a game metadata scraper.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/higan-emu/higan.git")
+             (url "https://github.com/higan-emu/higan")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -484,7 +484,7 @@ The following systems are supported:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mgba-emu/mgba.git")
+             (url "https://github.com/mgba-emu/mgba")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -540,7 +540,7 @@ and Game Boy Color games.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LIJI32/SameBoy.git")
+             (url "https://github.com/LIJI32/SameBoy")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -587,7 +587,7 @@ from an emulator---from save states to scaling filters.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-core.git")
+             (url "https://github.com/mupen64plus/mupen64plus-core")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -636,7 +636,7 @@ core library.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-audio-sdl.git")
+             (url "https://github.com/mupen64plus/mupen64plus-audio-sdl")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -682,7 +682,7 @@ SDL audio plugin.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-input-sdl.git")
+             (url "https://github.com/mupen64plus/mupen64plus-input-sdl")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -727,7 +727,7 @@ SDL input plugin.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-rsp-hle.git")
+             (url "https://github.com/mupen64plus/mupen64plus-rsp-hle")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -769,7 +769,7 @@ high-level emulation (HLE) RSP processor plugin.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-rsp-z64.git")
+             (url "https://github.com/mupen64plus/mupen64plus-rsp-z64")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -811,7 +811,7 @@ Z64 RSP processor plugin.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-video-arachnoid.git")
+             (url "https://github.com/mupen64plus/mupen64plus-video-arachnoid")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -857,7 +857,7 @@ Arachnoid video plugin.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-video-glide64.git")
+             (url "https://github.com/mupen64plus/mupen64plus-video-glide64")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -911,7 +911,7 @@ Glide64 video plugin.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-video-glide64mk2.git")
+             (url "https://github.com/mupen64plus/mupen64plus-video-glide64mk2")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -961,7 +961,7 @@ Glide64MK2 video plugin.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-video-rice.git")
+             (url "https://github.com/mupen64plus/mupen64plus-video-rice")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1009,7 +1009,7 @@ Rice Video plugin.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-video-z64.git")
+             (url "https://github.com/mupen64plus/mupen64plus-video-z64")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1064,7 +1064,7 @@ Z64 video plugin.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mupen64plus/mupen64plus-ui-console.git")
+             (url "https://github.com/mupen64plus/mupen64plus-ui-console")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1129,7 +1129,7 @@ towards a working Mupen64Plus for casual users.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rdanbrook/nestopia.git")
+             (url "https://github.com/rdanbrook/nestopia")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1180,7 +1180,7 @@ emulation community.  It provides highly accurate emulation.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/libretro/RetroArch.git")
+             (url "https://github.com/libretro/RetroArch")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1344,7 +1344,7 @@ play them on systems for which they were never designed!")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mamedev/mame.git")
+             (url "https://github.com/mamedev/mame")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
@@ -1849,7 +1849,7 @@ framework based on QEMU.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/hrydgard/ppsspp.git")
+             (url "https://github.com/hrydgard/ppsspp")
              (commit (string-append "v" version))))
        (sha256
         (base32 "02yx1w0ygclnmdl0imsvgj24lkzi55wvxkf47q617j0jgrqhy8yl"))
@@ -1949,7 +1949,7 @@ framework based on QEMU.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/hrydgard/ppsspp-lang.git")
+                 (url "https://github.com/hrydgard/ppsspp-lang")
                  (commit "d184ba2b607a03435be579406b816c90add334e6")))
            (sha256
             (base32 "0s003x6247nx09qd6a1jz1l2hsk5d6k1zmh8mg3m6hjjhvbvd9j9"))))
@@ -1957,7 +1957,7 @@ framework based on QEMU.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/hrydgard/pspautotests.git")
+                 (url "https://github.com/hrydgard/pspautotests")
                  (commit "328b839c7243e7f733f9eae88d059485e3d808e7")))
            (sha256
             (base32 "1gj1kr5ijxrqwvz7c41phskjr70ndp8iz0gr8c3xxsd8p9z5gdvm"))))))

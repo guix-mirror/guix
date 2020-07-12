@@ -305,7 +305,7 @@ Japanese language input in most graphical applications.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rime/librime.git")
+             (url "https://github.com/rime/librime")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -356,7 +356,7 @@ traditional Chinese output.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rime/plum.git")
+             (url "https://github.com/rime/plum")
              (commit "397d601dd22cfc857613973724724b8f44db9f9c")))
        (file-name "plum-checkout")
        (sha256
@@ -403,7 +403,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-array.git")
+                 (url "https://github.com/rime/rime-array")
                  (commit "93cc99238f120606a076220ec4ddcad164f6396a")))
            (file-name "rime-array-checkout")
            (sha256
@@ -413,7 +413,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-bopomofo.git")
+                 (url "https://github.com/rime/rime-bopomofo")
                  (commit "ed25098386f5efd3d70b08650f0d1b70c41c11a3")))
            (file-name "rime-bopomofo-checkout")
            (sha256
@@ -423,7 +423,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-cangjie.git")
+                 (url "https://github.com/rime/rime-cangjie")
                  (commit "5fd8ce6f64039e505ca02655a621f2e830b97c19")))
            (file-name "rime-cangjie-checkout")
            (sha256
@@ -433,7 +433,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-cantonese.git")
+                 (url "https://github.com/rime/rime-cantonese")
                  (commit "e06fe8e79d7d64db2f2b6339aabc004d8cbc1f67")))
            (file-name "rime-cantonese-checkout")
            (sha256
@@ -443,7 +443,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-combo-pinyin.git")
+                 (url "https://github.com/rime/rime-combo-pinyin")
                  (commit "67b29cdc786928ea46b43a9c660dee3db8f1adff")))
            (file-name "rime-combo-pinyin-checkout")
            (sha256
@@ -453,7 +453,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-double-pinyin.git")
+                 (url "https://github.com/rime/rime-double-pinyin")
                  (commit "69bf85d4dfe8bac139c36abbd68d530b8b6622ea")))
            (file-name "rime-double-pinyin-checkout")
            (sha256
@@ -463,7 +463,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-emoji.git")
+                 (url "https://github.com/rime/rime-emoji")
                  (commit "c99d34e4a837349e4679a110bb4b94f71fe015ae")))
            (file-name "rime-emoji-checkout")
            (sha256
@@ -473,7 +473,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-essay.git")
+                 (url "https://github.com/rime/rime-essay")
                  (commit "88055afa3752e4582fa887765d962a30e02bb1fa")))
            (file-name "rime-essay-checkout")
            (sha256
@@ -483,7 +483,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-ipa.git")
+                 (url "https://github.com/rime/rime-ipa")
                  (commit "22b71710e029bcb412e9197192a638ab11bc2abf")))
            (file-name "rime-ipa-checkout")
            (sha256
@@ -493,7 +493,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-jyutping.git")
+                 (url "https://github.com/rime/rime-jyutping")
                  (commit "6fe0d727b3178feabd0f01e6cd82599202764735")))
            (file-name "rime-jyutping-checkout")
            (sha256
@@ -503,7 +503,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-luna-pinyin.git")
+                 (url "https://github.com/rime/rime-luna-pinyin")
                  (commit "f1268e192ca88b9526467ce04ac3e47c837891ad")))
            (file-name "rime-luna-pinyin-checkout")
            (sha256
@@ -513,7 +513,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-middle-chinese.git")
+                 (url "https://github.com/rime/rime-middle-chinese")
                  (commit "ed6d44f8d0bedf6e0c1c3183a270f8f01a211a40")))
            (file-name "rime-middle-chinese-checkout")
            (sha256
@@ -523,7 +523,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-pinyin-simp.git")
+                 (url "https://github.com/rime/rime-pinyin-simp")
                  (commit "b73df7fc0994912ce785462b3be569ae81258ac2")))
            (file-name "rime-pinyin-simp-checkout")
            (sha256
@@ -533,7 +533,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-prelude.git")
+                 (url "https://github.com/rime/rime-prelude")
                  (commit "8a52b4f86a59f3eb602f9a4cf6a680a67c15df8c")))
            (file-name "rime-prelude-checkout")
            (sha256
@@ -543,7 +543,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-quick.git")
+                 (url "https://github.com/rime/rime-quick")
                  (commit "3fe5911ba608cb2df1b6301b76ad1573bd482a76")))
            (file-name "rime-quick-checkout")
            (sha256
@@ -553,7 +553,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-scj.git")
+                 (url "https://github.com/rime/rime-scj")
                  (commit "cab5a0858765eff0553dd685a2d61d5536e9149c")))
            (file-name "rime-scj-checkout")
            (sha256
@@ -563,7 +563,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-soutzoe.git")
+                 (url "https://github.com/rime/rime-soutzoe")
                  (commit "beeaeca72d8e17dfd1e9af58680439e9012987dc")))
            (file-name "rime-soutzoe-checkout")
            (sha256
@@ -573,7 +573,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-stenotype.git")
+                 (url "https://github.com/rime/rime-stenotype")
                  (commit "f3e9189d5ce33c55d3936cc58e39d0c88b3f0c88")))
            (file-name "rime-stenotype-checkout")
            (sha256
@@ -583,7 +583,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-stroke.git")
+                 (url "https://github.com/rime/rime-stroke")
                  (commit "ea8576d1accd6fda339e96b415caadb56e2a07d1")))
            (file-name "rime-stroke-checkout")
            (sha256
@@ -593,7 +593,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-terra-pinyin.git")
+                 (url "https://github.com/rime/rime-terra-pinyin")
                  (commit "492aaf914f9de37cc9d26b846dc693116de70ae8")))
            (file-name "rime-terra-pinyin-checkout")
            (sha256
@@ -603,7 +603,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-wubi.git")
+                 (url "https://github.com/rime/rime-wubi")
                  (commit "dd052ee158a38cb791755318b1aef9b4a3ed0316")))
            (file-name "rime-wubi-checkout")
            (sha256
@@ -613,7 +613,7 @@ traditional Chinese output.")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/rime/rime-wugniu.git")
+                 (url "https://github.com/rime/rime-wugniu")
                  (commit "abd1ee98efbf170258fcf43875c21a4259e00b61")))
            (file-name "rime-wugniu-checkout")
            (sha256
@@ -633,7 +633,7 @@ Method Engine.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rime/ibus-rime.git")
+             (url "https://github.com/rime/ibus-rime")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

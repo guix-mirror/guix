@@ -132,7 +132,7 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
        (method git-fetch)
        ;; Fetch from the git repository, so that the tests can be run.
        (uri (git-reference
-             (url "https://github.com/django-extensions/django-extensions.git")
+             (url "https://github.com/django-extensions/django-extensions")
              (commit version)))
        (file-name (string-append name "-" version))
        (sha256
@@ -375,7 +375,7 @@ account authentication.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jazzband/django-debug-toolbar.git")
+             (url "https://github.com/jazzband/django-debug-toolbar")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -483,7 +483,7 @@ merging, minifying and compiling CSS and Javascript files.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/niwinz/django-jinja.git")
+             (url "https://github.com/niwinz/django-jinja")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

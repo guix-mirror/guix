@@ -461,7 +461,7 @@ for long periods of working with computers (8 or more hours per day).")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/adobe-fonts/source-han-sans.git")
+                     (url "https://github.com/adobe-fonts/source-han-sans")
                      (commit (string-append version "R"))))
               (file-name (git-file-name name version))
               (sha256
@@ -847,7 +847,7 @@ It contains the following fonts and styles:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/belluzj/fantasque-sans.git")
+             (url "https://github.com/belluzj/fantasque-sans")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -930,7 +930,7 @@ Powerline support.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/adobe-fonts/source-code-pro.git")
+             (url "https://github.com/adobe-fonts/source-code-pro")
              (commit (regexp-substitute/global
                       ;; The upstream tag uses "/" between the roman and italic
                       ;; versions, so substitute our "-" separator here.
@@ -955,7 +955,7 @@ designed to work well in user interface environments.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/adobe-fonts/source-sans-pro.git")
+             (url "https://github.com/adobe-fonts/source-sans-pro")
              (commit (regexp-substitute/global
                       ;; The upstream tag uses "/" between the roman and italic
                       ;; versions, so substitute our "-" separator here.
@@ -980,7 +980,7 @@ work well in user interface (UI) environments.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/adobe-fonts/source-serif-pro.git")
+             (url "https://github.com/adobe-fonts/source-serif-pro")
              (commit (regexp-substitute/global
                       ;; The upstream tag uses "/" between the roman and italic
                       ;; versions, so substitute our "-" separator here.
@@ -1023,7 +1023,7 @@ Sans Pro family.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/mozilla/Fira.git")
+                     (url "https://github.com/mozilla/Fira")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1068,7 +1068,7 @@ correct spacing.")
    (source (origin
             (method git-fetch)
             (uri (git-reference
-                   (url "https://github.com/FortAwesome/Font-Awesome.git")
+                   (url "https://github.com/FortAwesome/Font-Awesome")
                    (commit (string-append "v" version))))
             (file-name (git-file-name name version))
             (sha256
@@ -1105,7 +1105,7 @@ vector graphics.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/sunaku/tamzen-font.git")
+              (url "https://github.com/sunaku/tamzen-font")
               (commit (string-append "Tamzen-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1388,7 +1388,7 @@ monospace, slab-serif fonts.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/google/material-design-icons.git")
+                     (url "https://github.com/google/material-design-icons")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1658,7 +1658,7 @@ formatting.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/uswds/public-sans.git")
+             (url "https://github.com/uswds/public-sans")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

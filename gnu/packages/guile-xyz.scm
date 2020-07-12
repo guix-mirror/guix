@@ -234,7 +234,7 @@ more.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/ijp/guildhall.git")
+                      (url "https://github.com/ijp/guildhall")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -1350,7 +1350,7 @@ SQL databases.  This package implements the interface for SQLite.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/opencog/guile-dbi.git")
+               (url "https://github.com/opencog/guile-dbi")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1850,7 +1850,7 @@ provides access to that interface and its types from the Scheme level.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/fisherdj/miniAdapton.git")
+                      (url "https://github.com/fisherdj/miniAdapton")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -2047,7 +2047,7 @@ for Guile\".")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ijp/minikanren.git")
+                    (url "https://github.com/ijp/minikanren")
                     (commit "e844d85512f8c055d3f96143ee506007389a25e3")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3104,7 +3104,7 @@ clean and easy to use high level API.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/lloda/guile-ffi-fftw.git")
+                      (url "https://github.com/lloda/guile-ffi-fftw")
                       (commit commit)))
                 (file-name (git-file-name "guile-ffi-fftw" version))
                 (sha256
@@ -3540,7 +3540,7 @@ according to Bitorrent BEP003.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/rekado/guile-irc.git")
+                      (url "https://github.com/rekado/guile-irc")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

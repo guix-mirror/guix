@@ -3540,7 +3540,7 @@ X server.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mjanusz/v86d.git")
+             (url "https://github.com/mjanusz/v86d")
              (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6698,7 +6698,7 @@ Thai).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/eworm-de/xcur2png.git")
+             (url "https://github.com/eworm-de/xcur2png")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

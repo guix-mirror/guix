@@ -253,7 +253,7 @@ and syntax highlighting.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/oh-my-fish/plugin-foreign-env.git")
+             (url "https://github.com/oh-my-fish/plugin-foreign-env")
              (commit "dddd9213272a0ab848d474d0cbde12ad034e65bc")))
        (file-name (git-file-name name version))
        (sha256
@@ -300,7 +300,7 @@ into fish.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rakitzis/rc.git")
+                    (url "https://github.com/rakitzis/rc")
                     (commit (string-append "v" version))))
               (sha256
                (base32
@@ -744,7 +744,7 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dimkr/loksh.git")
+             (url "https://github.com/dimkr/loksh")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

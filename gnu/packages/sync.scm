@@ -64,7 +64,7 @@
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/meganz/MEGAcmd.git")
+              (url "https://github.com/meganz/MEGAcmd")
               (commit (string-append version "_Linux"))
               (recursive? #t)))
         (sha256
@@ -266,7 +266,7 @@ their folder.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/axkibe/lsyncd.git")
+             (url "https://github.com/axkibe/lsyncd")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256

@@ -147,7 +147,7 @@ large and/or frequently changing (network) environment.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/fdupoux/fsarchiver.git")
+         (url "https://github.com/fdupoux/fsarchiver")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -574,7 +574,7 @@ All of this is accomplished without a centralized metadata server.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/sahlberg/libnfs.git")
+                    (url "https://github.com/sahlberg/libnfs")
                     (commit (string-append "libnfs-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -821,7 +821,7 @@ is similar to mhddfs, unionfs, and aufs.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/trapexit/mergerfs-tools.git")
+               (url "https://github.com/trapexit/mergerfs-tools")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

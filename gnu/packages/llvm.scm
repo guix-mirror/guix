@@ -865,7 +865,7 @@ use with Clang, targeting C++11, C++14 and above.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/llvm/llvm-project.git")
+             (url "https://github.com/llvm/llvm-project")
              (commit (string-append "llvmorg-" version))))
        (file-name (git-file-name name version))
        (sha256

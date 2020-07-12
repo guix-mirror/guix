@@ -5129,7 +5129,7 @@ the ‘haddock’ package.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/haskell/haddock.git")
+             (url "https://github.com/haskell/haddock")
              (commit (string-append "haddock-" version "-release"))))
        (file-name (git-file-name name version))
        (sha256

@@ -351,7 +351,7 @@ releases.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rsyslog/libestr.git")
+             (url "https://github.com/rsyslog/libestr")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -384,7 +384,7 @@ more, like escaping special characters.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rsyslog/libfastjson.git")
+             (url "https://github.com/rsyslog/libfastjson")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -411,7 +411,7 @@ with essential JSON handling functions, sufficiently good JSON support (not
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rsyslog/liblogging.git")
+             (url "https://github.com/rsyslog/liblogging")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

@@ -878,7 +878,7 @@ mainly implemented in user space.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/abbbi/qmpbackup.git")
+                     (url "https://github.com/abbbi/qmpbackup")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256

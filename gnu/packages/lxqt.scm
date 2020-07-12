@@ -77,7 +77,7 @@
        ;; Download from github rather than launchpad because launchpad trunk
        ;; tarball hash is not deterministic.
        (uri (git-reference
-             (url "https://github.com/unity8-team/libdbusmenu-qt.git")
+             (url "https://github.com/unity8-team/libdbusmenu-qt")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

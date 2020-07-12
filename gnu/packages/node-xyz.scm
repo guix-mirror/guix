@@ -253,7 +253,7 @@ function with browser support.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/npm/node-semver.git")
+                    (url "https://github.com/npm/node-semver")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

@@ -48,7 +48,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/boinc/boinc.git")
+                    (url "https://github.com/boinc/boinc")
                     (commit (string-append "client_release/"
                                            (version-major+minor version)
                                            "/" version))))

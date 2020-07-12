@@ -36,7 +36,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/openstenoproject/plover.git")
+             (url "https://github.com/openstenoproject/plover")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

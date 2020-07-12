@@ -330,7 +330,7 @@ completion for many common commands.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/illusori/bash-tap.git")
+             (url "https://github.com/illusori/bash-tap")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -373,7 +373,7 @@ capturing.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/bats-core/bats-core.git")
+                    (url "https://github.com/bats-core/bats-core")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

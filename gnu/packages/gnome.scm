@@ -5384,7 +5384,7 @@ DAV, and others.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/hughsie/libgusb.git")
+                     (url "https://github.com/hughsie/libgusb")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -8446,7 +8446,7 @@ functionality and behavior.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/NicoHood/arc-theme.git")
+                    (url "https://github.com/NicoHood/arc-theme")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -8489,7 +8489,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/snwh/faba-icon-theme.git")
+             (url "https://github.com/snwh/faba-icon-theme")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -8522,7 +8522,7 @@ Moka")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/snwh/moka-icon-theme.git")
+             (url "https://github.com/snwh/moka-icon-theme")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -8545,7 +8545,7 @@ simple and consistent.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/horst3180/arc-icon-theme.git")
+             (url "https://github.com/horst3180/arc-icon-theme")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -9416,7 +9416,7 @@ configurable file renaming. ")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rcaelers/workrave.git")
+             (url "https://github.com/rcaelers/workrave")
              (commit (string-append "v" (string-map
                                          (match-lambda (#\. #\_) (chr chr))
                                          version)))))
@@ -10204,7 +10204,7 @@ card sheets that you’ll find at most office supply stores.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/libratbag/libratbag.git")
+             (url "https://github.com/libratbag/libratbag")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -10271,7 +10271,7 @@ your operating-system definition:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/libratbag/piper.git")
+             (url "https://github.com/libratbag/piper")
              (commit version)))
        (sha256
         (base32 "00vrcsbsv2477l1ncpyzc61lhxgac84dsgr3sjs8qxw3nh1gaasv"))
@@ -10338,7 +10338,7 @@ provided there is a DBus service present:
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/gkarsay/parlatype.git")
+               (url "https://github.com/gkarsay/parlatype")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

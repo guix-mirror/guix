@@ -86,7 +86,7 @@ library.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/sparsehash/sparsehash.git")
+                     (url "https://github.com/sparsehash/sparsehash")
                      (commit (string-append name "-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -161,7 +161,7 @@ queues, stacks, and doubly-linked lists.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/troydhanson/uthash.git")
+             (url "https://github.com/troydhanson/uthash")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -263,7 +263,7 @@ equivalent succinct data structure are (most of the time) identical.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/y-256/libdivsufsort.git")
+                    (url "https://github.com/y-256/libdivsufsort")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

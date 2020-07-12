@@ -295,7 +295,7 @@ FTP servers.  It is based on the curl library.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jpbarrette/curlpp.git")
+             (url "https://github.com/jpbarrette/curlpp")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1b0ylnnrhdax4kwjq64r1fk0i24n5ss6zfzf4hxwgslny01xiwrk"))

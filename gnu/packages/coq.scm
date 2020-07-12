@@ -51,7 +51,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/coq/coq.git")
+             (url "https://github.com/coq/coq")
              (commit (string-append "V" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -329,7 +329,7 @@ assistant.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/math-comp/math-comp.git")
+             (url "https://github.com/math-comp/math-comp")
              (commit (string-append "mathcomp-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -423,7 +423,7 @@ theorems between the two libraries.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/coq/bignums.git")
+                     (url "https://github.com/coq/bignums")
                      (commit (string-append "V" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -552,7 +552,7 @@ uses Ltac to synthesize the substitution operation.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mattam82/Coq-Equations.git")
+                    (url "https://github.com/mattam82/Coq-Equations")
                     (commit (string-append "v" version "-8.10"))))
               (file-name (git-file-name name version))
               (sha256

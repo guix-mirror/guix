@@ -1465,7 +1465,7 @@ Thunderbird.  It supports email, news feeds, chat, calendar and contacts.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Unode/firefox_decrypt.git")
+                    (url "https://github.com/Unode/firefox_decrypt")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

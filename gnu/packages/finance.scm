@@ -206,7 +206,7 @@ and dynamically with report tools based on filtering and graphical charts.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ledger/ledger.git")
+             (url "https://github.com/ledger/ledger")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -304,7 +304,7 @@ in ability, and easy to use.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ledger/ledger-mode.git")
+               (url "https://github.com/ledger/ledger-mode")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -378,7 +378,7 @@ This package provides the Emacs mode.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/stesie/geierlein.git")
+             (url "https://github.com/stesie/geierlein")
              (commit (string-append "V" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -481,7 +481,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Electron-Cash/Electron-Cash.git")
+             (url "https://github.com/Electron-Cash/Electron-Cash")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -553,7 +553,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/monero-project/monero.git")
+             (url "https://github.com/monero-project/monero")
              (commit (string-append "v" version))
              (recursive? #t)))
        (file-name (git-file-name name version))
@@ -672,7 +672,7 @@ the Monero command line client and daemon.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/monero-project/monero-gui.git")
+             (url "https://github.com/monero-project/monero-gui")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -787,7 +787,7 @@ the Monero GUI client.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/romanz/trezor-agent.git")
+             (url "https://github.com/romanz/trezor-agent")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1197,7 +1197,7 @@ information.")
          (origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/trezor/trezor-common.git")
+                 (url "https://github.com/trezor/trezor-common")
                  (commit commit)))
            (sha256
             (base32
@@ -1222,7 +1222,7 @@ trezord as a regular user instead of needing to it run as root.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/trezor/trezord-go.git")
+              (url "https://github.com/trezor/trezord-go")
               (commit (string-append "v" version))))
        (sha256
         (base32
@@ -1405,7 +1405,7 @@ entity management.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/BitcoinUnlimited/BitcoinUnlimited.git")
+             (url "https://github.com/BitcoinUnlimited/BitcoinUnlimited")
              (commit (string-append "BCHunlimited" version))))
        (file-name (git-file-name name version))
        (sha256

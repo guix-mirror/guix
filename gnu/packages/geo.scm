@@ -859,7 +859,7 @@ to create databases that are optimized for rendering/tile/map-services.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/osmcode/libosmium.git")
+             (url "https://github.com/osmcode/libosmium")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -892,7 +892,7 @@ OpenStreetMap data.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/openstreetmap/osm2pgsql.git")
+             (url "https://github.com/openstreetmap/osm2pgsql")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -941,7 +941,7 @@ map, geocoding with Nominatim, or general analysis.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mapbox/tippecanoe.git")
+             (url "https://github.com/mapbox/tippecanoe")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1032,7 +1032,7 @@ map display.  Downloads map data from a number of websites, including
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/opengribs/XyGrib.git")
+                     (url "https://github.com/opengribs/XyGrib")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1468,7 +1468,7 @@ using the dataset of topographical information collected by
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Maproom/qmapshack.git")
+             (url "https://github.com/Maproom/qmapshack")
              (commit (string-append "V_" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1620,7 +1620,7 @@ exchanged form one Spatial DBMS and the other.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OpenCPN/OpenCPN.git")
+             (url "https://github.com/OpenCPN/OpenCPN")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

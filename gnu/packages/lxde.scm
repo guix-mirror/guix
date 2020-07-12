@@ -270,7 +270,7 @@ with freedesktop.org standard.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/IgnorantGuru/spacefm.git")
+         (url "https://github.com/IgnorantGuru/spacefm")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256

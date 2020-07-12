@@ -78,7 +78,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/six-ddc/hss.git")
+                    (url "https://github.com/six-ddc/hss")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -495,7 +495,7 @@ responsive, especially over Wi-Fi, cellular, and long-distance links.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/MisterTea/EternalTCP.git")
+             (url "https://github.com/MisterTea/EternalTCP")
              (commit (string-append "et-v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -828,7 +828,7 @@ of existing remote shell facilities such as SSH.")
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/skeeto/endlessh.git")
+              (url "https://github.com/skeeto/endlessh")
               (commit version)))
         (file-name (git-file-name name version))
         (sha256

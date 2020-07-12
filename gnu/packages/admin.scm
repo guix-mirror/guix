@@ -147,7 +147,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/nomius/ktsuss.git")
+         (url "https://github.com/nomius/ktsuss")
          (commit version)))
        (sha256
         (base32 "0q9931f9hp47v1n8scli4bdg2rkjpf5jf8v7jj2gdn83aia1r2hz"))
@@ -220,7 +220,7 @@ usual file attributes can be checked for inconsistencies.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Xfennec/progress.git")
+             (url "https://github.com/Xfennec/progress")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1cnb4ixlhshn139mj5sr42k5m6gjjbyqvkn1324c47niwrgp7dqm"))
@@ -1488,7 +1488,7 @@ commands and their arguments.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Duncaen/OpenDoas.git")
+                    (url "https://github.com/Duncaen/OpenDoas")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1916,7 +1916,7 @@ system is under heavy load.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dharple/detox.git")
+                    (url "https://github.com/dharple/detox")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2106,7 +2106,7 @@ degradation and failure.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/adrianlopezroche/fdupes.git")
+             (url "https://github.com/adrianlopezroche/fdupes")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2358,7 +2358,7 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/opsengine/cpulimit.git")
+             (url "https://github.com/opsengine/cpulimit")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2397,7 +2397,7 @@ limits.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wting/autojump.git")
+             (url "https://github.com/wting/autojump")
              (commit (string-append "release-v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2443,7 +2443,7 @@ frequently used directories by typing only a small pattern.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/clvv/fasd.git")
+                    (url "https://github.com/clvv/fasd")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2675,7 +2675,7 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dagwieers/dstat.git")
+             (url "https://github.com/dagwieers/dstat")
              (commit (string-append "v" version))))
        (file-name (git-file-name "dstat" version))
        (sha256
@@ -2727,7 +2727,7 @@ throughput (in the same interval).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/nvbn/thefuck.git")
+             (url "https://github.com/nvbn/thefuck")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2803,7 +2803,7 @@ produce uniform output across heterogeneous networks.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/valr/cbatticon.git")
+             (url "https://github.com/valr/cbatticon")
              (commit version)))
        (sha256
         (base32 "0ivm2dzhsa9ir25ry418r2qg2llby9j7a6m3arbvq5c3kaj8m9jr"))
@@ -2839,7 +2839,7 @@ the status of your battery in the system tray.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/TrilbyWhite/interrobang.git")
+               (url "https://github.com/TrilbyWhite/interrobang")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -2915,7 +2915,7 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/linux-sunxi/sunxi-tools.git")
+             (url "https://github.com/linux-sunxi/sunxi-tools")
              (commit (string-append "v" version))))
        (sha256
         (base32 "04f3jqg8ww4jxsf9c6ddcdgy2xbhkyp0b3l5f1hvvbv94p81rjxd"))
@@ -3020,7 +3020,7 @@ in order to be able to find it.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/aureliojargas/sedsed.git")
+             (url "https://github.com/aureliojargas/sedsed")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3423,7 +3423,7 @@ on systems running the Linux kernel.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/robertdavidgraham/masscan.git")
+             (url "https://github.com/robertdavidgraham/masscan")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -3534,7 +3534,7 @@ launch daemons into the relevant nodes.")
               ;; We use git checkout to avoid github auto-generated tarballs
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/hpc/Spindle.git")
+                    (url "https://github.com/hpc/Spindle")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3745,7 +3745,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pwr/Solaar.git")
+                    (url "https://github.com/pwr/Solaar")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3958,7 +3958,7 @@ supplied by the user when logging in.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/kellyjonbrazil/jc.git")
+                    (url "https://github.com/kellyjonbrazil/jc")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3982,7 +3982,7 @@ file-types for easier parsing in scripts.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/kellyjonbrazil/jtbl.git")
+                    (url "https://github.com/kellyjonbrazil/jtbl")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -4004,7 +4004,7 @@ text table representation to stdout.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/xwmx/hosts.git")
+                    (url "https://github.com/xwmx/hosts")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
