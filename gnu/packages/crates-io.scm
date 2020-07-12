@@ -10881,8 +10881,49 @@ SystemTime}}.")
 ignore files such as .gitignore against file paths.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-image-0.23
+  (package
+    (name "rust-image")
+    (version "0.23.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "image" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1d2a80k7pwqshliqi5fw1dwkz7q9zd6pjnwpw8zxc1v4xhzmbc5m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test images are missing from the release.
+       #:cargo-inputs
+       (("rust-bytemuck" ,rust-bytemuck-1)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-gif" ,rust-gif-0.10)
+        ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.1)
+        ("rust-num-iter" ,rust-num-iter-0.1)
+        ("rust-num-rational" ,rust-num-rational-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-png" ,rust-png-0.16)
+        ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
+        ("rust-tiff" ,rust-tiff-0.5))
+       #:cargo-development-inputs
+       (("rust-crc32fast" ,rust-crc32fast-1.2)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-num-complex" ,rust-num-complex-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page "https://github.com/image-rs/image")
+    (synopsis "Imaging library written in Rust")
+    (description
+     "Imaging library written in Rust.  Provides basic filters and decoders
+for the most common image formats.")
+    (license license:expat)))
+
 (define-public rust-image-0.22
   (package
+    (inherit rust-image-0.23)
     (name "rust-image")
     (version "0.22.5")
     (source
@@ -10894,7 +10935,6 @@ ignore files such as .gitignore against file paths.")
        (sha256
         (base32
          "0jpbd0p1q7xx6395ba9ikz2k4cfp26qczisa8m2v15w3hzd2mv88"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Some test images are missing from the release.
        #:cargo-inputs
@@ -10911,13 +10951,7 @@ ignore files such as .gitignore against file paths.")
        (("rust-crc32fast" ,rust-crc32fast-1.2)
         ("rust-glob" ,rust-glob-0.3)
         ("rust-num-complex" ,rust-num-complex-0.2)
-        ("rust-quickcheck" ,rust-quickcheck-0.9))))
-    (home-page "https://github.com/image-rs/image")
-    (synopsis "Imaging library written in Rust")
-    (description
-     "Imaging library written in Rust.  Provides basic filters and decoders
-for the most common image formats.")
-    (license license:expat)))
+        ("rust-quickcheck" ,rust-quickcheck-0.9))))))
 
 (define-public rust-image-0.21
   (package
