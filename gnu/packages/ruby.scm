@@ -9590,25 +9590,46 @@ access to the contents of a PDF file with a high degree of flexibility.")
     (license license:gpl3+)))
 
 (define-public ruby-pdf-inspector
-  (package
-    (name "ruby-pdf-inspector")
-    (version "1.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "pdf-inspector" version))
-              (sha256
-               (base32
-                "1g853az4xzgqxr5xiwhb76g4sqmjg4s79mm35mp676zjsrwpa47w"))))
-    (build-system ruby-build-system)
-    (propagated-inputs
-     `(("ruby-pdf-reader" ,ruby-pdf-reader)))
-    (arguments `(#:tests? #f)); No rakefile
-    (home-page "https://github.com/prawnpdf/pdf-inspector")
-    (synopsis "Analysis classes for inspecting PDF output")
-    (description "This library provides a number of PDF::Reader based tools for
+  (let ((revision "1")
+        (commit "00ee4c92ff917118785ebec188e81effc968abeb"))
+    (package
+      (name "ruby-pdf-inspector")
+      (version (git-version "1.3.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/prawnpdf/pdf-inspector.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0h9w81ddd0gvkh5n2cvny9ddb5qiac1si0dhinkk0xxh5382qs0m"))))
+      (build-system ruby-build-system)
+      (arguments
+       `(#:test-target "spec"
+         #:phases (modify-phases %standard-phases
+                    (add-before 'build 'drop-signing-key-requirement
+                      (lambda _
+                        (substitute* "pdf-inspector.gemspec"
+                          (("spec.signing_key =.*")
+                           "spec.signing_key = nil"))
+                        #t))
+                    (replace 'check
+                      (lambda _
+                        (substitute* "pdf-inspector.gemspec"
+                          ((".*rubocop.*") "")
+                          ((".*yard.*") ""))
+                        (invoke "rspec"))))))
+      (native-inputs
+       `(("ruby-rspec" ,ruby-rspec)))
+      (propagated-inputs
+       `(("ruby-pdf-reader" ,ruby-pdf-reader)))
+      (home-page "https://github.com/prawnpdf/pdf-inspector")
+      (synopsis "Analysis classes for inspecting PDF output")
+      (description "This library provides a number of PDF::Reader based tools for
 use in testing PDF output.  Presently, the primary purpose of this tool is to
 support the tests found in Prawn, a pure Ruby PDF generation library.")
-    (license license:gpl3+)))
+      (license %prawn-project-licenses))))
 
 (define-public ruby-pdf-core
   (package
