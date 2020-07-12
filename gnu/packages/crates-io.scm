@@ -901,6 +901,34 @@ Mac, and Unix.")
     (description "This package helps testing CLI Applications.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-assert-cmd-1
+  (package
+    (name "rust-assert-cmd")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "assert-cmd" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1nhqr0zimizcnqfggccfznyrmvklgqwhklsh0f1yq5lwdyi9r2y8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-predicates" ,rust-predicates-1)
+        ("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-predicates-tree" ,rust-predicates-tree-1)
+        ("rust-wait-timeout" ,rust-wait-timeout-0.2))
+       #:cargo-development-inputs
+       (("rust-escargot" ,rust-escargot-0.5))))
+    (home-page "https://github.com/assert-rs/assert_cmd")
+    (synopsis "Test CLI Applications")
+    (description "Test CLI Applications.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-assert-fs-0.11
   (package
     (name "rust-assert-fs")
