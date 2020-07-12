@@ -17737,8 +17737,44 @@ both WASM and native applications")
      "Build script helper for building PNaCl/NaCl C/CXX libraries from source")
     (license license:mpl2.0)))
 
+(define-public rust-png-0.16
+  (package
+    (name "rust-png")
+    (version "0.16.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "png" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1393s3v3kg4bxnn86d7yn2vyz8xj6g64ighdfkc3vzpsg5sbyl61"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-crc32fast" ,rust-crc32fast-1.2)
+        ("rust-deflate" ,rust-deflate-0.8)
+        ("rust-miniz-oxide" ,rust-miniz-oxide-0.3))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-getopts" ,rust-getopts-0.2)
+        ;; TODO: glium has many cyclic dependencies with other packages
+        ;; ("rust-glium" ,rust-glium-0.24)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-term" ,rust-term-0.6))))
+    (home-page "https://github.com/image-rs/image-png.git")
+    (synopsis "PNG decoding and encoding library in pure Rust")
+    (description
+     "PNG decoding and encoding library in pure Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-png-0.15
   (package
+    (inherit rust-png-0.16)
     (name "rust-png")
     (version "0.15.3")
     (source
@@ -17750,7 +17786,6 @@ both WASM and native applications")
        (sha256
         (base32
          "10x2qkhyfnm3si5vgx77r2ik811gaap7ahi825wfxgsb0lirm1gg"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -17764,12 +17799,7 @@ both WASM and native applications")
         ;;("rust-glium" ,rust-glium-0.24)
         ("rust-glob" ,rust-glob-0.3)
         ("rust-rand" ,rust-rand-0.7)
-        ("rust-term" ,rust-term-0.6))))
-    (home-page "https://github.com/image-rs/image-png.git")
-    (synopsis "PNG decoding and encoding library in pure Rust")
-    (description
-     "PNG decoding and encoding library in pure Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-term" ,rust-term-0.6))))))
 
 (define-public rust-png-0.14
   (package
