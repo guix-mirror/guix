@@ -15,6 +15,7 @@
 ;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -107,7 +108,11 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                            "releases/download/" version "/"
                            "fish-" version ".tar.gz"))
        (sha256
-        (base32 "1vblmb3x2k2cb0db5jdyflppnlqsm7i6jjaidyhmvaaw7ch2gffm"))))
+        (base32 "1vblmb3x2k2cb0db5jdyflppnlqsm7i6jjaidyhmvaaw7ch2gffm"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "pcre2-10.32") #t))))
     (build-system cmake-build-system)
     (inputs
      `(("fish-foreign-env" ,fish-foreign-env)
