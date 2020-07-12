@@ -698,6 +698,26 @@
                (lint-warning-message second-warning)))))))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
+(test-equal "source, git-reference: 301 -> 200"
+  "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
+  (with-http-server `((200 ,%long-string))
+    (let* ((initial-url (%local-url))
+           (redirect    (build-response #:code 301
+                                        #:headers
+                                        `((location
+                                           . ,(string->uri initial-url))))))
+      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+        (with-http-server `((,redirect ""))
+          (let ((pkg (dummy-package
+                      "x"
+                      (source (origin
+                                (method git-fetch)
+                                (uri (git-reference (url (%local-url))
+                                                    (commit "v1.0.0")))
+                                (sha256 %null-sha256))))))
+            (single-lint-warning-message (check-source pkg))))))))
+
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 301 -> 404"
   "URI http://localhost:10000/foo/bar not reachable: 404 (\"Such is life\")"
   (with-http-server '((404 "booh!"))

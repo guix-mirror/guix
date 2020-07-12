@@ -793,27 +793,32 @@ descriptions maintained upstream."
             (loop rest (cons warning warnings))))))))
 
   (let ((origin (package-source package)))
-    (if (and (origin? origin)
-             (eqv? (origin-method origin) url-fetch))
-        (let* ((uris     (append-map (cut maybe-expand-mirrors <> %mirrors)
-                                     (map string->uri (origin-uris origin))))
-               (warnings (warnings-for-uris uris)))
+    (if (origin? origin)
+        (cond
+         ((eq? (origin-method origin) url-fetch)
+          (let* ((uris     (append-map (cut maybe-expand-mirrors <> %mirrors)
+                                       (map string->uri (origin-uris origin))))
+                 (warnings (warnings-for-uris uris)))
 
-          ;; Just make sure that at least one of the URIs is valid.
-          (if (= (length uris) (length warnings))
-              ;; When everything fails, report all of WARNINGS, otherwise don't
-              ;; report anything.
-              ;;
-              ;; XXX: Ideally we'd still allow warnings to be raised if *some*
-              ;; URIs are unreachable, but distinguish that from the error case
-              ;; where *all* the URIs are unreachable.
-              (cons*
-               (make-warning package
-                             (G_ "all the source URIs are unreachable:")
-                             #:field 'source)
-               warnings)
-              '()))
-        '())))
+            ;; Just make sure that at least one of the URIs is valid.
+            (if (= (length uris) (length warnings))
+                ;; When everything fails, report all of WARNINGS, otherwise don't
+                ;; report anything.
+                ;;
+                ;; XXX: Ideally we'd still allow warnings to be raised if *some*
+                ;; URIs are unreachable, but distinguish that from the error case
+                ;; where *all* the URIs are unreachable.
+                (cons*
+                 (make-warning package
+                               (G_ "all the source URIs are unreachable:")
+                               #:field 'source)
+                 warnings)
+                '())))
+         ((git-reference? (origin-uri origin))
+          (warnings-for-uris
+           (list (string->uri (git-reference-url (origin-uri origin))))))
+         (else
+          '())))))
 
 (define (check-source-file-name package)
   "Emit a warning if PACKAGE's origin has no meaningful file name."
