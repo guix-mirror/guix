@@ -5083,7 +5083,7 @@ and arithmetic.")
 (define-public rust-dav1d-sys-0.3
   (package
     (name "rust-dav1d-sys")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
       (origin
         (method url-fetch)
@@ -5092,12 +5092,11 @@ and arithmetic.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1022czzp3s54r42x6rhr870w1fwzyp7b6qn0zirpz55zmqjpgnwa"))))
+          "1jdxhnlxcml6jd67lx78ifzkn1xm18zfk4li7vjdh3fa61i073kx"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-bindgen" ,rust-bindgen-0.52)
+       (("rust-bindgen" ,rust-bindgen-0.54)
         ("rust-metadeps" ,rust-metadeps-1.1))
        #:phases
        (modify-phases %standard-phases
@@ -5114,7 +5113,7 @@ and arithmetic.")
        ("llvm" ,llvm)))
     (home-page "https://github.com/rust-av/dav1d-rs")
     (synopsis "FFI bindings to dav1d")
-    (description "FFI bindings to dav1d")
+    (description "This package provides FFI bindings to dav1d.")
     (license license:expat)))
 
 (define-public rust-decimal-2.0
