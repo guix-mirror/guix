@@ -590,6 +590,3 @@ IAX protocols, as well as decentralized calling using P2P-DHT.
 This package provides the Jami client for the GNOME desktop.")
     (home-page "https://jami.net")
     (license license:gpl3+)))
-
-(define-public jami-client-gnome
-  (deprecated-package "jami-client-gnome" jami))
