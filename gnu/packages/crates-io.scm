@@ -6869,8 +6869,42 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
     (description "Fallible streaming iteration")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fern-0.6
+  (package
+    (name "rust-fern")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fern" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0rghkbmpm7ckchd2fr2ifahprc7ll3qs0fbwsspsgj6cy0h4i6lc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-colored" ,rust-colored-1.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-reopen" ,rust-reopen-0.3)
+        ("rust-syslog" ,rust-syslog-3.3)
+        ("rust-syslog" ,rust-syslog-4.0))
+       #:cargo-development-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/daboross/fern")
+    (synopsis "Simple, efficient logging")
+    (description
+     "This package provides a simple, efficient logging system for Rust.")
+    (license license:expat)))
+
 (define-public rust-fern-0.5
   (package
+    (inherit rust-fern-0.6)
     (name "rust-fern")
     (version "0.5.9")
     (source
@@ -6882,7 +6916,6 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
         (sha256
          (base32
           "1anslk0hx9an4ypcaxqff080hgbcxm7ji7d4qf4f6qx1mkav16p6"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
@@ -6894,12 +6927,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
         ("rust-syslog" ,rust-syslog-4.0))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://github.com/daboross/fern")
-    (synopsis "Simple, efficient logging")
-    (description
-     "This package provides a simple, efficient logging system for Rust.")
-    (license license:expat)))
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-filetime-0.2
   (package
