@@ -1483,7 +1483,7 @@ archive' public keys, with GUIX."
   ;; List of authorized substitute keys.
   ;; TODO: Change to "berlin.guix.gnu.org.pub" when the 'guix' package is
   ;; updated.
-  (list (file-append guix "/share/guix/berlin.guixsd.org.pub")))
+  (list (file-append guix "/share/guix/berlin.guix.gnu.org.pub")))
 
 (define-record-type* <guix-configuration>
   guix-configuration make-guix-configuration
