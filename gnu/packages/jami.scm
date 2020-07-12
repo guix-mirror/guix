@@ -23,6 +23,7 @@
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -62,7 +63,7 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
-(define %jami-version "20200401.1.6f090de")
+(define %jami-version "20200710.1.6bd18d2")
 
 (define* (jami-source #:key without-daemon)
   (origin
@@ -78,7 +79,7 @@
          #f))
     (sha256
      (base32
-      "0lryx9n1jn0jsw7s10pbwivqv0d5m3jdzhdhdyg5n02v72mjvkmh"))))
+      "0lg61jv39x7kc9lq30by246xb6gcgp1rzj49ak7ff8nqpfzyfvva"))))
 
 ;; Savoir-Faire Linux modifies many libraries to add features
 ;; to Jami. This procedure makes applying patches to a given
@@ -167,7 +168,10 @@
                   "0006-ignore_ipv6_on_transport_check"
                   "0007-pj_ice_sess"
                   "0008-fix_ioqueue_ipv6_sendto"
-                  "0009-add-config-site"))
+                  "0009-add-config-site"
+                  "0010-fix-pkgconfig"
+                  "0011-fix-tcp-death-detection"
+                  "0012-fix-turn-shutdown-crash"))
                #t)))
          ;; TODO: We could use substitute-keyword-arguments instead of
          ;; repeating the phases from pjproject, but somehow it does
@@ -455,6 +459,7 @@
        ("gsm" ,gsm)
        ("jack" ,jack-1)
        ("jsoncpp" ,jsoncpp)
+       ("libarchive" ,libarchive)
        ("libnatpmp" ,libnatpmp)
        ("libogg" ,libogg)
        ("libva" ,libva)
