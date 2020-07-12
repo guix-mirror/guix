@@ -251,7 +251,7 @@ supports HTTP, HTTPS and GnuTLS.")
 (define-public gnunet
   (package
    (name "gnunet")
-   (version "0.13.0")
+   (version "0.13.1")
    (source
     (origin
       (method url-fetch)
@@ -259,7 +259,7 @@ supports HTTP, HTTPS and GnuTLS.")
                           ".tar.gz"))
       (sha256
        (base32
-        "0g2zp8rj4yzz9xj4b5k9bdflmmpqxdgxvkr1vk5cq0jlz3vqmxx3"))))
+        "15jnca5zxng7r6m3qzq9lr73xxq0v6mvcp0lny3zrlkz5s2nmmq3"))))
    (build-system gnu-build-system)
    (inputs
     `(("bluez" ,bluez)
