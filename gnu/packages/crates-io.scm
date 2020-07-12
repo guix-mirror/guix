@@ -14569,6 +14569,28 @@ combinators library.")
       "No-op proc_macro, literally does nothing")
     (license license:expat)))
 
+(define-public rust-normalize-line-endings-0.3
+  (package
+    (name "rust-normalize-line-endings")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "normalize-line-endings" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1gp52dfn2glz26a352zra8h04351icf0fkqzw1shkwrgh1vpz031"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/derekdreery/normalize-line-endings")
+    (synopsis
+     "Iterate over chars and returns a new iterator with all line endings")
+    (description
+     "This package takes an iterator over characters and returns a new iterator
+with all line endings.")
+    (license license:asl2.0)))
+
 (define-public rust-notify-4
   (package
     (name "rust-notify")
