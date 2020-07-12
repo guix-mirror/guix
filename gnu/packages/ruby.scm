@@ -9562,13 +9562,13 @@ custom checks.  This gem provides a set of additional checks.")
 (define-public ruby-pdf-reader
   (package
     (name "ruby-pdf-reader")
-    (version "2.1.0")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "pdf-reader" version))
               (sha256
                (base32
-                "1b3ig4wpcgdbqa7yw0ahwbmikkkywn2a22bfmrknl5ls7g066x45"))))
+                "1g3gr2m46275hjv6fv4jwq3qlvdbnhf1jxir9vzgxhv45ncnhffy"))))
     (build-system ruby-build-system)
     (arguments `(#:test-target "spec"))
     (native-inputs
