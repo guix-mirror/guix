@@ -2255,6 +2255,26 @@ in a byte slice, fast.")
         ("rust-quickcheck" ,rust-quickcheck-0.6)
         ("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-bytemuck-1
+  (package
+    (name "rust-bytemuck")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bytemuck" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0cclc9v10hc1abqrxgirg3qbwa3ra3s0dai3xiwv9v4j4bgi7yip"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/Lokathor/bytemuck")
+    (synopsis "crate for mucking around with piles of bytes")
+    (description
+     "This package provides a crate for mucking around with piles of bytes.")
+    (license license:zlib)))
+
 (define-public rust-byteorder-1.3
   (package
     (name "rust-byteorder")
