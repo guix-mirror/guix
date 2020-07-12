@@ -18016,6 +18016,32 @@ dependency to expose a precomputed hash.")
      "An API for boolean-valued predicate functions.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-predicates-tree-1
+  (package
+    (name "rust-predicates-tree")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "predicates-tree" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "090148qjilm2c722l873z7g31fhzj5j4qhd2xiv8mcqkj22w8qwf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-treeline" ,rust-treeline-0.1))))
+    (home-page
+     "https://github.com/assert-rs/predicates-rs/tree/master/predicates-tree")
+    (synopsis
+     "Render boolean-valued predicate functions results as a tree")
+    (description
+     "Render boolean-valued predicate functions results as a tree.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pretty-assertions-0.6
   (package
     (name "rust-pretty-assertions")
