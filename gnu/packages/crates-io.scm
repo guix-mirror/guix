@@ -901,6 +901,35 @@ Mac, and Unix.")
     (description "This package helps testing CLI Applications.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-assert-fs-0.11
+  (package
+    (name "rust-assert-fs")
+    (version "0.11.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "assert-fs" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1h1q90qskbylv4g3jyizdanj73835q7vvq7q10y555x4gnavmrjc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-globwalk" ,rust-globwalk-0.5)
+        ("rust-predicates" ,rust-predicates-1)
+        ("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-predicates-tree" ,rust-predicates-tree-1)
+        ("rust-tempfile" ,rust-tempfile-3))
+       #:cargo-development-inputs
+       (("rust-docmatic" ,rust-docmatic-0.1))))
+    (home-page "https://github.com/assert-rs/assert_fs")
+    (synopsis "Filesystem fixtures and assertions for testing")
+    (description
+     "Filesystem fixtures and assertions for testing.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-assert-matches-1.3
   (package
     (name "rust-assert-matches")
