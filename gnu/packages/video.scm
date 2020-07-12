@@ -3982,7 +3982,7 @@ result in several formats:
 (define-public rav1e
   (package
     (name "rav1e")
-    (version "0.3.0")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
@@ -3991,7 +3991,7 @@ result in several formats:
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1bsmj8kqzs5pf8dl98rsl6a67cljj1gkj3b5hmd8hn8wdy4ya173"))))
+          "053bh8hc6jj81ydq4gcak01b0ady59hvkl7d87im3y8nafg7xzb4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -4000,18 +4000,16 @@ result in several formats:
         ("rust-arg-enum-proc-macro" ,rust-arg-enum-proc-macro-0.3)
         ("rust-arrayvec" ,rust-arrayvec-0.5)
         ("rust-backtrace" ,rust-backtrace-0.3)
-        ("rust-better-panic" ,rust-better-panic-0.2)
         ("rust-bitstream-io" ,rust-bitstream-io-0.8)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-clap" ,rust-clap-2)
-        ("rust-console" ,rust-console-0.9)
+        ("rust-console" ,rust-console-0.11)
         ("rust-dav1d-sys" ,rust-dav1d-sys-0.3)
-        ("rust-err-derive" ,rust-err-derive-0.2)
-        ("rust-fern" ,rust-fern-0.5)
-        ("rust-image" ,rust-image-0.22)
+        ("rust-fern" ,rust-fern-0.6)
+        ("rust-image" ,rust-image-0.23)
         ("rust-interpolate-name" ,rust-interpolate-name-0.2)
-        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-itertools" ,rust-itertools-0.9)
         ("rust-ivf" ,rust-ivf-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
@@ -4027,6 +4025,7 @@ result in several formats:
         ("rust-serde" ,rust-serde-1.0)
         ("rust-signal-hook" ,rust-signal-hook-0.1)
         ("rust-simd-helpers" ,rust-simd-helpers-0.1)
+        ("rust-thiserror" ,rust-thiserror-1.0)
         ("rust-toml" ,rust-toml-0.5)
         ("rust-y4m" ,rust-y4m-0.5)
         ("rust-cc" ,rust-cc-1.0)
@@ -4034,7 +4033,8 @@ result in several formats:
         ("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-vergen" ,rust-vergen-3.1))
        #:cargo-development-inputs
-       (("rust-criterion" ,rust-criterion-0.3)
+       (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-criterion" ,rust-criterion-0.3)
         ("rust-interpolate-name" ,rust-interpolate-name-0.2)
         ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
         ("rust-rand" ,rust-rand-0.7)
