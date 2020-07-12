@@ -17995,6 +17995,27 @@ for x86.")
 dependency to expose a precomputed hash.")
     (license license:expat)))
 
+(define-public rust-predicates-core-1
+  (package
+    (name "rust-predicates-core")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "predicates-core" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0y3ingf2i4xx7r61f1a8wizs57j8hh32hylyjbw9ymcj7qx5q1q6"))))
+    (build-system cargo-build-system)
+    (home-page
+     "https://github.com/assert-rs/predicates-rs/tree/master/predicates-core")
+    (synopsis "API for boolean-valued predicate functions")
+    (description
+     "An API for boolean-valued predicate functions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pretty-assertions-0.6
   (package
     (name "rust-pretty-assertions")
