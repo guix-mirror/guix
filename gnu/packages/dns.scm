@@ -177,14 +177,28 @@ and BOOTP/TFTP for network booting of diskless machines.")
              (with-directory-excursion "fuzz"
                (invoke "make" "check"))
              #t)))))
-    (synopsis "An implementation of the Domain Name System")
+    (synopsis "Domain Name System (DNS) implementation")
     (description "BIND is an implementation of the @dfn{Domain Name System}
 (DNS) protocols for the Internet.  It is a reference implementation of those
 protocols, but it is also production-grade software, suitable for use in
-high-volume and high-reliability applications. The name BIND stands for
-\"Berkeley Internet Name Domain\", because the software originated in the early
-1980s at the University of California at Berkeley.")
-    (home-page "https://www.isc.org/downloads/bind")
+high-volume and high-reliability applications.  The name BIND stands for
+\"Berkeley Internet Name Domain\", because the software originated in the
+early 1980s at the University of California at Berkeley.  The @code{utils}
+output of this package contains the following DNS name servers related command
+line utilities:
+@table @code
+@item delv
+DNS lookup and validation utility
+@item dig
+DNS lookup utility
+@item host
+DNS lookup utility
+@item nslookup
+Internet name servers interactive query utility
+@item nsupdate
+Dynamic DNS update utility
+@end table")
+    (home-page "https://www.isc.org/bind/")
     (license (list license:mpl2.0))))
 
 (define-public dnscrypt-proxy
