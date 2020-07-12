@@ -37,6 +37,7 @@
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages web)
   #:use-module (gnu packages patchutils)
@@ -1720,6 +1721,11 @@ WSGIPassAuthorization On
          (shell (file-append shadow "/sbin/nologin")))))
 
 (define (mumi-shepherd-services config)
+  (define environment
+    #~(list "LC_ALL=en_US.utf8"
+            (string-append "GUIX_LOCPATH=" #$glibc-utf8-locales
+                           "/lib/locale")))
+
   (match config
     (($ <mumi-configuration> mumi mailer? sender smtp)
      (list (shepherd-service
@@ -1729,6 +1735,7 @@ WSGIPassAuthorization On
             (start #~(make-forkexec-constructor
                       `(#$(file-append mumi "/bin/mumi") "web"
                         ,@(if #$mailer? '() '("--disable-mailer")))
+                      #:environment-variables #$environment
                       #:user "mumi" #:group "mumi"
                       #:log-file "/var/log/mumi.log"))
             (stop #~(make-kill-destructor)))
@@ -1738,6 +1745,7 @@ WSGIPassAuthorization On
             (requirement '(networking))
             (start #~(make-forkexec-constructor
                       '(#$(file-append mumi "/bin/mumi") "worker")
+                      #:environment-variables #$environment
                       #:user "mumi" #:group "mumi"
                       #:log-file "/var/log/mumi.worker.log"))
             (stop #~(make-kill-destructor)))
@@ -1753,6 +1761,7 @@ WSGIPassAuthorization On
                         ,@(if #$smtp
                               (list (string-append "--smtp=" #$smtp))
                               '()))
+                      #:environment-variables #$environment
                       #:user "mumi" #:group "mumi"
                       #:log-file "/var/log/mumi.mailer.log"))
             (stop #~(make-kill-destructor)))))))
