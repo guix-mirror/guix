@@ -37,6 +37,7 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Boris A. Dekshteyn <boris.dekshteyn@gmail.com>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
+;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1359,6 +1360,44 @@ demos.  It also acts as a nice screen locker.")
               (string-append
                "http://metadata.ftp-master.debian.org/changelogs/"
                "/main/x/xscreensaver/xscreensaver_5.36-1_copyright")))))
+
+(define-public xssproxy
+  (package
+    (name "xssproxy")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/timakro/xssproxy")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0c83wmipnsdnbihc5niyczs7jrkss2s8n6iwwjdia7hkjzbd0hl7"))))
+    (build-system gnu-build-system)
+    (arguments `(#:make-flags `("bindir=/bin"
+                                "man1dir=/share/man/man1"
+                                ,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
+                                "CC=gcc")
+                 #:phases (modify-phases %standard-phases
+                            (delete 'configure)
+                            (delete 'check))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("dbus" ,dbus)))
+    (synopsis "Forward freedesktop.org Idle Inhibition Service calls to Xss")
+    (description "xssproxy implements the @code{org.freedesktop.ScreenSaver}
+D-Bus interface described in the Idle Inhibition Service Draft by the
+freedesktop.org developers.  The inhibition of the screensaver is then
+controlled using the XScreenSaverSuspend function from the Xss (X11 Screen
+Saver extension) library.")
+    (home-page "https://github.com/timakro/xssproxy")
+    (license license:gpl3+)))
 
 (define-public xsel
   (package
