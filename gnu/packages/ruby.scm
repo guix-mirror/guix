@@ -1215,14 +1215,6 @@ syntax to the minimum while remaining clear.")
      `(#:test-target "test:all"
        #:phases
        (modify-phases %standard-phases
-         (replace 'replace-git-ls-files
-           (lambda _
-             ;; TODO: Remove after the fix of using 'cut' to better mimic the
-             ;; git ls-files output is merged in ruby-build-system.
-             (substitute* "asciidoctor.gemspec"
-               (("`git ls-files -z`")
-                "`find . -type f -print0 |sort -z|cut -zc3-`"))
-             #t))
          (add-after 'extract-gemspec 'strip-version-requirements
            (lambda _
              (delete-file "Gemfile")
