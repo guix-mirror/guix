@@ -59,20 +59,17 @@
   #:use-module (srfi srfi-9)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:export (<httpd-configuration>
-            httpd-configuration
+  #:export (httpd-configuration
             httpd-configuration?
             httpd-configuration-package
             httpd-configuration-pid-file
             httpd-configuration-config
 
-            <httpd-virtualhost>
             httpd-virtualhost
             httpd-virtualhost?
             httpd-virtualhost-addresses-and-ports
             httpd-virtualhost-contents
 
-            <httpd-config-file>
             httpd-config-file
             httpd-config-file?
             httpd-config-file-modules
@@ -84,14 +81,12 @@
             httpd-config-file-user
             httpd-config-file-group
 
-            <httpd-module>
             httpd-module
             httpd-module?
             %default-httpd-modules
 
             httpd-service-type
 
-            <nginx-configuration>
             nginx-configuration
             nginx-configuration?
             nginx-configuartion-nginx
@@ -106,7 +101,6 @@
             nginx-configuration-extra-content
             nginx-configuration-file
 
-            <nginx-server-configuration>
             nginx-server-configuration
             nginx-server-configuration?
             nginx-server-configuration-listen
@@ -119,19 +113,16 @@
             nginx-server-configuration-server-tokens?
             nginx-server-configuration-raw-content
 
-            <nginx-upstream-configuration>
             nginx-upstream-configuration
             nginx-upstream-configuration?
             nginx-upstream-configuration-name
             nginx-upstream-configuration-servers
 
-            <nginx-location-configuration>
             nginx-location-configuration
             nginx-location-configuration?
             nginx-location-configuration-uri
             nginx-location-configuration-body
 
-            <nginx-named-location-configuration>
             nginx-named-location-configuration
             nginx-named-location-configuration?
             nginx-named-location-configuration-name
@@ -144,7 +135,6 @@
             fcgiwrap-configuration?
             fcgiwrap-service-type
 
-            <php-fpm-configuration>
             php-fpm-configuration
             make-php-fpm-configuration
             php-fpm-configuration?
@@ -162,7 +152,6 @@
             php-fpm-configuration-workers-log-file
             php-fpm-configuration-file
 
-            <php-fpm-dynamic-process-manager-configuration>
             php-fpm-dynamic-process-manager-configuration
             make-php-fpm-dynamic-process-manager-configuration
             php-fpm-dynamic-process-manager-configuration?
@@ -171,13 +160,11 @@
             php-fpm-dynamic-process-manager-configuration-min-spare-servers
             php-fpm-dynamic-process-manager-configuration-max-spare-servers
 
-            <php-fpm-static-process-manager-configuration>
             php-fpm-static-process-manager-configuration
             make-php-fpm-static-process-manager-configuration
             php-fpm-static-process-manager-configuration?
             php-fpm-static-process-manager-configuration-max-children
 
-            <php-fpm-on-demand-process-manager-configuration>
             php-fpm-on-demand-process-manager-configuration
             make-php-fpm-on-demand-process-manager-configuration
             php-fpm-on-demand-process-manager-configuration?
@@ -193,7 +180,6 @@
             hpcguix-web-configuration?
             hpcguix-web-service-type
 
-            <tailon-configuration-file>
             tailon-configuration-file
             tailon-configuration-file?
             tailon-configuration-file-files
@@ -207,7 +193,6 @@
             tailon-configuration-file-http-auth
             tailon-configuration-file-users
 
-            <tailon-configuration>
             tailon-configuration
             tailon-configuration?
             tailon-configuration-config-file
@@ -215,7 +200,6 @@
 
             tailon-service-type
 
-            <varnish-configuration>
             varnish-configuration
             varnish-configuration?
             varnish-configuration-package
@@ -229,7 +213,6 @@
 
             varnish-service-type
 
-            <patchwork-database-configuration>
             patchwork-database-configuration
             patchwork-database-configuration?
             patchwork-database-configuration-engine
@@ -239,7 +222,6 @@
             patchwork-database-configuration-host
             patchwork-database-configuration-port
 
-            <patchwork-settings-module>
             patchwork-settings-module
             patchwork-settings-module?
             patchwork-settings-module-database-configuration
@@ -254,7 +236,6 @@
             patchwork-settings-module-force-https-links?
             patchwork-settings-module-extra-settings
 
-            <patchwork-configuration>
             patchwork-configuration
             patchwork-configuration?
             patchwork-configuration-patchwork
@@ -264,7 +245,6 @@
             patchwork-virtualhost
             patchwork-service-type
 
-            <mumi-configuration>
             mumi-configuration
             mumi-configuration?
             mumi-configuration-mumi
