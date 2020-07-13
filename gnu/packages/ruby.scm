@@ -1310,6 +1310,45 @@ loader for the file type associated with a filename extension, and it augments
     (home-page "https://github.com/cjheath/polyglot")
     (license license:expat)))
 
+(define-public ruby-treetop
+  (package
+    (name "ruby-treetop")
+    (version "1.6.10")
+    (source
+     (origin
+       (method git-fetch)               ;no test suite in distributed gem
+       (uri (git-reference
+             (url "https://github.com/cjheath/treetop.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1dmk94z6ivhrz5hsq68vl5vgydhkz89n394rha1ymddw3rymbfcv"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'replace-git-ls-files
+           (lambda _
+             ;; TODO: Remove after the fix of using 'cut' to better mimic the
+             ;; git ls-files output is merged in ruby-build-system.
+             (substitute* "treetop.gemspec"
+               (("`git ls-files -z`")
+                "`find . -type f -print0 |sort -z|cut -zc3-`"))
+             #t)))))
+    (native-inputs
+     `(("ruby-activesupport" ,ruby-activesupport)
+       ("ruby-rr" ,ruby-rr)
+       ("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-polyglot" ,ruby-polyglot)))
+    (synopsis "Ruby-based parsing DSL based on parsing expression grammars")
+    (description "This package provides a Ruby-based Parsing Expression
+Grammar (PEG) parser generator Domain Specific Language (DSL).")
+    (home-page "https://github.com/cjheath/treetop")
+    (license license:expat)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
