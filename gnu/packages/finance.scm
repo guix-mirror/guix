@@ -1131,7 +1131,6 @@ main features are:
     (inputs
      `(("click" ,python-click)
        ("duniterpy" ,python-duniterpy)
-       ("ipaddress" ,python-ipaddress)
        ("pynacl" ,python-pynacl)
        ("tabulate" ,python-tabulate)
        ("texttable" ,python-texttable)))
