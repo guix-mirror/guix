@@ -2975,12 +2975,12 @@ servers.  The 4rev1 and 4 versions of IMAP are supported.")
     (synopsis "View/select the URLs in an email message or file")
     (description
      "Urlscan is a small program that is designed to integrate with the
-@code{mutt} mailreader to allow you to easily launch a Web browser for URLs
+Mutt mail reader to allow you to easily launch a Web browser for URLs
 contained in email messages.  It parses an email message or file and scans it
 for URLs and email addresses.  It then displays the URLs and their context
 within the message, and allows you to choose one or more URLs to send to your
-Web browser.  Alternatively, it send a list of all URLs to stdout.  It is a
-replacement for the @code{urlview} program.")
+Web browser.  Alternatively, it send a list of all URLs to standard output.
+It is a replacement for the @command{urlview} program.")
     (license gpl2)))
 
 (define-public tnef
