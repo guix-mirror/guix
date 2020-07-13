@@ -22534,3 +22534,30 @@ it marks a leap forward in terms of web browser automation.  Selenium
 automates web browsers (commonly referred to as browsers).  Using RSelenium
 you can automate browsers locally or remotely.")
     (license license:agpl3+)))
+
+(define-public r-conquer
+  (package
+    (name "r-conquer")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "conquer" version))
+       (sha256
+        (base32
+         "1c7id7wgspma5bdcirrhw7f9fp709zxpj31klivasdbvd4jgi4vb"))))
+    (properties `((upstream-name . "conquer")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "https://github.com/XiaoouPan/conquer")
+    (synopsis "Convolution-type smoothed quantile regression")
+    (description
+     "This package provides fast and accurate convolution-type smoothed
+quantile regression, implemented using Barzilai-Borwein gradient descent with
+a Huber regression warm start.  Confidence intervals for regression
+coefficients are constructed using multiplier bootstrap.")
+    (license license:gpl3)))
