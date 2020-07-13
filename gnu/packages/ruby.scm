@@ -8514,7 +8514,7 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
 (define-public ruby-ttfunk
   (package
     (name "ruby-ttfunk")
-    (version "1.5.1")
+    (version "1.6.2.1")
     (source
      (origin
        (method git-fetch)
@@ -8525,7 +8525,7 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0dx9891zcli0sjrslmsvrwalv86hbjbqlmbrcasnjr069v05h9v9"))))
+         "0rsf4j6s97wbcnjbvmmh6xrc7imw4g9lrlcvn945wh400lc8r53z"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
@@ -8557,7 +8557,7 @@ part of the Prawn PDF generator.")
     (home-page "https://github.com/prawnpdf/ttfunk")
     ;; From the README: "Matz's terms for Ruby, GPLv2, or GPLv3. See LICENSE
     ;; for details."
-    (license (list license:gpl2 license:gpl3 license:ruby))))
+    (license %prawn-project-licenses)))
 
 (define-public ruby-puma
   (package
