@@ -1290,6 +1290,26 @@ of its many longstanding issues.")
     (home-page "https://github.com/prawnpdf/prawn-templates")
     (license %prawn-project-licenses)))
 
+(define-public ruby-polyglot
+  (package
+    (name "ruby-polyglot")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "polyglot" version))
+       (sha256
+        (base32
+         "1bqnxwyip623d8pr29rg6m8r0hdg08fpr2yb74f46rn1wgsnxmjr"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f))           ;no test suite
+    (synopsis "Augment @code{require} to load non-Ruby file types")
+    (description "The Polyglot library allows a Ruby module to register a
+loader for the file type associated with a filename extension, and it augments
+@code{require} to find and load matching files.")
+    (home-page "https://github.com/cjheath/polyglot")
+    (license license:expat)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
