@@ -8532,12 +8532,12 @@ two-dimensional genome scans.")
 (define-public r-qtl2
   (package
     (name "r-qtl2")
-    (version "0.22-8")
+    (version "0.22-11")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "qtl2" version))
               (sha256
-               (base32 "07w74s7lyyrfa1l6q6v8sxnfaqwxb4w1x4wawcngf0hr1rwx9lda"))))
+               (base32 "0dfdzjylqzc92dcszawc8cyinxccjm3p36v9vcq9ma818pqcanmr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
