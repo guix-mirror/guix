@@ -9660,39 +9660,52 @@ functionality from Prawn.")
     (license license:gpl3+)))
 
 (define-public ruby-prawn
-  (package
-    (name "ruby-prawn")
-    (version "2.2.2")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "prawn" version))
-              (sha256
-               (base32
-                "1qdjf1v6sfl44g3rqxlg8k4jrzkwaxgvh2l4xws97a8f3xv4na4m"))))
-    (build-system ruby-build-system)
-    (arguments
-     ; No tests
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-dependencies
-           (lambda _
-             (substitute* "prawn.gemspec"
-               (("~> 0.7.0") "~> 0.7"))
-             #t)))))
-    (propagated-inputs
-     `(("ruby-pdf-core" ,ruby-pdf-core)
-       ("ruby-ttfunk" ,ruby-ttfunk)))
-    (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-pdf-inspector" ,ruby-pdf-inspector)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-yard" ,ruby-yard)))
-    (home-page "http://prawnpdf.org/api-docs/2.0/")
-    (synopsis "PDF generation for Ruby")
-    (description "Prawn is a pure Ruby PDF generation library.")
-    (license license:gpl3+)))
+  ;; There hasn't been a new release since 2017/03/17.
+  (let ((revision "1")
+        (commit "d980247be8a00e7c59cd4e5785e3aa98f9856db1"))
+    (package
+      (name "ruby-prawn")
+      (version (git-version "2.2.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/prawnpdf/prawn.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0mcmvf22h8il93yq48v9f31qpy27pvjxgv9172p0f4x9lqy0imwr"))))
+      (build-system ruby-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'drop-signing-key-requirement
+             (lambda _
+               (substitute* "prawn.gemspec"
+                 (("spec.signing_key =.*")
+                  "spec.signing_key = nil"))
+               #t))
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 ;; The Prawn manual test fails (see:
+                 ;; https://github.com/prawnpdf/prawn/issues/1163), so exclude
+                 ;; it.
+                 (invoke "rspec" "--exclude-pattern" "prawn_manual_spec.rb"))
+               #t)))))
+      (propagated-inputs
+       `(("ruby-pdf-core" ,ruby-pdf-core)
+         ("ruby-ttfunk" ,ruby-ttfunk)))
+      (native-inputs
+       `(("ruby-pdf-inspector" ,ruby-pdf-inspector)
+         ("ruby-prawn-manual-builder" ,ruby-prawn-manual-builder)
+         ("ruby-rspec" ,ruby-rspec)
+         ("ruby-simplecov" ,ruby-simplecov)
+         ("ruby-yard" ,ruby-yard)))
+      (home-page "https://prawnpdf.org/api-docs/2.0/")
+      (synopsis "PDF generation for Ruby")
+      (description "Prawn is a pure Ruby PDF generation library.")
+      (license %prawn-project-licenses))))
 
 (define-public ruby-prawn-table
   (package
