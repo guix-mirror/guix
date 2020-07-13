@@ -1248,6 +1248,48 @@ Prawn module.")
     (home-page "https://github.com/mogest/prawn-svg")
     (license license:expat)))
 
+(define-public ruby-prawn-templates
+  (package
+    (name "ruby-prawn-templates")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/prawnpdf/prawn-templates.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0wll54wxxwixpwazfn4ffbqvqbfrl01cfsv8y11vnlzy7isx5xvl"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'do-not-use-bundler
+                    (lambda _
+                      (substitute* "spec/spec_helper.rb"
+                        ((".*[Bb]undler.*") ""))
+                      #t))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "rspec"))
+                      #t)))))
+    (native-inputs
+     `(("ruby-pdf-inspector" ,ruby-pdf-inspector)
+       ("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-pdf-reader" ,ruby-pdf-reader)
+       ("ruby-prawn" ,ruby-prawn)))
+    (synopsis "Prawn extension to include or combine PDF documents")
+    (description "This @strong{unmaintained} package provides a Prawn
+extension that allows including other Portable Document Format (PDF) documents
+as background or combining several PDF documents into one.  This functionality
+used to be part of Prawn itself, but was extracted from Prawn 0.15.0 because
+of its many longstanding issues.")
+    (home-page "https://github.com/prawnpdf/prawn-templates")
+    (license %prawn-project-licenses)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
