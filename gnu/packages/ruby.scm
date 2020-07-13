@@ -4555,10 +4555,7 @@ back to Ruby via the @code{ruby2ruby} library.")
      "This package provides a tool for writing manuals for Prawn and Prawn
 accessories")
     (home-page "https://github.com/prawnpdf/prawn-manual_builder")
-    (license (list
-              ;; GPLv2 or GPLv3 or custom license described in LICENSE file
-              license:gpl2
-              license:gpl3))))
+    (license %prawn-project-licenses)))
 
 (define-public ruby-progress_bar
   (package
