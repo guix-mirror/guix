@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -589,7 +589,7 @@ instead of @command{python3}.")))
 (define-public micropython
   (package
     (name "micropython")
-    (version "1.11")
+    (version "1.12")
     (source
       (origin
         (method url-fetch)
@@ -598,7 +598,7 @@ instead of @command{python3}.")))
                             "/micropython-" version ".tar.gz"))
         (sha256
          (base32
-          "0px3xhw16rl0l7qifq7jw1gq92wzlnhd17dmszv9m2c3wbzs9p9f"))
+          "1fl1dm2aay23hyqbarnv69qj7z2wljcvkwmvfwfac8yadcv05zcq"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -612,7 +612,11 @@ instead of @command{python3}.")))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'prepare-build
+         (add-before 'build 'build-mpy-cross
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (with-directory-excursion "mpy-cross"
+               (apply invoke "make" make-flags))))
+         (add-after 'build-mpy-cross 'prepare-build
            (lambda _
              (chdir "ports/unix")
              ;; see: https://github.com/micropython/micropython/pull/4246
