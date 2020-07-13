@@ -66,7 +66,6 @@
     (arguments '(#:tests? #f))
     (inputs
      `(("python-requests" ,python-requests-2.20)
-       ("python-ipaddress" ,python-ipaddress)
        ("python-six" ,python-six)
        ("python-urllib3" ,python-urllib3-1.24)
        ("python-websocket-client" ,python-websocket-client)))
