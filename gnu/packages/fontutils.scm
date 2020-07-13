@@ -263,32 +263,50 @@ work with most software requiring Type 1 fonts.")
   (package
     (name "woff2")
     (version "1.0.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/google/woff2")
-                    (commit (string-append "v" version))))
-              (file-name (string-append name "-" version ".git"))
-              (sha256
-               (base32
-                "13l4g536h0pr84ww4wxs2za439s0xp1va55g6l478rfbb1spp44y"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/google/woff2.git")
+         (commit (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "13l4g536h0pr84ww4wxs2za439s0xp1va55g6l478rfbb1spp44y"))))
     (build-system cmake-build-system)
+    (outputs '("out" "bin"))
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:configure-flags
+       (list
+        (string-append "-DCMAKE_INSTALL_BINDIR="
+                       (assoc-ref %outputs "bin")
+                       "/bin")
+        (string-append "-DCMAKE_INSTALL_INCLUDEDIR="
+                       (assoc-ref %outputs "out")
+                       "/include")
+        (string-append "-DCMAKE_INSTALL_LIBDIR="
+                       (assoc-ref %outputs "out")
+                       "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; To install both binaries and libraries.
+         (add-after 'unpack 'patch-installation
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("NOT BUILD_SHARED_LIBS")
+                "BUILD_SHARED_LIBS"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("google-brotli" ,google-brotli)))
-    (arguments
-     ;; package has no tests
-     `(#:tests? #f
-       ;; we can’t have both, shared libraries and binaries, so turn off the
-       ;; former
-       #:configure-flags (list "-DBUILD_SHARED_LIBS=OFF")))
-    (synopsis "Compress TrueType fonts to WOFF2")
-    (description
-     "This package provides utilities for compressing/decompressing TrueType
-fonts to/from the WOFF2 format.")
-    (license license:asl2.0)
-    (home-page "https://github.com/google/woff2")))
+     `(("brotli" ,google-brotli)))
+    (synopsis "Libraries and tools for WOFF2 font format")
+    (description "WOFF2 provides libraires and tools to handle the Web Open
+Font Format (WOFF).")
+    (home-page "https://w3c.github.io/woff/woff2/")
+    (license license:expat)))
 
 (define-public fontconfig
   (package
