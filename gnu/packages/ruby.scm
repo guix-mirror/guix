@@ -79,6 +79,13 @@
   #:use-module (guix build-system ruby)
   #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
+(define %prawn-project-licenses
+  ;; This set of licenses applies to most (all?) components of the Prawn
+  ;; project (it is triple licensed).
+  (list license:ruby
+        license:gpl2+
+        license:gpl3+))
+
 (define-public ruby
   (package
     (name "ruby")
