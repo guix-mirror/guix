@@ -5793,3 +5793,31 @@ inspired by the causal messaging system in the Pony programming language.")
     (description "This package is a Go library that draws progress bars on
 the terminal.")
     (license license:bsd-3)))
+
+(define-public go-github-com-gologme-log
+  ;; this is the same as v1.2.0, only the LICENSE file changed
+  (let ((commit "720ba0b3ccf0a91bc6018c9967a2479f93f56a55"))
+    (package
+      (name "go-github-com-gologme-log")
+      (version "1.2.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gologme/log")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0z3gs5ngv2jszp42ypp3ai0pn410v3b2m674g73ma7vsbn2yjk1n"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gologme/log"))
+      (home-page "https://github.com/gologme/log/")
+      (synopsis
+       "Fork of the golang built in log package to add support for levels")
+      (description "This package is a drop in replacement for the built-in Go
+log package.  All the functionality of the built-in package still exists and
+is unchanged.  This package contains a series of small enhancements and
+additions.")
+      (license license:bsd-3))))
