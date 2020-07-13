@@ -5094,18 +5094,19 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.55")
+    (version "5.61")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
-        (base32 "1zjc8p95kb0ypxa6nxp0lkdq8armkjmmhf8484m25n5f14a59qfb"))))
+        (base32 "0kby1crnzkdg5sczwqapfpkr58apyzrrx85khigcqggmhhwl44wk"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
     (propagated-inputs
-     `(("r-matrix" ,r-matrix)
+     `(("r-conquer" ,r-conquer)
+       ("r-matrix" ,r-matrix)
        ("r-matrixmodels" ,r-matrixmodels)
        ("r-sparsem" ,r-sparsem)))
     (home-page "https://www.r-project.org")
