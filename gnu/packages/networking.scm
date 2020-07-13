@@ -997,13 +997,14 @@ network frames.")
     (home-page "https://fping.org/")
     (synopsis "Send ICMP ECHO_REQUEST packets to network hosts")
     (description
-     "fping is a ping like program which uses the Internet Control Message
-Protocol (ICMP) echo request to determine if a target host is responding.
-fping differs from ping in that you can specify any number of targets on the
-command line, or specify a file containing the lists of targets to ping.
-Instead of sending to one target until it times out or replies, fping will
-send out a ping packet and move on to the next target in a round-robin
-fashion.")
+     "fping is a ping-like program which uses @acronym{ICMP, Internet Control
+Message Protocol} echo requests to determine if a target host is responding.
+
+@command{fping} differs from @command{ping} in that you can specify any number
+of targets on the command line, or specify a file containing the lists of
+targets to ping.  Instead of sending to one target until it times out or
+replies, fping will send out a ping packet and move on to the next target in a
+round-robin fashion.")
     (license license:expat)))
 
 (define-public gandi.cli
