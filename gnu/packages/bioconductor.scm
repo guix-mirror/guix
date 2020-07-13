@@ -7187,21 +7187,20 @@ using whole genome sequencing data.")
 (define-public r-activepathways
   (package
     (name "r-activepathways")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActivePathways" version))
        (sha256
         (base32
-         "1xb0d1svmzw404pv8ja6wr4773k7x2lxkrzrayilvzqbfzj1wx20"))))
+         "1hxy760x141ykrpqdbfldq4ggj1svj3lsrpwi4rb2x7r4lna937l"))))
     (properties
      `((upstream-name . "ActivePathways")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-metap" ,r-metap)))
+       ("r-ggplot2" ,r-ggplot2)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ActivePathways/")
