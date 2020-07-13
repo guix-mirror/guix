@@ -9564,16 +9564,24 @@ custom checks.  This gem provides a set of additional checks.")
     (name "ruby-pdf-reader")
     (version "2.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "pdf-reader" version))
+              (method git-fetch)        ;no test in distributed gem archive
+              (uri (git-reference
+                    (url "https://github.com/yob/pdf-reader.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g3gr2m46275hjv6fv4jwq3qlvdbnhf1jxir9vzgxhv45ncnhffy"))))
+                "1yh8yrlssf5ppnkvk4m78vmh5r5vqwdcd0gm3lqipw162llz0rai"))))
     (build-system ruby-build-system)
-    (arguments `(#:test-target "spec"))
+    (arguments `(#:test-target "spec"
+                 #:phases (modify-phases %standard-phases
+                            (add-after 'unpack 'do-not-use-bundler
+                              (lambda _
+                                (substitute* "spec/spec_helper.rb"
+                                  ((".*[Bb]undler.*") ""))
+                                #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
+     `(("ruby-rspec" ,ruby-rspec)
        ("ruby-cane" ,ruby-cane)
        ("ruby-morecane" ,ruby-morecane)))
     (propagated-inputs
