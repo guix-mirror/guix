@@ -1155,6 +1155,42 @@ formats.")
     (home-page "https://asciidoctor.org")
     (license license:expat)))
 
+(define-public ruby-prawn-icon
+  (package
+    (name "ruby-prawn-icon")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "prawn-icon" version))
+       (sha256
+        (base32
+         "1ivkdf8rdf92hhy97vbmc2a4w97vcvqd58jcj4z9hz3hfsb1526w"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'remove-unnecessary-dependencies
+                    (lambda _
+                      (substitute* '("Rakefile" "spec/spec_helper.rb")
+                        ((".*[Bb]undler.*") "")
+                        (("^require 'rubocop.*") "")
+                        (("^RuboCop.*") ""))
+                      #t)))))
+    (native-inputs
+     `(("ruby-pdf-inspector" ,ruby-pdf-inspector)
+       ("ruby-pdf-reader" ,ruby-pdf-reader)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (propagated-inputs
+     `(("ruby-prawn" ,ruby-prawn)))
+    (synopsis "Icon fonts for use with the Prawn PDF toolkit")
+    (description "@code{Prawn::Icon} provides various icon fonts including
+FontAwesome, PaymentFont and Foundation Icons for use with the Prawn PDF
+toolkit.")
+    (home-page "https://github.com/jessedoyle/prawn-icon/")
+    (license %prawn-project-licenses)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
