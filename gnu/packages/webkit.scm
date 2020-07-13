@@ -32,9 +32,11 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -117,6 +119,108 @@ backend which implements them.")
      "This package provides a backend implementation for the WPE WebKit
 engine that uses Wayland for graphics output.")
     (license license:bsd-2)))
+
+(define-public wpewebkit
+  (package
+    (name "wpewebkit")
+    (version "2.28.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://wpewebkit.org/releases/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "12z9457ja1xm93kl3gpd6nvd5xn11mvm8pr0w2zhmh3k9lx2cf95"))))
+    (build-system cmake-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:tests? #f                      ; XXX: To be enabled
+       #:configure-flags
+       (list
+        "-DPORT=WPE"
+        ;; XXX: To be enabled.
+        ;; "-DENABLE_ACCELERATED_2D_CANVAS=ON"
+        "-DENABLE_ENCRYPTED_MEDIA=ON"
+        "-DENABLE_GTKDOC=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'setenv
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each
+              (lambda (file)
+                (substitute* file
+                  (("http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd")
+                   (string-append (assoc-ref inputs "docbook-xml")
+                                  "/xml/dtd/docbook/docbookx.dtd"))))
+              (find-files "Source" "\\.sgml$"))
+             #t))
+         (add-after 'install 'move-doc-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("python2" ,python-2.7)
+       ("ruby" ,ruby)))
+    (inputs
+     `(("atk" ,atk)
+       ("atk-bridge" ,at-spi2-atk)
+       ("bubblewrap" ,bubblewrap)
+       ("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("gperf" ,gperf)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("harfbuzz" ,harfbuzz)
+       ("icu" ,icu4c)
+       ("libepoxy" ,libepoxy)
+       ("libgcrypt" ,libgcrypt)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libseccomp" ,libseccomp)
+       ("libtasn1" ,libtasn1)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("mesa" ,mesa)
+       ("openjpeg" ,openjpeg)
+       ("sqlite" ,sqlite)
+       ("webp" ,libwebp)
+       ("woff2" ,woff2)
+       ("xdg-dbus-proxy" ,xdg-dbus-proxy)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("libsoup" ,libsoup)
+       ("wpe" ,libwpe)))
+    (synopsis "WebKit port optimized for embedded devices")
+    (description "WPE WebKit allows embedders to create simple and performant
+systems based on Web platform technologies.  It is designed with hardware
+acceleration in mind, leveraging common 3D graphics APIs for best performance.")
+    (home-page "https://wpewebkit.org/")
+    (license
+     (list
+      ;; Rendering and JavaScript Engines.
+      license:lgpl2.1+
+      ;; Others
+      license:bsd-2))))
 
 (define-public webkitgtk
   (package
