@@ -5763,3 +5763,33 @@ error messages.")
       (description "Phony is a very minimal actor model library for Go,
 inspired by the causal messaging system in the Pony programming language.")
       (license license:expat))))
+
+(define-public go-github-com-cheggaaa-pb
+  (package
+    (name "go-github-com-cheggaaa-pb")
+    (version "3.0.4")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cheggaaa/pb/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0xhsv9yf3fz918ay6w0d87jnb3hk9vxvi16jk172kqq26x7jixd0"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/cheggaaa/pb/"))
+    (propagated-inputs
+     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-mattn-go-colorable" ,go-github-com-mattn-go-colorable)
+       ("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (native-inputs
+     `(("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)))
+    (home-page "https://github.com/cheggaaa/pb/")
+    (synopsis "Console progress bar for Go")
+    (description "This package is a Go library that draws progress bars on
+the terminal.")
+    (license license:bsd-3)))
