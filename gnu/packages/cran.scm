@@ -3411,22 +3411,23 @@ by base R methods related to model fitting.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.5.6")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "0da3jsb02xckrk6alznicn6l5lnyvdhc64qklyarnd77miqgc1hb"))))
+         "0bq8w1ckrladzck2g0mgiyjdrzi06kbqalk5q3pfvj1607fdv3d5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
        ("r-dplyr" ,r-dplyr)
+       ("r-ellipsis" ,r-ellipsis)
        ("r-generics" ,r-generics)
-       ("r-nlme" ,r-nlme)
+       ("r-glue" ,r-glue)
        ("r-purrr" ,r-purrr)
-       ("r-reshape2" ,r-reshape2)
+       ("r-rlang" ,r-rlang)
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)))
