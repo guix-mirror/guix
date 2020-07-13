@@ -67,29 +67,28 @@
   (package
     (name "libwpe")
     (version "1.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://wpewebkit.org/releases/libwpe-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "141w35b488jjhanl3nrm0awrbcy6hb579fk8n9vbpx07m2wcd1rm"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://wpewebkit.org/releases/libwpe-"
+                       version ".tar.xz"))
+       (sha256
+        (base32 "141w35b488jjhanl3nrm0awrbcy6hb579fk8n9vbpx07m2wcd1rm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
     (inputs
      `(("mesa" ,mesa)))
     (propagated-inputs
-     `(;; In Requires of wpe-1.0.pc.
-       ("libxkbcommon" ,libxkbcommon)))
+     `(("libxkbcommon" ,libxkbcommon)))
+    (synopsis "General-purpose library for WPE")
+    (description "LibWPE is general-purpose library specifically developed for
+the WPE-flavored port of WebKit.")
     (home-page "https://wpewebkit.org/")
-    (synopsis "Platform agnostic WebKit interfaces")
-    (description
-     "@code{libwpe} is a small library that defines programming interfaces
-for use by WebKit, and provides a mechanism for loading a platform-specific
-backend which implements them.")
     (license license:bsd-2)))
 
 (define-public wpebackend-fdo
