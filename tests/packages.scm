@@ -1110,6 +1110,20 @@
       (("dep" package)
        (eq? package dep)))))
 
+(test-assert "package->bag, sensitivity to %current-system"
+  (let* ((dep (dummy-package "dep"
+                (propagated-inputs (if (string=? (%current-system)
+                                                 "i586-gnu")
+                                       `(("libxml2" ,libxml2))
+                                       '()))))
+         (pkg (dummy-package "foo"
+                (native-inputs `(("dep" ,dep)))))
+         (bag (package->bag pkg (%current-system) "i586-gnu")))
+    (equal? (parameterize ((%current-system "x86_64-linux"))
+              (bag-transitive-inputs bag))
+            (parameterize ((%current-system "i586-gnu"))
+              (bag-transitive-inputs bag)))))
+
 (test-assert "package->bag, sensitivity to %current-target-system"
   (let* ((dep (dummy-package "dep"
                 (propagated-inputs (if (%current-target-system)
