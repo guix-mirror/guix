@@ -30015,6 +30015,30 @@ to XDG Base Directory specification")
     (description "This package provides an implementation of zbase32.")
     (license license:lgpl3+)))
 
+(define-public rust-zeroize-derive-1
+  (package
+    (name "rust-zeroize-derive")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zeroize-derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18lc9xq9dwvmv81y3bqnw20974nbrs7d20rljb1inz7wd7n1w9fy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0)
+        ("rust-synstructure" ,rust-synstructure-0.12))))
+    (home-page "https://github.com/iqlusioninc/crates/")
+    (synopsis "Custom derive support for zeroize")
+    (description "This crate provides custom derive support for Zeroize.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-zip-0.5
   (package
     (name "rust-zip")
