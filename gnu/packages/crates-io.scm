@@ -20603,6 +20603,32 @@ first-class Rust objects.")
         ;; build dependencies
         ("rust-cc" ,rust-cc-1.0))))))
 
+(define-public rust-rle-decode-fast-1
+  (package
+    (name "rust-rle-decode-fast")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rle-decode-fast" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1b4h7qs4mssc5dnlhs3f91ya8pb40bv72zzshl18gify2jllzgna"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-criterion" ,rust-criterion-0.2))))
+    (home-page "https://github.com/WanzenBug/rle-decode-helper")
+    (synopsis "Implement decoding for Run Length Encoded data in Rust")
+    (description
+     "This crate provides a fast way to implement any kind of decoding
+for Run Length Encoded data in Rust.
+
+Writing a fast decoder that is also safe can be quite challenging, so
+this crate is here to save you the hassle of maintaining and testing
+your own implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rls-span-0.5
   (package
     (name "rust-rls-span")
