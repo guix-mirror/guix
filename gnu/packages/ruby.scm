@@ -1212,6 +1212,42 @@ Style Sheets (CSS) rule sets in Ruby.")
     (home-page "https://github.com/premailer/css_parser")
     (license license:expat)))
 
+(define-public ruby-prawn-svg
+  (package
+    (name "ruby-prawn-svg")
+    (version "0.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "prawn-svg" version))
+       (sha256
+        (base32
+         "0df3l49cy3xpwi0b73hmi2ykbjg9kjwrvhk0k3z7qhh5ghmmrn77"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'do-not-use-bundler
+                    (lambda _
+                      (substitute* "spec/spec_helper.rb"
+                        ((".*[Bb]undler.*") ""))
+                      #t))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "rspec" "-Ilib" "-rprawn-svg"))
+                      #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-css-parser" ,ruby-css-parser)
+       ("ruby-prawn" ,ruby-prawn)))
+    (synopsis "SVG renderer for the Prawn PDF library")
+    (description "This library allows rendering Scalable Vector Graphics (SVG)
+graphics directly into a Portable Document Format (PDF) document using the
+Prawn module.")
+    (home-page "https://github.com/mogest/prawn-svg")
+    (license license:expat)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
