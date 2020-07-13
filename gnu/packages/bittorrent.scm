@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -183,38 +183,36 @@ XML-RPC over SCGI.")
     (license l:gpl2+)))
 
 (define-public tremc
-  (let ((commit "4d50dab7376601daca13f7be6eabc0eaa057c1b0")
-        (revision "0"))
-    (package
-      (name "tremc")
-      (version (git-version "0.9.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/tremc/tremc")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0qpi65n8rv7l9mg8qyqx70z83inkl8v5r5nks65c99lhscdki0w7"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                      ; no test suite
-         #:make-flags
-         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:phases
-         (modify-phases %standard-phases
-           ;; The software is just a Python script that must be copied into place.
-           (delete 'configure)
-           (delete 'build))))
-      (inputs
-       `(("python" ,python)))
-      (synopsis "Console client for the Transmission BitTorrent daemon")
-      (description "Tremc is a console client, with a curses interface, for the
+  (package
+    (name "tremc")
+    (version "0.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tremc/tremc")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1fqspp2ckafplahgba54xmx0sjidx1pdzyjaqjhz0ivh98dkx2n5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The software is just a Python script that must be copied into place.
+         (delete 'configure)
+         (delete 'build))))
+    (inputs
+     `(("python" ,python)))
+    (synopsis "Console client for the Transmission BitTorrent daemon")
+    (description "Tremc is a console client, with a curses interface, for the
 Transmission BitTorrent daemon.")
-      (home-page "https://github.com/tremc/tremc")
-      (license l:gpl3+))))
+    (home-page "https://github.com/tremc/tremc")
+    (license l:gpl3+)))
 
 (define-public transmission-remote-cli
   (package
