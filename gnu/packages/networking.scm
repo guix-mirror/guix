@@ -1778,7 +1778,7 @@ library remains flexible, portable, and easily embeddable.")
 (define-public sslh
   (package
     (name "sslh")
-    (version "1.20")
+    (version "1.21")
     (source
      (origin
        (method git-fetch)
@@ -1787,7 +1787,7 @@ library remains flexible, portable, and easily embeddable.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18zhkqlwfh6f5dg1a41a4p7p9g94dgb9nwls1ksy9r5yz174i2fx"))))
+        (base32 "1hqnqzxaabqrvjh24p30yr9f71s2q6ddvlqmycf9b71qq5nj4xrf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Test dependencies.
