@@ -30015,6 +30015,32 @@ to XDG Base Directory specification")
     (description "This package provides an implementation of zbase32.")
     (license license:lgpl3+)))
 
+(define-public rust-zeroize-1
+  (package
+    (name "rust-zeroize")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zeroize" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1f5547q8l8bpi16yy6lix2gl9rf1qz45lj06bq7wjk525gnw5fiw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;2 doc tests fail
+       #:cargo-inputs
+       (("rust-zeroize-derive" ,rust-zeroize-derive-1))))
+    (home-page "https://github.com/iqlusioninc/crates/")
+    (synopsis "Securely clear secrets from memory")
+    (description
+     "Zeroize securely clears secrets from memory with a simple trait built on
+stable Rust primitives, which guarantee memory is zeroed using an operation
+will not be ``optimized away'' by the compiler.  It uses a portable pure Rust
+implementation that works everywhere, even WASM!")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-zeroize-derive-1
   (package
     (name "rust-zeroize-derive")
