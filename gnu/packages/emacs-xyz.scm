@@ -259,14 +259,14 @@ using geiser.")
 (define-public emacs-hyperbole
   (package
     (name "emacs-hyperbole")
-    (version "7.0.6")
+    (version "7.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "hyperbole-" version ".tar"))
        (sha256
-        (base32 "08gi4v76s53nfmn3s0qcxc3zii0pspjfd6ry7jq1kgm3z34x8hab"))
+        (base32 "1bspmqnbniwr9385wh823dsr5fgch5qnlkf45s4vi0nvg8jdccp1"))
        (patches
         (search-patches "emacs-hyperbole-toggle-messaging.patch"))))
     (build-system emacs-build-system)
