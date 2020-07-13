@@ -19269,9 +19269,9 @@ and cuts down boilerplate code when testing libraries for asyncio.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sk9i8czxgsbrswsf1nlb4c82vgnlzi8zrvrxdip92w2z8hqh43y"))))
+        (base32 "1sk9i8czxgsbrswsf1nlb4c82vgnlzi8zrvrxdip92w2z8hqh43y"))
+       (patches (search-patches "python-aionotify-0.2.0-py3.8.patch"))))
     (build-system python-build-system)
-    (native-inputs `(("python-asynctest" ,python-asynctest)))
     (home-page "https://github.com/rbarrois/aionotify")
     (synopsis "Asyncio-powered inotify library")
     (description

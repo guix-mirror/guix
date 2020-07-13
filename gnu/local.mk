@@ -1450,6 +1450,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3.8-fix-tests.patch		\
   %D%/packages/patches/python-CVE-2018-14647.patch		\
   %D%/packages/patches/python-aiohttp-3.6.2-no-warning-fail.patch	\
+  %D%/packages/patches/python-aionotify-0.2.0-py3.8.patch	\
   %D%/packages/patches/python-alembic-exceptions-cause.patch	\
   %D%/packages/patches/python-argcomplete-1.11.1-fish31.patch	\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
