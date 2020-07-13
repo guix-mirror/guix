@@ -1191,6 +1191,27 @@ toolkit.")
     (home-page "https://github.com/jessedoyle/prawn-icon/")
     (license %prawn-project-licenses)))
 
+(define-public ruby-css-parser
+  (package
+    (name "ruby-css-parser")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "css_parser" version))
+       (sha256
+        (base32
+         "04c4dl8cm5rjr50k9qa6yl9r05fk9zcb1zxh0y0cdahxlsgcydfw"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f))          ;gem doesn't ship with test suite
+    (propagated-inputs
+     `(("ruby-addressable" ,ruby-addressable)))
+    (synopsis "Ruby Cascading Style Sheets (CSS) parser")
+    (description "This package allows loading, parsing and cascading Cascading
+Style Sheets (CSS) rule sets in Ruby.")
+    (home-page "https://github.com/premailer/css_parser")
+    (license license:expat)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
