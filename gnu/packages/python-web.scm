@@ -1691,7 +1691,6 @@ authenticated session objects providing things like keep-alive.")
        ("python-certifi" ,python-certifi)
        ("python-cryptography" ,python-cryptography)
        ("python-idna" ,python-idna)
-       ("python-ipaddress" ,python-ipaddress)
        ("python-pyopenssl" ,python-pyopenssl)
        ("python-pysocks" ,python-pysocks)))
     (home-page "https://urllib3.readthedocs.io/")
@@ -1700,6 +1699,7 @@ authenticated session objects providing things like keep-alive.")
      "Urllib3 supports features left out of urllib and urllib2 libraries.  It
 can reuse the same socket connection for multiple requests, it can POST files,
 supports url redirection and retries, and also gzip and deflate decoding.")
+    (properties `((python2-variant . ,(delay python2-urllib3))))
     (license license:expat)))
 
 ;; Some software requires an older version of urllib3, notably Docker.
@@ -1715,7 +1715,12 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 
 (define-public python2-urllib3
-  (package-with-python2 python-urllib3))
+  (let ((base (package-with-python2 (strip-python2-variant python-urllib3))))
+    (package/inherit
+     base
+     (propagated-inputs
+      `(("python-ipaddress" ,python2-ipaddress)
+        ,@(package-propagated-inputs base))))))
 
 (define-public awscli
   (package
