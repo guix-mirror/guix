@@ -3710,18 +3710,19 @@ analysis of multiply imputed data sets.")
 (define-public r-mice
   (package
     (name "r-mice")
-    (version "3.9.0")
+    (version "3.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mice" version))
        (sha256
         (base32
-         "1wycbc2iqp68gfzvqx1gsn5n1k1h4bg79dy8m5msqf226hy83ncn"))))
+         "0w81shmd2crpdlh66pnm27v4n06aayganq6kkalirln4c0ci2nyi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
        ("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
        ("r-lattice" ,r-lattice)
        ("r-rcpp" ,r-rcpp)
        ("r-tidyr" ,r-tidyr)))
