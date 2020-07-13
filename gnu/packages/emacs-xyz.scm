@@ -23003,14 +23003,14 @@ comment.")
 (define-public emacs-delight
   (package
     (name "emacs-delight")
-    (version "1.5")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "delight-" version ".el"))
        (sha256
-        (base32 "0kzlvzwmn6zj0874086q2xw0pclyi7wlkq48zh2lkd2796xm8vw7"))))
+        (base32 "0pihsghrf9xnd1kqlq48qmjcmp5ra95wwwgrb3l8m1wagmmc0bi1"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/delight.html")
     (synopsis "Dimmer switch for your mode-line lighter text")
