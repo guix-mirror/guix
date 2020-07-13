@@ -4461,19 +4461,21 @@ to variables on the left-hand side of the assignment.")
 (define-public r-pillar
   (package
     (name "r-pillar")
-    (version "1.4.4")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pillar" version))
        (sha256
         (base32
-         "0viymfp1rkr7ig3m1b016r75hk8qbr9cqsjc6c20ks9pm5svmsp1"))))
+         "01ck8ziqzjc9ibbj3g88siz1iw263dgl8jx6ryw2v50rjrr3y7fj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
        ("r-crayon" ,r-crayon)
+       ("r-ellipsis" ,r-ellipsis)
        ("r-fansi" ,r-fansi)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-rlang" ,r-rlang)
        ("r-utf8" ,r-utf8)
        ("r-vctrs" ,r-vctrs)))
