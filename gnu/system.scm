@@ -118,6 +118,7 @@
             operating-system-sudoers-file
             operating-system-swap-devices
             operating-system-kernel-loadable-modules
+            operating-system-location
 
             operating-system-derivation
             operating-system-profile
@@ -255,7 +256,12 @@
                    (default %setuid-programs))    ; list of string-valued gexps
 
   (sudoers-file operating-system-sudoers-file     ; file-like
-                (default %sudoers-specification)))
+                (default %sudoers-specification))
+
+  (location operating-system-location             ; <location>
+            (default (and=> (current-source-location)
+                            source-properties->location))
+            (innate)))
 
 (define (operating-system-kernel-arguments os root-device)
   "Return all the kernel arguments, including the ones not specified
