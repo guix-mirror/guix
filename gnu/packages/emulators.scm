@@ -1946,21 +1946,25 @@ framework based on QEMU.")
        ;; TODO: unbundle armips.
        ("armips-source" ,(package-source armips))
        ("lang"
-        ,(origin
-           (method git-fetch)
-           (uri (git-reference
-                 (url "https://github.com/hrydgard/ppsspp-lang")
-                 (commit "d184ba2b607a03435be579406b816c90add334e6")))
-           (sha256
-            (base32 "0s003x6247nx09qd6a1jz1l2hsk5d6k1zmh8mg3m6hjjhvbvd9j9"))))
+        ,(let ((commit "d184ba2b607a03435be579406b816c90add334e6"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/hrydgard/ppsspp-lang")
+                   (commit commit)))
+             (sha256
+              (base32 "0s003x6247nx09qd6a1jz1l2hsk5d6k1zmh8mg3m6hjjhvbvd9j9"))
+             (file-name (git-file-name "ppsspp-lang" commit)))))
        ("tests"
-        ,(origin
-           (method git-fetch)
-           (uri (git-reference
-                 (url "https://github.com/hrydgard/pspautotests")
-                 (commit "328b839c7243e7f733f9eae88d059485e3d808e7")))
-           (sha256
-            (base32 "1gj1kr5ijxrqwvz7c41phskjr70ndp8iz0gr8c3xxsd8p9z5gdvm"))))))
+        ,(let ((commit "328b839c7243e7f733f9eae88d059485e3d808e7"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/hrydgard/pspautotests")
+                   (commit commit)))
+             (sha256
+              (base32 "1gj1kr5ijxrqwvz7c41phskjr70ndp8iz0gr8c3xxsd8p9z5gdvm"))
+             (file-name (git-file-name "pspautotests" commit)))))))
     (arguments
      `(#:out-of-source? #f
        #:configure-flags (list "-DUSE_DISCORD=OFF"
