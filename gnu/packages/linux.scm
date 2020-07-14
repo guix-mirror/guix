@@ -47,6 +47,7 @@
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -125,6 +126,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -7114,6 +7116,34 @@ with supporting Flatpak applications being the primary goal.  Alongside Wayland
 and Flatpak we expect PipeWire to provide a core building block for the future
 of Linux application development.")
     (license license:lgpl2.0+)))
+
+(define-public pipewire-0.3
+  (package
+    (inherit pipewire)
+    (name "pipewire")
+    (version "0.3.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PipeWire/pipewire")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0g149vyaigf4gzm764fcgxxci9niw19z0af9afs4diwq5xzr1qd3"))))
+    (arguments
+     '(#:configure-flags '("-Dsystemd=false")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Skip shrink-runpath, otherwise validate-runpath fails
+         (delete 'shrink-runpath))))
+    (inputs
+     (append (package-inputs pipewire)
+             `(("bluez" ,bluez)
+               ("jack" ,jack-2)
+               ("pulseaudio" ,pulseaudio)
+               ("vulkan-loader" ,vulkan-loader)
+               ("vulkan-headers" ,vulkan-headers))))))
 
 (define-public ell
   (package
