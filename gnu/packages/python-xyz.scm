@@ -5599,9 +5599,6 @@ similar to Fourier transforms, the difference being that Fourier transforms are
 localized only in frequency instead of in time and frequency.")
     (license license:expat)))
 
-(define-public python2-pywavelets
-  (package-with-python2 python-pywavelets))
-
 (define-public python-pywinrm
   (package
     (name "python-pywinrm")
