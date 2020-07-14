@@ -652,6 +652,23 @@ or variants of @code{~a} in the same profile.")
 or remove one of them from the profile.")
                               name1 name2)))))
 
+(cond-expand
+  (guile-3
+   ;; On Guile 3.0, in 'call-with-error-handling' we need to re-raise.  To
+   ;; preserve useful backtraces in case of unhandled errors, we want that to
+   ;; happen before the stack has been unwound, hence 'guard*'.
+   (define-syntax-rule (guard* (var clauses ...) exp ...)
+     "This variant of SRFI-34 'guard' does not unwind the stack before
+evaluating the tests and bodies of CLAUSES."
+     (with-exception-handler
+         (lambda (var)
+           (cond clauses ... (else (raise var))))
+       (lambda () exp ...)
+       #:unwind? #f)))
+  (else
+   (define-syntax-rule (guard* (var clauses ...) exp ...)
+     (guard (var clauses ...) exp ...))))
+
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."
   (define (port-filename* port)
@@ -660,143 +677,147 @@ or remove one of them from the profile.")
     (and (not (port-closed? port))
          (port-filename port)))
 
-  (guard (c ((package-input-error? c)
-             (let* ((package  (package-error-package c))
-                    (input    (package-error-invalid-input c))
-                    (location (package-location package))
-                    (file     (location-file location))
-                    (line     (location-line location))
-                    (column   (location-column location)))
-               (leave (G_ "~a:~a:~a: package `~a' has an invalid input: ~s~%")
-                      file line column
-                      (package-full-name package) input)))
-            ((package-cross-build-system-error? c)
-             (let* ((package (package-error-package c))
-                    (loc     (package-location package))
-                    (system  (package-build-system package)))
-               (leave (G_ "~a: ~a: build system `~a' does not support cross builds~%")
-                      (location->string loc)
-                      (package-full-name package)
-                      (build-system-name system))))
-            ((gexp-input-error? c)
-             (let ((input (package-error-invalid-input c)))
-               (leave (G_ "~s: invalid G-expression input~%")
-                      (gexp-error-invalid-input c))))
-            ((profile-not-found-error? c)
-             (leave (G_ "profile '~a' does not exist~%")
-                    (profile-error-profile c)))
-            ((missing-generation-error? c)
-             (leave (G_ "generation ~a of profile '~a' does not exist~%")
-                    (missing-generation-error-generation c)
-                    (profile-error-profile c)))
-            ((unmatched-pattern-error? c)
-             (let ((pattern (unmatched-pattern-error-pattern c)))
-               (leave (G_ "package '~a~@[@~a~]~@[:~a~]' not found in profile~%")
-                      (manifest-pattern-name pattern)
-                      (manifest-pattern-version pattern)
-                      (match (manifest-pattern-output pattern)
-                        ("out" #f)
-                        (output output)))))
-            ((profile-collision-error? c)
-             (let ((entry    (profile-collision-error-entry c))
-                   (conflict (profile-collision-error-conflict c)))
-               (define (report-parent-entries entry)
-                 (let ((parent (force (manifest-entry-parent entry))))
-                   (when (manifest-entry? parent)
-                     (report-error (G_ "   ... propagated from ~a@~a~%")
-                                   (manifest-entry-name parent)
-                                   (manifest-entry-version parent))
-                     (report-parent-entries parent))))
+  (guard* (c ((package-input-error? c)
+              (let* ((package  (package-error-package c))
+                     (input    (package-error-invalid-input c))
+                     (location (package-location package))
+                     (file     (location-file location))
+                     (line     (location-line location))
+                     (column   (location-column location)))
+                (leave (G_ "~a:~a:~a: package `~a' has an invalid input: ~s~%")
+                       file line column
+                       (package-full-name package) input)))
+             ((package-cross-build-system-error? c)
+              (let* ((package (package-error-package c))
+                     (loc     (package-location package))
+                     (system  (package-build-system package)))
+                (leave (G_ "~a: ~a: build system `~a' does not support cross builds~%")
+                       (location->string loc)
+                       (package-full-name package)
+                       (build-system-name system))))
+             ((gexp-input-error? c)
+              (let ((input (package-error-invalid-input c)))
+                (leave (G_ "~s: invalid G-expression input~%")
+                       (gexp-error-invalid-input c))))
+             ((profile-not-found-error? c)
+              (leave (G_ "profile '~a' does not exist~%")
+                     (profile-error-profile c)))
+             ((missing-generation-error? c)
+              (leave (G_ "generation ~a of profile '~a' does not exist~%")
+                     (missing-generation-error-generation c)
+                     (profile-error-profile c)))
+             ((unmatched-pattern-error? c)
+              (let ((pattern (unmatched-pattern-error-pattern c)))
+                (leave (G_ "package '~a~@[@~a~]~@[:~a~]' not found in profile~%")
+                       (manifest-pattern-name pattern)
+                       (manifest-pattern-version pattern)
+                       (match (manifest-pattern-output pattern)
+                         ("out" #f)
+                         (output output)))))
+             ((profile-collision-error? c)
+              (let ((entry    (profile-collision-error-entry c))
+                    (conflict (profile-collision-error-conflict c)))
+                (define (report-parent-entries entry)
+                  (let ((parent (force (manifest-entry-parent entry))))
+                    (when (manifest-entry? parent)
+                      (report-error (G_ "   ... propagated from ~a@~a~%")
+                                    (manifest-entry-name parent)
+                                    (manifest-entry-version parent))
+                      (report-parent-entries parent))))
 
-               (define (manifest-entry-output* entry)
-                 (match (manifest-entry-output entry)
-                   ("out"   "")
-                   (output (string-append ":" output))))
+                (define (manifest-entry-output* entry)
+                  (match (manifest-entry-output entry)
+                    ("out"   "")
+                    (output (string-append ":" output))))
 
-               (report-error (G_ "profile contains conflicting entries for ~a~a~%")
-                             (manifest-entry-name entry)
-                             (manifest-entry-output* entry))
-               (report-error (G_ "  first entry: ~a@~a~a ~a~%")
-                             (manifest-entry-name entry)
-                             (manifest-entry-version entry)
-                             (manifest-entry-output* entry)
-                             (manifest-entry-item entry))
-               (report-parent-entries entry)
-               (report-error (G_ "  second entry: ~a@~a~a ~a~%")
-                             (manifest-entry-name conflict)
-                             (manifest-entry-version conflict)
-                             (manifest-entry-output* conflict)
-                             (manifest-entry-item conflict))
-               (report-parent-entries conflict)
-               (display-collision-resolution-hint c)
-               (exit 1)))
-            ((nar-error? c)
-             (let ((file (nar-error-file c))
-                   (port (nar-error-port c)))
-               (if file
-                   (leave (G_ "corrupt input while restoring '~a' from ~s~%")
-                          file (or (port-filename* port) port))
-                   (leave (G_ "corrupt input while restoring archive from ~s~%")
-                          (or (port-filename* port) port)))))
-            ((store-connection-error? c)
-             (leave (G_ "failed to connect to `~a': ~a~%")
-                    (store-connection-error-file c)
-                    (strerror (store-connection-error-code c))))
-            ((store-protocol-error? c)
-             ;; FIXME: Server-provided error messages aren't i18n'd.
-             (leave (G_ "~a~%")
-                    (store-protocol-error-message c)))
-            ((derivation-missing-output-error? c)
-             (leave (G_ "reference to invalid output '~a' of derivation '~a'~%")
-                    (derivation-missing-output c)
-                    (derivation-file-name (derivation-error-derivation c))))
-            ((file-search-error? c)
-             (leave (G_ "file '~a' could not be found in these \
+                (report-error (G_ "profile contains conflicting entries for ~a~a~%")
+                              (manifest-entry-name entry)
+                              (manifest-entry-output* entry))
+                (report-error (G_ "  first entry: ~a@~a~a ~a~%")
+                              (manifest-entry-name entry)
+                              (manifest-entry-version entry)
+                              (manifest-entry-output* entry)
+                              (manifest-entry-item entry))
+                (report-parent-entries entry)
+                (report-error (G_ "  second entry: ~a@~a~a ~a~%")
+                              (manifest-entry-name conflict)
+                              (manifest-entry-version conflict)
+                              (manifest-entry-output* conflict)
+                              (manifest-entry-item conflict))
+                (report-parent-entries conflict)
+                (display-collision-resolution-hint c)
+                (exit 1)))
+             ((nar-error? c)
+              (let ((file (nar-error-file c))
+                    (port (nar-error-port c)))
+                (if file
+                    (leave (G_ "corrupt input while restoring '~a' from ~s~%")
+                           file (or (port-filename* port) port))
+                    (leave (G_ "corrupt input while restoring archive from ~s~%")
+                           (or (port-filename* port) port)))))
+             ((store-connection-error? c)
+              (leave (G_ "failed to connect to `~a': ~a~%")
+                     (store-connection-error-file c)
+                     (strerror (store-connection-error-code c))))
+             ((store-protocol-error? c)
+              ;; FIXME: Server-provided error messages aren't i18n'd.
+              (leave (G_ "~a~%")
+                     (store-protocol-error-message c)))
+             ((derivation-missing-output-error? c)
+              (leave (G_ "reference to invalid output '~a' of derivation '~a'~%")
+                     (derivation-missing-output c)
+                     (derivation-file-name (derivation-error-derivation c))))
+             ((file-search-error? c)
+              (leave (G_ "file '~a' could not be found in these \
 directories:~{ ~a~}~%")
-                    (file-search-error-file-name c)
-                    (file-search-error-search-path c)))
-            ((invoke-error? c)
-             (leave (G_ "program exited\
+                     (file-search-error-file-name c)
+                     (file-search-error-search-path c)))
+             ((invoke-error? c)
+              (leave (G_ "program exited\
 ~@[ with non-zero exit status ~a~]\
 ~@[ terminated by signal ~a~]\
 ~@[ stopped by signal ~a~]: ~s~%")
-                    (invoke-error-exit-status c)
-                    (invoke-error-term-signal c)
-                    (invoke-error-stop-signal c)
-                    (cons (invoke-error-program c)
-                          (invoke-error-arguments c))))
-            ((and (error-location? c) (message-condition? c))
-             (report-error (error-location c) (G_ "~a~%")
-                           (gettext (condition-message c) %gettext-domain))
-             (when (fix-hint? c)
-               (display-hint (condition-fix-hint c)))
-             (exit 1))
-            ((and (message-condition? c) (fix-hint? c))
-             (report-error (G_ "~a~%")
-                           (gettext (condition-message c) %gettext-domain))
-             (display-hint (condition-fix-hint c))
-             (exit 1))
+                     (invoke-error-exit-status c)
+                     (invoke-error-term-signal c)
+                     (invoke-error-stop-signal c)
+                     (cons (invoke-error-program c)
+                           (invoke-error-arguments c))))
+             ((and (error-location? c) (message-condition? c))
+              (report-error (error-location c) (G_ "~a~%")
+                            (gettext (condition-message c) %gettext-domain))
+              (when (fix-hint? c)
+                (display-hint (condition-fix-hint c)))
+              (exit 1))
+             ((and (message-condition? c) (fix-hint? c))
+              (report-error (G_ "~a~%")
+                            (gettext (condition-message c) %gettext-domain))
+              (display-hint (condition-fix-hint c))
+              (exit 1))
 
-            ;; On Guile 3.0.0, exceptions such as 'unbound-variable' are
-            ;; compound and include a '&message'.  However, that message only
-            ;; contains the format string.  Thus, special-case it here to
-            ;; avoid displaying a bare format string.
-            ((cond-expand
-               (guile-3
-                ((exception-predicate &exception-with-kind-and-args) c))
-               (else #f))
-             (raise c))
+             ;; On Guile 3.0.0, exceptions such as 'unbound-variable' are
+             ;; compound and include a '&message'.  However, that message only
+             ;; contains the format string.  Thus, special-case it here to
+             ;; avoid displaying a bare format string.
+             ;;
+             ;; Furthermore, use of 'guard*' ensures that the stack has not
+             ;; been unwound when we re-raise, since that would otherwise show
+             ;; useless backtraces.
+             ((cond-expand
+                (guile-3
+                 ((exception-predicate &exception-with-kind-and-args) c))
+                (else #f))
+              (raise c))
 
-            ((message-condition? c)
-             ;; Normally '&message' error conditions have an i18n'd message.
-             (leave (G_ "~a~%")
-                    (gettext (condition-message c) %gettext-domain))))
-    ;; Catch EPIPE and the likes.
-    (catch 'system-error
-      thunk
-      (lambda (key proc format-string format-args . rest)
-        (leave (G_ "~a: ~a~%") proc
-               (apply format #f format-string format-args))))))
+             ((message-condition? c)
+              ;; Normally '&message' error conditions have an i18n'd message.
+              (leave (G_ "~a~%")
+                     (gettext (condition-message c) %gettext-domain))))
+      ;; Catch EPIPE and the likes.
+      (catch 'system-error
+        thunk
+        (lambda (key proc format-string format-args . rest)
+          (leave (G_ "~a: ~a~%") proc
+                 (apply format #f format-string format-args))))))
 
 (define-syntax-rule (leave-on-EPIPE exp ...)
   "Run EXP... in a context where EPIPE errors are caught and lead to 'exit'
@@ -1992,5 +2013,9 @@ and signal handling have already been set up."
 (define (guix-main arg0 . args)
   (initialize-guix)
   (apply run-guix args))
+
+;;; Local Variables:
+;;; eval: (put 'guard* 'scheme-indent-function 2)
+;;; End:
 
 ;;; ui.scm ends here
