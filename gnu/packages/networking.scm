@@ -95,6 +95,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
@@ -125,6 +126,7 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tcl)
@@ -136,6 +138,69 @@
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
+
+;; This package does not have a release yet.
+;; But this is required to provide a feature in PipeWire.
+(define-public libcamera
+  (package
+    (name "libcamera")
+    (version "0.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "git://linuxtv.org/libcamera.git")
+         (commit "74c8b508338ccdd0780aa1e067a1e8fcb9ee326b")))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "0d9lp8b9gyxh4jwfh55kp8zl1xyyg32z684v3y29378zpksncss1"))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:configure-flags
+       (list
+        "-Dv4l2=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "test/meson.build"
+               (("\\['list-cameras',                    'list-cameras.cpp'\\],")
+                ""))
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/doc")
+                (string-append doc "/share/doc"))
+               #t))))))
+    (native-inputs
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("sphinx" ,python-sphinx)
+       ("yaml" ,python-pyyaml)))
+    (inputs
+     `(("boost" ,boost)
+       ("glib" ,glib)
+       ("gstreamer" ,gst-plugins-base)
+       ("gnutls" ,gnutls)
+       ("libtiff" ,libtiff)
+       ("openssl" ,openssl)
+       ("qt5" ,qtbase)
+       ("udev" ,eudev)))
+    (synopsis "Camera stack and framework")
+    (description "LibCamera is a complex camera support library for GNU+Linux,
+Android, and ChromeOS.")
+    (home-page "https://libcamera.org/")
+    (license license:lgpl2.1+)))
 
 (define-public libnice
   (package
