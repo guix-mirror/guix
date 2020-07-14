@@ -4358,6 +4358,12 @@ something like this:
          (body (en "Don't miss the @@code@{hello@} package!"))))
 @end lisp
 
+While the news file is using the Scheme syntax, avoid naming it with a
+@file{.scm} extension or else it will get picked up when building the
+channel and yield an error since it is not a valid module.
+Alternatively, you can move the channel module to a subdirectory and
+store the news file in another directory.
+
 The file consists of a list of @dfn{news entries}.  Each entry is
 associated with a commit or tag: it describes changes made in this
 commit, possibly in preceding commits as well.  Users see entries only
@@ -4376,7 +4382,7 @@ you write news entries in English first, the command below creates a PO
 file containing the strings to translate:
 
 @example
-xgettext -o news.po -l scheme -ken etc/news.scm
+xgettext -o news.po -l scheme -ken etc/news.txt
 @end example
 
 To sum up, yes, you could use your channel as a blog.  But beware, this
