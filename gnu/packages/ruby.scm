@@ -651,6 +651,28 @@ re-sourced, but they will be rendered in a single line format.")
     (home-page "https://github.com/rspec-given/sorcerer")
     (license license:expat)))
 
+(define-public ruby-given-core
+  (package
+    (name "ruby-given-core")
+    (version "3.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "given_core" version))
+       (sha256
+        (base32
+         "1lzyqllbbv6as3qgwz2007mvy7wy247bgkch9adnmh1zfa73bkrg"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f))          ;no test suite for the core package
+    (propagated-inputs
+     `(("ruby-sorcerer" ,ruby-sorcerer)))
+    (synopsis "Core abstractions used by rspec-given and minitest-given")
+    (description "Given_core is the basic functionality behind rspec-given and
+minitest-given, extensions that allow the use of Given/When/Then terminology
+when defining specifications.")
+    (home-page "https://github.com/rspec-given/rspec-given")
+    (license license:expat)))
+
 (define-public ruby-rspec-its
   (package
     (name "ruby-rspec-its")
