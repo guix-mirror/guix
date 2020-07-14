@@ -652,13 +652,13 @@ and verifies that it matches the intended target hostname.")
 (define-public python-bitarray
   (package
     (name "python-bitarray")
-    (version "1.2.1")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "bitarray" version))
               (sha256
                (base32
-                "1kxrlxfj9nrx512sfwifwl9z4v6ky3qschl0zmk3s3dvc3s7bmif"))))
+                "177fj6wbw5jln54wpp6plcqy2329wjkwqwvgz7022rrg3xfrq49g"))))
     (build-system python-build-system)
     (home-page "https://github.com/ilanschnell/bitarray")
     (synopsis "Efficient arrays of booleans")
