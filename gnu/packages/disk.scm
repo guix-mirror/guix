@@ -78,6 +78,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
@@ -432,7 +433,7 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
                            version "/gparted-" version ".tar.gz"))
        (sha256
         (base32 "092rgwjh1825fal6v3yafq2wr0i61hh0a2n0j4296zn0zdx7pzp2"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
       ;; Tests require access to paths outside the build container, such
       ;; as '/dev/disk/by-id'
