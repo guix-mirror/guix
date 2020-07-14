@@ -38,7 +38,41 @@
   #:use-module (gnu packages less)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages xml))
+
+(define-public xmltoman
+  (package
+    (name "xmltoman")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/xmltoman/files/"
+                       "xmltoman/xmltoman-" version ".tar.gz/xmltoman-"
+                       version ".tar.gz/download"))
+       (sha256
+        (base32 "1c0lvzr7kdy63wbn1jv6s126ds7add3pxqb0vlxd3v5a2sir91wl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests
+       #:make-flags
+       (list
+        (string-append "PREFIX="
+                       (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (propagated-inputs
+     `(("perl" ,perl)
+       ("perl-xml-parser" ,perl-xml-parser)))
+    (synopsis "XML to Man converter")
+    (description "XMLtoMan and XMLMantoHTML are two small scripts to convert xml
+to man pages in groff format or html.  It features the usual man page items such
+as description, options, see also, etc.")
+    (home-page "http://xmltoman.sourceforge.net/")
+    (license gpl2+)))
 
 (define-public ronn
   (package
