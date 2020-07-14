@@ -3937,12 +3937,18 @@ thanks to the use of namespaces.")
      `(#:configure-flags '("--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-reference-to-squashfs-tools
+         (add-after 'unpack 'patch-references
            (lambda _
              (substitute* "libexec/cli/build.exec"
                (("if ! singularity_which mksquashfs") "if 0")
                (("if ! mksquashfs")
                 (string-append "if ! " (which "mksquashfs"))))
+             (substitute* (list "libexec/cli/help.exec"
+                                "libexec/bootstrap-scripts/functions"
+                                "libexec/bootstrap-scripts/post.sh"
+                                "libexec/functions")
+               (("egrep ")
+                (string-append (which "egrep") " ")))
              #t))
          (add-after 'install 'set-PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
