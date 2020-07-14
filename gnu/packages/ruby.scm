@@ -1440,6 +1440,28 @@ Grammar (PEG) parser generator Domain Specific Language (DSL).")
     (home-page "https://github.com/cjheath/treetop")
     (license license:expat)))
 
+(define-public ruby-rubocop-performance
+  (package
+    (name "ruby-rubocop-performance")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rubocop-performance" version))
+       (sha256
+        (base32
+         "04r8d4x62ygv17spvz9yyfxbmbf8qxwhijs0xycfvzr0q4pyg9sw"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no test suite in the distributed gem
+    (propagated-inputs
+     `(("ruby-rubocop" ,ruby-rubocop)))
+    (synopsis "Performance optimizations checkers for Ruby code")
+    (description "This package provides a collection of RuboCop cops to check
+for performance optimizations in Ruby code.")
+    (home-page "https://docs.rubocop.org/rubocop-performance/")
+    (license license:expat)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
