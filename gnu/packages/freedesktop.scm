@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1881,3 +1882,47 @@ useful with system integration.")
 into the Unity menu bar.  Based on KSNI, it also works in KDE and will
 fallback to generic Systray support if none of those are available.")
     (license license:lgpl2.1+)))
+
+(define-public libportal
+  (let ((commit "bff3289")
+        (revision "1"))
+    (package
+      (name "libportal")
+      (version (git-version "0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/flatpak/libportal")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "104b91qircr1i9jkmm6f725awywky52aimrki303kiaadn2v8b5i"))))
+      (build-system meson-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'move-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc"))
+                     (html "/share/gtk-doc"))
+                 (copy-recursively (string-append out html)
+                                   (string-append doc html))
+                 (delete-file-recursively (string-append out html))
+                 #t))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("gtk-doc" ,gtk-doc)
+         ("docbook-xsl" ,docbook-xsl)
+         ("docbook-xml" ,docbook-xml)
+         ("libxml2" ,libxml2)
+         ("glib:bin" ,glib "bin")))
+      (propagated-inputs
+       `(("glib" ,glib)))
+      (outputs '("out" "doc"))
+      (home-page "https://github.com/flatpak/libportal")
+      (synopsis "Flatpak portal library")
+      (description
+       "libportal provides GIO-style async APIs for most Flatpak portals.")
+      (license license:lgpl2.1+))))
