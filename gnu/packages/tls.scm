@@ -891,7 +891,8 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    ;; XXX Check whether ‘-Wformat-signedness’ below still breaks when updating.
+    ;; XXX Check whether ‘-Wformat-signedness’ still breaks mbedtls-for-hiawatha
+    ;; when updating.
     (version "2.23.0")
     (source
      (origin
@@ -912,17 +913,6 @@ then ported to the GNU / Linux environment.")
          (add-after 'unpack 'make-source-writable
            (lambda _
              (for-each make-file-writable (find-files "."))
-             #t))
-         (add-before 'configure 'enable-features
-           ;; Some packages like Hiawatha depend on ’less embedded’ features.
-           (lambda _
-             (substitute* "include/mbedtls/config.h"
-               (("//(#define MBEDTLS_THREADING_(C|PTHREAD))"
-                 _ match)
-                match))
-             ;; XXX The above enables code that breaks with -Werror…
-             (substitute* "CMakeLists.txt"
-               ((" -Wformat-signedness") ""))
              #t)))))
     (native-inputs
      `(("perl" ,perl)
@@ -942,17 +932,19 @@ coding footprint.")
    (package
      (inherit mbedtls-apache)
      (arguments
-      (substitute-keyword-arguments
-          `(#:phases
-            (modify-phases %standard-phases
-              (add-after 'configure 'configure-extra-features
-                (lambda _
-                  (for-each (lambda (feature)
-                              (invoke "scripts/config.pl" "set" feature))
-                            (list "MBEDTLS_THREADING_C"
-                                  "MBEDTLS_THREADING_PTHREAD"))
-                  #t)))
-            ,@(package-arguments mbedtls-apache)))))))
+      (substitute-keyword-arguments (package-arguments mbedtls-apache)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-before 'configure 'configure-extra-features
+              (lambda _
+                (for-each (lambda (feature)
+                            (invoke "scripts/config.pl" "set" feature))
+                          (list "MBEDTLS_THREADING_C"
+                                "MBEDTLS_THREADING_PTHREAD"))
+                ;; XXX The above enables code that breaks with -Werror…
+                (substitute* "CMakeLists.txt"
+                  ((" -Wformat-signedness") ""))
+                #t)))))))))
 
 (define-public dehydrated
   (package
