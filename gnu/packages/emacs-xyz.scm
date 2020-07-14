@@ -7041,6 +7041,46 @@ The purpose of this library is to wrap all the quirks and hassle of
 @code{package.el} into a sane API.")
     (license license:gpl3+)))
 
+(define-public emacs-counsel-notmuch
+  ;; Upstream provides no release.  Extract version for main file.
+  (let ((commit "a4a1562935e4180c42524c51609d1283e9be0688")
+        (revision "0"))
+    (package
+      (name "emacs-counsel-notmuch")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fuxialexander/counsel-notmuch.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "01k1321d961kc2i660a5595bqk0d85f16snsxngsn5si6y83kqr7"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'locate-notmuch
+             (lambda* (#:key inputs #:allow-other-keys)
+               (make-file-writable "counsel-notmuch.el")
+               (emacs-substitute-variables "counsel-notmuch.el"
+                 ("counsel-notmuch-path"
+                  (string-append (assoc-ref inputs "notmuch")
+                                 "/bin/notmuch")))
+               #t)))))
+      (inputs
+       `(("emacs-counsel" ,emacs-counsel)
+         ("notmuch" ,notmuch)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/fuxialexander/counsel-notmuch")
+      (synopsis "Search emails in Notmuch asynchronously with Ivy")
+      (description
+       "This package can be used to search emails in Notmuch
+asynchronously, with Counsel and Ivy.  Simply call
+@code{counsel-notmuch} and input your Notmuch query.")
+      (license license:gpl3+))))
+
 (define-public emacs-counsel-projectile
   (package
     (name "emacs-counsel-projectile")
