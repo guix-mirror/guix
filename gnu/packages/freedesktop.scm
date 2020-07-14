@@ -61,6 +61,7 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -78,6 +79,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
@@ -1926,3 +1928,48 @@ fallback to generic Systray support if none of those are available.")
       (description
        "libportal provides GIO-style async APIs for most Flatpak portals.")
       (license license:lgpl2.1+))))
+
+(define-public xdg-desktop-portal
+  (package
+    (name "xdg-desktop-portal")
+    (version "1.7.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/flatpak/xdg-desktop-portal")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rkwpsmbn3d3spkzc2zsd50l2r8pp4la390zcpsawaav8w7ql7xm"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("glib:bin" ,glib "bin")
+       ("which" ,which)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("glib" ,glib)
+       ("flatpak" ,flatpak)
+       ("fontconfig" ,fontconfig)
+       ("json-glib" ,json-glib)
+       ("libportal" ,libportal)
+       ("dbus" ,dbus)
+       ("geoclue" ,geoclue)
+       ("pipewire" ,pipewire-0.3)
+       ("fuse" ,fuse)))
+    (home-page "https://github.com/flatpak/xdg-desktop-portal")
+    (synopsis "Desktop integration portal for sandboxed apps")
+    (description
+     "xdg-desktop-portal is a @dfn{portal front-end service} for Flatpak and
+possibly other desktop containment frameworks.  It works by exposing a series
+of D-Bus interfaces known as portals under a well-known
+name (@code{org.freedesktop.portal.Desktop}) and object
+path (@code{/org/freedesktop/portal/desktop}).
+
+The portal interfaces include APIs for file access, opening URIs, printing
+and others.")
+    (license license:lgpl2.1+)))
