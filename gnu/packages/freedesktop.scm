@@ -48,6 +48,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
@@ -1972,4 +1973,56 @@ path (@code{/org/freedesktop/portal/desktop}).
 
 The portal interfaces include APIs for file access, opening URIs, printing
 and others.")
+    (license license:lgpl2.1+)))
+
+(define-public xdg-desktop-portal-gtk
+  (package
+    (name "xdg-desktop-portal-gtk")
+    (version "1.7.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/flatpak/xdg-desktop-portal-gtk")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "183iha9dxmvprn99ymgz17jx1lyn1fj5jyj6ghxl716zn9mxmird"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'po-chmod
+           (lambda _
+             ;; Make sure 'msgmerge' can modify the PO files.
+             (for-each (lambda (po)
+                         (chmod po #o666))
+                       (find-files "po" "\\.po$"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("xdg-desktop-portal" ,xdg-desktop-portal)
+       ("glib:bin" ,glib "bin")
+       ("which" ,which)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk" ,gtk+)
+       ("fontconfig" ,fontconfig)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DESKTOP_PORTAL_DIR")
+            (files '("share/xdg-desktop-portal/portals")))))
+    (home-page "https://github.com/flatpak/xdg-desktop-portal-gtk")
+    (synopsis "GTK implementation of xdg-desktop-portal")
+    (description
+     "This package provides a backend implementation for xdg-desktop-portal
+which uses GTK+ and various pieces of GNOME infrastructure, such as the
+@code{org.gnome.Shell.Screenshot} or @code{org.gnome.SessionManager} D-Bus
+interfaces.")
     (license license:lgpl2.1+)))
