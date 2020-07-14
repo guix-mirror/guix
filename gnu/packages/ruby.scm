@@ -631,6 +631,26 @@ outcomes of a code example.")
     (propagated-inputs
      `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
 
+(define-public ruby-sorcerer
+  (package
+    (name "ruby-sorcerer")
+    (version "2.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "sorcerer" version))
+        (sha256
+          (base32
+            "0d32ha9pp9slpmsm027pkdpbr9vc5jn2m8rl6hwwx6a87m8cr58h"))))
+    (build-system ruby-build-system)
+    (synopsis "Ripper-style abstract syntax tree to Ruby source generator")
+    (description "Sorcerer generates Ruby code from a Ripper-like abstract
+syntax tree (i.e. S-Expressions).  Sorcerer is targeted mainly at small
+snippets of Ruby code, expressable in a single line.  Longer examples may be
+re-sourced, but they will be rendered in a single line format.")
+    (home-page "https://github.com/rspec-given/sorcerer")
+    (license license:expat)))
+
 (define-public ruby-rspec-its
   (package
     (name "ruby-rspec-its")
