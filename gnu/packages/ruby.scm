@@ -673,6 +673,55 @@ when defining specifications.")
     (home-page "https://github.com/rspec-given/rspec-given")
     (license license:expat)))
 
+(define-public ruby-rspec-given
+  (package
+    (name "ruby-rspec-given")
+    (version "3.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rspec-given" version))
+       (sha256
+        (base32
+         "1783bazja10kbha8hk15khvybsq88siyax02cpkk688604h54nji"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "rs"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-rakefile
+           (lambda _
+             (substitute* '("Rakefile" "rakelib/gemspec.rake")
+               (("require '\\./lib/given/.*") "")
+               (("Given::VERSION") (format #f "~s" ,version))
+               ;; Fix the error: "cannot load such file -- example_helper"
+               (("sh \"rspec")
+                "sh \"rspec -Ilib:examples"))
+             #t))
+         (add-after 'extract-gemspec 'delete-failing-tests
+           ;; See: https://github.com/jimweirich/rspec-given/issues/57.
+           (lambda _
+             (substitute* ".gemspec"
+               (("\"spec/lib/given/natural_assertion_spec.rb\".freeze, ")
+                "")
+               (("\"examples/integration/failing_messages_spec.rb\".freeze, ")
+                ""))
+             (delete-file "spec/lib/given/natural_assertion_spec.rb")
+             (delete-file "examples/integration/failing_messages_spec.rb")
+             #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-minitest" ,ruby-minitest)))
+    (propagated-inputs
+     `(("ruby-given-core" ,ruby-given-core)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Given/When/Then for RSpec and Minitest")
+    (description "Given is an RSpec extension that allows the use of
+Given/When/Then terminology when defining specifications, in a way similar to
+the Cucumber Gherkin language.")
+    (home-page "https://github.com/rspec-given/rspec-given")
+    (license license:expat)))
+
 (define-public ruby-rspec-its
   (package
     (name "ruby-rspec-its")
