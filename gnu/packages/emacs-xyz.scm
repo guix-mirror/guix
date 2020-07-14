@@ -3428,7 +3428,7 @@ Lisp.")
 (define-public emacs-paren-face
   (package
     (name "emacs-paren-face")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method git-fetch)
@@ -3437,17 +3437,16 @@ Lisp.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "04vkg8fhdn8x02dydxbwpizh2yn3sbmn9432v770vbbq6b62k2lx"))))
+        (base32 "17bdcxah216z928387yx6z9lmp4jsi461n8fwiqaibn2qy5fagas"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/paren-face")
-    (synopsis "Face for parentheses in lisp modes")
+    (synopsis "Face for parentheses in Lisp modes")
     (description
      "This library defines a face named @code{parenthesis} used just for
 parentheses.  The intended purpose of this face is to make parentheses less
 visible in Lisp code by dimming them.  Lispers probably don't need to be
 constantly made aware of the existence of the parentheses.  Dimming them might
-be even more useful for people new to lisp who have not yet learned to
+be even more useful for people new to Lisp who have not yet learned to
 subconsciously blend out the parentheses.")
     (license license:gpl3+)))
 
