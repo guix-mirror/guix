@@ -739,26 +739,44 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 (define-public python-pynacl
   (package
     (name "python-pynacl")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyNaCl" version))
        (modules '((guix build utils)))
-       ;; Remove bundled libsodium.
-       (snippet '(begin (delete-file-recursively "src/libsodium")
-                        #t))
+       (snippet
+        '(begin
+           ;; Remove spurious dependency on python-wheel, can be removed
+           ;; for 1.5.
+           (substitute* "setup.py"
+             (("\"wheel\"") ""))
+           ;; Remove bundled libsodium.
+           (delete-file-recursively "src/libsodium")
+           #t))
        (sha256
         (base32
-         "0330wyvggm19xhmwmz9rrr97lzbv3siwfy50gmax3vvgs7nh0q8c"))))
+         "01b56hxrbif3hx8l6rwz5kljrgvlbj7shmmd2rjh0hn7974a5sal"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
+     `(#:modules (,@%python-build-system-modules
+                  (guix build utils)
+                  (ice-9 ftw)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases (@ (guix build python-build-system) %standard-phases)
          (add-before 'build 'use-system-sodium
            (lambda _
              (setenv "SODIUM_INSTALL" "system")
-             #t)))))
+             #t))
+         (replace 'check
+           (lambda _
+             (let ((build-directory
+                    (car (scandir "build" (cut string-prefix? "lib" <>)))))
+               (setenv "PYTHONPATH"
+                       (string-append "./build/" build-directory ":"
+                                      (getenv "PYTHONPATH")))
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)))
