@@ -446,19 +446,6 @@ list of services."
 ;;; Generations.
 ;;;
 
-(define (sexp->channel sexp)
-  "Return the channel corresponding to SEXP, an sexp as found in the
-\"provenance\" file produced by 'provenance-service-type'."
-  (match sexp
-    (('channel ('name name)
-               ('url url)
-               ('branch branch)
-               ('commit commit)
-               rest ...)
-     ;; XXX: In the future REST may include a channel introduction.
-     (channel (name name) (url url)
-              (branch branch) (commit commit)))))
-
 (define* (display-system-generation number
                                     #:optional (profile %system-profile))
   "Display a summary of system generation NUMBER in a human-readable format."
@@ -482,13 +469,10 @@ list of services."
                             (uuid->string root)
                             root))
            (kernel      (boot-parameters-kernel params))
-           (multiboot-modules (boot-parameters-multiboot-modules params))
-           (provenance  (catch 'system-error
-                          (lambda ()
-                            (call-with-input-file
-                                (string-append generation "/provenance")
-                              read))
-                          (const #f))))
+           (multiboot-modules (boot-parameters-multiboot-modules params)))
+      (define-values (channels config-file)
+        (system-provenance generation))
+
       (display-generation profile number)
       (format #t (G_ "  file name: ~a~%") generation)
       (format #t (G_ "  canonical file name: ~a~%") (readlink* generation))
@@ -518,21 +502,16 @@ list of services."
          (format #t (G_ "  multiboot: ~a~%")
                  (string-join modules "\n    "))))
 
-      (match provenance
-        (#f #t)
-        (('provenance ('version 0)
-                      ('channels channels ...)
-                      ('configuration-file config-file))
-         (unless (null? channels)
-           ;; TRANSLATORS: Here "channel" is the same terminology as used in
-           ;; "guix describe" and "guix pull --channels".
-           (format #t (G_ "  channels:~%"))
-           (for-each display-channel (map sexp->channel channels)))
-         (when config-file
-           (format #t (G_ "  configuration file: ~a~%")
-                   (if (supports-hyperlinks?)
-                       (file-hyperlink config-file)
-                       config-file))))))))
+      (unless (null? channels)
+        ;; TRANSLATORS: Here "channel" is the same terminology as used in
+        ;; "guix describe" and "guix pull --channels".
+        (format #t (G_ "  channels:~%"))
+        (for-each display-channel channels))
+      (when config-file
+        (format #t (G_ "  configuration file: ~a~%")
+                (if (supports-hyperlinks?)
+                    (file-hyperlink config-file)
+                    config-file))))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
   "Display in a human-readable format all the system generations matching

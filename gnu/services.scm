@@ -89,6 +89,7 @@
 
             system-service-type
             provenance-service-type
+            system-provenance
             boot-service-type
             cleanup-service-type
             activation-service-type
@@ -423,6 +424,19 @@ be parsed by tools; it's potentially more future-proof than code."
             (branch ,(channel-branch channel))
             (commit ,(channel-commit channel))))
 
+(define (sexp->channel sexp)
+  "Return the channel corresponding to SEXP, an sexp as found in the
+\"provenance\" file produced by 'provenance-service-type'."
+  (match sexp
+    (('channel ('name name)
+               ('url url)
+               ('branch branch)
+               ('commit commit)
+               rest ...)
+     ;; XXX: In the future REST may include a channel introduction.
+     (channel (name name) (url url)
+              (branch branch) (commit commit)))))
+
 (define (provenance-file channels config-file)
   "Return a 'provenance' file describing CHANNELS, a list of channels, and
 CONFIG-FILE, which can be either #f or a <local-file> containing the OS
@@ -474,6 +488,24 @@ channels in use and CONFIG-FILE, if it is true."
 itself: the channels used when building the system, and its configuration
 file, when available.")))
 
+(define (system-provenance system)
+  "Given SYSTEM, the file name of a system generation, return two values: the
+list of channels SYSTEM is built from, and its configuration file.  If that
+information is missing, return the empty list (for channels) and possibly
+#false (for the configuration file)."
+  (catch 'system-error
+    (lambda ()
+      (match (call-with-input-file (string-append system "/provenance")
+               read)
+        (('provenance ('version 0)
+                      ('channels channels ...)
+                      ('configuration-file config-file))
+         (values (map sexp->channel channels)
+                 config-file))
+        (_
+         (values '() #f))))
+    (lambda _
+      (values '() #f))))
 
 ;;;
 ;;; Cleanup.
