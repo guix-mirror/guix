@@ -17217,14 +17217,13 @@ based on the CPython 2.7 and 3.7 parsers.")
 (define-public python-typing
   (package
     (name "python-typing")
-    (version "3.7.4.1")
+    (version "3.7.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "typing" version))
        (sha256
-        (base32
-         "08xs7s5pyq99hbrzw23inczmidz90krvpv9q5p1qrvh6yzrydpwi"))))
+        (base32 "1j8wnz8c9s049w9xbf7ssr1dmgg4rz7vdfq7m880srzxhafgp1qi"))))
     (build-system python-build-system)
     (home-page "https://docs.python.org/3/library/typing.html")
     (synopsis "Type hints for Python")
