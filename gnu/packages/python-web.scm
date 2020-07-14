@@ -2945,14 +2945,14 @@ addon modules.")
 (define-public python-bottle
   (package
     (name "python-bottle")
-    (version "0.12.13")
+    (version "0.12.18")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "bottle" version))
       (sha256
         (base32
-          "0m9k2a7yxvggc4kw8fsvj381vgsvfcdshg5nzy6vwrxiw2p53drr"))))
+          "17pn43kzr7m6czjbm4nda7kzs4ap9mmb30qfbhifyzas2i5vf688"))))
     (build-system python-build-system)
     (home-page "http://bottlepy.org/")
     (synopsis "WSGI framework for small web-applications.")
