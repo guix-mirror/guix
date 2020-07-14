@@ -1032,9 +1032,13 @@ we're running in the final root."
 
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."
-  (find (lambda (fs)
-          (string=? "/" (file-system-mount-point fs)))
-        (operating-system-file-systems os)))
+  (or (find (lambda (fs)
+              (string=? "/" (file-system-mount-point fs)))
+            (operating-system-file-systems os))
+      (raise (condition
+              (&message (message "missing root file system"))
+              (&error-location
+               (location (operating-system-location os)))))))
 
 (define (operating-system-initrd-file os)
   "Return a gexp denoting the initrd file of OS."
