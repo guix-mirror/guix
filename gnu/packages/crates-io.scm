@@ -29853,19 +29853,18 @@ extended attributes.")
     (name "rust-xdg")
     (version "2.2.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "xdg" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "0mws8a0fr3cqk5nh7aq9lmkmhzghvasqy4mhw6nnza06l4d6i2fh"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xdg" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "0mws8a0fr3cqk5nh7aq9lmkmhzghvasqy4mhw6nnza06l4d6i2fh"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/whitequark/rust-xdg")
     (synopsis "Store and retrieve files according to XDG specification")
     (description
      "This package provides a library for storing and retrieving files according
-to XDG Base Directory specification")
+to XDG Base Directory specification.")
     (license (list license:asl2.0
                    license:expat))))
 
