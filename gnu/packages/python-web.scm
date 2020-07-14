@@ -608,14 +608,14 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 (define-public python-pycurl
   (package
     (name "python-pycurl")
-    (version "7.43.0.2")
+    (version "7.43.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.bintray.com/pycurl/pycurl/pycurl-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1915kb04k1j4y6k1dx1sgnbddxrl9r1n4q928if2lkrdm73xy30g"))))
+        (base32 "1cwlb76vddqp2mxqvjbhf367caddzy82rhangddjjhjqaj8x4zgc"))))
     (build-system python-build-system)
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run
