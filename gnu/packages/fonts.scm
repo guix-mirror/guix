@@ -710,7 +710,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "13.0.02")
+    (version "13.0.03")
     (source
      (origin
        (method url-fetch)
@@ -720,7 +720,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "1fg908qadh14kfbpzqfj3vgzlxgx68sdlwhl2prz7arq5r45dami"))))
+        (base32 "04l2sbg6il78qsj3jxqfbz5k1xzihvw8vdlckgkp4zfr0nh2q7h7"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
