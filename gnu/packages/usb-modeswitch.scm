@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,7 +77,7 @@ file for use with USB_ModeSwitch.")
 (define-public usb-modeswitch
   (package
     (name "usb-modeswitch")
-    (version "2.6.0")
+    (version "2.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -84,7 +85,7 @@ file for use with USB_ModeSwitch.")
                     "usb-modeswitch-" version ".tar.bz2"))
               (sha256
                (base32
-                "18wbbxc5cfsmikba0msdvd5qlaga27b32nhrzicyd9mdddp265f2"))))
+                "0d7s8p92r36danjd15y1zaznf6rbk17kxyg9367nabz56vhxk5ai"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libusb" ,libusb)
               ("jimtcl" ,jimtcl)
