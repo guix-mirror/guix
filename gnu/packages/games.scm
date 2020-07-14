@@ -8621,15 +8621,15 @@ levels to unlock.")
 (define simgear
   (package
     (name "simgear")
-    (version "2018.3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/flightgear/release-"
-                                  (version-major+minor version) "/"
-                                  "simgear-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1941ay8rngz4vwsx37bbpxr48hpcvcbj3xw1hy264lq4qnl99c68"))))
+    (version "2018.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/flightgear/release-"
+                           (version-major+minor version) "/"
+                           "simgear-" version ".tar.bz2"))
+       (sha256
+        (base32 "1vkqm66r1205k3hdjmx5wmx5kvmsb0dgfzrs8n5gqnxj8szs42dl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -8639,7 +8639,7 @@ levels to unlock.")
              ;; Skip tests that require internet access.
              (invoke "ctest" "-E" "(http|dns)"))))))
     (inputs
-     `(("boost" ,boost-for-mysql) ; fails with 1.69
+     `(("boost" ,boost-for-mysql)       ; fails with 1.69
        ("curl" ,curl)
        ("expat" ,expat)
        ("mesa" ,mesa)
@@ -8658,21 +8658,21 @@ and also provides the base for the FlightGear Flight Simulator.")
   (package
     (name "flightgear")
     (version (package-version simgear))
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/flightgear/release-"
-                                  (version-major+minor version) "/"
-                                  "flightgear-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0lzy524cjzs8vldcjcc750bgg5c4mq9fkymxxxzqf68ilc4d1jss"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; There are some bundled libraries.
-                  (for-each delete-file-recursively
-                            '("3rdparty/sqlite3/"))
-                  #t))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/flightgear/release-"
+                           (version-major+minor version) "/"
+                           "flightgear-" version ".tar.bz2"))
+       (sha256
+        (base32 "0ya3vb539kwi1qrifqhsj5j3k4w6s06hrllp2vdzxf6id7cgf0hc"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; There are some bundled libraries.
+           (for-each delete-file-recursively
+                     '("3rdparty/sqlite3/"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -8738,7 +8738,7 @@ and also provides the base for the FlightGear Flight Simulator.")
                                "FlightGear-" version "-data.tar.bz2"))
            (sha256
             (base32
-             "0h4npa7gqpf5fw6pv2bpw0wbwr7fa2vhia21cjbigfgd75x82zi7"))))))
+             "04fv9za5zlyxlyfh6jx78y42l3jazvzl9dq2y6rzxqlcc9g5swhk"))))))
     (home-page "https://home.flightgear.org/")
     (synopsis "Flight simulator")
     (description "The goal of the FlightGear project is to create a
