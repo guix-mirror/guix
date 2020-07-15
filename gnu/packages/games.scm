@@ -8813,7 +8813,15 @@ play with up to four players simultaneously.  It has network support.")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "ctest"))))))
+           (lambda _ (invoke "ctest")))
+         (add-after 'install 'install-icon
+           (lambda _
+             ;; Install icon for the desktop file.
+             (let* ((out (assoc-ref %outputs "out"))
+                    (icons (string-append out "/share/icons/hicolor/512x512/apps")))
+               (with-directory-excursion (string-append "../hedgewars-src-" ,version)
+                 (install-file "misc/hedgewars.png" icons)))
+             #t)))))
     (inputs
      `(("ffmpeg" ,ffmpeg)
        ("freeglut" ,freeglut)
