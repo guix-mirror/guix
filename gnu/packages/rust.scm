@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Nikolai Merinov <nikolai.merinov@member.fsf.org>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -447,7 +447,18 @@ test = { path = \"../libtest\" }
             (files '("include/c++" "include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
-            (files '("lib" "lib64")))))
+            (files '("lib" "lib64")))
+
+           ;; For cargo.
+           (search-path-specification
+            (variable "SSL_CERT_DIR")
+            (separator #f)
+            (files '("etc/ssl/certs")))
+           (search-path-specification
+            (variable "SSL_CERT_FILE")
+            (file-type 'regular)
+            (separator #f)
+            (files '("etc/ssl/certs/ca-certificates.crt")))))
 
     (synopsis "Compiler for the Rust progamming language")
     (description "Rust is a systems programming language that provides memory
