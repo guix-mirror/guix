@@ -6524,6 +6524,39 @@ better performance than @code{Regexp} and @code{String} methods from the
     (home-page "https://github.com/jaynetics/character_set")
     (license license:expat)))
 
+(define-public ruby-range-compressor
+  (package
+    (name "ruby-range-compressor")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/janosch-x/range_compressor.git")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0y8slri2msyyg2szgwgriqd6qw9hkxycssdrcl5lk2dbcq5zvn54"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'extract-gemspec 'strip-version-requirements
+                    (lambda _
+                      (substitute* "range_compressor.gemspec"
+                        (("(.*add_.*dependency '[_A-Za-z0-9-]+').*" _ stripped)
+                         (string-append stripped "\n")))
+                      #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Simple arrays of objects to arrays of ranges compressor")
+    (description "RangeCompresses is a tiny library that allows compressing
+arrays of objects into arrays of ranges.  For example, it can turn the
+following: @code{[1, 2, 3, 4, 6, 8, 9, 10]} into @code{[1..4, 6..6, 8..10]}.")
+    (home-page "https://github.com/janosch-x/range_compressor")
+    (license license:expat)))
+
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
