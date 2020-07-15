@@ -10662,13 +10662,13 @@ implementation.")
 (define-public ruby-rouge
   (package
     (name "ruby-rouge")
-    (version "3.13.0")
+    (version "3.21.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rouge" version))
               (sha256
                (base32
-                "1y90nx9ph9adnrpcsvs2adca2l3dyz8am2d2kzxkwd3a086ji7aw"))))
+                "1agrrmj88k9jkk36ra1ml2c1jffpp595pkxmcla74ac9ia09vn3s"))))
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)); No rakefile
     (home-page "http://rouge.jneen.net/")
