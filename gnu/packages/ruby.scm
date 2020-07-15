@@ -6429,6 +6429,50 @@ inspired by the Sinatra microframework style of specifying actions:
     (home-page "https://github.com/rest-client/rest-client")
     (license license:expat)))
 
+(define-public ruby-rubocop-ast
+  (package
+    (name "ruby-rubocop-ast")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)               ;no test suite in distributed gem
+       (uri (git-reference
+             (url "https://github.com/rubocop-hq/rubocop-ast.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nz25z5b76xkgb9sh370hni3l946j07fr05cdwkdj9x7ibgsb6nj"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-bundler
+                    (lambda _
+                      (substitute* "Rakefile"
+                        (("Bundler\\.setup.*") "nil\n"))
+                      #t))
+                  (replace 'replace-git-ls-files
+                    (lambda _
+                      (substitute* "rubocop-ast.gemspec"
+                        (("`git ls-files(.*)`" _ files)
+                         (format #f "`find ~a -type f| sort`" files)))
+                      #t)))))
+    (native-inputs
+     `(("ruby-bump" ,ruby-bump)
+       ("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-parser" ,ruby-parser)))
+    (synopsis "RuboCop's AST extensions and NodePattern functionality")
+    (description "Rubocop::AST extends @code{ruby-parser} with classes used
+by RuboCop to deal with Ruby's Abstract Syntax Tree (AST), in particular:
+@itemize
+@item @code{RuboCop::AST::Node}
+@item @code{RuboCop::AST::NodePattern}
+@end itemize")
+    (home-page "https://rubocop.org/")
+    (license license:expat)))
+
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
