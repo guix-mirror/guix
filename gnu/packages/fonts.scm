@@ -1936,3 +1936,27 @@ languages, it contains Japanese characters, including Kana glyphs and more
 than 5,300 Kanji glyphs, as well major international phonetic symbols,
 operators and special symbols.")
     (license (license:non-copyleft "file:///LICENSE_E"))))
+
+(define-public font-catamaran
+  (let ((commit "7559b4906f9c9148fb22c6f89508c3053a78a296")
+        (revision "1"))
+    (package
+      (name "font-catamaran")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/VanillaandCream/Catamaran-Tamil")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1wpp41l7j2kpgnyavhgxcc5wp852a4wqsnwravn39gp980s84yxw"))))
+      (build-system font-build-system)
+      (home-page "https://github.com/VanillaandCream/Catamaran-Tamil")
+      (synopsis "9 weight Tamil and Latin type")
+      (description "Catamaran is a 9 weight Tamil and Latin type.  Catamaran
+is a stylish type with a polished yet relaxed feel.  Its versatility makes it
+suitable for a wide range of uses.")
+      (license license:silofl1.1))))
