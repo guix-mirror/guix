@@ -1525,6 +1525,58 @@ only what they care about.")
       (home-page "https://github.com/searls/gimme")
       (license license:expat))))
 
+(define-public ruby-standard
+  (package
+    (name "ruby-standard")
+    (version "0.4.7")
+    (source
+     (origin
+       (method git-fetch)               ;no test suite in distributed gem
+       (uri (git-reference
+             (url "https://github.com/testdouble/standard.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ylx0lm2pbbgr5h7fban592w96bl3wxmvfcpcdfrhkxnpg5kiwgv"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; TODO: the tests are currently broken due to using a newer Rubocop.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-version-requiremens
+           (lambda _
+             (delete-file "Gemfile")
+             (delete-file "Gemfile.lock")
+             #t))
+         (replace 'replace-git-ls-files
+           (lambda _
+             ;; TODO: Remove after the fix of using 'cut' to better mimic the
+             ;; git ls-files output is merged in ruby-build-system.
+             (substitute* "standard.gemspec"
+               (("`git ls-files -z`")
+                "`find . -type f -not -regex '.*\\.gem$' -print0 \
+|sort -z|cut -zc3-`"))
+             #t)))))
+    (native-inputs
+     `(("ruby-gimme" ,ruby-gimme)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (propagated-inputs
+     `(("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-rubocop-performance" ,ruby-rubocop-performance)))
+    (synopsis "Ruby Style Guide, with linter & automatic code fixer")
+    (description "Standard is a port of StandardJS.  Like StandardJS, it aims
+to save time in the following ways:
+@itemize
+@item No configuration.
+@item Automatically format code.
+@item Catch style issues and programmer errors early.
+@end itemize")
+    (home-page "https://github.com/testdouble/standard")
+    (license license:expat)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
