@@ -9472,7 +9472,7 @@ win.")
                   (string-append "\"" roboto-dir "Roboto-" type ".ttf\");")))
                #t))))))
     (inputs
-     `(("boost" ,boost)
+     `(("boost" ,boost-with-python2)
        ("boost_signals" ,boost-signals2)
        ("font-dejavu" ,font-dejavu)
        ("font-roboto" ,font-google-roboto)
