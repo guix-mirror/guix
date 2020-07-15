@@ -2413,7 +2413,7 @@ to esoteric or niche requirements.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.opensmtpd.org/archives/"
-                                  name "-" version ".tar.gz"))
+                                  "opensmtpd-extras-" version ".tar.gz"))
               (sha256
                (base32
                 "1kld4hxgz792s0cb2gl7m2n618ikzqkj88w5dhaxdrxg4x2c4vdm"))))
