@@ -28388,11 +28388,16 @@ an older system generation at boot time should you need it.
 Upon completion, the new system is deployed under
 @file{/run/current-system}.  This directory contains @dfn{provenance
 meta-data}: the list of channels in use (@pxref{Channels}) and
-@var{file} itself, when available.  This information is useful should
-you later want to inspect how this particular generation was built.
+@var{file} itself, when available.  You can view it by running:
 
-In fact, assuming @var{file} is self-contained, you can later rebuild
-generation @var{n} of your operating system with:
+@example
+guix system describe
+@end example
+
+This information is useful should you later want to inspect how this
+particular generation was built.  In fact, assuming @var{file} is
+self-contained, you can later rebuild generation @var{n} of your
+operating system with:
 
 @example
 guix time-machine \
@@ -28405,6 +28410,12 @@ You can think of it as some sort of built-in version control!  Your
 system is not just a binary artifact: @emph{it carries its own source}.
 @xref{Service Reference, @code{provenance-service-type}}, for more
 information on provenance tracking.
+
+By default, @command{reconfigure} @emph{prevents you from downgrading
+your system}, which could (re)introduce security vulnerabilities and
+also cause problems with ``stateful'' services such as database
+management systems.  You can override that behavior by passing
+@option{--allow-downgrades}.
 
 @item switch-generation
 @cindex generations
@@ -28731,6 +28742,22 @@ appear in the @code{operating-system} declaration actually exist
 (@pxref{File Systems}), and that any Linux kernel modules that may be
 needed at boot time are listed in @code{initrd-modules} (@pxref{Initial
 RAM Disk}).  Passing this option skips these tests altogether.
+
+@item --allow-downgrades
+Instruct @command{guix system reconfigure} to allow system downgrades.
+
+By default, @command{reconfigure} prevents you from downgrading your
+system.  It achieves that by comparing the provenance info of your
+system (shown by @command{guix system describe}) with that of your
+@command{guix} command (shown by @command{guix describe}).  If the
+commits for @command{guix} are not descendants of those used for your
+system, @command{guix system reconfigure} errors out.  Passing
+@option{--allow-downgrades} allows you to bypass these checks.
+
+@quotation Note
+Make sure you understand its security implications before using
+@option{--allow-downgrades}.
+@end quotation
 
 @cindex on-error
 @cindex on-error strategy
