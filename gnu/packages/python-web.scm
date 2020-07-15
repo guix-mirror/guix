@@ -3411,6 +3411,7 @@ library to create slugs from unicode strings while keeping it DRY.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "tinycss2" version))
+       (patches (search-patches "python-tinycss2-flake8-compat.patch"))
        (sha256
         (base32 "1kw84y09lggji4krkc58jyhsfj31w8npwhznr7lf19d0zbix09v4"))))
     (build-system python-build-system)
