@@ -6588,6 +6588,47 @@ they match.")
     (home-page "https://github.com/jaynetics/regexp_property_values")
     (license license:expat)))
 
+(define-public ruby-regexp-parser
+  (package
+    (name "ruby-regexp-parser")
+    (version "1.7.1")
+    (source
+     (origin
+       (method git-fetch)               ;bin/test missing from gem
+       (uri (git-reference
+             (url "https://github.com/ammar/regexp_parser.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0dk9d4vpw31cc06s29fqyr1kq0kipym1mydifkcrnppvpl3pd53r"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "default"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'compile-scanner.rb
+                    (lambda _
+                      (invoke "rake" "build")
+                      ;; XXX: This is needed otherwise the install
+                      ;; phase fails to delete the installed cached
+                      ;; gem file.
+                      (delete-file-recursively "pkg")
+                      #t)))))
+    (native-inputs
+     `(("ragel" ,ragel)
+       ("ruby-regexp-property-values" ,ruby-regexp-property-values)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "A regular expression parser library for Ruby ")
+    (description "A Ruby gem for tokenizing, parsing, and transforming regular
+expressions.  It comprises the following components:
+@itemize
+@item A scanner/tokenizer based on Ragel,
+@item A lexer that produces a stream of token objects,
+@item A parser that produces a tree of Expression objects.
+@end itemize")
+    (home-page "https://github.com/ammar/regexp_parser")
+    (license license:expat)))
+
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
