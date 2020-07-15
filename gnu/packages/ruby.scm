@@ -1645,6 +1645,31 @@ integer math and a highly optimized saving routine.
       (home-page "https://github.com/wvanbergen/chunky_png/wiki")
       (license license:expat))))
 
+(define-public ruby-text-hyphen
+  (package
+    (name "ruby-text-hyphen")
+    (version "1.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "text-hyphen" version))
+        (sha256
+          (base32
+            "1gj4awvs9ryf960m0iawg43jyjmfwcqgfwrbcfp890a57b9ag7q1"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Ruby library to hyphenate words in various languages")
+    (description "Text::Hyphen is a Ruby library to hyphenate words in various
+languages using Ruby-fied versions of TeX hyphenation patterns.  It will
+properly hyphenate various words according to the rules of the language the
+word is written in.  The algorithm is based on that of the TeX typesetting
+system by Donald E.  Knuth.")
+    (home-page "https://github.com/halostatue/text-hyphen")
+    ;; The whole is licensed under the Expat license, but parts use various
+    ;; versions of the LaTeX Project Public License.
+    (license license:expat)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
