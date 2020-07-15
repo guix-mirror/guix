@@ -6664,25 +6664,73 @@ run.")
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
-    (version "0.77.0")
+    (version "0.88.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "rubocop" version))
+       (method git-fetch)               ;no tests in distributed gem
+       (uri (git-reference
+             (url "https://github.com/rubocop-hq/rubocop.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0m88b1bgbhmmbdnz2xv6n0il0j4q5qm9jbc0vf1zsaxmxqp06nx9"))))
+         "1d06893jp8pd85fvgp5d16vqcf31bafi430v4f4y746ihyvhzz5r"))
+       (patches (search-patches "ruby-rubocop-break-dependency-cycle.patch"))))
     (build-system ruby-build-system)
     (arguments
-     '(;; No included tests
-       #:tests? #f))
+     '(#:test-target "default"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-problematic-tests
+           ;; These tests depend on Rubocop extensions, which cannot be
+           ;; included as they cause a dependency cycle with Rubocop itself.
+           (lambda _
+             (delete-file "spec/rubocop/config_loader_spec.rb")
+             (substitute* "Gemfile"
+               ((".*'rubocop-performance'.*") "")
+               ((".*'rubocop-rspec'.*") ""))
+             ;; Prevent "Unnecessary disabling of RSpec/* (unknown cop)"
+             ;; errors.
+             (substitute* (find-files "spec/rubocop/cop/" "_spec\\.rb$")
+               (("# (rubocop:(enable|disable) RSpec.*)" _ what)
+                (string-append "# Disabled: " what)))
+             #t))
+         (add-after 'unpack 'disable-bundler
+           (lambda _
+             (substitute* "Rakefile"
+               (("Bundler\\.setup.*") "nil\n"))
+             #t))
+         (replace 'replace-git-ls-files
+           (lambda _
+             (substitute* "rubocop.gemspec"
+               (("`git ls-files(.*)`" _ files)
+                (format #f "`find ~a -type f| sort`" files)))
+             #t))
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t))
+         (add-before 'check 'make-adoc-files-writable
+           (lambda _
+             (let ((adoc-files (find-files "docs/modules/ROOT/pages"
+                                           "\\.adoc$")))
+               (for-each make-file-writable adoc-files))
+             #t)))))
+    (native-inputs
+     `(("ruby-bump" ,ruby-bump)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-test-queue" ,ruby-test-queue)
+       ("ruby-webmock" ,ruby-webmock-2)
+       ("ruby-yard" ,ruby-yard)))
     (propagated-inputs
-     `(("ruby-parser" ,ruby-parser)
-       ("ruby-powerpack" ,ruby-powerpack)
+     `(("ruby-parallel" ,ruby-parallel)
+       ("ruby-parser" ,ruby-parser)
        ("ruby-rainbow" ,ruby-rainbow)
+       ("ruby-regexp-parser" ,ruby-regexp-parser)
+       ("ruby-rexml" ,ruby-rexml)
+       ("ruby-rubocop-ast" ,ruby-rubocop-ast)
        ("ruby-progressbar" ,ruby-progressbar)
-       ("ruby-parallel" ,ruby-parallel)
-       ("ruby-jaro-winkler" ,ruby-jaro-winkler)
        ("ruby-unicode-display-width" ,ruby-unicode-display-width)))
     (synopsis "Ruby code style checking tool")
     (description
