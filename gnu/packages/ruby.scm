@@ -7186,8 +7186,20 @@ software development workflow.")
          "1mv4fn5lfxhy7bc2f1lpnc5yp9mvv97az77j4r7jgrxcqwn8fqxc"))))
     (build-system ruby-build-system)
     ;; The test suite depends on ruby-vcr, which cannot be included in Guix
-    ;; because of its nonfree, Hippocratic derived license.
-    (arguments '(#:tests? #f))
+    ;; because of its nonfree, Hippocratic-derived license.
+    (arguments
+     `(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'extract-gemspec 'strip-version-requirements
+                    ;; Keeping strict version requirements can cause problems
+                    ;; to users of the library, such as: Gem::ConflictError:
+                    ;; Unable to activate coveralls-0.8.23, because
+                    ;; simplecov-0.17.1 conflicts with simplecov (~> 0.16.1).
+                    (lambda _
+                      (substitute* "coveralls-ruby.gemspec"
+                        (("(.*add_.*dependency\\([^,]+), .*" _ stripped)
+                         (string-append stripped ")\n")))
+                      #t)))))
     (propagated-inputs
      `(("ruby-json" ,ruby-json)
        ("ruby-term-ansicolor" ,ruby-term-ansicolor)
