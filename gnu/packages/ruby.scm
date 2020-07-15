@@ -1443,14 +1443,17 @@ Grammar (PEG) parser generator Domain Specific Language (DSL).")
 (define-public ruby-ast
   (package
     (name "ruby-ast")
-    (version "2.4.0")
+    (version "2.4.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "ast" version))
+       (method git-fetch)               ;no test included in gem from v2.4.1
+       (uri (git-reference
+             (url "https://github.com/whitequark/ast")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "184ssy3w93nkajlz2c70ifm79jp3j737294kbc5fjw69v1w0n9x7"))))
+         "0k8vya256chimy473g818gim06m5rjgh6mz5sc5g8xz3csh3rysi"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
