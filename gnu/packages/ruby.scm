@@ -4741,14 +4741,14 @@ across multiple CPU cores.")
 (define-public ruby-parser
   (package
     (name "ruby-parser")
-    (version "2.6.0.0")
+    (version "2.7.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "parser" version))
        (sha256
         (base32
-         "1hhz2k5417vr2k1llwqgjdnmyrhlpqicy0y2arr6r1gp04fg9wlm"))))
+         "1030znhvhkfn39svwbj6qn4xb6hgl94gnvg57k4d3r76f9bryqmn"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)
