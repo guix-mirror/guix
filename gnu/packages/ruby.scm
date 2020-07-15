@@ -1691,6 +1691,111 @@ web pages.")
     (home-page "https://github.com/tigris/open-uri-cached")
     (license license:expat)))
 
+(define-public ruby-asciidoctor-pdf
+  ;; Use the latest commit, as the last tag doesn't build with the
+  ;; latest Ruby dependencies in Guix.
+  (let ((revision "1")
+        (commit "d257440df895d1595a3825ef58b32e4b290ba1c3"))
+    (package
+      (name "ruby-asciidoctor-pdf")
+      (version (git-version "1.5.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)      ;no test suite in the distributed gem
+         (uri (git-reference
+               (url "https://github.com/asciidoctor/asciidoctor-pdf.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1563d11ghzsrsg4inwfwj6b9hb5sk5b429f49fwq5qg3sq76kgjj"))))
+      (build-system ruby-build-system)
+      (arguments
+       `(#:test-target "spec"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'remove-failing-tests
+             ;; Two tests module fail for unknown reasons, *only* when
+             ;; ran in the build container (see:
+             ;; https://github.com/asciidoctor/asciidoctor-pdf/issues/1725#issuecomment-658777965).
+             (lambda _
+               (delete-file "spec/audio_spec.rb")
+               (delete-file "spec/video_spec.rb")
+               #t))
+           (add-after 'extract-gemspec 'strip-version-requirements
+             (lambda _
+               (substitute* "asciidoctor-pdf.gemspec"
+                 (("(.*add_.*dependency '[_A-Za-z0-9-]+').*" _ stripped)
+                  (string-append stripped "\n")))
+               #t))
+           (replace 'replace-git-ls-files
+             ;; TODO: Remove after the fix of using 'cut' to better mimic the
+             ;; git ls-files output is merged in ruby-build-system.
+             (lambda _
+               (substitute* "asciidoctor-pdf.gemspec"
+                 (("`git ls-files -z`")
+                  "`find . -type f -not -regex '.*\\.gem$' -print0 \
+|sort -z|cut -zc3-`"))
+               #t))
+           ;; The tests rely on the Gem being installed, so move the check phase
+           ;; after the install phase.
+           (delete 'check)
+           (add-after 'install 'check
+             (lambda* (#:key outputs tests? #:allow-other-keys)
+               (let ((new-gem (string-append (assoc-ref outputs "out")
+                                             "/lib/ruby/vendor_ruby")))
+                 (setenv "GEM_PATH"
+                         (string-append (getenv "GEM_PATH") ":" new-gem))
+                 (when tests?
+                   (invoke "rspec" "-t" "~visual" "-t" "~cli" "-t" "~network"))
+                 #t))))))
+      (native-inputs
+       `(("ruby-chunky-png" ,ruby-chunky-png)
+         ("ruby-coderay" ,ruby-coderay)
+         ("ruby-pdf-inspector" ,ruby-pdf-inspector)
+         ("ruby-rouge" ,ruby-rouge)
+         ("ruby-rspec" ,ruby-rspec)))
+      (propagated-inputs
+       `(("ruby-asciidoctor" ,ruby-asciidoctor)
+         ("ruby-concurrent-ruby" ,ruby-concurrent)
+         ("ruby-open-uri-cached" ,ruby-open-uri-cached)
+         ("ruby-prawn" ,ruby-prawn)
+         ("ruby-prawn-icon" ,ruby-prawn-icon)
+         ("ruby-prawn-svg" ,ruby-prawn-svg)
+         ("ruby-prawn-table" ,ruby-prawn-table)
+         ("ruby-prawn-templates" ,ruby-prawn-templates)
+         ("ruby-safe-yaml" ,ruby-safe-yaml)
+         ("ruby-text-hyphen" ,ruby-text-hyphen)
+         ("ruby-thread-safe" ,ruby-thread-safe)
+         ("ruby-treetop" ,ruby-treetop)
+         ("ruby-ttfunk" ,ruby-ttfunk)))
+      (synopsis"AsciiDoc to Portable Document Format (PDF)} converter")
+      (description "Asciidoctor PDF is an extension for Asciidoctor that
+converts AsciiDoc documents to Portable Document Format (PDF) using the Prawn
+PDF library.  It has features such as:
+@itemize
+@item Direct AsciiDoc to PDF conversion
+@item Configuration-driven theme (style and layout)
+@item Scalable Vector Graphics (SVG) support
+@item PDF document outline (i.e., bookmarks)
+@item Table of contents page(s)
+@item Document metadata (title, authors, subject, keywords, etc.)
+@item Internal cross reference links
+@item Syntax highlighting with Rouge, Pygments, or CodeRay
+@item Page numbering
+@item Customizable running content (header and footer)
+@item
+“Keep together” blocks (i.e., page breaks avoided in certain block content)
+@item Orphaned section titles avoided
+@item Autofit verbatim blocks (as permitted by base_font_size_min setting)
+@item Table border settings honored
+@item Font-based icons
+@item Custom TrueType (TTF) fonts
+@item Double-sided printing mode (margins alternate on recto and verso pages)
+@end itemize")
+      (home-page "https://asciidoctor.org/docs/asciidoctor-pdf")
+      (license license:expat))))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
