@@ -296,17 +296,6 @@ supports HTTP, HTTPS and GnuTLS.")
         (add-after 'configure 'remove-failing-tests
           ;; These tests fail in Guix's building environment.
           (lambda _
-            (substitute* "src/cadet/Makefile"
-              (("test_cadet_2_reopen\\$\\(EXEEXT\\) \\\\\n") "test_cadet_2_reopen$(EXEEXT)")
-              (("test_cadet_5_forward\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_signal\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_keepalive\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed_ack\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed_reliable\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed_reliable_backwards\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed_backwards\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_reopen\\$\\(EXEEXT\\)") ""))
             (substitute* "src/transport/Makefile"
               (("\\$\\(am__EXEEXT_15\\)") "") ; test_transport_api_https
               (("test_transport_api_manipulation_cfg\\$\\(EXEEXT\\) \\\\\n") "")
