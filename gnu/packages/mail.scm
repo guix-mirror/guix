@@ -2409,71 +2409,62 @@ to esoteric or niche requirements.")
 (define-public opensmtpd-extras
   (package
     (name "opensmtpd-extras")
-    (version "5.7.1")
+    (version "6.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.opensmtpd.org/archives/"
                                   "opensmtpd-extras-" version ".tar.gz"))
               (sha256
                (base32
-                "1kld4hxgz792s0cb2gl7m2n618ikzqkj88w5dhaxdrxg4x2c4vdm"))))
+                "1b1mx71bvmv92lbm08wr2p60g3qhikvv3n15zsr6dcwbk9aqahzq"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libressl" ,libressl)
        ("libevent" ,libevent)
-       ("libasr" ,libasr)
-       ("python-2" ,python-2)
+       ("mysql" ,mysql)
        ("opensmtpd" ,opensmtpd)
-       ("perl" ,perl)
-       ("lua" ,lua)
        ("postgresql" ,postgresql)
-       ("sqlite" ,sqlite)
-       ("linux-pam" ,linux-pam)))
-    (native-inputs
-     `(("bison" ,bison)
-       ("pkg-config" ,pkg-config)
-       ("groff" ,groff)
-       ("automake" ,automake)
-       ("autoconf" ,autoconf)))
+       ("python" ,python-2)
+       ("sqlite" ,sqlite)))
     (arguments
-     `(;; We have to configure it like this because the default checks for for example
-       ;; python in /usr/local/bin, /usr/bin and fails otherwise.
-       #:configure-flags (list
-                          "--with-filter-clamav"    "--with-filter-dkim-signer"
-                          "--with-filter-dnsbl"     "--with-filter-lua"
-                          "--with-filter-monkey"    "--with-filter-pause"
-                          "--with-filter-perl"      "--with-filter-python"
-                          "--with-filter-regex"     "--with-filter-spamassassin"
-                          "--with-filter-stub"      "--with-filter-trace"
-                          "--with-filter-void"
+     `(#:configure-flags
+       (list "--sysconfdir=/etc"
+             "--localstatedir=/var"
 
-                          "--with-queue-null"       "--with-queue-python"
-                          "--with-queue-ram"        "--with-queue-stub"
+             "--with-queue-null"
+             "--with-queue-python"
+             "--with-queue-ram"
+             "--with-queue-stub"
 
-                          "--with-scheduler-python" "--with-scheduler-ram"
-                          "--with-scheduler-stub"
+             "--with-table-ldap"
+             "--with-table-mysql"
+             "--with-table-postgres"
+             ;; "--with-table-redis"    ; TODO: package hiredis
+             "--with-table-socketmap"
+             "--with-table-passwd"
+             "--with-table-python"
+             "--with-table-sqlite"
+             "--with-table-stub"
 
-                          "--with-table-ldap"       ; "--with-table-mysql"
-                          "--with-table-passwd"     "--with-table-postgres"
-                          "--with-table-python"     "--with-table-socketmap"
-                          "--with-table-sqlite"     "--with-table-stub"
-                          ;;"--with-table-redis"    ; TODO: package hiredis
+             "--with-scheduler-ram"
+             "--with-scheduler-stub"
+             "--with-scheduler-python"
 
-                          "--with-user=smtpd"       "--with-privsep-user=smtpd"
-                          "--localstatedir=/var"    "--sysconfdir=/etc"
-                          "--with-lua-type=lua"     ; can use lua or luajit
+             "--with-user-smtpd=smtpd"
 
-                          (string-append "--with-python="
-                                         (assoc-ref %build-inputs "python-2"))
-                          (string-append "--with-lua="
-                                         (assoc-ref %build-inputs "lua")))))
-    (license (list bsd-2 bsd-3 bsd-4
-                   public-domain isc license:openssl))
+             ;; We have to configure it like this because the default checks for
+             ;; for example Python in /usr/{,local/}bin and fails otherwise.
+             (string-append "--with-python="
+                            (assoc-ref %build-inputs "python")))))
+    (home-page "https://www.opensmtpd.org")
     (synopsis "Extra tables, filters, and various other addons for OpenSMTPD")
     (description
      "This package provides extra tables, filters, and various other addons
 for OpenSMTPD to extend its functionality.")
-    (home-page "https://www.opensmtpd.org")))
+    (license (list bsd-2 bsd-3               ; openbsd-compat
+                   isc))))                   ; everything else
 
 (define-public python-mailmanclient
   (package
