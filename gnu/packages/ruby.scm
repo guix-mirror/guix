@@ -6495,6 +6495,35 @@ parsing.")
     (home-page "https://github.com/ruby/rexml")
     (license license:bsd-2)))
 
+(define-public ruby-character-set
+  (package
+    (name "ruby-character-set")
+    (version "1.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "character_set" version))
+        (sha256
+          (base32
+            "0affq9n77vwy897ri2zhmfinfagf37hcwwimrccy1bcxan9mj3h3"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f))          ;avoid a cycle with ruby-regexp-parser
+    (synopsis "Ruby library to manipulate Unicode")
+    (description "CharacterSet is a C-extended Ruby library to work with sets
+of Unicode code points.  It can read and write these sets in various formats
+and implements the @code{stdlib} @code{Set} interface for them.  It also
+offers an alternate paradigm of @code{String} processing which grants much
+better performance than @code{Regexp} and @code{String} methods from the
+@code{stdlib} where applicable.  Many parts can be used independently, e.g.:
+@itemize
+@item @code{CharacterSet::Character}
+@item @code{CharacterSet::Parser}
+@item @code{CharacterSet::Writer}
+@item @code{RangeCompressor}
+@end itemize")
+    (home-page "https://github.com/jaynetics/character_set")
+    (license license:expat)))
+
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
