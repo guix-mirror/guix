@@ -128,13 +128,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
-  #:use-module ((guix licenses)
-                #:select (fdl1.1+
-                           agpl3+
-                           gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
-                           non-copyleft (expat . license:expat) bsd-3
-                           public-domain bsd-4 isc (openssl . license:openssl)
-                           bsd-2 x11-style agpl3 asl2.0 perl-license))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -183,7 +177,7 @@ in the MUA, it is first passed to Anubis, which performs additional processing
 to the message before passing it on for delivery by the MTA.  Anubis may, for
 example, modify the message headers or body, or encrypt or sign the message.")
     (home-page "https://www.gnu.org/software/anubis/manual/")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public mailutils
   (package
@@ -289,7 +283,7 @@ also available, simplifying the addition of mail capabilities to new
 software.")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
-     (list gpl3+ lgpl3+))))
+     (list license:gpl3+ license:lgpl3+))))
 
 (define-public guile2.2-mailutils
   (package
@@ -380,8 +374,8 @@ Nullmailer is designed to be simple to configure, easy to extend, and secure.
 It requires little ongoing administration.  The included @command{sendmail}
 emulator front-end should allow most (if not all) sendmail-compatible programs
 to run without any changes.")
-    (license (list lgpl2.1+         ; lib/cli++/ (but some files lack headers)
-                   gpl2+))))        ; everything else
+    (license (list license:lgpl2.1+ ; lib/cli++/ (but some files lack headers)
+                   license:gpl2+)))) ; everything else
 
 (define-public fetchmail
   (package
@@ -416,7 +410,7 @@ Fetchmail retrieves mail from remote mail servers and forwards it via SMTP,
 so it can then be read by normal mail user agents such as mutt, elm
 or BSD Mail.  It allows all your system MTA's filtering, forwarding, and
 aliasing facilities to work just as they would on normal mail.")
-    (license gpl2+))) ; most files are actually public domain or x11
+    (license license:gpl2+))) ; most files are actually public domain or x11
 
 (define-public mutt
   (package
@@ -463,7 +457,7 @@ aliasing facilities to work just as they would on normal mail.")
     (description
      "Mutt is a small but very powerful text-based mail client for Unix
 operating systems.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public neomutt
   (package
@@ -557,7 +551,7 @@ operating systems.")
     (description
      "NeoMutt is a command-line mail reader which is based on mutt.
 It adds a large amount of new and improved features to mutt.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public gmime
   (package
@@ -602,7 +596,7 @@ It adds a large amount of new and improved features to mutt.")
      "GMime provides a core library and set of utilities which may be used for
 the creation and parsing of messages using the Multipurpose Internet Mail
 Extension (MIME).")
-    (license (list lgpl2.1+ gpl2+ gpl3+))))
+    (license (list license:lgpl2.1+ license:gpl2+ license:gpl3+))))
 
 ;; Some packages are not ready for GMime 3 yet.
 (define-public gmime-2.6
@@ -648,7 +642,7 @@ Extension (MIME).")
  (non-spam) by a statistical analysis of the message's header and
 content (body).  The program is able to learn from the user's classifications
 and corrections.  It is based on a Bayesian filter.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public offlineimap
   (package
@@ -694,7 +688,7 @@ and corrections.  It is based on a Bayesian filter.")
      "OfflineImap synchronizes emails between two repositories, so that you
 can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
 repository and Maildir/IMAP as LOCAL repository.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public emacs-mew
   (package
@@ -745,7 +739,7 @@ repository and Maildir/IMAP as LOCAL repository.")
     (description "Mew (Messaging in the Emacs World) is a user interface
 for text messages, multimedia messages (MIME), news articles and
 security functionality including PGP, S/MIME, SSH, and SSL.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public mu
   (package
@@ -829,7 +823,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 Maildir-format.  Mu's purpose in life is to help you to quickly find the
 messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public alot
   (package
@@ -866,7 +860,7 @@ attachments, create new maildirs, and so on.")
     (description
      "Alot is an experimental terminal mail user agent (@dfn{MUA}) based on
 @code{notmuch} mail.  It is written in Python using the @code{urwid} toolkit.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public notifymuch
   (let
@@ -914,7 +908,7 @@ is configurable, and a notification for the same message will not be send
 within a configurable period (defaults to 48 hours).  To use notifymuch, run
 @command{notifymuch} after new mail is indexed, this can be automated by
 invoking @command{notifymuch} from the post-new hook.")
-      (license gpl3))))
+      (license license:gpl3))))
 
 (define-public notmuch
   (package
@@ -990,7 +984,7 @@ invoking @command{notifymuch} from the post-new hook.")
     (description
      "Notmuch is a command-line based program for indexing, searching, read-
 ing, and tagging large collections of email messages.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public notmuch-addrlookup-c
   (package
@@ -1061,7 +1055,7 @@ useful for email address completion.")
     (description
      "This package provides Python bindings to use the Notmuch mail indexing
 and search library.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public python2-notmuch
   (package-with-python2 python-notmuch))
@@ -1096,7 +1090,7 @@ broadband.  Muchsync supports arbitrary pairwise synchronization among
 replicas.  A version-vector-based algorithm allows it to exchange only the
 minimum information necessary to bring replicas up to date regardless of which
 pairs have previously synchronized.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public getmail
   (package
@@ -1122,7 +1116,7 @@ arbitrary message filtering, single-user and domain-mailboxes, and many other
 useful features.")
 
     ;; License is specified in file '__init__.py'.
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public libetpan
   (package
@@ -1160,7 +1154,7 @@ useful features.")
 framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
 provides an API for C language.  It's the low-level API used by MailCore and
 MailCore 2.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public compface
   (package
@@ -1181,7 +1175,7 @@ MailCore 2.")
     (description "This package takes your 48x48x1 portrait image and
 compresses it.")
     (home-page "https://legacy.cs.indiana.edu/ftp/faces/")
-    (license (x11-style "file://README"))))
+    (license (license:x11-style "file://README"))))
 
 (define-public claws-mail
   (package
@@ -1243,7 +1237,7 @@ other popular email clients, as well as experienced users.  Almost all commands
 are accessible with the keyboard.  Plus, Claws-Mail is extensible via addons
 which can add many functionalities to the base client.")
     (home-page "https://www.claws-mail.org/")
-    (license gpl3+))) ; most files are actually public domain or x11
+    (license license:gpl3+))) ; most files are actually public domain or x11
 
 (define-public msmtp
   (package
@@ -1293,7 +1287,7 @@ which can add many functionalities to the base client.")
      "msmtp is an SMTP client.  In the default mode, it transmits a mail to
 an SMTP server (for example at a free mail provider) which takes care of further
 delivery.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public exim
   (package
@@ -1399,7 +1393,7 @@ Cambridge for use on Unix systems connected to the Internet.  In style it is
 similar to Smail 3, but its facilities are more general.  There is a great
 deal of flexibility in the way mail can be routed, and there are extensive
 facilities for checking incoming mail.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public dovecot
   (package
@@ -1461,7 +1455,8 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
     ;; Most source files are covered by either lgpl2.1 or expat.  The SHA code
     ;; is covered by a variant of BSD-3, and UnicodeData.txt is covered by the
     ;; Unicode, Inc. License Agreement for Data Files and Software.
-    (license (list lgpl2.1 license:expat (non-copyleft "file://COPYING")))))
+    (license (list license:lgpl2.1 license:expat
+                   (license:non-copyleft "file://COPYING")))))
 
 (define-public dovecot-trees
   (package
@@ -1511,7 +1506,7 @@ How it works:
 using libsodium sealed boxes.
 @item New mail is encrypted as it arrives using the Curve25519 public key.
 @end enumerate\n")
-    (license agpl3)))
+    (license license:agpl3)))
 
 (define-public dovecot-libsodium-plugin
   (let ((commit "044de73c01c35385df0105f6b387bec5d5317ce7")
@@ -1548,7 +1543,7 @@ using libsodium sealed boxes.
       (description
        "@code{dovecot-libsodium-plugin} provides a libsodium password
 hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
-      (license gpl3+))))
+      (license license:gpl3+))))
 
 (define-public isync
   (package
@@ -1574,7 +1569,7 @@ hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
     (description
      "isync/mbsync is a command-line tool for two-way synchronization of
 mailboxes.  Currently Maildir and IMAP are supported types.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public perl-email-abstract
   (package
@@ -1597,7 +1592,7 @@ mailboxes.  Currently Maildir and IMAP are supported types.")
     (synopsis "Interface to mail representations")
     (description "Email::Abstract provides module writers with the ability to
 write simple, representation-independent mail handling code.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-email-address
   (package
@@ -1616,7 +1611,7 @@ write simple, representation-independent mail handling code.")
     (description "Email::Address implements a regex-based RFC 2822 parser that
 locates email addresses in strings and returns a list of Email::Address
 objects found.  Alternatively you may construct objects manually.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-email-address-xs
   (package
@@ -1638,7 +1633,7 @@ objects found.  Alternatively you may construct objects manually.")
 addresses and groups.  Unlike Email::Address, this module does not use regular
 expressions for parsing but instead is implemented in XS and uses shared code
 from Dovecot IMAP server.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-email-date-format
   (package
@@ -1657,7 +1652,7 @@ from Dovecot IMAP server.")
     (synopsis "Produce RFC 2822 date strings")
     (description "Email::Date::Format provides a means for generating an RFC
 2822 compliant datetime string.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-email-messageid
   (package
@@ -1676,7 +1671,7 @@ from Dovecot IMAP server.")
     (synopsis "Generate world unique message-ids")
     (description "Email::MessageID generates recommended message-ids to
 identify a message uniquely.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-email-mime
   (package
@@ -1705,7 +1700,7 @@ identify a message uniquely.")
 handle MIME encoded messages.  It takes a message as a string, splits it up
 into its constituent parts, and allows you access to various parts of the
 message.  Headers are decoded from MIME encoding.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-email-mime-contenttype
   (package
@@ -1726,7 +1721,7 @@ message.  Headers are decoded from MIME encoding.")
     (synopsis "Parse MIME Content-Type headers")
     (description "Email::MIME::ContentType parses a MIME Content-Type
 header.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-email-mime-encodings
   (package
@@ -1746,7 +1741,7 @@ header.")
     (home-page "https://metacpan.org/release/Email-MIME-Encodings")
     (synopsis "Unified interface to MIME encoding and decoding")
     (description "This module wraps MIME::Base64 and MIME::QuotedPrint.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-email-sender
   (package
@@ -1777,7 +1772,7 @@ header.")
     (synopsis "Perl library for sending email")
     (description "Email::Sender replaces the old and sometimes problematic
 Email::Send library.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-email-simple
   (package
@@ -1798,7 +1793,7 @@ Email::Send library.")
     (synopsis "Parsing of RFC 2822 messages")
     (description "Email::Simple provides simple parsing of RFC 2822 message
 format and headers.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public libesmtp
   (package
@@ -1828,7 +1823,7 @@ submission of) electronic mail via a preconfigured Mail Transport Agent (MTA).
 It may be used as part of a Mail User Agent (MUA) or other program that must
 be able to post electronic mail where mail functionality may not be that
 program's primary purpose.")
-    (license (list lgpl2.1+ gpl2+))))
+    (license (list license:lgpl2.1+ license:gpl2+))))
 
 (define-public esmtp
   (package
@@ -1865,7 +1860,7 @@ user's @file{$HOME/.esmtprc} configuration file; see the @command{esmtprc} man
 page for more on configuration.  This package also provides minimal
 compatibility shims for the @command{sendmail}, @command{mailq}, and
 @command{newaliases} commands.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public fdm
   (package
@@ -1891,7 +1886,8 @@ deliver it in various ways.")
      ;; Why point to a source file?  Well, all the individual files have a
      ;; copy of this license in their headers, but there's no seprate file
      ;; with that information.
-     (non-copyleft "https://github.com/nicm/fdm/blob/master/command.c"))))
+     (license:non-copyleft
+      "https://github.com/nicm/fdm/blob/master/command.c"))))
 
 
 (define-public procmail
@@ -1939,10 +1935,10 @@ for a variety of mailbox formats such as mbox, mh and maildir.  Incoming mail
 can be sorted into separate files/directories and arbitrary commands can be
 executed on mail arrival.  Procmail is considered stable, but is no longer
 maintained.")
-    (license gpl2+))) ;; procmail allows to choose the
-                      ;; nonfree Artistic License 1.0
-                      ;; as alternative to the GPL2+.
-                      ;; This option is not listed here.
+    (license license:gpl2+))) ;; procmail allows to choose the
+                              ;; nonfree Artistic License 1.0
+                              ;; as alternative to the GPL2+.
+                              ;; This option is not listed here.
 
 (define-public khard
   (package
@@ -1979,7 +1975,7 @@ modifies and removes CardDAV address book entries at your local machine.  For
 synchronizing with a remote address book, @command{vdirsyncer} is recommended.
 Khard can also be used from within the email client @command{mutt}.")
     (home-page "https://github.com/scheibler/khard")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public perl-mail-spf
   (package
@@ -2018,7 +2014,7 @@ Khard can also be used from within the email client @command{mutt}.")
     (synopsis "Perl implementation of Sender Policy Framework")
     (description "Mail::SPF is the Sender Policy Framework implemented
 in Perl.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public perl-mail-authenticationresults
   (package
@@ -2041,7 +2037,7 @@ in Perl.")
 that indicates the message authentication status as per RFC7601.  This module
 is not fully compliant with the RFC but it tries to implement most styles of
 Authentication-Results header seen in the wild.")
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-mail-dkim
   (package
@@ -2073,7 +2069,7 @@ Keys Identified Mail (DKIM) standard, and the older Yahoo! DomainKeys standard,
 both of which sign and verify emails using digital signatures and DNS records.
 Mail-DKIM can be used by any Perl program that wants to provide support for
 DKIM and/or DomainKeys.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public dkimproxy
   (package
@@ -2148,7 +2144,7 @@ of incoming messages.
 It was designed for Postfix, but can be used to add DKIM support to nearly any
 existing mail server.  With Postfix, the proxies can operate as either
 @code{Before-Queue} or @code{After-Queue} content filters.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public mb2md
   (package
@@ -2193,7 +2189,7 @@ existing mail server.  With Postfix, the proxies can operate as either
     (description
      "Mb2md is a Perl script that takes one or more mbox format files and
 converts them to maildir format directories.")
-    (license public-domain)))
+    (license license:public-domain)))
 
 (define-public mpop
   (package
@@ -2220,7 +2216,7 @@ mpop supports multiple accounts, header based mail filtering, delivery
 to mbox files, maildir folders or an @acronym{MDA, Mail Delivery Agent},
 TLS/SSL, several authentication methods, @acronym{IDN, Internationalized Domain
 Names} and SOCKS proxies.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public mhonarc
   (package
@@ -2242,7 +2238,7 @@ Names} and SOCKS proxies.")
 provides HTML mail archiving with index, mail thread linking,
 etc; plus other capabilities including support for MIME and
 powerful user customization features.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 
 (define-public sendmail
@@ -2324,8 +2320,8 @@ define(`confINST_DEP', `')
      "Sendmail is a mail transfer agent (MTA) originally developed by Eric
 Allman.  It is highly configurable and supports many delivery methods and many
 transfer protocols.")
-    (license (non-copyleft "file://LICENSE"
-                           "See LICENSE in the distribution."))))
+    (license (license:non-copyleft "file://LICENSE"
+                                   "See LICENSE in the distribution."))))
 
 (define-public opensmtpd
   (package
@@ -2403,8 +2399,9 @@ functionality than those available in other SMTP daemons.  The objective is to
 provide enough features to satisfy typical usage at the risk of unsuitability
 to esoteric or niche requirements.")
     (home-page "https://www.opensmtpd.org")
-    (license (list bsd-2 bsd-3 bsd-4 (non-copyleft "file://COPYING")
-                   public-domain isc license:openssl))))
+    (license (list license:bsd-2 license:bsd-3 license:bsd-4
+                   (license:non-copyleft "file://COPYING")
+                   license:public-domain license:isc license:openssl))))
 
 (define-public opensmtpd-extras
   (package
@@ -2463,8 +2460,8 @@ to esoteric or niche requirements.")
     (description
      "This package provides extra tables, filters, and various other addons
 for OpenSMTPD to extend its functionality.")
-    (license (list bsd-2 bsd-3               ; openbsd-compat
-                   isc))))                   ; everything else
+    (license (list license:bsd-2 license:bsd-3 ; openbsd-compat
+                   license:isc))))             ; everything else
 
 (define-public python-mailmanclient
   (package
@@ -2488,7 +2485,7 @@ for OpenSMTPD to extend its functionality.")
     (description
      "The mailmanclient library provides official Python bindings for
 the GNU Mailman 3 REST API.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public python2-mailmanclient
   (package-with-python2 python-mailmanclient))
@@ -2589,7 +2586,7 @@ installation on systems where resources are limited.  Its features include:
     (description
      "Libraries and templates for Django-based interfaces
 interacting with Mailman.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public postorius
   (package
@@ -2619,7 +2616,7 @@ interacting with Mailman.")
     (description
      "Postorius is a Django app which provides a web user interface
 to access GNU Mailman.")
-    (license (list gpl3+ lgpl3+))))
+    (license (list license:gpl3+ license:lgpl3+))))
 
 (define-public blists
   (package
@@ -2703,7 +2700,7 @@ unix-domain sockets, internet-domain sockets, and pipes to spawned processes.
 Options can be specified in environment variables, configuration files, and
 the command line allowing maximum configurability and ease of use for
 operators and scripters.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public alpine
   (package
@@ -2784,7 +2781,7 @@ tools and applications:
 @item pico, the standalone text editor, GNU nano's predecessor
 @item pilot, the standalone file system navigator
 @end enumerate\n")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public balsa
   (package
@@ -2840,7 +2837,7 @@ tools and applications:
 the GNOME desktop.  It supports both POP3 and IMAP servers as well as the
 mbox, maildir and mh local mailbox formats.  Balsa also supports SMTP and/or
 the use of a local MTA such as Sendmail.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public afew
   (package
@@ -2865,7 +2862,7 @@ the use of a local MTA such as Sendmail.")
 provides automatic tagging each time new mail is registered with notmuch.  It
 can add tags based on email headers or Maildir folders and can handle spam and
 killed threads.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public pan
   (package
@@ -2912,7 +2909,7 @@ killed threads.")
 and binaries. It supports offline reading, scoring and killfiles, yEnc, NZB,
 PGP handling, multiple servers, and secure connections.")
     ;; License of the docs: fdl-1.1; Others: gpl2.
-    (license (list fdl1.1+ gpl2))))
+    (license (list license:fdl1.1+ license:gpl2))))
 
 (define-public imapfilter
   (package
@@ -2972,7 +2969,7 @@ for URLs and email addresses.  It then displays the URLs and their context
 within the message, and allows you to choose one or more URLs to send to your
 Web browser.  Alternatively, it send a list of all URLs to standard output.
 It is a replacement for the @command{urlview} program.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public tnef
   (package
@@ -2997,7 +2994,7 @@ It is a replacement for the @command{urlview} program.")
     (description
      "TNEF is a tar-like program that unpacks MIME attachments of type
 @code{application/ms-tnef}.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public mumi
   (let ((commit "5a578328199bab51a147fbadbce12c8d06959ed6")
@@ -3059,7 +3056,7 @@ It is a replacement for the @command{urlview} program.")
       (home-page "https://git.elephly.net/software/mumi.git")
       (synopsis "Debbugs web interface")
       (description "Mumi is a Debbugs web interface.")
-      (license agpl3+))))
+      (license license:agpl3+))))
 
 (define-public ytnef
   (package
@@ -3083,7 +3080,7 @@ It is a replacement for the @command{urlview} program.")
     (synopsis "TNEF stream reader for winmail.dat files")
     (description "This package provides a TNEF stream reader library and
 related tools to process winmail.dat files.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public public-inbox
   (let ((commit "05a06f3262a2ddbf46adb85169e13ce9127e4524")
@@ -3169,7 +3166,7 @@ related tools to process winmail.dat files.")
       "public-inbox implements the sharing of an email inbox via git to
 complement or replace traditional mailing lists.  Readers may read via NNTP,
 Atom feeds or HTML archives.")
-     (license agpl3+))))
+     (license license:agpl3+))))
 
 (define-public sylpheed
   (package
@@ -3201,4 +3198,4 @@ Atom feeds or HTML archives.")
      "Sylpheed is a simple, lightweight but featureful, and easy-to-use e-mail
 client.  Sylpheed provides intuitive user-interface.  Sylpheed is also
 designed for keyboard-oriented operation.")
-    (license gpl2+)))
+    (license license:gpl2+)))
