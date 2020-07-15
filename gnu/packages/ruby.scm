@@ -1670,6 +1670,27 @@ system by Donald E.  Knuth.")
     ;; versions of the LaTeX Project Public License.
     (license license:expat)))
 
+(define-public ruby-open-uri-cached
+  (package
+    (name "ruby-open-uri-cached")
+    (version "0.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "open-uri-cached" version))
+       (sha256
+        (base32
+         "13xy2vhrgz9mdxhklw5fszhamsdxh8ysf3l40g92hqm4hm288wap"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no test suite
+    (synopsis "OpenURI with transparent disk caching")
+    (description "OpenURI with transparent disk caching, which is
+useful to avoid making excessive queries, for example when scraping
+web pages.")
+    (home-page "https://github.com/tigris/open-uri-cached")
+    (license license:expat)))
+
 (define-public ruby-ast
   (package
     (name "ruby-ast")
