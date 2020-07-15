@@ -418,6 +418,7 @@ sys_authorize_build_farms()
 
 sys_create_init_profile()
 { # Create /etc/profile.d/guix.sh for better desktop integration
+  # This will not take effect until the next shell or desktop session!
     [ -d "/etc/profile.d" ] || mkdir /etc/profile.d # Just in case
     cat <<"EOF" > /etc/profile.d/guix.sh
 # _GUIX_PROFILE: `guix pull` profile
@@ -507,6 +508,9 @@ main()
 
     _msg "${PAS}Guix has successfully been installed!"
     _msg "${INF}Run 'info guix' to read the manual."
+
+    # Required to source /etc/profile in desktop environments.
+    _msg "${INF}Please log out and back in to complete the installation."
  }
 
 main "$@"
