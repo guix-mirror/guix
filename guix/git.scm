@@ -150,47 +150,52 @@ of SHA1 string."
     (last (string-split url #\/)) ".git" "")
    "-" (string-take sha1 7)))
 
+(define (resolve-reference repository ref)
+  "Resolve the branch, commit or tag specified by REF, and return the
+corresponding Git object."
+  (let resolve ((ref ref))
+    (match ref
+      (('branch . branch)
+       (let ((oid (reference-target
+                   (branch-lookup repository branch BRANCH-REMOTE))))
+         (object-lookup repository oid)))
+      (('commit . commit)
+       (let ((len (string-length commit)))
+         ;; 'object-lookup-prefix' appeared in Guile-Git in Mar. 2018, so we
+         ;; can't be sure it's available.  Furthermore, 'string->oid' used to
+         ;; read out-of-bounds when passed a string shorter than 40 chars,
+         ;; which is why we delay calls to it below.
+         (if (< len 40)
+             (if (module-defined? (resolve-interface '(git object))
+                                  'object-lookup-prefix)
+                 (object-lookup-prefix repository (string->oid commit) len)
+                 (raise (condition
+                         (&message
+                          (message "long Git object ID is required")))))
+             (object-lookup repository (string->oid commit)))))
+      (('tag-or-commit . str)
+       (if (or (> (string-length str) 40)
+               (not (string-every char-set:hex-digit str)))
+           (resolve `(tag . ,str))              ;definitely a tag
+           (catch 'git-error
+             (lambda ()
+               (resolve `(tag . ,str)))
+             (lambda _
+               ;; There's no such tag, so it must be a commit ID.
+               (resolve `(commit . ,str))))))
+      (('tag    . tag)
+       (let ((oid (reference-name->oid repository
+                                       (string-append "refs/tags/" tag))))
+         ;; OID may point to a "tag" object, but it can also point directly
+         ;; to a "commit" object, as surprising as it may seem.  Return that
+         ;; object, whatever that is.
+         (object-lookup repository oid))))))
+
 (define (switch-to-ref repository ref)
   "Switch to REPOSITORY's branch, commit or tag specified by REF.  Return the
 OID (roughly the commit hash) corresponding to REF."
   (define obj
-    (let resolve ((ref ref))
-      (match ref
-        (('branch . branch)
-         (let ((oid (reference-target
-                     (branch-lookup repository branch BRANCH-REMOTE))))
-           (object-lookup repository oid)))
-        (('commit . commit)
-         (let ((len (string-length commit)))
-           ;; 'object-lookup-prefix' appeared in Guile-Git in Mar. 2018, so we
-           ;; can't be sure it's available.  Furthermore, 'string->oid' used to
-           ;; read out-of-bounds when passed a string shorter than 40 chars,
-           ;; which is why we delay calls to it below.
-           (if (< len 40)
-               (if (module-defined? (resolve-interface '(git object))
-                                    'object-lookup-prefix)
-                   (object-lookup-prefix repository (string->oid commit) len)
-                   (raise (condition
-                           (&message
-                            (message "long Git object ID is required")))))
-               (object-lookup repository (string->oid commit)))))
-        (('tag-or-commit . str)
-         (if (or (> (string-length str) 40)
-                 (not (string-every char-set:hex-digit str)))
-             (resolve `(tag . ,str))              ;definitely a tag
-             (catch 'git-error
-               (lambda ()
-                 (resolve `(tag . ,str)))
-               (lambda _
-                 ;; There's no such tag, so it must be a commit ID.
-                 (resolve `(commit . ,str))))))
-        (('tag    . tag)
-         (let ((oid (reference-name->oid repository
-                                         (string-append "refs/tags/" tag))))
-           ;; OID may point to a "tag" object, but it can also point directly
-           ;; to a "commit" object, as surprising as it may seem.  Return that
-           ;; object, whatever that is.
-           (object-lookup repository oid))))))
+    (resolve-reference repository ref))
 
   (reset repository obj RESET_HARD)
   (object-id obj))
