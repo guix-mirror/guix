@@ -6473,6 +6473,28 @@ by RuboCop to deal with Ruby's Abstract Syntax Tree (AST), in particular:
     (home-page "https://rubocop.org/")
     (license license:expat)))
 
+(define-public ruby-rexml
+  (package
+    (name "ruby-rexml")
+    (version "3.2.4")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in distributed gem
+       (uri (git-reference
+             (url "https://github.com/ruby/rexml.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0rhjjbkaq2f2cs8hyr2i4yjqpcyl8m0wmr2cypa401m3fvz4221i"))))
+    (build-system ruby-build-system)
+    (synopsis "XML toolkit for Ruby")
+    (description "Inspired by Electric XML library for Java, REXML aims to be
+easy-to-use API, small and fast.  It supports both tree and stream document
+parsing.")
+    (home-page "https://github.com/ruby/rexml")
+    (license license:bsd-2)))
+
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
