@@ -292,6 +292,7 @@ definitely available in REPOSITORY, false otherwise."
                                  #:key
                                  (ref '(branch . "master"))
                                  recursive?
+                                 (check-out? #t)
                                  starting-commit
                                  (log-port (%make-void-port "w"))
                                  (cache-directory
@@ -306,7 +307,10 @@ provided) as returned by 'commit-relation'.
 REF is pair whose key is [branch | commit | tag | tag-or-commit ] and value
 the associated data: [<branch name> | <sha1> | <tag name> | <string>].
 
-When RECURSIVE? is true, check out submodules as well, if any."
+When RECURSIVE? is true, check out submodules as well, if any.
+
+When CHECK-OUT? is true, reset the cached working tree to REF; otherwise leave
+it unchanged."
   (define canonical-ref
     ;; We used to require callers to specify "origin/" for each branch, which
     ;; made little sense since the cache should be transparent to them.  So
@@ -337,7 +341,10 @@ When RECURSIVE? is true, check out submodules as well, if any."
 
      ;; Note: call 'commit-relation' from here because it's more efficient
      ;; than letting users re-open the checkout later on.
-     (let* ((oid      (switch-to-ref repository canonical-ref))
+     (let* ((oid      (if check-out?
+                          (switch-to-ref repository canonical-ref)
+                          (object-id
+                           (resolve-reference repository canonical-ref))))
             (new      (and starting-commit
                            (commit-lookup repository oid)))
             (old      (and starting-commit
