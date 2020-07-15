@@ -6629,6 +6629,38 @@ expressions.  It comprises the following components:
     (home-page "https://github.com/ammar/regexp_parser")
     (license license:expat)))
 
+(define-public ruby-test-queue
+  (package
+    (name "ruby-test-queue")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "test-queue" version))
+       (sha256
+        (base32
+         "0hvm3n1qrqxqilhqk4rjivw3gcrd08zz1i6am9qzg1ppjxv6f36f"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Minitest/RSpec parallel test runner for CI environments")
+    (description "The test-queue module is a parallel test runner,
+built using a centralized queue to ensure optimal distribution of
+tests between workers.  It is specifically optimized for Continuous
+Integration (CI) environments: build statistics from each run are
+stored locally and used to sort the queue at the beginning of the next
+run.")
+    (home-page "https://github.com/tmm1/test-queue")
+    (license license:expat)))
+
 (define-public ruby-rubocop
   (package
     (name "ruby-rubocop")
