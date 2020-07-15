@@ -1280,7 +1280,42 @@ move around."
   (rust-bootstrapped-package rust-1.43 "1.44.1"
     "0ww4z2v3gxgn3zddqzwqya1gln04p91ykbrflnpdbmcd575n8bky"))
 
-;; NOTE: An update to LLVM 10 is coming in 1.45, make sure not to miss it.
+(define-public rust-1.45
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.44 "1.45.0"
+           "0z6dh0yd3fcm3qh960wi4s6fa6pxz9mh77psycsqfkkx5kqra15s")))
+    (package
+      (inherit base-rust)
+      (source
+        (origin
+          (inherit (package-source base-rust))
+          (patches (search-patches "rust-1.45-linker-locale.patch"))))
+      (inputs
+        (alist-replace "llvm" (list llvm-10)
+                       (package-inputs base-rust)))
+      (arguments
+        (substitute-keyword-arguments (package-arguments base-rust)
+          ((#:phases phases)
+           `(modify-phases ,phases
+              ;; These tests make sure that the parser behaves properly when
+              ;; a source file starts with a shebang. Unfortunately,
+              ;; the patch-shebangs phase changes the meaning of these edge-cases.
+              ;; We skip the test since it's drastically unlikely Guix's packaging
+              ;; will introduce a bug here.
+              (add-after 'patch-tests 'skip-shebang-tests
+                (lambda _
+                  (with-directory-excursion "src/test/ui/parser/shebang"
+                    (delete-file "shebang-doc-comment.rs")
+                    (delete-file "sneaky-attrib.rs")
+                    #t)))
+              ;; This test case synchronizes itself by starting a localhost TCP
+              ;; server. This doesn't work as networking is not available.
+              (add-after 'patch-tests 'skip-networking-test
+                (lambda _
+                  (substitute* "src/tools/cargo/tests/testsuite/freshness.rs"
+                    (("fn linking_interrupted" all)
+                     (string-append "#[ignore] " all)))
+                 #t)))))))))
 
 ;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.39)
