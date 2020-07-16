@@ -54,6 +54,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages imagemagick)
@@ -12412,3 +12413,56 @@ wrappers of deflate streams.  It currently does not handle compression.")
 
 (define-public ecl-skippy
   (sbcl-package->ecl-package sbcl-skippy))
+
+(define-public sbcl-cl-freetype2
+  (let ((commit "96058da730b4812df916c1f4ee18c99b3b15a3de")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-freetype2")
+      (version (git-version "1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rpav/cl-freetype2")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0f8darhairgxnb5bzqcny7nh7ss3471bdzix5rzcyiwdbr5kymjl"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("cffi-grovel" ,sbcl-cffi-grovel)
+         ("freetype" ,freetype)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/ffi/ft2-lib.lisp"
+                 (("\"libfreetype\"")
+                  (string-append "\"" (assoc-ref inputs "freetype")
+                                 "/lib/libfreetype\"")))
+               (substitute* "src/ffi/grovel/grovel-freetype2.lisp"
+                 (("-I/usr/include/freetype")
+                  (string-append "-I" (assoc-ref inputs "freetype")
+                                 "/include/freetype")))
+               #t)))))
+      (home-page "https://github.com/rpav/cl-freetype2")
+      (synopsis "Common Lisp bindings for Freetype 2")
+      (description
+       "This is a general Freetype 2 wrapper for Common Lisp using CFFI.  It's
+geared toward both using Freetype directly by providing a simplified API, as
+well as providing access to the underlying C structures and functions for use
+with other libraries which may also use Freetype.")
+      (license license:bsd-3))))
+
+(define-public cl-freetype2
+  (sbcl-package->cl-source-package sbcl-cl-freetype2))
+
+(define-public ecl-cl-freetype2
+  (sbcl-package->ecl-package sbcl-cl-freetype2))
