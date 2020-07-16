@@ -12535,3 +12535,43 @@ in the TIFF (Tagged Image File Format) format.")
 
 (define-public ecl-retrospectiff
   (sbcl-package->ecl-package sbcl-retrospectiff))
+
+(define-public sbcl-mmap
+  (let ((commit "ba2e98c67e25f0fb8ff838238561120a23903ce7")
+        (revision "0"))
+    (package
+      (name "sbcl-mmap")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/mmap")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qd0xp20i1pcfn12kkapv9pirb6hd4ns7kz4zf1mmjwykpsln96q"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("parachute" ,sbcl-parachute)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("documentation-utils" ,sbcl-documentation-utils)))
+      (home-page "https://shinmera.github.io/mmap/")
+      (synopsis "File memory mapping for Common Lisp")
+      (description
+       "This is a utility library providing access to the @emph{mmap} family of
+functions in a portable way.  It allows you to directly map a file into the
+address space of your process without having to manually read it into memory
+sequentially.  Typically this is much more efficient for files that are larger
+than a few Kb.")
+      (license license:zlib))))
+
+(define-public cl-mmap
+  (sbcl-package->cl-source-package sbcl-mmap))
+
+(define-public ecl-mmap
+  (sbcl-package->ecl-package sbcl-mmap))
