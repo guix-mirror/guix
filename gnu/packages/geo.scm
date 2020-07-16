@@ -666,9 +666,12 @@ development.")
        ("libwebp" ,libwebp)
        ("netcdf" ,netcdf)
        ("pcre" ,pcre)
+       ("postgresql" ,postgresql) ; libpq
        ("proj" ,proj)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://gdal.org/")
     (synopsis "Raster and vector geospatial data format library")
     (description "GDAL is a translator library for raster and vector geospatial
