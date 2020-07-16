@@ -8415,7 +8415,7 @@ reference point and sorted by a user defined feature.")
        ("r-seqpattern" ,r-seqpattern)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
+    (home-page "https://bioinformatics.mdc-berlin.de/genomation/")
     (synopsis "Summary, annotation and visualization of genomic data")
     (description
      "This package provides a package for summary and annotation of genomic
@@ -8448,7 +8448,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
     (arguments `(#:substitutable? #f))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
+    (home-page "https://bioinformatics.mdc-berlin.de/genomation/")
     (synopsis "Experimental data for use with the genomation package")
     (description
      "This package contains experimental genetic data for use with the
@@ -12952,7 +12952,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for RNA sequencing experiments")
     (description "PiGX RNAseq is an analysis pipeline for preprocessing and
 reporting for RNA sequencing experiments.  It is easy to use and produces high
@@ -13021,7 +13021,7 @@ expression report comparing samples in an easily configurable manner.")
        ("kentutils" ,kentutils)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for ChIP sequencing experiments")
     (description "PiGX ChIPseq is an analysis pipeline for preprocessing, peak
 calling and reporting for ChIP sequencing experiments.  It is easy to use and
@@ -13083,7 +13083,7 @@ in an easily configurable manner.")
        ("trim-galore" ,trim-galore)
        ("cutadapt" ,cutadapt)
        ("samtools" ,samtools)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Bisulfite sequencing pipeline from fastq to methylation reports")
     (description "PiGx BSseq is a data processing pipeline for raw fastq read
 data of bisulfite experiments; it produces reports on aggregate methylation
@@ -13147,7 +13147,7 @@ methylation and segmentation.")
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-stringr" ,r-stringr)
        ("r-yaml" ,r-yaml)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for single-cell RNA sequencing experiments")
     (description "PiGX scRNAseq is an analysis pipeline for preprocessing and
 quality control for single cell RNA sequencing experiments.  The inputs are
@@ -13176,7 +13176,7 @@ based methods.")
        ("pigx-chipseq" ,pigx-chipseq)
        ("pigx-rnaseq" ,pigx-rnaseq)
        ("pigx-scrnaseq" ,pigx-scrnaseq)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipelines for genomics")
     (description "PiGx is a collection of genomics pipelines.  It includes the
 following pipelines:
