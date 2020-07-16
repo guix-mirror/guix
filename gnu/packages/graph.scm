@@ -78,7 +78,7 @@
        ("lapack" ,lapack)
        ("openblas" ,openblas)
        ("zlib" ,zlib)))
-    (home-page "http://igraph.org")
+    (home-page "https://igraph.org")
     (synopsis "Network analysis and visualization")
     (description
      "This package provides a library for the analysis of networks and graphs.
@@ -145,7 +145,7 @@ more.")
      `(("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
        ("r-pkgconfig" ,r-pkgconfig)))
-    (home-page "http://igraph.org")
+    (home-page "https://igraph.org")
     (synopsis "Network analysis and visualization")
     (description
      "This package provides routines for simple graphs and network analysis.
