@@ -133,7 +133,19 @@ human.")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_ALL=YES"
-                           "-DWITH_XC_UPDATECHECK=NO")))
+                           "-DWITH_XC_UPDATECHECK=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-bin
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/keepassxc")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins"))
+                         '("qtbase" "qtsvg")))))
+             #t)))))
     (native-inputs
      `(("asciidoctor" ,ruby-asciidoctor)
        ("qttools" ,qttools)))
