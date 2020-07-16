@@ -333,7 +333,7 @@ tool lex or flex for C/C++.")
        ("alsa-lib" ,alsa-lib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.haskell.org/haskellwiki/ALSA")
+    (home-page "https://wiki.haskell.org/ALSA")
     (synopsis "Binding to the ALSA Library API (Exceptions)")
     (description "This package provides access to ALSA infrastructure, that is
 needed by both alsa-seq and alsa-pcm.")
@@ -937,7 +937,7 @@ the bounds of \"base\" as well.")
         (base32
          "1ia6li7qjg1zkak4gf6mnbshw45mq9bfjr0jch58ds0lscmvwyzf"))))
     (build-system haskell-build-system)
-    (home-page "http://www.haskell.org/haskellwiki/Unicode-symbols")
+    (home-page "https://wiki.haskell.org/Unicode-symbols")
     (synopsis "Unicode alternatives for common functions and operators")
     (description "This package defines new symbols for a number of functions,
 operators and types in the base package.  All symbols are documented with
@@ -2113,7 +2113,7 @@ nothing.")
    ;; ghc-test-framework -> ghc-ansi-terminal -> ghc-colour.
    `(#:tests? #f))
   (build-system haskell-build-system)
-  (home-page "https://www.haskell.org/haskellwiki/Colour")
+  (home-page "https://wiki.haskell.org/Colour")
   (synopsis "Model for human colour perception")
   (description
    "This package provides a data type for colours and transparency.
@@ -2644,7 +2644,7 @@ function performs the conversion you desire.")
        (sha256
         (base32 "1fq4gygxbz0bd0mzgvc1sl3m4gjnsv8nbgpnmdpa29zj5lb9agxc"))))
     (build-system haskell-build-system)
-    (home-page "https://www.haskell.org/haskellwiki/Record_access")
+    (home-page "https://wiki.haskell.org/Record_access")
     (synopsis
      "Haskell utilities for accessing and manipulating fields of records")
     (description "This package provides Haskell modules for accessing and
@@ -2665,7 +2665,7 @@ manipulating fields of records.")
         (base32 "0yp030vafbpddl27m606aibbbr5ar5j5bsv4bksscz3cq4yq5j10"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-data-accessor" ,ghc-data-accessor)))
-    (home-page "https://www.haskell.org/haskellwiki/Record_access")
+    (home-page "https://wiki.haskell.org/Record_access")
     (synopsis "Use Accessor to access state in transformers State monad")
     (description "This package provides Haskell modules to allow use of
 Accessor to access state in transformers State monad.")
@@ -4762,7 +4762,7 @@ matching patterns against file paths.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-openglraw" ,ghc-openglraw)))
-    (home-page "https://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Raw Haskell bindings GLU")
     (description "GLURaw is a raw Haskell binding for the GLU 1.3 OpenGL
 utility library.  It is basically a 1:1 mapping of GLU's C API, intended as a
@@ -4789,7 +4789,7 @@ basis for a nicer interface.")
        ("ghc-opengl" ,ghc-opengl)
        ("ghc-openglraw" ,ghc-openglraw)
        ("freeglut" ,freeglut)))
-    (home-page "https://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Haskell bindings for the OpenGL Utility Toolkit")
     (description "This library provides Haskell bindings for the OpenGL
 Utility Toolkit, a window system-independent toolkit for writing OpenGL
@@ -4825,7 +4825,7 @@ programs.")
                (substitute* "os/generic/Graphics/Gnuplot/Private/OS.hs"
                  (("(gnuplotName = ).*$" all cmd)
                   (string-append cmd "\"" gnuplot "/bin/gnuplot\"")))))))))
-    (home-page "https://www.haskell.org/haskellwiki/Gnuplot")
+    (home-page "https://wiki.haskell.org/Gnuplot")
     (synopsis "2D and 3D plots using gnuplot")
     (description "This package provides a Haskell module for creating 2D and
 3D plots using gnuplot.")
@@ -5145,7 +5145,7 @@ the ‘haddock’ package.")
     (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-xml" ,ghc-xml)))
-    (home-page "http://www.haskell.org/haddock/")
+    (home-page "https://www.haskell.org/haddock/")
     (synopsis "Test utilities for Haddock")
     (description "This package provides test utilities for Haddock.")
     (license license:bsd-3)
@@ -8441,7 +8441,7 @@ old @code{time} library.  For new projects, the newer
        ("ghc-gluraw" ,ghc-gluraw)
        ("ghc-statevar" ,ghc-statevar)
        ("ghc-openglraw" ,ghc-openglraw)))
-    (home-page "https://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Haskell bindings for the OpenGL graphics system")
     (description "This package provides Haskell bindings for the OpenGL
 graphics system (GL, version 4.5) and its accompanying utility library (GLU,
@@ -8467,7 +8467,7 @@ version 1.3).")
      `(("ghc-half" ,ghc-half)
        ("ghc-fixed" ,ghc-fixed)
        ("glu" ,glu)))
-    (home-page "https://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Raw Haskell bindings for the OpenGL graphics system")
     (description "OpenGLRaw is a raw Haskell binding for the OpenGL 4.5
 graphics system and lots of OpenGL extensions.  It is basically a 1:1 mapping
@@ -11966,7 +11966,7 @@ together.")
        ("ghc-unsafe" ,ghc-unsafe)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-syb" ,ghc-syb)))
-    (home-page "https://www.haskell.org/haskellwiki/Storable_Vector")
+    (home-page "https://wiki.haskell.org/Storable_Vector")
     (synopsis "Fast, packed, strict storable arrays with a list interface")
     (description "This library provides fast, packed, strict storable
 arrays with a list interface, a chunky lazy list interface with variable

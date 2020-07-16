@@ -1447,7 +1447,7 @@ ignored.")
     (inputs
      `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://www.haskell.org/haskellwiki/Regular_expressions_for_XML_Schema")
+    (home-page "https://wiki.haskell.org/Regular_expressions_for_XML_Schema")
     (synopsis "Regular expression library for W3C XML Schema regular expressions")
     (description
      "This library supports full W3C XML Schema regular expressions inclusive
