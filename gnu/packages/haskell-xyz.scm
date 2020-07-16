@@ -8883,7 +8883,7 @@ suitable for inclusion in pandoc YAML metadata.")
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://johnmacfarlane.net/pandoc")
+    (home-page "https://johnmacfarlane.net/pandoc")
     (synopsis "Types for representing a structured document")
     (description
      "This module defines the @code{Pandoc} data structure, which is used by
