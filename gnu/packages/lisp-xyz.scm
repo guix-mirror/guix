@@ -12497,3 +12497,41 @@ macros for the Opticl image processing library.")
 
 (define-public ecl-opticl-core
   (sbcl-package->ecl-package sbcl-opticl-core))
+
+(define-public sbcl-retrospectiff
+  (let ((commit "c2a69d77d5010f8cdd9045b3e36a08a73da5d321")
+        (revision "0"))
+    (package
+      (name "sbcl-retrospectiff")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/slyrus/retrospectiff")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qsn9hpd8j2kp43dk05j8dczz9zppdff5rrclbp45n3ksk9inw8i"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cl-jpeg" ,sbcl-cl-jpeg)
+         ("com.gigamonkeys.binary-data" ,sbcl-com.gigamonkeys.binary-data)
+         ("deflate" ,sbcl-deflate)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("ieee-floats" ,sbcl-ieee-floats)
+         ("opticl-core" ,sbcl-opticl-core)))
+      (home-page "https://github.com/slyrus/retrospectiff")
+      (synopsis "Common Lisp library for TIFF images")
+      (description
+       "Retrospectiff is a common lisp library for reading and writing images
+in the TIFF (Tagged Image File Format) format.")
+      (license license:bsd-2))))
+
+(define-public cl-retrospectif
+  (sbcl-package->cl-source-package sbcl-retrospectiff))
+
+(define-public ecl-retrospectiff
+  (sbcl-package->ecl-package sbcl-retrospectiff))
