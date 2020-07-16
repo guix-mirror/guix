@@ -13457,7 +13457,7 @@ constant-time:
      `(("ghc-syb" ,ghc-syb)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-unordered-containers" ,ghc-unordered-containers)))
-    (home-page "http://community.haskell.org/~ndm/uniplate/")
+    (home-page "https://github.com/ndmitchell/uniplate")
     (synopsis "Simple, concise and fast generic operations")
     (description "Uniplate is a library for writing simple and concise generic
 operations.  Uniplate has similar goals to the original Scrap Your Boilerplate
