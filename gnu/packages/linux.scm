@@ -391,10 +391,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.132")
+(define-public linux-libre-4.19-version "4.19.133")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0i3xka0n26iqslvc8xzxlcig3gjwfprzgdwd1q3wrr1cjsafxmyp")))
+        (hash (base32 "1i6vfzg8xds4lvvzkxaak74727iq35hx4vxr14w65bq9gpzfacxr")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
@@ -473,8 +473,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-4.19-source
   (source-with-patches linux-libre-4.19-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch
-                             %linux-libre-fix-atheros-9271-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-4.14-source
   (source-with-patches linux-libre-4.14-pristine-source
