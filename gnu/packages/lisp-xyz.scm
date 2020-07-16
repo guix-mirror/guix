@@ -12356,3 +12356,31 @@ based on code from chapter 24 of the book @emph{Practical Common Lisp}.")
 
 (define-public ecl-com.gigamonkeys.binary-data
   (sbcl-package->ecl-package sbcl-com.gigamonkeys.binary-data))
+
+(define-public sbcl-deflate
+  (package
+    (name "sbcl-deflate")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pmai/Deflate")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jpdjnxh6cw2d8hk70r2sxn92is52s9b855irvwkdd777fdciids"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://github.com/pmai/Deflate")
+    (synopsis "Native deflate decompression for Common Lisp")
+    (description
+     "This library is an implementation of Deflate (RFC 1951) decompression,
+with optional support for ZLIB-style (RFC 1950) and gzip-style (RFC 1952)
+wrappers of deflate streams.  It currently does not handle compression.")
+    (license license:expat)))
+
+(define-public cl-deflate
+  (sbcl-package->cl-source-package sbcl-deflate))
+
+(define-public ecl-deflate
+  (sbcl-package->ecl-package sbcl-deflate))
