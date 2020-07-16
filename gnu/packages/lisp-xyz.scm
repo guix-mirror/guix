@@ -12384,3 +12384,31 @@ wrappers of deflate streams.  It currently does not handle compression.")
 
 (define-public ecl-deflate
   (sbcl-package->ecl-package sbcl-deflate))
+
+(define-public sbcl-skippy
+  (let ((commit "e456210202ca702c792292c5060a264d45e47090")
+        (revision "0"))
+    (package
+      (name "sbcl-skippy")
+      (version (git-version "1.3.12" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/xach/skippy")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1sxbn5nh24qpx9w64x8mhp259cxcl1x8p126wk3b91ijjsj7l5vj"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://xach.com/lisp/skippy/")
+      (synopsis "Common Lisp library for GIF images")
+      (description
+       "Skippy is a Common Lisp library to read and write GIF image files.")
+      (license license:bsd-2))))
+
+(define-public cl-skippy
+  (sbcl-package->cl-source-package sbcl-skippy))
+
+(define-public ecl-skippy
+  (sbcl-package->ecl-package sbcl-skippy))
