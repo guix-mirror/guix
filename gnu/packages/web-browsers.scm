@@ -621,7 +621,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
                           (install-file "bombadillo.1" mandir)
                           (install-file "bombadillo-icon.png" pixdir)
                           #t)))))))
-    (home-page "http://bombadillo.colorfield.space")
+    (home-page "https://bombadillo.colorfield.space")
     (synopsis "Terminal browser for the gopher, gemini, and finger protocols")
     (description "Bombadillo is a non-web browser for the terminal with
 vim-like key bindings, a document pager, configurable settings, and robust
