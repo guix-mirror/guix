@@ -12683,3 +12683,40 @@ both from files on disk, or streams in memory.")
 
 (define-public ecl-pngload
   (sbcl-package->ecl-package sbcl-pngload))
+
+(define-public sbcl-opticl
+  (let ((commit "e8684416eca2e78e82a7b436d436ef2ea24c019d")
+        (revision "0"))
+    (package
+      (name "sbcl-opticl")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/slyrus/opticl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "03rirnnhhisjbimlmpi725h1d3x0cfv00r57988am873dyzawmm1"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-jpeg" ,sbcl-cl-jpeg)
+         ("cl-tga" ,sbcl-cl-tga)
+         ("png-read" ,sbcl-png-read)
+         ("pngload" ,sbcl-pngload)
+         ("retrospectiff" ,sbcl-retrospectiff)
+         ("skippy" ,sbcl-skippy)
+         ("zpng" ,sbcl-zpng)))
+      (home-page "https://github.com/slyrus/opticl")
+      (synopsis "Image processing library for Common Lisp")
+      (description
+       "Opticl is a Common Lisp library for representing, processing, loading,
+and saving 2-dimensional pixel-based images.")
+      (license license:bsd-2))))
+
+(define-public cl-opticl
+  (sbcl-package->cl-source-package sbcl-opticl))
