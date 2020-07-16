@@ -692,6 +692,11 @@ as the 'native-search-paths' field."
    (custom-gcc gcc "gfortran" '("fortran")
                %generic-search-paths)))
 
+(define-public gdc-10
+  (hidden-package
+   (custom-gcc gcc-10 "gdc" '("d")
+               %generic-search-paths)))
+
 (define-public libgccjit
   (package
     (inherit gcc-9)
