@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -982,7 +983,7 @@ environments.")
                          "-s")
                    "\",\n\t\t\""))
                  (("guix-jupyter-kernel.scm")
-                  (string-append out "/share/guile/site/2.2/"
+                  (string-append out "/share/guile/site/3.0/"
                                  "guix-jupyter-kernel.scm")))
                #t))))))
     (native-inputs
