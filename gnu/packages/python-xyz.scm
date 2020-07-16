@@ -2429,14 +2429,14 @@ interfaces.")
 (define-public python-click
   (package
     (name "python-click")
-    (version "7.0")
+    (version "7.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "click" version))
        (sha256
         (base32
-         "1mzjixd4vjbjvzb6vylki9w1556a9qmdh35kzmq6cign46av952v"))))
+         "06kbzd6sjfkqan3miwj9wqyddfxc2b6hi7p5s4dvqjb3gif2bdfj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2445,12 +2445,13 @@ interfaces.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((glibc (assoc-ref inputs ,(if (%current-target-system)
                                                  "cross-libc" "libc"))))
-               (substitute* "click/_unicodefun.py"
+               (substitute* "src/click/_unicodefun.py"
                  (("'locale'")
                   (string-append "'" glibc "/bin/locale'"))))
              #t))
          (replace 'check
            (lambda _
+             (setenv "PYTHONPATH" (string-append "./src:" (getenv "PYTHONPATH")))
              (invoke "python" "-m" "pytest"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
