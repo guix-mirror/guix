@@ -12575,3 +12575,44 @@ than a few Kb.")
 
 (define-public ecl-mmap
   (sbcl-package->ecl-package sbcl-mmap))
+
+(define-public sbcl-3bz
+  (let ((commit "d6119083b5e0b0a6dd3abc2877936c51f3f3deed")
+        (revision "0"))
+    (package
+      (name "sbcl-3bz")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/3b/3bz")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0fyxzyf2b6sc0w8d9g4nlva861565z6f3xszj0lw29x526dd9rhj"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)
+         ("cffi" ,sbcl-cffi)
+         ("mmap" ,sbcl-mmap)
+         ("nibbles" ,sbcl-nibbles)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (arguments
+       ;; FIXME: Without the following line, the build fails (see issue 41437).
+       `(#:asd-system-name "3bz"))
+      (home-page "https://github.com/3b/3bz")
+      (synopsis "Deflate decompression for Common Lisp")
+      (description
+       "3bz is an implementation of Deflate decompression (RFC 1951) optionally
+with zlib (RFC 1950) or gzip (RFC 1952) wrappers, with support for reading from
+foreign pointers (for use with mmap and similar, etc), and from CL octet
+vectors and streams.")
+      (license license:expat))))
+
+(define-public cl-3bz
+  (sbcl-package->cl-source-package sbcl-3bz))
+
+(define-public ecl-3bz
+  (sbcl-package->ecl-package sbcl-3bz))
