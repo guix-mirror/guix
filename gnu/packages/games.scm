@@ -1554,14 +1554,14 @@ Chess).  It is similar to standard chess but this variant is far more complicate
 (define-public ltris
   (package
     (name "ltris")
-    (version "1.0.20")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://prdownloads.sourceforge.net/lgames/"
+       (uri (string-append "mirror://sourceforge/lgames/ltris/"
                            "ltris-" version ".tar.gz"))
        (sha256
-        (base32 "16zbqsc4amx9g3yjv6054nh4ia09dgfp8k6q4qxpjicl3dw3z0in"))))
+        (base32 "15b18p7id55xiz2jkf56w2f1g6yw1rcb98bpa188i6skqrgnrg57"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The code in LTris uses traditional GNU semantics for inline functions
