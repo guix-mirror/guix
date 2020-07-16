@@ -12616,3 +12616,30 @@ vectors and streams.")
 
 (define-public ecl-3bz
   (sbcl-package->ecl-package sbcl-3bz))
+
+(define-public sbcl-zpb-exif
+  (package
+    (name "sbcl-zpb-exif")
+    (version "1.2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xach/zpb-exif")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15s227jhby55cisz14xafb0p1ws2jmrg2rrbbd00lrb97im84hy6"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://xach.com/lisp/zpb-exif/")
+    (synopsis "EXIF information extractor for Common Lisp")
+    (description
+     "This is a Common Lisp library to extract EXIF information from image
+files.")
+    (license license:bsd-2)))
+
+(define-public cl-zpb-exif
+  (sbcl-package->cl-source-package sbcl-zpb-exif))
+
+(define-public ecl-zpb-exif
+  (sbcl-package->ecl-package sbcl-zpb-exif))
