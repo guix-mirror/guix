@@ -12466,3 +12466,34 @@ with other libraries which may also use Freetype.")
 
 (define-public ecl-cl-freetype2
   (sbcl-package->ecl-package sbcl-cl-freetype2))
+
+(define-public sbcl-opticl-core
+  (let ((commit "b7cd13d26df6b824b216fbc360dc27bfadf04999")
+        (revision "0"))
+    (package
+      (name "sbcl-opticl-core")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/slyrus/opticl-core")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0458bllabcdjghfrqx6aki49c9qmvfmkk8jl75cfpi7q0i12kh95"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (home-page "https://github.com/slyrus/opticl-core")
+      (synopsis "Core classes and pixel access macros for Opticl")
+      (description
+       "This Common Lisp library contains the core classes and pixel access
+macros for the Opticl image processing library.")
+      (license license:bsd-2))))
+
+(define-public cl-opticl-core
+  (sbcl-package->cl-source-package sbcl-opticl-core))
+
+(define-public ecl-opticl-core
+  (sbcl-package->ecl-package sbcl-opticl-core))
