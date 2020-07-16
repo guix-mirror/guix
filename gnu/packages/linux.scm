@@ -375,10 +375,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.7-version "5.7.8")
+(define-public linux-libre-5.7-version "5.7.9")
 (define-public linux-libre-5.7-pristine-source
   (let ((version linux-libre-5.7-version)
-        (hash (base32 "1ijdhjik5hlaj8w32qf5x4gigf2aa6xkg68hckm5h1s0isw7gddg")))
+        (hash (base32 "1y231c3lf94lgnnn8bzi2yfx40h4xsli2hq0kaxdd744lxk30zd8")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.7)))
@@ -457,8 +457,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-5.7-source
   (source-with-patches linux-libre-5.7-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch
-                             %linux-libre-fix-atheros-9271-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
