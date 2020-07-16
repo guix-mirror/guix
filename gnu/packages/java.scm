@@ -10840,7 +10840,7 @@ features that bring it on par with the Z shell line editor.")
            (sha256
             (base32
              "0r0glj37pg5l868yjz78gckr91cs8fysxxbp9p328dssssi91agr"))))))
-    (home-page "http://www.xmlunit.org/")
+    (home-page "https://www.xmlunit.org/")
     (synopsis "XML output testing")
     (description "XMLUnit provides you with the tools to verify the XML you
 emit is the one you want to create.  It provides helpers to validate against
