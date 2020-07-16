@@ -6430,7 +6430,7 @@ the MTP device as a file system.")
 itself and its environment as possible.  It can be used as a test
 tool, to understand the type of environment a process runs in, and for
 comparing system environments.")
-   (home-page "http://github.com/jamesodhunt/procenv/")
+   (home-page "https://github.com/jamesodhunt/procenv/")
    (license license:gpl3+)))
 
 (define-public libfabric

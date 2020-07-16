@@ -965,7 +965,7 @@ the KeepKey Hardware Wallet.")
     (inputs
      `(("python-ledgerblue" ,python-ledgerblue)
        ("python-trezor-agent" ,python-trezor-agent)))
-    (home-page "http://github.com/romanz/trezor-agent")
+    (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "Ledger as hardware SSH/GPG agent")
     (description "This package allows using Ledger as hardware SSH/GPG agent.
 
@@ -1024,7 +1024,7 @@ agent.")
     (inputs
      `(("python-keepkey" ,python-keepkey)
        ("python-trezor-agent" ,python-trezor-agent)))
-    (home-page "http://github.com/romanz/trezor-agent")
+    (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "KeepKey as hardware SSH/GPG agent")
     (description "This package allows using KeepKey as a hardware SSH/GPG
 agent.")

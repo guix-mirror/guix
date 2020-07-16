@@ -10163,7 +10163,7 @@ visual (yet text based) progress to long running operations.")
         (base32
          "1zvf6zs5hzrc03p9nfs4p16vhilqikycvv1yk0pxn8s07fdhvzji"))))
     (build-system python-build-system)
-    (home-page "http://github.com/germangh/python-progressbar")
+    (home-page "https://github.com/germangh/python-progressbar")
     (synopsis "Text progress bar library for Python")
     (description
      "This package provides a text progress bar library for Python.  This
@@ -16426,7 +16426,7 @@ files, and Makefiles.")
             (invoke "py.test"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://github.com/Suor/whatever")
+    (home-page "https://github.com/Suor/whatever")
     (synopsis "Make anonymous functions by partial application of operators")
     (description "@code{whatever} provides an easy way to make anonymous
 functions by partial application of operators.")
@@ -16458,7 +16458,7 @@ functions by partial application of operators.")
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-whatever" ,python-whatever)))
-    (home-page "http://github.com/Suor/funcy")
+    (home-page "https://github.com/Suor/funcy")
     (synopsis "Functional tools")
     (description "@code{funcy} is a library that provides functional tools.
 Examples are:

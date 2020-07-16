@@ -2347,7 +2347,7 @@ in main memory.")
      `(("r-bit" ,r-bit)
        ("r-fastmatch" ,r-fastmatch)
        ("r-ff" ,r-ff)))
-    (home-page "http://github.com/edwindj/ffbase")
+    (home-page "https://github.com/edwindj/ffbase")
     (synopsis "Basic statistical functions for package 'ff'")
     (description
      "This package extends the out of memory vectors of @code{ff} with
@@ -3530,7 +3530,7 @@ for certain use cases.")
        ("r-scales" ,r-scales)))
     (native-inputs
      `(("r-knitr" ,r-knitr))) ; for vignettes
-    (home-page "http://github.com/slowkow/ggrepel")
+    (home-page "https://github.com/slowkow/ggrepel")
     (synopsis "Repulsive text and label geometries for ggplot2")
     (description
      "This package provides text and label geometries for ggplot2 that help to
@@ -13205,7 +13205,7 @@ plotting functions are available for analyzing clustering results.")
        ("r-tibble" ,r-tibble)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://github.com/rnabioco/valr")
+    (home-page "https://github.com/rnabioco/valr")
     (synopsis "Genome interval arithmetic in R")
     (description
      "This package enables you to read and manipulate genome intervals and

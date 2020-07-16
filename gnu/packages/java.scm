@@ -9079,7 +9079,7 @@ software engineering people who are interested in Aspect-Oriented Programming
      `(#:jar-name "java-javax-inject.jar"
        #:jdk ,icedtea-8
        #:tests? #f)); no tests
-    (home-page "http://github.com/javax-inject/javax-inject")
+    (home-page "https://github.com/javax-inject/javax-inject")
     (synopsis "JSR-330: Dependency Injection for Java")
     (description "This package specifies a means for obtaining objects in such
 a way as to maximize reusability, testability and maintainability compared to

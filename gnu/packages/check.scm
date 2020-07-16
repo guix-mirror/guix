@@ -1600,7 +1600,7 @@ testing frameworks.")
     (propagated-inputs
      `(("python-coverage" ,python-coverage)
        ("python-requests" ,python-requests)))
-    (home-page "http://github.com/codecov/codecov-python")
+    (home-page "https://github.com/codecov/codecov-python")
     (synopsis "Upload code coverage reports to @code{codecov.io}")
     (description
      "Codecov collects code coverage reports from code written in Python, Java,
@@ -2163,7 +2163,7 @@ a fork of pytest-capturelog.")
     (propagated-inputs
      `(("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)))
-    (home-page "http://github.com/cmheisel/nose-xcover")
+    (home-page "https://github.com/cmheisel/nose-xcover")
     (synopsis "Extends nose.plugins.cover to add Cobertura-style XML reports")
     (description "Nose-xcover is a companion to the built-in
 @code{nose.plugins.cover}.  This plugin will write out an XML coverage report

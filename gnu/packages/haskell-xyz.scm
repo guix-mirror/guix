@@ -2472,7 +2472,7 @@ interface}.")
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
-    (home-page "http://github.com/bos/configurator")
+    (home-page "https://github.com/bos/configurator")
     (synopsis "Configuration management")
     (description
      "This package provides a configuration management library for programs
@@ -5492,7 +5492,7 @@ template-haskell abstract syntax.")
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-microlens-platform" ,ghc-microlens-platform)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://github.com/MarcWeber/hasktags")
+    (home-page "https://github.com/MarcWeber/hasktags")
     (synopsis "Make @code{Ctags} and @code{Etags} files for Haskell programs")
     (description
      "This package provides a means of generating tag files for Emacs and
@@ -6991,7 +6991,7 @@ Kaseorg.")
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://github.com/ekmett/linear/")
+    (home-page "https://github.com/ekmett/linear/")
     (synopsis "Linear algebra library for Haskell")
     (description
      "This package provides types and combinators for linear algebra on free
@@ -8258,7 +8258,7 @@ IPv4, IPv6 and MAC addresses.")
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)))
-    (home-page "http://github.com/sjakobi/newtype-generics")
+    (home-page "https://github.com/sjakobi/newtype-generics")
     (synopsis "Typeclass and set of functions for working with newtypes")
     (description "The @code{Newtype} typeclass represents the packing and
 unpacking of a newtype, and allows you to operate under that newtype with
@@ -9622,7 +9622,7 @@ ByteStrings in the style of other common *nix hex dump tools.")
     (inputs
      `(("ghc-haskell-lexer" ,ghc-haskell-lexer)
        ("ghc-happy" ,ghc-happy)))
-    (home-page "http://wiki.github.com/yav/pretty-show")
+    (home-page "https://wiki.github.com/yav/pretty-show")
     (synopsis "Tools for working with derived `Show` instances")
     (description
      "This package provides a library and an executable for working with
@@ -10565,7 +10565,7 @@ code where you can safely allocate resources.")
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)
        ("ghc-hedgehog" ,ghc-hedgehog)))
-    (home-page "http://github.com/Soostone/retry")
+    (home-page "https://github.com/Soostone/retry")
     (synopsis "Retry combinators for monadic actions that may fail")
     (description "This package exposes combinators that can wrap
 arbitrary monadic actions.  They run the action and potentially retry
@@ -14351,7 +14351,7 @@ parts.")
         (base32
          "0azlzaxp2dn4l1nr7shsxah2magk1szf6fx0mv75az00qsjw6qg4"))))
     (build-system haskell-build-system)
-    (home-page "http://github.com/willdonnelly/xdg-basedir")
+    (home-page "https://github.com/willdonnelly/xdg-basedir")
     (synopsis "XDG Base Directory library for Haskell")
     (description "This package provides a library implementing the XDG Base Directory spec.")
     (license license:bsd-3)))

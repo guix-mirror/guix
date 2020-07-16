@@ -2458,7 +2458,7 @@ Ruby Gems.")
   (synopsis "Ruby module is for reading and writing zip files")
   (description
     "The rubyzip module provides ways to read from and create zip files.")
-  (home-page "http://github.com/rubyzip/rubyzip")
+  (home-page "https://github.com/rubyzip/rubyzip")
   (license license:bsd-2)))
 
 (define-public ruby-simplecov-html
@@ -4758,7 +4758,7 @@ file or directories are modified.")
   (package
     (name "ruby-spinach")
     (version "0.11.0")
-    (home-page "http://github.com/codegram/spinach")
+    (home-page "https://github.com/codegram/spinach")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "spinach" version))
@@ -6630,7 +6630,7 @@ It is intended be used by all Cucumber implementations to parse
   (package
     (name "ruby-gherkin-ruby")
     (version "0.3.2")
-    (home-page "http://github.com/codegram/gherkin-ruby")
+    (home-page "https://github.com/codegram/gherkin-ruby")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "gherkin-ruby" version))
@@ -8855,7 +8855,7 @@ integrates other mathematical standard libraries.  Prior to Ruby 2.5,
     (description
      "This gem is a port of the rails 'rake stats' method so it can be made
 more robust and work for non rails projects.")
-    (home-page "http://github.com/danmayer/code_statistics")
+    (home-page "https://github.com/danmayer/code_statistics")
     (license license:expat)))
 
 (define-public ruby-rubypants
@@ -9057,7 +9057,7 @@ RFC 3987, and RFC 6570 (level 4), providing support for IRIs and URI templates."
      "This package extends the @code{String} class and adds a
 @code{ColorizedString} with methods to set text color, background color,
 and text effects.")
-    (home-page "http://github.com/fazibear/colorize")
+    (home-page "https://github.com/fazibear/colorize")
     (license license:gpl2+)))
 
 (define-public ruby-colorator
@@ -10602,7 +10602,7 @@ which snapshots to consider and what files to include.")
   (package
     (name "ruby-wwtd")
     (version "1.4.1")
-    (home-page "http://github.com/grosser/wwtd")
+    (home-page "https://github.com/grosser/wwtd")
     (source (origin
               (method git-fetch)
               (uri (git-reference

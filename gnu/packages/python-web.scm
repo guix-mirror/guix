@@ -187,7 +187,7 @@ aiohttp.  It supports SOCKS4(a) and SOCKS5.")
      `(("python-pycares" ,python-pycares)))
     (arguments
      `(#:tests? #f))                    ;tests require internet access
-    (home-page "http://github.com/saghul/aiodns")
+    (home-page "https://github.com/saghul/aiodns")
     (synopsis "Simple DNS resolver for asyncio")
     (description "@code{aiodns} provides a simple way for doing
 asynchronous DNS resolutions with a synchronous looking interface by
@@ -2368,7 +2368,7 @@ pretty printer and a tree visitor.")
        ("python-itsdangerous" ,python-itsdangerous)
        ("python-passlib" ,python-passlib)
        ("python-tox" ,python-tox)))
-    (home-page "http://github.com/carsongee/flask-htpasswd")
+    (home-page "https://github.com/carsongee/flask-htpasswd")
     (synopsis "Basic authentication via htpasswd files in Flask applications")
     (description "This package provides Basic authentication via
 @file{htpasswd} files and access_token authentication in Flask
@@ -3106,7 +3106,7 @@ more.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;tests require internet access
-    (home-page "http://github.com/saghul/pycares")
+    (home-page "https://github.com/saghul/pycares")
     (synopsis "Python interface for @code{c-ares}")
     (description "@code{pycares} is a Python module which provides an
 interface to @code{c-ares}, a C library that performs DNS requests and

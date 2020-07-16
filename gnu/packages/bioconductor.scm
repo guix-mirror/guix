@@ -1587,7 +1587,7 @@ Affymetrix (CEL files) and NimbleGen arrays (XYS files).")
        ("r-reshape2" ,r-reshape2)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://github.com/jdstorey/qvalue")
+    (home-page "https://github.com/StoreyLab/qvalue")
     (synopsis "Q-value estimation for false discovery rate control")
     (description
      "This package takes a list of p-values resulting from the simultaneous

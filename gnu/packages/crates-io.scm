@@ -1995,7 +1995,7 @@ BLAKE2bp hash functions.")
      `(#:skip-build? #t
        #:cargo-development-inputs
        (("rust-objc-test-utils" ,rust-objc-test-utils-0.0))))
-    (home-page "http://github.com/SSheldon/rust-block")
+    (home-page "https://github.com/SSheldon/rust-block")
     (synopsis "Rust interface for Apple's C language extension of blocks")
     (description "This package provides a rust interface for Apple's C language
 extension of blocks.")
@@ -5724,7 +5724,7 @@ for intentionally leaking memory")
          "019nzy993hxaiazcdnayx3csv2iki34i535asw11ki96hakkrs84"))))
     (build-system cargo-build-system)
     (arguments '(#:tests? #f))  ; Tests only run on Mac.
-    (home-page "http://github.com/SSheldon/rust-dispatch")
+    (home-page "https://github.com/SSheldon/rust-dispatch")
     (synopsis "Rust wrapper for Apple's Grand Central Dispatch")
     (description "This package provides a Rust wrapper for Apple's Grand
 Central Dispatch.")
@@ -15258,7 +15258,7 @@ giga, kibi.")
        #:cargo-inputs
        (("rust-malloc-buf" ,rust-malloc-buf-0.0)
         ("rust-objc-exception" ,rust-objc-exception-0.1))))
-    (home-page "http://github.com/SSheldon/rust-objc")
+    (home-page "https://github.com/SSheldon/rust-objc")
     (synopsis "Objective-C Runtime bindings and wrapper for Rust")
     (description "This package provides an Objective-C Runtime bindings and
 wrapper for Rust.")
@@ -15282,7 +15282,7 @@ wrapper for Rust.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-cc" ,rust-cc-1.0))))
-    (home-page "http://github.com/SSheldon/rust-objc-exception")
+    (home-page "https://github.com/SSheldon/rust-objc-exception")
     (synopsis "Rust interface for Objective-C's throw and try/catch statements")
     (description
      "This package provides a Rust interface for Objective-C's throw and
@@ -15309,7 +15309,7 @@ try/catch statements.")
        (("rust-block" ,rust-block-0.1)
         ("rust-objc" ,rust-objc-0.2)
         ("rust-objc-id" ,rust-objc-id-0.1))))
-    (home-page "http://github.com/SSheldon/rust-objc-foundation")
+    (home-page "https://github.com/SSheldon/rust-objc-foundation")
     (synopsis "Rust wrapper for Objective-C's Foundation framework")
     (description "This package provides a rust wrapper for Objective-C's
 Foundation framework.")
@@ -15332,7 +15332,7 @@ Foundation framework.")
     (arguments
      `(#:tests? #f  ; Tests require gcc-objc.
        #:cargo-inputs (("rust-objc" ,rust-objc-0.2))))
-    (home-page "http://github.com/SSheldon/rust-objc-id")
+    (home-page "https://github.com/SSheldon/rust-objc-id")
     (synopsis "Rust smart pointers for Objective-C reference counting")
     (description
      "This package provides Rust smart pointers for Objective-C reference counting.")
@@ -15356,7 +15356,7 @@ Foundation framework.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-gcc" ,rust-gcc-0.3))))
-    (home-page "http://github.com/SSheldon/rust-objc")
+    (home-page "https://github.com/SSheldon/rust-objc")
     (synopsis "Utilities for testing Objective-C interop")
     (description
      "This package provides utilities for testing Objective-C interop.")
@@ -15478,7 +15478,7 @@ Things in odds may move to more appropriate crates if we find them.")
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-onig-sys" ,rust-onig-sys-69.2))))
-    (home-page "http://github.com/iwillspeak/rust-onig")
+    (home-page "https://github.com/rust-onig/rust-onig")
     (synopsis
      "Rust bindings for the Oniguruma regular expression library")
     (description
@@ -15507,7 +15507,7 @@ character encodings and regex syntaxes.")
        (("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-bindgen" ,rust-bindgen-0.50)
         ("rust-cc" ,rust-cc-1.0))))
-    (home-page "http://github.com/iwillspeak/rust-onig")
+    (home-page "https://github.com/rust-onig/rust-onig")
     (synopsis
      "Rust bindings to the oniguruma library.")
     (description
@@ -28139,7 +28139,7 @@ designed for reexporting.")
        (("rust-chrono" ,rust-chrono-0.4)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-bitflags" ,rust-bitflags-1))))
-    (home-page "http://github.com/rustyhorde/vergen")
+    (home-page "https://github.com/rustyhorde/vergen")
     (synopsis "Generate version related functions")
     (description
      "Generate version related functions.")
