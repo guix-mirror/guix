@@ -1976,8 +1976,8 @@ sets, bitmaps and hyperloglogs.")
     (version "1.2.77")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://fallabs.com/kyotocabinet/pkg/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "https://fallabs.com/kyotocabinet/pkg/"
+                                  "kyotocabinet-" version ".tar.gz"))
               (sha256
                (base32
                 "1rlx4307adbzd842b4npq6cwlw8h010ingxaz3qz1ijc70lr72an"))))
@@ -1989,7 +1989,7 @@ sets, bitmaps and hyperloglogs.")
         (string-append "LDFLAGS=-Wl,-rpath="
                        (assoc-ref %outputs "out") "/lib"))))
     (inputs `(("zlib" ,zlib)))
-    (home-page "http://fallabs.com/kyotocabinet/")
+    (home-page "https://fallabs.com/kyotocabinet/")
     (synopsis
      "Kyoto Cabinet is a modern implementation of the DBM database")
     (description
