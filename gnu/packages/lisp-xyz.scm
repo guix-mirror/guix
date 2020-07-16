@@ -12295,3 +12295,33 @@ convolutions, etc.")
 
 (define-public cl-napa-fft3
   (sbcl-package->cl-source-package sbcl-napa-fft3))
+
+(define-public sbcl-cl-tga
+  (let ((commit "4dc2f7b8a259b9360862306640a07a23d4afaacc")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-tga")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fisxoj/cl-tga")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "03k3npmn0xd3fd2m7vwxph82av2xrfb150imqrinlzqmzvz1v1br"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/fisxoj/cl-tga")
+      (synopsis "TGA file loader for Common Lisp")
+      (description
+       "Cl-tga was written to facilitate loading @emph{.tga} files into OpenGL
+programs.  It's a very simple library, and, at the moment, only supports
+non-RLE encoded forms of the files.")
+      (license license:expat))))
+
+(define-public cl-tga
+  (sbcl-package->cl-source-package sbcl-cl-tga))
+
+(define-public ecl-cl-tga
+  (sbcl-package->ecl-package sbcl-cl-tga))
