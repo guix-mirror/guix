@@ -380,40 +380,63 @@ decompression.")
     (home-page "https://web.archive.org/web/20180801004107/http://www.bzip.org/")))
 
 (define-public lbzip2
-  (package
-    (name "lbzip2")
-    (version "2.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://archive.lbzip2.org/lbzip2-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1sahaqc5bw4i0iyri05syfza4ncf5cml89an033fspn97klmxis6"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 (substitute* (find-files "lib" "\\.c$")
-                   (("#if defined _IO_ftrylockfile")
-                    "#if defined _IO_EOF_SEEN"))
-                 (substitute* "lib/stdio-impl.h"
-                   (("^/\\* BSD stdio derived implementations")
-                    (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
-                                   "# define _IO_IN_BACKUP 0x100\n"
-                                   "#endif\n\n"
-                                   "/* BSD stdio derived implementations")))
-                 #t))))
-    (build-system gnu-build-system)
-    (synopsis "Parallel bzip2 compression utility")
-    (description
-     "lbzip2 is a multi-threaded compression utility with support for the
+  ;; The last 2.5 release is 4 years behind the newest commit (from 2018) and
+  ;; may create files that can't even be decompressed by newer bzip2 versions.
+  (let ((commit "b6dc48a7b9bfe6b340ed1f6d72133608ad57144b")
+        (revision "0"))
+    (package
+      (name "lbzip2")
+      (version (git-version "2.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kjn/lbzip2")
+               (commit commit)))
+         (sha256
+          (base32 "140xp00dmjsr6c3dwb4dwf0pzlgf159igri321inbinsjiclkngy"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-gnulib
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((gnulib (assoc-ref inputs "gnulib")))
+                 (copy-recursively gnulib "lib")
+                 (setenv "PATH" (string-append "lib:" (getenv "PATH")))
+                 #t)))
+           (delete 'bootstrap)          ; gnulib still has unpatched shebangs
+           (add-after 'patch-source-shebangs 'bootstrap
+             (lambda _
+               (invoke "sh" "build-aux/autogen.sh")
+               #t)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("gnulib"
+          ,(let ((commit "2d431ac35c4943a3655c07ba91870d2323321b43"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "git://git.savannah.gnu.org/gnulib.git")
+                     (commit commit)))
+               (sha256
+                (base32 "1f0xr4w89bqvhzsfcflcagdixidrk41k00k7kpr91w9lazfis4kf"))
+               (file-name (git-file-name "gnulib" commit)))))
+         ("perl" ,perl)))
+      (synopsis "Parallel bzip2 compression utility")
+      (description
+       "lbzip2 is a multi-threaded compression utility with support for the
 bzip2 compressed file format.  lbzip2 can process standard bz2 files in
 parallel.  It uses POSIX threading model (pthreads), which allows it to take
 full advantage of symmetric multiprocessing (SMP) systems.  It has been proven
 to scale linearly, even to over one hundred processor cores.  lbzip2 is fully
 compatible with bzip2 – both at file format and command line level.")
-    (home-page "http://www.lbzip2.org/")
-    (license license:gpl3+)))
+      ;; lbzip2.org now looks fishy.  There is no source code to be found.
+      ;; Reported upstream: <https://github.com/kjn/lbzip2/issues/26>.
+      (home-page "https://github.com/kjn/lbzip2")
+      (license license:gpl3+))))
 
 (define-public pbzip2
   (package
