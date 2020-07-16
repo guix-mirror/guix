@@ -383,10 +383,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.7)))
 
-(define-public linux-libre-5.4-version "5.4.51")
+(define-public linux-libre-5.4-version "5.4.52")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1786l83nwzjazr2rl5fwxpw9dzlggi33nnj9grmp4dnn9j5ym2wy")))
+        (hash (base32 "0fjxx8xpp0v0wwfw6zd5nc21i2r82wzcsy2yyl7w5c90259zlzh3")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
@@ -463,7 +463,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
   (source-with-patches linux-libre-5.4-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch
-                             %linux-libre-fix-atheros-9271-patch
                              ;; Pinebook Pro patch from linux-next,
                              ;; can be dropped for linux-libre 5.7
                              (search-patch
