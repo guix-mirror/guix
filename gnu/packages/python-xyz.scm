@@ -14538,6 +14538,28 @@ in other versions.")
 (define-public python2-configparser
   (package-with-python2 python-configparser))
 
+(define-public python-mamba
+  (package
+    (name "python-mamba")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "mamba" version))
+              (sha256
+               (base32
+                "0bpbgz9v63rpanjjpc8bnvrr8fkms5rzylh77xrcki1x6az7gnsz"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))  ; No test
+    (propagated-inputs
+     `(("python-clint" ,python-clint)
+       ("python-coverage" ,python-coverage)))
+    (home-page "https://nestorsalceda.com/mamba/")
+    (synopsis "Test runner for Python")
+    (description
+     "Mamba is a Behaviour-Driven Development tool for Python developers.
+Is heavily influenced from RSpec, Mocha, Jasmine or Ginkgo.")
+    (license license:expat)))
+
 (define-public python-mando
   (package
     (name "python-mando")
