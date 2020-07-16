@@ -24982,7 +24982,7 @@ the @code{--snapshot} flag using something along these lines:
 @quotation Note
 This service is considered experimental.  Configuration options may be changed
 in a backwards-incompatible manner, and not all features have been thorougly
-tested. Users of this service are encouraged to share their experience at
+tested.  Users of this service are encouraged to share their experience at
 @email{guix-devel@@gnu.org}.
 @end quotation
 
@@ -25050,7 +25050,7 @@ Users are advised to read the
 administrators guide} to learn about the various cluster options and
 day-to-day operations.  There is also a
 @url{https://guix.gnu.org/blog/2020/ganeti-on-guix/,blog post}
-describing how to configure a small cluster.
+describing how to configure and initialize a small cluster.
 
 @defvr {Scheme Variable} ganeti-service-type
 This is a service type that includes all the various services that Ganeti
@@ -25058,6 +25058,8 @@ nodes should run.
 
 Its value is a @code{ganeti-configuration} object that defines the package
 to use for CLI operations, as well as configuration for the various daemons.
+Allowed file storage paths and available guest operating systems are also
+configured through this data type.
 @end defvr
 
 @deftp {Data Type} ganeti-configuration
@@ -25124,8 +25126,8 @@ storage backend and OS variants.
 @end deftp
 
 @deftp {Data Type} ganeti-os
-This data type is suitable for passing to the @code{os} configuration of
-Ganeti.  It takes the following parameters:
+This data type is suitable for passing to the @code{os} parameter of
+@code{ganeti-configuration}.  It takes the following parameters:
 
 @table @asis
 @item @code{name}
@@ -25175,16 +25177,14 @@ scripts that will run when the OS is installed.  It can also be a list of
 @code{(name . file-like)} pairs.  For example:
 
 @lisp
-
 `((99-hello-world . ,(plain-file "#!/bin/sh\necho Hello, World")))
-
 @end lisp
 
 That will create a directory with one executable named @code{99-hello-world}
 and run it every time this variant is installed.  If set to @code{#f}, hooks
 in @file{/etc/ganeti/instance-debootstrap/hooks} will be used, if any.
 @item @code{proxy} (default: @code{#f})
-HTTP proxy to use, if any.
+Optional HTTP proxy to use.
 @item @code{mirror} (default: @code{#f})
 The Debian mirror.  Typically something like @code{http://ftp.no.debian.org/debian}.
 The default varies depending on the distribution.
@@ -25213,24 +25213,24 @@ Alignment of the partition in sectors.
 @end table
 @end deftp
 
-@deffn {Scheme Procedure} debootstrap-variant
+@deffn {Scheme Procedure} debootstrap-variant @var{name} @var{configuration}
 This is a helper procedure that creates a @code{ganeti-os-variant} record.  It
 takes two parameters: a name and a @code{debootstrap-configuration} object.
 @end deffn
 
-@deffn {Scheme Procedure} debootstrap-os
+@deffn {Scheme Procedure} debootstrap-os @var{variants}@dots{}
 This is a helper procedure that creates a @code{ganeti-os} record.  It takes
 a list of variants created with @code{debootstrap-variant}.
 @end deffn
 
-@deffn {Scheme Procedure} guix-variant
+@deffn {Scheme Procedure} guix-variant @var{name} @var{configuration}
 This is a helper procedure that creates a @code{ganeti-os-variant} record for
 use with the Guix OS provider.  It takes a name and a G-expression that returns
 a ``file-like'' (@pxref{G-Expressions, file-like objects}) object containing a
 Guix System configuration.
 @end deffn
 
-@deffn {Scheme Procedure} guix-os
+@deffn {Scheme Procedure} guix-os @var{variants}@dots{}
 This is a helper procedure that creates a @code{ganeti-os} record.  It
 takes a list of variants produced by @code{guix-variant}.
 @end deffn
@@ -25243,7 +25243,7 @@ contains a single debootstrap variant with the default configuration:
 @lisp
 (list (debootstrap-variant
        "default"
-       (debootstrap-configuration))))
+       (debootstrap-configuration)))
 @end lisp
 @end defvr
 
@@ -25256,7 +25256,7 @@ server, a serial console, and authorizes the Ganeti hosts SSH keys.
 (list (guix-variant
        "default"
        (file-append ganeti-instance-guix
-                    "/share/doc/ganeti-instance-guix/examples/dynamic.scm"))))
+                    "/share/doc/ganeti-instance-guix/examples/dynamic.scm")))
 @end lisp
 @end defvr
 
@@ -25524,9 +25524,7 @@ When true, the daemon performs additional logging for debugging purposes.
 
 @defvr {Scheme Variable} ganeti-metad-service-type
 @command{ganeti-metad} is an optional daemon that can be used to provide
-information about the cluster to instances or OS install scripts.  It is
-not included in @code{ganeti-service-type} because using it requires
-additional configuration and support in OS providers.
+information about the cluster to instances or OS install scripts.
 
 It takes a @code{ganeti-metad-configuration} object.
 @end defvr
