@@ -14455,6 +14455,27 @@ builds partial trees by inspecting living objects.")
         ,@(alist-delete "python-typed-ast"
                         (package-propagated-inputs base)))))))
 
+(define-public python-isbnlib
+  (package
+    (name "python-isbnlib")
+    (version "3.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "isbnlib" version))
+       (sha256
+        (base32
+         "07qhykv0x60d5rsx5pj6s4q15ri4znczscll3xmpf6gyclac1592"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; No test
+    (home-page "https://github.com/xlcnd/isbnlib")
+    (synopsis "Python library to work with ISBN strings")
+    (description "@code{python-isbnlib} is a (pure) python library that provides
+several useful methods and functions to validate, clean, transform, hyphenate and
+get metadata for ISBN strings.  Its origin was as the core of isbntools.  This short
+version, is suitable to be include as a dependency in other projects.")
+    (license license:lgpl3+)))
+
 (define-public python-isort
   (package
     (name "python-isort")
