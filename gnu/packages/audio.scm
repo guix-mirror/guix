@@ -2094,21 +2094,21 @@ significantly faster and have minimal dependencies.")
     (version "1.18.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://lv2plug.in/spec/lv2-"
+             (uri (string-append "https://lv2plug.in/spec/lv2-"
                                  version ".tar.bz2"))
              (sha256
               (base32
                "0gs7401xz23q9vajqr31aa2db8dvssgyh5zrvr4ipa6wig7yb8wh"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f  ; no check target
+     `(#:tests? #f                      ; no check target
        #:configure-flags '("--no-plugins")))
     (inputs
      ;; Leaving off cairo and gtk+-2.0 which are needed for example plugins
      `(("libsndfile" ,libsndfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://lv2plug.in/")
+    (home-page "https://lv2plug.in/")
     (synopsis "LV2 audio plugin specification")
     (description
      "LV2 is an open specification for audio plugins and host applications.
