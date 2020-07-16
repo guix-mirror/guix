@@ -12566,7 +12566,7 @@ reading, writing, and exporting phylogenetic trees.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Core libraries of Java framework for processing biological data")
     (description "BioJava is a project dedicated to providing a Java framework
 for processing biological data.  It provides analytical and statistical
@@ -12609,7 +12609,7 @@ This package provides the core libraries.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Biojava interface to the forester phylogenomics library")
     (description "The phylo module provides a biojava interface layer to the
 forester phylogenomics library for constructing phylogenetic trees.")))
@@ -12646,7 +12646,7 @@ forester phylogenomics library for constructing phylogenetic trees.")))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Biojava API for genetic sequence alignment")
     (description "The alignment module of BioJava provides an API that
 contains
@@ -12703,7 +12703,7 @@ contains
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Biojava interface to the forester phylogenomics library")
     (description "The phylo module provides a biojava interface layer to the
 forester phylogenomics library for constructing phylogenetic trees.")))
@@ -12740,7 +12740,7 @@ forester phylogenomics library for constructing phylogenetic trees.")))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Biojava API for genetic sequence alignment")
     (description "The alignment module of BioJava provides an API that
 contains
