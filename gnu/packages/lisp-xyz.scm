@@ -12325,3 +12325,34 @@ non-RLE encoded forms of the files.")
 
 (define-public ecl-cl-tga
   (sbcl-package->ecl-package sbcl-cl-tga))
+
+(define-public sbcl-com.gigamonkeys.binary-data
+  (let ((commit "22e908976d7f3e2318b7168909f911b4a00963ee")
+        (revision "0"))
+    (package
+      (name "sbcl-com.gigamonkeys.binary-data")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gigamonkey/monkeylib-binary-data")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "072v417vmcnvmyh8ddq9vmwwrizm7zwz9dpzi14qy9nsw8q649zw"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (home-page "https://github.com/gigamonkey/monkeylib-binary-data")
+      (synopsis "Common Lisp library for reading and writing binary data")
+      (description
+       "This a Common Lisp library for reading and writing binary data.  It is
+based on code from chapter 24 of the book @emph{Practical Common Lisp}.")
+      (license license:bsd-3))))
+
+(define-public cl-com.gigamonkeys.binary-data
+  (sbcl-package->cl-source-package sbcl-com.gigamonkeys.binary-data))
+
+(define-public ecl-com.gigamonkeys.binary-data
+  (sbcl-package->ecl-package sbcl-com.gigamonkeys.binary-data))
