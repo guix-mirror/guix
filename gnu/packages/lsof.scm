@@ -47,7 +47,7 @@
 
                 ;; Add mirrors because the canonical FTP server at purdue.edu
                 ;; bails out when it cannot do a reverse DNS lookup, as noted
-                ;; at <http://people.freebsd.org/~abe/>.
+                ;; at <https://people.freebsd.org/~abe/>.
                 "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/"
                 (string-append "http://www.mirrorservice.org/sites/"
                                "lsof.itap.purdue.edu/pub/tools/unix/lsof")
@@ -121,4 +121,4 @@ on the system.")
    (license (license:fsf-free
              "file://00FAQ"
              "License inspired by zlib, see point 1.9 of 00FAQ in the distribution."))
-   (home-page "http://people.freebsd.org/~abe/")))
+   (home-page "https://people.freebsd.org/~abe/")))
