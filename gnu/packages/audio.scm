@@ -1690,15 +1690,16 @@ especially for creating reverb effects.  It supports impulse responses with 1,
   (package
     (name "jack")
     (version "0.125.0")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://jackaudio.org/downloads/jack-audio-connection-kit-"
-                   version
-                   ".tar.gz"))
-             (sha256
-              (base32
-               "0i6l25dmfk2ji2lrakqq9icnwjxklgcjzzk65dmsff91z2zva5rm"))))
+    (source
+     (origin
+       (method url-fetch)
+       ;; jackaudio.org/downloads/jack-audio-connection-kit-0.125.0.tar.gz
+       ;; no longer exists (404).  Use an unofficial mirror.
+       (uri (string-append "https://crux.ster.zone/downloads/"
+                           "jack-audio-connection-kit/"
+                           "jack-audio-connection-kit-" version ".tar.gz"))
+       (sha256
+        (base32 "0i6l25dmfk2ji2lrakqq9icnwjxklgcjzzk65dmsff91z2zva5rm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1718,7 +1719,7 @@ especially for creating reverb effects.  It supports impulse responses with 1,
        ("bdb" ,bdb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://jackaudio.org/")
+    (home-page "https://jackaudio.org/")
     (synopsis "JACK audio connection kit")
     (description
      "JACK is a low-latency audio server.  It can connect a number of
