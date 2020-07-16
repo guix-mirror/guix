@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3900,6 +3901,14 @@ binaries, plus debugging symbols in the @code{debug} output), and Binutils.")
 
 (define-public gcc-toolchain-10
   (make-gcc-toolchain gcc-10))
+
+(define-public gdc-toolchain-10
+  (package (inherit (make-gcc-toolchain gdc-10))
+    (synopsis "Complete GCC tool chain for D lang development")
+    (description "This package provides a complete GCC tool chain for
+D lang development to be installed in user profiles.  This includes
+gdc, as well as libc (headers and binaries, plus debugging symbols
+in the @code{debug} output), and binutils.")))
 
 ;; Provide the Fortran toolchain package only for the version of gfortran that
 ;; is used by Guix internally to build Fortran libraries, because combining
