@@ -13224,3 +13224,14 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
      `(("clim-basic" ,sbcl-clim-basic)))
     (arguments
      '(#:asd-file "Extensions/conditional-commands/conditional-commands.asd"))))
+
+(define-public sbcl-mcclim-layouts-tab
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-layouts-tab")
+    (inputs
+     `(("clim" ,sbcl-clim)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Extensions/layouts/mcclim-layouts.asd"
+       #:asd-system-name "mcclim-layouts/tab"))))
