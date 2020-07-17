@@ -157,7 +157,7 @@ inside %DOCKER-OS."
           (version "0")
           (source #f)
           (build-system trivial-build-system)
-          (arguments `(#:guile ,guile-2.2
+          (arguments `(#:guile ,guile-3.0
                        #:builder
                        (let ((out (assoc-ref %outputs "out")))
                          (mkdir out)
@@ -171,7 +171,7 @@ standard output device and then enters a new line.")
           (home-page #f)
           (license license:public-domain)))
        (profile (profile-derivation (packages->manifest
-                                     (list guile-2.2 guile-json-3
+                                     (list guile-3.0 guile-json-3
                                            guest-script-package))
                                     #:hooks '()
                                     #:locales? #f))
@@ -254,7 +254,7 @@ inside %DOCKER-OS."
                 (define (wait-for-container-file container file)
                   ;; Wait for FILE to show up in CONTAINER.
                   (docker-cli "exec" container
-                              #$(file-append guile-2.2 "/bin/guile")
+                              #$(file-append guile-3.0 "/bin/guile")
                               "-c"
                               (object->string
                                `(let loop ((n 15))
