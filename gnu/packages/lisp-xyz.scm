@@ -12986,3 +12986,18 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                (("\\(asdf:defsystem #:mcclim-harfbuzz" all)
                 (string-append "(asdf:load-system :cffi-grovel)\n" all)))
              #t)))))))
+
+(define-public sbcl-mcclim-fonts-clx-freetype
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-fonts-clx-freetype")
+    (inputs
+     `(("cl-freetype2" ,sbcl-cl-freetype2)
+       ("mcclim-clx" ,sbcl-mcclim-clx)
+       ("mcclim-fontconfig" ,sbcl-mcclim-fontconfig)
+       ("mcclim-fonts" ,sbcl-mcclim-fonts)
+       ("mcclim-harfbuzz" ,sbcl-mcclim-harfbuzz)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Extensions/fonts/mcclim-fonts.asd"
+       #:asd-system-name "mcclim-fonts/clx-freetype"))))
