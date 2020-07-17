@@ -12810,3 +12810,20 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
      `())
     (arguments
      '(#:asd-file "Libraries/Drei/Persistent/persistent.asd"))))
+
+(define-public sbcl-drei-mcclim
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-drei-mcclim")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("automaton" ,sbcl-automaton)
+       ("clim-core" ,sbcl-clim-core)
+       ("esa-mcclim" ,sbcl-esa-mcclim)
+       ("flexichain" ,sbcl-flexichain)
+       ("mcclim-fonts" ,sbcl-mcclim-fonts)
+       ("persistent" ,sbcl-persistent)
+       ("swank" ,cl-slime-swank)))
+    (arguments
+     '(#:asd-file "Libraries/Drei/drei-mcclim.asd"))))
