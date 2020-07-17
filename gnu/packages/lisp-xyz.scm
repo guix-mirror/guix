@@ -13021,3 +13021,25 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                (("mcclim-fonts/clx-freetype")
                 "mcclim-fonts-clx-freetype"))
              #t)))))))
+
+(define-public sbcl-mcclim-render
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-render")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-vectors" ,sbcl-cl-vectors)
+       ("clim-basic" ,sbcl-clim-basic)
+       ("mcclim-backend-common" ,sbcl-mcclim-backend-common)
+       ("mcclim-fonts-truetype" ,sbcl-mcclim-fonts-truetype)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Extensions/render/mcclim-render.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-asd-system-names
+           (lambda _
+             (substitute* "Extensions/render/mcclim-render.asd"
+               (("mcclim-fonts/truetype")
+                "mcclim-fonts-truetype"))
+             #t)))))))
