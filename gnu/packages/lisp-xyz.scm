@@ -13205,3 +13205,13 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                (("#:mcclim-bezier/clx\\)\\)")
                 "#:mcclim-bezier-clx))"))
              #t)))))))
+
+(define-public sbcl-mcclim-bitmaps
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-bitmaps")
+    (inputs
+     `(("clim-basic" ,sbcl-clim-basic)
+       ("opticl" ,sbcl-opticl)))
+    (arguments
+     '(#:asd-file "Extensions/bitmap-formats/mcclim-bitmaps.asd"))))
