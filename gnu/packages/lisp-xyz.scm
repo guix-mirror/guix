@@ -13215,3 +13215,12 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("opticl" ,sbcl-opticl)))
     (arguments
      '(#:asd-file "Extensions/bitmap-formats/mcclim-bitmaps.asd"))))
+
+(define-public sbcl-conditional-commands
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-conditional-commands")
+    (inputs
+     `(("clim-basic" ,sbcl-clim-basic)))
+    (arguments
+     '(#:asd-file "Extensions/conditional-commands/conditional-commands.asd"))))
