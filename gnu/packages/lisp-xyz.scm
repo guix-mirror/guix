@@ -12838,3 +12838,15 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("swank" ,cl-slime-swank))) ; For drei-mcclim
     (arguments
      '(#:asd-file "Core/clim/clim.asd"))))
+
+(define-public sbcl-mcclim-backend-common
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-backend-common")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("clim" ,sbcl-clim)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Backends/common/mcclim-backend-common.asd"))))
