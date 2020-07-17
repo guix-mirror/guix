@@ -12773,3 +12773,13 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
      `(("clim-basic" ,sbcl-clim-basic)))
     (arguments
      '(#:asd-file "Core/clim-core/clim-core.asd"))))
+
+(define-public sbcl-esa-mcclim
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-esa-mcclim")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("clim-core" ,sbcl-clim-core)))
+    (arguments
+     '(#:asd-file "Libraries/ESA/esa-mcclim.asd"))))
