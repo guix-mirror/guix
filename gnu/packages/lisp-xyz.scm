@@ -13283,3 +13283,38 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ;; Test suite disabled because of a dependency cycle.
        ;; The tests depend on mcclim/test-util, which depends on mcclim.
        #:tests? #f))))
+
+(define-public cl-mcclim
+  (let ((base (sbcl-package->cl-source-package sbcl-clim-lisp)))
+    (package
+      (inherit base)
+      (name "cl-mcclim")
+      (native-inputs
+       `(("fiveam" ,cl-fiveam)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("alexandria" ,cl-alexandria)
+         ("babel" ,cl-babel)
+         ("bordeaux-threads" ,cl-bordeaux-threads)
+         ("cffi" ,cl-cffi)
+         ("cl-aa" ,cl-aa)
+         ("cl-freetype2" ,cl-freetype2)
+         ("cl-paths-ttf" ,cl-paths-ttf)
+         ("cl-pdf" ,cl-pdf)
+         ("cl-unicode" ,cl-unicode)
+         ("cl-vectors" ,cl-vectors)
+         ("closer-mop" ,cl-closer-mop)
+         ("clx" ,cl-clx)
+         ("flexi-streams" ,cl-flexi-streams)
+         ("flexichain" ,cl-flexichain)
+         ("fontconfig" ,fontconfig)
+         ("freetype" ,freetype)
+         ("harfbuzz" ,harfbuzz)
+         ("log4cl" ,cl-log4cl)
+         ("opticl" ,cl-opticl)
+         ("spatial-trees" ,cl-spatial-trees)
+         ("trivial-features" ,cl-trivial-features)
+         ("trivial-garbage" ,cl-trivial-garbage)
+         ("trivial-gray-streams" ,cl-trivial-gray-streams)
+         ("swank" ,cl-slime-swank)
+         ("zpb-ttf" ,cl-zpb-ttf))))))
