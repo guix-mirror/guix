@@ -12922,3 +12922,34 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                (("mcclim-fonts/clx-truetype")
                 "mcclim-fonts-clx-truetype"))
              #t)))))))
+
+(define-public sbcl-mcclim-fontconfig
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-fontconfig")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cffi" ,sbcl-cffi)
+       ("cffi-grovel" ,sbcl-cffi-grovel)
+       ("fontconfig" ,fontconfig)))
+    (arguments
+     '(#:asd-file "Extensions/fontconfig/mcclim-fontconfig.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Extensions/fontconfig/src/functions.lisp"
+               (("libfontconfig\\.so")
+                (string-append (assoc-ref inputs "fontconfig")
+                               "/lib/libfontconfig.so")))
+             #t))
+         (add-after 'unpack 'fix-build
+           (lambda _
+             ;; The cffi-grovel system does not get loaded automatically,
+             ;; so we load it explicitly.
+             (substitute* "Extensions/fontconfig/mcclim-fontconfig.asd"
+               (("\\(asdf:defsystem #:mcclim-fontconfig" all)
+                (string-append "(asdf:load-system :cffi-grovel)\n" all)))
+             #t)))))))
