@@ -12720,3 +12720,31 @@ and saving 2-dimensional pixel-based images.")
 
 (define-public cl-opticl
   (sbcl-package->cl-source-package sbcl-opticl))
+
+(define-public sbcl-clim-lisp
+  (let ((commit "27b4d7a667c9b3faa74cabcb57706b888314fff7")
+        (revision "0"))
+    (package
+      (name "sbcl-clim-lisp")
+      (version (git-version "0.9.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mcclim/mcclim")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0jijfgkwas6xnpp5wiii6slcx9pgsalngacb8zm29x6pamx2193h"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("log4cl" ,sbcl-log4cl)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (home-page "https://common-lisp.net/project/mcclim/")
+      (synopsis "Common Lisp GUI toolkit")
+      (description
+       "McCLIM is an implementation of the @emph{Common Lisp Interface Manager
+specification}, a toolkit for writing GUIs in Common Lisp.")
+      (license license:lgpl2.1+))))
