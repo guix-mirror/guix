@@ -13043,3 +13043,15 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                (("mcclim-fonts/truetype")
                 "mcclim-fonts-truetype"))
              #t)))))))
+
+(define-public sbcl-mcclim-clx-fb
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-clx-fb")
+    (inputs
+     `(("mcclim-backend-common" ,sbcl-mcclim-backend-common)
+       ("mcclim-clx" ,sbcl-mcclim-clx)
+       ("mcclim-render" ,sbcl-mcclim-render)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Backends/CLX-fb/mcclim-clx-fb.asd"))))
