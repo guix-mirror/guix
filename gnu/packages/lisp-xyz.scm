@@ -12801,3 +12801,12 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
      `())
     (arguments
      '(#:asd-file "Libraries/Drei/cl-automaton/automaton.asd"))))
+
+(define-public sbcl-persistent
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-persistent")
+    (inputs
+     `())
+    (arguments
+     '(#:asd-file "Libraries/Drei/Persistent/persistent.asd"))))
