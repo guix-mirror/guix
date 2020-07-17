@@ -12882,3 +12882,23 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ;; Tests want access to user's fonts, which are not available in
        ;; build container.
        #:tests? #f))))
+
+(define-public sbcl-mcclim-fonts-clx-truetype
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-fonts-clx-truetype")
+    (inputs
+     `(("mcclim-clx" ,sbcl-mcclim-clx)
+       ("mcclim-fonts-truetype" ,sbcl-mcclim-fonts-truetype)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "./Extensions/fonts/mcclim-fonts.asd"
+       #:asd-system-name "mcclim-fonts/clx-truetype"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-asd-system-names
+           (lambda _
+             (substitute* "Extensions/fonts/mcclim-fonts.asd"
+               ((":depends-on \\(#:mcclim-fonts/truetype")
+                ":depends-on (#:mcclim-fonts-truetype"))
+             #t)))))))
