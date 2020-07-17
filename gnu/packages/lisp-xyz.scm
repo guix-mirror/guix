@@ -12764,3 +12764,12 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("trivial-garbage" ,sbcl-trivial-garbage)))
     (arguments
      '(#:asd-file "Core/clim-basic/clim-basic.asd"))))
+
+(define-public sbcl-clim-core
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-clim-core")
+    (inputs
+     `(("clim-basic" ,sbcl-clim-basic)))
+    (arguments
+     '(#:asd-file "Core/clim-core/clim-core.asd"))))
