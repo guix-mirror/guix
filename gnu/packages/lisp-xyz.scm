@@ -13184,3 +13184,24 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                (("mcclim-bezier/core\\)")
                 "mcclim-bezier-core)"))
              #t)))))))
+
+(define-public sbcl-mcclim-bezier
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-bezier")
+    (inputs
+     `(("mcclim-bezier/clx" ,sbcl-mcclim-bezier-clx)
+       ("mcclim-bezier/core" ,sbcl-mcclim-bezier-core)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Extensions/bezier/mcclim-bezier.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-asd-system-names
+           (lambda _
+             (substitute* "Extensions/bezier/mcclim-bezier.asd"
+               (("\\(#:mcclim-bezier/core")
+                "(#:mcclim-bezier-core")
+               (("#:mcclim-bezier/clx\\)\\)")
+                "#:mcclim-bezier-clx))"))
+             #t)))))))
