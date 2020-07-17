@@ -12902,3 +12902,23 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                ((":depends-on \\(#:mcclim-fonts/truetype")
                 ":depends-on (#:mcclim-fonts-truetype"))
              #t)))))))
+
+(define-public sbcl-mcclim-clx-truetype
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-clx-truetype")
+    (inputs
+     `(("mcclim-clx" ,sbcl-mcclim-clx)
+       ("mcclim-fonts-clx-truetype" ,sbcl-mcclim-fonts-clx-truetype)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Backends/CLX/mcclim-clx.asd"
+       #:asd-system-name "mcclim-clx/truetype"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-asd-system-names
+           (lambda _
+             (substitute* "Backends/CLX/mcclim-clx.asd"
+               (("mcclim-fonts/clx-truetype")
+                "mcclim-fonts-clx-truetype"))
+             #t)))))))
