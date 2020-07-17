@@ -12850,3 +12850,17 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("swank" ,cl-slime-swank))) ; For drei-mcclim
     (arguments
      '(#:asd-file "Backends/common/mcclim-backend-common.asd"))))
+
+(define-public sbcl-mcclim-clx
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-clx")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-unicode" ,sbcl-cl-unicode)
+       ("clx" ,sbcl-clx)
+       ("mcclim-backend-common" ,sbcl-mcclim-backend-common)
+       ("mcclim-fonts" ,sbcl-mcclim-fonts)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Backends/CLX/mcclim-clx.asd"))))
