@@ -13112,3 +13112,29 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ;; The tests depend on mcclim/test-util, which depends on mcclim,
        ;; wich depends on mcclim/extensions, which depends on clim-pdf.
        #:tests? #f))))
+
+(define-public sbcl-mcclim-looks
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-looks")
+    (inputs
+     `(("clim" ,sbcl-clim)
+       ("mcclim-clx" ,sbcl-mcclim-clx)
+       ("mcclim-clx-fb" ,sbcl-mcclim-clx-fb)
+       ("mcclim-clx-freetype" ,sbcl-mcclim-clx-freetype)
+       ("mcclim-clx-truetype" ,sbcl-mcclim-clx-truetype)
+       ("mcclim-null" ,sbcl-mcclim-null)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "mcclim.asd"
+       #:asd-system-name "mcclim/looks"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-asd-system-names
+           (lambda _
+             (substitute* "mcclim.asd"
+               (("mcclim-clx/truetype")
+                "mcclim-clx-truetype")
+               (("mcclim-clx/freetype")
+                "mcclim-clx-freetype"))
+             #t)))))))
