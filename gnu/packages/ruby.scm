@@ -8098,7 +8098,15 @@ A modified copy of yajl is used, and included in the package.")
     (arguments
      ;; Note: Tests are willfully disabled to alleviate dependency cycle
      ;; problems.
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'do-not-set-date-in-gemspec
+                    ;; Fix a reproducibility issue (see:
+                    ;; https://github.com/lsegal/yard/issues/1343).
+                    (lambda _
+                      (substitute* "yard.gemspec"
+                        ((".*s\\.date.*") ""))
+                      #t)))))
     (synopsis "Documentation generation tool for Ruby")
     (description "YARD is a documentation generation tool for the Ruby
 programming language.  It enables the user to generate consistent, usable
