@@ -13148,3 +13148,18 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("swank" ,cl-slime-swank))) ; For drei-mcclim
     (arguments
      '(#:asd-file "Extensions/Franz/mcclim-franz.asd"))))
+
+(define-public sbcl-mcclim-bezier-core
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-bezier-core")
+    (inputs
+     `(("clim" ,sbcl-clim)
+       ("clim-pdf" ,sbcl-clim-pdf)
+       ("clim-postscript" ,sbcl-clim-postscript)
+       ("mcclim-null" ,sbcl-mcclim-null)
+       ("mcclim-render" ,sbcl-mcclim-render)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Extensions/bezier/mcclim-bezier.asd"
+       #:asd-system-name "mcclim-bezier/core"))))
