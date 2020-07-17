@@ -6177,6 +6177,7 @@ It provides packages in the @code{javax.annotations} namespace.")
               (uri (git-reference
                      (url "https://github.com/google/guava/")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "00h5cawdjic1vind3yivzh1f58flvm1yfmhsyqwyvmbvj1vakysp"))))
