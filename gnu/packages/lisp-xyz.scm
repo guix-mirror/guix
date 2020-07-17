@@ -13260,3 +13260,26 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                (("mcclim-layouts/tab")
                 "mcclim-layouts-tab"))
              #t)))))))
+
+(define-public sbcl-mcclim
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("mcclim-looks" ,sbcl-mcclim-looks)
+       ("mcclim-extensions" ,sbcl-mcclim-extensions)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-asd-system-names
+           (lambda _
+             (substitute* "mcclim.asd"
+               ((":depends-on \\(\"mcclim/looks\" \"mcclim/extensions\"\\)")
+                ":depends-on (\"mcclim-looks\" \"mcclim-extensions\")"))
+             #t)))
+       ;; Test suite disabled because of a dependency cycle.
+       ;; The tests depend on mcclim/test-util, which depends on mcclim.
+       #:tests? #f))))
