@@ -12792,3 +12792,12 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
      `(("clim-basic" ,sbcl-clim-basic)))
     (arguments
      '(#:asd-file "Extensions/fonts/mcclim-fonts.asd"))))
+
+(define-public sbcl-automaton
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-automaton")
+    (inputs
+     `())
+    (arguments
+     '(#:asd-file "Libraries/Drei/cl-automaton/automaton.asd"))))
