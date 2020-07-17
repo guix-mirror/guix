@@ -12953,3 +12953,36 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                (("\\(asdf:defsystem #:mcclim-fontconfig" all)
                 (string-append "(asdf:load-system :cffi-grovel)\n" all)))
              #t)))))))
+
+(define-public sbcl-mcclim-harfbuzz
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-harfbuzz")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cffi" ,sbcl-cffi)
+       ("cffi-grovel" ,sbcl-cffi-grovel)
+       ("freetype" ,freetype)
+       ("harfbuzz" ,harfbuzz)
+       ("trivial-garbage" ,sbcl-trivial-garbage)))
+    (arguments
+     '(#:asd-file "Extensions/harfbuzz/mcclim-harfbuzz.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Extensions/harfbuzz/src/functions.lisp"
+               (("libharfbuzz\\.so")
+                (string-append (assoc-ref inputs "harfbuzz")
+                               "/lib/libharfbuzz.so")))
+             #t))
+         (add-after 'unpack 'fix-build
+           (lambda _
+             ;; The cffi-grovel system does not get loaded automatically,
+             ;; so we load it explicitly.
+             (substitute* "Extensions/harfbuzz/mcclim-harfbuzz.asd"
+               (("\\(asdf:defsystem #:mcclim-harfbuzz" all)
+                (string-append "(asdf:load-system :cffi-grovel)\n" all)))
+             #t)))))))
