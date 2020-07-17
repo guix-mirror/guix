@@ -13138,3 +13138,13 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                (("mcclim-clx/freetype")
                 "mcclim-clx-freetype"))
              #t)))))))
+
+(define-public sbcl-mcclim-franz
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-franz")
+    (inputs
+     `(("clim" ,sbcl-clim)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Extensions/Franz/mcclim-franz.asd"))))
