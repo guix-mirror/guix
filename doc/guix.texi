@@ -6849,7 +6849,7 @@ corresponding argument, @code{#:jdk} and @code{#:maven}.
 
 The @code{#:maven-plugins} argument is a list of maven plugins used during
 the build, with the same format as the @code{inputs} fields of the package
-declaration.  Its default value is @code{%default-maven-plugins} which is
+declaration.  Its default value is @code{(default-maven-plugins)} which is
 also exported.
 @end defvr
 

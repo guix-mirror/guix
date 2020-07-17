@@ -28,7 +28,7 @@
   #:use-module (srfi srfi-1)
   #:export (%maven-build-system-modules
             default-maven
-            %default-maven-plugins
+            default-maven-plugins
             %default-exclude
             lower
             maven-build
@@ -96,7 +96,7 @@
   (let ((jdk-mod (resolve-interface '(gnu packages java))))
     (module-ref jdk-mod 'icedtea)))
 
-(define %default-maven-plugins
+(define (default-maven-plugins)
   `(("maven-compiler-plugin" ,(default-maven-compiler-plugin))
     ("maven-jar-plugin" ,(default-maven-jar-plugin))
     ("maven-resources-plugin" ,(default-maven-resources-plugin))
@@ -112,7 +112,7 @@
                 #:key source inputs native-inputs outputs system target
                 (maven (default-maven))
                 (jdk (default-jdk))
-                (maven-plugins %default-maven-plugins)
+                (maven-plugins (default-maven-plugins))
                 (local-packages '())
                 (exclude %default-exclude)
                 #:allow-other-keys
