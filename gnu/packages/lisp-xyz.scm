@@ -12748,3 +12748,19 @@ and saving 2-dimensional pixel-based images.")
        "McCLIM is an implementation of the @emph{Common Lisp Interface Manager
 specification}, a toolkit for writing GUIs in Common Lisp.")
       (license license:lgpl2.1+))))
+
+(define-public sbcl-clim-basic
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-clim-basic")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("babel" ,sbcl-babel)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("clim-lisp" ,sbcl-clim-lisp)
+       ("flexichain" ,sbcl-flexichain)
+       ("spatial-trees" ,sbcl-spatial-trees)
+       ("trivial-features" ,sbcl-trivial-features)
+       ("trivial-garbage" ,sbcl-trivial-garbage)))
+    (arguments
+     '(#:asd-file "Core/clim-basic/clim-basic.asd"))))
