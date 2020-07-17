@@ -12827,3 +12827,14 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("swank" ,cl-slime-swank)))
     (arguments
      '(#:asd-file "Libraries/Drei/drei-mcclim.asd"))))
+
+(define-public sbcl-clim
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-clim")
+    (inputs
+     `(("clim-core" ,sbcl-clim-core)
+       ("drei-mcclim" ,sbcl-drei-mcclim)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Core/clim/clim.asd"))))
