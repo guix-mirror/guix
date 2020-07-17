@@ -13076,3 +13076,20 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("swank" ,cl-slime-swank))) ; For drei-mcclim
     (arguments
      '(#:asd-file "Backends/PostScript/clim-postscript-font.asd"))))
+
+(define-public sbcl-clim-postscript
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-clim-postscript")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("clim-basic" ,sbcl-clim-basic)
+       ("clim-postscript-font" ,sbcl-clim-postscript-font)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Backends/PostScript/clim-postscript.asd"
+       ;; Test suite disabled because of a dependency cycle.
+       ;; The tests depend on mcclim/test-util, which depends on mcclim,
+       ;; wich depends on mcclim/extensions, which depends on clim-postscript.
+       #:tests? #f))))
