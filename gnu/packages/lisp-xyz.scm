@@ -12783,3 +12783,12 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("clim-core" ,sbcl-clim-core)))
     (arguments
      '(#:asd-file "Libraries/ESA/esa-mcclim.asd"))))
+
+(define-public sbcl-mcclim-fonts
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-fonts")
+    (inputs
+     `(("clim-basic" ,sbcl-clim-basic)))
+    (arguments
+     '(#:asd-file "Extensions/fonts/mcclim-fonts.asd"))))
