@@ -13065,3 +13065,14 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("swank" ,cl-slime-swank))) ; For drei-mcclim
     (arguments
      '(#:asd-file "Backends/Null/mcclim-null.asd"))))
+
+(define-public sbcl-clim-postscript-font
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-clim-postscript-font")
+    (inputs
+     `(("clim-basic" ,sbcl-clim-basic)
+       ("mcclim-backend-common" ,sbcl-mcclim-backend-common)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Backends/PostScript/clim-postscript-font.asd"))))
