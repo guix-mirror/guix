@@ -13093,3 +13093,22 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ;; The tests depend on mcclim/test-util, which depends on mcclim,
        ;; wich depends on mcclim/extensions, which depends on clim-postscript.
        #:tests? #f))))
+
+(define-public sbcl-clim-pdf
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-clim-pdf")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("cl-pdf" ,sbcl-cl-pdf)
+       ("clim-basic" ,sbcl-clim-basic)
+       ("clim-postscript-font" ,sbcl-clim-postscript-font)
+       ("flexi-streams" ,sbcl-flexi-streams)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Backends/PDF/clim-pdf.asd"
+       ;; Test suite disabled because of a dependency cycle.
+       ;; The tests depend on mcclim/test-util, which depends on mcclim,
+       ;; wich depends on mcclim/extensions, which depends on clim-pdf.
+       #:tests? #f))))
