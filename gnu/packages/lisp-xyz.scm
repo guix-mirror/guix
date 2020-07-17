@@ -13235,3 +13235,28 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
     (arguments
      '(#:asd-file "Extensions/layouts/mcclim-layouts.asd"
        #:asd-system-name "mcclim-layouts/tab"))))
+
+(define-public sbcl-mcclim-extensions
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-extensions")
+    (inputs
+     `(("clim-pdf" ,sbcl-clim-pdf)
+       ("clim-postscript" ,sbcl-clim-postscript)
+       ("conditional-commands" ,sbcl-conditional-commands)
+       ("mcclim-bezier" ,sbcl-mcclim-bezier)
+       ("mcclim-bitmaps" ,sbcl-mcclim-bitmaps)
+       ("mcclim-franz" ,sbcl-mcclim-franz)
+       ("mcclim-layouts-tab" ,sbcl-mcclim-layouts-tab)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "mcclim.asd"
+       #:asd-system-name "mcclim/extensions"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-asd-system-names
+           (lambda _
+             (substitute* "mcclim.asd"
+               (("mcclim-layouts/tab")
+                "mcclim-layouts-tab"))
+             #t)))))))
