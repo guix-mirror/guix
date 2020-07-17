@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Julien Lepiler <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
+;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -935,8 +936,8 @@ messaging library.")
   (deprecated-package "guile3.0-simple-zmq" guile-simple-zmq))
 
 (define-public jupyter-guile-kernel
-  (let ((commit "a7db9245a886e104138474df46c3e88b95cff629")
-        (revision "1"))
+  (let ((commit "f25fb90b95529b17a006a807bd04e6aee12ea304")
+        (revision "2"))
     (package
       (name "jupyter-guile-kernel")
       (version (git-version "0.0.0" revision commit))
@@ -949,7 +950,7 @@ messaging library.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0aj04853bqm47ivfcmrgpb7w3wkis847kc7qrwsa5zcn9h38qh2f"))))
+           "0zr1fasdb2yv9kn21yll993y9higqss4jnfs030ndhjb93raa9sr"))))
       (build-system guile-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
@@ -984,7 +985,7 @@ messaging library.")
 
                           ;; Fix hard-coded file name in the kernel.
                           (substitute* (string-append dir "/kernel.json")
-                            (("/home/.*/guile-jupyter-kernel.scm")
+                            (("/usr/local/.*/guile-jupyter-kernel.scm")
                              (string-append out "/share/guile/site/"
                                             (target-guile-effective-version)
                                             "/guile-jupyter-kernel.scm"))
@@ -1005,17 +1006,17 @@ messaging library.")
                                                              effective
                                                              "/site-ccache\""))
                                             deps)))
-                              (string-append "--no-auto-compile\""
-                                             (string-join -L ", \"-L\", "
-                                                          'prefix)
-                                             (string-join -C ", \"-C\", "
-                                                          'prefix)
-                                             ", \"-s"))))
+                               (string-append "--no-auto-compile\""
+                                              (string-join -L ", \"-L\", "
+                                                           'prefix)
+                                              (string-join -C ", \"-C\", "
+                                                           'prefix)
+                                              ", \"-s"))))
                           #t))))))
       (inputs
        `(("openssl" ,openssl)
-         ("guile" ,guile-2.2)
-         ("guile-json" ,guile-json-1)
+         ("guile" ,guile-3.0)
+         ("guile-json" ,guile-json-3)
          ("guile-simple-zmq" ,guile-simple-zmq)))
       (synopsis "Guile kernel for the Jupyter Notebook")
       (description
