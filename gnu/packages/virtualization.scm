@@ -782,6 +782,7 @@ Guix to build virtual machines.")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0f2isw9d8lawzj21rrq1q9xhq8xfa65rqbhqmrn59z201x9q1336"))))
