@@ -401,26 +401,25 @@ libssh library.")
     (version "2.0")
     (source
      (origin
-       (method url-fetch)
-       ;; The agroman.net domain name expired on 2017-03-23, and the original
-       ;; "http://www.agroman.net/corkscrew/corkscrew-2.0.tar.gz" now returns
-       ;; bogus HTML.  Perhaps it will yet return.  Until then, use a mirror.
-       (uri (string-append "https://downloads.openwrt.org/sources/"
-                           "corkscrew-" version ".tar.gz"))
-       (sha256 (base32
-                "1gmhas4va6gd70i2x2mpxpwpgww6413mji29mg282jms3jscn3qd"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/patpadgett/corkscrew")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0g4pkczrc1zqpnxyyjwcjmyzdj5qqcpzwf1bm3965zdwp94bpppf"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            ;; Replace configure phase as the ./configure script does not like
-           ;; CONFIG_SHELL and SHELL passed as parameters
+           ;; CONFIG_SHELL and SHELL passed as parameters.
            (lambda* (#:key outputs build target #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
                     (bash  (which "bash"))
                     ;; Set --build and --host flags as the provided config.guess
-                    ;; is not able to detect them
+                    ;; is not able to detect them.
                     (flags `(,(string-append "--prefix=" out)
                              ,(string-append "--build=" build)
                              ,(string-append "--host=" (or target build)))))
@@ -430,9 +429,9 @@ libssh library.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (doc (string-append out "/share/doc/" ,name "-" ,version)))
-               (install-file "README" doc)
+               (install-file "README.markdown" doc)
                #t))))))
-    (home-page "http://www.agroman.net/corkscrew")
+    (home-page "https://github.com/patpadgett/corkscrew")
     (synopsis "SSH tunneling through HTTP(S) proxies")
     (description
      "Corkscrew tunnels SSH connections through most HTTP and HTTPS proxies.
