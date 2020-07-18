@@ -1693,15 +1693,6 @@ web pages.")
                  (("(.*add_.*dependency '[_A-Za-z0-9-]+').*" _ stripped)
                   (string-append stripped "\n")))
                #t))
-           (replace 'replace-git-ls-files
-             ;; TODO: Remove after the fix of using 'cut' to better mimic the
-             ;; git ls-files output is merged in ruby-build-system.
-             (lambda _
-               (substitute* "asciidoctor-pdf.gemspec"
-                 (("`git ls-files -z`")
-                  "`find . -type f -not -regex '.*\\.gem$' -print0 \
-|sort -z|cut -zc3-`"))
-               #t))
            ;; The tests rely on the Gem being installed, so move the check phase
            ;; after the install phase.
            (delete 'check)
