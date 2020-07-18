@@ -22,11 +22,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
@@ -40,15 +42,18 @@
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (srfi srfi-1))
 
 (define-public newsboat
   (package
     (name "newsboat")
-    (version "2.13")
+    (version "2.20.1")
     (source
      (origin
        (method url-fetch)
@@ -56,13 +61,20 @@
                            "/newsboat-" version ".tar.xz"))
        (sha256
         (base32
-         "0pik1d98ydzqi6055vdbkjg5krwifbk2hy2f5jp5p1wcy2s16dn7"))))
-    (build-system gnu-build-system)
+         "0rimjikni96m52vhymgsg1b9g99af6ggyzd1lpvhgqsznxwj0y42"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "rust/libnewsboat/Cargo.toml"
+             (("= 1.0.17") "1.0.17"))
+           #t))))
+    (build-system cargo-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
+       ("openssl" ,openssl)
        ("pkg-config" ,pkg-config)
        ;; For building documentation.
-       ("asciidoc" ,asciidoc)))
+       ("asciidoctor" ,ruby-asciidoctor)))
     (inputs
      `(("curl" ,curl)
        ("json-c" ,json-c-0.13)
@@ -71,15 +83,58 @@
        ("stfl" ,stfl)
        ("sqlite" ,sqlite)))
     (arguments
-     '(#:phases
+     `(#:modules ((guix build cargo-build-system)
+                  (guix build utils)
+                  ((guix build gnu-build-system) #:prefix gnu:))
+       #:vendor-dir "vendor"
+       #:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-curl-sys" ,rust-curl-sys-0.4)
+        ("rust-dirs" ,rust-dirs-2.0)
+        ("rust-gettext-rs" ,rust-gettext-rs-0.4)
+        ("rust-gettext-sys" ,rust-gettext-sys-0.19)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-natord" ,rust-natord-1.0)
+        ("rust-nom" ,rust-nom-5)
+        ("rust-once-cell" ,rust-once-cell-1.2)
+        ("rust-percent-encoding" ,rust-percent-encoding-2.1)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-url" ,rust-url-2.1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-xdg" ,rust-xdg-2.2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-section-testing" ,rust-section-testing-0.0))
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'build 'build-documentation
-           (lambda _
-             (invoke "make" "doc"))))
-       #:make-flags
-       (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:test-target "test"))
+         (add-after 'configure 'dont-vendor-self
+           (lambda* (#:key vendor-dir #:allow-other-keys)
+             ;; Don't keep the whole tarball in the vendor directory
+             (delete-file-recursively
+               (string-append vendor-dir "/" ,name "-" ,version ".tar.xz"))
+             #t))
+         (replace 'build
+           (lambda* args
+             ((assoc-ref gnu:%standard-phases 'build)
+              #:make-flags
+              (list (string-append "prefix=" (assoc-ref %outputs "out"))))))
+         (replace 'check
+           (lambda* args
+             ((assoc-ref gnu:%standard-phases 'check)
+              #:test-target "test"
+              #:make-flags
+              (list (string-append "prefix=" (assoc-ref %outputs "out"))))))
+         (replace 'install
+           (lambda* args
+             ((assoc-ref gnu:%standard-phases 'install)
+              #:make-flags
+              (list (string-append "prefix=" (assoc-ref %outputs "out")))))))))
     (native-search-paths
      ;; Newsboat respects CURL_CA_BUNDLE.
      (package-native-search-paths curl))
@@ -95,6 +150,35 @@ Newsboat supports OPML import/exports, HTML rendering, podcasts (with
 file system, and many more features.")
     (license (list license:gpl2+        ; filter/*
                    license:expat))))    ; everything else
+
+(define-public newsboat-2.13
+  (package
+    (inherit newsboat)
+    (version "2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://newsboat.org/releases/" version
+                           "/newsboat-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0pik1d98ydzqi6055vdbkjg5krwifbk2hy2f5jp5p1wcy2s16dn7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(,@(fold alist-delete (package-native-inputs newsboat)
+               '("asciidoctor" "openssl"))
+       ;; For building documentation.
+       ("asciidoc" ,asciidoc)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-after 'build 'build-documentation
+           (lambda _
+             (invoke "make" "doc"))))
+       #:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:test-target "test"))))
 
 (define-public liferea
   (package
