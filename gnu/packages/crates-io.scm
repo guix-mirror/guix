@@ -16463,7 +16463,7 @@ deserialization, and interpreter in Rust.")
 (define-public rust-parking-lot-0.10
   (package
     (name "rust-parking-lot")
-    (version "0.10.0")
+    (version "0.10.2")
     (source
      (origin
        (method url-fetch)
@@ -16472,7 +16472,7 @@ deserialization, and interpreter in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1z0wgf2sd1266y768kxxs3313zjfzj9r3k7j4arfaz0bmd4qrscj"))))
+         "0pjhcbyk6n0g6jsr6s9nf4x8wribm1b2yf8fgc8drbqa77mh99yk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
