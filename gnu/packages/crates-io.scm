@@ -15505,6 +15505,32 @@ slices (@code{.find()}, @code{RevSlice}), strings and other things.
 Things in odds may move to more appropriate crates if we find them.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-odds-0.2
+  (package
+    (inherit rust-odds-0.3)
+    (name "rust-odds")
+    (version "0.2.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "odds" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08pvngx0nf7yl9cgk4bahn1a0s8na5g9knbhq7y29kysp58h3bjf"))))
+    (arguments
+     `(#:tests? #f      ; doc tests fail
+       #:cargo-inputs
+       (("rust-rawpointer" ,rust-rawpointer-0.1)
+        ("rust-rawslice" ,rust-rawslice-0.1)
+        ("rust-unchecked-index" ,rust-unchecked-index-0.2))
+       #:cargo-development-inputs
+       (("rust-itertools" ,rust-itertools-0.5)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-quickcheck" ,rust-quickcheck-0.4))))))
+
 (define-public rust-onig-5.0
   (package
     (name "rust-onig")
