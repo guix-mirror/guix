@@ -17136,8 +17136,42 @@ algorithm.")
      "Pest meta language parser and validator.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-petgraph-0.5
+  (package
+    (name "rust-petgraph")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "petgraph" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dzxda6z17sfxly11m8ja3iargh73pw0s1sdgjyp0qp5dm51cza6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fixedbitset" ,rust-fixedbitset-0.2)
+        ("rust-ordermap" ,rust-ordermap-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:cargo-development-inputs
+       (("rust-defmac" ,rust-defmac-0.1)
+        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-odds" ,rust-odds-0.2)
+        ("rust-rand" ,rust-rand-0.5))))
+    (home-page "https://github.com/petgraph/petgraph")
+    (synopsis "Graph data structure library")
+    (description
+     "Graph data structure library.  Provides graph types and graph
+algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-petgraph-0.4
   (package
+    (inherit rust-petgraph-0.5)
     (name "rust-petgraph")
     (version "0.4.13")
     (source
@@ -17149,7 +17183,6 @@ algorithm.")
        (sha256
         (base32
          "0kyfmca854s54jk26g2x1kjb04c3k7cjilaxyr0if8lhxv8mjdlw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-fixedbitset" ,rust-fixedbitset-0.1)
@@ -17168,13 +17201,7 @@ algorithm.")
            (lambda _
              (substitute* "tests/graph.rs"
                (("fn dot\\(\\) \\{" all)
-                (string-append "#[ignore] " all))))))))
-    (home-page "https://github.com/petgraph/petgraph")
-    (synopsis "Graph data structure library")
-    (description
-     "Graph data structure library.  Provides graph types and graph
-algorithms.")
-    (license (list license:expat license:asl2.0))))
+                (string-append "#[ignore] " all))))))))))
 
 (define-public rust-phf-0.8
   (package
