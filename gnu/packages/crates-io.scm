@@ -5624,8 +5624,7 @@ structs and enums.")
          (base32
           "1qymhyq7w7wlf1dirq6gsnabdyzg6yi2yyxkx6c4ldlkbjdaibhk"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-dirs-sys" ,rust-dirs-sys-0.3))))
     (build-system cargo-build-system)
@@ -5662,7 +5661,7 @@ Windows, and the Standard Directory guidelines on macOS.")
 (define-public rust-dirs-sys-0.3
   (package
     (name "rust-dirs-sys")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
@@ -5671,11 +5670,10 @@ Windows, and the Standard Directory guidelines on macOS.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0yyykdcmbc476z1v9m4z5jb8y91dw6kgzpkiqi2ig07xx0yv585g"))))
+         "0ym5843xack45b1yjahrh3q2f72shnwf1dd2jncf9qsxf3sxg4wf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-redox-users" ,rust-redox-users-0.3)
