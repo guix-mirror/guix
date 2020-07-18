@@ -1577,14 +1577,6 @@ to save time in the following ways:
            (lambda _
              (substitute* (find-files "." "\\.rb$")
                (("require.*bundler/setup.*") ""))
-             #t))
-         (replace 'replace-git-ls-files
-           (lambda _
-             ;; TODO: Remove after the fix of using 'cut' to better mimic the
-             ;; git ls-files output is merged in ruby-build-system.
-             (substitute* "chunky_png.gemspec"
-               (("`git ls-files`")
-                "`find . -type f -not -regex '.*\\.gem$' |sort |cut -c3-`"))
              #t)))))
     (native-inputs
      `(("bundler" ,bundler)
