@@ -2626,7 +2626,7 @@ making @dfn{screencasts}.")
 (define-public simplescreenrecorder
   (package
     (name "simplescreenrecorder")
-    (version "0.3.11")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
@@ -2636,7 +2636,7 @@ making @dfn{screencasts}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0n702dnv4qshgn3b90ixvplfafjhgz6040yir5vy8khjdpciysq4"))))
+         "1dzp5yzqlha65crzklx2qlan6ssw1diwzfpc4svd7gnr858q2292"))))
     (build-system cmake-build-system)
     ;; Although libx11, libxfixes, libxext are listed as build dependencies in
     ;; README.md, the program builds and functions properly without them.
@@ -2647,6 +2647,7 @@ making @dfn{screencasts}.")
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("libxi" ,libxi)
+       ("libxinerama" ,libxinerama)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
