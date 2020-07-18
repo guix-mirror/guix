@@ -677,6 +677,24 @@ has an ease of use unmatched by other C++ callback libraries.")
 useful for C++.")
     (license license:lgpl2.1+)))
 
+ (define-public glibmm-2.64
+   (package
+    (inherit glibmm)
+    (name "glibmm")
+    (version "2.64.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/glibmm/"
+                       (version-major+minor version)
+                       "/glibmm-" version ".tar.xz"))
+       (sha256
+        (base32 "1v6lp23fr2qh4zshcnm28sn29j3nzgsvcqj2nhmrnvamipjq4lm7"))))
+     (propagated-inputs
+      `(("libsigc++" ,libsigc++-2)
+        ("glib" ,glib)))))
+
 (define-public python2-pygobject-2
   (package
     (name "python2-pygobject")
