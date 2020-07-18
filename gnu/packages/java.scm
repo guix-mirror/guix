@@ -3796,6 +3796,13 @@ testing frameworks, mocking libraries and UI validation rules.")
       ((#:build-target _) "library")
       ((#:phases phases)
        `(modify-phases ,phases
+          (add-after 'unpack 'patch-classpath-for-integration
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "build.xml"
+                (("build/hamcrest-core-\\$\\{version\\}\\.jar")
+                 (car (find-files (assoc-ref inputs "java-hamcrest-core")
+                                  "jar$"))))
+              #t))
           (replace 'create-pom
             (lambda _
              (substitute* "pom/hamcrest-library.pom"
