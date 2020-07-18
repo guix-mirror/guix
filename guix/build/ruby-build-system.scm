@@ -136,11 +136,7 @@ is #f."
                   #:allow-other-keys)
   "Install the gem archive SOURCE to the output store item.  Additional
 GEM-FLAGS are passed to the 'gem' invocation, if present."
-  (let* ((ruby-version
-          (match:substring (string-match "ruby-(.*)\\.[0-9]$"
-                                         (assoc-ref inputs "ruby"))
-                           1))
-         (out (assoc-ref outputs "out"))
+  (let* ((out (assoc-ref outputs "out"))
          (vendor-dir (string-append out "/lib/ruby/vendor_ruby"))
          (gem-file (first-matching-file "\\.gem$"))
          (gem-file-basename (basename gem-file))
@@ -151,8 +147,8 @@ GEM-FLAGS are passed to the 'gem' invocation, if present."
     (setenv "GEM_VENDOR" vendor-dir)
 
     (or (zero?
-          ;; 'zero? system*' allows the custom error handling to function as
-          ;; expected, while 'invoke' raises its own exception.
+         ;; 'zero? system*' allows the custom error handling to function as
+         ;; expected, while 'invoke' raises its own exception.
          (apply system* "gem" "install" gem-file
                 "--verbose"
                 "--local" "--ignore-dependencies" "--vendor"
