@@ -1535,15 +1535,6 @@ only what they care about.")
            (lambda _
              (delete-file "Gemfile")
              (delete-file "Gemfile.lock")
-             #t))
-         (replace 'replace-git-ls-files
-           (lambda _
-             ;; TODO: Remove after the fix of using 'cut' to better mimic the
-             ;; git ls-files output is merged in ruby-build-system.
-             (substitute* "standard.gemspec"
-               (("`git ls-files -z`")
-                "`find . -type f -not -regex '.*\\.gem$' -print0 \
-|sort -z|cut -zc3-`"))
              #t)))))
     (native-inputs
      `(("ruby-gimme" ,ruby-gimme)
