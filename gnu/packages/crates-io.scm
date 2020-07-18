@@ -15488,16 +15488,15 @@ formats.")
          "0rdnxa0na4897yb0svb3figz35g4imxjv61yfm2j21gbh5q8v8d9"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-rawpointer" ,rust-rawpointer-0.1)
         ("rust-rawslice" ,rust-rawslice-0.1)
         ("rust-unchecked-index" ,rust-unchecked-index-0.2))
        #:cargo-development-inputs
-       (("rust-itertools" ,rust-itertools-0.8)
-        ("rust-lazy-static" ,rust-lazy-static-1)
+       (("rust-itertools" ,rust-itertools-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
         ("rust-memchr" ,rust-memchr-2)
-        ("rust-quickcheck" ,rust-quickcheck-0.8))))
+        ("rust-quickcheck" ,rust-quickcheck-0.4))))
     (home-page "https://github.com/bluss/odds")
     (synopsis "Extra functionality for slices, strings and other things")
     (description
