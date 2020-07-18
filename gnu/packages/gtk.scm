@@ -1654,25 +1654,25 @@ tutorial.")
       license:gpl2+))))
 
 (define-public gtkmm-2
-  (package (inherit gtkmm)
+  (package
+    (inherit gtkmm)
     (name "gtkmm")
     (version "2.24.5")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
-                                 (version-major+minor version)  "/"
-                                 name "-" version ".tar.xz"))
-             (sha256
-              (base32
-               "0wkbzvsx4kgw16f6xjdc1dz7f77ldngdila4yi5lw2zrgcxsb006"))))
-    (arguments '())
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version)  "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0wkbzvsx4kgw16f6xjdc1dz7f77ldngdila4yi5lw2zrgcxsb006"))))
     (propagated-inputs
-     `(("pangomm" ,pangomm)
-       ("cairomm" ,cairomm)
-       ("atkmm" ,atkmm)
+     `(("atkmm" ,atkmm-2.28)
+       ("cairomm" ,cairomm-1.13)
+       ("glibmm" ,glibmm-2.64)
        ("gtk+" ,gtk+-2)
-       ("glibmm" ,glibmm)))))
+       ("pangomm" ,pangomm-2.42)))))
 
 (define-public gtksourceviewmm
   (package
