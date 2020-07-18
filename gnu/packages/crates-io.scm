@@ -5610,6 +5610,36 @@ structs and enums.")
        (("rust-blobby" ,rust-blobby-0.1)
         ("rust-generic-array" ,rust-generic-array-0.13))))))
 
+(define-public rust-directories-3
+  (package
+    (name "rust-directories")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "directories" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03ysv4m6mhsc3w1xnvncd5sxf7v2dz917awq6ksx0n0bsqwxdzpq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dirs-sys" ,rust-dirs-sys-0.3))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1))))
+    (home-page "https://github.com/dirs-dev/directories-rs")
+    (synopsis "Library for standard locations of data directories")
+    (description
+     "This package provides a tiny mid-level library that provides
+platform-specific standard locations of directories for config,
+cache and other data on Linux, Windows and macOS by leveraging the
+mechanisms defined by the XDG base/user directory specifications
+on Linux, the Known Folder API on Windows, and the Standard
+Directory guidelines on macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dirs-2.0
   (package
     (name "rust-dirs")
