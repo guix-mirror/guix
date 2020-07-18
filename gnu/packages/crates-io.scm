@@ -12711,7 +12711,7 @@ by inspecting the system for user preference.")
 (define-public rust-lock-api-0.3
   (package
     (name "rust-lock-api")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
@@ -12720,7 +12720,7 @@ by inspecting the system for user preference.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0yzlz7f5xl5sm129dq8jqsrcrkyv7jjnqwd4zr4ijsdlxjaxxckr"))))
+         "0xgc5dzmajh0akbh5d6d7rj9mh5rzpk74pyrc946v2ixgakj9nn4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
