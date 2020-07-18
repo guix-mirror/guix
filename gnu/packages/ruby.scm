@@ -1413,17 +1413,7 @@ loader for the file type associated with a filename extension, and it augments
          "1dmk94z6ivhrz5hsq68vl5vgydhkz89n394rha1ymddw3rymbfcv"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:test-target "spec"
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'replace-git-ls-files
-           (lambda _
-             ;; TODO: Remove after the fix of using 'cut' to better mimic the
-             ;; git ls-files output is merged in ruby-build-system.
-             (substitute* "treetop.gemspec"
-               (("`git ls-files -z`")
-                "`find . -type f -print0 |sort -z|cut -zc3-`"))
-             #t)))))
+     `(#:test-target "spec"))
     (native-inputs
      `(("ruby-activesupport" ,ruby-activesupport)
        ("ruby-rr" ,ruby-rr)
