@@ -7144,8 +7144,28 @@ cross platform API.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-fixedbitset-0.2
+  (package
+    (name "rust-fixedbitset")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fixedbitset" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0kg03p777wc0dajd9pvlcnsyrwa8dhqwf0sd9r4dw0p82rs39arp"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/petgraph/fixedbitset")
+    (synopsis "FixedBitSet is a simple bitset collection")
+    (description "FixedBitSet is a simple bitset collection.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-fixedbitset-0.1
   (package
+    (inherit rust-fixedbitset-0.2)
     (name "rust-fixedbitset")
     (version "0.1.9")
     (source
@@ -7155,13 +7175,7 @@ cross platform API.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0czam11mi80dbyhf4rd4lz0ihcf7vkfchrdcrn45wbs0h40dxm46"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/petgraph/fixedbitset")
-    (synopsis "FixedBitSet is a simple bitset collection")
-    (description "FixedBitSet is a simple bitset collection.")
-    (license (list license:asl2.0
-                   license:expat))))
+          "0czam11mi80dbyhf4rd4lz0ihcf7vkfchrdcrn45wbs0h40dxm46"))))))
 
 (define-public rust-flame-0.2
   (package
