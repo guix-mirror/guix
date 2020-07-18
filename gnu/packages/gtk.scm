@@ -1243,6 +1243,25 @@ library.")
 library.")
     (license license:lgpl2.1+)))
 
+(define-public pangomm-2.42
+  (package
+    (inherit pangomm)
+    (name "pangomm")
+    (version "2.42.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version)  "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "03zli5amizhv9bfklwfq7xyf0b5dagchx1lnz9f0v1rhk69h9gql"))))
+    (propagated-inputs
+     `(("cairomm" ,cairomm-1.13)
+       ("glibmm" ,glibmm-2.64)
+       ("pango" ,pango)))))
+
 (define-public atkmm
   (package
     (name "atkmm")
