@@ -33,6 +33,8 @@
    (name "biscuolo"))
   ("7988 3B9F 7D6A 4DBF 3719  0367 2506 A96C CF63 0B21"
    (name "boskovits"))
+  ("E82A C026 95D6 FF02 43CA  1E5C F6C5 2DD1 BA27 CB87"
+   (name "brettgilio"))
   (;; primary: "8929 BBC5 73CD 9206 3DDD 979D 3D36 CAA0 116F 0F99"
    "1C9B F005 1A1A 6A44 5257 599A A949 03A1 66A1 8FAE"
    (name "bricewge"))
