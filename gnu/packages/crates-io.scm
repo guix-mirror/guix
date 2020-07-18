@@ -16567,7 +16567,7 @@ synchronization primitives.")
 (define-public rust-parking-lot-core-0.7
   (package
     (name "rust-parking-lot-core")
-    (version "0.7.0")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
@@ -16576,7 +16576,7 @@ synchronization primitives.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1wdbrvh35nn09ga570vl5062dpwfbrwgzyrlhhy78ifzhj2870km"))))
+         "18s0cw5y32447c06fhg2mp3xfng22fn1h9fpx3il98sbimv7r36m"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -16584,7 +16584,7 @@ synchronization primitives.")
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-cloudabi" ,rust-cloudabi-0.0)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-petgraph" ,rust-petgraph-0.4)
+        ("rust-petgraph" ,rust-petgraph-0.5)
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-smallvec" ,rust-smallvec-1)
         ("rust-thread-id" ,rust-thread-id-3.3)
