@@ -1200,6 +1200,23 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
 library.")
     (license license:lgpl2.0+)))
 
+(define-public cairomm-1.13
+  (package
+    (inherit cairomm)
+    (name "cairomm")
+    (version "1.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.cairographics.org/releases/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xlfl0fm5mgv53lr8xjv2kqsk3bz67qkk6qzvbrqmbvbvvbqp9wp"))))
+    (propagated-inputs
+     `(("cairo" ,cairo)
+       ("sigc++" ,libsigc++-2)))))
+
 (define-public pangomm
   (package
     (name "pangomm")
