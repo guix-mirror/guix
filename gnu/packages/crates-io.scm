@@ -11531,6 +11531,27 @@ immutable interval tree.")
        (("rust-permutohedron" ,rust-permutohedron-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.5))))))
 
+(define-public rust-itertools-0.5
+  (package
+    (inherit rust-itertools-0.7)
+    (name "rust-itertools")
+    (version "0.5.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "itertools" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1z4lyrakgynvhylya72qb3vizmxmd62whjmg4r8k01d4inbxccs8"))))
+    (arguments
+     `(#:tests? #f ; Tests fail to compile
+       #:cargo-inputs
+       (("rust-either" ,rust-either-1.5))
+       #:cargo-development-inputs
+       (("rust-permutohedron" ,rust-permutohedron-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.4))))))
+
 (define-public rust-itertools-num-0.1
   (package
     (name "rust-itertools-num")
