@@ -9,7 +9,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -375,17 +375,17 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.1.14")
+    (version "1.2.7")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "https://github.com/arvidn/libtorrent/releases/download/libtorrent-"
+                "https://github.com/arvidn/libtorrent/releases/download/libtorrent_"
                 (string-join (string-split version #\.) "_")
                 "/libtorrent-rasterbar-" version ".tar.gz"))
               (sha256
                (base32
-                "0sn3ingmk1lk9p56f9ifgdwhjg0qizcfgv15wyc9s71nm5fya7sc"))))
+                "001g35janbxi20c7jzsf3ii9mkagz4kdsp7f3sz5r0n0cng0c05w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
