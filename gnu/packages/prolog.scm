@@ -86,7 +86,7 @@ manner.  It also features an interactive interpreter.")
 (define-public swi-prolog
   (package
     (name "swi-prolog")
-    (version "8.1.21")
+    (version "8.3.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -96,7 +96,7 @@ manner.  It also features an interactive interpreter.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1axdiz37dllw0ih58ffm0m95dfxqfzwahl48hpzq90rz4swcr1lq"))))
+                "1r8ypnm8vd2si5wsc9f9i612967l9pdd57bdq4n29mjnl18wznfr"))))
     (build-system cmake-build-system)
     (arguments
      `(#:parallel-build? #t
@@ -106,11 +106,9 @@ manner.  It also features an interactive interpreter.")
              "-DSWIPL_INSTALL_IN_LIB=OFF") ; FIXME: Breaks RUNPATH validation.
        #:phases
        (modify-phases %standard-phases
-         ;; XXX: Delete a variety of tests which fail either attempting to
-         ;; establish a network connection, or attempts to write to the
-         ;; immutable store. Phases marked *-pre are disabled /before/ building.
-         ;; Phases marked *-post are disabled /after/ building.
-         (add-after 'unpack 'delete-failing-tests-pre
+         ;; XXX: Delete the test phase that attempts to write to the
+         ;; immutable store.
+         (add-after 'unpack 'delete-failing-tests
            (lambda _
              (substitute* "src/CMakeLists.txt"
                ((" save") ""))
@@ -119,16 +117,6 @@ manner.  It also features an interactive interpreter.")
              (with-directory-excursion "src/Tests"
                (for-each delete-file-recursively
                          '("save")))
-             #t))
-         (add-before 'check 'delete-failing-tests-post
-           (lambda _
-             (with-directory-excursion "packages"
-               (for-each delete-file-recursively
-                         '("http"
-                           "pengines"
-                           "RDF"
-                           "semweb"
-                           "ssl")))
              #t)))))
     (native-inputs
      `(("zlib" ,zlib)
