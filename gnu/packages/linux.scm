@@ -5672,7 +5672,7 @@ exceeded.")
 (define-public mtd-utils
   (package
     (name "mtd-utils")
-    (version "2.1.1")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5680,7 +5680,7 @@ exceeded.")
                     "mtd-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1lijl89l7hljx8xx70vrz9srd3h41v5gh4b0lvqnlv831yvyh5cd"))))
+                "1mp9fqgnz5r69s8ly98ry6k2blqnaqpllwi8m930dm0n8zrwbm4a"))))
     (arguments
      '(#:configure-flags '("--enable-unit-tests")))
     (native-inputs
