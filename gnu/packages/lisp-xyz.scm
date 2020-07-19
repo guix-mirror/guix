@@ -54,6 +54,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -12875,13 +12876,22 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
        ("cl-paths-ttf" ,sbcl-cl-paths-ttf)
        ("cl-vectors" ,sbcl-cl-vectors)
        ("clim-basic" ,sbcl-clim-basic)
+       ("font-dejavu" ,font-dejavu)
        ("zpb-ttf" ,sbcl-zpb-ttf)))
     (arguments
-     '(#:asd-file "./Extensions/fonts/mcclim-fonts.asd"
+     '(#:asd-file "Extensions/fonts/mcclim-fonts.asd"
        #:asd-system-name "mcclim-fonts/truetype"
-       ;; Tests want access to user's fonts, which are not available in
-       ;; build container.
-       #:tests? #f))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; mcclim-truetype uses DejaVu as default font and
+             ;; sets the path at build time.
+             (substitute* "Extensions/fonts/fontconfig.lisp"
+               (("/usr/share/fonts/truetype/dejavu/")
+                (string-append (assoc-ref inputs "font-dejavu")
+                               "/share/fonts/truetype/")))
+             #t)))))))
 
 (define-public sbcl-mcclim-fonts-clx-truetype
   (package
