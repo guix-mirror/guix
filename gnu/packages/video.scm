@@ -43,6 +43,7 @@
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -528,7 +529,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public straw-viewer
   (package
     (name "straw-viewer")
-    (version "0.0.2")
+    (version "0.0.6")
     (source
      (origin
        (method git-fetch)
@@ -537,7 +538,8 @@ H.264 (MPEG-4 AVC) video streams.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "067j8wdfy29bi5ahky10xzzs8cr3mn95wl4kyqqjvjzri77a25j3"))))
+        (base32
+         "0a9g10r56jdm2jx2yg9i8j8nczq74x78c29bhannr7ybnm2r6w2a"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
