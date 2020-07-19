@@ -1124,14 +1124,14 @@ multiple Unicode code points, e.g. \"G\" + acute-accent)
 (define-public python-humanfriendly
   (package
     (name "python-humanfriendly")
-    (version "4.4.1")
+    (version "8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "humanfriendly" version))
        (sha256
         (base32
-         "0pisgizjql86785jchfjv217g0lsgk114g2lja5j4y3lsc3b9szi"))))
+         "04ixg8b7p6xc8x8lffhi7wfl77xhszakhd0s6j0cf6a84j8yqlmz"))))
     (build-system python-build-system)
     (arguments
      `(;; XXX: Tests depend on coloredlogs, which in turn depends on humanfriendly.
