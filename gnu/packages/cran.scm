@@ -21176,14 +21176,13 @@ recommendations for developers.")
 (define-public r-loo
   (package
     (name "r-loo")
-    (version "2.3.0")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "loo" version))
        (sha256
-        (base32
-         "1lgkmb9938x5cfm0rff3lp4wrj2rvsv61dw1iz1jfd4xr38w87wx"))))
+        (base32 "12z0k8lhz0rxygs5lc7076nw6qhk0pda8nxf65hkinfrf4dy53fr"))))
     (properties `((upstream-name . "loo")))
     (build-system r-build-system)
     (inputs
