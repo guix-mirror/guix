@@ -25497,7 +25497,7 @@ The maximum number of simultaneous client requests to handle.  Further
 connections are allowed, but no responses are sent until enough connections
 have closed.
 
-@item @code{ssl?} (default: @code{#f})
+@item @code{ssl?} (default: @code{#t})
 Whether to use SSL/TLS encryption on the RAPI port.
 
 @item @code{ssl-key} (default: @file{"/var/lib/ganeti/server.pem"})

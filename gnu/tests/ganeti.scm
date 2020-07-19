@@ -70,6 +70,11 @@
                    (service ganeti-service-type
                             (ganeti-configuration
                              (file-storage-paths '("/srv/ganeti/file-storage"))
+                             (rapi-configuration
+                              (ganeti-rapi-configuration
+                               ;; Disable TLS so we can test the RAPI without
+                               ;; pulling in GnuTLS.
+                               (ssl? #f)))
                              (os %default-ganeti-os))))
              %base-services))))
 

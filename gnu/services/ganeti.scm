@@ -450,7 +450,7 @@ be submitted via this daemon and it schedules and starts them.")))
   (max-clients ganeti-rapi-configuration-max-clients    ;integer
                (default 20))
   (ssl?        ganeti-rapi-configuration-ssl?           ;Boolean
-               (default #f))
+               (default #t))
   (ssl-key     ganeti-rapi-configuration-ssl-key        ;string
                (default "/var/lib/ganeti/server.pem"))
   (ssl-cert    ganeti-rapi-configuration-ssl-cert       ;string
