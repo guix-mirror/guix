@@ -3852,8 +3852,6 @@ Server (PLS).")
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
        ("python-jsonrpc-server" ,python-jsonrpc-server)
-       ;; Note: Remove the special versions of Jedi and Parso when updating
-       ;; this package.
        ("python-jedi" ,python-jedi)
        ("python-yapf" ,python-yapf)
        ("python-pyflakes" ,python-pyflakes)
