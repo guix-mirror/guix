@@ -37,14 +37,14 @@
 (define-public mc
   (package
     (name "mc")
-    (version "4.8.24")
+    (version "4.8.25")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://ftp.midnight-commander.org/mc-"
                           version ".tar.xz"))
       (sha256
-       (base32 "0ikd2yql44p7nagmb08dmjqdwadclnvgr7ri9pmzc2s5f301r7w5"))))
+       (base32 "12jlnabnc91xsm35g99g2wnh96jmznvrhffd18rj7fqfy8brdhgz"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
