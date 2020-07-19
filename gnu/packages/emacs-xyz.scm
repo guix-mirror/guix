@@ -22242,9 +22242,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "ae09592498ce380e57fbb76725fd4c89ae248864")
+  (let ((commit "5fd725ef8e0b4cf2eb908b1f48638a9d5df49b93")
 	(revision "0")
-	(version "0.6.0"))
+	(version "0.6.27"))
     (package
       (name "emacs-telega")
       (version (git-version version revision commit))
@@ -22256,7 +22256,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "0mv6i80958d9crzspzik5xh5g8326115bvg2frgv0dp9p6rm86m3"))
+           "1852xkd8pq1g6c74nm8kbgiglsig7cyizp2igr4mydln2pak0ccx"))
          (patches (search-patches "emacs-telega-test-env.patch"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
@@ -22284,7 +22284,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                  (("python3 run_tests.py")
                   ""))
                #t))
-           (add-after 'unpack 'telega-paths-patch
+           (add-after 'check 'telega-paths-patch
              (lambda* (#:key inputs #:allow-other-keys)
                ;; Hard-code paths to `ffplay` and `ffmpeg`.
                (let ((ffplay-bin (string-append (assoc-ref inputs "ffmpeg")
@@ -22345,6 +22345,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
       (propagated-inputs
        `(("emacs-visual-fill-column" ,emacs-visual-fill-column)
          ("emacs-company" ,emacs-company)
+         ("emacs-rainbow-identifiers"
+          ,emacs-rainbow-identifiers)
          ("libwebp" ,libwebp))) ; sticker support.
       (native-inputs
        `(("tdlib" ,tdlib)
