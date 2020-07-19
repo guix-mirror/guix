@@ -76,7 +76,7 @@ loop.")
 (define-public libev
   (package
     (name "libev")
-    (version "4.31")
+    (version "4.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/libev/Attic/libev-"
@@ -84,7 +84,7 @@ loop.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "0nkfqv69wfyy2bpga4d53iqydycpik8jp8x6q70353hia8mmv1gd"))))
+                "1sjs4324is7fp21an4aas2z4dwsvs6z4xwrmp72vwpq1s6wbfzjh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
