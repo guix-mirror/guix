@@ -1594,8 +1594,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
-  %D%/packages/patches/ungoogled-chromium-system-jsoncpp.patch	\
-  %D%/packages/patches/ungoogled-chromium-system-zlib.patch	\
+  %D%/packages/patches/ungoogled-chromium-system-nspr.patch	\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\
   %D%/packages/patches/unzip-CVE-2014-8141.patch		\

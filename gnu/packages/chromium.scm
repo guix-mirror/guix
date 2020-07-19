@@ -55,6 +55,7 @@
   #:use-module (gnu packages nss)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -137,6 +138,8 @@
     "third_party/dawn" ;ASL2.0
     "third_party/depot_tools/owners.py" ;BSD-3
     "third_party/devtools-frontend" ;BSD-3
+    "third_party/devtools-frontend/src/front_end/third_party/acorn" ;Expat
+    "third_party/devtools-frontend/src/front_end/third_party/codemirror" ;Expat
     "third_party/devtools-frontend/src/front_end/third_party/fabricjs" ;Expat
     "third_party/devtools-frontend/src/front_end/third_party/lighthouse" ;ASL2.0
     "third_party/devtools-frontend/src/front_end/third_party/wasmparser" ;ASL2.0
@@ -159,6 +162,7 @@
     "third_party/jstemplate" ;ASL2.0
     "third_party/khronos" ;Expat, SGI
     "third_party/leveldatabase" ;BSD-3
+    "third_party/libavif" ;BSD-2
     "third_party/libXNVCtrl" ;Expat
     "third_party/libaddressinput" ;ASL2.0
     "third_party/libaom" ;BSD-2 or "Alliance for Open Media Patent License 1.0"
@@ -174,6 +178,7 @@
     "third_party/libwebm" ;BSD-3
     "third_party/libxml/chromium" ;BSD-3
     "third_party/libyuv" ;BSD-3
+    "third_party/lottie" ;Expat
     "third_party/lss" ;BSD-3
     "third_party/mako" ;Expat
     "third_party/markupsafe" ;BSD-3
@@ -186,6 +191,7 @@
     "third_party/one_euro_filter" ;BSD-3
     "third_party/openscreen" ;BSD-3
     "third_party/openscreen/src/third_party/tinycbor" ;Expat
+    "third_party/openscreen/src/third_party/mozilla" ;MPL1.1/GPL2+/LGPL2.1+, BSD-3
     "third_party/ots" ;BSD-3
     "third_party/pdfium" ;BSD-3
     "third_party/pdfium/third_party/agg23" ;Expat
@@ -223,12 +229,13 @@
     "third_party/swiftshader/third_party/SPIRV-Headers" ;X11-style
     "third_party/usb_ids" ;BSD-3
     "third_party/usrsctp" ;BSD-2
+    "third_party/vulkan_memory_allocator" ;Expat
     "third_party/wayland/wayland_scanner_wrapper.py" ;BSD-3
     "third_party/wayland-protocols" ;Expat
     "third_party/web-animations-js" ;ASL2.0
     "third_party/webdriver" ;ASL2.0
     "third_party/webrtc" ;BSD-3
-    "third_party/webrtc/common_audio/third_party/fft4g" ;Non-copyleft
+    "third_party/webrtc/common_audio/third_party/ooura" ;Non-copyleft
     "third_party/webrtc/common_audio/third_party/spl_sqrt_floor" ;Public domain
     "third_party/webrtc/modules/third_party/fft" ;Non-copyleft
     "third_party/webrtc/modules/third_party/g711" ;Public domain
@@ -239,7 +246,6 @@
     "third_party/widevine/cdm/widevine_cdm_common.h" ;BSD-3
     "third_party/woff2" ;ASL2.0
     "third_party/xdg-utils" ;Expat
-    "third_party/yasm/run_yasm.py" ;BSD-2 or BSD-3
     "third_party/zlib/google" ;BSD-3
     "url/third_party/mozilla" ;BSD-3, MPL1.1/GPL2+/LGPL2.1+
     "v8/src/third_party/siphash" ;Public domain
@@ -254,10 +260,6 @@
   ;; run the Blink performance tests, just remove everything to save ~24MiB.
   '("third_party/blink/perf_tests"))
 
-(define %ungoogled-revision "f08ce8b3f1300ef0750b5d6bf967b9cbbfd9a56d")
-(define %debian-revision "debian/81.0.4044.92-1")
-(define %gentoo-revision "55ef09d6709f4e4cbe23418e4ade0f219fa2fa1f")
-
 (define (gentoo-patch name revision hash)
   (origin
     (method url-fetch)
@@ -266,39 +268,15 @@
     (file-name (string-append "ungoogled-" name))
     (sha256 (base32 hash))))
 
-(define %gentoo-patches
-  (list (gentoo-patch "chromium-fix-char_traits.patch" %gentoo-revision
-                      "1zr9wj2rj5phwdiffykd8w3srmzn0xxgmznz762qp7rs7amnp8ns")
-        (gentoo-patch "chromium-blink-style_format.patch" %gentoo-revision
-                      "098akk5l01m0n3zz08ycz1kp3xmjnbng6d399z1fnb2zigbf0b0z")
-        (gentoo-patch "chromium-78-protobuf-export.patch" %gentoo-revision
-                      "1wbw29daqwyrnij4991v84955ydqfvvjpz4s2p40agnzmgdzwnsx")
-        (gentoo-patch "chromium-79-gcc-alignas.patch" %gentoo-revision
-                      "1a6l4i9cicy8dpxxjamyw8cl2nmqfv3x9gbffrsr8571my6fh17s")
-        (gentoo-patch "chromium-80-gcc-quiche.patch" %gentoo-revision
-                      "0rdlsymw6h8i6yhysiq4la53pwivzv1i9lh0gprh5cl367r1haww")
-        (gentoo-patch "chromium-82-gcc-noexcept.patch" %gentoo-revision
-                      "0pljnysjvbv2ck0s159qssjhv1pfr32i0nb66smmfmfix2yaizqc")
-        (gentoo-patch "chromium-82-gcc-incomplete-type.patch" %gentoo-revision
-                      "04751dnpmiasifhq29a1kyxlnq6f2fmd2qbkv7hxdlsxbzg3lhsv")
-        (gentoo-patch "chromium-82-gcc-template.patch" %gentoo-revision
-                      "1ilmx9wmzyrwmfvr2mwc7m5z6lnbhjkms5k40i8yavqah6kcdbw2")
-        (gentoo-patch "chromium-82-gcc-iterator.patch" %gentoo-revision
-                      "1xljai9cj99pf4q3l8hz90i8mhdbd8v6h1vj8y37v6j8p78n3zvj")
-        (gentoo-patch "chromium-83-gcc-template.patch" %gentoo-revision
-                      "1bb1anqdrimza7d0gg4fmxij00563jd9k1azy8sz1ybd8gvrphqi")
-        (gentoo-patch "chromium-83-gcc-include.patch" %gentoo-revision
-                      "0rs9jj71ridplndi967m0z47vqd8ryykg36gjx8iyf3580vr2hlw")
-        (gentoo-patch "chromium-83-gcc-permissive.patch" %gentoo-revision
-                      "04mrmrg3pbwl3gph2n1dkbv4miz80xww1gysd39six028nxacjpg")
-        (gentoo-patch "chromium-83-gcc-iterator.patch" %gentoo-revision
-                      "0q66399va607kjnk8n9xlcr740q7c522p2z7abyd2hgq2bxgglnv")
-        (gentoo-patch "chromium-83-gcc-serviceworker.patch" %gentoo-revision
-                      "0klvcqqzldfhvqr3plja64qamgff1m2z1zcn325bj32gmpypqjx9")
-        (gentoo-patch "chromium-83-gcc-10.patch" %gentoo-revision
-                      "0vfvh1jypqcb274bggacg165mw2q5gmn237cvrrwcjqalz0ahnry")
-        (gentoo-patch "chromium-83-icu67.patch" %gentoo-revision
-                      "05spmjhg5f56mkq3f96vm4s2d9h6vqdxz5g8ibd9pf8ddnh4blnx")))
+;; This repository contains libstdc++ compatibility patches for Chromium.
+(define (chromium-gcc-patchset commit hash)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/stha09/chromium-patches")
+          (commit commit)))
+    (file-name (git-file-name "chromium-gcc-patches" commit))
+    (sha256 (base32 hash))))
 
 (define (debian-patch name revision hash)
   (origin
@@ -310,9 +288,25 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
+(define %ungoogled-revision "df199c04ff367da59ce52a23a3f3b305dd3b00c3")
+(define %debian-revision "debian/83.0.4103.116-3")
+(define %gentoo-revision "f3f649046d31ebdbc8c4a302b2384504eff78027")
+
+(define %gentoo-patches
+  ;; This patch is necessary for compatibility with FFmpeg 4.3.
+  (list (gentoo-patch "chromium-84-mediaalloc.patch" %gentoo-revision
+                      "0snxdc4nb8ykzncz62vpsl8hgxpy24m17mycx67i2gckmrpslzzv")))
+
+(define %chromium-gcc-patches
+  (chromium-gcc-patchset
+   "chromium-84-patchset-3"
+   "0l05gx3pn703n47anjwsl5sjcqw8kaxmivf7llax97kj3k6d127v"))
+
 (define %debian-patches
-  (list (debian-patch "system/nspr.patch" %debian-revision
-                      "1x6ydc8pfks2c1dlwf0c58par6znjknvs9815576ycx27jl633dy")
+  (list (debian-patch "system/zlib.patch" %debian-revision
+                      "0bp2vh1cgmwjrn1zkpphkd3bs662s23xwdhy3abm9cfjvwrj117n")
+        (debian-patch "system/jsoncpp.patch" %debian-revision
+                      "0d95brl4a5y5w142yd0rvf59z513h7chsz0vnm034d6lqf22ahwf")
         (debian-patch "system/openjpeg.patch" %debian-revision
                       "0zd6v5njx1pc7i0y6mslxvpx5j4cq01mmyx55qcqx8qzkm0gm48j")))
 
@@ -325,7 +319,7 @@
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "0kc40p8f7cls696gh6ign37l8j4x1pyyz32jkkli9cmrpbsjsadl"))))
+      "1bqvcq3dj6615198j7cz3ylyyic5zpis06capvl6ybl1na3ainb0"))))
 
 ;; This is a source 'snippet' that does the following:
 ;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
@@ -350,12 +344,10 @@
                               patch "--no-backup-if-mismatch"))
                     (append
                      '#+%gentoo-patches '#+%debian-patches
+                     (find-files #$%chromium-gcc-patches "\\.patch$")
                      '#+(list (local-file
                                (search-patch
-                                "ungoogled-chromium-system-jsoncpp.patch"))
-                              (local-file
-                               (search-patch
-                                "ungoogled-chromium-system-zlib.patch")))))
+                                "ungoogled-chromium-system-nspr.patch")))))
 
           (with-directory-excursion #+%ungoogled-origin
             (format #t "Ungooglifying...~%")
@@ -386,8 +378,7 @@
                   "--system-libraries" "ffmpeg" "flac" "fontconfig"
                   "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
                   "libjpeg" "libpng" "libvpx" "libwebp" "libxml"
-                  "libxslt" "openh264" "opus" "re2" "snappy" "yasm"
-                  "zlib")
+                  "libxslt" "openh264" "opus" "re2" "snappy" "zlib")
           #t))))
 
 (define opus+custom
@@ -402,10 +393,20 @@
         `(cons "--enable-custom-modes"
                ,flags))))))
 
+;; Chromium still has Python2-only code, so we need this special Python 2
+;; variant of xcb-proto.
+(define xcb-proto/python2
+  (package/inherit
+   xcb-proto
+   (name "python2-xcb-proto")
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("python" ,python-2)))))
+
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
-    (version (string-append "83.0.4103.116-0."
+    (version (string-append "84.0.4147.89-0."
                             (string-take %ungoogled-revision 7)))
     (synopsis "Graphical web browser")
     (source (origin
@@ -415,7 +416,7 @@
                                   (car (string-split version #\-)) ".tar.xz"))
               (sha256
                (base32
-                "1hravbi1lazmab2mih465alfzji1kzy38zya1visbwz9zs6pw35v"))
+                "0yf6j0459qzr677zsa2apmfz0x0ndlscvwj1a5v40nqjijchv5qp"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -435,10 +436,13 @@
        ;; directory for an exhaustive list of supported flags.
        ;; (Note: The 'configure' phase will do that for you.)
        (list "is_debug=false"
+             "is_unsafe_developer_build=false"
              "use_gold=false"
              "use_lld=false"
+             (string-append "max_jobs_per_link="
+                            (number->string (parallel-job-count)))
+             "exclude_unwind_tables=true"
              "clang_use_chrome_plugins=false"
-             "linux_use_bundled_binutils=false"
              "use_custom_libcxx=false"
              "use_sysroot=false"
              "enable_precompiled_headers=false"
@@ -467,6 +471,9 @@
              "custom_toolchain=\"//build/toolchain/linux/unbundle:default\""
              "host_toolchain=\"//build/toolchain/linux/unbundle:default\""
 
+             (string-append "xcbproto_path=\""
+                            (assoc-ref %build-inputs "xcb-proto") "/share/xcb\"")
+
              ;; Prefer system libraries.
              "use_system_freetype=true"
              "use_system_harfbuzz=true"
@@ -481,6 +488,7 @@
              "use_pulseaudio=true"
              "link_pulseaudio=true"
              "icu_use_data_file=false"
+             "perfetto_use_system_protobuf=true"
 
              ;; VA-API acceleration is currently only supported on x86_64-linux.
              ,@(if (string-prefix? "x86_64" (or (%current-target-system)
@@ -568,13 +576,10 @@
              (substitute* "third_party/webrtc/rtc_base/strings/json.h"
                (("#include \"third_party/jsoncpp/") "#include \"json/"))
 
-             (substitute* "gpu/config/gpu_util.cc"
-               (("third_party/vulkan/include/")
-                ""))
-
              (substitute* '("components/viz/common/gpu/vulkan_context_provider.h"
-                            "components/viz/common/resources/resource_format_utils.h")
-               (("third_party/vulkan/include/") ""))
+                            "components/viz/common/resources/resource_format_utils.h"
+                            "gpu/config/gpu_util.cc")
+               (("third_party/vulkan_headers/include/") ""))
 
              (substitute* "third_party/skia/include/gpu/vk/GrVkVulkan.h"
                (("include/third_party/vulkan/") ""))
@@ -743,7 +748,6 @@
        ("node" ,node)
        ("pkg-config" ,pkg-config)
        ("which" ,which)
-       ("yasm" ,yasm)
 
        ;; This file contains defaults for new user profiles.
        ("master-preferences" ,(local-file "aux-files/chromium/master-preferences.json"))
@@ -760,11 +764,7 @@
        ("dbus-glib" ,dbus-glib)
        ("expat" ,expat)
        ("flac" ,flac)
-
-       ;; FIXME: Change to ffmpeg 4.3 when supported, see
-       ;; <https://bugs.chromium.org/p/chromium/issues/detail?id=1095962>.
-       ("ffmpeg" ,ffmpeg-4.2)
-
+       ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("gdk-pixbuf" ,gdk-pixbuf)
@@ -805,13 +805,15 @@
        ("opus" ,opus+custom)
        ("pango" ,pango)
        ("pciutils" ,pciutils)
+       ("protobuf" ,protobuf)
        ("pulseaudio" ,pulseaudio)
        ("re2" ,re2)
        ("snappy" ,snappy)
        ("speech-dispatcher" ,speech-dispatcher)
        ("udev" ,eudev)
        ("valgrind" ,valgrind)
-       ("vulkan-headers" ,vulkan-headers)))
+       ("vulkan-headers" ,vulkan-headers)
+       ("xcb-proto" ,xcb-proto/python2)))
 
     ;; Building Chromium takes ... a very long time.  On a single core, a busy
     ;; mid-end x86 system may need more than 24 hours to complete the build.
