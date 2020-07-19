@@ -25091,7 +25091,7 @@ Users are advised to read the
 @url{http://docs.ganeti.org/ganeti/master/html/admin.html,Ganeti
 administrators guide} to learn about the various cluster options and
 day-to-day operations.  There is also a
-@url{https://guix.gnu.org/blog/2020/ganeti-on-guix/,blog post}
+@url{https://guix.gnu.org/blog/2020/running-a-ganeti-cluster-on-guix/,blog post}
 describing how to configure and initialize a small cluster.
 
 @defvr {Scheme Variable} ganeti-service-type
