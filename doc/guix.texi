@@ -27612,10 +27612,12 @@ Network access
 @command{auditctl} from the @code{audit} package can be used in order
 to add or remove events to be tracked (until the next reboot).
 In order to permanently track events, put the command line arguments
-of auditctl into @file{/etc/audit/audit.rules}.
+of auditctl into a file called @code{audit.rules} in the configuration
+directory (see below).
 @command{aureport} from the @code{audit} package can be used in order
 to view a report of all recorded events.
-The audit daemon usually logs into the directory @file{/var/log/audit}.
+The audit daemon by default logs into the file
+@file{/var/log/audit.log}.
 
 @end defvr
 
@@ -27626,6 +27628,11 @@ This is the data type representing the configuration of auditd.
 
 @item @code{audit} (default: @code{audit})
 The audit package to use.
+
+@item @code{configuration-directory} (default: @code{%default-auditd-configuration-directory})
+The directory containing the configuration file for the audit package, which
+must be named @code{auditd.conf}, and optionally some audit rules to
+instantiate on startup.
 
 @end table
 @end deftp
