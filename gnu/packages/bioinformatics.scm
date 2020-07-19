@@ -10867,14 +10867,7 @@ block processing.")
              (for-each delete-file '("configure" "configure.ac"))
              ;; Do not make other packages link with the proprietary libsz.
              (substitute* "R/zzz.R"
-               (("'\"%s/libhdf5.a\" \"%s/libsz.a\" -lz'")
-                "'\"%s/libhdf5.a\" \"%s/libhdf5.a\" -lz'")
-               (("'\"%s/libhdf5_cpp.a\" \"%s/libhdf5.a\" \"%s/libsz.a\" -lz'")
-                "'\"%s/libhdf5_cpp.a\" \"%s/libhdf5.a\" \"%s/libhdf5.a\" -lz'")
-               (("'%s/libhdf5_hl.a %s/libhdf5.a %s/libsz.a -lz'")
-                "'%s/libhdf5_hl.a %s/libhdf5.a %s/libhdf5.a -lz'")
-               (("'%s/libhdf5_hl_cpp.a %s/libhdf5_hl.a %s/libhdf5_cpp.a %s/libhdf5.a %s/libsz.a -lz'")
-                "'%s/libhdf5_hl_cpp.a %s/libhdf5_hl.a %s/libhdf5_cpp.a %s/libhdf5.a %s/libhdf5.a -lz'"))
+               ((" \"%s/libsz.a\"") ""))
              (with-directory-excursion "src"
                (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
                (rename-file (string-append "hdf5-" ,(package-version hdf5-1.10))
