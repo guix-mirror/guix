@@ -51,6 +51,7 @@
 ;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4651,15 +4652,15 @@ tactics.")
 (define-public widelands
   (package
     (name "widelands")
-    (version "20")
+    (version "21")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://launchpad.net/widelands/"
                            "build" version "/build" version "/+download/"
-                           "widelands-build" version ".tar.bz2"))
+                           "widelands-build" version "-source.tar.gz"))
        (sha256
-        (base32 "1cmwfwk7j6yi2pwmm4rm57s23sdzasqf53nx6567sdagqyc4sn9q"))
+        (base32 "0mz3jily0w1zxxqbnkqrp6hl88xhrwzbil9crq7gpcwidx60w7k0"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4683,25 +4684,6 @@ tactics.")
                "-DCMAKE_BUILD_TYPE=Release"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'install-desktop-file-and-icons
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((share (string-append (assoc-ref outputs "out") "/share"))
-                    (applications (string-append share "/applications"))
-                    (icons (string-append share "/icons/hicolor")))
-               ;; Move desktop entry.
-               (mkdir-p applications)
-               (copy-file "debian/org.widelands.widelands.desktop"
-                          (string-append applications "/widelands.desktop"))
-               ;; Install icons.
-               (for-each (lambda (size)
-                           (let* ((dim (string-append size "x" size))
-                                  (apps (string-append icons "/" dim "/apps")))
-                             (mkdir-p apps)
-                             (copy-file (string-append "data/images/logos"
-                                                       "/wl-ico-" size ".png")
-                                        (string-append apps "/widelands.png"))))
-                         '("16" "32" "48" "64" "128"))
-               #t)))
          (add-after 'unpack 'unbundle-fonts
            ;; Unbundle fonts already packaged in Guix.  XXX: missing fonts are
            ;; amiri, Culmus, mmrCensus, Nakula, and Sinhala.
