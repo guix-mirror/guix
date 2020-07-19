@@ -261,6 +261,89 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public gtx
+  (package
+    (name "gtx")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://launchpad.net/gtx/trunk/"
+                       version "/+download/gtx-" version ".tar.gz"))
+       (sha256
+        (base32 "0i4zvn5v4rf0cw3fxylk6j2pyy5lkrswdiw8jdxkys0ph0nan33n"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-gtk-doc"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)))
+    (synopsis "GLib Testing Framework")
+    (description "GTX is a small collection of convenience functions intended to
+enhance the GLib testing framework.  With specific emphasis on easing the pain
+of writing test cases for asynchronous interactions.")
+    (home-page "https://launchpad.net/gtx")
+    (license license:lgpl2.1+)))
+
+(define-public libcloudproviders
+  (package
+    (name "libcloudproviders")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0aars24myf6n8b8hm1n12hsgcm54097kpbpm4ba31zp1l4y22qs7"))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:configure-flags
+       (list
+        "-Denable-gtk-doc=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)))
+    (synopsis "Cloudproviders Integration API")
+    (description "Libcloudproviders is a DBus API that allows cloud storage sync
+clients to expose their services.  Clients such as file managers and desktop
+environments can then provide integrated access to the cloud providers
+services.")
+    (home-page "https://csorianognome.wordpress.com/2015/07/07/cloud-providers/")
+    (license license:lgpl3+)))
+
 (define-public sysprof
   (package
     (name "sysprof")
