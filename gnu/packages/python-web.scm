@@ -4227,3 +4227,27 @@ modified BTree data structure.  The trees are optimized for use inside ZODB's
 \"optimistic concurrency\" paradigm, and include explicit resolution of
 conflicts detected by that mechanism.")
     (license license:zpl2.1)))
+
+(define-public python-transaction
+  (package
+    (name "python-transaction")
+    (version "3.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "transaction" version))
+        (sha256
+         (base32
+          "0bdaks31bgfh78wnj3sij24bfysmqk25crsis6amz8kzrc0d82iv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/zopefoundation/transaction")
+    (synopsis "Transaction management for Python")
+    (description "This package contains a generic transaction implementation
+for Python.  It is mainly used by the ZODB.")
+    (license license:zpl2.1)))
