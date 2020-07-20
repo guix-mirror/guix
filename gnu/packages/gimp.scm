@@ -40,10 +40,14 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages patchutils)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
@@ -124,6 +128,39 @@
 2-Dimensional Constrained Delaunay Triangulations.")
     (home-page "https://code.google.com/archive/p/poly2tri-c/")
     (license license:bsd-3)))
+
+(define-public mrg
+  (package
+    (name "mrg")
+    (version "0.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hodefoting/mrg.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "106qhh0c11576cc5kh90ds0ram72d3r6n9sadw0y4krnhap6dvwk"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("alsa" ,alsa-lib)
+       ("cairo" ,cairo)
+       ("gtk+" ,gtk+)
+       ("mmm" ,mmm)
+       ("x11" ,libx11)))
+    (synopsis "Microraptor GUI")
+    (description "MrG is is a C API for creating user interfaces.  It can be
+used as an application writing environment or as an interactive canvas for part
+of a larger interface.")
+    (home-page "https://github.com/hodefoting/mrg")
+    (license license:lgpl2.0+)))
 
 (define-public babl
   (package
