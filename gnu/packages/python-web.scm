@@ -1277,18 +1277,17 @@ defining data schemas.")
 (define-public python-zope-configuration
   (package
     (name "python-zope-configuration")
-    (version "4.3.1")
+    (version "4.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "zope.configuration" version))
               (sha256
                (base32
-                "1qb88764fd7nkkmqv7fl9bxd1jirynkg5vbqkpqdiffnkxzp85kf"))))
+                "0g6vrl7y27z9cj5xyrww9xlzk4npj55mgmlrcd9d2nj08jn2pw79"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (native-inputs
-     `(("python-zope-testing" ,python-zope-testing)
+     `(("python-manuel" ,python-manuel)
+       ("python-zope-testing" ,python-zope-testing)
        ("python-zope-testrunner" ,python-zope-testrunner)))
     (propagated-inputs
      `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
