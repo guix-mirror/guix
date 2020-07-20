@@ -6097,7 +6097,7 @@ every time the power supply source is changed.")
 (define-public lshw
   (package
     (name "lshw")
-    (version "B.02.18")
+    (version "B.02.19.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ezix.org/software/"
@@ -6105,7 +6105,7 @@ every time the power supply source is changed.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "0brwra4jld0d53d7jsgca415ljglmmx1l2iazpj4ndilr48yy8mf"))))
+                "100gm1c6gb2hkfws22h0xhvv7nz38p49lxd1csikj8qlhyn4gcwv"))))
     (build-system gnu-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases (delete 'configure))
