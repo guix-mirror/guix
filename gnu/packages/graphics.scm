@@ -72,6 +72,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
@@ -97,6 +98,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt)
   #:use-module (guix download)
@@ -105,6 +107,35 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public mmm
+  (package
+    (name "mmm")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hodefoting/mmm.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1xmcv6rwinqsbr863rgl9005h2jlmd7k2qrwsc1h4fb8r61ykpjl"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("luajit" ,luajit)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("sdl" ,sdl)
+       ("sdl2" ,sdl2)))
+    (synopsis "Memory Mapped Machine")
+    (description "MMM is a shared memory protocol for virtualising access to
+framebuffer graphics, audio output and input event.")
+    (home-page "https://github.com/hodefoting/mrg")
+    (license license:isc)))
 
 (define-public directfb
   (package
