@@ -1122,7 +1122,13 @@ conforming to a given API or contract.")
          "1nkgfwawswmyc6i0b8g3ymvja4mb507m8yhid8s4rbxq3dmqhwhd"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f))                ; circular dependency with zope.testrunner
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "zope-testrunner" "--test-path=src"))))))
+    (native-inputs
+     `(("python-zope-testrunner" ,python-zope-testrunner-bootstrap)))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
     (home-page "https://pypi.org/project/zope.exceptions/")
