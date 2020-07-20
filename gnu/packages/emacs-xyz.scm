@@ -22242,8 +22242,8 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; This package has versions newer than indicated on MELPA.
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
-  (let ((commit "5fd725ef8e0b4cf2eb908b1f48638a9d5df49b93")
-	(revision "0")
+  (let ((commit "5c39c3a81e48222911db75ae30e5a8f8fa34efb5")
+	(revision "1")
 	(version "0.6.27"))
     (package
       (name "emacs-telega")
@@ -22256,7 +22256,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                (commit commit)))
          (sha256
           (base32
-           "1852xkd8pq1g6c74nm8kbgiglsig7cyizp2igr4mydln2pak0ccx"))
+           "0wyycgsb1ja73phs9a2dgi50m2p6sdvx3xdwclfyijx4hzwlv233"))
          (patches (search-patches "emacs-telega-test-env.patch"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
@@ -22307,6 +22307,13 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                   "(concat \"telega-data/\" filename)
                     (locate-dominating-file telega--lib-directory
                                             \"telega-data\")"))
+               ;; Modify telega.el to reflect unique dir name in
+               ;; `telega-install-contrib' phase.
+               (substitute* "telega.el"
+                 (("\\(push \\(expand-file-name \"contrib\" telega--lib-directory\\) load-path\\)")
+                  "(push (expand-file-name \"telega-contrib\"
+                     (locate-dominating-file telega--lib-directory
+                                             \"telega-contrib\")) load-path)"))
                #t))
            ;; The server test suite has a hardcoded path.
            ;; Reset this behavior to use the proper path.
@@ -22325,7 +22332,16 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
            ;; Build emacs-side using `emacs-build-system'
            (add-after 'compress-documentation 'emacs-add-source-to-load-path
              (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
-           (add-after 'emacs-add-source-to-load-path 'emacs-install
+	   ;; Manually invoke bytecompilation for the contrib
+	   ;; subdirectory.
+           (add-after 'emacs-add-source-to-load-path 'emacs-bytecomp-contrib
+             (lambda _
+	       (substitute* "Makefile"
+                 (("byte-recompile-directory \".\"")
+                  "byte-recompile-directory \"contrib\""))
+               (invoke "make" "compile")
+	       #t))
+           (add-after 'emacs-bytecomp-contrib 'emacs-install
              (assoc-ref emacs:%standard-phases 'install))
            ;; This step installs subdir /etc, which contains images, sounds and
            ;; various other data, next to the site-lisp dir.
@@ -22336,9 +22352,16 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                 (string-append (assoc-ref outputs "out")
                                "/share/emacs/telega-data/"))
                #t))
-           (add-after 'telega-install-data 'emacs-build
+           (add-after 'emacs-install 'telega-install-contrib
+             (lambda* (#:key outputs #:allow-other-keys)
+               (copy-recursively
+                "contrib"
+                (string-append (assoc-ref outputs "out")
+                               "/share/emacs/telega-contrib"))
+               #t))
+           (add-after 'telega-install-contrib 'emacs-build
              (assoc-ref emacs:%standard-phases 'build))
-           (add-after 'emacs-build 'emacs-make-autoloads
+           (add-after 'telega-install-contrib 'emacs-make-autoloads
              (assoc-ref emacs:%standard-phases 'make-autoloads)))))
       (inputs
        `(("ffmpeg" ,ffmpeg))) ; mp4/gif support.
