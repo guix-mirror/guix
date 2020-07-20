@@ -1299,6 +1299,13 @@ defining data schemas.")
 Markup Language.")
     (license license:zpl2.1)))
 
+(define-public python-zope-configuration-bootstrap
+  (package
+    (inherit python-zope-configuration)
+    (arguments `(#:tests? #f))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-configuration
   (package-with-python2 python-zope-configuration))
 
