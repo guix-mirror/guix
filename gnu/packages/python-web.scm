@@ -1384,17 +1384,15 @@ Zope3, which are are special objects that have a structural location.")
 (define-public python-zope-security
   (package
     (name "python-zope-security")
-    (version "5.1.0")
+    (version "5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.security" version))
        (sha256
         (base32
-         "1npfrgnm202v48wavpwn3450dsn7az12lfww95vbhxyjl11f14yb"))))
+         "11lfw67cigscfax9c5j63xcvz2qcj724zx5fcdqyc94am2glim0h"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Tests can't find zope.testrunner.
     (propagated-inputs
      `(("python-zope-component" ,python-zope-component)
        ("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
@@ -1403,9 +1401,12 @@ Zope3, which are are special objects that have a structural location.")
        ("python-zope-proxy" ,python-zope-proxy)
        ("python-zope-schema" ,python-zope-schema)))
     (native-inputs
-     `(("python-zope-configuration" ,python-zope-configuration)
-       ("python-zope-testrunner" ,python-zope-testrunner)
-       ("python-zope-testing" ,python-zope-testing)))
+     `(("python-btrees" ,python-btrees)
+       ("python-zope-component" ,python-zope-component-bootstrap)
+       ("python-zope-configuration" ,python-zope-configuration-bootstrap)
+       ("python-zope-location" ,python-zope-location-bootstrap)
+       ("python-zope-testing" ,python-zope-testing)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
     (home-page "https://pypi.org/project/zope.security/")
     (synopsis "Zope security framework")
     (description "Zope.security provides a generic mechanism to implement
