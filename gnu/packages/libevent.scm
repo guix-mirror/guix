@@ -41,7 +41,7 @@
 (define-public libevent
   (package
     (name "libevent")
-    (version "2.1.11")
+    (version "2.1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -49,7 +49,7 @@
                     version "-stable/libevent-" version "-stable.tar.gz"))
               (sha256
                (base32
-                "0g988zqm45sj1hlhhz4il5z4dpi5dl74hzjwzl4md37a09iaqnx6"))))
+                "1fq30imk8zd26x8066di3kpc5zyfc5z6frr3zll685zcx4dxxrlj"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
     (arguments
