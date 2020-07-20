@@ -102,14 +102,14 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.35.0")
+    (version "1.38.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "0126mfmaw3s92dsga60sydgwjmzwg9cd36n127pydmisah17v50f"))))
+                "0iy6yp9nrxpj643w7la3kl3j59ni59b0l4v6n23a63s8kqkpvkhf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")
