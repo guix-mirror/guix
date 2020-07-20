@@ -1189,6 +1189,15 @@ forms, HTTP servers, regular expressions, and more.")
 tests.")
     (license license:zpl2.1)))
 
+(define-public python-zope-testrunner-bootstrap
+  (package
+    (inherit python-zope-testrunner)
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-zope-exceptions" ,python-zope-exceptions-bootstrap)))
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-testrunner
   (package-with-python2 python-zope-testrunner))
 
