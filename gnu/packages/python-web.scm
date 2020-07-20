@@ -1131,6 +1131,14 @@ conforming to a given API or contract.")
 that have uses outside of the Zope framework.")
     (license license:zpl2.1)))
 
+(define-public python-zope-exceptions-bootstrap
+  (package
+    (inherit python-zope-exceptions)
+    (arguments `(#:tests? #f))
+    (propagated-inputs `())
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-exceptions
   (package-with-python2 python-zope-exceptions))
 
