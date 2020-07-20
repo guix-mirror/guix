@@ -1158,14 +1158,14 @@ forms, HTTP servers, regular expressions, and more.")
 (define-public python-zope-testrunner
   (package
     (name "python-zope-testrunner")
-    (version "5.1")
+    (version "5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.testrunner" version))
        (sha256
         (base32
-         "0w3q66cy4crpj7c0hw0vvvvwf3g931rnvw7wwa20av7yqvv6ajim"))))
+         "0jyyf1dcz156q95x2y7yw2v420q2xn3cff0c5aci7hmdmcbn0gc7"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
