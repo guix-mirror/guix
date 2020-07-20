@@ -1319,6 +1319,13 @@ only when necessary to apply the policy (e.g., access checking, location
 brokering, etc.) for which the proxy is responsible.")
     (license license:zpl2.1)))
 
+(define-public python-zope-proxy-bootstrap
+  (package
+    (inherit python-zope-proxy)
+    (arguments `(#:tests? #f))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-proxy
   (package-with-python2 python-zope-proxy))
 
