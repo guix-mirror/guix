@@ -1741,7 +1741,7 @@ This package provides the TrueType fonts.")
 (define-public font-jetbrains-mono
   (package
     (name "font-jetbrains-mono")
-    (version "1.0.3")
+    (version "2.001")
     (source
      (origin
        (method url-fetch)
@@ -1749,8 +1749,17 @@ This package provides the TrueType fonts.")
         (string-append "https://download.jetbrains.com/fonts/"
                        "JetBrainsMono-" version ".zip"))
        (sha256
-        (base32 "0zvhwmpdwpm4vywmm6i9a4najz0c7vfi411yikgkd66l5hwd1p6f"))))
+        (base32 "0r3dk3kn536rik4mvpcjin9mwmifl3v8mawvb4a5l59pww0vcxzq"))))
     (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'install-license-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "../LICENSE" doc)
+               #t))))))
     (home-page "https://www.jetbrains.com/lp/mono/")
     (synopsis "Mono typeface for developers")
     (description
