@@ -615,6 +615,22 @@ releases are on gnu.org."
 (define gnu-hosted?
   (url-prefix-predicate "mirror://gnu/"))
 
+(define (url-prefix-rewrite old new)
+  "Return a one-argument procedure that rewrites URL prefix OLD to NEW."
+  (lambda (url)
+    (if (string-prefix? old url)
+        (string-append new (string-drop url (string-length old)))
+        url)))
+
+(define (adjusted-upstream-source source rewrite-url)
+  "Rewrite URLs in SOURCE by apply REWRITE-URL to each of them."
+  (upstream-source
+   (inherit source)
+   (urls (map rewrite-url (upstream-source-urls source)))
+   (signature-urls (and=> (upstream-source-signature-urls source)
+                          (lambda (urls)
+                            (map rewrite-url urls))))))
+
 (define savannah-package?
   (url-prefix-predicate "mirror://savannah/"))
 
@@ -628,10 +644,13 @@ releases are on gnu.org."
   "Return the latest release of PACKAGE."
   (let* ((uri       (string->uri (origin-uri (package-source package))))
          (package   (package-upstream-name package))
-         (directory (dirname (uri-path uri))))
-    (latest-html-release package
-                         #:base-url %savannah-base
-                         #:directory directory)))
+         (directory (dirname (uri-path uri)))
+         (rewrite   (url-prefix-rewrite %savannah-base
+                                        "mirror://savannah")))
+    (adjusted-upstream-source (latest-html-release package
+                                                   #:base-url %savannah-base
+                                                   #:directory directory)
+                              rewrite)))
 
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE."
@@ -655,11 +674,15 @@ releases are on gnu.org."
 
   (let* ((uri       (string->uri (origin-uri (package-source package))))
          (package   (package-upstream-name package))
-         (directory (dirname (uri-path uri))))
-    (latest-html-release package
-                         #:base-url %kernel.org-base
-                         #:directory directory
-                         #:file->signature file->signature)))
+         (directory (dirname (uri-path uri)))
+         (rewrite   (url-prefix-rewrite %kernel.org-base
+                                        "mirror://kernel.org")))
+    (adjusted-upstream-source (latest-html-release package
+                                                   #:base-url %kernel.org-base
+                                                   #:directory directory
+                                                   #:file->signature
+                                                   file->signature)
+                              rewrite)))
 
 (define %gnu-updater
   ;; This is for everything at ftp.gnu.org.
