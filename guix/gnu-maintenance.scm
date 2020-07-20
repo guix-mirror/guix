@@ -642,7 +642,10 @@ releases are on gnu.org."
 
 (define (latest-savannah-release package)
   "Return the latest release of PACKAGE."
-  (let* ((uri       (string->uri (origin-uri (package-source package))))
+  (let* ((uri       (string->uri
+                     (match (origin-uri (package-source package))
+                       ((? string? uri) uri)
+                       ((uri mirrors ...) uri))))
          (package   (package-upstream-name package))
          (directory (dirname (uri-path uri)))
          (rewrite   (url-prefix-rewrite %savannah-base
@@ -672,7 +675,10 @@ releases are on gnu.org."
   (define (file->signature file)
     (string-append (file-sans-extension file) ".sign"))
 
-  (let* ((uri       (string->uri (origin-uri (package-source package))))
+  (let* ((uri       (string->uri
+                     (match (origin-uri (package-source package))
+                       ((? string? uri) uri)
+                       ((uri mirrors ...) uri))))
          (package   (package-upstream-name package))
          (directory (dirname (uri-path uri)))
          (rewrite   (url-prefix-rewrite %kernel.org-base
