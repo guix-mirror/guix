@@ -4153,3 +4153,28 @@ Swagger.")
     (description
      "Manuel lets you mix and match traditional doctests with custom test syntax.")
     (license license:asl2.0)))
+
+(define-public python-persistent
+  (package
+    (name "python-persistent")
+    (version "4.6.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "persistent" version))
+        (sha256
+         (base32
+          "0imm9ji03lhkpcfmhid7x5209ix8g2rlgki9ik1qxks4b8sm8gzq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-manuel" ,python-manuel)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
+    (home-page "https://github.com/zopefoundation/persistent/")
+    (synopsis "Translucent persistent objects")
+    (description "This package contains a generic persistence implementation for
+Python.  It forms the core protocol for making objects interact
+\"transparently\" with a database such as the ZODB.")
+    (license license:zpl2.1)))
