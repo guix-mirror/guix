@@ -308,7 +308,7 @@ package for the Game Boy and Game Boy Color.  It consists of:
 (define-public wla-dx
   (package
     (name "wla-dx")
-    (version "9.10")
+    (version "9.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -317,12 +317,12 @@ package for the Game Boy and Game Boy Color.  It consists of:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "022isf7s9q5i0j4xj69zpp0lgw8p9n37sn7ii25v68r15zaahk2w"))))
+                "0i8pxvyaih79pqnyvqyqd9rwdid91pna76cap0k1n5zhg8xswf2f"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("sphinx" ,python-sphinx)))      ; to generate man pages
     (arguments
-     `(#:tests? #f)) ; no tests
+     `(#:tests? #f))                    ; no tests
     (home-page "https://github.com/vhelin/wla-dx")
     (synopsis "Assemblers for various processors")
     (description "WLA DX is a set of tools to assemble assembly files to
