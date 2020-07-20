@@ -6430,9 +6430,10 @@ other things and it comes with a command line interface.")
            ;; There is no Rakefile and minitest can only run one file at once,
            ;; so we have to iterate over all test files.
            (lambda _
-             (map (lambda (file)
-                    (invoke "ruby" "-Itest" file))
-                  (find-files "./test" "test_.*\\.rb")))))))
+             (for-each (lambda (file)
+                         (invoke "ruby" "-Itest" file))
+                       (find-files "./test" "test_.*\\.rb"))
+             #t)))))
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)))
     (synopsis "Library to read and update netrc files")
