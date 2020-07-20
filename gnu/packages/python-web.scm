@@ -4132,3 +4132,25 @@ REST APIs.  Flask-RESTX encourages best practices with minimal setup.  If you ar
 decorators and tools to describe your API and expose its documentation properly using
 Swagger.")
     (license license:bsd-3)))
+
+(define-public python-manuel
+  (package
+    (name "python-manuel")
+    (version "1.10.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "manuel" version))
+        (sha256
+         (base32
+          "1bdzay7j70fly5fy6wbdi8fbrxjrrlxnxnw226rwry1c8a351rpy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-zope-testing" ,python-zope-testing)))
+    (home-page "https://pypi.org/project/manuel/")
+    (synopsis "Build tested documentation")
+    (description
+     "Manuel lets you mix and match traditional doctests with custom test syntax.")
+    (license license:asl2.0)))
