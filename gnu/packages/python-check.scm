@@ -126,35 +126,38 @@ interactions, which will update them to correspond to the new API.")
     (license license:expat)))
 
 (define-public python-pytest-vcr
-  (package
-    (name "python-pytest-vcr")
-    (version "1.0.2")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/ktosiek/pytest-vcr")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "1i6fin91mklvbi8jzfiswvwf1m91f43smpj36a17xrzk4gisfs6i"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "tests/"))))))
-    (propagated-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-vcrpy" ,python-vcrpy)))
-    (home-page "https://github.com/ktosiek/pytest-vcr")
-    (synopsis "Plugin for managing VCR.py cassettes")
-    (description
-     "Plugin for managing VCR.py cassettes.")
-    (license license:expat)))
+  ;; This commit fixes integration with pytest-5
+  (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
+        (revision "1"))
+    (package
+      (name "python-pytest-vcr")
+      (version (git-version "1.0.2" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/ktosiek/pytest-vcr")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1yk988zi0la6zpcm3fff0mxf942di2jiymrfqas19nyngj5ygaqs"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "tests/"))))))
+      (propagated-inputs
+       `(("python-pytest" ,python-pytest)
+         ("python-vcrpy" ,python-vcrpy)))
+      (home-page "https://github.com/ktosiek/pytest-vcr")
+      (synopsis "Plugin for managing VCR.py cassettes")
+      (description
+       "Plugin for managing VCR.py cassettes.")
+      (license license:expat))))
 
 (define-public python-pytest-checkdocs
   (package
