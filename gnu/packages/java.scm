@@ -2933,9 +2933,11 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
                                  ,(package-version java-commons-lang) ".jar"))
                  (("\\$\\{lib\\}/commons-io/commons-io.jar")
                   (string-append (assoc-ref inputs "java-commons-io")
-                                 "/share/java/commons-io-"
+                                 "/lib/m2/commons-io/commons-io/"
                                  ,(package-version java-commons-io)
-                                 "-SNAPSHOT.jar"))
+                                 "/commons-io-"
+                                 ,(package-version java-commons-io)
+                                 ".jar"))
                  ;; Remove dependency on svn
                  (("<build-info.*") "")
                  (("\\$\\{revision.number\\}")
