@@ -1371,6 +1371,13 @@ brokering, etc.) for which the proxy is responsible.")
 Zope3, which are are special objects that have a structural location.")
     (license license:zpl2.1)))
 
+(define-public python-zope-location-bootstrap
+  (package
+    (inherit python-zope-location)
+    (arguments `(#:tests? #f))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-location
   (package-with-python2 python-zope-location))
 
