@@ -1389,6 +1389,18 @@ Zope3, which are are special objects that have a structural location.")
 security policies on Python objects.")
     (license license:zpl2.1)))
 
+(define-public python-zope-security-bootstrap
+  (package
+    (inherit python-zope-security)
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
+       ("python-zope-interface" ,python-zope-interface)
+       ("python-zope-proxy" ,python-zope-proxy-bootstrap)
+       ("python-zope-schema" ,python-zope-schema)))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-security
   (package-with-python2 python-zope-security))
 
