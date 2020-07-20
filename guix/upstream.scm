@@ -26,6 +26,7 @@
                 #:select (download-to-store url-fetch))
   #:use-module (guix gnupg)
   #:use-module (guix packages)
+  #:use-module (guix diagnostics)
   #:use-module (guix ui)
   #:use-module (guix base32)
   #:use-module (guix gexp)
@@ -477,10 +478,8 @@ new version string if an update was made, and #f otherwise."
                 (warning (G_ "~a: could not locate source file")
                          (location-file loc))
                 #f)))
-        (begin
-          (format (current-error-port)
-                  (G_ "~a: ~a: no `version' field in source; skipping~%")
-                  (location->string (package-location package))
-                  name)))))
+        (warning (package-location package)
+                 (G_ "~a: no `version' field in source; skipping~%")
+                 name))))
 
 ;;; upstream.scm ends here
