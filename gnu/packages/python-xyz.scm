@@ -12321,6 +12321,37 @@ It supports TSIG authenticated messages and EDNS0.")
 (define-public python2-dnspython
   (package-with-python2 python-dnspython))
 
+(define-public python-py3dns
+  (package
+    (name "python-py3dns")
+    (version "3.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "py3dns" version))
+        (sha256
+         (base32
+          "1r25f0ys5p37bhld7m7n4gb0lrysaym3w318w2f8bncq7r3d81qz"))))
+    (build-system python-build-system)
+    ;; This package wants to read /etc/resolv.conf. We can't patch it without
+    ;; removing functionality so we copy from Nix and "just don't build it".
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "setup.py"
+               (("import DNS") "")
+               (("DNS.__version__") (string-append "\"" ,version "\"")))
+             #t)))
+       #:tests? #f)) ; Also skip the tests.
+    (home-page "https://launchpad.net/py3dns")
+    (synopsis "Python 3 DNS library")
+    (description "This Python 3 module provides a DNS API for looking up DNS
+entries from within Python 3 modules and applications.  This module is a
+simple, lightweight implementation.")
+    (license license:psfl)))
+
 (define-public python-email-validator
   (package
     (name "python-email-validator")
