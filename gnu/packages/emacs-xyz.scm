@@ -19960,7 +19960,8 @@ as Emacs Lisp.")
                (invoke "make" "info")
                ;; Move the info file to lisp so that it gets installed by the
                ;; emacs-build-system.
-               (rename-file "docs/transient.info" "lisp/transient.info")))
+               (rename-file "docs/transient.info" "lisp/transient.info")
+               #t))
            (add-after 'build-info-manual 'enter-lisp-directory
              (lambda _
                (chdir "lisp")
