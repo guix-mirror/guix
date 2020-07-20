@@ -497,9 +497,8 @@ return the corresponding signature URL, or #f it signatures are unavailable."
               (version version)
               (urls (list (string-append base-url directory "/" url)))
               (signature-urls
-               (list (string-append base-url directory "/"
-                                    (file-sans-extension url)
-                                    ".sign")))))))
+               (list (file->signature
+                      (string-append base-url directory "/" url))))))))
 
     (define candidates
       (filter-map url->release (html-links sxml)))
