@@ -142,14 +142,16 @@ dnl GUIX_CHECK_GUILE_SSH
 dnl
 dnl Check whether a recent-enough Guile-SSH is available.
 AC_DEFUN([GUIX_CHECK_GUILE_SSH], [
-  dnl Check whether 'userauth-gssapi!' (introduced in 0.12.0) is present.
+  dnl Check whether '#:nodelay' paramater to 'make-session' (introduced in
+  dnl 0.13.0) is present.
   AC_CACHE_CHECK([whether Guile-SSH is available and recent enough],
     [guix_cv_have_recent_guile_ssh],
     [GUILE_CHECK([retval],
       [(and (@ (ssh channel) channel-send-eof)
             (@ (ssh popen) open-remote-pipe)
             (@ (ssh dist node) node-eval)
-            (@ (ssh auth) userauth-gssapi!))])
+            (@ (ssh auth) userauth-gssapi!)
+            ((@ (ssh session) make-session) #:nodelay #t))])
      if test "$retval" = 0; then
        guix_cv_have_recent_guile_ssh="yes"
      else
