@@ -310,6 +310,17 @@
         (debian-patch "system/openjpeg.patch" %debian-revision
                       "0zd6v5njx1pc7i0y6mslxvpx5j4cq01mmyx55qcqx8qzkm0gm48j")))
 
+(define %arch-patches
+  (list (origin
+          (method url-fetch)
+          (uri "https://git.archlinux.org/svntogit/packages.git/plain/trunk/\
+chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
+&id=93b5b90621b4827084288197c6e0e09b987b372a")
+          (file-name "ungoogled-chromium-fix-vaapi-on-intel.patch")
+          (sha256
+           (base32
+            "16jbjjf4d9jp52rdrrxx5vm69nx3w0qrijgjpwapnmcif13z55g4")))))
+
 (define %ungoogled-origin
   (origin
     (method git-fetch)
@@ -343,7 +354,7 @@
                       (invoke "patch" "-p1" "--force" "--input"
                               patch "--no-backup-if-mismatch"))
                     (append
-                     '#+%gentoo-patches '#+%debian-patches
+                     '#+%gentoo-patches '#+%debian-patches '#+%arch-patches
                      (find-files #$%chromium-gcc-patches "\\.patch$")
                      '#+(list (local-file
                                (search-patch
