@@ -62,6 +62,7 @@
 
             %gnu-updater
             %gnu-ftp-updater
+            %savannah-updater
             %xorg-updater
             %kernel.org-updater))
 
@@ -614,8 +615,26 @@ releases are on gnu.org."
 (define gnu-hosted?
   (url-prefix-predicate "mirror://gnu/"))
 
+(define savannah-package?
+  (url-prefix-predicate "mirror://savannah/"))
+
+(define %savannah-base
+  ;; One of the Savannah mirrors listed at
+  ;; <http://download0.savannah.gnu.org/mirmon/savannah/> that serves valid
+  ;; HTML (unlike <https://download.savannah.nongnu.org/releases>.)
+  "https://nongnu.freemirror.org/nongnu")
+
+(define (latest-savannah-release package)
+  "Return the latest release of PACKAGE."
+  (let* ((uri       (string->uri (origin-uri (package-source package))))
+         (package   (package-upstream-name package))
+         (directory (dirname (uri-path uri))))
+    (latest-html-release package
+                         #:base-url %savannah-base
+                         #:directory directory)))
+
 (define (latest-xorg-release package)
-  "Return the latest release of PACKAGE, the name of an X.org package."
+  "Return the latest release of PACKAGE."
   (let ((uri (string->uri (origin-uri (package-source package)))))
     (false-if-ftp-error
      (latest-ftp-release
@@ -660,6 +679,13 @@ releases are on gnu.org."
            (and (not (gnu-hosted? package))
                 (pure-gnu-package? package))))
    (latest latest-release*)))
+
+(define %savannah-updater
+  (upstream-updater
+   (name 'savannah)
+   (description "Updater for packages hosted on savannah.gnu.org")
+   (pred (url-prefix-predicate "mirror://savannah/"))
+   (latest latest-savannah-release)))
 
 (define %xorg-updater
   (upstream-updater
