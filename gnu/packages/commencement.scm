@@ -3303,9 +3303,6 @@ memoized as a function of '%current-system'."
              `(("mig" ,mig-boot0))
              '())
 
-       ;; A native GCC is needed to build `cross-rpcgen'.
-       ("native-gcc" ,@(assoc-ref (%boot0-inputs) "gcc"))
-
        ;; Here, we use the bootstrap Bash, which is not satisfactory
        ;; because we don't want to depend on bootstrap tools.
        ("static-bash" ,@(assoc-ref (%boot0-inputs) "bash"))))))
