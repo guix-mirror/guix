@@ -1112,14 +1112,14 @@ conforming to a given API or contract.")
 (define-public python-zope-exceptions
   (package
     (name "python-zope-exceptions")
-    (version "4.3")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.exceptions" version))
        (sha256
         (base32
-         "04bjskwas17yscl8bs3l44maxspw1gdji0zcmr499fs420y9r9az"))))
+         "1nkgfwawswmyc6i0b8g3ymvja4mb507m8yhid8s4rbxq3dmqhwhd"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))                ; circular dependency with zope.testrunner
