@@ -4178,3 +4178,31 @@ Swagger.")
 Python.  It forms the core protocol for making objects interact
 \"transparently\" with a database such as the ZODB.")
     (license license:zpl2.1)))
+
+(define-public python-btrees
+  (package
+    (name "python-btrees")
+    (version "4.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "BTrees" version))
+        (sha256
+         (base32
+          "0iiq0g9k1g6qgqq84q9h6639vlvzznk1rgdm0rfcnnqkbkmsbr3w"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-persistent" ,python-persistent)
+       ("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-persistent" ,python-persistent)
+       ("python-transaction" ,python-transaction)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
+    (home-page "https://github.com/zopefoundation/BTrees")
+    (synopsis "Scalable persistent object containers")
+    (description
+     "This package contains a set of persistent object containers built around a
+modified BTree data structure.  The trees are optimized for use inside ZODB's
+\"optimistic concurrency\" paradigm, and include explicit resolution of
+conflicts detected by that mechanism.")
+    (license license:zpl2.1)))
