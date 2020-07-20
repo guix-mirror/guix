@@ -15170,16 +15170,16 @@ powerful Org contents.")
 (define-public emacs-org-re-reveal
   (package
     (name "emacs-org-re-reveal")
-    (version "2.12.2")
+    (version "3.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://gitlab.com/oer/org-re-reveal.git")
+                    (url "https://gitlab.com/oer/org-re-reveal")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19nz77f2r49hqavz50ri222prhrd5890vhvc7jfazbascbcdjbqv"))))
+                "1jjawkqrhbm787jkzfnwz1ixjphm5mgrhdi3qhzl0jzbjib5a4bf"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-htmlize" ,emacs-htmlize)
