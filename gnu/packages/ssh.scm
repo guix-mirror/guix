@@ -297,7 +297,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.12.0")
+    (version "0.13.0")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               (method git-fetch)
@@ -307,7 +307,7 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "054hd9rzfhb48gc1hw3rphhp0cnnd4bs5qmidy5ygsyvy9ravlad"))
+                "1q96h98p6x7ah6nc0d2wfx503fmsj36riv9ka9s79z3lzwaf0k26"))
               (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
