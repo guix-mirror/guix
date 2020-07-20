@@ -3228,9 +3228,11 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
                                  ,(package-version java-commons-lang) ".jar"))
                  (("\\$\\{lib\\}/commons-io/commons-io.jar")
                   (string-append (assoc-ref inputs "java-commons-io")
-                                 "/share/java/commons-io-"
+                                 "/lib/m2/commons-io/commons-io/"
                                  ,(package-version java-commons-io)
-                                 "-SNAPSHOT.jar"))
+                                 "/commons-io-"
+                                 ,(package-version java-commons-io)
+                                 ".jar"))
                  (("\\$\\{lib\\}/testng/testng-jdk15.jar")
                   (string-append (assoc-ref inputs "java-testng")
                                  "/share/java/java-testng.jar"))
