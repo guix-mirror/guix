@@ -149,6 +149,11 @@ dependencies are registered."
             (define db-file
               (store-database-file #:state-directory #$output))
 
+            ;; Make sure non-ASCII file names are properly handled.
+            (setenv "GUIX_LOCPATH"
+                    #+(file-append glibc-utf8-locales "/lib/locale"))
+            (setlocale LC_ALL "en_US.utf8")
+
             (sql-schema #$schema)
             (let ((items (append-map read-closure '#$labels)))
               (with-database db-file db
