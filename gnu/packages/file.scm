@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,14 +31,14 @@
 (define-public file
   (package
     (name "file")
-    (version "5.38")
+    (version "5.39")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0d7s376b4xqymnrsjxi3nsv3f5v89pzfspzml2pcajdk5by2yg2r"))))
+                "1lgs2w2sgamzf27kz5h7pajz7v62554q21fbs11n4mfrfrm2hpgh"))))
    (build-system gnu-build-system)
 
    ;; When cross-compiling, this package depends upon a native install of
