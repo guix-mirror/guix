@@ -201,7 +201,7 @@ and dynamically with report tools based on filtering and graphical charts.")
 (define-public ledger
   (package
     (name "ledger")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method git-fetch)
@@ -210,7 +210,7 @@ and dynamically with report tools based on filtering and graphical charts.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1l5c9jf2wnly6ncm9civ8i7v47xld15g1y7wpl0hqwgbfyffwjci"))))
+        (base32 "0x6jxwss3wwzbzlwmnwb8yzjk8f9wfawif4f1b74z2qg6hc4r7f6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules (,@%cmake-build-system-modules
