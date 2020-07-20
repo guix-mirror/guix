@@ -1725,10 +1725,10 @@ capabilities.")
     (license license:gpl3+)))
 
 (define-public g-golf
-  (let ((commit "4a4edf25e4877df9182c77843bdd98ab59e13ef7"))
+  (let ((commit "5d2903afb4b6b65c22f587835d8fdff91916e5ee"))
     (package
       (name "g-golf")
-      (version (git-version "1" "683" commit))
+      (version (git-version "1" "804" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1737,7 +1737,7 @@ capabilities.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "09p0gf71wbmlm9kri693a8fvr9hl3hhlmlidyadwjdh7853xg0h8"))))
+                  "1xkb6a5d3i9s8lpb5cf06bd64p5srqnnhn5l0b2f5csbvyz8hmmh"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -1745,10 +1745,11 @@ capabilities.")
          ("texinfo" ,texinfo)
          ("gettext" ,gettext-minimal)
          ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)))
+         ("pkg-config" ,pkg-config)
+         ("xorg-server" ,xorg-server)))
       (inputs
        `(("guile" ,guile-2.2)
-         ("guile-lib" ,guile-lib)
+         ("guile-lib" ,guile2.2-lib)
          ("clutter" ,clutter)
          ("gtk" ,gtk+)
          ("glib" ,glib)))
@@ -1791,7 +1792,14 @@ capabilities.")
                                                    (assoc-ref outputs "out"))))))))
                  (setenv "GUILE_AUTO_COMPILE" "0")
                  (setenv "GUILE_GGOLF_UNINSTALLED" "1")
-                 #t))))))
+                 #t)))
+           (add-before 'check 'start-xorg-server
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; The test suite requires a running X server.
+               (system (format #f "~a/bin/Xvfb :1 &"
+                               (assoc-ref inputs "xorg-server")))
+               (setenv "DISPLAY" ":1")
+               #t)))))
       (home-page "https://www.gnu.org/software/g-golf/")
       (synopsis "Guile bindings for GObject Introspection")
       (description
