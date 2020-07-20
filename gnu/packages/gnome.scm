@@ -159,11 +159,14 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdesktop)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages rust)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages scanner)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages speech)
@@ -377,6 +380,88 @@ of known objects without needing a central registrar.")
      (list
       license:lgpl3+
       license:gpl3+))))
+
+(define-public zeitgeist
+  (package
+    (name "zeitgeist")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://gitlab.freedesktop.org/zeitgeist/zeitgeist.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "0ig3d3j1n0ghaxsgfww6g2hhcdwx8cljwwfmp9jk1nrvkxd6rnmv"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--enable-explain-queries"
+        "--enable-fts"
+        "--enable-docs")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc/libzeitgeist"
+               (substitute* "zeitgeist-gtkdoc-index.sgml"
+                 (("http://www.oasis-open.org/docbook/xml/4.3/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-after 'patch-docbook-xml 'disable-failing-tests
+           (lambda _
+             (substitute* "test/direct/Makefile.am"
+               (("	log-test ")
+                ""))
+             (substitute* "test/c/Makefile.am"
+               (("	test-log ")
+                ""))
+             #t))
+         (add-before 'bootstrap 'remove-autogen-script
+           (lambda _
+             ;; To honor `autoreconf -vif` by build-system.
+             (delete-file "autogen.sh")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("xorg-server-for-tests" ,xorg-server-for-tests)))
+    (inputs
+     `(("dee-icu" ,dee)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("sqlite" ,sqlite)
+       ("telepathy-glib" ,telepathy-glib)
+       ("python" ,python-wrapper)
+       ("python-rdflib" ,python-rdflib)
+       ("xapian-config" ,xapian)))
+    (propagated-inputs
+     `(("glib" ,glib)))
+    (synopsis "Desktop Activity Logging")
+    (description "Zeitgeist is a service which logs the users’s activities and
+events, anywhere from files opened to websites visited and conversations.  It
+makes this information readily available for other applications to use.  It is
+able to establish relationships between items based on similarity and usage
+patterns.")
+    (home-page "https://zeitgeist.freedesktop.org/")
+    (license
+     ;; Dual-licensed
+     (list
+      license:lgpl2.1+
+      license:gpl2+))))
 
 (define-public libcloudproviders
   (package
