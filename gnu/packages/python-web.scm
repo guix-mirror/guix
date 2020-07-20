@@ -1295,14 +1295,14 @@ Markup Language.")
 (define-public python-zope-proxy
   (package
     (name "python-zope-proxy")
-    (version "4.3.4")
+    (version "4.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.proxy" version))
        (sha256
         (base32
-         "1g0rcfnbchpvqhm76aixqlz544dawrgmy8gw9zwmijhk6wfl9f26"))))
+         "14h7nyfbl5vpfk0rbviy4ygdfx0yx5kncvg6jpbdb0dhwna0ssm6"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-zope-security" ,python-zope-security-bootstrap)
