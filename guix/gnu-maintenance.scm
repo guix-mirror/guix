@@ -647,10 +647,10 @@ releases are on gnu.org."
          (directory (dirname (uri-path uri)))
          (rewrite   (url-prefix-rewrite %savannah-base
                                         "mirror://savannah")))
-    (adjusted-upstream-source (latest-html-release package
-                                                   #:base-url %savannah-base
-                                                   #:directory directory)
-                              rewrite)))
+    (and=> (latest-html-release package
+                                #:base-url %savannah-base
+                                #:directory directory)
+           (cut adjusted-upstream-source <> rewrite))))
 
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE."
@@ -677,12 +677,11 @@ releases are on gnu.org."
          (directory (dirname (uri-path uri)))
          (rewrite   (url-prefix-rewrite %kernel.org-base
                                         "mirror://kernel.org")))
-    (adjusted-upstream-source (latest-html-release package
-                                                   #:base-url %kernel.org-base
-                                                   #:directory directory
-                                                   #:file->signature
-                                                   file->signature)
-                              rewrite)))
+    (and=> (latest-html-release package
+                                #:base-url %kernel.org-base
+                                #:directory directory
+                                #:file->signature file->signature)
+           (cut adjusted-upstream-source <> rewrite))))
 
 (define %gnu-updater
   ;; This is for everything at ftp.gnu.org.
