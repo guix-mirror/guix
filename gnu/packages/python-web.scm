@@ -1442,6 +1442,13 @@ Architecture.  Together with the zope.interface package, it provides
 facilities for defining, registering and looking up components.")
     (license license:zpl2.1)))
 
+(define-public python-zope-component-bootstrap
+  (package
+    (inherit python-zope-component)
+    (arguments `(#:tests? #f))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-component
   (package-with-python2 python-zope-component))
 
