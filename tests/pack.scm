@@ -57,10 +57,10 @@
 (unless (network-reachable?) (test-skip 1))
 (test-assertm "self-contained-tarball" %store
   (mlet* %store-monad
-      ((profile (profile-derivation (packages->manifest
-                                     (list %bootstrap-guile))
-                                    #:hooks '()
-                                    #:locales? #f))
+      ((profile -> (profile
+                    (content (packages->manifest (list %bootstrap-guile)))
+                    (hooks '())
+                    (locales? #f)))
        (tarball (self-contained-tarball "pack" profile
                                         #:symlinks '(("/bin/Guile"
                                                       -> "bin/guile"))

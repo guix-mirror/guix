@@ -181,6 +181,15 @@ added to the pack."
          (file-append (store-database (list profile))
                       "/db/db.sqlite")))
 
+  (define set-utf8-locale
+    ;; Arrange to not depend on 'glibc-utf8-locales' when using '--bootstrap'.
+    (and (or (not (profile? profile))
+             (profile-locales? profile))
+         #~(begin
+             (setenv "GUIX_LOCPATH"
+                     #+(file-append glibc-utf8-locales "/lib/locale"))
+             (setlocale LC_ALL "en_US.utf8"))))
+
   (define build
     (with-imported-modules (source-module-closure
                             `((guix build utils)
@@ -225,6 +234,9 @@ added to the pack."
             (zero? (system* (string-append #+archiver "/bin/tar")
                             "cf" "/dev/null" "--files-from=/dev/null"
                             "--sort=name")))
+
+          ;; Make sure non-ASCII file names are properly handled.
+          #+set-utf8-locale
 
           ;; Add 'tar' to the search path.
           (setenv "PATH" #+(file-append archiver "/bin"))
