@@ -1240,17 +1240,24 @@ internationalized messages within program source text.")
 (define-public python-zope-schema
   (package
     (name "python-zope-schema")
-    (version "5.0.1")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.schema" version))
        (sha256
         (base32
-         "0q93j0x52a42khw12al90jw2bk0wly3jwghql3a25zpwwxvn24ya"))))
+          "09jg47bxhfg1ahr1jxb5y0cbiszyk1j6fn1r1r7s6svjl3lbryr0"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; FIXME: Tests can't find zope.event.
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (if tests?
+               (invoke "zope-testrunner" "--test-path=src")
+               #t))))))
     (propagated-inputs
      `(("python-zope-event" ,python-zope-event)
        ("python-zope-interface" ,python-zope-interface)))
