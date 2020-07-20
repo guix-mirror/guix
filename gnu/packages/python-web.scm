@@ -1087,17 +1087,21 @@ dispatching systems can be built.")
 (define-public python-zope-interface
   (package
     (name "python-zope-interface")
-    (version "4.7.2")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.interface" version))
        (sha256
         (base32
-         "0r9kvb1q3lxrdhxabliv9nwhjsdmn1n0vcjv93rlqkyb7yyh24gx"))))
+         "03nrl6b8cb600dnnh46y149awvrm0gxyqgwq5hdw3lvys8mw9r20"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; test suite can't find python-zope-testing
     (native-inputs
-     `(("python-zope-event" ,python-zope-event)))
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)
+       ("python-zope-event" ,python-zope-event)
+       ("python-zope-testing" ,python-zope-testing)))
     (home-page "https://github.com/zopefoundation/zope.interface")
     (synopsis "Python implementation of the \"design by contract\"
 methodology")
