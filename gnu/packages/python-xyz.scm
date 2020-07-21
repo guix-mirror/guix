@@ -13545,6 +13545,32 @@ network.")
 (define-public python2-argcomplete
   (package-with-python2 python-argcomplete))
 
+(define-public python-csscompressor
+  (package
+    (name "python-csscompressor")
+    (version "0.9.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "csscompressor" version))
+        (sha256
+         (base32
+          "018ssffvlpnc1salmnpyl52c11glzzwj4k9f757hl4pkpjnjp8mg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "py.test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/sprymix/csscompressor")
+    (synopsis "Python port of YUI CSS Compressor")
+    (description
+     "This package provides a python port of YUI CSS Compressor.")
+    (license license:bsd-3)))
+
 (define-public python-rcssmin
   (package
     (name "python-rcssmin")
