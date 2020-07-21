@@ -1345,6 +1345,31 @@ brokering, etc.) for which the proxy is responsible.")
 (define-public python2-zope-proxy
   (package-with-python2 python-zope-proxy))
 
+(define-public python-zope-hookable
+  (package
+    (name "python-zope-hookable")
+    (version "5.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "zope.hookable" version))
+        (sha256
+         (base32
+          "0hc82lfr7bk53nvbxvjkibkarngyrzgfk2i6bg8wshl0ly0pdl19"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-zope-testing" ,python-zope-testing)))
+    (home-page "https://github.com/zopefoundation/zope.hookable")
+    (synopsis "Zope hookable")
+    (description "This package supports the efficient creation of hookable
+objects, which are callable objects that are meant to be optionally replaced.
+The idea is that you create a function that does some default thing and make i
+hookable.  Later, someone can modify what it does by calling its sethook method
+and changing its implementation.  All users of the function, including those
+that imported it, will see the change.")
+    (license license:zpl2.1)))
+
 (define-public python-zope-location
   (package
     (name "python-zope-location")
