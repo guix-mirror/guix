@@ -1492,6 +1492,32 @@ facilities for defining, registering and looking up components.")
 (define-public python2-zope-component
   (package-with-python2 python-zope-component))
 
+(define-public python-zope-deferredimport
+  (package
+    (name "python-zope-deferredimport")
+    (version "4.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "zope.deferredimport" version))
+        (sha256
+         (base32
+          "1q89v54dwniiqypjbwywwdfjdr4kdkqlyqsgrpplgvsygdg39cjp"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-zope-proxy" ,python-zope-proxy)))
+    (native-inputs
+     `(("python-zope-testrunner" ,python-zope-testrunner)))
+    (home-page "https://github.com/zopefoundation/zope.deferredimport")
+    (synopsis "Defer imports until used by code")
+    (description
+     "Often, especially for package modules, you want to import names for
+convenience, but not actually perform the imports until necessary.  The
+@code{zope.deferredimport} package provided facilities for defining names in
+modules that will be imported from somewhere else when used.  You can also cause
+deprecation warnings to be issued when a variable is used.")
+    (license license:zpl2.1)))
+
 (define-public python-ndg-httpsclient
   (package
     (name "python-ndg-httpsclient")
