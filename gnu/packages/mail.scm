@@ -3279,3 +3279,31 @@ helper scripts for command line signing and verification.  It supports DKIM
 signing/verifying of ed25519-sha256 signatures (RFC 8463).  It also supports
 the RFC 8617 Authenticated Received Chain (ARC) protocol.")
     (license license:bsd-3)))
+
+(define-public python-authheaders
+  (package
+    (name "python-authheaders")
+    (version "0.13.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "authheaders" version))
+        (sha256
+         (base32
+          "14k6i72k5f8dyvps8vc0aq0cczc8lvqpgjfjzsy6qqychjvjcmwk"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-authres" ,python-authres)
+       ("python-dkimpy" ,python-dkimpy)
+       ("python-dnspython" ,python-dnspython)
+       ("python-publicsuffix2" ,python-publicsuffix2)))
+    (home-page "https://github.com/ValiMail/authentication-headers")
+    (synopsis "Library wrapping email authentication header verification and generation")
+    (description
+     "This is a Python library for the generation of email authentication
+headers.  The library can perform DKIM, SPF, and DMARC validation, and the
+results are packaged into the Authentication-Results header.  The library can
+DKIM and ARC sign messages and output the corresponding signature headers.")
+    ;; The package's metadata claims it were MIT licensed, but the source file
+    ;; headers disagree. MPL-2 for the public suffix list.
+    (license (list license:zpl2.1 license:zlib license:mpl2.0))))
