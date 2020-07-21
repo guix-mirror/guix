@@ -1144,6 +1144,35 @@ Django projects, which allows association of a number of tags with any
 provides features like a web browseable API and authentication policies.")
     (license license:bsd-2)))
 
+(define-public python-django-sekizai
+  (package
+    (name "python-django-sekizai")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "django-sekizai" version))
+        (sha256
+         (base32
+          "1nc4sv109valdn6azmgm2j01k7khxy2wnji84z63x7fxsikfdxp2"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; Tests not included with release.
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-django-classy-tags" ,python-django-classy-tags)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/divio/django-sekizai")
+    (synopsis "Template blocks for Django projects")
+    (description "Sekizai means blocks in Japanese, and thats what this app
+provides.  A fresh look at blocks.  With @code{django-sekizai} you can define
+placeholders where your blocks get rendered and at different places in your
+templates append to those blocks.  This is especially useful for css and
+javascript.  Your subtemplates can now define css and javscript files to be
+included, and the css will be nicely put at the top and the javascript to the
+bottom, just like you should.  Also sekizai will ignore any duplicate content in
+a single block.")
+    (license license:bsd-3)))
+
 (define-public python-django-crispy-forms
   (package
     (name "python-django-crispy-forms")
