@@ -20716,6 +20716,32 @@ to minimize duplication of information across files.  The format supports schema
 validation.")
     (license license:lgpl3)))
 
+(define-public python-flufl-bounce
+  (package
+    (name "python-flufl-bounce")
+    (version "3.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "flufl.bounce" version))
+        (sha256
+         (base32
+          "01lg1b0jpf8605mzaz9miq3nray6s7a7gc8n4wzg5nsxl8fglcp4"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-atpublic" ,python-atpublic)
+       ("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-nose2" ,python-nose2)))
+    (home-page "https://fluflbounce.readthedocs.io/en/latest/")
+    (synopsis "Email bounce detectors")
+    (description "The @code{flufl.bounce} library provides a set of heuristics
+and an API for detecting the original bouncing email addresses from a bounce
+message.  Many formats found in the wild are supported, as are VERP and
+RFC 3464.")
+    (license (list license:asl2.0
+                   license:lgpl3))))    ; only for setup_headers.py
+
 (define-public python-flufl-i18n
   (package
     (name "python-flufl-i18n")
