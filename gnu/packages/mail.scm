@@ -2465,6 +2465,53 @@ for OpenSMTPD to extend its functionality.")
     (license (list license:bsd-2 license:bsd-3 ; openbsd-compat
                    license:isc))))             ; everything else
 
+(define-public mailman
+  (package
+    (name "mailman")
+    (version "3.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mailman" version))
+        (sha256
+         (base32
+          "0idfiv48jjgc0jq4731094ddhraqq8bxnwmjk6sg5ask0jss9kxq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("gunicorn" ,gunicorn)
+       ("python-aiosmtpd" ,python-aiosmtpd)
+       ("python-alembic" ,python-alembic)
+       ("python-atpublic" ,python-atpublic)
+       ("python-authheaders" ,python-authheaders)
+       ("python-authres" ,python-authres)
+       ("python-click" ,python-click)
+       ("python-dateutil" ,python-dateutil)
+       ("python-dnspython" ,python-dnspython)
+       ("python-falcon" ,python-falcon)
+       ("python-flufl-bounce" ,python-flufl-bounce)
+       ("python-flufl-i18n" ,python-flufl-i18n)
+       ("python-flufl-lock" ,python-flufl-lock)
+       ("python-importlib-resources" ,python-importlib-resources)
+       ("python-lazr-config" ,python-lazr-config)
+       ("python-passlib" ,python-passlib)
+       ("python-requests" ,python-requests)
+       ("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-zope-component" ,python-zope-component)
+       ("python-zope-configuration" ,python-zope-configuration)
+       ("python-zope-event" ,python-zope-event)
+       ("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://www.list.org")
+    (synopsis "Mailing list manager")
+    (description
+     "GNU Mailman is software for managing email discussion and mailing
+lists.  Both users and administrators generally perform their actions in a
+web interface, although email and command-line interfaces are also provided.
+The system features built-in archiving, automatic bounce processing, content
+filtering, digest delivery, and more.")
+    (license license:gpl3+)))
+
 (define-public python-mailmanclient
   (package
     (name "python-mailmanclient")
