@@ -1089,6 +1089,15 @@ higher quality while welcoming newcomers.")
         (base32
          "0s7b4v45j783yaxs7rni10k24san0ya77nqz4s7zdf3jhfpk42r1"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "DJANGO_SETTINGS_MODULE" "tagging.tests.settings")
+             (invoke "django-admin" "test" "--pythonpath=."))))))
+    (inputs
+     `(("python-django" ,python-django)))
     (home-page "https://github.com/Fantomas42/django-tagging")
     (synopsis "Generic tagging application for Django")
     (description "This package provides a generic tagging application for
