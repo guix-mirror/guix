@@ -388,6 +388,25 @@ given PATCHES.  When TOOLS-EXTRA is given, it must point to the
                                 (("@GLIBC_LIBDIR@")
                                  (string-append libc "/lib"))))))
                         #t)))
+                  (add-after 'install 'symlink-cfi_blacklist
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (lib-share (string-append out "/lib/clang/"
+                                                       ,version "/share"))
+                             (compiler-rt (assoc-ref inputs "clang-runtime"))
+                             ;; The location varies between Clang versions.
+                             (cfi-blacklist
+                              (cond ((file-exists?
+                                      (string-append compiler-rt "/cfi_blacklist.txt"))
+                                     (string-append compiler-rt "/cfi_blacklist.txt"))
+                                    (else (string-append compiler-rt
+                                                         "/share/cfi_blacklist.txt")))))
+                        (mkdir-p lib-share)
+                        ;; Symlink cfi_blacklist.txt to where Clang expects
+                        ;; to find it.
+                        (symlink cfi-blacklist
+                                 (string-append lib-share "/cfi_blacklist.txt"))
+                        #t)))
                   (add-after 'install 'install-clean-up-/share/clang
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
