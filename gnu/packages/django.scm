@@ -1080,14 +1080,14 @@ higher quality while welcoming newcomers.")
 (define-public python-django-tagging
   (package
     (name "python-django-tagging")
-    (version "0.4.6")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-tagging" version))
        (sha256
         (base32
-         "0s7b4v45j783yaxs7rni10k24san0ya77nqz4s7zdf3jhfpk42r1"))))
+         "13afxx30chssclxzd9gqnvwm9qyrdpnlbs6iswdfa18phfj8zmi8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1103,10 +1103,22 @@ higher quality while welcoming newcomers.")
     (description "This package provides a generic tagging application for
 Django projects, which allows association of a number of tags with any
 @code{Model} instance and makes retrieval of tags simple.")
+    (properties `((python2-variant . ,(delay python2-django-tagging))))
     (license license:bsd-3)))
 
 (define-public python2-django-tagging
-  (package-with-python2 python-django-tagging))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-django-tagging))))
+    (package
+      (inherit base)
+      (version "0.4.6")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (pypi-uri "django-tagging" version))
+          (sha256
+           (base32
+            "0s7b4v45j783yaxs7rni10k24san0ya77nqz4s7zdf3jhfpk42r1")))))))
 
 (define-public python-djangorestframework
   (package
