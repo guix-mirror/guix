@@ -20590,3 +20590,34 @@ For the most part it's transliterated from C, the major differences are:
     (description
      "Jinxed is an implementation of a subset of the Python curses library.")
     (license license:mpl2.0)))
+
+(define-public python-blessed
+  (package
+    (name "python-blessed")
+    (version "1.17.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "blessed" version))
+        (sha256
+         (base32
+          "1wdj342sk22hfrg0n91x2qnqsbzbiyq9y009v3pxnvfzn9bx0wbn"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; Don't get hung up on Windows test failures.
+            (delete-file "blessed/win_terminal.py") #t))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-jinxed" ,python-jinxed)
+       ("python-six" ,python-six)
+       ("python-wcwidth" ,python-wcwidth)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/jquast/blessed")
+    (synopsis "Wrapper around terminal capabilities")
+    (description
+     "Blessed is a thin, practical wrapper around terminal styling, screen
+positioning, and keyboard input.")
+    (license license:expat)))
