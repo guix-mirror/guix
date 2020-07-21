@@ -34,6 +34,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages geo)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
@@ -1196,6 +1197,51 @@ a single block.")
     (description
      "@code{django-crispy-forms} lets you easily build, customize and reuse
 forms using your favorite CSS framework, without writing template code.")
+    (license license:expat)))
+
+(define-public python-django-compressor
+  (package
+    (name "python-django-compressor")
+    (version "2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "django_compressor" version))
+        (sha256
+         (base32
+          "0kx7bclfa0sxlsz6ka70zr9ra00lks0hmv1kc99wbanx6xhirvfj"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+               (begin
+                 (setenv "DJANGO_SETTINGS_MODULE" "compressor.test_settings")
+                 (invoke "django-admin" "test"
+                         "--pythonpath=."))
+               #t))))
+       ;; Tests fail with beautifulsoup 4.9+
+       ;; https://github.com/django-compressor/django-compressor/issues/998
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-django-appconf" ,python-django-appconf)
+       ("python-rcssmin" ,python-rcssmin)
+       ("python-rjsmin" ,python-rjsmin)))
+    (native-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-brotli" ,python-brotli)
+       ("python-csscompressor" ,python-csscompressor)
+       ("python-django-sekizai" ,python-django-sekizai)
+       ("python-mock" ,python-mock)))
+    (home-page "https://django-compressor.readthedocs.io/en/latest/")
+    (synopsis
+     "Compress linked and inline JavaScript or CSS into single cached files")
+    (description
+     "Django Compressor combines and compresses linked and inline Javascript or
+CSS in a Django templates into cacheable static files by using the compress
+template tag.")
     (license license:expat)))
 
 (define-public python-django-override-storage
