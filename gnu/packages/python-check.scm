@@ -412,6 +412,27 @@ rounds that are calibrated to the chosen timer.")
 service processes for your tests with pytest.")
     (license license:expat)))
 
+(define-public python-pytest-aiohttp
+  (package
+    (name "python-pytest-aiohttp")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-aiohttp" version))
+       (sha256
+        (base32
+         "0kx4mbs9bflycd8x9af0idcjhdgnzri3nw1qb0vpfyb3751qaaf9"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)))
+    (home-page "https://github.com/aio-libs/pytest-aiohttp/")
+    (synopsis "Pytest plugin for aiohttp support")
+    (description "This package provides a pytest plugin for aiohttp support.")
+    (license license:asl2.0)))
+
 (define-public python-pytest-flask
   (package
     (name "python-pytest-flask")
