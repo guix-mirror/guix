@@ -831,6 +831,41 @@ settings.py and easily use them in your project.")
 (define-public python2-django-rq
   (package-with-python2 python-django-rq))
 
+(define-public python-django-q
+  (package
+    (name "python-django-q")
+    (version "1.3.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "django-q" version))
+        (sha256
+         (base32
+          "0ac3rjxv37bn97a62ly8b7qvbv765z6paiinzpwxx83nal2icc42"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "DJANGO_SETTINGS_MODULE" "django_q.tests.settings")
+             (invoke "django-admin" "test" "django_q.tests"
+                     "--pythonpath=."))))))
+    (propagated-inputs
+     `(("python-arrow" ,python-arrow)
+       ("python-blessed" ,python-blessed)
+       ("python-django" ,python-django)
+       ("python-django-picklefield" ,python-django-picklefield)))
+    (native-inputs
+     `(("python-django-redis" ,python-django-redis)
+       ("python-pytest-django" ,python-pytest-django)))
+    (home-page "https://django-q.readthedocs.io/")
+    (synopsis "Multiprocessing distributed task queue for Django")
+    (description
+     "Django Q is a native Django task queue, scheduler and worker application
+using Python multiprocessing.")
+    (license license:expat)))
+
 (define-public python-django-sortedm2m
   (package
     (name "python-django-sortedm2m")
