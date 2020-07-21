@@ -3704,8 +3704,8 @@ and fairly speedy.")
   (package
     (inherit gunicorn)
     (name "gunicorn")
-	(arguments `(#:tests? #f))
-	(properties '((hidden? . #t)))
+    (arguments `(#:tests? #f))
+    (properties '((hidden? . #t)))
     (native-inputs `())))
 
 (define-public python-translation-finder
