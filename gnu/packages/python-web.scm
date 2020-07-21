@@ -1456,25 +1456,37 @@ security policies on Python objects.")
 (define-public python-zope-component
   (package
     (name "python-zope-component")
-    (version "4.3.0")
+    (version "4.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.component" version))
        (sha256
         (base32
-         "1hlvzwj1kcfz1qms1dzhwsshpsf38z9clmyksb1gh41n8k3kchdv"))))
+         "14iwp95hh6q5dj4k9h1iw75cbp89bs27nany4dinyglb44c8jqli"))))
     (build-system python-build-system)
     (arguments
-     ;; Skip tests due to circular dependency with python-zope-security.
-     '(#:tests? #f))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "setup.py" "test"))))))
     (native-inputs
-     `(("python-zope-testing" ,python-zope-testing)))
-    (propagated-inputs
-     `(("python-zope-event" ,python-zope-event)
-       ("python-zope-interface" ,python-zope-interface)
+     `(("python-persistent" ,python-persistent)
+       ("python-zope-configuration" ,python-zope-configuration-bootstrap)
        ("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
-       ("python-zope-configuration" ,python-zope-configuration)))
+       ("python-zope-location" ,python-zope-location-bootstrap)
+       ("python-zope-proxy" ,python-zope-proxy-bootstrap)
+       ("python-zope-security" ,python-zope-security-bootstrap)
+       ("python-zope-testing" ,python-zope-testing)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
+    (propagated-inputs
+     `(("python-zope-deferredimport" ,python-zope-deferredimport)
+       ("python-zope-deprecation" ,python-zope-deprecation)
+       ("python-zope-event" ,python-zope-event)
+       ("python-zope-hookable" ,python-zope-hookable)
+       ("python-zope-interface" ,python-zope-interface)))
     (home-page "https://github.com/zopefoundation/zope.component")
     (synopsis "Zope Component Architecture")
     (description "Zope.component represents the core of the Zope Component
