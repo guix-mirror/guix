@@ -2551,6 +2551,44 @@ installation on systems where resources are limited.  Its features include:
 @end enumerate\n")
     (license license:expat)))
 
+(define-public python-django-mailman3
+  (package
+    (name "python-django-mailman3")
+    (version "1.3.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "django-mailman3" version))
+        (sha256
+         (base32
+          "1yrm7wpjy34xai72vn2vkhc9131cdrbqy08rrabf36kynj5vcdvy"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "DJANGO_SETTINGS_MODULE"
+                     "django_mailman3.tests.settings_test")
+             (invoke "django-admin" "test"
+                     "--pythonpath=."))))))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-django-allauth" ,python-django-allauth)
+       ("python-django-gravatar2" ,python-django-gravatar2)
+       ("python-mailmanclient" ,python-mailmanclient)
+       ("python-pytz" ,python-pytz)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (home-page "https://gitlab.com/mailman/django-mailman3")
+    (synopsis "Django library to help interaction with Mailman")
+    (description
+     "This package contains libraries and templates for Django-based interfaces
+interacting with Mailman.")
+    (properties `((python2-variant . ,(delay python2-django-mailman))))
+    (license license:gpl3+)))
+
+;; This is the last version to support Python-2.
 (define-public python2-django-mailman3
   (package
     (name "python2-django-mailman3")
