@@ -10047,6 +10047,8 @@ list of updaters).  Currently, @var{updater} may be one of:
 @table @code
 @item gnu
 the updater for GNU packages;
+@item savannah
+the updater for packages hosted at @uref{https://savannah.gnu.org, Savannah};
 @item gnome
 the updater for GNOME packages;
 @item kde
