@@ -20621,3 +20621,32 @@ For the most part it's transliterated from C, the major differences are:
      "Blessed is a thin, practical wrapper around terminal styling, screen
 positioning, and keyboard input.")
     (license license:expat)))
+
+(define-public python-readme-renderer
+  (package
+    (name "python-readme-renderer")
+    (version "26.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "readme_renderer" version))
+        (sha256
+         (base32
+          "13fnrv7z3y0yfafzcjbl55cqxncvbxadr72ql4l29pgyvrqxpsfb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-bleach" ,python-bleach)
+       ("python-docutils" ,python-docutils)
+       ("python-pygments" ,python-pygments)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/pypa/readme_renderer")
+    (synopsis "Render README files in Warehouse")
+    (description
+     "Readme Renderer is a library that will safely render arbitrary README
+files into HTML.  It is designed to be used in Warehouse to render the
+@code{long_description} for packages.  It can handle Markdown, reStructuredText,
+and plain text.")
+    (license license:asl2.0)))
