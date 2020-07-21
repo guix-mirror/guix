@@ -19902,7 +19902,12 @@ logging in Python.  It also provides some custom formatters and handlers.")
          "150av2pylsjy8ykrpyi0vzy2q24s9rhh2ya01zvwnvj9j5dspviz"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "setup.py" "testr" "--slowest"
+                     "--testr-args=until-failure"))))))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-daiquiri" ,python-daiquiri)
