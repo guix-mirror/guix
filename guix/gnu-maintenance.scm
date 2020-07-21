@@ -650,6 +650,9 @@ releases are on gnu.org."
          (directory (dirname (uri-path uri)))
          (rewrite   (url-prefix-rewrite %savannah-base
                                         "mirror://savannah")))
+    ;; Note: We use the default 'file->signature', which adds ".sig", but not
+    ;; all projects on Savannah follow that convention: some use ".asc" and
+    ;; perhaps some lack signatures altogether.
     (and=> (latest-html-release package
                                 #:base-url %savannah-base
                                 #:directory directory)

@@ -326,10 +326,17 @@ values: 'interactive' (default), 'always', and 'never'."
                                (built-derivations (list drv))
                                (return (derivation->output-path drv))))))))
           (let-values (((status data)
-                        (gnupg-verify* sig data #:key-download key-download)))
+                        (if sig
+                            (gnupg-verify* sig data
+                                           #:key-download key-download)
+                            (values 'missing-signature data))))
             (match status
               ('valid-signature
                tarball)
+              ('missing-signature
+               (warning (G_ "failed to download detached signature from ~a~%")
+                        signature-url)
+               #f)
               ('invalid-signature
                (warning (G_ "signature verification failed for '~a' (key: ~a)~%")
                         url data)
