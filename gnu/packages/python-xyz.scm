@@ -13545,6 +13545,43 @@ network.")
 (define-public python2-argcomplete
   (package-with-python2 python-argcomplete))
 
+(define-public python-rjsmin
+  (package
+    (name "python-rjsmin")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rjsmin" version))
+        (sha256
+         (base32
+          "0cmc72rlkvzz8fl89bc83czkx0pcvhzj7yn7m29r8pgnf5fcfpdi"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (for-each delete-file (find-files "bench" "\\.js$"))
+            #t))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f  ; Not all test files included.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (if tests?
+               (invoke "py.test" "-vv" "tests")
+               #t))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://opensource.perlig.de/rjsmin/")
+    (synopsis "Javascript Minifier")
+    (description "@code{rJSmin} is a javascript minifier written in Python.  The
+minifier is based on the semantics of jsmin.c by Douglas Crockford.  The module
+is a re-implementation aiming for speed, so it can be used at runtime (rather
+than during a preprocessing step).")
+    (license license:asl2.0)))
+
 (define-public python-xopen
   (package
     (name "python-xopen")
