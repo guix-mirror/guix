@@ -387,6 +387,31 @@ for the @code{pytest} framework.")
 rounds that are calibrated to the chosen timer.")
     (license license:bsd-2)))
 
+(define-public python-pytest-services
+  (package
+    (name "python-pytest-services")
+    (version "1.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pytest-services" version))
+        (sha256
+         (base32
+          "0b2zfv04w6m3gp2v44ifdhx22vcji069qnn95ry3zcyxib7cjnq3"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; Tests not included in release tarball.
+    (propagated-inputs
+     `(("python-psutil" ,python-psutil)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/pytest-dev/pytest-services")
+    (synopsis "Services plugin for pytest testing framework")
+    (description
+     "This plugin provides a set of fixtures and utility functions to start
+service processes for your tests with pytest.")
+    (license license:expat)))
+
 (define-public python-pytest-flask
   (package
     (name "python-pytest-flask")
