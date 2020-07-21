@@ -874,7 +874,7 @@ support, and optional data-URI image and font embedding.")
              (invoke "redis-server" "--daemonize" "yes")
              (invoke "django-admin.py" "test" "django_rq"
                      "--settings=django_rq.tests.settings"
-                     "--pythonpath="))))))
+                     "--pythonpath=."))))))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("redis" ,redis)))
