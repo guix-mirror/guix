@@ -6036,6 +6036,29 @@ all the newest features of the standard @code{pathlib} can be used also on
 older Python versions.")
     (license license:expat)))
 
+(define-public python-importlib-resources
+  (package
+    (name "python-importlib-resources")
+    (version "3.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "importlib_resources" version))
+        (sha256
+         (base32
+          "1hq626mx5jl9zfl0wdrjkxsnh8qd98fqv322n68b9251xjk4bxqr"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-toml" ,python-toml)))
+    (home-page "http://importlib-resources.readthedocs.io/")
+    (synopsis "Read resources from Python packages")
+    (description
+     "@code{importlib_resources} is a backport of Python 3's standard library
+@code{importlib.resources} module for Python 2.7, and Python 3.")
+    (properties `((python2-variant . ,(delay python2-importlib-resources))))
+    (license license:asl2.0)))
+
 (define-public python2-importlib-resources
   (package
     (name "python2-importlib-resources")
