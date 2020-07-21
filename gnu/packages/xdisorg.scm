@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 Boris A. Dekshteyn <boris.dekshteyn@gmail.com>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -627,7 +628,7 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -637,7 +638,8 @@ move windows, switch between desktops, etc.).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x70hd59ik37kqd8xqpwrz46np01jv324iz28x2s0kk36d7sblsj"))))
+        (base32
+         "12xq6glg70icwsvbnfw9gm4dahlbnrc7b6adpd0mpf89h4sj2gds"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -647,6 +649,7 @@ move windows, switch between desktops, etc.).")
      `(("giblib" ,giblib)
        ("libx11" ,libx11)
        ("libXcursor" ,libxcursor)
+       ("libxcomposite" ,libxcomposite)
        ("libXfixes" ,libxfixes)))
     (home-page "https://github.com/resurrecting-open-source-projects/scrot")
     (synopsis "Command-line screen capture utility for X Window System")
