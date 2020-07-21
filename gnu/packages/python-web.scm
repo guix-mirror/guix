@@ -1309,6 +1309,37 @@ Markup Language.")
 (define-public python2-zope-configuration
   (package-with-python2 python-zope-configuration))
 
+(define-public python-zope-copy
+  (package
+    (name "python-zope-copy")
+    (version "4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "zope.copy" version))
+        (sha256
+         (base32
+          "06m75434krl57n6p73c2qj55k5i3fixg887j8ss01ih6zw4rvfs7"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "zope-testrunner" "--test-path=src" "\\[]"))))))
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-zope-component" ,python-zope-component-bootstrap)
+       ("python-zope-location" ,python-zope-location-bootstrap)
+       ("python-zope-testing" ,python-zope-testing)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
+    (home-page "https://github.com/zopefoundation/zope.copy")
+    (synopsis "Pluggable object copying mechanism")
+    (description
+     "This package provides a pluggable mechanism for copying persistent objects.")
+    (license license:zpl2.1)))
+
 (define-public python-zope-proxy
   (package
     (name "python-zope-proxy")
