@@ -13545,6 +13545,30 @@ network.")
 (define-public python2-argcomplete
   (package-with-python2 python-argcomplete))
 
+(define-public python-rcssmin
+  (package
+    (name "python-rcssmin")
+    (version "1.0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rcssmin" version))
+        (sha256
+         (base32
+          "0w42l4dhxghcz7pj3q7hkxp015mvb8z2cq9sfxbl31npsfavd1ya"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "run_tests.py" "tests"))))))
+    (home-page "http://opensource.perlig.de/rcssmin/")
+    (synopsis "CSS Minifier")
+    (description "The minifier is based on the semantics of the YUI compressor,
+which itself is based on the rule list by Isaac Schlueter.")
+    (license license:asl2.0)))
+
 (define-public python-rjsmin
   (package
     (name "python-rjsmin")
