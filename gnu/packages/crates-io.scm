@@ -768,7 +768,7 @@ that runs on Argon2.")
        #:cargo-development-inputs
        (("rust-bencher" ,rust-bencher-0.1)
         ("rust-matches" ,rust-matches-0.1)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
+        ("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/bluss/arrayvec")
     (synopsis "Vector with fixed capacity")
     (description
@@ -799,7 +799,7 @@ ArrayVec and ArrayString.")
        #:cargo-development-inputs
        (("rust-bencher" ,rust-bencher-0.1)
         ("rust-matches" ,rust-matches-0.1)
-        ("rust-serde-test" ,rust-serde-test-1.0))))))
+        ("rust-serde-test" ,rust-serde-test-1))))))
 
 (define-public rust-ascii-1.0
   (package
@@ -819,7 +819,7 @@ ArrayVec and ArrayString.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-serde" ,rust-serde-1)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
+        ("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/tomprogrammer/rust-ascii")
     (synopsis "ASCII-only equivalents to `char`, `str` and `String`.")
     (description
@@ -846,7 +846,7 @@ standard library.")
      `(#:cargo-inputs
        (("rust-quickcheck" ,rust-quickcheck-0.6)
         ("rust-serde" ,rust-serde-1)
-        ("rust-serde-test" ,rust-serde-test-1.0))))))
+        ("rust-serde-test" ,rust-serde-test-1))))))
 
 (define-public rust-ascii-canvas-2
   (package
@@ -2398,7 +2398,7 @@ little-endian.")
        (("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-loom" ,rust-loom-0.2)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
+        ("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/tokio-rs/bytes")
     (synopsis "Types and traits for working with bytes")
     (description "Types and traits for working with bytes.")
@@ -2426,7 +2426,7 @@ little-endian.")
         ("rust-iovec" ,rust-iovec-0.1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (("rust-serde-test" ,rust-serde-test-1.0))))))
+       (("rust-serde-test" ,rust-serde-test-1))))))
 
 (define-public rust-bytes-0.3
   (package
@@ -6855,7 +6855,7 @@ variables.")
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (("rust-serde-test" ,rust-serde-test-1.0))))
+       (("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/servo/euclid")
     (synopsis "Geometry primitives")
     (description "Geometry primitives written in Rust.")
@@ -10246,7 +10246,7 @@ the template engine that renders the official Rust website")
         ("rust-rand" ,rust-rand-0.5)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-rustc-hash" ,rust-rustc-hash-1.1)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
+        ("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/rust-lang/hashbrown")
     (synopsis "Rust port of Google's SwissTable hash map")
     (description
@@ -11193,7 +11193,7 @@ for the most common image formats.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
+        ("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/bluss/indexmap")
     (synopsis "Hash table with consistent order and fast iteration.")
     (description
@@ -12577,7 +12577,7 @@ graphics and video games.")
        (("rust-clippy" ,rust-clippy-0.0)
         ("rust-heapsize" ,rust-heapsize-0.4)
         ("rust-serde" ,rust-serde-1)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
+        ("rust-serde-test" ,rust-serde-test-1))))
     (home-page
      "https://github.com/contain-rs/linked-hash-map")
     (synopsis
@@ -12821,7 +12821,7 @@ by inspecting the system for user preference.")
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (("rust-serde-test" ,rust-serde-test-1.0))))
+       (("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/rust-lang/log")
     (synopsis "Lightweight logging facade for Rust")
     (description
@@ -12890,7 +12890,7 @@ by inspecting the system for user preference.")
         ("rust-generator" ,rust-generator-0.6)
         ("rust-scoped-tls" ,rust-scoped-tls-0.1)
         ("rust-serde" ,rust-serde-1)
-        ("rust-serde-test" ,rust-serde-test-1.0)
+        ("rust-serde-test" ,rust-serde-test-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
 (define-public rust-loom-0.1
@@ -14904,7 +14904,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
         ("rust-serde" ,rust-serde-1)
         ("rust-autocfg" ,rust-autocfg-1.0))
        #:cargo-development-inputs
-       (("rust-serde-test" ,rust-serde-test-1.0))))))
+       (("rust-serde-test" ,rust-serde-test-1))))))
 
 (define-public rust-num-bigint-0.1
   (package
@@ -15947,7 +15947,7 @@ PartialOrd types, like floats.")
        (("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (("rust-serde-test" ,rust-serde-test-1.0))))
+       (("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/reem/rust-ordered-float")
     (synopsis "Wrappers for total ordering on floats")
     (description
@@ -15978,7 +15978,7 @@ PartialOrd types, like floats.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-rand" ,rust-rand-0.4)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
+        ("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/bluss/indexmap")
     (synopsis "Hash table with consistent order and fast iteration")
     (description
@@ -22753,7 +22753,7 @@ proven statistical guarantees.")
        #:cargo-development-inputs
        (("rust-bincode" ,rust-bincode-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
+        ("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/serde-rs/bytes")
     (synopsis "Handle integer arrays and vectors for Serde")
     (description
@@ -23010,7 +23010,7 @@ for the serde framework.")
      "Macros to auto-generate implementations for the serde framework.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-serde-test-1.0
+(define-public rust-serde-test-1
   (package
     (name "rust-serde-test")
     (version "1.0.105")
@@ -23040,7 +23040,7 @@ for the serde framework.")
 
 (define-public rust-serde-test-0.9
   (package
-    (inherit rust-serde-test-1.0)
+    (inherit rust-serde-test-1)
     (name "rust-serde-test")
     (version "0.9.15")
     (source
@@ -23064,7 +23064,7 @@ for the serde framework.")
 
 (define-public rust-serde-test-0.8
   (package
-    (inherit rust-serde-test-1.0)
+    (inherit rust-serde-test-1)
     (name "rust-serde-test")
     (version "0.8.23")
     (source
@@ -27573,7 +27573,7 @@ with the Unicode character database.")
         ("rust-matches" ,rust-matches-0.1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (("rust-serde-test" ,rust-serde-test-1.0))))
+       (("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/servo/unicode-bidi")
     (synopsis "Implementation of the Unicode Bidirectional Algorithm")
     (description
@@ -28136,7 +28136,7 @@ Unix users and groups.")
        (("rust-bincode" ,rust-bincode-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
+        ("rust-serde-test" ,rust-serde-test-1))))
     (home-page "https://github.com/uuid-rs/uuid")
     (synopsis "Generate and parse UUIDs")
     (description
