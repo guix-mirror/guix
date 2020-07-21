@@ -20716,6 +20716,32 @@ to minimize duplication of information across files.  The format supports schema
 validation.")
     (license license:lgpl3)))
 
+(define-public python-flufl-i18n
+  (package
+    (name "python-flufl-i18n")
+    (version "3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "flufl.i18n" version))
+        (sha256
+         (base32
+          "1flwpn1xhgc957zj3zxw92dhdjh0lsy0hdvzq32dzqpsajfsvq1r"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-atpublic" ,python-atpublic)))
+    (home-page "https://flufli18n.readthedocs.io")
+    (synopsis "API for Python internationalization")
+    (description
+     "This package provides a high level, convenient API for managing
+internationalization translation contexts in Python application.  There is a
+simple API for single-context applications, such as command line scripts which
+only need to translate into one language during the entire course of thei
+execution.  There is a more flexible, but still convenient API for multi-context
+applications, such as servers, which may need to switch language contexts for
+different tasks.")
+    (license license:asl2.0)))
+
 (define-public python-flufl-lock
   (package
     (name "python-flufl-lock")
