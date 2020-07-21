@@ -430,6 +430,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/photo.scm			\
   %D%/packages/phabricator.scm 			\
   %D%/packages/php.scm				\
+  %D%/packages/piet.scm			\
   %D%/packages/pkg-config.scm			\
   %D%/packages/plotutils.scm			\
   %D%/packages/poedit.scm				\
