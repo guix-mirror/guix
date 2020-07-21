@@ -146,7 +146,7 @@ for commit ~a")
                       (message (format #f (G_ "could not authenticate \
 commit ~a: key ~a is missing")
                                        (oid->string commit-id)
-                                       data))))))
+                                       (openpgp-format-fingerprint data)))))))
             ('good-signature data)))))))
 
 (define (read-authorizations port)
