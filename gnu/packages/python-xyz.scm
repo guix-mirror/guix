@@ -20792,3 +20792,24 @@ timeouts for POSIX systems.  It is similar to the @code{O_EXCL} option of the
 and have a maximum lifetime built-in.")
     (license (list license:asl2.0
                    license:lgpl3))))    ; only for setup_helpers.py
+
+(define-public python-flufl-testing
+  (package
+    (name "python-flufl-testing")
+    (version "0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "flufl.testing" version))
+        (sha256
+         (base32
+          "1nkm95mhcfhl4x5jgs6y97ikszaxsfh07nyawsih6cxxm6l62641"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose2" ,python-nose2)))
+    (home-page "https://gitlab.com/warsaw/flufl.testing")
+    (synopsis "Collection of test tool plugins")
+    (description
+     "This package contains a small collection of test tool plugins for
+@code{nose2} and @code{flake8}.")
+    (license license:asl2.0)))
