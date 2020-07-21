@@ -192,6 +192,31 @@ with arguments to the field constructor.")
 (define-public python2-django-simple-math-captcha
   (package-with-python2 python-django-simple-math-captcha))
 
+(define-public python-django-classy-tags
+  (package
+    (name "python-django-classy-tags")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "django-classy-tags" version))
+        (sha256
+         (base32
+          "1cayqddvxd5prhybqi77lif2z4j7mmfmxgc61pq9i82q5gy2asmd"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; Test script not distributed with release.
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/divio/django-classy-tags")
+    (synopsis "Class based template tags for Django")
+    (description
+     "@code{django-classy-tags} is an approach at making writing template tags
+in Django easier, shorter and more fun.  It provides an extensible argument
+parser which reduces most of the boiler plate code you usually have to write
+when coding custom template tags.")
+    (license license:bsd-3)))
+
 (define-public python-django-taggit
   (package
     (name "python-django-taggit")
