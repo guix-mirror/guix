@@ -4346,3 +4346,25 @@ conflicts detected by that mechanism.")
     (description "This package contains a generic transaction implementation
 for Python.  It is mainly used by the ZODB.")
     (license license:zpl2.1)))
+
+(define-public python-robot-detection
+  (package
+    (name "python-robot-detection")
+    (version "0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "robot-detection" version))
+        (sha256
+         (base32
+          "1xd2jm3yn31bnk1kqzggils2rxj26ylxsfz3ap7bhr3ilhnbg3rx"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; Tests not shipped in pypi release.
+    (propagated-inputs `(("python-six" ,python-six)))
+    (home-page "https://github.com/rory/robot-detection")
+    (synopsis "Detect web crawlers")
+    (description
+     "@code{robot_detection} is a python module to detect if a given HTTP User
+Agent is a web crawler.  It uses the list of registered robots from
+@url{http://www.robotstxt.org}.")
+    (license license:gpl3+)))
