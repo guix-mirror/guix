@@ -22266,7 +22266,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
   (let ((commit "5c39c3a81e48222911db75ae30e5a8f8fa34efb5")
-	(revision "1")
+	(revision "2")
 	(version "0.6.27"))
     (package
       (name "emacs-telega")
@@ -22280,7 +22280,9 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
          (sha256
           (base32
            "0wyycgsb1ja73phs9a2dgi50m2p6sdvx3xdwclfyijx4hzwlv233"))
-         (patches (search-patches "emacs-telega-test-env.patch"))
+         (patches (search-patches
+                   "emacs-telega-patch-server-functions.patch"
+                   "emacs-telega-test-env.patch"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
