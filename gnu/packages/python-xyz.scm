@@ -20650,3 +20650,34 @@ files into HTML.  It is designed to be used in Warehouse to render the
 @code{long_description} for packages.  It can handle Markdown, reStructuredText,
 and plain text.")
     (license license:asl2.0)))
+
+(define-public python-lazr-delegates
+  (package
+    (name "python-lazr-delegates")
+    (version "2.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "lazr.delegates" version))
+        (sha256
+         (base32
+          "1rdnl85j9ayp8n85l0ciip621j9dcziz5qnmv2m7krgwgcn31vfx"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "setup.py" "nosetests"))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
+    (home-page "https://launchpad.net/lazr.delegates")
+    (synopsis "Easily write objects that delegate behavior")
+    (description
+     "The @code{lazr.delegates} package makes it easy to write objects that
+delegate behavior to another object.  The new object adds some property or
+behavior on to the other object, while still providing the underlying interface,
+and delegating behavior.")
+    (license license:lgpl3)))
