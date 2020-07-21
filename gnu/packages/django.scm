@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -571,6 +571,25 @@ conn_max_age argument to easily enable Django’s connection pool.")
 
 (define-public python2-dj-database-url
   (package-with-python2 python-dj-database-url))
+
+(define-public python-django-picklefield
+  (package
+    (name "python-django-picklefield")
+    (version "2.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "django-picklefield" version))
+        (sha256
+         (base32
+          "0imncys5s3vsy2q79nn7k5d670da1xgmcr9gmhn06fry6ibf39b7"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-django" ,python-django)))
+    (native-inputs `(("python-tox" ,python-tox)))
+    (home-page "https://github.com/gintas/django-picklefield")
+    (synopsis "Pickled object field for Django")
+    (description "Pickled object field for Django")
+    (license license:expat)))
 
 (define-public python-django-bulk-update
   (package
