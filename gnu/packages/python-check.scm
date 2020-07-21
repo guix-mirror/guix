@@ -454,3 +454,37 @@ analysing code quality.")
     (description "This package provides a library for replying fake data to
 Python software under test, when they make an HTTP query.")
     (license license:asl2.0)))
+
+(define-public python-atpublic
+  (package
+    (name "python-atpublic")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "atpublic" version))
+        (sha256
+         (base32
+          "0i3sbxkdlbb4560rrlmwwd5y4ps7k73lp4d8wnmd7ag9k426gjkx"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'enable-c-implementation
+           (lambda _
+             (setenv "ATPUBLIC_BUILD_EXTENSION" "yes")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "nose2" "-v"))))))
+    (native-inputs
+     `(("python-nose2" ,python-nose2)))
+    (home-page "https://public.readthedocs.io/")
+    (synopsis "@code{@@public} decorator for populating @code{__all__}")
+    (description
+     "This Python module adds a @code{@@public} decorator and function which
+populates a module's @code{__all__} and optionally the module globals.  With
+it, the declaration of a name's public export semantics are not separated from
+the implementation of that name.")
+    (license (list license:asl2.0
+                   license:lgpl3))))    ; only for setup_helpers.py
