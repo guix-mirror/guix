@@ -660,7 +660,7 @@ information to OS install scripts or instances.")))
      #~(lambda ()
          (system* #$(file-append ganeti "/sbin/ganeti-watcher")
                   #$@(if rapi-ip
-                         #~(string-append "--rapi-ip=" #$rapi-ip)
+                         #~((string-append "--rapi-ip=" #$rapi-ip))
                          #~())
                   #$(string-append "--job-age=" (number->string job-age))
                   #$@(if verify-disks?
