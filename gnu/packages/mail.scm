@@ -2695,6 +2695,46 @@ interacting with Mailman.")
 interacting with Mailman.")
     (license license:gpl3+)))
 
+(define-public python-mailman-hyperkitty
+  (package
+    (name "python-mailman-hyperkitty")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mailman-hyperkitty" version))
+        (sha256
+         (base32
+          "1lfqa9admhvdv71f528jmz2wl0i5cv77v6l64px2pm4zqr9ckkjx"))
+        (patches
+          (list
+            (origin
+              ;; see: https://gitlab.com/mailman/mailman-hyperkitty/issues/17
+              ;; fixes test_archive_message_unserializable
+              (method url-fetch)
+              (uri "https://salsa.debian.org/mailman-team/mailman-hyperkitty/raw/debian/1.1.0-9/debian/patches/0002-Skip-the-test_archive_message_unserializable.patch")
+              (sha256
+               (base32
+                "0p1fwm46c4bl81lvsg3kjhn2r1lwgkpgxamb3xyqn7h9qdrw10hw")))))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-zope-interface" ,python-zope-interface)))
+    (inputs
+     `(("mailman" ,mailman)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-nose2" ,python-nose2)))
+    (home-page "https://gitlab.com/mailman/mailman-hyperkitty/")
+    (synopsis "Mailman archiver plugin for HyperKitty")
+    (description
+     "Mailman3 allows emails sent to its mailing lists to be archived by any
+software provided that there is a plugin (loadable by Mailman3) designed to
+communicate with it properly.  This module contains a Mailman3 archiver plugin
+which sends emails to HyperKitty, the official Mailman3 web archiver.")
+    (license license:gpl3+)))
+
 (define-public postorius
   (package
     (name "postorius")
