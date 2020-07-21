@@ -7105,6 +7105,29 @@ asynchronously, with Counsel and Ivy.  Simply call
 commands and replacements for existing functions.")
     (license license:gpl3+)))
 
+(define-public emacs-qml-mode
+  (package
+    (name "emacs-qml-mode")
+    (version "0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/coldnew/qml-mode")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1sncsvzjfgmhp4m8w5jd4y51k24n2jfpgvrkd64wlhhzbj3wb947"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/coldnew/qml-mode/")
+    (synopsis "Qt Modeling Language (QML) mode for Emacs")
+    (description "This package provides the @code{qml-mode} major Emacs mode
+for editing source files written in the Qt Modeling Language (QML) user
+interface markup language.  It provides syntax highlighting and basic
+navigation commands.  @code{qml-mode} is derived from code{js-mode}, the Emacs
+builtin JavaScript mode.")
+    (license license:gpl2+)))
+
 (define-public emacs-queue
   (package
     (name "emacs-queue")
