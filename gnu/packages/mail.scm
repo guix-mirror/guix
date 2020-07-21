@@ -3199,3 +3199,42 @@ Atom feeds or HTML archives.")
 client.  Sylpheed provides intuitive user-interface.  Sylpheed is also
 designed for keyboard-oriented operation.")
     (license license:gpl2+)))
+
+(define-public python-authres
+  (package
+    (name "python-authres")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "authres" version))
+        (sha256
+         (base32
+          "1dr5zpqnb54h4f5ax8334l1dcp8j9083d7v4vdi1xqkwmnavklck"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Run doctests as described in the README.
+           (lambda _
+             (invoke "python" "-m" "authres" "-v"))))))
+    (home-page "https://launchpad.net/authentication-results-python")
+    (synopsis "Email Authentication Results Header Module")
+    (description
+     "This module can be used to generate and parse RFC 5451/7001/7601
+Authentication-Results headers.  It also supports Authentication Results
+extensions:
+@itemize
+@item RFC 5617 DKIM/ADSP
+@item RFC 6008 DKIM signature identification (header.b)
+@item RFC 6212 Vouch By Reference (VBR)
+@item RFC 6577 Sender Policy Framework (SPF)
+@item RFC 7281 Authentication-Results Registration for S/MIME
+@item RFC 7293 The Require-Recipient-Valid-Since Header Field
+@item RFC 7489 Domain-based Message Authentication, Reporting, and Conformance (DMARC)
+@item Authenticated Recieved Chain (ARC) (draft-ietf-dmarc-arc-protocol-08)
+@end itemize
+Note: RFC 7601 obsoletes RFC 5451, 6577, 7001, and 7410.  Authres supports the
+current standard.  No backward compatibility issues have been noted.")
+    (license license:asl2.0)))
