@@ -2468,29 +2468,49 @@ for OpenSMTPD to extend its functionality.")
 (define-public python-mailmanclient
   (package
     (name "python-mailmanclient")
-    (version "3.1.1")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mailmanclient" version))
        (sha256
         (base32
-         "0fdfs5g3pf30v2i7w18pdkv9xnfxmfcv66mzv56dck0a1igq07m3"))))
+         "0pjgzpvhdb6ql8asb20xr8d01m646zpghmcp9fmscks0n1k4di4g"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Requires mailman running
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-httplib2" ,python-httplib2)))
-    (home-page "https://launchpad.net/mailman.client")
+     `(("python-requests" ,python-requests)))
+    ;(native-inputs
+    ; `(("mailman" ,mailman)
+    ;   ("python-falcon" ,python-falcon)
+    ;   ("python-pytest" ,python-pytest)
+    ;   ("python-pytest-services" ,python-pytest-services)))
+    (home-page "https://www.list.org/")
     (synopsis "Python bindings for the Mailman 3 REST API")
     (description
      "The mailmanclient library provides official Python bindings for
 the GNU Mailman 3 REST API.")
+    (properties `((python2-variant . ,(delay python2-mailmanclient))))
     (license license:lgpl3+)))
 
+;; This is the last version which supports Python-2.
 (define-public python2-mailmanclient
-  (package-with-python2 python-mailmanclient))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-mailmanclient))))
+    (package
+      (inherit base)
+      (version "3.1.1")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (pypi-uri "mailmanclient" version))
+          (sha256
+           (base32
+            "0fdfs5g3pf30v2i7w18pdkv9xnfxmfcv66mzv56dck0a1igq07m3"))))
+      (propagated-inputs
+       `(("python2-six" ,python2-six)
+         ("python2-httplib2" ,python2-httplib2))))))
 
 (define-public mlmmj
   (package
