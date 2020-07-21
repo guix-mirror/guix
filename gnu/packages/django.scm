@@ -392,36 +392,23 @@ them do this.")
 (define-public python-django-allauth
   (package
     (name "python-django-allauth")
-    (version "0.39.1")
+    (version "0.40.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-allauth" version))
        (sha256
         (base32
-         "17l0acpr3cihdndzccjhgv58f9z170v2qwx7w0b8w6235x646i24"))))
+         "12f5gjidcpb7a0d1f601k0c5dcdmb6fg9sfn7xn5j8zfsg29y63a"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         ;; TODO: Tagging the tests requiring the web could be done upstream.
-         (add-before 'check 'skip-test-requiring-network-access
-           (lambda _
-             (substitute* "allauth/socialaccount/providers/openid/tests.py"
-               (("import override_settings") "import tag, override_settings")
-               (("def test_login")
-                "@tag('requires-web')
-    def test_login"))))
          (replace 'check
            (lambda _
-             ;; TODO: investigate why this test fails
-             (delete-file "allauth/socialaccount/providers/cern/tests.py")
              (setenv "DJANGO_SETTINGS_MODULE" "test_settings")
-             (invoke "django-admin"
-                     "test"
-                     "allauth"
-                     "--verbosity=2"
-                     "--exclude-tag=requires-web"))))))
+             (invoke "django-admin" "test" "allauth.tests"
+                     "--pythonpath=."))))))
     (propagated-inputs
      `(("python-openid" ,python-openid)
        ("python-requests" ,python-requests)
