@@ -1155,7 +1155,7 @@ made by suckless.")
         ("rust-log" ,rust-log-0.4)
         ("rust-time" ,rust-time-0.1)
         ("rust-env-logger" ,rust-env-logger-0.7)
-        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde" ,rust-serde-1)
         ("rust-serde-yaml" ,rust-serde-yaml-0.8)
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-glutin" ,rust-glutin-0.22) ; adjust 'patch-glutin-libgl-path as needed

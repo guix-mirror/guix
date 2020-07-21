@@ -4025,7 +4025,7 @@ result in several formats:
         ("rust-rayon" ,rust-rayon-1)
         ("rust-rust-hawktracer" ,rust-rust-hawktracer-0.7)
         ("rust-scan-fmt" ,rust-scan-fmt-0.2)
-        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde" ,rust-serde-1)
         ("rust-signal-hook" ,rust-signal-hook-0.1)
         ("rust-simd-helpers" ,rust-simd-helpers-0.1)
         ("rust-thiserror" ,rust-thiserror-1.0)
