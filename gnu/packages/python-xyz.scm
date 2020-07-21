@@ -20560,3 +20560,33 @@ For the most part it's transliterated from C, the major differences are:
 @end itemize
 ")
     (license license:gpl3+)))
+
+(define-public python-jinxed
+  (package
+    (name "python-jinxed")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "jinxed" version))
+        (sha256
+         (base32
+          "1n7vl03rhjd0xhjgbjlh8x9f8yfbhamcwkgvs4jg7g5qj8f0wk89"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-environment-variables
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ncurses (assoc-ref inputs "ncurses")))
+               (setenv "TERM" "LINUX")
+               (setenv "TERMINFO" (string-append ncurses "/share/terminfo"))
+               #t))))
+       #:tests? #f)) ; _curses.error: setupterm: could not find terminal
+    (native-inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "https://github.com/Rockhopper-Technologies/jinxed")
+    (synopsis "Jinxed Terminal Library")
+    (description
+     "Jinxed is an implementation of a subset of the Python curses library.")
+    (license license:mpl2.0)))
