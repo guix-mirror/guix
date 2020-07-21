@@ -32,6 +32,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -280,6 +281,54 @@ useful tools for testing Django applications and projects.")
 
 (define-public python2-pytest-django
   (package-with-python2 python-pytest-django))
+
+(define-public python-django-haystack
+  (package
+    (name "python-django-haystack")
+    (version "2.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "django-haystack" version))
+        (sha256
+         (base32
+          "1302fqsrx8w474xk5cmnmg3hjqfprlxnjg9qlg86arsr4v4vqm4b"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-verion-restrictions
+           (lambda _
+             (substitute* "setup.py"
+               (("geopy.*") "geopy',\n"))
+             #t))
+         (add-before 'check 'set-gdal-lib-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "GDAL_LIBRARY_PATH"
+                     (string-append (assoc-ref inputs "gdal")
+                                    "/lib"))
+             #t)))
+       #:tests? #f)) ; OSError: libgdal.so.27: cannot open shared object file
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (native-inputs
+     `(("gdal" ,gdal)
+       ("python-coverage" ,python-coverage)
+       ("python-dateutil" ,python-dateutil)
+       ("python-geopy" ,python-geopy)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-requests" ,python-requests)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pysolr" ,python-pysolr)
+       ("python-whoosh" ,python-whoosh)))
+    (home-page "http://haystacksearch.org/")
+    (synopsis "Pluggable search for Django")
+    (description "Haystack provides modular search for Django.  It features a
+unified, familiar API that allows you to plug in different search backends
+(such as Solr, Elasticsearch, Whoosh, Xapian, etc.) without having to modify
+your code.")
+    (license license:bsd-3)))
 
 (define-public python-django-filter
   (package
