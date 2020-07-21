@@ -86,6 +86,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -2113,4 +2114,35 @@ architecture.")
     (synopsis "Python geodesic routines from GeographicLib")
     (description
      "This is a python implementation of the geodesic routines in GeographicLib.")
+    (license license:expat)))
+
+(define-public python-geopy
+  (package
+    (name "python-geopy")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "geopy" version))
+        (sha256
+         (base32
+          "0fx0cv0kgbvynpmjgsvq2fpsyngd5idiscdn8pd5201f1ngii3mq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-geographiclib" ,python-geographiclib)))
+    (native-inputs
+     `(("python-async-generator" ,python-async-generator)
+       ("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-isort" ,python-isort)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-aiohttp" ,python-pytest-aiohttp)
+       ("python-readme-renderer" ,python-readme-renderer)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/geopy/geopy")
+    (synopsis "Geocoding library for Python")
+    (description "@code{geopy} is a Python client for several popular geocoding
+web services.  @code{geopy} makes it easy for Python developers to locate the
+coordinates of addresses, cities, countries, and landmarks across the globe
+using third-party geocoders and other data sources.")
     (license license:expat)))
