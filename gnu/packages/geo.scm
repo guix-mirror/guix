@@ -8,7 +8,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2019, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -2096,3 +2096,21 @@ architecture.")
       license:opl1.0+
       license:public-domain
       license:qwt1.0))))
+
+(define-public python-geographiclib
+  (package
+    (name "python-geographiclib")
+    (version "1.50")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "geographiclib" version))
+        (sha256
+         (base32
+          "0cn6ap5fkh3mkfa57l5b44z3gvz7j6lpmc9rl4g2jny2gvp4dg8j"))))
+    (build-system python-build-system)
+    (home-page "https://geographiclib.sourceforge.io/1.50/python/")
+    (synopsis "Python geodesic routines from GeographicLib")
+    (description
+     "This is a python implementation of the geodesic routines in GeographicLib.")
+    (license license:expat)))
