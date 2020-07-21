@@ -2652,7 +2652,7 @@ installation on systems where resources are limited.  Its features include:
     (description
      "This package contains libraries and templates for Django-based interfaces
 interacting with Mailman.")
-    (properties `((python2-variant . ,(delay python2-django-mailman))))
+    (properties `((python2-variant . ,(delay python2-django-mailman3))))
     (license license:gpl3+)))
 
 ;; This is the last version to support Python-2.
