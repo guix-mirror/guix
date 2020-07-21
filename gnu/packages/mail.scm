@@ -2791,26 +2791,36 @@ some configuration.")
 (define-public postorius
   (package
     (name "postorius")
-    (version "1.0.3")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "postorius" version "+post2.tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "postorius" version))
        (sha256
         (base32
-         "1wymcpv2icjjy8h1ni52p6dr7wwxf71ivqgbqhzx4i82yqphcaq5"))))
+         "08jn23gblbkfl09qlykbpsmp39mmach3sl69h1j5cd5kkx839rwa"))))
     (build-system python-build-system)
     (arguments
-     `(; One test dependency relies on Persona, which was shut down in
-       ;; November 2016.
-       #:tests? #f
-       ;; The part of the frontend of Mailman is still python 2.7.
-       #:python ,python-2))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (if tests?
+                 (invoke "python" "example_project/manage.py" "test"
+                         "--settings=test_settings" "postorius")
+                 #t))))
+       #:tests? #f)) ; Tests try to run a mailman instance to test against.
     (inputs
-     `(("python2-django" ,python2-django)
-       ("python2-django-mailman3" ,python2-django-mailman3)
-       ("python2-mailmanclient" ,python2-mailmanclient)))
+     `(("python-django" ,python-django)
+       ("python-django-mailman3" ,python-django-mailman3)
+       ("python-mailmanclient" ,python-mailmanclient)
+       ("python-readme-renderer" ,python-readme-renderer)))
+    (native-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-isort" ,python-isort)
+       ("python-mock" ,python-mock)
+       ("python-vcrpy" ,python-vcrpy)))
     (home-page "https://gitlab.com/mailman/postorius")
     (synopsis "Web user interface for GNU Mailman")
     (description
