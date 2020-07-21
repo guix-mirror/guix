@@ -5326,16 +5326,15 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.7")
+    (version "1.20.8")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "mirror://xorg/individual/xserver/"
-              "xorg-server-" version ".tar.bz2"))
+        (uri (string-append "mirror://xorg/individual/xserver/"
+                            "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "18bfl04ihw1jr3h0fs522nnxxq5ixjay77y9dcymnkzk23q8cndx"))
+          "0ih15m7gh1z1ly6z7g82bkni719yisqmbk61a1wgp82bxrmn8yyi"))
         (patches
          (list
           ;; See:
@@ -5454,10 +5453,19 @@ draggable titlebars and borders.")
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
 ;; packages with the same name and version.
+;; TODO: Update this in the next rebuild cycle.
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server))))
+     (inherit xorg-server)
+     (version "1.20.7")
+     (source (origin
+               (inherit (package-source xorg-server))
+               (uri (string-append "mirror://xorg/individual/xserver/"
+                                   "xorg-server-" version ".tar.bz2"))
+               (sha256
+                (base32
+                 "18bfl04ihw1jr3h0fs522nnxxq5ixjay77y9dcymnkzk23q8cndx")))))))
 
 (define-public xorg-server-xwayland
   (package
