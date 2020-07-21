@@ -107,6 +107,7 @@
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
@@ -3238,3 +3239,43 @@ extensions:
 Note: RFC 7601 obsoletes RFC 5451, 6577, 7001, and 7410.  Authres supports the
 current standard.  No backward compatibility issues have been noted.")
     (license license:asl2.0)))
+
+(define-public python-dkimpy
+  (package
+    (name "python-dkimpy")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "dkimpy" version))
+        (sha256
+         (base32
+          "14idcs0wiyc0iyi5bz3xqimxf3x6dizcjfn92s2ka5zxp95xdyvd"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-more-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openssl (assoc-ref inputs "openssl")))
+               (substitute* "dkim/dknewkey.py"
+                 (("/usr/bin/openssl") (string-append openssl "/bin/openssl"))))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "test.py"))))))
+    (propagated-inputs
+     `(("python-dnspython" ,python-dnspython)))
+    (native-inputs
+     `(("python-authres" ,python-authres)
+       ("python-pynacl" ,python-pynacl)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://launchpad.net/dkimpy")
+    (synopsis "DKIM (DomainKeys Identified Mail)")
+    (description "Python module that implements @dfn{DKIM} (DomainKeys
+Identified Mail) email signing and verification (RFC6376).  It also provides
+helper scripts for command line signing and verification.  It supports DKIM
+signing/verifying of ed25519-sha256 signatures (RFC 8463).  It also supports
+the RFC 8617 Authenticated Received Chain (ARC) protocol.")
+    (license license:bsd-3)))
