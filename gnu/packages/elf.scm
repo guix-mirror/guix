@@ -7,7 +7,6 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Mark Wielaard <mark@klomp.org>
-;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -215,7 +214,7 @@ static analysis of the ELF binaries at hand.")
 (define-public patchelf
   (package
     (name "patchelf")
-    (version "0.11")
+    (version "0.10")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -224,7 +223,7 @@ static analysis of the ELF binaries at hand.")
                    "/patchelf-" version ".tar.bz2"))
              (sha256
               (base32
-               "16ms3ijcihb88j3x6cl8cbvhia72afmfcphczb9cfwr0gbc22chx"))))
+               "1wzwvnlyf853hw9zgqq5522bvf8gqadk8icgqa41a5n7593csw7n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
