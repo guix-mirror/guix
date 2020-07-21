@@ -5647,17 +5647,15 @@ Intrinsics (Xt) Library.")
 (define-public twm
   (package
     (name "twm")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "mirror://xorg/individual/app/" name "-"
-             version
-             ".tar.bz2"))
+       (uri (string-append "mirror://xorg/individual/app/twm-"
+                           version ".tar.xz"))
        (sha256
         (base32
-         "1ms5cj1w3g26zg6bxdv1j9hl0pxr4300qnv003cz1q3cl7ffljb4"))))
+         "1iv8kdb18n9vk3is5fyh6l40ipq9mkgx8ppj86byf464vr1ais7l"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxt" ,libxt)
