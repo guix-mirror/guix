@@ -20715,3 +20715,28 @@ file format of section, keys, and values.  The config file supports inheritance
 to minimize duplication of information across files.  The format supports schema
 validation.")
     (license license:lgpl3)))
+
+(define-public python-flufl-lock
+  (package
+    (name "python-flufl-lock")
+    (version "4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "flufl.lock" version))
+        (sha256
+         (base32
+          "055941zyma3wfx25jhm8wcsghpv3jc3iwi1gdrdjhzcnfhn62lxq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-atpublic" ,python-atpublic)
+       ("python-psutil" ,python-psutil)))
+    (home-page "https://flufllock.readthedocs.io")
+    (synopsis "NFS-safe file locking with timeouts for POSIX systems")
+    (description
+     "The @dfn{flufl.lock} package provides NFS-safe file locking with
+timeouts for POSIX systems.  It is similar to the @code{O_EXCL} option of the
+@code{open} system call but uses a lockfile.  Lock objects support lock-breaking
+and have a maximum lifetime built-in.")
+    (license (list license:asl2.0
+                   license:lgpl3))))    ; only for setup_helpers.py
