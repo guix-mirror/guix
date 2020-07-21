@@ -818,7 +818,8 @@ descriptions maintained upstream."
           (warnings-for-uris
            (list (string->uri (git-reference-url (origin-uri origin))))))
          (else
-          '())))))
+          '()))
+        '())))
 
 (define (check-source-file-name package)
   "Emit a warning if PACKAGE's origin has no meaningful file name."
