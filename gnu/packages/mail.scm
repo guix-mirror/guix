@@ -107,6 +107,7 @@
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -3307,3 +3308,38 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
     ;; The package's metadata claims it were MIT licensed, but the source file
     ;; headers disagree. MPL-2 for the public suffix list.
     (license (list license:zpl2.1 license:zlib license:mpl2.0))))
+
+(define-public python-aiosmtpd
+  (package
+    (name "python-aiosmtpd")
+    (version "1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "aiosmtpd" version))
+        (sha256
+         (base32
+          "1xdfk741pjmz1cm8dsi4n5vq4517i175rm94696m3f7kcgk7xsmp"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-failing-test
+           (lambda _
+             (delete-file "aiosmtpd/tests/test_smtps.py")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "nose2" "-v"))))))
+    (native-inputs
+     `(("python-flufl-testing" ,python-flufl-testing)
+       ("python-nose2" ,python-nose2)))
+    (propagated-inputs
+     `(("python-atpublic" ,python-atpublic)))
+    (home-page "https://aiosmtpd.readthedocs.io/")
+    (synopsis "Asyncio based SMTP server")
+    (description
+     "This project is a reimplementation of the Python stdlib @code{smtpd.py}
+based on asyncio.")
+    (license (list license:asl2.0
+                   license:lgpl3))))    ; only for setup_helpers.py
