@@ -22266,7 +22266,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
   ;; Get the current version from `telega-version` in telega.el.
   ;; or by running M-x telega-version.
   (let ((commit "5c39c3a81e48222911db75ae30e5a8f8fa34efb5")
-	(revision "2")
+	(revision "3")
 	(version "0.6.27"))
     (package
       (name "emacs-telega")
@@ -22294,7 +22294,13 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                              (guix build emacs-build-system)
                              (guix build emacs-utils))
          #:test-target "test"
-         #:make-flags (list "WITH_VOIP=t")
+         ;; TODO: Currently tgVOIP is not functional, thus we have disabled it
+         ;; temporarily. This functionality when enabled causes an erroneous
+         ;; linkage with libtgvoip.so and libopus.so (FFMPEG) against the
+         ;; system libraries on "foreign" distros. When tgVOIP becomes functional
+         ;; this needs to be investigated to prevent a linkage issue.
+         ;; Re-add libtgvoip to native-inputs at that time.
+         ;; #:make-flags (list "WITH_VOIP=t")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'prefix-patch
@@ -22398,7 +22404,6 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
          ("libwebp" ,libwebp))) ; sticker support.
       (native-inputs
        `(("tdlib" ,tdlib)
-         ("libtgvoip" ,libtgvoip) ; VoIP support.
          ;; Use Emacs with wide ints on 32-bit architectures.
          ("emacs" ,(match (%current-system)
                      ((or "i686-linux" "armhf-linux")
