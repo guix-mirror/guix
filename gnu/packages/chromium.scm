@@ -385,6 +385,13 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
 
           (format #t "Replacing GN files...~%")
           (force-output)
+          (substitute* "tools/generate_shim_headers/generate_shim_headers.py"
+            ;; The "is_official_build" configure option enables certain
+            ;; release optimizations like those used in the commercial
+            ;; Chrome browser.  Unfortunately it also requires using the
+            ;; bundled libraries: lose that restriction.
+            (("#if defined\\(OFFICIAL_BUILD\\)")
+             "#if 0"))
           (invoke "python" "build/linux/unbundle/replace_gn_files.py"
                   "--system-libraries" "ffmpeg" "flac" "fontconfig"
                   "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
@@ -413,6 +420,31 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("python" ,python-2)))))
+
+;; 'make-ld-wrapper' can only work with an 'ld' executable, so we need
+;; this trick to make it wrap 'lld'.
+(define lld-as-ld
+  (computed-file "lld-ld"
+                 #~(begin
+                     (mkdir #$output)
+                     (mkdir (string-append #$output "/bin"))
+                     (symlink #$(file-append lld "/bin/lld")
+                              (string-append #$output "/bin/ld")))))
+
+;; Create a wrapper for LLD that inserts appropriate -rpath entries.
+(define lld-wrapper
+  (make-ld-wrapper "lld-wrapper"
+                   #:binutils lld-as-ld))
+
+;; Clang looks for an 'ld.lld' executable, so we need to symlink it back.
+(define lld/wrapped
+  (computed-file "lld-wrapped"
+                 #~(begin
+                     (mkdir #$output)
+                     (mkdir (string-append #$output "/bin"))
+                     (symlink #$(file-append lld-wrapper "/bin/ld")
+                              (string-append #$output "/bin/lld"))
+                     (symlink "lld" (string-append #$output "/bin/ld.lld")))))
 
 (define-public ungoogled-chromium
   (package
@@ -447,16 +479,14 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
        ;; directory for an exhaustive list of supported flags.
        ;; (Note: The 'configure' phase will do that for you.)
        (list "is_debug=false"
-             "is_unsafe_developer_build=false"
-             "use_gold=false"
-             "use_lld=false"
+             ;; Use the "official" release optimizations, as opposed to
+             ;; a developer build.
+             "is_official_build=true"
              (string-append "max_jobs_per_link="
                             (number->string (parallel-job-count)))
-             "exclude_unwind_tables=true"
              "clang_use_chrome_plugins=false"
              "use_custom_libcxx=false"
              "use_sysroot=false"
-             "enable_precompiled_headers=false"
              "goma_dir=\"\""
              "enable_nacl=false"
              "enable_nacl_nonsfi=false"
@@ -499,7 +529,10 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
              "use_pulseaudio=true"
              "link_pulseaudio=true"
              "icu_use_data_file=false"
-             "perfetto_use_system_protobuf=true"
+
+             ;; FIXME: Using system protobuf with "is_official_build" causes an
+             ;; invalid opcode and "protoc-gen-plugin: Plugin killed by signal 4".
+             ;;"perfetto_use_system_protobuf=true"
 
              ;; VA-API acceleration is currently only supported on x86_64-linux.
              ,@(if (string-prefix? "x86_64" (or (%current-target-system)
@@ -628,7 +661,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
            (lambda* (#:key inputs #:allow-other-keys)
 
              ;; Make sure the right build tools are used.
-             (setenv "AR" "ar") (setenv "NM" "nm")
+             (setenv "AR" "llvm-ar") (setenv "NM" "llvm-nm")
              (setenv "CC" "clang") (setenv "CXX" "clang++")
 
              (setenv "CXXFLAGS"
@@ -755,6 +788,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
        ("clang" ,clang-10)
        ("gn" ,gn)
        ("gperf" ,gperf)
+       ("ld-wrapper" ,lld/wrapped)
        ("ninja" ,ninja)
        ("node" ,node)
        ("pkg-config" ,pkg-config)
@@ -816,7 +850,6 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
        ("opus" ,opus+custom)
        ("pango" ,pango)
        ("pciutils" ,pciutils)
-       ("protobuf" ,protobuf)
        ("pulseaudio" ,pulseaudio)
        ("re2" ,re2)
        ("snappy" ,snappy)
