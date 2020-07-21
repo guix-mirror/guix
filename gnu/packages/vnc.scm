@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Todor Kondić <tk.code@protonmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -233,7 +234,7 @@ where the server is installed.")))
 (define-public libvnc
   (package
     (name "libvnc")
-    (version "0.9.12")
+    (version "0.9.13")
     (source
      (origin
        (method git-fetch)
@@ -242,10 +243,16 @@ where the server is installed.")))
              (commit (string-append "LibVNCServer-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1226hb179l914919f5nm2mlf8rhaarqbf48aa649p4rwmghyx9vm"))
-       (patches (search-patches "libvnc-CVE-2018-20750.patch"
-                                "libvnc-CVE-2019-15681.patch"))))
+        (base32 "0zz0hslw8b1p3crnfy3xnmrljik359h83dpk64s697dqdcrzy141"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-cc-reference
+                    (lambda _
+                      (substitute* "test/includetest.sh"
+                        (("^cc -I")
+                         "gcc -I"))
+                      #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
