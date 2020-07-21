@@ -20681,3 +20681,37 @@ delegate behavior to another object.  The new object adds some property or
 behavior on to the other object, while still providing the underlying interface,
 and delegating behavior.")
     (license license:lgpl3)))
+
+(define-public python-lazr-config
+  (package
+    (name "python-lazr-config")
+    (version "2.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "lazr.config" version))
+        (sha256
+         (base32
+          "11xpddgyhyj7sf27wbmrq5lnqk21wnprx3ajycgwlxjamh6sgffd"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "-s" "-m" "nose" "-P" "lazr"))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-lazr-delegates" ,python-lazr-delegates)
+       ("python-zope-interface" ,python-zope-interface)))
+    (home-page "https://launchpad.net/lazr.config")
+    (synopsis "Create configuration schemas and process and validate configurations")
+    (description
+     "The LAZR config system is typically used to manage process configuration.
+Process configuration is for saying how things change when we run systems on
+different machines, or under different circumstances.  This system uses ini-like
+file format of section, keys, and values.  The config file supports inheritance
+to minimize duplication of information across files.  The format supports schema
+validation.")
+    (license license:lgpl3)))
