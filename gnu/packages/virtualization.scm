@@ -1714,7 +1714,7 @@ virtual machines.")
     (inputs
      `(("libcap" ,libcap)))
     (native-inputs
-     `(("python-2" ,python-2)
+     `(("python" ,python-wrapper)
        ("util-linux" ,util-linux)))
     (home-page "https://github.com/containers/bubblewrap")
     (synopsis "Unprivileged sandboxing tool")
