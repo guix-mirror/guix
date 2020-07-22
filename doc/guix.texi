@@ -27599,6 +27599,27 @@ $ source /run/current-system/profile/etc/profile.d/nix.sh
 
 @end defvr
 
+@deftp {Data Type} nix-configuration
+This data type represents the configuration of the Nix daemon.
+
+@table @asis
+@item @code{nix} (default: @code{nix})
+The Nix package to use.
+
+@item @code{sandbox} (default: @code{#t})
+Specifies whether builds are sandboxed by default.
+
+@item @code{build-sandbox-items} (default: @code{'()})
+This is a list of strings or objects appended to the
+@code{build-sandbox-items} field of the configuration file.
+
+@item @code{extra-config} (default: @code{'()})
+This is a list of strings or objects appended to the configuration file.
+It is used to pass extra text to be added verbatim to the configuration
+file.
+@end table
+@end deftp
+
 @node Setuid Programs
 @section Setuid Programs
 
