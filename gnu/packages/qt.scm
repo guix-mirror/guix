@@ -342,6 +342,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtbase
   (package
     (name "qtbase")
+    ;; TODO Remove ((gnu packages kde) qtbase-for-krita) when upgrading qtbase.
     (version "5.14.2")
     (source (origin
              (method url-fetch)
@@ -607,6 +608,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        (inherit (package-source qtbase))
        (patches (append (origin-patches (package-source qtbase))
                         (search-patches "qtbase-absolute-runpath.patch")))))))
+
+(define-public qtbase-for-krita
+  (hidden-package
+    (package
+      (inherit qtbase)
+      (source (origin
+                (inherit (package-source qtbase))
+                (patches (append (origin-patches (package-source qtbase))
+                                 (search-patches "qtbase-fix-krita-deadlock.patch"))))))))
 
 (define-public qtsvg
   (package (inherit qtbase)
