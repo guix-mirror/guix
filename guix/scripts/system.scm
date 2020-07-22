@@ -1067,6 +1067,12 @@ Some ACTIONS support additional ARGS.\n"))
     (image-size . guess)
     (install-bootloader? . #t)))
 
+(define (verbosity-level opts)
+  "Return the verbosity level based on OPTS, the alist of parsed options."
+  (or (assoc-ref opts 'verbosity)
+      (if (eq? (assoc-ref opts 'action) 'build)
+          2 1)))
+
 
 ;;;
 ;;; Entry point.
@@ -1126,6 +1132,8 @@ resulting from command-line parsing."
 
       (with-build-handler (build-notifier #:use-substitutes?
                                           (assoc-ref opts 'substitutes?)
+                                          #:verbosity
+                                          (verbosity-level opts)
                                           #:dry-run?
                                           (assoc-ref opts 'dry-run?))
         (run-with-store store
@@ -1282,8 +1290,7 @@ argument list and OPTS is the option alist."
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
       (parameterize ((%graft? (assoc-ref opts 'graft?)))
-        (with-status-verbosity (or (assoc-ref opts 'verbosity)
-                                   (if (eq? command 'build) 2 1))
+        (with-status-verbosity (verbosity-level opts)
           (process-command command args opts))))))
 
 ;;; Local Variables:

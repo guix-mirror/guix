@@ -1153,6 +1153,8 @@ Create a bundle of PACKAGE.\n"))
 
         (with-build-handler (build-notifier #:dry-run?
                                             (assoc-ref opts 'dry-run?)
+                                            #:verbosity
+                                            (assoc-ref opts 'verbosity)
                                             #:use-substitutes?
                                             (assoc-ref opts 'substitutes?))
           (parameterize ((%graft? (assoc-ref opts 'graft?))

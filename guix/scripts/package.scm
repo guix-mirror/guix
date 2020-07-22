@@ -965,6 +965,8 @@ option processing with 'parse-command-line'."
             (set-build-options-from-command-line (%store) opts)
             (with-build-handler (build-notifier #:use-substitutes?
                                                 (assoc-ref opts 'substitutes?)
+                                                #:verbosity
+                                                (assoc-ref opts 'verbosity)
                                                 #:dry-run?
                                                 (assoc-ref opts 'dry-run?))
               (parameterize ((%guile-for-build

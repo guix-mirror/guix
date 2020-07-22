@@ -151,7 +151,9 @@ Perform the deployment specified by FILE.\n"))
         (with-store store
           (set-build-options-from-command-line store opts)
           (with-build-handler (build-notifier #:use-substitutes?
-                                              (assoc-ref opts 'substitutes?))
+                                              (assoc-ref opts 'substitutes?)
+                                              #:verbosity
+                                              (assoc-ref opts 'verbosity))
             (parameterize ((%graft? (assq-ref opts 'graft?)))
               (map/accumulate-builds store
                                      (cut deploy-machine* store <>)
