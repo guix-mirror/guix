@@ -360,6 +360,14 @@ a module for implementing ODF Gantt charts, which are bar charts that
 illustrate project schedules.")
     (license license:gpl2+)))
 
+(define qtbase-for-krita
+  (package
+    (inherit qtbase)
+    (source (origin
+              (inherit (package-source qtbase))
+              (patches (append (origin-patches (package-source qtbase))
+                               (search-patches "qtbase-fix-krita-deadlock.patch")))))))
+
 (define-public krita
   (package
     (name "krita")
@@ -434,7 +442,7 @@ illustrate project schedules.")
        ("openexr" ,openexr)
        ("perl" ,perl)
        ("poppler-qt5" ,poppler-qt5)
-       ("qtbase" ,qtbase)
+       ("qtbase" ,qtbase-for-krita)
        ("qtdeclarative" ,qtdeclarative)
        ("qtmultimedia" ,qtmultimedia)
        ("qtsvg" ,qtsvg)
