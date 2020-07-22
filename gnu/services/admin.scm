@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,10 +20,13 @@
 
 (define-module (gnu services admin)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages certs)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu services)
   #:use-module (gnu services mcron)
   #:use-module (gnu services shepherd)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
@@ -41,7 +44,17 @@
             rottlog-configuration
             rottlog-configuration?
             rottlog-service
-            rottlog-service-type))
+            rottlog-service-type
+
+            unattended-upgrade-service-type
+            unattended-upgrade-configuration
+            unattended-upgrade-configuration?
+            unattended-upgrade-configuration-channels
+            unattended-upgrade-configuration-schedule
+            unattended-upgrade-configuration-services-to-restart
+            unattended-upgrade-configuration-system-expiration
+            unattended-upgrade-configuration-maximum-duration
+            unattended-upgrade-configuration-log-file))
 
 ;;; Commentary:
 ;;;
@@ -176,5 +189,128 @@ Old log files are removed or compressed according to the configuration.")
               (rotations (append (rottlog-rotations config)
                                  rotations)))))
    (default-value (rottlog-configuration))))
+
+
+;;;
+;;; Unattended upgrade.
+;;;
+
+(define-record-type* <unattended-upgrade-configuration>
+  unattended-upgrade-configuration make-unattended-upgrade-configuration
+  unattended-upgrade-configuration?
+  (schedule             unattended-upgrade-configuration-schedule
+                        (default "30 01 * * 0"))
+  (channels             unattended-upgrade-configuration-channels
+                        (default #~%default-channels))
+  (services-to-restart  unattended-upgrade-configuration-services-to-restart
+                        (default '(mcron)))
+  (system-expiration    unattended-upgrade-system-expiration
+                        (default (* 3 30 24 3600)))
+  (maximum-duration     unattended-upgrade-maximum-duration
+                        (default 3600))
+  (log-file             unattended-upgrade-configuration-log-file
+                        (default %unattended-upgrade-log-file)))
+
+(define %unattended-upgrade-log-file
+  "/var/log/unattended-upgrade.log")
+
+(define (unattended-upgrade-mcron-jobs config)
+  (define channels
+    (scheme-file "channels.scm"
+                 (unattended-upgrade-configuration-channels config)))
+
+  (define log
+    (unattended-upgrade-configuration-log-file config))
+
+  (define services
+    (unattended-upgrade-configuration-services-to-restart config))
+
+  (define expiration
+    (unattended-upgrade-system-expiration config))
+
+  (define code
+    (with-imported-modules (source-module-closure '((guix build utils)
+                                                    (gnu services herd)))
+      #~(begin
+          (use-modules (guix build utils)
+                       (gnu services herd)
+                       (srfi srfi-19)
+                       (srfi srfi-34))
+
+          (define log
+            (open-file #$log "a0"))
+
+          (define (timestamp)
+            (date->string (time-utc->date (current-time time-utc))
+                          "[~4]"))
+
+          (define (alarm-handler . _)
+            (format #t "~a time is up, aborting upgrade~%"
+                    (timestamp))
+            (exit 1))
+
+          (define-syntax-rule (with-logging exp ...)
+            (with-output-to-port log
+              (lambda ()
+                (with-error-to-port log
+                  (lambda ()
+                    exp ...)))))
+
+          ;; 'guix time-machine' needs X.509 certificates to authenticate the
+          ;; Git host.
+          (setenv "SSL_CERT_DIR"
+                  #$(file-append nss-certs "/etc/ssl/certs"))
+
+          ;; Make sure the upgrade doesn't take too long.
+          (sigaction SIGALRM alarm-handler)
+          (alarm #$(unattended-upgrade-maximum-duration config))
+
+          (with-logging
+           (format #t "~a starting upgrade...~%" (timestamp))
+           (guard (c ((invoke-error? c)
+                      (report-invoke-error c)))
+             (invoke #$(file-append guix "/bin/guix")
+                     "time-machine" "-C" #$channels
+                     "--" "system" "reconfigure"
+                     "/run/current-system/configuration.scm")
+
+             ;; 'guix system delete-generations' fails when there's no
+             ;; matching generation.  Thus, catch 'invoke-error?'.
+             (guard (c ((invoke-error? c)
+                        (report-invoke-error c)))
+               (invoke #$(file-append guix "/bin/guix")
+                       "system" "delete-generations"
+                       #$(string-append (number->string expiration)
+                                        "s")))
+
+             (format #t "~a restarting services...~%" (timestamp))
+             (for-each restart-service '#$services)
+
+             ;; XXX: If 'mcron' has been restarted, perhaps this isn't
+             ;; reached.
+             (format #t "~a upgrade complete~%" (timestamp)))))))
+
+  (define upgrade
+    (program-file "unattended-upgrade" code))
+
+  (list #~(job #$(unattended-upgrade-configuration-schedule config)
+               #$upgrade)))
+
+(define (unattended-upgrade-log-rotations config)
+  (list (log-rotation
+         (files
+          (list (unattended-upgrade-configuration-log-file config))))))
+
+(define unattended-upgrade-service-type
+  (service-type
+   (name 'unattended-upgrade)
+   (extensions
+    (list (service-extension mcron-service-type
+                             unattended-upgrade-mcron-jobs)
+          (service-extension rottlog-service-type
+                             unattended-upgrade-log-rotations)))
+   (description
+    "Periodically upgrade the system from the current configuration.")
+   (default-value (unattended-upgrade-configuration))))
 
 ;;; admin.scm ends here
