@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,5 +54,41 @@
         "--avoid" "guix-daemon" "-r" "60" "-p"
         "-N" "python \"/some/path/notify-all-users.py\"")
   (earlyoom-configuration->command-line-args %earlyoom-configuration-sample))
+
+
+;;;
+;;; Zram swap device.
+;;;
+
+(define zram-device-configuration->udev-string
+  (@@ (gnu services linux) zram-device-configuration->udev-string))
+
+(define %zram-swap-device-test-1
+  (zram-device-configuration
+    (size "2G")
+    (compression-algorithm 'zstd)
+    (memory-limit "1G")
+    (priority 42)))
+
+(test-equal "zram-swap-device-test-1"
+  "KERNEL==\"zram0\", ATTR{comp_algorithm}=\"zstd\" ATTR{disksize}=\"2G\" ATTR{mem_limit}=\"1G\" RUN+=\"/run/current-system/profile/sbin/mkswap /dev/zram0\" RUN+=\"/run/current-system/profile/sbin/swapon --priority 42 /dev/zram0\"\n"
+  (zram-device-configuration->udev-string %zram-swap-device-test-1))
+
+(define %zram-swap-device-test-2
+  (zram-device-configuration
+    (size 1048576)  ; 1M
+    (compression-algorithm 'lz4)))
+
+(test-equal "zram-swap-device-test-2"
+  "KERNEL==\"zram0\", ATTR{comp_algorithm}=\"lz4\" ATTR{disksize}=\"1048576\" RUN+=\"/run/current-system/profile/sbin/mkswap /dev/zram0\" RUN+=\"/run/current-system/profile/sbin/swapon /dev/zram0\"\n"
+  (zram-device-configuration->udev-string %zram-swap-device-test-2))
+
+(define %zram-swap-device-test-3
+  (zram-device-configuration
+    (memory-limit (* 512 1000))))
+
+(test-equal "zram-swap-device-test-3"
+  "KERNEL==\"zram0\", ATTR{comp_algorithm}=\"lzo\" ATTR{disksize}=\"1G\" ATTR{mem_limit}=\"512000\" RUN+=\"/run/current-system/profile/sbin/mkswap /dev/zram0\" RUN+=\"/run/current-system/profile/sbin/swapon /dev/zram0\"\n"
+  (zram-device-configuration->udev-string %zram-swap-device-test-3))
 
 (test-end "linux-services")

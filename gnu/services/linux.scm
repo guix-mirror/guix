@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix records)
   #:use-module (guix modules)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
   #:use-module (gnu packages linux)
   #:use-module (srfi srfi-1)
@@ -42,7 +44,15 @@
             earlyoom-configuration-send-notification-command
             earlyoom-service-type
 
-            kernel-module-loader-service-type))
+            kernel-module-loader-service-type
+
+            zram-device-configuration
+            zram-device-configuration?
+            zram-device-configuration-size
+            zram-device-configuration-compression-algorithm
+            zram-device-configuration-memory-limit
+            zram-device-configuration-priority
+            zram-device-service-type))
 
 
 ;;;
@@ -177,3 +187,72 @@ representation."
    (compose concatenate)
    (extend append)
    (default-value '())))
+
+
+;;;
+;;; Kernel module loader.
+;;;
+
+(define-record-type* <zram-device-configuration>
+  zram-device-configuration make-zram-device-configuration
+  zram-device-configuration?
+  (size                     zram-device-configration-size
+                            (default "1G"))     ; string or integer
+  (compression-algorithm    zram-device-configuration-compression-algorithm
+                            (default 'lzo))     ; symbol
+  (memory-limit             zram-device-configuration-memory-limit
+                            (default 0))        ; string or integer
+  (priority                 zram-device-configuration-priority
+                            (default -1)))      ; integer
+
+(define (zram-device-configuration->udev-string config)
+  "Translate a <zram-device-configuration> into a string which can be
+placed in a udev rules file."
+  (match config
+    (($ <zram-device-configuration> size compression-algorithm memory-limit priority)
+     (string-append
+       "KERNEL==\"zram0\", "
+       "ATTR{comp_algorithm}=\"" (symbol->string compression-algorithm) "\" "
+       (if (not (or (equal? "0" size)
+                    (equal? 0 size)))
+         (string-append "ATTR{disksize}=\"" (if (number? size)
+                                              (number->string size)
+                                              size)
+                        "\" ")
+         "")
+       (if (not (or (equal? "0" memory-limit)
+                    (equal? 0 memory-limit)))
+         (string-append "ATTR{mem_limit}=\"" (if (number? memory-limit)
+                                               (number->string memory-limit)
+                                               memory-limit)
+                        "\" ")
+         "")
+       "RUN+=\"/run/current-system/profile/sbin/mkswap /dev/zram0\" "
+       "RUN+=\"/run/current-system/profile/sbin/swapon "
+       (if (not (equal? -1 priority))
+         (string-append "--priority " (number->string priority) " ")
+         "")
+       "/dev/zram0\"\n"))))
+
+(define %zram-device-config
+  `("modprobe.d/zram.conf"
+    ,(plain-file "zram.conf"
+                 "options zram num_devices=1")))
+
+(define (zram-device-udev-rule config)
+  (file->udev-rule "99-zram.rules"
+                   (plain-file "99-zram.rules"
+                               (zram-device-configuration->udev-string config))))
+
+(define zram-device-service-type
+  (service-type
+    (name 'zram)
+    (default-value (zram-device-configuration))
+    (extensions
+      (list (service-extension kernel-module-loader-service-type
+                               (const (list "zram")))
+            (service-extension etc-service-type
+                               (const (list %zram-device-config)))
+            (service-extension udev-service-type
+                               (compose list zram-device-udev-rule))))
+    (description "Creates a zram swap device.")))

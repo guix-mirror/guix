@@ -27283,6 +27283,51 @@ parameters, can be done as follow:
 @end lisp
 @end deffn
 
+@cindex zram
+@cindex compressed swap
+@cindex Compressed RAM-based block devices
+@subsubheading Zram Device Service
+
+The Zram device service provides a compressed swap device in system
+memory.  The Linux Kernel documentation has more information about
+@uref{https://www.kernel.org/doc/html/latest/admin-guide/blockdev/zram.html,zram}
+devices.
+
+@deffn {Scheme Variable} zram-device-service-type
+This service creates the zram block device, formats it as swap and
+enables it as a swap device.  The service's value is a
+@code{zram-device-configuration} record.
+
+@deftp {Data Type} zram-device-configuration
+This is the data type representing the configuration for the zram-device
+service.
+
+@table @asis
+@item @code{size} (default @var{"1G"})
+This is the amount of space you wish to provide for the zram device.  It
+accepts a string and can be a number of bytes or use a suffix, eg.:
+@var{"512M"} or @var{1024000}.
+@item @code{compression-algorithm} (default @var{'lzo})
+This is the compression algorithm you wish to use.  It is difficult to
+list all the possible compression options, but common ones supported by
+Guix's Linux Libre Kernel include @var{'lzo}, @var{'lz4} and @var{'zstd}.
+@item @code{memory-limit} (default @var{0})
+This is the maximum amount of memory which the zram device can use.
+Setting it to '0' disables the limit.  While it is generally expected
+that compression will be 2:1, it is possible that uncompressable data
+can be written to swap and this is a method to limit how much memory can
+be used.  It accepts a string and can be a number of bytes or use a
+suffix, eg.: @var{"2G"}.
+@item @code{priority} (default @var{-1})
+This is the priority of the swap device created from the zram device.
+@code{swapon} accepts values between -1 and 32767, with higher values
+indicating higher priority.  Higher priority swap will generally be used
+first.
+@end table
+
+@end deftp
+@end deffn
+
 @node Hurd Services
 @subsection Hurd Services
 
