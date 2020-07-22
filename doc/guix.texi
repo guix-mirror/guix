@@ -13843,12 +13843,14 @@ illustrates that.
         (with-imported-modules (source-module-closure
                                 '((guix build utils)))
           #~(begin
-              (define %min-level 20)
               (use-modules (guix build utils)
                            (ice-9 popen)
                            (ice-9 regex)
                            (ice-9 textual-ports)
                            (srfi srfi-2))
+
+              (define %min-level 20)
+
               (setenv "LC_ALL" "C")     ;ensure English output
               (and-let* ((input-pipe (open-pipe*
                                       OPEN_READ
