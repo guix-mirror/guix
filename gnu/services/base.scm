@@ -177,6 +177,8 @@
             pam-limits-service-type
             pam-limits-service
 
+            references-file
+
             %base-services))
 
 ;;; Commentary:
