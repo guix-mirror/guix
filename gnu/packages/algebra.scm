@@ -273,7 +273,7 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.11pl3")
+   (version "0.0.11pl4")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -281,7 +281,7 @@ PARI is also available as a C library to allow for faster computations.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "0yymbrgyjw500hqgmkj5m4nmscd7c9rs9w2c96lxgrcyab8krhrm"))))
+                "1cnnh7diqc97q76q5pyhpbljbhc0sz8mlrbqgiwi0sjkgh8iqsj0"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
