@@ -818,14 +818,14 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.5.2")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
                            "libmatroska/libmatroska-" version ".tar.xz"))
        (sha256
-        (base32 "0qn9lfs0877wbv581yxw2gywxywxpvwslc5q07q4f7bqpyzxxiha"))))
+        (base32 "0cs03ghf7h65yvv8yf915bx4a47i6d3w2mjbs5zpz000spmrrj7y"))))
     (build-system cmake-build-system)
     (inputs
      `(("libebml" ,libebml)))
