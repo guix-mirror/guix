@@ -1067,14 +1067,16 @@ interractive mode.")
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.28")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/burp/burp-" version
-                                  "/burp-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "18f8cjsb87skabvz4cl5pdln35qmim7x686js1xzpld6wyl9kv2k"))))
+    (version "2.3.30")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/grke/burp")
+             (commit version)))
+       (sha256
+        (base32 "1f9i5d415psbr03fqd47p162qy25sypra1w8w16ym6jk1pvdjsgx"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1092,7 +1094,9 @@ interractive mode.")
        ("uthash" ,uthash)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("check" ,check)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("check" ,check)
        ("pkg-config" ,pkg-config)))
     (home-page "https://burp.grke.org")
     (synopsis "Differential backup and restore")
