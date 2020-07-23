@@ -247,6 +247,41 @@ developers to detect whether any file handles or other file-like objects
 were inadvertently left open at the end of a unit test.")
     (license license:bsd-3)))
 
+(define-public python-pytest-remotedata
+  (package
+    (name "python-pytest-remotedata")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-remotedata" version))
+       (sha256
+        (base32 "1h6g6shib6z07azf12rnsa053470ggbd7hy3bnbw8nf3nza5h372"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k"
+                     (string-append
+                      ;; These tests require internet access. Disable them.
+                      "not test_default_behavior"
+                      " and not test_strict_with_decorator")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/astropy/pytest-remotedata")
+    (synopsis "Pytest plugin for controlling remote data access")
+    (description
+     "This package provides a plugin for the Pytest framework that allows
+developers to control unit tests that require access to data from the
+internet.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-vcr
   ;; This commit fixes integration with pytest-5
   (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
