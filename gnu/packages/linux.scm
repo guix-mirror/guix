@@ -5700,7 +5700,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.4.3")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -5708,10 +5708,11 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "07crwxqzvl5k2b90a47ii9wgvi09s9hsy5b5jddw9ylp351d25fg"))))
+                "1wql62cg8f95cwpy057cl764nni9g4sdn5lqj68x22kjs8w71yhz"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("which" ,which)))
+     `(("gperf" ,gperf)
+       ("which" ,which)))
     (synopsis "Interface to Linux's seccomp syscall filtering mechanism")
     (description "The libseccomp library provides an easy to use, platform
 independent, interface to the Linux Kernel's syscall filtering mechanism.  The
