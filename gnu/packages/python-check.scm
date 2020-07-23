@@ -152,6 +152,34 @@ data arrays produced during tests, in particular in cases where the arrays
 are too large to conveniently hard-code them in the tests.")
     (license license:bsd-3)))
 
+(define-public python-pytest-doctestplus
+  (package
+    (name "python-pytest-doctestplus")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-doctestplus" version))
+       (sha256
+        (base32 "1ai9kvd7xbq2jg2h8gmkb8lqzyrxvdh4zg3vxndg149iwd1hyi7d"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/astropy/pytest-doctestplus")
+    (synopsis "Pytest plugin with advanced doctest features")
+    (description
+     "This package contains a plugin for the Pytest framework that provides
+advanced doctest support and enables the testing of reStructuredText files.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-vcr
   ;; This commit fixes integration with pytest-5
   (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
