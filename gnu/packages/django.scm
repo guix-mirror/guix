@@ -35,6 +35,7 @@
   #:use-module (gnu packages geo)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-compression)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
@@ -84,9 +85,6 @@
     ;; TODO: Install extras/django_bash_completion.
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
-       ;; bcrypt and argon2-cffi are extra requirements not yet in guix
-       ;;("python-argon2-cffi" ,python-argon2-cffi) ; >= 16.1.0
-       ;;("python-bcrypt" ,python-bcrypt) ; not py-bcrypt!
        ;; Remaining packages are test requirements taken from
        ;; tests/requirements/py3.txt
        ("python-docutils" ,python-docutils)
@@ -100,7 +98,9 @@
        ("python-sqlparse" ,python-sqlparse)
        ("python-tblib" ,python-tblib)))
     (propagated-inputs
-     `(("python-pytz" ,python-pytz)))
+     `(("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-bcrypt" ,python-bcrypt)
+       ("python-pytz" ,python-pytz)))
     (home-page "https://www.djangoproject.com/")
     (synopsis "High-level Python Web framework")
     (description
