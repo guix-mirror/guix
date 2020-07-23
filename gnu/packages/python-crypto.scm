@@ -1474,3 +1474,34 @@ armored and binary formats.
 It can create and verify RSA, DSA, and ECDSA signatures, at the moment.  It
 can also encrypt and decrypt messages using RSA and ECDH.")
     (license license:bsd-3)))
+
+(define-public python-sop
+  (package
+    (name "python-sop")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "sop" version))
+        (sha256
+         (base32
+          "0gljyjsdn6hdmwlwwb5g5s0c031p6izamvfxp0d39x60af8k5jyf"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; There are no tests, and unittest throws an error trying
+                     ; to find some:
+                     ;     TypeError: don't know how to make test from: 0.2.0
+    (home-page "https://gitlab.com/dkg/python-sop")
+    (synopsis "Stateless OpenPGP Command-Line Interface")
+    (description
+     "The Stateless OpenPGP Command-Line Interface (or sop) is a
+specification that encourages OpenPGP implementors to provide a common,
+relatively simple command-line API for purposes of object security.
+
+This Python module helps implementers build such a CLI from any implementation
+accessible to the Python interpreter.
+
+It does not provide such an implementation itself -- this is just the
+scaffolding for the command line, which should make it relatively easy to
+supply a handful of python functions as methods to a class.")
+    (license license:expat))) ; MIT license
