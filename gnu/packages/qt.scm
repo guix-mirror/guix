@@ -342,7 +342,6 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtbase
   (package
     (name "qtbase")
-    ;; TODO Remove ((gnu packages kde) qtbase-for-krita) when upgrading qtbase.
     (version "5.14.2")
     (source (origin
              (method url-fetch)
