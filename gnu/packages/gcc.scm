@@ -567,14 +567,14 @@ It also includes runtime support libraries for these languages.")))
 (define-public gcc-10
   (package
    (inherit gcc-8)
-   (version "10.1.0")
+   (version "10.2.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gcc/gcc-"
                                 version "/gcc-" version ".tar.xz"))
             (sha256
              (base32
-              "18kyds3ss4j7in8shlsbmjafdhin400mq739d0dnyrabhhiqm2dn"))
+              "130xdkhmz1bc2kzx061s3sfwk36xah1fw5w332c0nzwwpdl47pdq"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-5.0-libvtv-runpath.patch"))))))
 
