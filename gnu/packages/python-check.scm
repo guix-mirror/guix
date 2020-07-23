@@ -7,6 +7,7 @@
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,6 +125,32 @@ is delete your existing cassette files, and run your tests again.  VCR.py will
 detect the absence of a cassette file and once again record all HTTP
 interactions, which will update them to correspond to the new API.")
     (license license:expat)))
+
+(define-public python-pytest-arraydiff
+  (package
+    (name "python-pytest-arraydiff")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-arraydiff" version))
+       (sha256
+        (base32 "05bcvhh2ycxa35znl8b3l9vkcmx7vwm5c3fpakbpw46c7vsn4bfy"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests require python-astropy, which itself requires this package.
+     ;; Disable tests to avoid the circular dependency problem.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/astropy/pytest-arraydiff")
+    (synopsis "Pytest plugin to help with comparing array output from tests")
+    (description
+     "This is a py.test plugin to facilitate the generation and comparison of
+data arrays produced during tests, in particular in cases where the arrays
+are too large to conveniently hard-code them in the tests.")
+    (license license:bsd-3)))
 
 (define-public python-pytest-vcr
   ;; This commit fixes integration with pytest-5
