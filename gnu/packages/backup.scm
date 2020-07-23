@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -404,23 +404,24 @@ errors.")
 (define-public rdiff-backup
   (package
     (name "rdiff-backup")
-    (version "1.2.8")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/rdiff-backup/rdiff-backup-"
-                           version ".tar.gz"))
+       (uri (string-append "https://github.com/rdiff-backup/rdiff-backup/releases/"
+                           "download/v" version "/rdiff-backup-" version ".tar.gz"))
        (sha256
         (base32
-         "1nwmmh816f96h0ff1jxk95ad38ilbhbdl5dgibx1d4cl81dsi48d"))))
+         "1qfmvwwb942srhg6gw77ncy4z5z54b4wfz8bpd5bpml8hp1d5qh4"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (inputs
-     `(("python" ,python-2)
-       ("librsync" ,librsync-0.9)))
+     `(("python" ,python)
+       ("librsync" ,librsync)))
     (arguments
-     `(#:python ,python-2
-       #:tests? #f))
-    (home-page "https://www.nongnu.org/rdiff-backup/")
+     `(#:tests? #f))                    ; Tests require root/sudo
+    (home-page "https://rdiff-backup.net/")
     (synopsis "Local/remote mirroring+incremental backup")
     (description
      "Rdiff-backup backs up one directory to another, possibly over a network.
