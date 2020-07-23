@@ -24,7 +24,7 @@
 # Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
-# Copyright © 2019 Brett Gilio <brettg@gnu.org>
+# Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 # Copyright © 2019 Amin Bandali <bandali@gnu.org>
 # Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 # Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -363,6 +363,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mc.scm				\
   %D%/packages/mcrypt.scm			\
   %D%/packages/medical.scm			\
+  %D%/packages/mercury.scm			\
   %D%/packages/mes.scm				\
   %D%/packages/messaging.scm			\
   %D%/packages/mingw.scm			\
