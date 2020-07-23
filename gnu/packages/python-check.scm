@@ -215,6 +215,38 @@ provides a shortcut to testing all code and documentation for a given
 sub-package.")
     (license license:bsd-3)))
 
+(define-public python-pytest-openfiles
+  (package
+    (name "python-pytest-openfiles")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-openfiles" version))
+       (sha256
+        (base32 "0n0a7fdc9m86360y96l23fvdmd6rw04bl6h5xqgl9qxfv08jk70p"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-psutil" ,python-psutil)))
+    (home-page "https://github.com/astropy/pytest-openfiles")
+    (synopsis "Pytest plugin for detecting inadvertent open file handles")
+    (description
+     "This package provides a plugin for the pytest framework that allows
+developers to detect whether any file handles or other file-like objects
+were inadvertently left open at the end of a unit test.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-vcr
   ;; This commit fixes integration with pytest-5
   (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
