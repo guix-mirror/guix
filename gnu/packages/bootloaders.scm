@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
@@ -11,7 +11,6 @@
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
@@ -97,7 +96,8 @@
              (patches (search-patches
                        "grub-efi-fat-serial-number.patch"
                        "grub-setup-root.patch"
-                       "grub-verifiers-Blocklist-fallout-cleanup.patch"))))
+                       "grub-verifiers-Blocklist-fallout-cleanup.patch"
+                       "grub-cross-system-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -446,7 +446,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2020.04")
+    (version "2020.07")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -454,7 +454,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wjkasnz87q86hx93inspdjfjsinmxi87bcvj30c773x0fpjlwzy"))))
+                "0sjzy262x93aaqd6z24ziaq19xjjjk5f577ivf768vmvwsgbzxf1"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -885,15 +885,6 @@ to Novena upstream, does not load u-boot.img from the first partition.")
   (let ((base (make-u-boot-package "pinebook-pro-rk3399" "aarch64-linux-gnu")))
     (package
      (inherit base)
-     (source (origin
-              (inherit (package-source u-boot))
-              (patches
-               (search-patches "u-boot-add-boe-nv140fhmn49-display.patch"
-                               "u-boot-gpio-keys-binding-cons.patch"
-                               "u-boot-leds-common-binding-con.patch"
-                               "u-boot-DT-for-Pinebook-Pro.patch"
-                               "u-boot-support-Pinebook-Pro-laptop.patch"
-                               "u-boot-video-rockchip-fix-build.patch"))))
       (arguments
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)

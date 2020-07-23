@@ -79,7 +79,7 @@
         ("python-testrepository" ,python-testrepository)
         ("python-testscenarios" ,python-testscenarios)
         ("python-testtools" ,python-testtools)))
-    (home-page "https://wiki.openstack.org/wiki/Security/Projects/Bandit")
+    (home-page "https://github.com/PyCQA/bandit")
     (synopsis "Security oriented static analyser for python code")
     (description
       "Bandit is a tool designed to find common security issues in Python code.

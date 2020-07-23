@@ -222,6 +222,14 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
                 fi
+	    elif _guix_is_command "environment"
+	    then
+                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
+                then
+                    _guix_complete_file
+		else
+		    _guix_complete_available_package "$word_at_point"
+		fi
 	    elif _guix_is_command "download"
 	    then
 		 _guix_complete_file

@@ -68,7 +68,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (srfi srfi-1)
+  #:use-module ((srfi srfi-1) #:hide (zip))
 
   ;; Export variables up-front to allow circular dependency with the 'xorg'
   ;; module.
@@ -1019,7 +1019,7 @@ other API remains the same.")
 (define-public template-glib
   (package
     (name "template-glib")
-    (version "3.32.0")
+    (version "3.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1027,7 +1027,7 @@ other API remains the same.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1g0zx0sxpw8kqp7p3sgl9kngaqrg9xl6cir24nrahks0vgsk98rr"))))
+                "1z9xkin5fyfh071ma9y045jcw83hgx33dfbjraw6cxk0qdmfysr1"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-D" "enable_gtk_doc=true")))

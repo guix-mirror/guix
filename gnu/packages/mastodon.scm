@@ -29,13 +29,13 @@
 (define-public toot
   (package
     (name "toot")
-    (version "0.26.0")
+    (version "0.27.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "toot" version))
         (sha256
-         (base32 "0h0lqm1q7i32i9n6yx5q2j563vc92h2sjh1ih4n2rxf98p6c5d1b"))))
+         (base32 "1mfbqmgna7046d134pc5qx1vyfd60vwcn0xr9lxzlmc5rjdbmz8x"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

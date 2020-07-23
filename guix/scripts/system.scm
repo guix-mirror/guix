@@ -74,6 +74,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (rnrs bytevectors)
   #:export (guix-system
@@ -445,17 +446,6 @@ list of services."
 ;;; Generations.
 ;;;
 
-(define (sexp->channel sexp)
-  "Return the channel corresponding to SEXP, an sexp as found in the
-\"provenance\" file produced by 'provenance-service-type'."
-  (match sexp
-    (('channel ('name name)
-               ('url url)
-               ('branch branch)
-               ('commit commit))
-     (channel (name name) (url url)
-              (branch branch) (commit commit)))))
-
 (define* (display-system-generation number
                                     #:optional (profile %system-profile))
   "Display a summary of system generation NUMBER in a human-readable format."
@@ -479,12 +469,10 @@ list of services."
                             (uuid->string root)
                             root))
            (kernel      (boot-parameters-kernel params))
-           (provenance  (catch 'system-error
-                          (lambda ()
-                            (call-with-input-file
-                                (string-append generation "/provenance")
-                              read))
-                          (const #f))))
+           (multiboot-modules (boot-parameters-multiboot-modules params)))
+      (define-values (channels config-file)
+        (system-provenance generation))
+
       (display-generation profile number)
       (format #t (G_ "  file name: ~a~%") generation)
       (format #t (G_ "  canonical file name: ~a~%") (readlink* generation))
@@ -508,21 +496,22 @@ list of services."
 
       (format #t (G_ "  kernel: ~a~%") kernel)
 
-      (match provenance
-        (#f #t)
-        (('provenance ('version 0)
-                      ('channels channels ...)
-                      ('configuration-file config-file))
-         (unless (null? channels)
-           ;; TRANSLATORS: Here "channel" is the same terminology as used in
-           ;; "guix describe" and "guix pull --channels".
-           (format #t (G_ "  channels:~%"))
-           (for-each display-channel (map sexp->channel channels)))
-         (when config-file
-           (format #t (G_ "  configuration file: ~a~%")
-                   (if (supports-hyperlinks?)
-                       (file-hyperlink config-file)
-                       config-file))))))))
+      (match multiboot-modules
+        (() #f)
+        (((modules . _) ...)
+         (format #t (G_ "  multiboot: ~a~%")
+                 (string-join modules "\n    "))))
+
+      (unless (null? channels)
+        ;; TRANSLATORS: Here "channel" is the same terminology as used in
+        ;; "guix describe" and "guix pull --channels".
+        (format #t (G_ "  channels:~%"))
+        (for-each display-channel channels))
+      (when config-file
+        (format #t (G_ "  configuration file: ~a~%")
+                (if (supports-hyperlinks?)
+                    (file-hyperlink config-file)
+                    config-file))))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
   "Display in a human-readable format all the system generations matching
@@ -747,6 +736,7 @@ and TARGET arguments."
 
 (define* (perform-action action os
                          #:key
+                         (validate-reconfigure ensure-forward-reconfigure)
                          save-provenance?
                          skip-safety-checks?
                          install-bootloader?
@@ -789,7 +779,8 @@ static checks."
          (operating-system-bootcfg os menu-entries)))
 
   (when (eq? action 'reconfigure)
-    (maybe-suggest-running-guix-pull))
+    (maybe-suggest-running-guix-pull)
+    (check-forward-update validate-reconfigure))
 
   ;; Check whether the declared file systems exist.  This is better than
   ;; instantiating a broken configuration.  Assume that we can only check if
@@ -938,6 +929,9 @@ Some ACTIONS support additional ARGS.\n"))
   -e, --expression=EXPR  consider the operating-system EXPR evaluates to
                          instead of reading FILE, when applicable"))
   (display (G_ "
+      --allow-downgrades for 'reconfigure', allow downgrades to earlier
+                         channel revisions"))
+  (display (G_ "
       --on-error=STRATEGY
                          apply STRATEGY (one of nothing-special, backtrace,
                          or debug) when an error occurs while reading FILE"))
@@ -992,6 +986,11 @@ Some ACTIONS support additional ARGS.\n"))
          (option '(#\d "derivation") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'derivations-only? #t result)))
+         (option '("allow-downgrades") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'validate-reconfigure
+                               warn-about-backward-reconfigure
+                               result)))
          (option '("on-error") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'on-error (string->symbol arg)
@@ -1064,6 +1063,7 @@ Some ACTIONS support additional ARGS.\n"))
     (graft? . #t)
     (debug . 0)
     (verbosity . #f)                              ;default
+    (validate-reconfigure . ,ensure-forward-reconfigure)
     (file-system-type . "ext4")
     (image-size . guess)
     (install-bootloader? . #t)))
@@ -1149,6 +1149,8 @@ resulting from command-line parsing."
                                #:use-substitutes? (assoc-ref opts 'substitutes?)
                                #:skip-safety-checks?
                                (assoc-ref opts 'skip-safety-checks?)
+                               #:validate-reconfigure
+                               (assoc-ref opts 'validate-reconfigure)
                                #:file-system-type (assoc-ref opts 'file-system-type)
                                #:image-size (assoc-ref opts 'image-size)
                                #:full-boot? (assoc-ref opts 'full-boot?)

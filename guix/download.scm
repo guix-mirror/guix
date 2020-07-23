@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -94,8 +94,9 @@
        "http://mirror.yandex.ru/mirrors/ftp.gnome.org/")
       (hackage
        "http://hackage.haskell.org/")
-      (savannah
+      (savannah           ; http://download0.savannah.gnu.org/mirmon/savannah/
        "http://download.savannah.gnu.org/releases/"
+       "http://nongnu.freemirror.org/nongnu/"
        "http://ftp.cc.uoc.gr/mirrors/nongnu.org/"
        "http://ftp.twaren.net/Unix/NonGNU/"
        "http://mirror.csclub.uwaterloo.ca/nongnu/"
@@ -140,7 +141,7 @@
       (apache             ; from http://www.apache.org/mirrors/dist.html
        "http://www.eu.apache.org/dist/"
        "http://www.us.apache.org/dist/"
-       "http://apache.belnet.be/"
+       "https://ftp.nluug.nl/internet/apache/"
        "http://apache.mirror.iweb.ca/"
        "http://mirrors.ircam.fr/pub/apache/"
        "http://apache.mirrors.ovh.net/ftp.apache.org/dist/"

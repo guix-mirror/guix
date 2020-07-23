@@ -1,0 +1,34 @@
+Disable systemd-run if the command is not found.
+
+diff -Naur xpra-4.0.1/xpra/scripts/main.py xpra-4.0.1.patched/xpra/scripts/main.py
+--- xpra-4.0.1/xpra/scripts/main.py	2020-05-17 18:12:15.000000000 +0200
++++ xpra-4.0.1.patched/xpra/scripts/main.py	2020-06-01 12:12:18.500257507 +0200
+@@ -312,16 +312,18 @@
+     if not is_systemd_pid1():
+         return False
+     #test it:
+-    cmd = ["systemd-run", "--quiet", "--user", "--scope", "--", "true"]
+-    proc = Popen(cmd, stdin=None, stdout=None, stderr=None, shell=False)
+-    r = pollwait(proc, timeout=1)
+-    if r is None:
+-        try:
+-            proc.terminate()
+-        except Exception:
+-            pass
+-    return r==0
+-
++    try:
++        cmd = ["systemd-run", "--quiet", "--user", "--scope", "--", "true"]
++        proc = Popen(cmd, stdin=None, stdout=None, stderr=None, shell=False)
++        r = pollwait(proc, timeout=1)
++        if r is None:
++            try:
++                proc.terminate()
++            except Exception:
++                pass
++        return r==0
++    except FileNotFoundError:
++        return False
+ 
+ def run_mode(script_file, error_cb, options, args, mode, defaults):
+     #configure default logging handler:

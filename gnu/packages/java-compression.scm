@@ -207,7 +207,6 @@ compressor/decompressor.")
      `(#:jar-name "iq80-snappy.jar"
        #:source-dir "src/main/java"
        #:test-dir "src/test"
-       #:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
          (replace 'check
@@ -228,13 +227,13 @@ compressor/decompressor.")
              ;; We don't have hadoop
              (delete-file "src/main/java/org/iq80/snappy/HadoopSnappyCodec.java")
              (delete-file "src/test/java/org/iq80/snappy/TestHadoopSnappyCodec.java")
-             #t)))))
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
     (home-page "https://github.com/dain/snappy")
     (native-inputs
-     `(("guava" ,java-guava)
+     `(("java-guava" ,java-guava)
        ("java-snappy" ,java-snappy)
-       ("hamcrest" ,java-hamcrest-core)
-       ("testng" ,java-testng)))
+       ("java-testng" ,java-testng)))
     (synopsis "Java port of the Snappy (de)compressor")
     (description
      "Iq80-snappy is a port of the Snappy compressor and decompressor rewritten
@@ -303,14 +302,21 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
              ;; the package is not contained in a subdirectory
              (chdir "..")
              #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Do we want to install *Demo.jar?
-             (install-file "build/jar/xz.jar"
-                           (string-append
-                             (assoc-ref outputs "out")
-                             "/share/java/xz.jar"))
-             #t)))))
+         (add-before 'install 'generate-pom
+           (lambda _
+             (copy-file "maven/pom_template.xml" "pom.xml")
+             (substitute* "pom.xml"
+               (("@VERSION@") ,version)
+               (("@TITLE@") "XZ data compression")
+               (("@HOMEPAGE@") "http://tukaani.org/xz/java.html"))
+             #t))
+        (add-before 'install 'rename-jar
+          (lambda _
+            (rename-file "build/jar/xz.jar"
+                         (string-append "build/jar/xz-" ,version ".jar"))
+            #t))
+        (replace 'install
+          (install-from-pom "pom.xml")))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://tukaani.org")

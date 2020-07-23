@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -90,20 +90,23 @@ false if none is recognized"
            (#t #f))) ; Some URLs are not recognised.
         #f))
 
-  (let ((source-uri (and=> (package-source old-package) origin-uri))
-        (fetch-method (and=> (package-source old-package) origin-method)))
-    (cond
-     ((eq? fetch-method download:url-fetch)
-      (match source-uri
-             ((? string?)
-              (updated-url source-uri))
-             ((source-uri ...)
-              (find updated-url source-uri))))
-     ((and (eq? fetch-method download:git-fetch)
-           (string-prefix? "https://github.com/"
-                           (download:git-reference-url source-uri)))
-      (download:git-reference-url source-uri))
-     (else #f))))
+  (match (package-source old-package)
+    ((? origin? origin)
+     (let ((source-uri   (origin-uri origin))
+           (fetch-method (origin-method origin)))
+       (cond
+        ((eq? fetch-method download:url-fetch)
+         (match source-uri
+           ((? string?)
+            (updated-url source-uri))
+           ((source-uri ...)
+            (find updated-url source-uri))))
+        ((and (eq? fetch-method download:git-fetch)
+              (string-prefix? "https://github.com/"
+                              (download:git-reference-url source-uri)))
+         (download:git-reference-url source-uri))
+        (else #f))))
+    (_ #f)))
 
 (define (github-package? package)
   "Return true if PACKAGE is a package from GitHub, else false."

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -92,7 +93,7 @@
        ("linux-headers" ,linux-libre-headers)
        ("alsa-lib" ,alsa-lib)
        ("python" ,python)))
-    (home-page "http://www.lirc.org/")
+    (home-page "https://www.lirc.org/")
     (synopsis "Linux Infrared Remote Control")
     (description
      "LIRC allows computers to send and receive IR signals of many commonly
@@ -114,7 +115,7 @@ on just one button press.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/tompreston/python-lirc.git")
+               (url "https://github.com/tompreston/python-lirc")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

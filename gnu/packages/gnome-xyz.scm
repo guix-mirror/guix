@@ -98,7 +98,7 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/madmaxms/iconpack-delft.git")
+             (url "https://github.com/madmaxms/iconpack-delft")
              (commit (string-append "v" version))))
        (sha256
         (base32
@@ -244,7 +244,7 @@ easier to keep track of apps running in the backround.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/micheleg/dash-to-dock.git")
+                    (url "https://github.com/micheleg/dash-to-dock")
                     (commit (string-append "extensions.gnome.org-v"
                                            version))))
               (sha256
@@ -423,7 +423,7 @@ currently focused application in the top panel of the GNOME shell.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/home-sweet-gnome/dash-to-panel.git")
+                    (url "https://github.com/home-sweet-gnome/dash-to-panel")
                     (commit (string-append "v" version))))
               (sha256
                (base32
@@ -462,7 +462,7 @@ into a single panel, similar to that found in KDE Plasma and Windows 7+.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/BjoernDaase/noannoyance.git")
+                    (url "https://github.com/BjoernDaase/noannoyance")
                     (commit "e37b5b3c31f577b4698bc6659bc9fec5ea9ac5d4")))
               (sha256
                (base32
@@ -485,7 +485,7 @@ It uses ES6 syntax and claims to be more actively maintained than others.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/paperwm/PaperWM.git")
+                    (url "https://github.com/paperwm/PaperWM")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -522,7 +522,7 @@ notebooks and tiling window managers.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/numixproject/numix-gtk-theme.git")
+                    (url "https://github.com/numixproject/numix-gtk-theme")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -564,7 +564,7 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme.git")
+               (url "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme")
                (commit tag)))
          (sha256
           (base32
@@ -597,7 +597,7 @@ and a few extra features.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/benwaffle/vala-language-server.git")
+                    (url "https://github.com/benwaffle/vala-language-server")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

@@ -38,7 +38,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/maebert/jrnl.git")
+             (url "https://github.com/maebert/jrnl")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

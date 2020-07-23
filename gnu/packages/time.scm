@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
@@ -140,14 +140,13 @@ saving time.  Almost all of the Olson timezones are supported.")
 (define-public python-pendulum
   (package
     (name "python-pendulum")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pendulum" version))
        (sha256
-        (base32
-         "1zhzk0ai8is8zclw4v73dllf0hx0l5nmm4sbwrh6cl8h5qsang09"))))
+        (base32 "1w4an6ki3l1pc36m2f2xiglaw5czmj9b4imbigln9z6mlnkkjxyr"))))
     (build-system python-build-system)
     ;; XXX: The PyPI distribution lacks tests, and the upstream repository
     ;; lacks a setup.py!
@@ -247,7 +246,7 @@ datetime module, available in Python 2.3+.")
        (method git-fetch)
        ;; The PyPi distribution doesn't include the tests.
        (uri (git-reference
-             (url "https://github.com/closeio/ciso8601.git")
+             (url "https://github.com/closeio/ciso8601")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

@@ -890,7 +890,7 @@ small program, it is easy to comprehend, get to grips with, and use.")
                 ;; <ftp.ecn.purdue.edu/qobi/stalin-0.11-amd64-patches.tgz>
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/barak/stalin.git")
+                      (url "https://github.com/barak/stalin")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -962,7 +962,7 @@ generation.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/JeffBezanson/femtolisp.git")
+                      (url "https://github.com/JeffBezanson/femtolisp")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256

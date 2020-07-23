@@ -33,7 +33,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/simh/simh.git")
+             (url "https://github.com/simh/simh")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1jiq6shj6a9xvzacvmyhxxd6xdyica8q4006qqjh5mh96rxrp15c"))

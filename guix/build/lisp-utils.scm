@@ -327,8 +327,12 @@ system to find its dependencies, as described by GENERATE-DEPENDENCY-LINKS."
                  #:version version
                  #:dependencies dependencies
                  ;; Some .asd don't have components, and thus they don't generate any .fasl.
-                 #:component? (pair?
-                               (find-files (dirname asd-file) "--system\\.fasl$")))
+                 #:component? (match (%lisp-type)
+                                ("sbcl" (pair? (find-files (dirname asd-file)
+                                                           "--system\\.fasl$")))
+                                ("ecl" (pair? (find-files (dirname asd-file)
+                                                          "\\.fasb$")))
+                                (_ (error "The LISP provided is not supported at this time."))))
                 (generate-dependency-links registry system)))
        port))))
 

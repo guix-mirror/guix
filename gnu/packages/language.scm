@@ -613,7 +613,7 @@ suitable for both the desktop and mobile devices.")
          ;; 'tegaki-recognize.in' are missing in the tarball.
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/tegaki/tegaki.git")
+               (url "https://github.com/tegaki/tegaki")
                (commit commit)))
          (sha256
           (base32

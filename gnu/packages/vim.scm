@@ -70,7 +70,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.0411")
+    (version "8.2.1145")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -79,28 +79,35 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0idjbf15yqk5jz2dqbh2lzj7glxcwn1jl5pp9kk908ps02vzqyai"))))
+               "01z5hgi7m8d63gl1fgfn4p9rsdaqbl5xn4vr247nbxjq5x5hrs7a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'configure 'patch-config-files
+         (add-after 'configure 'patch-absolute-paths
            (lambda _
              (substitute* "runtime/tools/mve.awk"
                (("/usr/bin/nawk") (which "gawk")))
              (substitute* '("src/testdir/Makefile"
                             "src/testdir/test_normal.vim"
-                            "src/testdir/test_terminal.vim")
+                            "src/testdir/test_system.vim"
+                            "src/testdir/test_terminal.vim"
+                            "src/testdir/test_terminal2.vim")
                (("/bin/sh") (which "sh")))
+             (substitute* "src/testdir/test_autocmd.vim"
+               (("/bin/kill") (which "kill")))
              #t))
-         (add-before 'check 'set-TZDIR
+         (add-before 'check 'set-environment-variables
            (lambda* (#:key inputs #:allow-other-keys)
              ;; One of the tests tests timezone-dependent functions.
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
+
+             ;; Make sure the TERM environment variable is set for the tests
+             (setenv "TERM" "xterm")
              #t))
          (add-before 'check 'skip-failing-tests
            (lambda _
@@ -112,6 +119,14 @@
              ;; 32-bit value and hope it never shows up in the test environment.
              (substitute* "src/testdir/test_swap.vim"
                (("if !IsRoot\\(\\)") "if 0"))
+
+             ;; These tests fail on upstream's CI on FreeBSD because they are
+             ;; run as root.  They fail for us because PID 1 and the test suite
+             ;; are run by the same user.
+             (substitute* '("src/testdir/test_backup.vim"
+                            "src/testdir/test_writefile.vim")
+               (("CheckNotBSD") "throw 'Skipped: this test fails on Guix'")
+               (("'bsd'") "'unix'"))
 
              ;; This test checks how the terminal looks after executing some
              ;; actions.  The path of the bash binary is shown, which results in
@@ -200,26 +215,6 @@ with the editor vim.")))
        ,@(substitute-keyword-arguments (package-arguments vim)
            ((#:phases phases)
             `(modify-phases ,phases
-               (add-before 'check 'skip-previewpopup
-                 ;; This test fails when the path to the source is long. See:
-                 ;; https://github.com/vim/vim/issues/5615
-                 (lambda _
-                   (substitute* "src/testdir/test_popupwin.vim"
-                     ((".*Test_previewpopup.*" line)
-                      (string-append line "return\n")))))
-               (add-before 'check 'skip-test87
-                 ;; This test fails for unknown reasons after switching
-                 ;; to a git checkout.
-                 (lambda _
-                   (delete-file "src/testdir/test87.ok")
-                   (delete-file "src/testdir/test87.in")
-                   (substitute* '("src/Makefile"
-                                  "src/testdir/Make_vms.mms")
-                     (("test87") ""))
-                   (substitute* "src/testdir/Make_all.mak"
-                     (("test86.out \\\\") "test86")
-                     (("test87.out") ""))
-                   #t))
                (add-before 'check 'start-xserver
                  (lambda* (#:key inputs #:allow-other-keys)
                    ;; Some tests require an X server, but does not start one.
@@ -463,7 +458,7 @@ trouble using them, because you do not have to remember each snippet name.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/tpope/vim-fugitive.git")
+               (url "https://github.com/tpope/vim-fugitive")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -579,7 +574,7 @@ are detected, the user is notified.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/editorconfig/editorconfig-vim.git")
+               (url "https://github.com/editorconfig/editorconfig-vim")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -798,13 +793,13 @@ With the package comes a plugin to use vifm as a vim file selector.")
 (define-public python-pynvim
   (package
     (name "python-pynvim")
-    (version "0.3.2")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pynvim" version))
               (sha256
                (base32
-                "01dybk4vs452pljn1q3il5z2sd313ki0lgiglc0xmjc6wp290r6g"))))
+                "0n2cx22lrmbq7xk7356lyn6k77ryqvkxplw9k0fglk35ckb1isam"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)
@@ -900,3 +895,31 @@ bound by synchronicity.  Kick off builds and test suites using one of several
 asynchronous adapters (including tmux, screen, and a headless mode), and when
 the job completes, errors will be loaded and parsed automatically.")
     (license license:vim)))
+
+(define-public vim-eunuch
+  (let ((commit "33e875b31c8b811a0a47908884a5e2339106bbe8")
+        (revision "1"))
+    (package
+      (name "vim-eunuch")
+      (version (git-version "1.2" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/tpope/vim-eunuch")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1xadb22kd40swmww0qxmmkcpcq6viy8l167pjck5q32hfngll5d3"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan
+         '(("doc" "share/vim/vimfiles/")
+           ("plugin" "share/vim/vimfiles/"))))
+      (home-page "https://github.com/tpope/vim-eunuch")
+      (synopsis "Vim sugar for the UNIX shell commands")
+      (description "Vim sugar for the UNIX shell commands that need it the most.
+This package includes commands such as @code{SudoWrite} and @code{SudoEdit} and
+help working on Vim buffers and the files they reference with one command.")
+      (license license:vim))))

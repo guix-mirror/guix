@@ -1,0 +1,136 @@
+This patch adds a new "--disable-version-links" configuration option
+that allows installing to the standard GNU installation directories
+instead of having to add symlinks in /etc/ganeti/{lib,share} that
+points to the right $ganeti/{lib,share}/$version.  Mainly to reduce
+service complexity, and because Guix users can install as many versions
+of Ganeti they can muster without resorting to such hacks.
+
+diff --git a/Makefile.am b/Makefile.am
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -66,11 +66,16 @@ SHELL_ENV_INIT = autotools/shell-env-init
+ # so, if some currently architecture-independent executable is replaced by an
+ # architecture-dependent one (and hence has to go under $(versiondir)), add a link
+ # under $(versionedsharedir) but do not change the external links.
++#
++# As of Ganeti 3.0, it is possible to disable this behavior by passing
++# --disable-version-links, in which case the standard GNU installation
++# directories are used.
+ if USE_VERSION_FULL
+ DIRVERSION=$(VERSION_FULL)
+ else
+ DIRVERSION=$(VERSION_MAJOR).$(VERSION_MINOR)
+ endif
++if USE_VERSION_LINKS
+ versiondir = $(libdir)/ganeti/$(DIRVERSION)
+ defaultversiondir = $(libdir)/ganeti/default
+ versionedsharedir = $(prefix)/share/ganeti/$(DIRVERSION)
+@@ -90,6 +95,18 @@ gntpythondir = $(versionedsharedir)
+ pkgpython_bindir = $(versionedsharedir)
+ gnt_python_sbindir = $(versionedsharedir)
+ tools_pythondir = $(versionedsharedir)
++else
++myexeclibdir = $(pkglibdir)
++pkgpython_rpc_stubdir = $(pkgpythondir)/rpc/stub
++gntpythondir = $(sbindir)
++pkgpython_bindir = $(pkglibdir)
++gnt_python_sbindir = $(sbindir)
++tools_pythondir = $(pkglibdir)
++versionedsharedir = $(pkglibdir)
++# This is a hack but works because the only user does $(versiondir)$(datadir).
++versiondir =
++endif !USE_VERSION_LINKS
++
+ 
+ clientdir = $(pkgpythondir)/client
+ cmdlibdir = $(pkgpythondir)/cmdlib
+@@ -2356,6 +2373,7 @@ src/AutoConf.hs: Makefile src/AutoConf.hs.in $(PRINT_PY_CONSTANTS) \
+ 	    -DVERSION_SUFFIX="$(VERSION_SUFFIX)" \
+ 	    -DVERSION_FULL="$(VERSION_FULL)" \
+ 	    -DDIRVERSION="$(DIRVERSION)" \
++	    -DUSE_VERSION_LINKS="$(USE_VERSION_LINKS)" \
+ 	    -DLOCALSTATEDIR="$(localstatedir)" \
+ 	    -DSYSCONFDIR="$(sysconfdir)" \
+ 	    -DSSH_CONFIG_DIR="$(SSH_CONFIG_DIR)" \
+@@ -2857,6 +2875,7 @@ install-exec-local:
+ 	@mkdir_p@ "$(DESTDIR)${localstatedir}/lib/ganeti" \
+ 	  "$(DESTDIR)${localstatedir}/log/ganeti" \
+ 	  "$(DESTDIR)${localstatedir}/run/ganeti"
++if USE_VERSION_LINKS
+ 	for dir in $(SYMLINK_TARGET_DIRS); do \
+ 	  @mkdir_p@  $(DESTDIR)$$dir; \
+ 	done
+@@ -2892,7 +2911,8 @@ install-exec-local:
+ if INSTALL_SYMLINKS
+ 	$(LN_S) -f $(versionedsharedir) $(DESTDIR)$(sysconfdir)/ganeti/share
+ 	$(LN_S) -f $(versiondir) $(DESTDIR)$(sysconfdir)/ganeti/lib
+-endif
++endif INSTALL_SYMLINKS
++endif USE_VERSION_LINKS
+ 
+ .PHONY: apidoc
+ if WANT_HSAPIDOC
+diff --git a/configure.ac b/configure.ac
+--- a/configure.ac
++++ b/configure.ac
+@@ -29,6 +29,23 @@ AC_SUBST([BINDIR], $bindir)
+ AC_SUBST([SBINDIR], $sbindir)
+ AC_SUBST([MANDIR], $mandir)
+ 
++# --enable-version-links
++AC_ARG_ENABLE([version-links],
++  [AS_HELP_STRING([--enable-version-links],
++                  m4_normalize([install ganeti to version-specific
++                  subdirectories to allow installing multiple versions
++                  in parallel (default: enabled)]))],
++  [[if test "$enableval" != no; then
++      USE_VERSION_LINKS=True
++    else
++      USE_VERSION_LINKS=False
++    fi
++  ]],
++  [USE_VERSION_LINKS=True
++  ])
++AC_SUBST(USE_VERSION_LINKS, $USE_VERSION_LINKS)
++AM_CONDITIONAL([USE_VERSION_LINKS], [test "$USE_VERSION_LINKS" = True])
++
+ # --enable-versionfull
+ AC_ARG_ENABLE([versionfull],
+   [AS_HELP_STRING([--enable-versionfull],
+diff --git a/lib/bootstrap.py b/lib/bootstrap.py
+--- a/lib/bootstrap.py
++++ b/lib/bootstrap.py
+@@ -944,7 +944,7 @@ def SetupNodeDaemon(opts, cluster_name, node, ssh_port):
+                          debug=opts.debug, verbose=opts.verbose,
+                          use_cluster_key=True, ask_key=opts.ssh_key_check,
+                          strict_host_check=opts.ssh_key_check,
+-                         ensure_version=True)
++                         ensure_version=constants.USE_VERSION_LINKS)
+ 
+   _WaitForSshDaemon(node, ssh_port)
+   _WaitForNodeDaemon(node)
+diff --git a/src/AutoConf.hs.in b/src/AutoConf.hs.in
+--- a/src/AutoConf.hs.in
++++ b/src/AutoConf.hs.in
+@@ -64,6 +64,9 @@ versionFull = "VERSION_FULL"
+ dirVersion :: String
+ dirVersion = "DIRVERSION"
+ 
++useVersionLinks :: Bool
++useVersionLinks = USE_VERSION_LINKS
++
+ localstatedir :: String
+ localstatedir = "LOCALSTATEDIR"
+ 
+diff --git a/src/Ganeti/Constants.hs b/src/Ganeti/Constants.hs
+--- a/src/Ganeti/Constants.hs
++++ b/src/Ganeti/Constants.hs
+@@ -164,5 +164,8 @@ versionRevision = AutoConf.versionRevision
+ dirVersion :: String
+ dirVersion = AutoConf.dirVersion
+ 
++useVersionLinks :: Bool
++useVersionLinks = AutoConf.useVersionLinks
++
+ osApiV10 :: Int
+ osApiV10 = 10

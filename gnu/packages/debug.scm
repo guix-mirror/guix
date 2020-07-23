@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
@@ -393,8 +393,8 @@ server and embedded PowerPC, and S390 guests.")
     (supported-systems (delete "mips64el-linux" %supported-systems))))))
 
 (define-public stress-make
-  (let ((commit "9e92dff8f0157f012aaf31de5b8b8112ad720100")
-        (revision "1"))                 ;No official source distribution
+  (let ((commit "97815bed8060de33952475b3498767c91f59ffd9")
+        (revision "2"))                 ;No official source distribution
     (package
       (name "stress-make")
       (version (git-version "1.0" revision commit))
@@ -402,12 +402,12 @@ server and embedded PowerPC, and S390 guests.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/lanl/stress-make.git")
+               (url "https://github.com/lanl/stress-make")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1z1yiwnqyzv3v6152fnjbfh2lr8q8fi5xxfdclnr8l8sd4c1rasp"))))
+           "0k55cy7x0hlc6rgpascl6ibhcfxaash3p9r9r8kwvbm3zag1rmac"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -431,7 +431,7 @@ server and embedded PowerPC, and S390 guests.")
              (add-after 'unpack-make 'set-default-shell
                (lambda _
                  ;; Taken mostly directly from (@ (gnu packages base) gnu-make)
-                 (substitute* (string-append ,make-dir "/job.c")
+                 (substitute* (string-append ,make-dir "/src/job.c")
                    (("default_shell = .*$")
                     (format #f "default_shell = \"~a\";\n"
                             (which "sh"))))))
@@ -606,7 +606,7 @@ fun.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dlbeer/mspdebug.git")
+                    (url "https://github.com/dlbeer/mspdebug")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

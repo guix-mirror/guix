@@ -94,7 +94,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/lanoxx/tilda.git")
+                    (url "https://github.com/lanoxx/tilda")
                     (commit (string-append "tilda-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -365,7 +365,7 @@ combining, and so on, with a simple interface.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/npat-efault/picocom.git")
+                    (url "https://github.com/npat-efault/picocom")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -407,7 +407,7 @@ to all types of devices that provide serial consoles.")
              ;; unmaintained for some time, and vulnerable to at least two CVEs:
              ;; https://github.com/johnath/beep/issues/11#issuecomment-454056858
              ;; Use this maintained fork instead.
-             (url "https://github.com/spkr-beep/beep.git")
+             (url "https://github.com/spkr-beep/beep")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -438,7 +438,7 @@ has no notion of what's interesing, but it's very good at that notifying part.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mauke/unibilium.git")
+             (url "https://github.com/mauke/unibilium")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -708,7 +708,7 @@ desktop installed to have a decent terminal emulator.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/nsf/termbox-go.git")
+                      (url "https://github.com/nsf/termbox-go")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -766,7 +766,7 @@ usable with any list--including files, command history, processes and more.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/howeyc/gopass.git")
+                      (url "https://github.com/howeyc/gopass")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -902,7 +902,7 @@ per-line fullscreen terminal rendering, and keyboard input event reporting.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tmate-io/tmate.git")
+             (url "https://github.com/tmate-io/tmate")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -934,7 +934,7 @@ tmux.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/kovidgoyal/kitty.git")
+             (url "https://github.com/kovidgoyal/kitty")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1041,7 +1041,7 @@ comfortably in a pager or editor.
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/MisterTea/EternalTerminal.git")
+               (url "https://github.com/MisterTea/EternalTerminal")
                (commit (string-append "et-v" version))))
         (file-name (git-file-name name version))
        (sha256
@@ -1081,7 +1081,7 @@ while also supporting native scrolling and @command{tmux} control mode
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/majestrate/wterm.git")
+             (url "https://github.com/majestrate/wterm")
              (commit "0ae42717c08a85a6509214e881422c7fbe7ecc45")))
        (sha256
          (base32
@@ -1137,7 +1137,7 @@ made by suckless.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jwilm/alacritty.git")
+             (url "https://github.com/jwilm/alacritty")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1207,7 +1207,7 @@ made by suckless.")
         ("rust-embed-resource" ,rust-embed-resource-1.3)
         ("rust-http-req" ,rust-http-req-0.5)
         ("rust-zip" ,rust-zip-0.5)
-        ("rust-tempfile" ,rust-tempfile-3.1)
+        ("rust-tempfile" ,rust-tempfile-3)
         ("rust-named-pipe" ,rust-named-pipe-0.4)
         ("rust-winapi" ,rust-winapi-0.3))
        #:phases

@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Andrew Miloradovsky <andrew@interpretmath.pw>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,8 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
@@ -32,6 +35,101 @@
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls))
+
+(define-public drbd-utils
+  (package
+    (name "drbd-utils")
+    (version "9.13.1")
+    (source (origin
+              (method url-fetch)
+              ;; Older releases are moved to /archive.  List it first because in
+              ;; practice this URL will be the most current (e.g. time-machine).
+              (uri (list (string-append "https://www.linbit.com/downloads/drbd"
+                                        "/utils/archive/drbd-utils-" version
+                                        ".tar.gz")
+                         (string-append "https://www.linbit.com/downloads/drbd"
+                                        "/utils/drbd-utils-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0di55y0vzaw8jhcgz0fakww03h1gpg4a5q1zklxhjw3dwzjvysnk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "scripts/global_common.conf"
+                    ;; Do not participate in usage count survey by default.
+                    (("usage-count: yes")
+                     "usage-count: no"))
+                  (substitute* "scripts/Makefile.in"
+                    ;; Install the Pacemaker resource agents to the libdir,
+                    ;; regardless of what the OCF specification says...
+                    (("\\$\\(DESTDIR\\)/usr/lib")
+                     "$(DESTDIR)$(LIBDIR)"))
+                  (substitute* "configure"
+                    ;; Use a sensible default udev rules directory.
+                    (("default_udevdir=/lib/udev")
+                     "default_udevdir='${prefix}/lib/udev'"))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '(;; Do not install sysv or systemd init scripts.
+                           "--with-initscripttype=none"
+                           ;; Use the pre-built manual pages present in release
+                           ;; tarballs instead of generating them from scratch.
+                           "--with-prebuiltman"
+                           ;; Disable support for DRBD 8.3 as it is only for
+                           ;; Linux-Libre versions < 3.8.  8.4 is the latest
+                           ;; kernel driver as of Linux 5.7.
+                           "--without-83support"
+                           "--sysconfdir=/etc"
+                           "--localstatedir=/var")
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-generated-file-shebangs 'patch-documentation
+           (lambda _
+             ;; The preceding phase misses some Makefiles with unusual file
+             ;; names, so we handle those here.
+             (for-each patch-makefile-SHELL (find-files "documentation/common"
+                                                        "^Makefile"))
+             #t))
+         (add-before 'configure 'use-absolute-/lib/drbd
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Look for auxiliary executables below exec_prefix instead
+               ;; of assuming /lib/drbd (see TODO comment in the file).
+               (substitute* "user/v9/drbdtool_common.c"
+                 (("\"/lib/drbd\"")
+                  (string-append "\"" out "/lib/drbd\"")))
+               #t)))
+         (add-after 'configure 'adjust-installation-directories
+           (lambda _
+             ;; Do not attempt to create /etc or /var.
+             (substitute* "scripts/Makefile"
+               (("\\$\\(DESTDIR\\)\\$\\(sysconfdir\\)")
+                "$(DESTDIR)$(prefix)$(sysconfdir)"))
+             (substitute* "user/v84/Makefile"
+               (("\\$\\(DESTDIR\\)\\$\\(localstatedir\\)")
+                "$(DESTDIR)$(prefix)$(localstatedir)")
+               (("\\$\\(DESTDIR\\)/lib/drbd")
+                "$(DESTDIR)$(prefix)/lib/drbd"))
+             (substitute* "user/v9/Makefile"
+               (("\\$\\(DESTDIR\\)\\$\\(localstatedir\\)")
+                "$(DESTDIR)$(prefix)$(localstatedir)")
+               (("\\$\\(DESTDIR\\)\\$\\(DRBD_LIB_DIR\\)")
+                "$(DESTDIR)$(prefix)$(DRBD_LIB_DIR)"))
+             #t)))))
+    (native-inputs
+     `(("clitest" ,clitest)
+       ("flex" ,flex)
+       ("udev" ,eudev)))          ;just to satisfy a configure check
+    (home-page "https://www.linbit.com/drbd/")
+    (synopsis "Replicate block devices between machines")
+    (description
+     "@acronym{DRBD, Distributed Replicated Block Device} is a software-based,
+shared-nothing, replicated storage solution mirroring the content of block
+devices (hard disks, partitions, logical volumes etc.) over any network
+connection.  This package contains the userland utilities.")
+    (license license:gpl2+)))
 
 (define-public keepalived
   (package

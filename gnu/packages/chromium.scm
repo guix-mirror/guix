@@ -55,6 +55,7 @@
   #:use-module (gnu packages nss)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -98,6 +99,7 @@
     "third_party/angle/src/third_party/compiler" ;BSD-2
     "third_party/angle/src/third_party/libXNVCtrl" ;Expat
     "third_party/angle/src/third_party/trace_event" ;BSD-3
+    "third_party/angle/src/third_party/volk" ;Expat
     "third_party/angle/third_party/vulkan-headers" ;ASL2.0
     "third_party/angle/third_party/vulkan-loader" ;ASL2.0
     "third_party/angle/third_party/vulkan-tools" ;ASL2.0
@@ -117,6 +119,7 @@
     ;; XXX: This is a minified version of <https://d3js.org/>.
     "third_party/catapult/tracing/third_party/d3" ;BSD-3
     "third_party/catapult/tracing/third_party/gl-matrix" ;Expat
+    "third_party/catapult/tracing/third_party/jpeg-js" ;ASL2.0
     ;; XXX: Minified version of <https://github.com/Stuk/jszip>.
     "third_party/catapult/tracing/third_party/jszip" ;Expat or GPL3
     "third_party/catapult/tracing/third_party/mannwhitneyu" ;Expat
@@ -135,7 +138,10 @@
     "third_party/dawn" ;ASL2.0
     "third_party/depot_tools/owners.py" ;BSD-3
     "third_party/devtools-frontend" ;BSD-3
+    "third_party/devtools-frontend/src/front_end/third_party/acorn" ;Expat
+    "third_party/devtools-frontend/src/front_end/third_party/codemirror" ;Expat
     "third_party/devtools-frontend/src/front_end/third_party/fabricjs" ;Expat
+    "third_party/devtools-frontend/src/front_end/third_party/lighthouse" ;ASL2.0
     "third_party/devtools-frontend/src/front_end/third_party/wasmparser" ;ASL2.0
     "third_party/devtools-frontend/src/third_party/axe-core" ;MPL2.0
     "third_party/devtools-frontend/src/third_party/pyjson5" ;ASL2.0
@@ -148,6 +154,7 @@
     "third_party/google_input_tools/third_party/closure_library" ;ASL2.0
     "third_party/google_input_tools/third_party/closure_library/third_party/closure" ;Expat
     "third_party/googletest" ;BSD-3
+    "third_party/harfbuzz-ng" ;Expat
     "third_party/hunspell" ;MPL1.1/GPL2+/LGPL2.1+
     "third_party/iccjpeg" ;IJG
     "third_party/inspector_protocol" ;BSD-3
@@ -155,6 +162,7 @@
     "third_party/jstemplate" ;ASL2.0
     "third_party/khronos" ;Expat, SGI
     "third_party/leveldatabase" ;BSD-3
+    "third_party/libavif" ;BSD-2
     "third_party/libXNVCtrl" ;Expat
     "third_party/libaddressinput" ;ASL2.0
     "third_party/libaom" ;BSD-2 or "Alliance for Open Media Patent License 1.0"
@@ -170,7 +178,9 @@
     "third_party/libwebm" ;BSD-3
     "third_party/libxml/chromium" ;BSD-3
     "third_party/libyuv" ;BSD-3
+    "third_party/lottie" ;Expat
     "third_party/lss" ;BSD-3
+    "third_party/mako" ;Expat
     "third_party/markupsafe" ;BSD-3
     "third_party/mesa_headers" ;Expat, SGI
     "third_party/metrics_proto" ;BSD-3
@@ -181,6 +191,7 @@
     "third_party/one_euro_filter" ;BSD-3
     "third_party/openscreen" ;BSD-3
     "third_party/openscreen/src/third_party/tinycbor" ;Expat
+    "third_party/openscreen/src/third_party/mozilla" ;MPL1.1/GPL2+/LGPL2.1+, BSD-3
     "third_party/ots" ;BSD-3
     "third_party/pdfium" ;BSD-3
     "third_party/pdfium/third_party/agg23" ;Expat
@@ -199,6 +210,7 @@
     "third_party/qcms" ;Expat
     "third_party/rnnoise" ;BSD-3
     "third_party/s2cellid" ;ASL2.0
+    "third_party/schema_org" ;CC-BY-SA3.0
     "third_party/skia" ;BSD-3
     "third_party/skia/include/third_party/skcms" ;BSD-3
     "third_party/skia/third_party/skcms" ;BSD-3
@@ -208,14 +220,22 @@
     "third_party/spirv-headers" ;ASL2.0
     "third_party/SPIRV-Tools" ;ASL2.0
     "third_party/sqlite" ;Public domain
+    "third_party/swiftshader" ;ASL2.0
+    "third_party/swiftshader/third_party/astc-encoder" ;ASL2.0
+    "third_party/swiftshader/third_party/llvm-7.0" ;NCSA
+    "third_party/swiftshader/third_party/llvm-subzero" ;NCSA
+    "third_party/swiftshader/third_party/marl" ;ASL2.0
+    "third_party/swiftshader/third_party/subzero" ;NCSA
+    "third_party/swiftshader/third_party/SPIRV-Headers" ;X11-style
     "third_party/usb_ids" ;BSD-3
     "third_party/usrsctp" ;BSD-2
+    "third_party/vulkan_memory_allocator" ;Expat
     "third_party/wayland/wayland_scanner_wrapper.py" ;BSD-3
     "third_party/wayland-protocols" ;Expat
     "third_party/web-animations-js" ;ASL2.0
     "third_party/webdriver" ;ASL2.0
     "third_party/webrtc" ;BSD-3
-    "third_party/webrtc/common_audio/third_party/fft4g" ;Non-copyleft
+    "third_party/webrtc/common_audio/third_party/ooura" ;Non-copyleft
     "third_party/webrtc/common_audio/third_party/spl_sqrt_floor" ;Public domain
     "third_party/webrtc/modules/third_party/fft" ;Non-copyleft
     "third_party/webrtc/modules/third_party/g711" ;Public domain
@@ -226,7 +246,6 @@
     "third_party/widevine/cdm/widevine_cdm_common.h" ;BSD-3
     "third_party/woff2" ;ASL2.0
     "third_party/xdg-utils" ;Expat
-    "third_party/yasm/run_yasm.py" ;BSD-2 or BSD-3
     "third_party/zlib/google" ;BSD-3
     "url/third_party/mozilla" ;BSD-3, MPL1.1/GPL2+/LGPL2.1+
     "v8/src/third_party/siphash" ;Public domain
@@ -235,36 +254,72 @@
     "v8/third_party/inspector_protocol" ;BSD-3
     "v8/third_party/v8/builtins")) ;PSFL
 
-(define* (computed-origin-method gexp-promise hash-algo hash
-                                 #:optional (name "source")
-                                 #:key (system (%current-system))
-                                 (guile (default-guile)))
-  "Return a derivation that executes the G-expression that results
-from forcing GEXP-PROMISE."
-  (mlet %store-monad ((guile (package->derivation guile system)))
-    (gexp->derivation (or name "computed-origin")
-                      (force gexp-promise)
-                      #:graft? #f       ;nothing to graft
-                      #:system system
-                      #:guile-for-build guile)))
+(define %blacklisted-files
+  ;; 'third_party/blink/perf_tests/resources/svg/HarveyRayner.svg' carries a
+  ;; nonfree license according to LICENSES in the same directory.  As we don't
+  ;; run the Blink performance tests, just remove everything to save ~24MiB.
+  '("third_party/blink/perf_tests"))
 
-(define %chromium-version "81.0.4044.138")
-(define %ungoogled-revision "c2a89fb6b5b559c826796c811741fa8ed3e11de8")
-(define %debian-revision "debian/81.0.4044.92-1")
-(define package-revision "0")
-(define %package-version (string-append %chromium-version "-"
-                                        package-revision "."
-                                        (string-take %ungoogled-revision 7)))
-
-(define %chromium-origin
+(define (gentoo-patch name revision hash)
   (origin
     (method url-fetch)
-    (uri (string-append "https://commondatastorage.googleapis.com"
-                        "/chromium-browser-official/chromium-"
-                        %chromium-version ".tar.xz"))
-    (sha256
-     (base32
-      "19kpzmqmld0m0nflx13w9flxfal19msnxhzl3lip1jqih65z4y7l"))))
+    (uri (string-append "https://gitweb.gentoo.org/repo/gentoo.git/plain"
+                        "/www-client/chromium/files/" name "?id=" revision))
+    (file-name (string-append "ungoogled-" name))
+    (sha256 (base32 hash))))
+
+;; This repository contains libstdc++ compatibility patches for Chromium.
+(define (chromium-gcc-patchset commit hash)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/stha09/chromium-patches")
+          (commit commit)))
+    (file-name (git-file-name "chromium-gcc-patches" commit))
+    (sha256 (base32 hash))))
+
+(define (debian-patch name revision hash)
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://salsa.debian.org/chromium-team/chromium/-/raw/"
+                        revision "/debian/patches/" name))
+    (file-name (match (string-split name #\/)
+                 ((category name)
+                  (string-append "ungoogled-chromium-" category "-" name))))
+    (sha256 (base32 hash))))
+
+(define %ungoogled-revision "df199c04ff367da59ce52a23a3f3b305dd3b00c3")
+(define %debian-revision "debian/83.0.4103.116-3")
+(define %gentoo-revision "f3f649046d31ebdbc8c4a302b2384504eff78027")
+
+(define %gentoo-patches
+  ;; This patch is necessary for compatibility with FFmpeg 4.3.
+  (list (gentoo-patch "chromium-84-mediaalloc.patch" %gentoo-revision
+                      "0snxdc4nb8ykzncz62vpsl8hgxpy24m17mycx67i2gckmrpslzzv")))
+
+(define %chromium-gcc-patches
+  (chromium-gcc-patchset
+   "chromium-84-patchset-3"
+   "0l05gx3pn703n47anjwsl5sjcqw8kaxmivf7llax97kj3k6d127v"))
+
+(define %debian-patches
+  (list (debian-patch "system/zlib.patch" %debian-revision
+                      "0bp2vh1cgmwjrn1zkpphkd3bs662s23xwdhy3abm9cfjvwrj117n")
+        (debian-patch "system/jsoncpp.patch" %debian-revision
+                      "0d95brl4a5y5w142yd0rvf59z513h7chsz0vnm034d6lqf22ahwf")
+        (debian-patch "system/openjpeg.patch" %debian-revision
+                      "0zd6v5njx1pc7i0y6mslxvpx5j4cq01mmyx55qcqx8qzkm0gm48j")))
+
+(define %arch-patches
+  (list (origin
+          (method url-fetch)
+          (uri "https://git.archlinux.org/svntogit/packages.git/plain/trunk/\
+chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
+&id=93b5b90621b4827084288197c6e0e09b987b372a")
+          (file-name "ungoogled-chromium-fix-vaapi-on-intel.patch")
+          (sha256
+           (base32
+            "16jbjjf4d9jp52rdrrxx5vm69nx3w0qrijgjpwapnmcif13z55g4")))))
 
 (define %ungoogled-origin
   (origin
@@ -275,145 +330,74 @@ from forcing GEXP-PROMISE."
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "0bbr4a2gkgm3ykdgpj8x58sd3dwam6qkifhzfs2997681g7b2v2q"))))
+      "1bqvcq3dj6615198j7cz3ylyyic5zpis06capvl6ybl1na3ainb0"))))
 
-(define %debian-origin
-  (origin
-    (method git-fetch)
-    (uri (git-reference
-          (url "https://salsa.debian.org/chromium-team/chromium.git")
-          (commit %debian-revision)))
-    (file-name (git-file-name "debian-chromium-packaging"
-                              (match (string-split %debian-revision #\/)
-                                ((_ revision) revision)
-                                (_ (string-take %debian-revision 7)))))
-    (sha256
-     (base32
-      "0srgbcqga3l75bfkv3bnmjk416189nazsximvzdx2k5n8v5k4p3m"))))
-
-;; This is a "computed" origin that does the following:
-;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
-;; *) Applies Debians Chromium patches, for their unbundling and GCC work.
+;; This is a source 'snippet' that does the following:
+;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
+;; *) Runs the ungoogled patch-, domain substitution-, and scrubbing scripts.
 ;; *) Prunes all third_party directories that are not explicitly preserved.
 ;; *) Adjusts "GN" build files such that system libraries are preferred.
-(define ungoogled-chromium-source
-  (let ((chromium-source %chromium-origin)
-        (ungoogled-source %ungoogled-origin)
-        (debian-source %debian-origin))
-    (origin
-      (method computed-origin-method)
-      (file-name (string-append "ungoogled-chromium-" %package-version ".tar.xz"))
-      (sha256 #f)
-      (uri
-       (delay
-         (with-imported-modules '((guix build utils))
-           #~(begin
-               (use-modules (guix build utils)
-                            (ice-9 rdelim)
-                            (srfi srfi-1)
-                            (srfi srfi-26))
-               (let ((chromium-dir    (string-append "chromium-" #$%chromium-version))
-                     (preserved-files (list #$@%preserved-third-party-files)))
+(define ungoogled-chromium-snippet
+  ;; Note: delay to cope with cyclic module imports at the top level.
+  (delay
+    #~(begin
+        (let ((chromium-dir (getcwd)))
+          (set-path-environment-variable
+           "PATH" '("bin")
+           (list #+patch #+python-wrapper #+xz))
 
-                 (set-path-environment-variable
-                  "PATH" '("bin")
-                  (list #+(canonical-package patch)
-                        #+(canonical-package xz)
-                        #+(canonical-package tar)
-                        #+python-wrapper))
+          ;; Apply patches before running the ungoogled scripts because
+          ;; domain substitution may break some of the patches.
+          (format #t "Applying assorted build fixes...~%")
+          (force-output)
+          (for-each (lambda (patch)
+                      (invoke "patch" "-p1" "--force" "--input"
+                              patch "--no-backup-if-mismatch"))
+                    (append
+                     '#+%gentoo-patches '#+%debian-patches '#+%arch-patches
+                     (find-files #$%chromium-gcc-patches "\\.patch$")
+                     '#+(list (local-file
+                               (search-patch
+                                "ungoogled-chromium-system-nspr.patch")))))
 
-                 (copy-recursively #+ungoogled-source "/tmp/ungoogled")
+          (with-directory-excursion #+%ungoogled-origin
+            (format #t "Ungooglifying...~%")
+            (force-output)
+            (invoke "python" "utils/prune_binaries.py" chromium-dir
+                    "pruning.list")
+            (invoke "python" "utils/patches.py" "apply"
+                    chromium-dir "patches")
+            (invoke "python" "utils/domain_substitution.py" "apply" "-r"
+                    "domain_regex.list" "-f" "domain_substitution.list"
+                    "-c" "/tmp/domainscache.tar.gz" chromium-dir))
 
-                 (with-directory-excursion "/tmp/ungoogled"
+          ;; Run after the ungoogled scripts to avoid interfering with
+          ;; patches or file lists.
+          (format #t "Removing blacklisted files...~%")
+          (force-output)
+          (for-each delete-file-recursively '#$%blacklisted-files)
 
-                   (format #t "Unpacking chromium tarball...~%")
-                   (force-output)
-                   (invoke "tar" "xf" #+chromium-source)
+          (format #t "Pruning third party files...~%")
+          (force-output)
+          (apply invoke (string-append #+python-2 "/bin/python")
+                 "build/linux/unbundle/remove_bundled_libraries.py"
+                 "--do-remove" '#$%preserved-third-party-files)
 
-                   ;; Ungoogled-Chromium contains a forked subset of the Debian
-                   ;; patches.  Disable those, as we apply newer versions later.
-                   (substitute* "patches/series"
-                     ((".*/debian/.*")
-                      ""))
-
-                   (format #t "Ungooglifying...~%")
-                   (force-output)
-                   (invoke "python" "utils/prune_binaries.py" chromium-dir
-                           "pruning.list")
-                   (invoke "python" "utils/patches.py" "apply"
-                           chromium-dir "patches")
-                   (invoke "python" "utils/domain_substitution.py" "apply" "-r"
-                           "domain_regex.list" "-f" "domain_substitution.list"
-                           "-c" "/tmp/domainscache.tar.gz" chromium-dir)
-
-                   (with-directory-excursion chromium-dir
-
-                     (format #t "Applying Debian patches...~%")
-                     (force-output)
-                     (let* ((debian  #+debian-source)
-                            (patches (string-append debian "/debian/patches"))
-                            (series  (string-append patches "/series")))
-                       (with-input-from-file series
-                         (lambda ()
-                           (let loop ((line (read-line)))
-                             (unless (eof-object? line)
-                               (when (and (> (string-length line) 1)
-                                          (not (string-prefix? "#" line))
-                                          ;; Skip the Debian-specific ones.
-                                          (not (string-prefix? "debianization/" line))
-                                          (not (string-prefix? "buster/" line))
-                                          (not (any (cute string-suffix? <> line)
-                                                    ;; These conflict with Ungoogled.
-                                                    '("widevine-buildflag.patch"
-                                                      "signin.patch"
-                                                      "third-party-cookies.patch"
-
-                                                      ;; Disable workarounds for the
-                                                      ;; Chromium "-lite" tarball.  We
-                                                      ;; use the "full" version and don't
-                                                      ;; need these patches.
-                                                      "closure.patch"
-                                                      "owners.patch"
-
-                                                      ;; XXX: 'fixes/inspector.patch'
-                                                      ;; makes v8 reuse the top-level
-                                                      ;; third_party/inspector_protocol
-                                                      ;; instead of its own bundled copy,
-                                                      ;; but that does not work here for
-                                                      ;; some reason.  Ignore that patch
-                                                      ;; and those that depend on it.
-                                                      "inspector.patch"))))
-                                 (invoke "patch" "--force" "-p1" "--input"
-                                         (string-append patches "/" line)
-                                         "--no-backup-if-mismatch"))
-                               (loop (read-line)))))))
-
-                     (format #t "Pruning third party files...~%")
-                     (force-output)
-                     (apply invoke (string-append #+python-2 "/bin/python")
-                            "build/linux/unbundle/remove_bundled_libraries.py"
-                            "--do-remove" preserved-files)
-
-                     (format #t "Replacing GN files...~%")
-                     (force-output)
-                     (invoke "python" "build/linux/unbundle/replace_gn_files.py"
-                             "--system-libraries" "ffmpeg" "flac" "fontconfig"
-                             "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
-                             "libjpeg" "libpng" "libvpx" "libwebp" "libxml"
-                             "libxslt" "openh264" "opus" "re2" "snappy" "yasm"
-                             "zlib"))
-
-                   (format #t (string-append "Packing new ungoogled tarball ...~%"))
-                   (force-output)
-                   (invoke "tar" "cvfa" #$output
-                           ;; Avoid non-determinism in the archive.
-                           "--mtime=@0"
-                           "--owner=root:0"
-                           "--group=root:0"
-                           "--sort=name"
-                           chromium-dir)
-
-                   #t)))))))))
+          (format #t "Replacing GN files...~%")
+          (force-output)
+          (substitute* "tools/generate_shim_headers/generate_shim_headers.py"
+            ;; The "is_official_build" configure option enables certain
+            ;; release optimizations like those used in the commercial
+            ;; Chrome browser.  Unfortunately it also requires using the
+            ;; bundled libraries: lose that restriction.
+            (("#if defined\\(OFFICIAL_BUILD\\)")
+             "#if 0"))
+          (invoke "python" "build/linux/unbundle/replace_gn_files.py"
+                  "--system-libraries" "ffmpeg" "flac" "fontconfig"
+                  "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
+                  "libjpeg" "libpng" "libvpx" "libwebp" "libxml"
+                  "libxslt" "openh264" "opus" "re2" "snappy" "zlib")
+          #t))))
 
 (define opus+custom
   (package/inherit opus
@@ -427,12 +411,57 @@ from forcing GEXP-PROMISE."
         `(cons "--enable-custom-modes"
                ,flags))))))
 
+;; Chromium still has Python2-only code, so we need this special Python 2
+;; variant of xcb-proto.
+(define xcb-proto/python2
+  (package/inherit
+   xcb-proto
+   (name "python2-xcb-proto")
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("python" ,python-2)))))
+
+;; 'make-ld-wrapper' can only work with an 'ld' executable, so we need
+;; this trick to make it wrap 'lld'.
+(define (make-lld-wrapper lld)
+  (define lld-as-ld
+    (computed-file "lld-ld"
+                   #~(begin
+                       (mkdir #$output)
+                       (mkdir (string-append #$output "/bin"))
+                       (symlink #$(file-append lld "/bin/lld")
+                                (string-append #$output "/bin/ld")))))
+
+  ;; Create a wrapper for LLD that inserts appropriate -rpath entries.
+  (define lld-wrapper
+    (make-ld-wrapper "lld-wrapper"
+                     #:binutils lld-as-ld))
+
+  ;; Clang looks for an 'ld.lld' executable, so we need to symlink it back.
+  (computed-file "lld-wrapped"
+                 #~(begin
+                     (mkdir #$output)
+                     (mkdir (string-append #$output "/bin"))
+                     (symlink #$(file-append lld-wrapper "/bin/ld")
+                              (string-append #$output "/bin/lld"))
+                     (symlink "lld" (string-append #$output "/bin/ld.lld")))))
+
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
-    (version %package-version)
+    (version (string-append "84.0.4147.89-0."
+                            (string-take %ungoogled-revision 7)))
     (synopsis "Graphical web browser")
-    (source ungoogled-chromium-source)
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://commondatastorage.googleapis.com"
+                                  "/chromium-browser-official/chromium-"
+                                  (car (string-split version #\-)) ".tar.xz"))
+              (sha256
+               (base32
+                "0yf6j0459qzr677zsa2apmfz0x0ndlscvwj1a5v40nqjijchv5qp"))
+              (modules '((guix build utils)))
+              (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -450,13 +479,14 @@ from forcing GEXP-PROMISE."
        ;; directory for an exhaustive list of supported flags.
        ;; (Note: The 'configure' phase will do that for you.)
        (list "is_debug=false"
-             "use_gold=false"
-             "use_lld=false"
+             ;; Use the "official" release optimizations, as opposed to
+             ;; a developer build.
+             "is_official_build=true"
+             (string-append "max_jobs_per_link="
+                            (number->string (parallel-job-count)))
              "clang_use_chrome_plugins=false"
-             "linux_use_bundled_binutils=false"
              "use_custom_libcxx=false"
              "use_sysroot=false"
-             "enable_precompiled_headers=false"
              "goma_dir=\"\""
              "enable_nacl=false"
              "enable_nacl_nonsfi=false"
@@ -472,7 +502,6 @@ from forcing GEXP-PROMISE."
              "enable_remoting=false"
              "enable_reporting=false"
              "enable_service_discovery=false"
-             "enable_swiftshader=false"
              "enable_vr=false"
              "enable_widevine=false"
              ;; Disable type-checking for the Web UI to avoid a Java dependency.
@@ -482,6 +511,9 @@ from forcing GEXP-PROMISE."
              ;; friends from the environment.
              "custom_toolchain=\"//build/toolchain/linux/unbundle:default\""
              "host_toolchain=\"//build/toolchain/linux/unbundle:default\""
+
+             (string-append "xcbproto_path=\""
+                            (assoc-ref %build-inputs "xcb-proto") "/share/xcb\"")
 
              ;; Prefer system libraries.
              "use_system_freetype=true"
@@ -496,6 +528,11 @@ from forcing GEXP-PROMISE."
              "use_openh264=true"
              "use_pulseaudio=true"
              "link_pulseaudio=true"
+             "icu_use_data_file=false"
+
+             ;; FIXME: Using system protobuf with "is_official_build" causes an
+             ;; invalid opcode and "protoc-gen-plugin: Plugin killed by signal 4".
+             ;;"perfetto_use_system_protobuf=true"
 
              ;; VA-API acceleration is currently only supported on x86_64-linux.
              ,@(if (string-prefix? "x86_64" (or (%current-target-system)
@@ -583,13 +620,10 @@ from forcing GEXP-PROMISE."
              (substitute* "third_party/webrtc/rtc_base/strings/json.h"
                (("#include \"third_party/jsoncpp/") "#include \"json/"))
 
-             (substitute* "gpu/config/gpu_util.cc"
-               (("third_party/vulkan/include/")
-                ""))
-
              (substitute* '("components/viz/common/gpu/vulkan_context_provider.h"
-                            "components/viz/common/resources/resource_format_utils.h")
-               (("third_party/vulkan/include/") ""))
+                            "components/viz/common/resources/resource_format_utils.h"
+                            "gpu/config/gpu_util.cc")
+               (("third_party/vulkan_headers/include/") ""))
 
              (substitute* "third_party/skia/include/gpu/vk/GrVkVulkan.h"
                (("include/third_party/vulkan/") ""))
@@ -622,23 +656,12 @@ from forcing GEXP-PROMISE."
                (substitute* "device/udev_linux/udev1_loader.cc"
                  (("libudev\\.so\\.1")
                   (string-append udev "/lib/libudev.so.1")))
-               (substitute*
-                   '("ui/ozone/platform/x11/gl_ozone_glx.cc"
-                     "ui/ozone/common/egl_util.cc"
-                     "ui/gl/init/gl_initializer_x11.cc"
-                     "third_party/angle/src/libANGLE/renderer/gl/glx/FunctionsGLX.cpp")
-                 (("libGL\\.so\\.1")
-                  (string-append mesa "/lib/libGL.so.1"))
-                 (("libEGL\\.so\\.1")
-                  (string-append mesa "/lib/libEGL.so.1"))
-                 (("libGLESv2\\.so\\.2")
-                  (string-append mesa "/lib/libGLESv2.so.2")))
                #t)))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
 
              ;; Make sure the right build tools are used.
-             (setenv "AR" "ar") (setenv "NM" "nm")
+             (setenv "AR" "llvm-ar") (setenv "NM" "llvm-nm")
              (setenv "CC" "clang") (setenv "CXX" "clang++")
 
              (setenv "CXXFLAGS"
@@ -649,13 +672,10 @@ from forcing GEXP-PROMISE."
                         ;; Clang plugins or newer versions.
                         "-Wno-unknown-warning-option")))
 
+             (setenv "CFLAGS" "-Wno-unknown-warning-option")
+
              ;; TODO: pre-compile instead. Avoids a race condition.
              (setenv "PYTHONDONTWRITEBYTECODE" "1")
-
-             (substitute*
-                 ;; From Debians 'system/node.patch'.
-                 "third_party/devtools-frontend/src/scripts/devtools_paths.py"
-               (("/usr/bin/nodejs") (which "node")))
 
              ;; XXX: How portable is this.
              (mkdir-p "third_party/node/linux/node-linux-x64")
@@ -708,7 +728,7 @@ from forcing GEXP-PROMISE."
                     (lib            (string-append out "/lib"))
                     (man            (string-append out "/share/man/man1"))
                     (applications   (string-append out "/share/applications"))
-                    (install-regexp (make-regexp "\\.(bin|pak)$"))
+                    (install-regexp (make-regexp "\\.(bin|pak|so)$"))
                     (locales        (string-append lib "/locales"))
                     (resources      (string-append lib "/resources"))
                     (preferences    (assoc-ref inputs "master-preferences"))
@@ -745,6 +765,10 @@ from forcing GEXP-PROMISE."
                  (symlink "../lib/chromium" exe)
                  (install-file "chromedriver" bin)
 
+                 (for-each (lambda (so)
+                             (install-file so (string-append lib "/swiftshader")))
+                           (find-files "swiftshader" "\\.so$"))
+
                  (wrap-program exe
                    ;; Avoid file manager crash.  See <https://bugs.gnu.org/26593>.
                    `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share")))))
@@ -761,14 +785,14 @@ from forcing GEXP-PROMISE."
                #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("clang" ,clang-9)
+       ("clang" ,clang-10)
        ("gn" ,gn)
        ("gperf" ,gperf)
+       ("ld-wrapper" ,(make-lld-wrapper lld))
        ("ninja" ,ninja)
        ("node" ,node)
        ("pkg-config" ,pkg-config)
        ("which" ,which)
-       ("yasm" ,yasm)
 
        ;; This file contains defaults for new user profiles.
        ("master-preferences" ,(local-file "aux-files/chromium/master-preferences.json"))
@@ -792,7 +816,7 @@ from forcing GEXP-PROMISE."
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("harfbuzz" ,harfbuzz)
-       ("icu4c" ,icu4c)
+       ("icu4c" ,icu4c-67)
        ("jsoncpp" ,jsoncpp)
        ("lcms" ,lcms)
        ("libevent" ,libevent)
@@ -832,13 +856,15 @@ from forcing GEXP-PROMISE."
        ("speech-dispatcher" ,speech-dispatcher)
        ("udev" ,eudev)
        ("valgrind" ,valgrind)
-       ("vulkan-headers" ,vulkan-headers)))
+       ("vulkan-headers" ,vulkan-headers)
+       ("xcb-proto" ,xcb-proto/python2)))
 
     ;; Building Chromium takes ... a very long time.  On a single core, a busy
     ;; mid-end x86 system may need more than 24 hours to complete the build.
     (properties '((timeout . 144000)    ;40 hours
                   ;; The linking step may take more than an hour on some hardware.
-                  (max-silent-time . 7200)))
+                  (max-silent-time . 7200)
+                  (cpe-name . "chrome")))
 
     (home-page "https://github.com/Eloston/ungoogled-chromium")
     (description
@@ -867,19 +893,10 @@ disabled in order to protect the users privacy.")
        ,@(package-inputs ungoogled-chromium)))
     (arguments
      (substitute-keyword-arguments (package-arguments ungoogled-chromium)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'add-ozone-patch
-             (lambda _
-               ;; Add missing include statement required when using libstdc++,
-               ;; Clang and Ozone.  Fixed in M81.
-               (substitute* "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.cc"
-                 (("#include \"base/logging\\.h" all)
-                  (string-append "#include <algorithm>\n" all)))
-               #t))))
        ((#:configure-flags flags)
         `(append (list "use_ozone=true"
                        "ozone_platform_wayland=true"
+                       "ozone_platform_x11=true"
                        "ozone_auto_platforms=false"
                        "ozone_platform=\"wayland\""
                        "use_xkbcommon=true"

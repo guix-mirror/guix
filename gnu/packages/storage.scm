@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages pkg-config)
@@ -53,14 +55,14 @@
 (define-public ceph
   (package
     (name "ceph")
-    (version "14.2.9")
+    (version "14.2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.ceph.com/tarballs/ceph-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0zkh1a23v8g1fa5flqa2d53lv08ancab3li57gybpqpnja90k7il"))
+                "0bbs3ag8zav283qpxrrndhvh2z01ykm6126fmwrbc1c5f9jfjq39"))
               (patches
                (search-patches "ceph-disable-cpu-optimizations.patch"))
               (modules '((guix build utils)))
@@ -73,7 +75,7 @@
                               ;"src/xxHash"
                               ;"src/zstd"
                               ;"src/civetweb"
-                              "src/seastar/fmt"
+                              ;"src/seastar/fmt"
                               "src/test/downloads"
                               "src/c-ares"
                               "src/googletest"
@@ -213,6 +215,7 @@
        ("libatomic-ops" ,libatomic-ops)
        ("libcap-ng" ,libcap-ng)
        ("libnl" ,libnl)
+       ("librdkafka" ,librdkafka)
        ("lua" ,lua)
        ("lz4" ,lz4)
        ("oath-toolkit" ,oath-toolkit)

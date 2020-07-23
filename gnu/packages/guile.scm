@@ -308,18 +308,18 @@ without requiring the source code to be rewritten.")
             (files '("lib/guile/3.0/site-ccache"
                      "share/guile/site/3.0")))))))
 
-(define-public guile-3.0.3
+(define-public guile-3.0-latest
   ;; TODO: Make this 'guile-3.0' on the next rebuild cycle.
   (package
     (inherit guile-3.0)
-    (version "3.0.3")
+    (version "3.0.4")
     (source (origin
               (inherit (package-source guile-3.0))
               (uri (string-append "mirror://gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0fz6fgx7ran6nn0l978jmpckjc9knk4g3bddr75n0daqqmhjs95k"))))))
+                "0c8dkyvs6xbxp7rgnhkyakajzhakay7qn9kahj1mj49x5vf4fybb"))))))
 
 (define-public guile-next
   (deprecated-package "guile-next" guile-3.0))
@@ -330,7 +330,7 @@ without requiring the source code to be rewritten.")
   ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40525
   (hidden-package
    (package
-     (inherit guile-3.0)
+     (inherit guile-3.0-latest)
      (propagated-inputs
       `(("bdw-gc" ,libgc-7)
         ,@(srfi-1:alist-delete "bdw-gc" (package-propagated-inputs guile-3.0)))))))
@@ -596,7 +596,7 @@ specification.  These are the main features:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ijp/guile-gdbm.git")
+                    (url "https://github.com/ijp/guile-gdbm")
                     (commit "fa1d5b6231d0e4d096687b378c025f2148c5f246")))
               (file-name (string-append name "-" version "-checkout"))
               (patches (search-patches

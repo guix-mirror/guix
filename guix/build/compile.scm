@@ -100,10 +100,9 @@
 
   (cond ((or (string-contains file "gnu/packages/")
              (string-contains file "gnu/tests/"))
-         ;; Level 0 is good enough but partial evaluation helps preserve the
-         ;; "macro writer's bill of rights".
-         (override-option #:partial-eval? #t
-                          (optimizations-for-level 0)))
+         ;; Use '-O1' to have partial evaluation and primitive inlining so we
+         ;; can honor the "macro writer's bill of rights".
+         (optimizations-for-level 1))
         ((string-contains file "gnu/services/")
          ;; '-O2 -Ono-letrectify' compiles about ~20% faster than '-O2' for
          ;; large files like gnu/services/mail.scm.

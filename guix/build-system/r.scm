@@ -61,7 +61,7 @@ release corresponding to NAME and VERSION."
           ;; TODO: use %bioconductor-version from (guix import cran)
           (string-append "https://bioconductor.org/packages/3.11"
                          type-url-part
-                         "/src/contrib/Archive/"
+                         "/src/contrib/"
                          name "_" version ".tar.gz"))))
 
 (define %r-build-system-modules

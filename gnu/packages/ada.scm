@@ -38,7 +38,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/AdaCore/langkit.git")
+                      (url "https://github.com/AdaCore/langkit")
                       (commit commit)))
                 (sha256
                  (base32
@@ -70,7 +70,7 @@ Ada library with bindings for the C and Python programming languages.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/AdaCore/libadalang.git")
+                      (url "https://github.com/AdaCore/libadalang")
                       (commit commit)))
                 (sha256
                  (base32

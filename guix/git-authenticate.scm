@@ -18,14 +18,18 @@
 
 (define-module (guix git-authenticate)
   #:use-module (git)
+  #:autoload   (gcrypt hash) (sha256)
   #:use-module (guix base16)
-  #:use-module ((guix git) #:select (false-if-git-not-found))
+  #:autoload   (guix base64) (base64-encode)
+  #:use-module ((guix git)
+                #:select (commit-difference false-if-git-not-found))
   #:use-module (guix i18n)
   #:use-module (guix openpgp)
   #:use-module ((guix utils)
                 #:select (cache-directory with-atomic-file-output))
   #:use-module ((guix build utils)
                 #:select (mkdir-p))
+  #:use-module (guix progress)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -43,6 +47,9 @@
             load-keyring-from-reference
             previously-authenticated-commits
             cache-authenticated-commit
+
+            repository-cache-key
+            authenticate-repository
 
             git-authentication-error?
             git-authentication-error-commit
@@ -139,7 +146,7 @@ for commit ~a")
                       (message (format #f (G_ "could not authenticate \
 commit ~a: key ~a is missing")
                                        (oid->string commit-id)
-                                       data))))))
+                                       (openpgp-format-fingerprint data)))))))
             ('good-signature data)))))))
 
 (define (read-authorizations port)
@@ -339,3 +346,95 @@ authenticated (only COMMIT-ID is written to cache, though)."
           (display ";; List of previously-authenticated commits.\n\n"
                    port)
           (pretty-print lst port))))))
+
+
+;;;
+;;; High-level interface.
+;;;
+
+(define (repository-cache-key repository)
+  "Return a unique key to store the authenticate commit cache for REPOSITORY."
+  (string-append "checkouts/"
+                 (base64-encode
+                  (sha256 (string->utf8 (repository-directory repository))))))
+
+(define (verify-introductory-commit repository keyring commit expected-signer)
+  "Look up COMMIT in REPOSITORY, and raise an exception if it is not signed by
+EXPECTED-SIGNER."
+  (define actual-signer
+    (openpgp-public-key-fingerprint
+     (commit-signing-key repository (commit-id commit) keyring)))
+
+  (unless (bytevector=? expected-signer actual-signer)
+    (raise (condition
+            (&message
+             (message (format #f (G_ "initial commit ~a is signed by '~a' \
+instead of '~a'")
+                              (oid->string (commit-id commit))
+                              (openpgp-format-fingerprint actual-signer)
+                              (openpgp-format-fingerprint expected-signer))))))))
+
+(define* (authenticate-repository repository start signer
+                                  #:key
+                                  (keyring-reference "keyring")
+                                  (cache-key (repository-cache-key repository))
+                                  (end (reference-target
+                                        (repository-head repository)))
+                                  (historical-authorizations '())
+                                  (make-reporter
+                                   (const progress-reporter/silent)))
+  "Authenticate REPOSITORY up to commit END, an OID.  Authentication starts
+with commit START, an OID, which must be signed by SIGNER; an exception is
+raised if that is not the case.  Return an alist mapping OpenPGP public keys
+to the number of commits signed by that key that have been traversed.
+
+The OpenPGP keyring is loaded from KEYRING-REFERENCE in REPOSITORY, where
+KEYRING-REFERENCE is the name of a branch.  The list of authenticated commits
+is cached in the authentication cache under CACHE-KEY.
+
+HISTORICAL-AUTHORIZATIONS must be a list of OpenPGP fingerprints (bytevectors)
+denoting the authorized keys for commits whose parent lack the
+'.guix-authorizations' file."
+  (define start-commit
+    (commit-lookup repository start))
+  (define end-commit
+    (commit-lookup repository end))
+
+  (define keyring
+    (load-keyring-from-reference repository keyring-reference))
+
+  (define authenticated-commits
+    ;; Previously-authenticated commits that don't need to be checked again.
+    (filter-map (lambda (id)
+                  (false-if-git-not-found
+                   (commit-lookup repository (string->oid id))))
+                (previously-authenticated-commits cache-key)))
+
+  (define commits
+    ;; Commits to authenticate, excluding the closure of
+    ;; AUTHENTICATED-COMMITS.
+    (commit-difference end-commit start-commit
+                       authenticated-commits))
+
+  ;; When COMMITS is empty, it's because END-COMMIT is in the closure of
+  ;; START-COMMIT and/or AUTHENTICATED-COMMITS, in which case it's known to
+  ;; be authentic already.
+  (if (null? commits)
+      '()
+      (let ((reporter (make-reporter start-commit end-commit commits)))
+        ;; If it's our first time, verify START-COMMIT's signature.
+        (when (null? authenticated-commits)
+          (verify-introductory-commit repository keyring
+                                      start-commit signer))
+
+        (let ((stats (call-with-progress-reporter reporter
+                       (lambda (report)
+                         (authenticate-commits repository commits
+                                               #:keyring keyring
+                                               #:default-authorizations
+                                               historical-authorizations
+                                               #:report-progress report)))))
+          (cache-authenticated-commit cache-key
+                                      (oid->string (commit-id end-commit)))
+
+          stats))))

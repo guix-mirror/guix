@@ -159,7 +159,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.20.1")
+    (version "0.20.2")
     (source
      (origin
        (method url-fetch)
@@ -167,7 +167,7 @@ programs for the manipulation and analysis of astronomical data.")
                            "/releases/download/v" version
                            "/stellarium-" version ".tar.gz"))
        (sha256
-        (base32 "034jkrdaaamvbrkfwi3qcl6h8hwfnw2nvf7a82faj55rskcpnkhm"))))
+        (base32 "16symz212vjvhfabh39a68qf7d0rm574c6djlibj2qd1q9jgj3j0"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -178,7 +178,7 @@ programs for the manipulation and analysis of astronomical data.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("gettext" ,gettext-minimal)     ; xgettext is used at compile time
-       ("perl" ,perl)                   ; For pod2man
+       ("perl" ,perl)                   ; for pod2man
        ("qtbase" ,qtbase)               ; Qt MOC is needed at compile time
        ("qttools" ,qttools)))
     (arguments
@@ -191,7 +191,7 @@ programs for the manipulation and analysis of astronomical data.")
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'set-offscreen-display
                     (lambda _
-                      ;; make Qt render "offscreen", required for tests
+                      ;; Make Qt render "offscreen", required for tests.
                       (setenv "QT_QPA_PLATFORM" "offscreen")
                       (setenv "HOME" "/tmp")
                       #t)))))

@@ -89,7 +89,8 @@ fundamental object types for C.")
                                   "sssd-" version ".tar.gz"))
               (sha256
                (base32
-                "1h6hwibaf3xa2w6qpzjiiywmfj6zkgbz4r2isf3gd0xm6vq7n6if"))))
+                "1h6hwibaf3xa2w6qpzjiiywmfj6zkgbz4r2isf3gd0xm6vq7n6if"))
+              (patches (search-patches "sssd-fix-samba.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

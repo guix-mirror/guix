@@ -557,10 +557,10 @@ for this connection will be pinned.  Return a server object."
                                           (make-bytevector 8192))))
       (write-int %worker-magic-1 port)
       (let ((r (read-int port)))
-        (and (eqv? r %worker-magic-2)
+        (and (= r %worker-magic-2)
              (let ((v (read-int port)))
-               (and (eqv? (protocol-major %protocol-version)
-                          (protocol-major v))
+               (and (= (protocol-major %protocol-version)
+                       (protocol-major v))
                     (begin
                       (write-int %protocol-version port)
                       (when (>= (protocol-minor v) 14)

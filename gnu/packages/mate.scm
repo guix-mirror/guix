@@ -76,7 +76,7 @@
 (define-public mate-common
   (package
     (name "mate-common")
-    (version "1.22.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
@@ -84,7 +84,7 @@
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "11lwckndizawbq993ws8lqp59vsc873zri0m8s1i5zyc4qx9f69z"))))
+         "1dgp6k2l6dz7x2lnqk4y5xfkld376726hda3mrc777f821kk99nr"))))
     (build-system gnu-build-system)
     (home-page "https://mate-desktop.org/")
     (synopsis "Common files for development of MATE packages")
@@ -1606,10 +1606,6 @@ used to bring up authentication dialogs.")
        ("shared-mime-info"          ,shared-mime-info)
        ("yelp"                      ,yelp)
        ("zenity"                    ,zenity)))
-    ;; FIXME: Propagating glib:bin fixes http://issues.guix.gnu.org/issue/38135
-    ;; The proper fix is in core-updates. So we can remove this after next merge.
-    (propagated-inputs
-     `(("glib:bin" ,glib "bin")))
     (synopsis "The MATE desktop environment")
     (home-page "https://mate-desktop.org/")
     (description

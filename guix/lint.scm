@@ -670,8 +670,9 @@ patch could not be found."
               (%make-warning package (condition-message c)
                              #:field 'patch-file-names))))
     (define patches
-      (or (and=> (package-source package) origin-patches)
-          '()))
+      (match (package-source package)
+        ((? origin? origin) (origin-patches origin))
+        (_ '())))
 
     (define (starts-with-package-name? file-name)
       (and=> (string-contains file-name (package-name package))
@@ -792,26 +793,32 @@ descriptions maintained upstream."
             (loop rest (cons warning warnings))))))))
 
   (let ((origin (package-source package)))
-    (if (and origin
-             (eqv? (origin-method origin) url-fetch))
-        (let* ((uris     (append-map (cut maybe-expand-mirrors <> %mirrors)
-                                     (map string->uri (origin-uris origin))))
-               (warnings (warnings-for-uris uris)))
+    (if (origin? origin)
+        (cond
+         ((eq? (origin-method origin) url-fetch)
+          (let* ((uris     (append-map (cut maybe-expand-mirrors <> %mirrors)
+                                       (map string->uri (origin-uris origin))))
+                 (warnings (warnings-for-uris uris)))
 
-          ;; Just make sure that at least one of the URIs is valid.
-          (if (= (length uris) (length warnings))
-              ;; When everything fails, report all of WARNINGS, otherwise don't
-              ;; report anything.
-              ;;
-              ;; XXX: Ideally we'd still allow warnings to be raised if *some*
-              ;; URIs are unreachable, but distinguish that from the error case
-              ;; where *all* the URIs are unreachable.
-              (cons*
-               (make-warning package
-                             (G_ "all the source URIs are unreachable:")
-                             #:field 'source)
-               warnings)
-              '()))
+            ;; Just make sure that at least one of the URIs is valid.
+            (if (= (length uris) (length warnings))
+                ;; When everything fails, report all of WARNINGS, otherwise don't
+                ;; report anything.
+                ;;
+                ;; XXX: Ideally we'd still allow warnings to be raised if *some*
+                ;; URIs are unreachable, but distinguish that from the error case
+                ;; where *all* the URIs are unreachable.
+                (cons*
+                 (make-warning package
+                               (G_ "all the source URIs are unreachable:")
+                               #:field 'source)
+                 warnings)
+                '())))
+         ((git-reference? (origin-uri origin))
+          (warnings-for-uris
+           (list (string->uri (git-reference-url (origin-uri origin))))))
+         (else
+          '()))
         '())))
 
 (define (check-source-file-name package)
@@ -828,7 +835,7 @@ descriptions maintained upstream."
            (not (string-match (string-append "^v?" version) file-name)))))
 
   (let ((origin (package-source package)))
-    (if (or (not origin) (origin-file-name-valid? origin))
+    (if (or (not (origin? origin)) (origin-file-name-valid? origin))
         '()
         (list
          (make-warning package
@@ -1208,7 +1215,7 @@ Heritage")
                     '())))
                '()))))
       (match-lambda*
-        ((key url method response)
+        (('swh-error url method response)
          (response->warning url method response))
         ((key . args)
          (if (eq? key skip-key)

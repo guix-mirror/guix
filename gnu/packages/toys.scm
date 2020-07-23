@@ -42,7 +42,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mtoyoda/sl.git")
+             (url "https://github.com/mtoyoda/sl")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

@@ -42,7 +42,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Timmmm/robocut.git")
+             (url "https://github.com/Timmmm/robocut")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -81,7 +81,7 @@ with Graphtec and Sihouette plotting cutters using an SVG file as its input.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pdewacht/brlaser.git")
+                    (url "https://github.com/pdewacht/brlaser")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

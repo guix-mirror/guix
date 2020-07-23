@@ -1,0 +1,113 @@
+This patch removes sources of build non-determinism in the upstream sources.
+
+In particular, many of the compiled sources are generated with Python code,
+which in turn uses dictionaries to index the output C functions.  However,
+iterators over Python dictionaries have no guaranteed order, thus resulting in
+the C functions being output in a random order between builds.
+
+The patch below fixes this by forcing an order during output in several key
+places.  Note, however, that future updates may uncover new such places that
+just happen to be non-problematic at the time of this patch.  If you are
+reading this due to finding such issues, feel free to contact me at
+elaexuotee@wilsonb.com for help.
+
+diff --git a/pysrc/ild_codegen.py b/pysrc/ild_codegen.py
+index 628ec45..a9bff79 100755
+--- a/pysrc/ild_codegen.py
++++ b/pysrc/ild_codegen.py
+@@ -188,14 +188,14 @@ def gen_l2_func_list(agi, target_nt_dict, arg_nt_dict,
+                      ild_t_member):
+     """generate L2 functions"""
+     l2_func_list = []
+-    for (nt_name,array) in target_nt_dict.items():
++    for (nt_name,array) in sorted(target_nt_dict.items()):
+         target_opname = array.get_target_opname()
+         if array.is_const_lookup_fun():
+             fo = gen_const_l2_function(agi, nt_name,
+                                 target_opname, ild_t_member)
+             l2_func_list.append(fo)
+         else:
+-            for arg_nt_seq,arg_arr in arg_nt_dict.items():
++            for arg_nt_seq,arg_arr in sorted(arg_nt_dict.items()):
+                 fo = gen_scalable_l2_function(agi, nt_name,
+                      target_opname, ild_t_member, arg_arr, list(arg_nt_seq))
+                 l2_func_list.append(fo)
+diff --git a/pysrc/ild_disp.py b/pysrc/ild_disp.py
+index 942c036..cf80e29 100755
+--- a/pysrc/ild_disp.py
++++ b/pysrc/ild_disp.py
+@@ -350,7 +350,8 @@ def work(agi, united_lookup,  disp_nts, brdisp_nts, ild_gendir,
+     disp_dict = _gen_l3_array_dict(agi, disp_nts, _disp_token)
+ 
+     
+-    nt_arr_list = list(brdisp_dict.values()) + list(disp_dict.values())
++    nt_arr_list = ([v for (k,v) in sorted(brdisp_dict.items())] +
++                   [v for (k,v) in sorted(disp_dict.items())])
+     #create function that calls all initialization functions
+     init_f = ild_nt.gen_init_function(nt_arr_list, 'xed_ild_disp_l3_init')
+     
+@@ -367,7 +368,7 @@ def work(agi, united_lookup,  disp_nts, brdisp_nts, ild_gendir,
+     l2_functions = []
+     eosz_op = ild_eosz.get_target_opname()
+     easz_op = ild_easz.get_target_opname()
+-    for nt_name,array in list(disp_dict.items()) + list(brdisp_dict.items()):
++    for nt_name,array in sorted(disp_dict.items()) + sorted(brdisp_dict.items()):
+         #Some DISP NTs depend on EOSZ, others on EASZ, we need to know
+         #that when we generate L2 functions
+         if eosz_op in array.get_arg_names():
+diff --git a/pysrc/ild_easz.py b/pysrc/ild_easz.py
+index 02cd691..c53b9f2 100755
+--- a/pysrc/ild_easz.py
++++ b/pysrc/ild_easz.py
+@@ -165,9 +165,10 @@ def work(agi, united_lookup, easz_nts, ild_gendir, debug):
+             return
+         nt_seq_arrays[tuple(nt_seq)] = array
+     #init function calls all single init functions for the created tables
+-    init_f = ild_nt.gen_init_function(list(nt_seq_arrays.values()),
++    nt_seq_values = [v for (k,v) in sorted(nt_seq_arrays.items())]
++    init_f = ild_nt.gen_init_function(nt_seq_values,
+                                        'xed_ild_easz_init')
+-    ild_nt.dump_lu_arrays(agi, list(nt_seq_arrays.values()), _easz_c_fn, 
++    ild_nt.dump_lu_arrays(agi, nt_seq_values, _easz_c_fn, 
+                           mbuild.join('include-private', _easz_header_fn),
+                           init_f)
+     getter_fos = []
+diff --git a/pysrc/ild_eosz.py b/pysrc/ild_eosz.py
+index 6643bc3..89d2d89 100755
+--- a/pysrc/ild_eosz.py
++++ b/pysrc/ild_eosz.py
+@@ -200,10 +200,11 @@ def work(agi, united_lookup, eosz_nts, ild_gendir, debug):
+             return None
+         nt_seq_arrays[tuple(nt_seq)] = array
+     #init function calls all single init functions for the created tables
+-    init_f = ild_nt.gen_init_function(list(nt_seq_arrays.values()), 
++    nt_seq_values = [v for (k,v) in sorted(nt_seq_arrays.items())]
++    init_f = ild_nt.gen_init_function(nt_seq_values, 
+                                       'xed_ild_eosz_init')
+     #dump init and lookup functions for EOSZ sequences
+-    ild_nt.dump_lu_arrays(agi, list(nt_seq_arrays.values()), _eosz_c_fn,
++    ild_nt.dump_lu_arrays(agi, nt_seq_values, _eosz_c_fn,
+                           mbuild.join('include-private', _eosz_header_fn),
+                           init_f)
+     #generate EOSZ getter functions - they get xed_decoded_inst_t*
+diff --git a/pysrc/ild_imm.py b/pysrc/ild_imm.py
+index 51c413c..0530bae 100755
+--- a/pysrc/ild_imm.py
++++ b/pysrc/ild_imm.py
+@@ -322,12 +322,14 @@ def work(agi, united_lookup, imm_nts, ild_gendir, eosz_dict,
+                                      level='l3')
+         nt_dict[nt_name] = array
+ 
++    nt_dict_values = [v for (k,v) in sorted(nt_dict.items())]
++
+     #create function that calls all initialization functions for L3
+-    init_f = ild_nt.gen_init_function(list(nt_dict.values()),
++    init_f = ild_nt.gen_init_function(nt_dict_values,
+                                       'xed_ild_imm_l3_init')
+     
+     #dump L3 functions
+-    ild_nt.dump_lu_arrays(agi, list(nt_dict.values()), _l3_c_fn,
++    ild_nt.dump_lu_arrays(agi, nt_dict_values, _l3_c_fn,
+                           mbuild.join('include-private',_l3_header_fn),
+                           init_f)
+     

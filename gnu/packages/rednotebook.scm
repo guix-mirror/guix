@@ -35,7 +35,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jendrikseipp/rednotebook.git")
+             (url "https://github.com/jendrikseipp/rednotebook")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

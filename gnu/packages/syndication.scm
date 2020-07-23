@@ -99,15 +99,15 @@ file system, and many more features.")
 (define-public liferea
   (package
     (name "liferea")
-    (version "1.12.6")
+    (version "1.12.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lwindolf/liferea/"
                            "releases/download/v" version "/liferea-"
-                           version "b.tar.bz2"))
+                           version ".tar.bz2"))
        (sha256
-        (base32 "03pr1gmiv5y0i92bkhcxr8s311ll91chz19wb96jkixx32xav91d"))))
+        (base32 "1xm5if831llkjcmbq4w9ssgqjgy3zlb5n9y7kh54xpy6afafbsh7"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases

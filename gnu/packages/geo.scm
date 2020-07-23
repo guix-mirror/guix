@@ -6,9 +6,9 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
-;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018, 2019, 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -86,6 +86,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -602,7 +603,7 @@ development.")
 (define-public gdal
   (package
     (name "gdal")
-    (version "3.0.4")
+    (version "3.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -610,7 +611,7 @@ development.")
                      version ".tar.gz"))
               (sha256
                (base32
-                "10symyajj1b7j98f889lqxxbmhcyvlhq9gg0l42h69bv22wx45gw"))
+                "1p6nmlsr8wbyq350pa6c22vrp98dcsa7yjnqsbhdbp74yj53nw9r"))
               (modules '((guix build utils)))
               (snippet
                 `(begin
@@ -666,9 +667,12 @@ development.")
        ("libwebp" ,libwebp)
        ("netcdf" ,netcdf)
        ("pcre" ,pcre)
+       ("postgresql" ,postgresql) ; libpq
        ("proj" ,proj)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://gdal.org/")
     (synopsis "Raster and vector geospatial data format library")
     (description "GDAL is a translator library for raster and vector geospatial
@@ -854,16 +858,16 @@ to create databases that are optimized for rendering/tile/map-services.")
 (define-public libosmium
   (package
     (name "libosmium")
-    (version "2.15.4")
+    (version "2.15.6")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/osmcode/libosmium.git")
+             (url "https://github.com/osmcode/libosmium")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mlcvqrhp40bzj5r5j9nfc5vbis8hmzcq9xi8jylkciyydaynhz4"))))
+        (base32 "0rqy18bbakp41f44y5id9ixh0ar2dby46z17p4115z8k1vv9znq2"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("boost" ,boost)
@@ -887,16 +891,16 @@ OpenStreetMap data.")
 (define-public osm2pgsql
   (package
     (name "osm2pgsql")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/openstreetmap/osm2pgsql.git")
+             (url "https://github.com/openstreetmap/osm2pgsql")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ysan01lpqzjxlq3y2kdminfjs5d9zksicpf9vvzpdk3fzq51fc9"))
+        (base32 "1j35aa8qinhavliqi5pdm0viyi7lm5xyk402rliaxxs1r2hbsafn"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -941,7 +945,7 @@ map, geocoding with Nominatim, or general analysis.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mapbox/tippecanoe.git")
+             (url "https://github.com/mapbox/tippecanoe")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1032,7 +1036,7 @@ map display.  Downloads map data from a number of websites, including
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/opengribs/XyGrib.git")
+                     (url "https://github.com/opengribs/XyGrib")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1160,10 +1164,55 @@ integrates an OSM map view into your Java application.  It is maintained as
 an independent project by the JOSM team.")
     (license license:gpl2)))
 
+(define-public java-opening-hours-parser
+  (package
+    (name "java-opening-hours-parser")
+    (version "0.21.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/simonpoole/OpeningHoursParser")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1m8sp0jbjyv1nq3ddj8rk6rf3sva3mkacc6vw7rsj0c2n57k3i50"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-opening-hours-parser.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (add-before 'build 'generate-parser
+           (lambda* _
+             (let* ((dir "src/main/java/ch/poole/openinghoursparser")
+                    (file (string-append dir "/OpeningHoursParser.jj")))
+               (invoke "javacc" "-DEBUG_PARSER=false"
+                       "-DEBUG_TOKEN_MANAGER=false" "-JDK_VERSION=1.8"
+                       "-GRAMMAR_ENCODING=UTF-8"
+                       (string-append "-OUTPUT_DIRECTORY=" dir)
+                       file))
+             #t)))))
+    (inputs
+     `(("java-jetbrains-annotations" ,java-jetbrains-annotations)))
+    (native-inputs
+     `(("javacc" ,javacc)
+       ("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://github.com/simonpoole/OpeningHoursParser")
+    (synopsis "Java parser for the OpenStreetMap opening hour format")
+    (description "This is a very simplistic parser for string values according
+to the OSM opening hours specification.")
+    (license license:expat)))
+
 (define-public josm
   (package
     (name "josm")
-    (version "15937")
+    (version "16731")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1172,7 +1221,7 @@ an independent project by the JOSM team.")
                      (recursive? #f)))
               (sha256
                (base32
-                "00b8sw0wgkcf7xknmdpn5s521ax8x2660figidcrry37sgq3x946"))
+                "036kdb1ckhym5f7lj5ydzblli7f1i1pl8z00hxvagf2rczdf5fi3"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
@@ -1189,6 +1238,7 @@ an independent project by the JOSM team.")
        ("java-jsonp-api" ,java-jsonp-api)
        ("java-jsonp-impl" ,java-jsonp-impl); runtime dependency
        ("java-metadata-extractor" ,java-metadata-extractor)
+       ("java-opening-hours-parser" ,java-opening-hours-parser)
        ("java-openjfx-media" ,java-openjfx-media)
        ("java-signpost-core" ,java-signpost-core)
        ("java-svg-salamander" ,java-svg-salamander)))
@@ -1209,6 +1259,14 @@ an independent project by the JOSM team.")
                    (string-append "<info><entry><commit revision=\"" ,version "\">"
                                   "<date>1970-01-01 00:00:00 +0000</date>"
                                   "</commit></entry></info>"))))
+             #t))
+         (add-before 'build 'fix-jcs
+           (lambda _
+             ;; This version of JOSM uses an unreleased version of commons-jcs,
+             ;; which has renamed its classes to another namespace.  Rename them
+             ;; back so they can be used with our version of jcs.
+             (substitute* (find-files "." ".*.java$")
+               (("jcs3") "jcs"))
              #t))
          (add-before 'build 'fix-classpath
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1243,10 +1301,9 @@ an independent project by the JOSM team.")
              (invoke "java" "-cp" "build/classes:scripts:."
                      "BuildProjectionDefinitions" ".")
              #t))
-         (add-after 'generate-epsg 'copy-data
+         (add-after 'generate-epsg 'copy-resources
            (lambda _
-             (mkdir-p "build/classes")
-             (rename-file "data" "build/classes/data")
+             (copy-recursively "resources" "build/classes")
              #t))
          (add-before 'install 'regenerate-jar
            (lambda _
@@ -1254,16 +1311,6 @@ an independent project by the JOSM team.")
              (delete-file "build/jar/josm.jar")
              (invoke "jar" "-cf" "build/jar/josm.jar" "-C"
                      "build/classes" ".")
-             #t))
-         (add-before 'build 'copy-styles
-           (lambda _
-             (mkdir-p "build/classes")
-             (rename-file "styles" "build/classes/styles")
-             #t))
-         (add-before 'build 'copy-images
-           (lambda _
-             (mkdir-p "build/classes")
-             (rename-file "images" "build/classes/images")
              #t))
          (add-before 'build 'copy-revision
            (lambda _
@@ -1425,7 +1472,7 @@ using the dataset of topographical information collected by
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Maproom/qmapshack.git")
+             (url "https://github.com/Maproom/qmapshack")
              (commit (string-append "V_" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1577,7 +1624,7 @@ exchanged form one Spatial DBMS and the other.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OpenCPN/OpenCPN.git")
+             (url "https://github.com/OpenCPN/OpenCPN")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1858,6 +1905,7 @@ growing set of geoscientific methods.")
                              "qgis_filedownloader"
                              ;; TODO: Find why the following tests fail
                              "ProcessingQgisAlgorithmsTestPt1"
+                             "ProcessingQgisAlgorithmsTestPt2"
                              "ProcessingQgisAlgorithmsTestPt3"
                              "ProcessingQgisAlgorithmsTestPt4"
                              "ProcessingGdalAlgorithmsRasterTest"
@@ -1872,6 +1920,7 @@ growing set of geoscientific methods.")
                              "qgis_geometrytest"
                              "qgis_layouthtmltest"
                              "qgis_layoutmaptest"
+                             "qgis_layoutmapgridtest"
                              "qgis_painteffecttest"
                              "qgis_pallabelingtest"
                              "qgis_svgmarkertest"
@@ -1890,6 +1939,11 @@ growing set of geoscientific methods.")
                              "PyQgsFileUtils"
                              "PyQgsGeometryTest"
                              "PyQgsImageCache"
+                             "PyQgsLayerMetadata"
+                             "PyQgsLayout"
+                             "PyQgsLayoutHtml"
+                             "PyQgsLayoutMapGrid"
+                             "PyQgsMetadataBase"
                              "PyQgsLayoutExporter"
                              "PyQgsLayoutLegend"
                              "PyQgsMapLayer"
@@ -2043,3 +2097,52 @@ architecture.")
       license:opl1.0+
       license:public-domain
       license:qwt1.0))))
+
+(define-public python-geographiclib
+  (package
+    (name "python-geographiclib")
+    (version "1.50")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "geographiclib" version))
+        (sha256
+         (base32
+          "0cn6ap5fkh3mkfa57l5b44z3gvz7j6lpmc9rl4g2jny2gvp4dg8j"))))
+    (build-system python-build-system)
+    (home-page "https://geographiclib.sourceforge.io/1.50/python/")
+    (synopsis "Python geodesic routines from GeographicLib")
+    (description
+     "This is a python implementation of the geodesic routines in GeographicLib.")
+    (license license:expat)))
+
+(define-public python-geopy
+  (package
+    (name "python-geopy")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "geopy" version))
+        (sha256
+         (base32
+          "0fx0cv0kgbvynpmjgsvq2fpsyngd5idiscdn8pd5201f1ngii3mq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-geographiclib" ,python-geographiclib)))
+    (native-inputs
+     `(("python-async-generator" ,python-async-generator)
+       ("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-isort" ,python-isort)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-aiohttp" ,python-pytest-aiohttp)
+       ("python-readme-renderer" ,python-readme-renderer)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/geopy/geopy")
+    (synopsis "Geocoding library for Python")
+    (description "@code{geopy} is a Python client for several popular geocoding
+web services.  @code{geopy} makes it easy for Python developers to locate the
+coordinates of addresses, cities, countries, and landmarks across the globe
+using third-party geocoders and other data sources.")
+    (license license:expat)))

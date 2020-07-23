@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -262,7 +263,7 @@ triangulations.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/cvxopt/cvxopt.git")
+                    (url "https://github.com/cvxopt/cvxopt")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -839,7 +840,7 @@ plotting engine by third-party applications like Octave.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OkoSanto/GCTP.git")
+             (url "https://github.com/OkoSanto/GCTP")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1186,10 +1187,15 @@ extremely large and complex data collections.")
                     (jhdf (string-append lib "/jhdf.jar"))
                     (jhdf5 (string-append lib "/jhdf5.jar"))
                     (testjars
-                     (map (lambda (i)
-                            (string-append (assoc-ref inputs i)
-                                           "/share/java/" i ".jar"))
-                          '("junit" "hamcrest-core" "slf4j-api" "slf4j-simple")))
+                     (append
+                       (map (lambda (i)
+                              (string-append (assoc-ref inputs i)
+                                             "/share/java/" i ".jar"))
+                            '("slf4j-api" "slf4j-simple"))
+                       (list
+                         (car (find-files (assoc-ref inputs "junit") "jar$"))
+                         (car (find-files (assoc-ref inputs "hamcrest-core")
+                                          "jar$")))))
                     (class-path
                      (string-join `("." ,build-dir ,jhdf ,jhdf5 ,@testjars) ":")))
 
@@ -1339,7 +1345,7 @@ Swath).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Blosc/hdf5-blosc.git")
+             (url "https://github.com/Blosc/hdf5-blosc")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1822,7 +1828,7 @@ script files.")
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/tpaviot/oce.git")
+              (url "https://github.com/tpaviot/oce")
               (commit (string-append "OCE-" version))))
         (file-name (git-file-name name version))
         (patches (search-patches "opencascade-oce-glibc-2.26.patch"))
@@ -2022,7 +2028,7 @@ ASCII text files using Gmsh's own scripting language.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/gerddie/maxflow.git")
+                    (url "https://github.com/gerddie/maxflow")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2409,6 +2415,36 @@ message-passing communication.  @code{slepc4py} provides Python
 bindings to almost all functions of SLEPc.")
     (license license:bsd-3)))
 
+(define-public metamath
+  (package
+    (name "metamath")
+    (version "0.183")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/metamath/metamath-exe")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jjf4fy6j53i40dh0yv0f9sngnw4gs24cig99vsg3q0303pwrhg7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "http://us.metamath.org/")
+    (synopsis "Proof verifier based on a minimalistic formalism")
+    (description
+     "Metamath is a tiny formal language and that can express theorems in
+abstract mathematics, with an accompyaning @command{metamath} executable that
+verifies databases of these proofs.  There is a public database,
+@url{https://github.com/metamath/set.mm, set.mm}, implementing first-order
+logic and Zermelo-Frenkel set theory with Choice, along with a large swath of
+associated, high-level theorems, e.g.@: the fundamental theorem of arithmetic,
+the Cauchy-Schwarz inequality, Stirling's formula, etc.  See the Metamath
+book.")
+    (license license:gpl2+)))
+
 (define-public mumps
   (package
     (name "mumps")
@@ -2585,28 +2621,17 @@ sparse system of linear equations A x = b using Gaussian elimination.")
 (define-public ruby-asciimath
   (package
     (name "ruby-asciimath")
-    (version "1.0.4")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "asciimath" version))
        (sha256
         (base32
-         "1d80kiph5mc78zps7si1hv48kv4k12mzaq8jk5kb3pqpjdr72qmc"))))
+         "1aapydwwkydbwgz07n7ma3a5jy9n3v0shy6q6j8mi4wr3crhx45a"))))
     (build-system ruby-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; Apply this patch
-         ;; https://github.com/asciidoctor/asciimath/commit/1c06fdc8086077f4785479f78b0823a4a72d7948
-         (add-after 'unpack 'patch-remove-spurious-backslashes
-           (lambda _
-             (substitute* "spec/parser_spec.rb"
-               (("\\\\\"")
-                "\""))
-             #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
+     `(("ruby-nokogiri" ,ruby-nokogiri)
        ("ruby-rspec" ,ruby-rspec)))
     (synopsis "AsciiMath parsing and conversion library")
     (description
@@ -3078,7 +3103,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.43.0")
+    (version "5.44.0")
     (source
      (origin
        (method url-fetch)
@@ -3086,7 +3111,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0xyahp4c6509haxh4n1swiqm3421gplkdisa0zypclh3252sbzfw"))
+         "1v6jr5s6hhj6r18gfk6hgxk2qd6z1dxkrjq9ss2z1y6sqi45wgyr"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -3198,7 +3223,7 @@ point numbers.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wxMaxima-developers/wxmaxima.git")
+             (url "https://github.com/wxMaxima-developers/wxmaxima")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3306,7 +3331,7 @@ associated functions (e.g., contiguous and non-contiguous submatrix views).")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/beltoforion/muparser.git")
+               (url "https://github.com/beltoforion/muparser")
                (commit (string-append "v" upstream-version))))
          (file-name (git-file-name name version))
          (sha256
@@ -3507,7 +3532,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/JuliaLang/openlibm.git")
+             (url "https://github.com/JuliaLang/openlibm")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3546,7 +3571,7 @@ environments.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/JuliaLang/openspecfun.git")
+             (url "https://github.com/JuliaLang/openspecfun")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3584,7 +3609,7 @@ Fresnel integrals, and similar related functions as well.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/DrTimothyAldenDavis/SuiteSparse.git")
+             (url "https://github.com/DrTimothyAldenDavis/SuiteSparse")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4052,6 +4077,7 @@ evaluates expressions using the standard order of operations.")
               (uri (git-reference
                     (url "https://github.com/xaos-project/XaoS")
                     (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "00110p5xscjsmn7avfqgydn656zbmdj3l3y2fpv9b4ihzpid8n7a"))))
@@ -4119,7 +4145,7 @@ set.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LLNL/hypre.git")
+             (url "https://github.com/LLNL/hypre")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4575,7 +4601,7 @@ symmetric matrices.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/elemental/Elemental.git")
+                     (url "https://github.com/elemental/Elemental")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -5548,7 +5574,7 @@ fields of knowledge.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/niklasso/minisat.git")
+               (url "https://github.com/niklasso/minisat")
                (commit commit)))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
@@ -5683,6 +5709,6 @@ cli.")
 multi-purpose GUI desktop calculator.  It provides basic and advanced
 functionality.  Features include customizable functions, unit calculations,
 and conversions, physical constants, symbolic calculations (including
-integrals and equations), arbitrary precision, uncertainity propagation,
+integrals and equations), arbitrary precision, uncertainty propagation,
 interval arithmetic, plotting.")
     (license license:gpl2+)))

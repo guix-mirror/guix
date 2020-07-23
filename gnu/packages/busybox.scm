@@ -60,7 +60,8 @@
                (("default y") "default n"))
              #t))
          (replace 'configure
-           (lambda _ (invoke "make" "defconfig")))
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "defconfig" make-flags)))
          (add-after 'configure 'dont-install-to-usr
            (lambda _
              (substitute* ".config"
@@ -68,7 +69,7 @@
                 "CONFIG_INSTALL_NO_USR=y"))
              #t))
          (replace 'check
-           (lambda _
+           (lambda* (#:key make-flags #:allow-other-keys)
              (substitute* '("testsuite/du/du-s-works"
                             "testsuite/du/du-works")
                (("/bin") "/etc"))  ; there is no /bin but there is a /etc
@@ -96,17 +97,17 @@
              (delete-file "testsuite/which/which-uses-default-path")
              (rmdir "testsuite/which")
 
-             (invoke "make"
+             (apply invoke "make"
                      ;; "V=1"
                      "SKIP_KNOWN_BUGS=1"
                      "SKIP_INTERNET_TESTS=1"
-                     "check")))
+                     "check" make-flags)))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key outputs make-flags #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (invoke "make"
+               (apply invoke "make"
                        (string-append "CONFIG_PREFIX=" out)
-                       "install")))))))
+                       "install" make-flags)))))))
     (native-inputs `(("perl" ,perl) ; needed to generate the man pages (pod2man)
                      ;; The following are needed by the tests.
                      ("inetutils" ,inetutils)

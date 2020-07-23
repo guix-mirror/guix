@@ -1,0 +1,58 @@
+Adapted from Debian: https://sources.debian.org/patches/sqlite3/3.32.3-1/20-hurd-locking-style.patch
+Upstream status: Not upstreamed.
+
+This patch is needed to get offloading to work.
+
+Sqlite can use simple file locking mode, but that does not work for the Hurd;
+a second sqlite process fails with a "locking protocol" error.
+
+See also: https://bugs.debian.org/529734.
+
+diff -purN sqlite-autoconf-3310100/sqlite3.c sqlite-autoconf-3310100-/sqlite3.c
+--- sqlite-autoconf-3310100/sqlite3.c	2020-01-27 21:25:19.000000000 +0100
++++ sqlite-autoconf-3310100-/sqlite3.c	2020-07-01 11:50:13.768333806 +0200
+@@ -33189,7 +33189,7 @@ SQLITE_PRIVATE const char *sqlite3Opcode
+ # include <sys/mman.h>
+ #endif
+ 
+-#if SQLITE_ENABLE_LOCKING_STYLE
++#if SQLITE_ENABLE_LOCKING_STYLE || defined(__GNU__)
+ /* # include <sys/ioctl.h> */
+ # include <sys/file.h>
+ # include <sys/param.h>
+@@ -35676,7 +35676,7 @@ static int dotlockClose(sqlite3_file *id
+ **
+ ** Omit this section if SQLITE_ENABLE_LOCKING_STYLE is turned off
+ */
+-#if SQLITE_ENABLE_LOCKING_STYLE
++#if SQLITE_ENABLE_LOCKING_STYLE || defined(__GNU__)
+ 
+ /*
+ ** Retry flock() calls that fail with EINTR
+@@ -38586,7 +38586,7 @@ IOMETHODS(
+   0                         /* xShmMap method */
+ )
+ 
+-#if SQLITE_ENABLE_LOCKING_STYLE
++#if SQLITE_ENABLE_LOCKING_STYLE || defined(__GNU__)
+ IOMETHODS(
+   flockIoFinder,            /* Finder function name */
+   flockIoMethods,           /* sqlite3_io_methods object name */
+@@ -41142,6 +41142,8 @@ SQLITE_API int sqlite3_os_init(void){
+     UNIXVFS("unix",          autolockIoFinder ),
+ #elif OS_VXWORKS
+     UNIXVFS("unix",          vxworksIoFinder ),
++#elif defined(__GNU__)
++    UNIXVFS("unix",          flockIoFinder ),
+ #else
+     UNIXVFS("unix",          posixIoFinder ),
+ #endif
+@@ -41151,7 +41153,7 @@ SQLITE_API int sqlite3_os_init(void){
+ #if OS_VXWORKS
+     UNIXVFS("unix-namedsem", semIoFinder ),
+ #endif
+-#if SQLITE_ENABLE_LOCKING_STYLE || OS_VXWORKS
++#if SQLITE_ENABLE_LOCKING_STYLE || OS_VXWORKS || defined(__GNU__)
+     UNIXVFS("unix-posix",    posixIoFinder ),
+ #endif
+ #if SQLITE_ENABLE_LOCKING_STYLE

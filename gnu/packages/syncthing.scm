@@ -531,7 +531,11 @@ higher-level API for doing so.")
                   "1hfxffnpaw49pr3wrkbzq3pnv3nyzsvk5dxndv0yz70xlrbg8a04"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/rcrowley/go-metrics"))
+       ;; Arbitrary precision tests are known to be broken on aarch64, ppc64le
+       ;; and s390x. See: https://github.com/rcrowley/go-metrics/issues/249
+       `(#:tests? ,(not (string-prefix? "aarch64" (or (%current-target-system)
+                                                      (%current-system))))
+         #:import-path "github.com/rcrowley/go-metrics"))
       (propagated-inputs
        `(("go-github-com-stathat-go" ,go-github-com-stathat-go)))
       (synopsis "Go port of Coda Hale's Metrics library")
@@ -659,7 +663,7 @@ inherent errors.")
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://github.com/chmduquesne/rollinghash.git")
+                 (url "https://github.com/chmduquesne/rollinghash")
                  (commit commit)))
           (file-name (git-file-name name version))
           (sha256
@@ -683,7 +687,7 @@ hashes.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/petermattis/goid.git")
+                       (url "https://github.com/petermattis/goid")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -707,7 +711,7 @@ the current goroutine's ID.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/kballard/go-shellquote.git")
+                       (url "https://github.com/kballard/go-shellquote")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -757,7 +761,7 @@ notification library in Go.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/beorn7/perks.git")
+                       (url "https://github.com/beorn7/perks")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -783,7 +787,7 @@ bounds.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/prometheus/client_model.git")
+                       (url "https://github.com/prometheus/client_model")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -816,7 +820,7 @@ bounds.")
           (method git-fetch)
           (uri
             (git-reference
-              (url "https://github.com/matttproud/golang_protobuf_extensions.git")
+              (url "https://github.com/matttproud/golang_protobuf_extensions")
               (commit commit)))
           (file-name (git-file-name name version))
           (sha256
@@ -843,7 +847,7 @@ message streaming.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/prometheus/common.git")
+                       (url "https://github.com/prometheus/common")
                        (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
@@ -886,7 +890,7 @@ Prometheus metrics.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/prometheus/procfs.git")
+                       (url "https://github.com/prometheus/procfs")
                        (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
@@ -911,7 +915,7 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/prometheus/client_golang.git")
+                       (url "https://github.com/prometheus/client_golang")
                        (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
@@ -998,7 +1002,7 @@ language.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/flynn-archive/go-shlex.git")
+                       (url "https://github.com/flynn-archive/go-shlex")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1021,7 +1025,7 @@ quoting, commenting, and escaping.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/AudriusButkevicius/pfilter.git")
+               (url "https://github.com/AudriusButkevicius/pfilter")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
@@ -1046,7 +1050,7 @@ virtual connections from a single physical connection.")
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://github.com/ccding/go-stun.git")
+                 (url "https://github.com/ccding/go-stun")
                  (commit commit)))
           (file-name (git-file-name name version))
           (sha256

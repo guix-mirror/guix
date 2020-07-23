@@ -1,0 +1,48 @@
+Compatibility with Python 3.8, see upstream issue
+https://github.com/rbarrois/aionotify/pull/15
+
+diff --git a/setup.py b/setup.py
+index 21a554f..094de64 100755
+--- a/setup.py
++++ b/setup.py
+@@ -40,7 +40,7 @@ setup(
+     setup_requires=[
+     ],
+     tests_require=[
+-        'asynctest',
++        'asynctest; python_version<"3.8"',
+     ],
+     classifiers=[
+         "Development Status :: 4 - Beta",
+diff --git a/tests/test_usage.py b/tests/test_usage.py
+index f156291..0476ff1 100644
+--- a/tests/test_usage.py
++++ b/tests/test_usage.py
+@@ -8,7 +8,11 @@ import os.path
+ import tempfile
+ import unittest
+ 
+-import asynctest
++try:
++    testBase = unittest.IsolatedAsyncioTestCase
++except AttributeError:
++    import asynctest
++    testBase = asynctest.TestCase
+ 
+ import aionotify
+ 
+@@ -25,11 +29,13 @@ if AIODEBUG:
+ TESTDIR = os.environ.get('AIOTESTDIR') or os.path.join(os.path.dirname(__file__), 'testevents')
+ 
+ 
+-class AIONotifyTestCase(asynctest.TestCase):
++class AIONotifyTestCase(testBase):
+     forbid_get_event_loop = True
+     timeout = 3
+ 
+     def setUp(self):
++        if not getattr (self, 'loop', None):
++            self.loop = asyncio.get_event_loop()
+         if AIODEBUG:
+             self.loop.set_debug(True)
+         self.watcher = aionotify.Watcher()

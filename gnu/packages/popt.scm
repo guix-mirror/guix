@@ -107,7 +107,7 @@ similar to getopt(3), it contains a number of enhancements, including:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/gflags/gflags.git")
+             (url "https://github.com/gflags/gflags")
              (commit (string-append "v" version))))
        (sha256
         (base32 "147i3md3nxkjlrccqg4mq1kyzc7yrhvqv5902iibc7znkvzdvlp0"))

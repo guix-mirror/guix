@@ -611,7 +611,7 @@
                              (origin
                                (method git-fetch)
                                (uri (git-reference
-                                     (url "https://github.com/archive/example.git")
+                                     (url "https://github.com/archive/example")
                                      (commit "0")))
                                (sha256 %null-sha256))))))
     (check-source-unstable-tarball pkg)))
@@ -698,6 +698,26 @@
                (lint-warning-message second-warning)))))))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
+(test-equal "source, git-reference: 301 -> 200"
+  "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
+  (with-http-server `((200 ,%long-string))
+    (let* ((initial-url (%local-url))
+           (redirect    (build-response #:code 301
+                                        #:headers
+                                        `((location
+                                           . ,(string->uri initial-url))))))
+      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+        (with-http-server `((,redirect ""))
+          (let ((pkg (dummy-package
+                      "x"
+                      (source (origin
+                                (method git-fetch)
+                                (uri (git-reference (url (%local-url))
+                                                    (commit "v1.0.0")))
+                                (sha256 %null-sha256))))))
+            (single-lint-warning-message (check-source pkg))))))))
+
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 301 -> 404"
   "URI http://localhost:10000/foo/bar not reachable: 404 (\"Such is life\")"
   (with-http-server '((404 "booh!"))
@@ -737,6 +757,7 @@
     (single-lint-warning-message
      (check-mirror-url (dummy-package "x" (source source))))))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "github-url"
   '()
   (with-http-server `((200 ,%long-string))
@@ -748,6 +769,7 @@
                            (sha256 %null-sha256)))))))
 
 (let ((github-url "https://github.com/foo/bar/bar-1.0.tar.gz"))
+  (test-skip (if (http-server-can-listen?) 0 1))
   (test-equal "github-url: one suggestion"
     (string-append
      "URL should be '" github-url "'")
@@ -770,6 +792,8 @@
                                       (method url-fetch)
                                       (uri (%local-url))
                                       (sha256 %null-sha256))))))))))))
+
+  (test-skip (if (http-server-can-listen?) 0 1))
   (test-equal "github-url: already the correct github url"
     '()
     (check-github-url
@@ -893,6 +917,7 @@
   '()
   (check-formatting (dummy-package "x")))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "archival: missing content"
   (let* ((origin   (origin
                      (method url-fetch)
@@ -904,6 +929,7 @@
                                                       (source origin)))))))
     (warning-contains? "not archived" warnings)))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "archival: content available"
   '()
   (let* ((origin   (origin
@@ -917,6 +943,7 @@
       (parameterize ((%swh-base-url (%local-url)))
         (check-archival (dummy-package "x" (source origin)))))))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "archival: missing revision"
   (let* ((origin   (origin
                      (method git-fetch)
@@ -936,6 +963,7 @@
                        (check-archival (dummy-package "x" (source origin)))))))
     (warning-contains? "scheduled" warnings)))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "archival: revision available"
   '()
   (let* ((origin   (origin
@@ -951,6 +979,7 @@
       (parameterize ((%swh-base-url (%local-url)))
         (check-archival (dummy-package "x" (source origin)))))))
 
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-assert "archival: rate limit reached"
   ;; We should get a single warning stating that the rate limit was reached,
   ;; and nothing more, in particular no other HTTP requests.

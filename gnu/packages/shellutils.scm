@@ -50,7 +50,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/zsh-users/zsh-autosuggestions.git")
+                    (url "https://github.com/zsh-users/zsh-autosuggestions")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -96,7 +96,7 @@ as you type.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rupa/z.git")
+                    (url "https://github.com/rupa/z")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -194,7 +194,7 @@ are already there.")
     (source
      (origin (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/direnv/direnv.git")
+                   (url "https://github.com/direnv/direnv")
                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256
@@ -248,7 +248,7 @@ environment variables of the current shell.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jhawthorn/fzy.git")
+             (url "https://github.com/jhawthorn/fzy")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -282,7 +282,7 @@ below the current cursor position, scrolling the screen if necessary.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/dvorka/hstr.git")
+                     (url "https://github.com/dvorka/hstr")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -325,7 +325,7 @@ bookmark your favourite commands.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/sharkdp/shell-functools.git")
+                    (url "https://github.com/sharkdp/shell-functools")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

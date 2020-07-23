@@ -153,9 +153,9 @@ SUB-DIRECTORY. Modules are listed in the order they appear on the path."
   (reverse (fold-modules cons '() path #:warn warn)))
 
 (define (fold-module-public-variables* proc init modules)
-  "Call (PROC MODULE SYMBOL VARIABLE) for each variable exported by one of MODULES,
-using INIT as the initial value of RESULT.  It is guaranteed to never traverse
-the same object twice."
+  "Call (PROC MODULE SYMBOL VARIABLE RESULT) for each variable exported by one
+of MODULES, using INIT as the initial value of RESULT.  It is guaranteed to
+never traverse the same object twice."
   ;; Here SEEN is populated by variables; if two different variables refer to
   ;; the same object, we still let them through.
   (identity                                       ;discard second return value

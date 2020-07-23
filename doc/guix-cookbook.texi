@@ -15,6 +15,7 @@ Copyright @copyright{} 2020 Oleg Pykhalov@*
 Copyright @copyright{} 2020 Matthew Brooks@*
 Copyright @copyright{} 2020 Marcin Karpezo@*
 Copyright @copyright{} 2020 Brice Waegeneire@*
+Copyright @copyright{} 2020 André Batista@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -109,8 +110,8 @@ Let's get started!
 
 Guix uses the Guile implementation of Scheme.  To start playing with the
 language, install it with @code{guix install guile} and start a
-@uref{https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop,
-REPL} by running @code{guile} from the command line.
+@dfn{REPL}---short for @uref{https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop,
+@dfn{read-eval-print loop}}---by running @code{guile} from the command line.
 
 Alternatively you can also run @code{guix environment --ad-hoc guile -- guile}
 if you'd rather not have Guile installed in your user profile.
@@ -118,7 +119,7 @@ if you'd rather not have Guile installed in your user profile.
 In the following examples, lines show what you would type at the REPL;
 lines starting with ``@result{}'' show evaluation results, while lines
 starting with ``@print{}'' show things that get printed.  @xref{Using Guile
-Interactively,,, guile, GNU Guile Reference Manual}), for more details on the
+Interactively,,, guile, GNU Guile Reference Manual}, for more details on the
 REPL.
 
 @itemize
@@ -843,12 +844,32 @@ tags, so if the @code{version} is tagged, then it can be used directly.  Sometim
 the tag is prefixed with a @code{v}, in which case you'd use @code{(commit (string-append
 "v" version))}.
 
-To ensure that the source code from the Git repository is stored in a unique
-directory with a readable name we use @code{(file-name (git-file-name name
+To ensure that the source code from the Git repository is stored in a
+directory with a descriptive name, we use @code{(file-name (git-file-name name
 version))}.
 
-Note that there is also a @code{git-version} procedure that can be used to derive the
-version when packaging programs for a specific commit.
+The @code{git-version} procedure can be used to derive the
+version when packaging programs for a specific commit, following the
+Guix contributor guidelines (@pxref{Version Numbers,,, guix, GNU Guix
+Reference Manual}).
+
+How does one obtain the @code{sha256} hash that's in there, you ask?  By
+invoking @command{guix hash} on a checkout of the desired commit, along
+these lines:
+
+@example
+git clone https://github.com/libgit2/libgit2/
+cd libgit2
+git checkout v0.26.6
+guix hash -rx .
+@end example
+
+@command{guix hash -rx} computes a SHA256 hash over the whole directory,
+excluding the @file{.git} sub-directory (@pxref{Invoking guix hash,,,
+guix, GNU Guix Reference Manual}).
+
+In the future, @command{guix download} will hopefully be able to do
+these steps for you, just like it does for regular downloads.
 
 @subsubsection Snippets
 
@@ -1267,7 +1288,7 @@ version or compilation options.
 @subsection Getting help
 
 Sadly, some applications can be tough to package.  Sometimes they need a patch to
-work with the non-standard filesystem hierarchy enforced by the store.
+work with the non-standard file system hierarchy enforced by the store.
 Sometimes the tests won't run properly.  (They can be skipped but this is not
 recommended.)  Other times the resulting package won't be reproducible.
 
@@ -1480,7 +1501,7 @@ custom kernel:
 @lisp
 (define %macbook41-full-config
   (append %macbook41-config-options
-          %filesystems
+          %file-systems
           %efi-support
           %emulation
           (@@@@ (gnu packages linux) %default-extra-linux-options)))
@@ -1496,8 +1517,8 @@ custom kernel:
                       #:extra-options %macbook41-config-options))
 @end lisp
 
-In the above example @code{%filesystems} is a collection of flags enabling
-different filesystem support, @code{%efi-support} enables EFI support and
+In the above example @code{%file-systems} is a collection of flags enabling
+different file system support, @code{%efi-support} enables EFI support and
 @code{%emulation} enables a x86_64-linux machine to act in 32-bit mode also.
 @code{%default-extra-linux-options} are the ones quoted above, which had to be
 added in since they were replaced in the @code{extra-options} keyword.
@@ -1561,7 +1582,7 @@ The second way to setup the kernel configuration makes more use of Guix's
 features and allows you to share configuration segments between different
 kernels.  For example, all machines using EFI to boot have a number of EFI
 configuration flags that they need.  It is likely that all the kernels will
-share a list of filesystems to support.  By using variables it is easier to
+share a list of file systems to support.  By using variables it is easier to
 see at a glance what features are enabled and to make sure you don't have
 features in one kernel but missing in another.
 
@@ -1799,10 +1820,16 @@ HTTP/HTTPS will get proxied; FTP, Git protocol, SSH, etc connections
 will still go through the clearnet.  Again, this configuration isn't
 foolproof some of your traffic won't get routed by Tor at all.  Use it
 at your own risk.
+
+Also note that the procedure described here applies only to package
+substitution. When you update your guix distribution with
+@command{guix pull}, you still need to use @command{torsocks} if
+you want to route the connection to guix's git repository servers
+through Tor.
 @end quotation
 
 Guix's substitute server is available as a Onion service, if you want
-to use it to get your substitutes from Tor configure your system as
+to use it to get your substitutes through Tor configure your system as
 follow:
 
 @lisp

@@ -1,0 +1,17 @@
+Do not use $ORIGIN in RUNPATH so that executables can be copied elsewhere and
+still be expected to work (needed for python-pyside-2-tools).
+
+diff --git a/mkspecs/common/linux.conf b/mkspecs/common/linux.conf
+--- a/mkspecs/common/linux.conf
++++ b/mkspecs/common/linux.conf
+@@ -10,8 +10,8 @@ QMAKE_CFLAGS_THREAD    += -D_REENTRANT
+ QMAKE_CXXFLAGS_THREAD  += $$QMAKE_CFLAGS_THREAD
+ QMAKE_LFLAGS_GCSECTIONS = -Wl,--gc-sections
+ 
+-QMAKE_LFLAGS_REL_RPATH  = -Wl,-z,origin
+-QMAKE_REL_RPATH_BASE    = $ORIGIN
++QMAKE_LFLAGS_REL_RPATH  =
++QMAKE_REL_RPATH_BASE    =
+ 
+ QMAKE_INCDIR            =
+ QMAKE_LIBDIR            =

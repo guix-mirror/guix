@@ -111,7 +111,7 @@ chk_gpg_keyring()
     # systems where gpg has never been used, causing errors and confusion.
     gpg --dry-run --list-keys ${OPENPGP_SIGNING_KEY_ID} >/dev/null 2>&1 || (
         _err "${ERR}Missing OpenPGP public key.  Fetch it with this command:"
-        echo "  wget https://sv.gnu.org/people/viewgpg.php?user_id=15145 -qO - | gpg --import -"
+        echo "  wget https://sv.gnu.org/people/viewgpg.php?user_id=15145 -qO - | sudo -i gpg --import -"
         exit 1
     )
 }
@@ -350,6 +350,8 @@ sys_enable_guix_daemon()
                   cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/gnu-store.mount" \
                      /etc/systemd/system/;
                   chmod 664 /etc/systemd/system/gnu-store.mount;
+                  systemctl daemon-reload &&
+                      systemctl enable gnu-store.mount;
               fi
 
               cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/guix-daemon.service" \
@@ -367,8 +369,8 @@ sys_enable_guix_daemon()
 	      fi;
 
               systemctl daemon-reload &&
-                  systemctl start  gnu-store.mount guix-daemon &&
-                  systemctl enable gnu-store.mount guix-daemon; } &&
+                  systemctl enable guix-daemon &&
+                  systemctl start  guix-daemon; } &&
                 _msg "${PAS}enabled Guix daemon via systemd"
             ;;
         sysv-init)
@@ -416,6 +418,7 @@ sys_authorize_build_farms()
 
 sys_create_init_profile()
 { # Create /etc/profile.d/guix.sh for better desktop integration
+  # This will not take effect until the next shell or desktop session!
     [ -d "/etc/profile.d" ] || mkdir /etc/profile.d # Just in case
     cat <<"EOF" > /etc/profile.d/guix.sh
 # _GUIX_PROFILE: `guix pull` profile
@@ -505,6 +508,9 @@ main()
 
     _msg "${PAS}Guix has successfully been installed!"
     _msg "${INF}Run 'info guix' to read the manual."
+
+    # Required to source /etc/profile in desktop environments.
+    _msg "${INF}Please log out and back in to complete the installation."
  }
 
 main "$@"

@@ -72,6 +72,7 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunwind)
@@ -200,16 +201,16 @@ and dynamically with report tools based on filtering and graphical charts.")
 (define-public ledger
   (package
     (name "ledger")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ledger/ledger.git")
+             (url "https://github.com/ledger/ledger")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1l5c9jf2wnly6ncm9civ8i7v47xld15g1y7wpl0hqwgbfyffwjci"))))
+        (base32 "0x6jxwss3wwzbzlwmnwb8yzjk8f9wfawif4f1b74z2qg6hc4r7f6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules (,@%cmake-build-system-modules
@@ -303,7 +304,7 @@ in ability, and easy to use.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ledger/ledger-mode.git")
+               (url "https://github.com/ledger/ledger-mode")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -377,7 +378,7 @@ This package provides the Emacs mode.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/stesie/geierlein.git")
+             (url "https://github.com/stesie/geierlein")
              (commit (string-append "V" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -480,7 +481,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Electron-Cash/Electron-Cash.git")
+             (url "https://github.com/Electron-Cash/Electron-Cash")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -547,12 +548,12 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.16.0.0")
+    (version "0.16.0.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/monero-project/monero.git")
+             (url "https://github.com/monero-project/monero")
              (commit (string-append "v" version))
              (recursive? #t)))
        (file-name (git-file-name name version))
@@ -568,7 +569,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
            #t))
        (sha256
         (base32
-         "0x74h5z0nxxxip97ibc854pqmrgd8r4d6w62m424f66i8gbzfskh"))))
+         "0n2cviqm8radpynx70fc0819k1xknjc58cvb4whlc49ilyvh8ky6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -666,17 +667,17 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.16.0.0")
+    (version "0.16.0.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/monero-project/monero-gui.git")
+             (url "https://github.com/monero-project/monero-gui")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "06vdrsj5y9k0zn32hspyxc7sw1kkyrvi3chzkdbnxk9jvyj8k4ld"))))
+         "1b1m8vhs0hdh81ysm8s8vfwqskqsihylb51wz16kc98ba40r9gqg"))))
     (build-system qt-build-system)
     (native-inputs
      `(("monero-source" ,(package-source monero))
@@ -786,7 +787,7 @@ the Monero GUI client.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/romanz/trezor-agent.git")
+             (url "https://github.com/romanz/trezor-agent")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -964,7 +965,7 @@ the KeepKey Hardware Wallet.")
     (inputs
      `(("python-ledgerblue" ,python-ledgerblue)
        ("python-trezor-agent" ,python-trezor-agent)))
-    (home-page "http://github.com/romanz/trezor-agent")
+    (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "Ledger as hardware SSH/GPG agent")
     (description "This package allows using Ledger as hardware SSH/GPG agent.
 
@@ -1023,7 +1024,7 @@ agent.")
     (inputs
      `(("python-keepkey" ,python-keepkey)
        ("python-trezor-agent" ,python-trezor-agent)))
-    (home-page "http://github.com/romanz/trezor-agent")
+    (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "KeepKey as hardware SSH/GPG agent")
     (description "This package allows using KeepKey as a hardware SSH/GPG
 agent.")
@@ -1130,7 +1131,6 @@ main features are:
     (inputs
      `(("click" ,python-click)
        ("duniterpy" ,python-duniterpy)
-       ("ipaddress" ,python-ipaddress)
        ("pynacl" ,python-pynacl)
        ("tabulate" ,python-tabulate)
        ("texttable" ,python-texttable)))
@@ -1196,7 +1196,7 @@ information.")
          (origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/trezor/trezor-common.git")
+                 (url "https://github.com/trezor/trezor-common")
                  (commit commit)))
            (sha256
             (base32
@@ -1221,7 +1221,7 @@ trezord as a regular user instead of needing to it run as root.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/trezor/trezord-go.git")
+              (url "https://github.com/trezor/trezord-go")
               (commit (string-append "v" version))))
        (sha256
         (base32
@@ -1239,7 +1239,7 @@ Trezor wallet.")
 (define-public bitcoin-abc
   (package
     (name "bitcoin-abc")
-    (version "0.21.6")
+    (version "0.21.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.bitcoinabc.org/"
@@ -1247,7 +1247,7 @@ Trezor wallet.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1w3c397h2mxsi9471fwyc3yjxw7s4jgvr4q3w2qfh49bhr4wygqj"))))
+                "0cgr416cp7p14mlnfryxfjfcxys5hksfjhi0i4amxl4fbnpgjwk0"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1257,6 +1257,7 @@ Trezor wallet.")
     (inputs
      `(("bdb" ,bdb-5.3)
        ("boost" ,boost)
+       ("jemalloc" ,jemalloc)
        ("libevent" ,libevent)
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
@@ -1403,7 +1404,7 @@ entity management.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/BitcoinUnlimited/BitcoinUnlimited.git")
+             (url "https://github.com/BitcoinUnlimited/BitcoinUnlimited")
              (commit (string-append "BCHunlimited" version))))
        (file-name (git-file-name name version))
        (sha256

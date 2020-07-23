@@ -382,7 +382,11 @@
      (member "lo" names))))
 
 (test-assert "network-interface-names"
-  (match (network-interface-names)
+  (match (remove (lambda (interface)
+                   ;; Ignore interface aliases since they don't show up in
+                   ;; (all-network-interface-names).
+                   (string-contains interface ":"))
+                 (network-interface-names))
     (((? string? names) ..1)
      (lset<= string=? names (all-network-interface-names)))))
 

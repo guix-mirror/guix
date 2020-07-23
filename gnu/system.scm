@@ -118,6 +118,7 @@
             operating-system-sudoers-file
             operating-system-swap-devices
             operating-system-kernel-loadable-modules
+            operating-system-location
 
             operating-system-derivation
             operating-system-profile
@@ -255,7 +256,12 @@
                    (default %setuid-programs))    ; list of string-valued gexps
 
   (sudoers-file operating-system-sudoers-file     ; file-like
-                (default %sudoers-specification)))
+                (default %sudoers-specification))
+
+  (location operating-system-location             ; <location>
+            (default (and=> (current-source-location)
+                            source-properties->location))
+            (innate)))
 
 (define (operating-system-kernel-arguments os root-device)
   "Return all the kernel arguments, including the ones not specified
@@ -351,9 +357,13 @@ file system labels."
          (('initrd ('string-append directory file)) ;the old format
           (string-append directory file))
          (('initrd (? string? file))
-          file)))
+          file)
+         (#f #f)))
 
-      (multiboot-modules (or (assq 'multiboot-modules rest) '()))
+      (multiboot-modules
+       (match (assq 'multiboot-modules rest)
+         ((_ args) args)
+         (#f       '())))
 
       (store-device
        ;; Linux device names like "/dev/sda1" are not suitable GRUB device
@@ -533,22 +543,26 @@ possible (that is if there's a LINUX keyword argument in the build system)."
 value of the SYSTEM-SERVICE-TYPE service."
   (let* ((locale  (operating-system-locale-directory os))
          (kernel  (operating-system-kernel os))
+         (hurd    (operating-system-hurd os))
          (modules (operating-system-kernel-loadable-modules os))
-         (kernel  (profile
-                   (content (packages->manifest
-                             (cons kernel
-                                   (map (lambda (module)
-                                          (if (package? module)
-                                              (package-for-kernel kernel
-                                                                  module)
-                                              module))
-                                        modules))))
-                   (hooks (list linux-module-database))))
-         (initrd  (operating-system-initrd-file os))
+         (kernel  (if hurd
+                      kernel
+                      (profile
+                       (content (packages->manifest
+                                 (cons kernel
+                                       (map (lambda (module)
+                                              (if (package? module)
+                                                  (package-for-kernel kernel
+                                                                      module)
+                                                  module))
+                                            modules))))
+                       (hooks (list linux-module-database)))))
+         (initrd  (and (not hurd) (operating-system-initrd-file os)))
          (params  (operating-system-boot-parameters-file os)))
     `(("kernel" ,kernel)
+      ,@(if hurd `(("hurd" ,hurd)) '())
       ("parameters" ,params)
-      ("initrd" ,initrd)
+      ,@(if initrd `(("initrd" ,initrd)) '())
       ("locale" ,locale))))   ;used by libc
 
 (define (operating-system-default-essential-services os)
@@ -600,23 +614,24 @@ bookkeeping."
                                   (operating-system-firmware os)))))))
 
 (define (hurd-default-essential-services os)
-  (list (service system-service-type '())
-        %boot-service
-        %hurd-startup-service
-        %activation-service
-        %shepherd-root-service
-        (service user-processes-service-type)
-        (account-service (append (operating-system-accounts os)
-                                 (operating-system-groups os))
-                         (operating-system-skeletons os))
-        (root-file-system-service)
-        (service file-system-service-type '())
-        (service fstab-service-type
-                 (filter file-system-needed-for-boot?
-                         (operating-system-file-systems os)))
-        (pam-root-service (operating-system-pam-services os))
-        (operating-system-etc-service os)
-        (service profile-service-type (operating-system-packages os))))
+  (let ((entries (operating-system-directory-base-entries os)))
+    (list (service system-service-type entries)
+          %boot-service
+          %hurd-startup-service
+          %activation-service
+          %shepherd-root-service
+          (service user-processes-service-type)
+          (account-service (append (operating-system-accounts os)
+                                   (operating-system-groups os))
+                           (operating-system-skeletons os))
+          (root-file-system-service)
+          (service file-system-service-type '())
+          (service fstab-service-type
+                   (filter file-system-needed-for-boot?
+                           (operating-system-file-systems os)))
+          (pam-root-service (operating-system-pam-services os))
+          (operating-system-etc-service os)
+          (service profile-service-type (operating-system-packages os)))))
 
 (define* (operating-system-services os)
   "Return all the services of OS, including \"essential\" services."
@@ -1017,9 +1032,13 @@ we're running in the final root."
 
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."
-  (find (lambda (fs)
-          (string=? "/" (file-system-mount-point fs)))
-        (operating-system-file-systems os)))
+  (or (find (lambda (fs)
+              (string=? "/" (file-system-mount-point fs)))
+            (operating-system-file-systems os))
+      (raise (condition
+              (&message (message "missing root file system"))
+              (&error-location
+               (location (operating-system-location os)))))))
 
 (define (operating-system-initrd-file os)
   "Return a gexp denoting the initrd file of OS."
@@ -1212,7 +1231,7 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
   "Return a monadic <boot-parameters> record that describes the boot
 parameters of OS.  When SYSTEM-KERNEL-ARGUMENTS? is true, add kernel arguments
 such as '--root' and '--load' to <boot-parameters>."
-  (let* ((initrd          (and (not (hurd-target?))
+  (let* ((initrd          (and (not (operating-system-hurd os))
                                (operating-system-initrd-file os)))
          (store           (operating-system-store-file-system os))
          (bootloader      (bootloader-configuration-bootloader
@@ -1272,7 +1291,13 @@ being stored into the \"parameters\" file)."
                      (kernel #$(boot-parameters-kernel params))
                      (kernel-arguments
                       #$(boot-parameters-kernel-arguments params))
-                     (initrd #$(boot-parameters-initrd params))
+                     #$@(if (boot-parameters-initrd params)
+                            #~((initrd #$(boot-parameters-initrd params)))
+                            #~())
+                     #$@(if (pair? (boot-parameters-multiboot-modules params))
+                            #~((multiboot-modules
+                                #$(boot-parameters-multiboot-modules params)))
+                            #~())
                      (bootloader-name #$(boot-parameters-bootloader-name params))
                      (bootloader-menu-entries
                       #$(map menu-entry->sexp

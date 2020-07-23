@@ -50,7 +50,7 @@
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/chjj/compton.git")
+               (url "https://github.com/chjj/compton")
                (commit (string-append "v" upstream-version))))
          (sha256
           (base32
@@ -119,7 +119,7 @@ performance).
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/yshui/picom.git")
+             (url "https://github.com/yshui/picom")
              (commit (string-append "v" version))))
        (sha256
         (base32

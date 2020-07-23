@@ -63,7 +63,7 @@ text editors.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/wofr06/lesspipe.git")
+                    (url "https://github.com/wofr06/lesspipe")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

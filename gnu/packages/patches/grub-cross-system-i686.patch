@@ -1,0 +1,96 @@
+Not upstreamed.
+Fixes cross-build for the Hurd, from i686-linux,
+see <https://bugs.gnu.org/41982>.
+
+From 17b242e7b80108f1467037e15b605595e4823b2e Mon Sep 17 00:00:00 2001
+From: "Jan (janneke) Nieuwenhuizen" <janneke@gnu.org>
+Date: Sun, 21 Jun 2020 15:10:40 +0200
+Subject: [PATCH v2] grub-core: Build fixes for i386
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+
+* grub-core/lib/i386/relocator64.S: Avoid x86_64 instructions on i386.
+---
+ grub-core/lib/i386/relocator64.S | 33 +++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
+
+diff --git a/grub-core/lib/i386/relocator64.S b/grub-core/lib/i386/relocator64.S
+index 148f38adb..ea39908c1 100644
+--- a/grub-core/lib/i386/relocator64.S
++++ b/grub-core/lib/i386/relocator64.S
+@@ -63,7 +63,9 @@ VARIABLE(grub_relocator64_cr3)
+ 	movq	%rax, %cr3
+ #endif
+ 
++#ifdef __x86_64__
+ 	.code64
++#endif
+ 
+ 	/* mov imm64, %rax */
+ 	.byte 	0x48
+@@ -71,7 +73,14 @@ VARIABLE(grub_relocator64_cr3)
+ VARIABLE(grub_relocator64_rsp)
+ 	.quad	0
+ 
++#ifndef __x86_64__
++	/* movq	%rax, %rsp */
++	.byte 	0x48
++	.byte	0x89
++	.byte	0xc4
++#else
+ 	movq	%rax, %rsp
++#endif
+ 
+ #ifdef GRUB_MACHINE_EFI
+ 	jmp	LOCAL(skip_efi_stack_align)
+@@ -85,7 +94,14 @@ VARIABLE(grub_relocator64_rsp)
+ 	 */
+ VARIABLE(grub_relocator64_efi_start)
+ 	/* Align the stack as UEFI spec requires. */
++#ifndef __x86_64__
++	.byte 0x48
++        .byte 0x83
++        .byte 0xe4
++        .byte 0xf0
++#else
+ 	andq	$~15, %rsp
++#endif
+ 
+ LOCAL(skip_efi_stack_align):
+ #endif
+@@ -95,8 +111,15 @@ LOCAL(skip_efi_stack_align):
+ VARIABLE(grub_relocator64_rsi)
+ 	.quad	0
+ 
++#ifndef	__x86_64__
++	/* movq	%rax, %rsi */
++	.byte 	0x48
++	.byte	0x89
++	.byte 	0xc6
++#else
+ 	movq	%rax, %rsi
+-	
++#endif
++
+ 	/* mov imm64, %rax */
+ 	.byte 	0x48
+ 	.byte	0xb8
+@@ -128,6 +151,14 @@ VARIABLE(grub_relocator64_rdx)
+ #ifdef __APPLE__
+ 	.byte 0xff, 0x25
+ 	.quad 0
++#elif !defined (__x86_64__)
++	/* jmp *LOCAL(jump_addr) (%rip) */
++	.byte 0xff
++        .byte 0x25
++	.byte 0
++	.byte 0
++	.byte 0
++	.byte 0
+ #else
+ 	jmp *LOCAL(jump_addr) (%rip)
+ #endif
+-- 
+Jan Nieuwenhuizen <janneke@gnu.org> | GNU LilyPond http://lilypond.org
+Freelance IT http://JoyofSource.com | Avatar® http://AvatarAcademy.com
+

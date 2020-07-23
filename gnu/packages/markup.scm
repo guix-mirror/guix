@@ -43,7 +43,7 @@
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                    (url "https://github.com/hoedown/hoedown.git")
+                    (url "https://github.com/hoedown/hoedown")
                     (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -201,7 +201,7 @@ implementation.
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                    (url "https://github.com/jgm/cmark.git")
+                    (url "https://github.com/jgm/cmark")
                     (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -242,7 +242,7 @@ for parsing and rendering CommonMark.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Gottox/smu.git")
+             (url "https://github.com/Gottox/smu")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -37,6 +37,7 @@
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages web)
   #:use-module (gnu packages patchutils)
@@ -57,20 +58,18 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (ice-9 match)
-  #:export (<httpd-configuration>
-            httpd-configuration
+  #:use-module (ice-9 format)
+  #:export (httpd-configuration
             httpd-configuration?
             httpd-configuration-package
             httpd-configuration-pid-file
             httpd-configuration-config
 
-            <httpd-virtualhost>
             httpd-virtualhost
             httpd-virtualhost?
             httpd-virtualhost-addresses-and-ports
             httpd-virtualhost-contents
 
-            <httpd-config-file>
             httpd-config-file
             httpd-config-file?
             httpd-config-file-modules
@@ -82,14 +81,12 @@
             httpd-config-file-user
             httpd-config-file-group
 
-            <httpd-module>
             httpd-module
             httpd-module?
             %default-httpd-modules
 
             httpd-service-type
 
-            <nginx-configuration>
             nginx-configuration
             nginx-configuration?
             nginx-configuartion-nginx
@@ -104,7 +101,6 @@
             nginx-configuration-extra-content
             nginx-configuration-file
 
-            <nginx-server-configuration>
             nginx-server-configuration
             nginx-server-configuration?
             nginx-server-configuration-listen
@@ -117,19 +113,16 @@
             nginx-server-configuration-server-tokens?
             nginx-server-configuration-raw-content
 
-            <nginx-upstream-configuration>
             nginx-upstream-configuration
             nginx-upstream-configuration?
             nginx-upstream-configuration-name
             nginx-upstream-configuration-servers
 
-            <nginx-location-configuration>
             nginx-location-configuration
             nginx-location-configuration?
             nginx-location-configuration-uri
             nginx-location-configuration-body
 
-            <nginx-named-location-configuration>
             nginx-named-location-configuration
             nginx-named-location-configuration?
             nginx-named-location-configuration-name
@@ -142,7 +135,6 @@
             fcgiwrap-configuration?
             fcgiwrap-service-type
 
-            <php-fpm-configuration>
             php-fpm-configuration
             make-php-fpm-configuration
             php-fpm-configuration?
@@ -160,7 +152,6 @@
             php-fpm-configuration-workers-log-file
             php-fpm-configuration-file
 
-            <php-fpm-dynamic-process-manager-configuration>
             php-fpm-dynamic-process-manager-configuration
             make-php-fpm-dynamic-process-manager-configuration
             php-fpm-dynamic-process-manager-configuration?
@@ -169,13 +160,11 @@
             php-fpm-dynamic-process-manager-configuration-min-spare-servers
             php-fpm-dynamic-process-manager-configuration-max-spare-servers
 
-            <php-fpm-static-process-manager-configuration>
             php-fpm-static-process-manager-configuration
             make-php-fpm-static-process-manager-configuration
             php-fpm-static-process-manager-configuration?
             php-fpm-static-process-manager-configuration-max-children
 
-            <php-fpm-on-demand-process-manager-configuration>
             php-fpm-on-demand-process-manager-configuration
             make-php-fpm-on-demand-process-manager-configuration
             php-fpm-on-demand-process-manager-configuration?
@@ -191,7 +180,6 @@
             hpcguix-web-configuration?
             hpcguix-web-service-type
 
-            <tailon-configuration-file>
             tailon-configuration-file
             tailon-configuration-file?
             tailon-configuration-file-files
@@ -205,7 +193,6 @@
             tailon-configuration-file-http-auth
             tailon-configuration-file-users
 
-            <tailon-configuration>
             tailon-configuration
             tailon-configuration?
             tailon-configuration-config-file
@@ -213,7 +200,6 @@
 
             tailon-service-type
 
-            <varnish-configuration>
             varnish-configuration
             varnish-configuration?
             varnish-configuration-package
@@ -227,7 +213,6 @@
 
             varnish-service-type
 
-            <patchwork-database-configuration>
             patchwork-database-configuration
             patchwork-database-configuration?
             patchwork-database-configuration-engine
@@ -237,7 +222,6 @@
             patchwork-database-configuration-host
             patchwork-database-configuration-port
 
-            <patchwork-settings-module>
             patchwork-settings-module
             patchwork-settings-module?
             patchwork-settings-module-database-configuration
@@ -252,7 +236,6 @@
             patchwork-settings-module-force-https-links?
             patchwork-settings-module-extra-settings
 
-            <patchwork-configuration>
             patchwork-configuration
             patchwork-configuration?
             patchwork-configuration-patchwork
@@ -262,7 +245,6 @@
             patchwork-virtualhost
             patchwork-service-type
 
-            <mumi-configuration>
             mumi-configuration
             mumi-configuration?
             mumi-configuration-mumi
@@ -1719,6 +1701,11 @@ WSGIPassAuthorization On
          (shell (file-append shadow "/sbin/nologin")))))
 
 (define (mumi-shepherd-services config)
+  (define environment
+    #~(list "LC_ALL=en_US.utf8"
+            (string-append "GUIX_LOCPATH=" #$glibc-utf8-locales
+                           "/lib/locale")))
+
   (match config
     (($ <mumi-configuration> mumi mailer? sender smtp)
      (list (shepherd-service
@@ -1728,6 +1715,7 @@ WSGIPassAuthorization On
             (start #~(make-forkexec-constructor
                       `(#$(file-append mumi "/bin/mumi") "web"
                         ,@(if #$mailer? '() '("--disable-mailer")))
+                      #:environment-variables #$environment
                       #:user "mumi" #:group "mumi"
                       #:log-file "/var/log/mumi.log"))
             (stop #~(make-kill-destructor)))
@@ -1737,6 +1725,7 @@ WSGIPassAuthorization On
             (requirement '(networking))
             (start #~(make-forkexec-constructor
                       '(#$(file-append mumi "/bin/mumi") "worker")
+                      #:environment-variables #$environment
                       #:user "mumi" #:group "mumi"
                       #:log-file "/var/log/mumi.worker.log"))
             (stop #~(make-kill-destructor)))
@@ -1752,6 +1741,7 @@ WSGIPassAuthorization On
                         ,@(if #$smtp
                               (list (string-append "--smtp=" #$smtp))
                               '()))
+                      #:environment-variables #$environment
                       #:user "mumi" #:group "mumi"
                       #:log-file "/var/log/mumi.mailer.log"))
             (stop #~(make-kill-destructor)))))))

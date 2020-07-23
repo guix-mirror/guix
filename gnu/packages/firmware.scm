@@ -50,7 +50,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/qca/open-ath9k-htc-firmware.git")
+                    (url "https://github.com/qca/open-ath9k-htc-firmware")
                     (commit version)))
               (sha256
                (base32
@@ -189,21 +189,19 @@ Broadcom/AirForce chipset BCM43xx with Wireless-Core Revision 5.  It is used
 by the b43-open driver of Linux-libre.")
     (license license:gpl2)))
 
-(define* (make-opensbi-package platform variant #:optional (arch "riscv64"))
+(define* (make-opensbi-package platform name #:optional (arch "riscv64"))
   (package
-    (name (string-replace-substring
-           (string-append "opensbi-" platform "-" variant)
-           "_" "-"))
-    (version "0.6")
+    (name name)
+    (version "0.8")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/riscv/opensbi.git")
+             (url "https://github.com/riscv/opensbi")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "129ypdga0fzn657n2f42g2a1vx3hf8x7sd78h06d35pgkry0jkl7"))))
+        (base32 "1y9z0b6q6wpw7mgy31wml4djc6m8ydm71a9f1asnks4ragc7m98b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(,@(if (and (not (string-prefix? "riscv64" (%current-system)))
@@ -213,7 +211,7 @@ by the b43-open driver of Linux-libre.")
            '())))
     (arguments
      `(#:tests? #f ; no check target
-       #:make-flags (list (string-append "PLATFORM=" ,platform "/" ,variant)
+       #:make-flags (list (string-append "PLATFORM=" ,platform)
                           ,@(if (and (not (string-prefix? "riscv64"
                                                           (%current-system)))
                                      (string-prefix? "riscv64" arch))
@@ -243,11 +241,14 @@ for platform-specific firmwares executing in M-mode.")
                    ;; platform/ariane-fpga/* is gpl2.
                    license:gpl2))))
 
+(define-public opensbi-qemu-generic
+  (make-opensbi-package "generic" "opensbi-qemu-generic"))
+
 (define-public opensbi-qemu-virt
-  (make-opensbi-package "qemu" "virt"))
+  (deprecated-package "opensbi-qemu-virt" opensbi-qemu-generic))
 
 (define-public opensbi-sifive-fu540
-  (make-opensbi-package "sifive" "fu540"))
+  (make-opensbi-package "sifive/fu540" "opensbi-sifive-fu540"))
 
 (define-public opensbi-qemu-sifive-u
   ;; Dropped upstream, as all functionality is present in the sifive-fu540

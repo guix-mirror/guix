@@ -154,7 +154,7 @@ between two other data points.")
 (define-public gama
   (package
     (name "gama")
-    (version "2.08")
+    (version "2.09")
     (source
       (origin
         (method url-fetch)
@@ -162,7 +162,7 @@ between two other data points.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "0fic6a3a83hgj3gj85bin3wd6ghgi2qg76d6jfwckamab0hlv7wx"))))
+          "0c1b28frl6109arj09v4zr1xs859krn8871mkvis517g5pb55dc9"))))
     (build-system gnu-build-system)
     (arguments '(#:parallel-tests? #f)) ; race condition
     (native-inputs

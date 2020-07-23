@@ -191,7 +191,8 @@ set."
                                   "10.0.2.15" ;the default QEMU guest IP
                                   "--netmask" "255.255.255.0"
                                   "--gateway" "10.0.2.2"
-                                  "--ipv6" "/servers/socket/16"))))
+                                  "--ipv6" "/servers/socket/16"))
+      ("proc"                    ("/hurd/procfs" "--stat-mode=444"))))
 
   (define devices
     '(("dev/full"    ("/hurd/null"     "--full")            #o666)
@@ -232,17 +233,22 @@ set."
                                                             #o666)))
 
   (for-each scope-set-translator servers)
-  (mkdir* (scope "dev/vcs/1"))
-  (mkdir* (scope "dev/vcs/2"))
-  (mkdir* (scope "dev/vcs/2"))
-  (rename-file (scope "/dev/console") (scope "/dev/console-"))
+  (mkdir* "dev/vcs/1")
+  (mkdir* "dev/vcs/2")
+  (mkdir* "dev/vcs/2")
+  (rename-file (scope "dev/console") (scope "dev/console-"))
   (for-each scope-set-translator devices)
 
   (false-if-EEXIST (symlink "/dev/random" (scope "dev/urandom")))
-  (mkdir* (scope "dev/fd"))
+  (mkdir* "dev/fd")
   (false-if-EEXIST (symlink "/dev/fd/0" (scope "dev/stdin")))
   (false-if-EEXIST (symlink "/dev/fd/1" (scope "dev/stdout")))
-  (false-if-EEXIST (symlink "/dev/fd/2" (scope "dev/stderr"))))
+  (false-if-EEXIST (symlink "/dev/fd/2" (scope "dev/stderr")))
+
+  ;; Make sure /etc/mtab is a symlink to /proc/mounts.
+  (false-if-exception (delete-file (scope "etc/mtab")))
+  (mkdir* (scope "etc"))
+  (symlink "/proc/mounts" (scope "etc/mtab")))
 
 
 (define* (boot-hurd-system #:key (on-error 'debug))

@@ -1396,14 +1396,14 @@ the Human Protein Atlas project.")
 (define-public r-regioner
   (package
     (name "r-regioner")
-    (version "1.20.0")
+    (version "1.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "regioneR" version))
        (sha256
         (base32
-         "10i21gxv0n7lrflhj5ja672xjizy1i4y4iq3pmjgbf0dpy1lxsih"))))
+         "0bzjwzj5mvb49wgvs3gd3jfpm7s0zfkca763i65i7m994lgvz33c"))))
     (properties `((upstream-name . "regioneR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1587,7 +1587,7 @@ Affymetrix (CEL files) and NimbleGen arrays (XYS files).")
        ("r-reshape2" ,r-reshape2)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://github.com/jdstorey/qvalue")
+    (home-page "https://github.com/StoreyLab/qvalue")
     (synopsis "Q-value estimation for false discovery rate control")
     (description
      "This package takes a list of p-values resulting from the simultaneous
@@ -2934,7 +2934,7 @@ qPCR data, but could be used with other types as well.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cole-trapnell-lab/monocle3.git")
+             (url "https://github.com/cole-trapnell-lab/monocle3")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -5119,14 +5119,14 @@ that arising from 16s metagenomic surveys.")
 (define-public r-wiggleplotr
   (package
     (name "r-wiggleplotr")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "wiggleplotr" version))
        (sha256
         (base32
-         "15l8f7ls2mwhsw68sr1k4r19hmdzjriibr5hpnfbanzj5x6yhdjq"))))
+         "1wknigh1md3w4h68caqlpq945maipdkpmw10hc2rlx4nbbpcnawp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -5781,14 +5781,14 @@ annotations.")
 (define-public r-rsubread
   (package
     (name "r-rsubread")
-    (version "2.2.2")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rsubread" version))
        (sha256
         (base32
-         "1wgilpaw70dwg0zilx5i1pmi4j8wri6wi2ha1d3bapfhlwc6igml"))))
+         "0yznfqgp5cbz68n3rrfvm752267da16kl538zdrb1g1aw9zdfqc6"))))
     (properties `((upstream-name . "Rsubread")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
@@ -6248,14 +6248,14 @@ sequential way to mimic the manual gating strategy.")
 (define-public r-cytoml
   (package
     (name "r-cytoml")
-    (version "2.0.0")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "CytoML" version))
        (sha256
         (base32
-         "0zpq2j4y9i5lls1kj2w4spl8qjp3076idsr2a2rjvy1fykzlp01q"))))
+         "174brv027mm90lydfg6hnhazwh8jy4vf6ial4hpsfalwa5jrz55n"))))
     (properties `((upstream-name . "CytoML")))
     (build-system r-build-system)
     (inputs
@@ -6286,6 +6286,7 @@ sequential way to mimic the manual gating strategy.")
        ("r-runit" ,r-runit)
        ("r-tibble" ,r-tibble)
        ("r-xml" ,r-xml)
+       ("r-xml2" ,r-xml2)
        ("r-yaml" ,r-yaml)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
@@ -6373,14 +6374,14 @@ delete entire rows with missing data.")
 (define-public r-depecher
   (package
     (name "r-depecher")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DepecheR" version))
        (sha256
         (base32
-         "0nmx04qybzf6nhfngmdxwpbbz9x32v34mbnpg8jq7a2cgchzsj9s"))))
+         "0dscfl6wxpl5538jzkrwisdwbr873d38rzd19vl6z5br71jvpv3v"))))
     (properties `((upstream-name . "DepecheR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6455,14 +6456,14 @@ genes in the gene-set that are ranked above the leading edge).")
 (define-public r-cicero
   (package
     (name "r-cicero")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "cicero" version))
        (sha256
         (base32
-         "0n78lf5hz6zzl550dbf4imis43pv91zicfff8y4lspckljhz9z75"))))
+         "0nf9yqg5krj26n4n82iyx3rsr84d46b17i9zfk35sh12l4xssbii"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -6482,6 +6483,7 @@ genes in the gene-set that are ranked above the leading edge).")
        ("r-plyr" ,r-plyr)
        ("r-reshape2" ,r-reshape2)
        ("r-s4vectors" ,r-s4vectors)
+       ("r-stringi" ,r-stringi)
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
@@ -6507,7 +6509,7 @@ accessibility data.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/cole-trapnell-lab/cicero-release.git")
+               (url "https://github.com/cole-trapnell-lab/cicero-release")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6528,7 +6530,7 @@ accessibility data.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/aertslab/cisTopic.git")
+               (url "https://github.com/aertslab/cisTopic")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6673,14 +6675,14 @@ metrics, with methods for objects produced by the @code{methylumi} and
 (define-public r-gdsfmt
   (package
     (name "r-gdsfmt")
-    (version "1.24.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gdsfmt" version))
        (sha256
         (base32
-         "00hggma0i15w03xi9jr02v2593jbqkcxyfcvpp7mdzrshn99m9p6"))
+         "0ipf60wylbhvwk9q3mbnak0f1n6k7spfh90s1c1c0b47ryxsri67"))
        (modules '((guix build utils)))
        ;; Remove bundled sources of zlib, lz4, and xz.  Don't attempt to build
        ;; them and link with system libraries instead.
@@ -7046,14 +7048,14 @@ arrays based on fast wavelet-based functional models.")
 (define-public r-variancepartition
   (package
     (name "r-variancepartition")
-    (version "1.18.0")
+    (version "1.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "variancePartition" version))
        (sha256
         (base32
-         "1rn655qq7dshbk1dd41n7y2hfz8498jxd2j4rk7p8hrikd3s32dm"))))
+         "19bhkb8vd44m3nkznw075fx3y2p3a1bsazbhcfiqw9n4190k9bgv"))))
     (properties
      `((upstream-name . "variancePartition")))
     (build-system r-build-system)
@@ -7185,21 +7187,20 @@ using whole genome sequencing data.")
 (define-public r-activepathways
   (package
     (name "r-activepathways")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActivePathways" version))
        (sha256
         (base32
-         "1xb0d1svmzw404pv8ja6wr4773k7x2lxkrzrayilvzqbfzj1wx20"))))
+         "1hxy760x141ykrpqdbfldq4ggj1svj3lsrpwi4rb2x7r4lna937l"))))
     (properties
      `((upstream-name . "ActivePathways")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-metap" ,r-metap)))
+       ("r-ggplot2" ,r-ggplot2)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ActivePathways/")
@@ -8087,3 +8088,31 @@ metrics, such as the elbow method and Horn's parallel analysis, which has
 relevance for data reduction in single-cell RNA-seq (scRNA-seq) and high
 dimensional mass cytometry data.")
     (license license:gpl3)))
+
+(define-public r-rgreat
+  (package
+    (name "r-rgreat")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "rGREAT" version))
+       (sha256
+        (base32
+         "0n8dw9ibb2klsczcxvvinpi9l53w8cs436i0c8w2jmramayl593v"))))
+    (properties `((upstream-name . "rGREAT")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicranges" ,r-genomicranges)
+       ("r-getoptlong" ,r-getoptlong)
+       ("r-iranges" ,r-iranges)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rjson" ,r-rjson)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/jokergoo/rGREAT")
+    (synopsis "Client for GREAT analysis")
+    (description
+     "This package makes GREAT (Genomic Regions Enrichment of Annotations
+Tool) analysis automatic by constructing a HTTP POST request according to
+user's input and automatically retrieving results from GREAT web server.")
+    (license license:expat)))

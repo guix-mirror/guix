@@ -177,7 +177,7 @@ Converts WOFF fonts to OpenType fonts
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wget/ttf2eot.git")
+             (url "https://github.com/wget/ttf2eot")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -266,7 +266,7 @@ work with most software requiring Type 1 fonts.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/google/woff2.git")
+                    (url "https://github.com/google/woff2")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version ".git"))
               (sha256
@@ -746,14 +746,14 @@ implements UFO3 as described by the UFO font format.")
     (version "20170925")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/googlei18n/nototools/"
-                           "archive/v2017-09-25-tooling-for-phase3-"
-                           "update.tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/googlei18n/nototools")
+              (commit "v2017-09-25-tooling-for-phase3-update")))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1pvacw18cm9l4sb66pqyjc7hc74xhhfxc7kd5ald8lixf4wzg0s8"))))
+         "03nzvcvwmrhfrcjhg218q2f3hfrm3vlivp4rk19sc397kh3hisiz"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
@@ -831,14 +831,14 @@ work well with other GTK+ desktop environments.")
     (name "fntsample")
     (version "5.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/eugmes/fntsample/archive/release/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eugmes/fntsample")
+                     (commit (string-append "release/" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0awp4dh1g40ivzvm5xqlvcpcdw1vplrx3drjmbylr62y185vbs74"))))
+                "02rx3gp7k472304vhjwb129nw10a29s4nvgs7i2m6bpjhlk2xgs5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.

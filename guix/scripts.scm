@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,12 +50,12 @@
 ;;;
 ;;; Code:
 
-(define (args-fold* options unrecognized-option-proc operand-proc . seeds)
+(define (args-fold* args options unrecognized-option-proc operand-proc . seeds)
   "A wrapper on top of `args-fold' that does proper user-facing error
 reporting."
   (catch 'misc-error
     (lambda ()
-      (apply args-fold options unrecognized-option-proc
+      (apply args-fold args options unrecognized-option-proc
              operand-proc seeds))
     (lambda (key proc msg args . rest)
       ;; XXX: MSG is not i18n'd.

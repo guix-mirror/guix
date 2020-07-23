@@ -102,6 +102,51 @@ SPIR-V modules.  The project includes an assembler, binary module
 parser,disassembler, validator, and optimizer for SPIR-V.")
     (license license:asl2.0)))
 
+(define-public spirv-cross
+  (package
+    (name "spirv-cross")
+    (version "2020-05-19")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/SPIRV-Cross")
+             (commit version)))
+       (sha256
+        (base32 "0zyijp9zx9wbd4i5lwjap7n793iz6yjkf27la60dsffxl75yy9pd"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DSPIRV_CROSS_SHARED=YES")
+       ;; FIXME: The following tests fail:
+       ;;   15 - spirv-cross-test-opt
+       ;;   16 - spirv-cross-test-metal-opt
+       ;;   17 - spirv-cross-test-hlsl-opt
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests-to-find-deps
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{CMAKE_(.*)_DIR\\}/external/glslang(.*)/bin")
+                (string-append (assoc-ref inputs "glslang") "/bin")))
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{CMAKE_(.*)_DIR\\}/external/spirv-tools(.*)/bin")
+                (string-append (assoc-ref inputs "spirv-tools") "/bin")))
+             #t)))))
+    (inputs
+     `(("glslang" ,glslang)
+       ("spirv-headers" ,spirv-headers)
+       ("spirv-tools" ,spirv-tools)))
+    (native-inputs `(("python" ,python)))
+    (home-page "https://github.com/KhronosGroup/SPIRV-Cross")
+    (synopsis "Parser for and converter of SPIR-V to other shader languages")
+    (description
+     "SPIRV-Cross tries hard to emit readable and clean output from the
+SPIR-V, aiming to emit GLSL or MSL that looks like human-written code.")
+    (license license:asl2.0)))
+
 (define-public glslang
   (package
     (name "glslang")

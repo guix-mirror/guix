@@ -106,7 +106,7 @@
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/steveire/grantlee.git")
+              (url "https://github.com/steveire/grantlee")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -595,6 +595,18 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 
 ;; qt used to refer to the monolithic Qt 5.x package
 (define-deprecated qt qtbase)
+
+;; This variable is required by 'python-pyside-2-tools', which copies some
+;; qtbase executables that fail to run because RUNPATH refers to the
+;; wrong $ORIGIN.  TODO: Merge with qtbase in the next rebuild cycle.
+(define qtbase/next
+  (package
+    (inherit qtbase)
+    (source
+     (origin
+       (inherit (package-source qtbase))
+       (patches (append (origin-patches (package-source qtbase))
+                        (search-patches "qtbase-absolute-runpath.patch")))))))
 
 (define-public qtsvg
   (package (inherit qtbase)
@@ -2566,19 +2578,19 @@ color-related widgets.")
 (define-public python-shiboken-2
   (package
     (name "python-shiboken-2")
-    (version "5.12.6")
+    (version "5.14.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.qt.io/official_releases"
                                   "/QtForPython/pyside2/PySide2-" version
-                                  "-src/pyside-setup-everywhere-src-"
+                                  "-src/pyside-setup-opensource-src-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1n45l6xxyxs6cfp2l4rp8qs1c2fyfwyrdxa4qcpwfsqsi51rydsk"))))
+                "08lhqm0n3fjqpblcx9rshsp8g3bvf7yzbai5q99bly2wa04y6b83"))))
     (build-system cmake-build-system)
     (inputs
-     `(("clang-toolchain" ,clang-toolchain-6)
+     `(("clang-toolchain" ,clang-toolchain)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("python-wrapper" ,python-wrapper)
@@ -2631,7 +2643,7 @@ color-related widgets.")
     (inputs
      `(("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("clang-toolchain" ,clang-toolchain-6)
+       ("clang-toolchain" ,clang-toolchain)
        ("qtbase" ,qtbase)
        ("qtdatavis3d" ,qtdatavis3d)
        ("qtlocation" ,qtlocation)
@@ -2699,7 +2711,7 @@ generate Python bindings for your C or C++ code.")
     (inputs
      `(("python-pyside-2" ,python-pyside-2)
        ("python-shiboken-2" ,python-shiboken-2)
-       ("qtbase" ,qtbase)))
+       ("qtbase" ,qtbase/next)))
     (native-inputs
      `(("python" ,python-wrapper)))
     (arguments

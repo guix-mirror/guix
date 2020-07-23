@@ -173,7 +173,11 @@ is used in some video games and movies.")
              (base32
               "07w3asqxx89wl2wfv1z3cak8v83h3ys3b39mq9qq4gyf3xdhs76n"))))
    (build-system gnu-build-system)
-   (native-inputs `(("asciidoc" ,asciidoc)))
+   (inputs
+    `(("libpng" ,libpng)))
+   (native-inputs
+    `(("asciidoc" ,asciidoc)
+      ("pkg-config" ,pkg-config)))
    (home-page "https://github.com/Doom-Utils/deutex")
    (synopsis "WAD file composer for Doom and related games")
    (description
@@ -313,30 +317,24 @@ provide connectivity for client applications written in any language.")
 (define-public nml
   (package
     (name "nml")
-    (version "0.4.5")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://bundles.openttdcoop.org/nml/releases/"
-                           version "/nml-" version ".tar.gz"))
+       (uri (pypi-uri "nml" version))
        (sha256
         (base32
-         "1pmvvm3sgnpngfa7884mqhq3fwdjh9sr0ca07ypnidcg0y341w53"))))
+         "1lwf5sc5qqzrkxfx5wkkj3yh2j2nzh5r599ly5psy8yw92km24hy"))))
     (build-system python-build-system)
+    ;; TODO: Fix test that fails with
+    ;; "AttributeError: partially initialized module 'nml.nmlop' has no
+    ;; attribute 'ADD' (most likely due to a circular import)"
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-pillow
-           (lambda _
-             ;; pillow's version is not in PIL.Image.VERSION anymore
-             (substitute* "nml/version_info.py"
-               (("from PIL import Image") "import PIL")
-               (("Image.VERSION") "PIL.__version__"))
-             #t)))))
+     '(#:tests? #f))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)
        ("python-ply" ,python-ply)))
-    (home-page "https://dev.openttdcoop.org/projects/nml")
+    (home-page "https://github.com/OpenTTD/nml")
     (synopsis "NML compiler")
     (description
      "@dfn{NewGRF Meta Language} (NML) is a python-based compiler, capable of
@@ -458,7 +456,7 @@ support.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/bjorn/tiled.git")
+                    (url "https://github.com/bjorn/tiled")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -505,7 +503,7 @@ clone.")
               ;; http://mirror0.sfml-dev.org/files/ because files there seem
               ;; to be changed in place.
               (uri (git-reference
-                    (url "https://github.com/SFML/SFML.git")
+                    (url "https://github.com/SFML/SFML")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -595,7 +593,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/alemart/surgescript.git")
+             (url "https://github.com/alemart/surgescript")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1405,7 +1403,7 @@ painted with a mouse.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wgois/OIS.git")
+             (url "https://github.com/wgois/OIS")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1498,13 +1496,14 @@ of use.")
     (version "0.46.0")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/OpenMW/openmw/archive/"
-                       "openmw-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/OpenMW/openmw")
+              (commit (string-append "openmw-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0n7x39kwhwmi6ly9hd7yc6dhlrmmdmx30ahc46kmlzzn2n7mm8q7"))))
+         "0rm32zsmxvr6b0jjihfj543skhicbw5kg6shjx312clhlm035w2x"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -1536,7 +1535,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.2.1")
+    (version "3.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1545,7 +1544,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kndls0rklha7kz9l4i2ivjxab4jpk3b2j7dcgcg2qc3s81yd0r6"))
+                "1libz83mbyrkbbsmmi8z2rydv3ls0w9r4vb5v6diqqwn7ka8z804"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
@@ -1934,7 +1933,7 @@ of the others")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ioquake/ioq3.git")
+               (url "https://github.com/ioquake/ioq3")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -2007,6 +2006,43 @@ hardware from multiple vendors without requiring that applications have
 specific knowledge of the hardware they are targeting.")
     (license license:bsd-3)))
 
+(define-public flatzebra
+  (package
+    (name "flatzebra")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://perso.b2b2c.ca/~sarrazip/dev/"
+                           "flatzebra-" version ".tar.gz"))
+       (sha256
+        (base32 "1x2dy41c8vrq62bn03b82fpmk7x4rzd7qqiwvq0mgcl5rmasc2c8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-sdl-config
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; XXX: sdl-config in sdl-union is a link to sdl-config from
+             ;; plain sdl package.  As a consequence, the prefix is wrong.
+             ;; Force correct one with "--prefix" argument.
+             (let ((sdl-union (assoc-ref inputs "sdl")))
+               (setenv "SDL_CONFIG"
+                       (string-append sdl-union
+                                      "/bin/sdl-config --prefix="
+                                      sdl-union)))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer)))))
+    (home-page "http://perso.b2b2c.ca/~sarrazip/dev/burgerspace.html")
+    (synopsis "Generic game engine for 2D double-buffering animation")
+    (description
+     "Flatzebra is a simple, generic C++ game engine library supporting 2D
+double-buffering.")
+    (license license:gpl2+)))
+
 (define-public fna
   (package
     (name "fna")
@@ -2015,7 +2051,7 @@ specific knowledge of the hardware they are targeting.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/FNA-XNA/FNA.git")
+             (url "https://github.com/FNA-XNA/FNA")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2067,7 +2103,7 @@ focuses solely on developing a fully accurate XNA4 runtime for the desktop.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/danfis/libccd.git")
+             (url "https://github.com/danfis/libccd")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2143,7 +2179,7 @@ computer games, 3D authoring tools and simulation tools.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/slembcke/Chipmunk2D.git")
+             (url "https://github.com/slembcke/Chipmunk2D")
              (commit (string-append "Chipmunk-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2170,7 +2206,7 @@ rigid body physics library written in C.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/libtcod/libtcod.git")
+                    (url "https://github.com/libtcod/libtcod")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2320,3 +2356,136 @@ utilities frequently used in roguelikes.")
 shooter video game.  The engine is based on qfusion, the id Tech 2 derived
 game engine.  id Tech 2 is the engine originally behind Quake 2.")
       (license license:gpl2+))))
+
+(define-public dhewm3
+  (package
+    (name "dhewm3")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dhewm/dhewm3/releases/download/"
+                    version "/dhewm3-" version "-src.tar.xz"))
+              (sha256
+               (base32
+                "0dmd1876az5q8gbjrd1jk8zidz11ydj607z3m8m5kvw2yj136jzv"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-to-build-dir
+           (lambda _
+             (chdir "neo")
+             #t)))))
+    (inputs
+     `(("curl" ,curl)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("libx11" ,libx11)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (home-page "https://dhewm3.org/")
+    (synopsis "Port of the original Doom 3 engine")
+    (description
+     "@command{dhewm3} is a source port of the original Doom 3 engine (not
+Doom 3: BFG Edition), also known as id Tech 4.  Compared to the original
+version of the Doom 3 engine, dhewm3 has many bugfixes, supports EAX-like
+sound effects on all operating systems and hardware (via OpenAL Softs EFX
+support), has much better support for widescreen resolutions and has 64bit
+support.")
+    (license license:gpl3)))
+
+(define-public tesseract-engine
+  (let ((svn-revision 2411))
+    (package
+      (name "tesseract-engine")
+      (version (string-append "20200615-" (number->string svn-revision)))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "svn://svn.tuxfamily.org/svnroot/tesseract/main")
+               (revision svn-revision)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1av9jhl2ivbl7wfszyhyna84llvh1z2d8khkmadm8d105addj10q"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (for-each delete-file-recursively
+                       '("bin" "bin64"
+                         ;; Remove "media" since some files such as
+                         ;; media/sound/game/soundsnap/info.txt refer to a
+                         ;; non-commercial license.
+                         "media"
+                         "server.bat"
+                         "tesseract.bat"
+                         "src/lib"
+                         "src/lib64"))
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "CC=gcc")
+         #:tests? #f                    ; No tests.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'cd-src
+             (lambda _ (chdir "src") #t))
+           (add-before 'build 'fix-env
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "sdl2-union")
+                                      "/include/SDL2:"
+                                      (or (getenv "CPATH") "")))
+               #t))
+           (add-after 'install 'really-install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (share (string-append out "/share/tesseract"))
+                      (bin (string-append out "/bin/tesseract"))
+                      (client (string-append out "/bin/tesseract-client")))
+                 (chdir "..")           ; Back to root.
+                 (for-each
+                  (lambda (dir)
+                    (mkdir-p (string-append share "/" dir))
+                    (copy-recursively dir (string-append share "/" dir)))
+                  '("config"))
+                 (mkdir-p (string-append out "/bin/"))
+                 (copy-file "bin_unix/native_client" client)
+                 (copy-file "bin_unix/native_server"
+                            (string-append out "/bin/tesseract-server"))
+                 (call-with-output-file bin
+                   (lambda (p)
+                     (format p "#!~a
+TESS_DATA=~a
+TESS_BIN=~a
+TESS_OPTIONS=\"-u$HOME/.tesseract\"
+cd \"$TESS_DATA\"
+exec \"$TESS_BIN\" \"$TESS_OPTIONS\" \"$@\""
+                             (which "bash")
+                             share
+                             client)))
+                 (chmod bin #o755)
+                 (install-file "src/readme_tesseract.txt"
+                               (string-append out "/share/licenses/tesseract/LICENSE")))
+               #t)))))
+      (inputs
+       `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-mixer sdl2-image)))
+         ("zlib" ,zlib)
+         ("libpng" ,libpng)
+         ("libgl" ,mesa)))
+      (home-page "http://tesseract.gg/")
+      (synopsis "First-person shooter engine with map editing, instagib, DM and CTF")
+      (description "This package contains the game engine of Tesseract, a
+first-person shooter focused on cooperative in-game map editing.
+
+The engine is derived from @emph{Cube 2: Sauerbraten} technology but with
+upgraded modern rendering techniques.  The new rendering features include
+fully dynamic omnidirectional shadows, global illumination, HDR lighting,
+deferred shading, morphological / temporal / multisample anti-aliasing, and
+much more.")
+      (license license:zlib))))

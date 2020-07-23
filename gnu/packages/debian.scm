@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,8 +25,10 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages perl))
@@ -181,7 +184,11 @@ contains the archive keys used for that.")
     (inputs
      `(("debian-keyring" ,debian-archive-keyring)
        ("ubuntu-keyring" ,ubuntu-keyring)
-       ("tzdata" ,tzdata)))
+       ("tzdata" ,tzdata)
+
+       ;; Called at run-time from various places, needs to be in PATH.
+       ("gnupg" ,gnupg)
+       ("wget" ,wget)))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "https://tracker.debian.org/pkg/debootstrap")
@@ -192,6 +199,46 @@ It does this by downloading .deb files from a mirror site, and carefully
 unpacking them into a directory which can eventually be chrooted into.")
     (license license:gpl2)))
 
+(define-public debianutils
+  (package
+    (name "debianutils")
+    (version "4.11")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/debian/debianutils.git")
+                    (commit (string-append "debian/" version))))
+              (file-name (git-file-name "debianutils" version))
+              (sha256
+               (base32
+                "1fmhzvymajack7kh8g4qjbwd9mq85z6rxl1psd1sm67s5695i9rc"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'bootstrap 'create-translations
+                    (lambda _
+                      (with-directory-excursion "po4a"
+                        (invoke "po4a" "--no-backups" "po4a.conf"))
+                      #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("po4a" ,po4a)))
+    (home-page "https://packages.debian.org/unstable/debianutils")
+    (synopsis "Miscellaneous shell utilities")
+    (description
+     "This package provides a number of utilities which are mostly for use
+in installation scripts of Debian packages.  The programs included are
+@command{add-shell}, @command{installkernel}, @command{ischroot},
+@command{remove-shell}, @command{run-parts}, @command{savelog},
+@command{tempfile}, and @command{which}.")
+    (license (list license:gpl2+
+                   ;; The 'savelog' program is distributed under a
+                   ;; GPL-compatible copyleft license.
+                   (license:fsf-free "file://debian/copyright"
+                                     "The SMAIL General Public License, see
+debian/copyright for more information.")))))
 
 (define-public apt-mirror
   (let ((commit "e664486a5d8947c2579e16dd793d762ea3de4202")

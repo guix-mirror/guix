@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -505,7 +506,7 @@ command-line tool.")
 (define-public chromaprint
   (package
     (name "chromaprint")
-    (version "1.4.3")
+    (version "1.5.0")
     (source (origin
       (method url-fetch)
       (uri (string-append
@@ -513,7 +514,7 @@ command-line tool.")
             version "/chromaprint-" version ".tar.gz"))
       (sha256
        (base32
-        "10kz8lncal4s2rp2rqpgc6xyjp0jzcrihgkx7chf127vfs5n067a"))))
+        "0sknmyl5254rc55bvkhfwpl4dfvz45xglk1rq8zq5crmwq058fjp"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests require googletest *sources*

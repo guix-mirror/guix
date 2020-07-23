@@ -59,7 +59,7 @@
               ;; do not use auto-generated tarballs
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/matricks/bam.git")
+                    (url "https://github.com/matricks/bam")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -111,8 +111,8 @@ generate such a compilation database.")
     (license license:gpl3+)))
 
 (define-public gn
-  (let ((commit "ec938ddaa276646eb8f1ab33e160c156011d8217")
-        (revision "1736"))            ;as returned by `git describe`, used below
+  (let ((commit "eb997b5ab9c3f1ba6a2c52072785884864a84eae")
+        (revision "1794"))            ;as returned by `git describe`, used below
     (package
       (name "gn")
       (version (git-version "0.0" revision commit))
@@ -122,7 +122,7 @@ generate such a compilation database.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "0j1qjwp2biw12s6npzpx4z8nvih7pyn68q6cz2k4700bk9y0d574"))
+                  "1vfkcy34wqhg7wsk7jdzhgnnzwim10wgbxv5bnavxzjcs871i2xa"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -259,7 +259,7 @@ other lower-level build files.")
 (define-public premake5
   (package
     (inherit premake4)
-    (version "5.0.0-alpha14")
+    (version "5.0.0-alpha15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/premake/premake-core/"
@@ -267,11 +267,13 @@ other lower-level build files.")
                                   "/premake-" version "-src.zip"))
               (sha256
                (base32
-                "0236s7bjvxf7x1l5faywmfzjywflpx42ngyhkn0mqqjnh54a97vw"))))
+                "0lyxfyqxyhjqsb3kmx1fyrxinb26i68hb7w7rg8lajczrgkmc3w8"))))
     (arguments
      (substitute-keyword-arguments (package-arguments premake4)
        ((#:phases phases)
         `(modify-phases ,phases
+           (replace 'enter-source
+             (lambda _ (chdir "build/gmake2.unix") #t))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (install-file "../../bin/release/premake5"

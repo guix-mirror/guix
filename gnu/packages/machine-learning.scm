@@ -37,7 +37,6 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix svn-download)
-  #:use-module (guix build-system asdf)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
@@ -63,7 +62,6 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
@@ -95,7 +93,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/libfann/fann.git")
+                      (url "https://github.com/libfann/fann")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -317,7 +315,7 @@ networks) based on simulation of (stochastic) flow in graphs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fhcrc/mcl.git")
+             (url "https://github.com/fhcrc/mcl")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -586,7 +584,7 @@ in terms of new algorithms.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ReactiveX/RxCpp.git")
+             (url "https://github.com/ReactiveX/RxCpp")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1rdpa3jlc181jd08nk437aar085h28i45s6nzrv65apb3xyyz0ij"))
@@ -805,7 +803,7 @@ computing environments.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/scikit-learn/scikit-learn.git")
+             (url "https://github.com/scikit-learn/scikit-learn")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -862,7 +860,7 @@ data analysis.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/scikit-learn/scikit-learn.git")
+                      (url "https://github.com/scikit-learn/scikit-learn")
                       (commit version)))
                 (file-name (git-file-name "python-scikit-learn" version))
                 (sha256
@@ -946,14 +944,14 @@ main intended application of Autograd is gradient-based optimization.")
     (name "lightgbm")
     (version "2.0.12")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Microsoft/LightGBM/archive/v"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Microsoft/LightGBM")
+                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "132zf0yk0545mg72hyzxm102g3hpb6ixx9hnf8zd2k55gas6cjj1"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0jlvyn7k81dzrh9ij3zw576wbgiwmmr26rzpdxjn1dbpc3njpvzi"))
+              (file-name (git-file-name name version))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-nose" ,python-nose)))
@@ -968,8 +966,8 @@ main intended application of Autograd is gradient-based optimization.")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (with-directory-excursion ,(string-append "../LightGBM-" version)
+           (lambda _
+             (with-directory-excursion "../source"
                (invoke "pytest" "tests/c_api_test/test_.py")))))))
     (build-system cmake-build-system)
     (home-page "https://github.com/Microsoft/LightGBM")
@@ -1066,7 +1064,7 @@ association studies (GWAS) on extremely large data sets.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/kaldi-asr/kaldi.git")
+                      (url "https://github.com/kaldi-asr/kaldi")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1177,7 +1175,7 @@ written in C++.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/alumae/gst-kaldi-nnet2-online.git")
+                      (url "https://github.com/alumae/gst-kaldi-nnet2-online")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1249,7 +1247,7 @@ automatically.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/alumae/kaldi-gstreamer-server.git")
+                      (url "https://github.com/alumae/kaldi-gstreamer-server")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1353,7 +1351,7 @@ Python.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tensorflow/tensorflow.git")
+             (url "https://github.com/tensorflow/tensorflow")
              (commit (string-append "v" version))))
        (file-name (string-append "tensorflow-" version "-checkout"))
        (sha256
@@ -1683,7 +1681,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/google/double-conversion.git")
+                   (url "https://github.com/google/double-conversion")
                    (commit commit)))
              (file-name
               (git-file-name "double-conversion"
@@ -1728,7 +1726,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/google/highwayhash.git")
+                   (url "https://github.com/google/highwayhash")
                    (commit commit)))
              (file-name (string-append "highwayhash-0-" revision
                                        (string-take commit 7)
@@ -1965,122 +1963,6 @@ that:
 @end itemize\n")
     (license license:expat)))
 
-(define-public sbcl-cl-libsvm-format
-  (let ((commit "3300f84fd8d9f5beafc114f543f9d83417c742fb")
-        (revision "0"))
-    (package
-      (name "sbcl-cl-libsvm-format")
-      (version (git-version "0.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/masatoi/cl-libsvm-format.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0284aj84xszhkhlivaigf9qj855fxad3mzmv3zfr0qzb5k0nzwrg"))))
-      (build-system asdf-build-system/sbcl)
-      (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)))
-      (inputs
-       `(("alexandria" ,sbcl-alexandria)))
-      (synopsis "LibSVM data format reader for Common Lisp")
-      (description
-       "This Common Lisp library provides a fast reader for data in LibSVM
-format.")
-      (home-page "https://github.com/masatoi/cl-libsvm-format")
-      (license license:expat))))
-
-(define-public cl-libsvm-format
-  (sbcl-package->cl-source-package sbcl-cl-libsvm-format))
-
-(define-public ecl-cl-libsvm-format
-  (sbcl-package->ecl-package sbcl-cl-libsvm-format))
-
-(define-public sbcl-cl-online-learning
-  (let ((commit "fc7a34f4f161cd1c7dd747d2ed8f698947781423")
-        (revision "0"))
-    (package
-      (name "sbcl-cl-online-learning")
-      (version (git-version "0.5" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/masatoi/cl-online-learning.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "14x95rlg80ay5hv645ki57pqvy12v28hz4k1w0f6bsfi2rmpxchq"))))
-      (build-system asdf-build-system/sbcl)
-      (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)))
-      (inputs
-       `(("cl-libsvm-format" ,sbcl-cl-libsvm-format)
-         ("cl-store" ,sbcl-cl-store)))
-      (arguments
-       `(;; FIXME: Tests pass but then the check phase crashes
-         #:tests? #f))
-      (synopsis "Online Machine Learning for Common Lisp")
-      (description
-       "This library contains a collection of machine learning algorithms for
-online linear classification written in Common Lisp.")
-      (home-page "https://github.com/masatoi/cl-online-learning")
-      (license license:expat))))
-
-(define-public cl-online-learning
-  (sbcl-package->cl-source-package sbcl-cl-online-learning))
-
-(define-public ecl-cl-online-learning
-  (sbcl-package->ecl-package sbcl-cl-online-learning))
-
-(define-public sbcl-cl-random-forest
-  (let ((commit "85fbdd4596d40e824f70f1b7cf239cf544e49d51")
-        (revision "0"))
-    (package
-      (name "sbcl-cl-random-forest")
-      (version (git-version "0.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/masatoi/cl-random-forest.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "097xv60i1ndz68sg9p4pc7c5gvyp9i1xgw966b4wwfq3x6hbz421"))))
-      (build-system asdf-build-system/sbcl)
-      (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)
-         ("trivial-garbage" ,sbcl-trivial-garbage)))
-      (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("cl-libsvm-format" ,sbcl-cl-libsvm-format)
-         ("cl-online-learning" ,sbcl-cl-online-learning)
-         ("lparallel" ,sbcl-lparallel)))
-      (arguments
-       `(#:tests? #f)) ; The tests download data from the Internet
-      (synopsis "Random Forest and Global Refinement for Common Lisp")
-      (description
-       "CL-random-forest is an implementation of Random Forest for multiclass
-classification and univariate regression written in Common Lisp.  It also
-includes an implementation of Global Refinement of Random Forest.")
-      (home-page "https://github.com/masatoi/cl-random-forest")
-      (license license:expat))))
-
-(define-public cl-random-forest
-  (sbcl-package->cl-source-package sbcl-cl-random-forest))
-
-(define-public ecl-cl-random-forest
-  (sbcl-package->ecl-package sbcl-cl-random-forest))
-
 (define-public gloo
   (let ((version "0.0.0") ; no proper version tag
         (commit "ca528e32fea9ca8f2b16053cff17160290fc84ce")
@@ -2092,7 +1974,7 @@ includes an implementation of Global Refinement of Random Forest.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/facebookincubator/gloo.git")
+               (url "https://github.com/facebookincubator/gloo")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

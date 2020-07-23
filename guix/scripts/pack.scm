@@ -149,6 +149,11 @@ dependencies are registered."
             (define db-file
               (store-database-file #:state-directory #$output))
 
+            ;; Make sure non-ASCII file names are properly handled.
+            (setenv "GUIX_LOCPATH"
+                    #+(file-append glibc-utf8-locales "/lib/locale"))
+            (setlocale LC_ALL "en_US.utf8")
+
             (sql-schema #$schema)
             (let ((items (append-map read-closure '#$labels)))
               (with-database db-file db
@@ -180,6 +185,15 @@ added to the pack."
     (and localstatedir?
          (file-append (store-database (list profile))
                       "/db/db.sqlite")))
+
+  (define set-utf8-locale
+    ;; Arrange to not depend on 'glibc-utf8-locales' when using '--bootstrap'.
+    (and (or (not (profile? profile))
+             (profile-locales? profile))
+         #~(begin
+             (setenv "GUIX_LOCPATH"
+                     #+(file-append glibc-utf8-locales "/lib/locale"))
+             (setlocale LC_ALL "en_US.utf8"))))
 
   (define build
     (with-imported-modules (source-module-closure
@@ -225,6 +239,9 @@ added to the pack."
             (zero? (system* (string-append #+archiver "/bin/tar")
                             "cf" "/dev/null" "--files-from=/dev/null"
                             "--sort=name")))
+
+          ;; Make sure non-ASCII file names are properly handled.
+          #+set-utf8-locale
 
           ;; Add 'tar' to the search path.
           (setenv "PATH" #+(file-append archiver "/bin"))
@@ -836,9 +853,10 @@ last resort for relocation."
                     (scandir input))
 
           (for-each build-wrapper
-                    (append (find-files (string-append input "/bin"))
-                            (find-files (string-append input "/sbin"))
-                            (find-files (string-append input "/libexec")))))))
+                    ;; Note: Trailing slash in case these are symlinks.
+                    (append (find-files (string-append input "/bin/"))
+                            (find-files (string-append input "/sbin/"))
+                            (find-files (string-append input "/libexec/")))))))
 
   (computed-file (string-append
                   (cond ((package? package)

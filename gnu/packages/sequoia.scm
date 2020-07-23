@@ -39,7 +39,7 @@
 (define-public sequoia
   (package
     (name "sequoia")
-    (version "0.16.0")
+    (version "0.17.0")
     (source
      (origin
        (method git-fetch)
@@ -47,7 +47,7 @@
              (url "https://gitlab.com/sequoia-pgp/sequoia.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0iwzi2ylrwz56s77cd4vcf89ig6ipy4w6kp2pfwqvd2d00x54dhk"))
+        (base32 "1rf9q67qmjfkgy6r3mz1h9ibfmc04r4j8nzacqv2l75x4mwvf6xb"))
        (file-name (git-file-name name version))))
     (build-system cargo-build-system)
     (outputs '("out" "python"))
@@ -69,48 +69,48 @@
        #:cargo-inputs
        (("rust-assert-cli" ,rust-assert-cli-0.6)
         ("rust-anyhow" ,rust-anyhow-1.0)
-        ("rust-base64", rust-base64-0.11)
+        ("rust-base64" ,rust-base64-0.11)
         ;;("rust-buffered-reader" included
-        ("rust-bzip2", rust-bzip2-0.3)
+        ("rust-bzip2" ,rust-bzip2-0.3)
         ("rust-capnp" ,rust-capnp-0.10)
         ("rust-capnp-rpc" ,rust-capnp-rpc-0.10)
         ("rust-capnpc" ,rust-capnpc-0.10)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
-        ("rust-clap" ,rust-clap-2)
         ("rust-colored" ,rust-colored-1.9.1)
         ("rust-crossterm" ,rust-crossterm-0.13)
-        ("rust-ctor", rust-ctor-0.1)
+        ("rust-ctor" ,rust-ctor-0.1)
         ("rust-dirs" ,rust-dirs-2.0)
         ;;("rust-failure" included
         ("rust-filetime" ,rust-filetime-0.2)
-        ("rust-flate2", rust-flate2-1.0)
+        ("rust-flate2" ,rust-flate2-1.0)
         ("rust-fs2" ,rust-fs2-0.4)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-http" ,rust-http-0.1)
         ("rust-hyper" ,rust-hyper-0.12)
         ("rust-hyper-tls" ,rust-hyper-tls-0.3)
-        ("rust-idna", rust-idna-0.2)
+        ("rust-idna" ,rust-idna-0.2)
         ("rust-itertools" ,rust-itertools-0.8)
-        ("rust-lalrpop-util", rust-lalrpop-util-0.17)
-        ("rust-lazy-static", rust-lazy-static-1.3)
+        ("rust-lalrpop-util" ,rust-lalrpop-util-0.17)
+        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-memsec", rust-memsec-0.5)
+        ("rust-memsec" ,rust-memsec-0.5)
         ("rust-native-tls" ,rust-native-tls-0.2)
-        ("rust-nettle", rust-nettle-7)
+        ("rust-nettle" ,rust-nettle-7)
         ("rust-parity-tokio-ipc" ,rust-parity-tokio-ipc-0.4)
         ("rust-percent-encoding" ,rust-percent-encoding-2.1)
         ("rust-prettytable-rs" ,rust-prettytable-rs-0.8)
         ("rust-proc-macro2" ,rust-proc-macro2-1.0)
-        ("rust-quickcheck", rust-quickcheck-0.9)
-        ("rust-rand", rust-rand-0.7)
-        ("rust-regex", rust-regex-1.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-regex" ,rust-regex-1)
         ("rust-rusqlite" ,rust-rusqlite-0.19)
-        ("rust-tempfile" ,rust-tempfile-3.1)
+        ("rust-structopt" ,rust-structopt-0.3)
+        ("rust-tempfile" ,rust-tempfile-3)
         ("rust-thiserror" ,rust-thiserror-1.0)
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-core" ,rust-tokio-core-0.1)
-        ("rust-unicode-normalization", rust-unicode-normalization-0.1)
+        ("rust-unicode-normalization" ,rust-unicode-normalization-0.1)
         ("rust-url" ,rust-url-2.1)
         ("rust-zbase32" ,rust-zbase32-0.1))
        #:cargo-development-inputs
@@ -162,6 +162,14 @@
              ;; FIXME: why do we need to set this here?
              (setenv "LIBCLANG_PATH"
                      (string-append (assoc-ref inputs "clang") "/lib"))
+             #t))
+         (add-after 'unpack 'unpin-deps
+           (lambda _
+             ;; As the comment in that file explains, upstream encourages
+             ;; unpinning, as the pinned version is only to make sure the crate
+             ;; compiles on older versions of rustc
+             (substitute* '("openpgp/Cargo.toml" "tool/Cargo.toml")
+               (("= \"=") "= \""))
              #t)))))
     (home-page "https://sequoia-pgp.org")
     (synopsis "New OpenPGP implementation")

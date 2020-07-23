@@ -294,7 +294,7 @@ be dangerous and may void your CPU or system board's warranty.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/uoaerg/wavemon.git")
+             (url "https://github.com/uoaerg/wavemon")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -338,7 +338,7 @@ supported by the Linux kernel.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/rockchip-linux/rkdeveloptool.git")
+               (url "https://github.com/rockchip-linux/rkdeveloptool")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

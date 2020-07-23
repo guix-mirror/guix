@@ -26,6 +26,7 @@
                 #:select (download-to-store url-fetch))
   #:use-module (guix gnupg)
   #:use-module (guix packages)
+  #:use-module (guix diagnostics)
   #:use-module (guix ui)
   #:use-module (guix base32)
   #:use-module (guix gexp)
@@ -51,6 +52,7 @@
             upstream-source-archive-types
             upstream-source-input-changes
 
+            url-predicate
             url-prefix-predicate
             coalesce-sources
 
@@ -161,23 +163,27 @@ S-expression PACKAGE-SEXP."
                              current-propagated new-propagated))))))
     (_ '())))
 
+(define* (url-predicate matching-url?)
+  "Return a predicate that returns true when passed a package whose source is
+an <origin> with the URL-FETCH method, and one of its URLs passes
+MATCHING-URL?."
+  (lambda (package)
+    (match (package-source package)
+      ((? origin? origin)
+       (and (eq? (origin-method origin) url-fetch)
+            (match (origin-uri origin)
+              ((? string? url)
+               (matching-url? url))
+              (((? string? urls) ...)
+               (any matching-url? urls))
+              (_
+               #f))))
+      (_ #f))))
+
 (define (url-prefix-predicate prefix)
   "Return a predicate that returns true when passed a package where one of its
 source URLs starts with PREFIX."
-  (lambda (package)
-    (define matching-uri?
-      (match-lambda
-        ((? string? uri)
-         (string-prefix? prefix uri))
-        (_
-         #f)))
-
-    (match (package-source package)
-      ((? origin? origin)
-       (match (origin-uri origin)
-         ((? matching-uri?) #t)
-         (_                 #f)))
-      (_ #f))))
+  (url-predicate (cut string-prefix? prefix <>)))
 
 (define (upstream-source-archive-types release)
   "Return the available types of archives for RELEASE---a list of strings such
@@ -320,10 +326,17 @@ values: 'interactive' (default), 'always', and 'never'."
                                (built-derivations (list drv))
                                (return (derivation->output-path drv))))))))
           (let-values (((status data)
-                        (gnupg-verify* sig data #:key-download key-download)))
+                        (if sig
+                            (gnupg-verify* sig data
+                                           #:key-download key-download)
+                            (values 'missing-signature data))))
             (match status
               ('valid-signature
                tarball)
+              ('missing-signature
+               (warning (G_ "failed to download detached signature from ~a~%")
+                        signature-url)
+               #f)
               ('invalid-signature
                (warning (G_ "signature verification failed for '~a' (key: ~a)~%")
                         url data)
@@ -472,10 +485,8 @@ new version string if an update was made, and #f otherwise."
                 (warning (G_ "~a: could not locate source file")
                          (location-file loc))
                 #f)))
-        (begin
-          (format (current-error-port)
-                  (G_ "~a: ~a: no `version' field in source; skipping~%")
-                  (location->string (package-location package))
-                  name)))))
+        (warning (package-location package)
+                 (G_ "~a: no `version' field in source; skipping~%")
+                 name))))
 
 ;;; upstream.scm ends here

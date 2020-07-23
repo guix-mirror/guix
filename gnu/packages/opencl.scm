@@ -58,7 +58,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/KhronosGroup/OpenCL-Headers.git")
+                      (url "https://github.com/KhronosGroup/OpenCL-Headers")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -109,7 +109,7 @@ programming.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/KhronosGroup/OpenCL-CLHPP.git")
+             (url "https://github.com/KhronosGroup/OpenCL-CLHPP")
              (commit (string-append "v" version))))
        (sha256
         (base32 "0h5kpg5cl8wzfnqmv6i26aig2apv06ffm9p3rh35938n9r8rladm"))
@@ -181,7 +181,7 @@ Loader as provided by this package.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Oblomov/clinfo.git")
+             (url "https://github.com/Oblomov/clinfo")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -223,7 +223,7 @@ the system.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/intel/beignet.git")
+             (url "https://github.com/intel/beignet")
              (commit (string-append "Release_v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -303,7 +303,7 @@ back-end for the LLVM compiler framework.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pocl/pocl.git")
+             (url "https://github.com/pocl/pocl")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1c4y69zks6hkq5fqh9waxgb8g4ka7y6h3vacmsm720kba0h57g8a"))

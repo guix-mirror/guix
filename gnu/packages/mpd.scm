@@ -60,7 +60,7 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.18")
+    (version "2.19")
     (source (origin
               (method url-fetch)
               (uri
@@ -69,7 +69,7 @@
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "1yl123xr25gcd3vlsfmn6p7gbrq029pgnxa8m6n6j0byaqgixc2c"))))
+                "12d1fzlkcnjw4ayk2wp11vhglfcvr5k02arzdbkhiavq496av2hm"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -92,7 +92,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.21.23")
+    (version "0.21.25")
     (source (origin
               (method url-fetch)
               (uri
@@ -101,7 +101,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "18q72b9baj5cdpq0yn60qm7q4g8vwqqyqndl9xg3f3w0m4n557s3"))))
+                "00f2cm3sg0vi9gxb1yk35lyyh3fbabwim3mfnsz2syrjpw0sv810"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
@@ -299,14 +299,14 @@ interface for the Music Player Daemon.")
     (name "sonata")
     (version "1.7b1")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/multani/sonata/archive/v"
-                              version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/multani/sonata")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "07gq2nxqwxs0qyxjbay7k5j25zd386bn7wdr2dl1gk53diwnn7s0"))))
+                "1npbxlrg6k154qybfd250nq2p96kxdsdkj9wwnp93gljnii3g8wh"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -350,7 +350,7 @@ MPD servers, search and multimedia key support.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/joshkunz/ashuffle.git")
+                    (url "https://github.com/joshkunz/ashuffle")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

@@ -29,6 +29,7 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix sets)
+  #:use-module ((guix diagnostics) #:select (leave))
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -39,6 +40,7 @@
             honor-system-x509-certificates!
 
             with-repository
+            with-git-error-handling
             false-if-git-not-found
             update-cached-checkout
             url+commit->name
@@ -148,47 +150,52 @@ of SHA1 string."
     (last (string-split url #\/)) ".git" "")
    "-" (string-take sha1 7)))
 
+(define (resolve-reference repository ref)
+  "Resolve the branch, commit or tag specified by REF, and return the
+corresponding Git object."
+  (let resolve ((ref ref))
+    (match ref
+      (('branch . branch)
+       (let ((oid (reference-target
+                   (branch-lookup repository branch BRANCH-REMOTE))))
+         (object-lookup repository oid)))
+      (('commit . commit)
+       (let ((len (string-length commit)))
+         ;; 'object-lookup-prefix' appeared in Guile-Git in Mar. 2018, so we
+         ;; can't be sure it's available.  Furthermore, 'string->oid' used to
+         ;; read out-of-bounds when passed a string shorter than 40 chars,
+         ;; which is why we delay calls to it below.
+         (if (< len 40)
+             (if (module-defined? (resolve-interface '(git object))
+                                  'object-lookup-prefix)
+                 (object-lookup-prefix repository (string->oid commit) len)
+                 (raise (condition
+                         (&message
+                          (message "long Git object ID is required")))))
+             (object-lookup repository (string->oid commit)))))
+      (('tag-or-commit . str)
+       (if (or (> (string-length str) 40)
+               (not (string-every char-set:hex-digit str)))
+           (resolve `(tag . ,str))              ;definitely a tag
+           (catch 'git-error
+             (lambda ()
+               (resolve `(tag . ,str)))
+             (lambda _
+               ;; There's no such tag, so it must be a commit ID.
+               (resolve `(commit . ,str))))))
+      (('tag    . tag)
+       (let ((oid (reference-name->oid repository
+                                       (string-append "refs/tags/" tag))))
+         ;; OID may point to a "tag" object, but it can also point directly
+         ;; to a "commit" object, as surprising as it may seem.  Return that
+         ;; object, whatever that is.
+         (object-lookup repository oid))))))
+
 (define (switch-to-ref repository ref)
   "Switch to REPOSITORY's branch, commit or tag specified by REF.  Return the
 OID (roughly the commit hash) corresponding to REF."
   (define obj
-    (let resolve ((ref ref))
-      (match ref
-        (('branch . branch)
-         (let ((oid (reference-target
-                     (branch-lookup repository branch BRANCH-REMOTE))))
-           (object-lookup repository oid)))
-        (('commit . commit)
-         (let ((len (string-length commit)))
-           ;; 'object-lookup-prefix' appeared in Guile-Git in Mar. 2018, so we
-           ;; can't be sure it's available.  Furthermore, 'string->oid' used to
-           ;; read out-of-bounds when passed a string shorter than 40 chars,
-           ;; which is why we delay calls to it below.
-           (if (< len 40)
-               (if (module-defined? (resolve-interface '(git object))
-                                    'object-lookup-prefix)
-                   (object-lookup-prefix repository (string->oid commit) len)
-                   (raise (condition
-                           (&message
-                            (message "long Git object ID is required")))))
-               (object-lookup repository (string->oid commit)))))
-        (('tag-or-commit . str)
-         (if (or (> (string-length str) 40)
-                 (not (string-every char-set:hex-digit str)))
-             (resolve `(tag . ,str))              ;definitely a tag
-             (catch 'git-error
-               (lambda ()
-                 (resolve `(tag . ,str)))
-               (lambda _
-                 ;; There's no such tag, so it must be a commit ID.
-                 (resolve `(commit . ,str))))))
-        (('tag    . tag)
-         (let ((oid (reference-name->oid repository
-                                         (string-append "refs/tags/" tag))))
-           ;; OID may point to a "tag" object, but it can also point directly
-           ;; to a "commit" object, as surprising as it may seem.  Return that
-           ;; object, whatever that is.
-           (object-lookup repository oid))))))
+    (resolve-reference repository ref))
 
   (reset repository obj RESET_HARD)
   (object-id obj))
@@ -208,6 +215,23 @@ OID (roughly the commit hash) corresponding to REF."
 dynamic extent of EXP."
   (call-with-repository directory
                         (lambda (repository) exp ...)))
+
+(define (report-git-error error)
+  "Report the given Guile-Git error."
+  ;; Prior to Guile-Git commit b6b2760c2fd6dfaa5c0fedb43eeaff06166b3134,
+  ;; errors would be represented by integers.
+  (match error
+    ((? integer? error)                           ;old Guile-Git
+     (leave (G_ "Git error ~a~%") error))
+    ((? git-error? error)                         ;new Guile-Git
+     (leave (G_ "Git error: ~a~%") (git-error-message error)))))
+
+(define-syntax-rule (with-git-error-handling body ...)
+  (catch 'git-error
+    (lambda ()
+      body ...)
+    (lambda (key err)
+      (report-git-error err))))
 
 (define (load-git-submodules)
   "Attempt to load (git submodules), which was missing until Guile-Git 0.2.0.
@@ -268,6 +292,7 @@ definitely available in REPOSITORY, false otherwise."
                                  #:key
                                  (ref '(branch . "master"))
                                  recursive?
+                                 (check-out? #t)
                                  starting-commit
                                  (log-port (%make-void-port "w"))
                                  (cache-directory
@@ -282,7 +307,10 @@ provided) as returned by 'commit-relation'.
 REF is pair whose key is [branch | commit | tag | tag-or-commit ] and value
 the associated data: [<branch name> | <sha1> | <tag name> | <string>].
 
-When RECURSIVE? is true, check out submodules as well, if any."
+When RECURSIVE? is true, check out submodules as well, if any.
+
+When CHECK-OUT? is true, reset the cached working tree to REF; otherwise leave
+it unchanged."
   (define canonical-ref
     ;; We used to require callers to specify "origin/" for each branch, which
     ;; made little sense since the cache should be transparent to them.  So
@@ -313,7 +341,10 @@ When RECURSIVE? is true, check out submodules as well, if any."
 
      ;; Note: call 'commit-relation' from here because it's more efficient
      ;; than letting users re-open the checkout later on.
-     (let* ((oid      (switch-to-ref repository canonical-ref))
+     (let* ((oid      (if check-out?
+                          (switch-to-ref repository canonical-ref)
+                          (object-id
+                           (resolve-reference repository canonical-ref))))
             (new      (and starting-commit
                            (commit-lookup repository oid)))
             (old      (and starting-commit

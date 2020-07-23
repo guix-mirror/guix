@@ -1,0 +1,102 @@
+Taken from Debian:
+https://salsa.debian.org/multimedia-team/taopm/-/raw/master/debian/patches/01-add-missing-headers.diff
+
+Description: Adding missing headers
+Author: Tiago Bortoletto Vaz <tiago@debian.org>
+Last-Update: 2013-04-17
+--- a/libtao/Tao.cc
++++ b/libtao/Tao.cc
+@@ -18,6 +18,7 @@
+ 
+ #include "Tao.h"
+ #include <iostream>
++#include <stdio.h>
+ 
+ extern Tao tao;
+ float &Time = tao.synthesisEngine.time;
+--- a/libtao/TaoDevice.cc
++++ b/libtao/TaoDevice.cc
+@@ -20,6 +20,7 @@
+ #include "Tao.h"
+ #include "TaoAccessPoint.h"
+ #include "TaoInstrument.h"
++#include <cstring>
+ 
+ TaoDevice::TaoDevice()
+     {
+--- a/libtao/TaoInstrument.cc
++++ b/libtao/TaoInstrument.cc
+@@ -23,6 +23,7 @@
+ //#include <sys/types.h>
+ #include <iostream>
+ #include <cmath>
++#include <cstring>
+ 
+ float TaoInstrument::defaultMass=3.5;		// Set to optimum value for
+                                                 // frequency response of
+--- a/libtao/TaoOutput.cc
++++ b/libtao/TaoOutput.cc
+@@ -24,6 +24,7 @@
+ #include <fstream>
+ #include "TaoOutput.h"
+ #include "Tao.h"
++#include <cstring>
+ 
+ extern Tao tao;
+ 
+--- a/libtao/TaoPitch.cc
++++ b/libtao/TaoPitch.cc
+@@ -30,6 +30,7 @@
+ #include "TaoPitch.h"
+ #include <iostream>
+ #include <cmath>
++#include <cstring>
+ 
+ // This class allows pitches and frequencies to be specified in a number of
+ // different formats including the following:
+--- a/taoparse/taoparser.yy
++++ b/taoparse/taoparser.yy
+@@ -19,7 +19,8 @@
+ 
+ #include <iostream>
+ #include <sstream>
+-#include <string>
++#include <cstring>
++#include <stdio.h>
+ #include "taoparserdefs.h"
+ 
+ int yyerror(char *s);
+--- a/libtao/TaoGraphicsEngine.cc
++++ b/libtao/TaoGraphicsEngine.cc
+@@ -27,7 +27,8 @@
+ #include "TaoInstrument.h"
+ #include "TaoAccessPoint.h"
+ #include "TaoDevice.h"
+-#include <string>
++#include <cstring>
++#include <stdio.h>
+     
+ extern Tao tao;
+ extern void taoMasterTick();
+--- a/tao2aiff/tao2aiff.cc
++++ b/tao2aiff/tao2aiff.cc
+@@ -25,6 +25,8 @@
+ #include <cmath>
+ #include "audiofile.h"
+ #include "tao2aiff.h"
++#include <cstdlib>
++#include <cstring>
+ 
+ 
+ main(int argc, char **argv)
+--- a/tao2wav/tao2wav.cc
++++ b/tao2wav/tao2wav.cc
+@@ -25,6 +25,8 @@
+ #include <cmath>
+ #include "audiofile.h"
+ #include "tao2wav.h"
++#include <cstdlib>
++#include <cstring>
+ 
+ main(int argc, char **argv)
+     {

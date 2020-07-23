@@ -3,18 +3,6 @@
 #include <iostream>
 #include <cstring>
 
-#ifdef HAVE_OPENSSL
-#include <openssl/md5.h>
-#include <openssl/sha.h>
-#else
-extern "C" {
-#include "md5.h"
-#include "sha1.h"
-#include "sha256.h"
-#include "sha512.h"
-}
-#endif
-
 #include "hash.hh"
 #include "archive.hh"
 #include "util.hh"
@@ -38,11 +26,9 @@ Hash::Hash()
 Hash::Hash(HashType type)
 {
     this->type = type;
-    if (type == htMD5) hashSize = md5HashSize;
-    else if (type == htSHA1) hashSize = sha1HashSize;
-    else if (type == htSHA256) hashSize = sha256HashSize;
-    else if (type == htSHA512) hashSize = sha512HashSize;
-    else throw Error("unknown hash type");
+    hashSize = gcry_md_get_algo_dlen(type);
+
+    if (hashSize == 0) throw Error("unknown hash type");
     assert(hashSize <= maxHashSize);
     memset(hash, 0, maxHashSize);
 }
@@ -195,41 +181,48 @@ bool isHash(const string & s)
     return true;
 }
 
-
+/* The "hash context".  */
 struct Ctx
 {
-    MD5_CTX md5;
-    SHA_CTX sha1;
-    SHA256_CTX sha256;
-    SHA512_CTX sha512;
+  /* This copy constructor is needed in 'HashSink::currentHash()' where we
+     expect the copy of a 'Ctx' object to yield a truly different context.  */
+  Ctx(Ctx &ref)
+  {
+    if (ref.md_handle == NULL)
+      md_handle = NULL;
+    else
+      gcry_md_copy (&md_handle, ref.md_handle);
+  }
+
+  /* Make sure 'md_handle' is always initialized.  */
+  Ctx(): md_handle (NULL) { };
+
+  gcry_md_hd_t md_handle;
 };
 
 
 static void start(HashType ht, Ctx & ctx)
 {
-    if (ht == htMD5) MD5_Init(&ctx.md5);
-    else if (ht == htSHA1) SHA1_Init(&ctx.sha1);
-    else if (ht == htSHA256) SHA256_Init(&ctx.sha256);
-    else if (ht == htSHA512) SHA512_Init(&ctx.sha512);
+    gcry_error_t err;
+
+    err = gcry_md_open (&ctx.md_handle, ht, 0);
+    assert (err == GPG_ERR_NO_ERROR);
 }
 
 
 static void update(HashType ht, Ctx & ctx,
     const unsigned char * bytes, unsigned int len)
 {
-    if (ht == htMD5) MD5_Update(&ctx.md5, bytes, len);
-    else if (ht == htSHA1) SHA1_Update(&ctx.sha1, bytes, len);
-    else if (ht == htSHA256) SHA256_Update(&ctx.sha256, bytes, len);
-    else if (ht == htSHA512) SHA512_Update(&ctx.sha512, bytes, len);
+    gcry_md_write (ctx.md_handle, bytes, len);
 }
 
 
 static void finish(HashType ht, Ctx & ctx, unsigned char * hash)
 {
-    if (ht == htMD5) MD5_Final(hash, &ctx.md5);
-    else if (ht == htSHA1) SHA1_Final(hash, &ctx.sha1);
-    else if (ht == htSHA256) SHA256_Final(hash, &ctx.sha256);
-    else if (ht == htSHA512) SHA512_Final(hash, &ctx.sha512);
+    memcpy (hash, gcry_md_read (ctx.md_handle, ht),
+	    gcry_md_get_algo_dlen (ht));
+    gcry_md_close (ctx.md_handle);
+    ctx.md_handle = NULL;
 }
 
 
@@ -328,6 +321,9 @@ HashType parseHashType(const string & s)
     else if (s == "sha1") return htSHA1;
     else if (s == "sha256") return htSHA256;
     else if (s == "sha512") return htSHA512;
+    else if (s == "sha3-256") return htSHA3_256;
+    else if (s == "sha3-512") return htSHA3_512;
+    else if (s == "blake2s-256") return htBLAKE2s_256;
     else return htUnknown;
 }
 
@@ -338,6 +334,9 @@ string printHashType(HashType ht)
     else if (ht == htSHA1) return "sha1";
     else if (ht == htSHA256) return "sha256";
     else if (ht == htSHA512) return "sha512";
+    else if (ht == htSHA3_256) return "sha3-256";
+    else if (ht == htSHA3_512) return "sha3-512";
+    else if (ht == htBLAKE2s_256) return "blake2s-256";
     else throw Error("cannot print unknown hash type");
 }
 

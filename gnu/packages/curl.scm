@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Dale Mellor <guix-devel-0brg6b@rdmp.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (gnu packages)
@@ -52,6 +54,7 @@
   (package
    (name "curl")
    (version "7.69.1")
+   (replacement curl-7.71.0)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
@@ -168,6 +171,31 @@ tunneling, and so on.")
     (name "curl-minimal")
     (inputs (alist-delete "openldap" (package-inputs curl))))))
 
+;; Replacement package to fix CVE-2020-8169 and CVE-2020-8177.
+(define curl-7.71.0
+  (package
+    (inherit curl)
+    (version "7.71.0")
+    (source (origin
+              (inherit (package-source curl))
+              (uri (string-append "https://curl.haxx.se/download/curl-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0wlppmx9iry8slh4pqcxj7lwc6fqwnlhh9ri2pcym2rx76a8gwfd"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments curl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'check
+             (lambda _
+               ;; Test 1510 is now disabled upstream, and the test runner
+               ;; complains that it can not disable a non-existing test.
+               ;; Thus, override the phase to not delete the test.
+               (substitute* "tests/runtests.pl"
+                 (("/bin/sh") (which "sh")))
+               (invoke "make" "-C" "tests" "test")))))))))
+
 (define-public kurly
   (package
     (name "kurly")
@@ -258,3 +286,34 @@ not offer a replacement for libcurl.")
 Guile to do client-side URL transfers, like requesting documents from HTTP or
 FTP servers.  It is based on the curl library.")
    (license license:gpl3+)))
+
+(define-public curlpp
+  (package
+    (name "curlpp")
+    (version "0.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jpbarrette/curlpp")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1b0ylnnrhdax4kwjq64r1fk0i24n5ss6zfzf4hxwgslny01xiwrk"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    ;; There are no build tests to be had.
+    (arguments
+     '(#:tests? #f))
+    ;; The installed version needs the header files from the C library.
+    (propagated-inputs
+     `(("curl" ,curl)))
+    (synopsis "C++ wrapper around libcURL")
+    (description
+     "This package provides a free and easy-to-use client-side C++ URL
+transfer library, supporting FTP, FTPS, HTTP, HTTPS, GOPHER, TELNET, DICT,
+FILE and LDAP; in particular it supports HTTPS certificates, HTTP POST, HTTP
+PUT, FTP uploading, kerberos, HTTP form based upload, proxies, cookies,
+user+password authentication, file transfer resume, http proxy tunneling and
+more!")
+    (home-page "http://www.curlpp.org")
+    (license license:expat)))

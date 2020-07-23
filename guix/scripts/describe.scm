@@ -26,11 +26,14 @@
   #:use-module (guix scripts)
   #:use-module (guix describe)
   #:use-module (guix profiles)
+  #:autoload   (guix openpgp) (openpgp-format-fingerprint)
   #:use-module (git)
   #:use-module (json)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:autoload   (ice-9 pretty-print) (pretty-print)
   #:use-module (web uri)
   #:export (display-profile-content
@@ -42,7 +45,8 @@
 ;;;
 ;;; Command-line options.
 ;;;
-(define %available-formats '("human" "channels" "json" "recutils"))
+(define %available-formats
+  '("human" "channels" "channels-sans-intro" "json" "recutils"))
 
 (define (list-formats)
   (display (G_ "The available formats are:\n"))
@@ -109,21 +113,50 @@ Display information about the channels currently in use.\n"))
        (_
         (warning (G_ "'GUIX_PACKAGE_PATH' is set but it is not captured~%")))))))
 
-(define (channel->sexp channel)
-  `(channel
-    (name ',(channel-name channel))
-    (url ,(channel-url channel))
-    (commit ,(channel-commit channel))))
+(define* (channel->sexp channel #:key (include-introduction? #t))
+  (let ((intro (and include-introduction?
+                    (channel-introduction channel))))
+    `(channel
+      (name ',(channel-name channel))
+      (url ,(channel-url channel))
+      (commit ,(channel-commit channel))
+      ,@(if intro
+            `((introduction (make-channel-introduction
+                             ,(channel-introduction-first-signed-commit intro)
+                             (openpgp-fingerprint
+                              ,(openpgp-format-fingerprint
+                                (channel-introduction-first-commit-signer
+                                 intro))))))
+            '()))))
 
 (define (channel->json channel)
-  (scm->json-string `((name . ,(channel-name channel))
-                      (url . ,(channel-url channel))
-                      (commit . ,(channel-commit channel)))))
+  (scm->json-string
+   (let ((intro (channel-introduction channel)))
+     `((name . ,(channel-name channel))
+       (url . ,(channel-url channel))
+       (commit . ,(channel-commit channel))
+       ,@(if intro
+             `((introduction
+                . ((commit . ,(channel-introduction-first-signed-commit
+                               intro))
+                   (signer . ,(openpgp-format-fingerprint
+                               (channel-introduction-first-commit-signer
+                                intro))))))
+             '())))))
 
 (define (channel->recutils channel port)
+  (define intro
+    (channel-introduction channel))
+
   (format port "name: ~a~%" (channel-name channel))
   (format port "url: ~a~%" (channel-url channel))
-  (format port "commit: ~a~%" (channel-commit channel)))
+  (format port "commit: ~a~%" (channel-commit channel))
+  (when intro
+    (format port "introductioncommit: ~a~%"
+            (channel-introduction-first-signed-commit intro))
+    (format port "introductionsigner: ~a~%"
+            (openpgp-format-fingerprint
+             (channel-introduction-first-commit-signer intro)))))
 
 (define (display-checkout-info fmt)
   "Display information about the current checkout according to FMT, a symbol
@@ -181,6 +214,10 @@ in the format specified by FMT."
      (display-profile-content profile number))
     ('channels
      (pretty-print `(list ,@(map channel->sexp channels))))
+    ('channels-sans-intro
+     (pretty-print `(list ,@(map (cut channel->sexp <>
+                                      #:include-introduction? #f)
+                                 channels))))
     ('json
      (format #t "[~a]~%" (string-join (map channel->json channels) ",")))
     ('recutils

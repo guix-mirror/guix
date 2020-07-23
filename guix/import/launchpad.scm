@@ -57,16 +57,17 @@ false if none is recognized"
                             "/" new-version "/+download/" repo "-" new-version ext))
             (#t #f))))) ; Some URLs are not recognised.
 
-  (let ((source-uri (and=> (package-source old-package) origin-uri))
-        (fetch-method (and=> (package-source old-package) origin-method)))
-    (cond
-     ((eq? fetch-method download:url-fetch)
-      (match source-uri
-             ((? string?)
-              (updated-url source-uri))
-             ((source-uri ...)
-              (find updated-url source-uri))))
-     (else #f))))
+  (match (package-source old-package)
+    ((? origin? origin)
+     (let ((source-uri   (origin-uri origin))
+           (fetch-method (origin-method origin)))
+       (and (eq? fetch-method download:url-fetch)
+            (match source-uri
+              ((? string?)
+               (updated-url source-uri))
+              ((source-uri ...)
+               (find updated-url source-uri))))))
+    (_ #f)))
 
 (define (launchpad-package? package)
   "Return true if PACKAGE is a package from Launchpad, else false."

@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,7 +123,7 @@ operating system functions.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/aseba-community/dashel.git")
+             (url "https://github.com/aseba-community/dashel")
              (commit version)))
        (sha256
         (base32 "0anks2l2i2qp0wlzqck1qgpq15a3l6dg8lw2h8s4nsj7f61lffwy"))
@@ -147,7 +148,7 @@ combination of these streams.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/QuantStack/xsimd.git")
+             (url "https://github.com/QuantStack/xsimd")
              (commit version)))
        (sha256
         (base32 "1ny2qin1j4h35mljivh8z52kwdyjxf4yxlzb8j52ji91v2ccc88j"))
@@ -165,6 +166,37 @@ library authors.  Namely, it enables manipulation of batches of numbers with
 the same arithmetic operators as for single values.  It also provides
 accelerated implementation of common mathematical functions operating on
 batches.")
+    (license license:bsd-3)))
+
+(define-public chaiscript
+  (package
+    (name "chaiscript")
+    (version "6.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ChaiScript/ChaiScript")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0i1c88rn1wwz8nf3dpapcdkk4w623m3nksfy5yjai10k9irkzy3c"))))
+    (build-system cmake-build-system)
+    (home-page "https://chaiscript.com/")
+    (synopsis "Embedded scripting language designed for C++")
+    (description
+     "ChaiScript is one of the only embedded scripting language designed from
+the ground up to directly target C++ and take advantage of modern C++
+development techniques.  Being a native C++ application, it has some advantages
+over existing embedded scripting languages:
+
+@enumerate
+@item Uses a header-only approach, which makes it easy to integrate with
+existing projects.
+@item Maintains type safety between your C++ application and the user scripts.
+@item Supports a variety of C++ techniques including callbacks, overloaded
+functions, class methods, and stl containers.
+@end enumerate\n")
     (license license:bsd-3)))
 
 (define-public fifo-map
@@ -268,7 +300,7 @@ intuitive syntax and trivial integration.")
               (method git-fetch)
               (uri
                (git-reference
-                (url "https://github.com/QuantStack/xtl.git")
+                (url "https://github.com/QuantStack/xtl")
                 (commit version)))
               (sha256
                (base32
@@ -328,7 +360,7 @@ maintained anymore.")
 (define-public gperftools
   (package
     (name "gperftools")
-    (version "2.7")
+    (version "2.8")
     (source
      (origin
        (method git-fetch)
@@ -336,14 +368,14 @@ maintained anymore.")
              (url "https://github.com/gperftools/gperftools")
              (commit (string-append "gperftools-" version))))
        (sha256
-        (base32 "0amvwrzn5qc0b0jpxpy5g6zkmj97zjh4hhjrd130hsg2lwwcwhy1"))
+        (base32 "1rnc53kaxlljgbpsff906vdsry9jl9gcvcnmxgkprwzxq1wipyd0"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ;; For tests:
+       ;; For tests.
        ("perl" ,perl)))
     (home-page "https://github.com/gperftools/gperftools")
     (synopsis "Multi-threaded malloc() and performance analysis tools for C++")
@@ -404,7 +436,7 @@ and make @code{cpplint} usable in wider contexts.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Stiffstream/sobjectizer.git")
+             (url "https://github.com/Stiffstream/sobjectizer")
              (commit (string-append "v." version))))
        (sha256
         (base32 "0jfai7sqxnnjkms38krm7mssj5l79nb3pllkbyj4j581a7l5j6l5"))
@@ -435,7 +467,7 @@ development of concurrent and multithreaded applications in C++.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mobius3/tweeny.git")
+             (url "https://github.com/mobius3/tweeny")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -462,7 +494,7 @@ point and then, after each tween step, plugging back the result.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/abseil/abseil-cpp.git")
+                    (url "https://github.com/abseil/abseil-cpp")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -506,7 +538,7 @@ Google's C++ code base.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/taocpp/PEGTL.git")
+                    (url "https://github.com/taocpp/PEGTL")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256

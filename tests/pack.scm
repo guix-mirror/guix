@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -27,8 +27,13 @@
   #:use-module (guix grafts)
   #:use-module (guix tests)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
+  #:use-module (gnu packages)
+  #:use-module ((gnu packages base) #:select (glibc-utf8-locales))
   #:use-module (gnu packages bootstrap)
   #:use-module ((gnu packages compression) #:select (squashfs-tools))
+  #:use-module ((gnu packages guile) #:select (guile-sqlite3))
+  #:use-module ((gnu packages gnupg) #:select (guile-gcrypt))
   #:use-module (srfi srfi-64))
 
 (define %store
@@ -57,10 +62,10 @@
 (unless (network-reachable?) (test-skip 1))
 (test-assertm "self-contained-tarball" %store
   (mlet* %store-monad
-      ((profile (profile-derivation (packages->manifest
-                                     (list %bootstrap-guile))
-                                    #:hooks '()
-                                    #:locales? #f))
+      ((profile -> (profile
+                    (content (packages->manifest (list %bootstrap-guile)))
+                    (hooks '())
+                    (locales? #f)))
        (tarball (self-contained-tarball "pack" profile
                                         #:symlinks '(("/bin/Guile"
                                                       -> "bin/guile"))
@@ -134,6 +139,57 @@
                         (and (file-exists? "var/guix/db/db.sqlite")
                              (string=? (string-append #$%bootstrap-guile "/bin")
                                        (readlink bin))))))))
+      (built-derivations (list check))))
+
+  (unless store (test-skip 1))
+  (test-assertm "self-contained-tarball + localstatedir, UTF-8 file names" store
+    (mlet* %store-monad
+        ((guile   (set-guile-for-build (default-guile)))
+         (tree    (interned-file-tree
+                   `("directory-with-utf8-file-names" directory
+                     ("α" regular (data "alpha"))
+                     ("λ" regular (data "lambda")))))
+         (tarball (self-contained-tarball "tar-pack" tree
+                                          #:localstatedir? #t))
+         (check   (gexp->derivation
+                   "check-tarball"
+                   (with-extensions (list guile-sqlite3 guile-gcrypt)
+                     (with-imported-modules (source-module-closure
+                                             '((guix store database)))
+                       #~(begin
+                           (use-modules (guix store database)
+                                        (rnrs io ports)
+                                        (srfi srfi-1))
+
+                           (define (valid-file? basename data)
+                             (define file
+                               (string-append "./" #$tree "/" basename))
+
+                             (string=? (call-with-input-file (pk 'file file)
+                                         get-string-all)
+                                       data))
+
+                           (setenv "PATH"
+                                   (string-append #$%tar-bootstrap "/bin"))
+                           (system* "tar" "xvf" #$tarball)
+
+                           (sql-schema
+                            #$(local-file (search-path %load-path
+                                                       "guix/store/schema.sql")))
+                           (with-database "var/guix/db/db.sqlite" db
+                             ;; Make sure non-ASCII file names are properly
+                             ;; handled.
+                             (setenv "GUIX_LOCPATH"
+                                     #+(file-append glibc-utf8-locales
+                                                    "/lib/locale"))
+                             (setlocale LC_ALL "en_US.utf8")
+
+                             (mkdir #$output)
+                             (exit
+                              (and (every valid-file?
+                                          '("α" "λ")
+                                          '("alpha" "lambda"))
+                                   (integer? (path-id db #$tree)))))))))))
       (built-derivations (list check))))
 
   (unless store (test-skip 1))

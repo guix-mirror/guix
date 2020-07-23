@@ -373,7 +373,7 @@ target that libc."
                                     ',%gcc-cross-include-paths)
                           #t))))
          #:configure-flags (list ,(string-append "--target=" target))
-         ,@(package-arguments mig)))
+         #:tests? #f))
 
       (propagated-inputs `(("cross-gnumach-headers" ,xgnumach-headers)))
       (native-inputs `(("cross-gcc" ,xgcc)

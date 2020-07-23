@@ -102,7 +102,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/TimothyGu/libilbc.git")
+         (url "https://github.com/TimothyGu/libilbc")
          (commit
           (string-append "v" version))))
        (file-name
@@ -297,7 +297,7 @@ packet-manipulation library.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/wernerd/ZRTPCPP.git")
+         (url "https://github.com/wernerd/ZRTPCPP")
          (commit
           (string-append "V" version))))
        (file-name
@@ -588,6 +588,16 @@ address of one of the participants.")
              (substitute* "src/mumble/Settings.cpp"
                (("bUsage = true;") "bUsage = false;"))
              #t))
+         (add-before 'configure 'fix-mumble-overlay
+           (lambda* (#:key outputs #:allow-other-keys)
+              (with-output-to-file "scripts/mumble-overlay"
+                (lambda ()
+                  (format #t "#!~a~%" (which "bash"))
+                  (format #t "export LD_PRELOAD=\"~a $LD_PRELOAD\"~%"
+                          (string-append (assoc-ref outputs "out")
+                                         "/lib/mumble/libmumble.so.1"))
+                  (format #t "exec \"${@}\"")))
+              #t))
          (add-before 'install 'disable-murmur-ice
            (lambda _
              (substitute* "scripts/murmur.ini.system"
@@ -717,7 +727,7 @@ your calls and messages.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pjsip/pjproject.git")
+             (url "https://github.com/pjsip/pjproject")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -803,7 +813,7 @@ Initiation Protocol (SIP) and a multimedia framework.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/grishka/libtgvoip.git")
+             (url "https://github.com/grishka/libtgvoip")
              (commit version)))
        (file-name (git-file-name name version))
        ;; Fix compilation on i686-linux architecture.

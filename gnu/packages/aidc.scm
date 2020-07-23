@@ -91,7 +91,7 @@ characters, and is highly robust.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dmtx/libdmtx.git")
+             (url "https://github.com/dmtx/libdmtx")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -163,7 +163,7 @@ Python as well as GUI widgets for GTK and Qt.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/nayuki/QR-Code-generator.git")
+                     (url "https://github.com/nayuki/QR-Code-generator")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (patches (search-patches "qrcodegen-cpp-make-install.patch"))

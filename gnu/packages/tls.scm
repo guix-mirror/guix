@@ -891,22 +891,29 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.16.6")
+    ;; XXX Check whether ‘-Wformat-signedness’ still breaks mbedtls-for-hiawatha
+    ;; when updating.
+    (version "2.23.0")
     (source
      (origin
-       (method url-fetch)
-       ;; XXX: The download links on the website are script redirection links
-       ;; which effectively lead to the format listed in the uri here.
-       (uri (string-append "https://tls.mbed.org/download/mbedtls-"
-                           version "-apache.tgz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ARMmbed/mbedtls")
+             (commit (string-append "mbedtls-" version))))
        (sha256
-        (base32
-         "0w0p51vx0cc6fyqfdn59669q6n4187vi64fw5ha302hrlqimwib6"))))
+        (base32 "13fa9h2i989cbf8n8c0j019mshv6wg213va18my1s787lhcq2d62"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON"
-             "-DUSE_STATIC_MBEDTLS_LIBRARY=OFF")))
+             "-DUSE_STATIC_MBEDTLS_LIBRARY=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-source-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t)))))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python)))
@@ -925,17 +932,19 @@ coding footprint.")
    (package
      (inherit mbedtls-apache)
      (arguments
-      (substitute-keyword-arguments
-          `(#:phases
-            (modify-phases %standard-phases
-              (add-after 'configure 'configure-extra-features
-                (lambda _
-                  (for-each (lambda (feature)
-                              (invoke "scripts/config.pl" "set" feature))
-                            (list "MBEDTLS_THREADING_C"
-                                  "MBEDTLS_THREADING_PTHREAD"))
-                  #t)))
-            ,@(package-arguments mbedtls-apache)))))))
+      (substitute-keyword-arguments (package-arguments mbedtls-apache)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-before 'configure 'configure-extra-features
+              (lambda _
+                (for-each (lambda (feature)
+                            (invoke "scripts/config.pl" "set" feature))
+                          (list "MBEDTLS_THREADING_C"
+                                "MBEDTLS_THREADING_PTHREAD"))
+                ;; XXX The above enables code that breaks with -Werror…
+                (substitute* "CMakeLists.txt"
+                  ((" -Wformat-signedness") ""))
+                #t)))))))))
 
 (define-public dehydrated
   (package

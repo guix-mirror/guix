@@ -53,6 +53,7 @@
   #:use-module (gnu system image)
   #:use-module (gnu system vm)
   #:use-module (gnu system install)
+  #:use-module (gnu system images hurd)
   #:use-module (gnu tests)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -185,18 +186,21 @@ SYSTEM."
               (remove (either from-32-to-64? same? pointless?)
                       %cross-targets)))
 
-(define %guixsd-supported-systems
-  '("x86_64-linux" "i686-linux" "armhf-linux"))
+;; Architectures that are able to build or cross-build Guix System images.
+;; This does not mean that other architectures are not supported, only that
+;; they are often not fast enough to support Guix System images building.
+(define %guix-system-supported-systems
+  '("x86_64-linux" "i686-linux"))
 
-(define %u-boot-systems
-  '("armhf-linux"))
+(define %guix-system-images
+  (list hurd-barebones-disk-image))
 
-(define (qemu-jobs store system)
-  "Return a list of jobs that build QEMU images for SYSTEM."
+(define (image-jobs store system)
+  "Return a list of jobs that build images for SYSTEM."
   (define (->alist drv)
     `((derivation . ,(derivation-file-name drv))
-      (description . "Stand-alone QEMU image of the GNU system")
-      (long-description . "This is a demo stand-alone QEMU image of the GNU
+      (description . "Stand-alone image of the GNU system")
+      (long-description . "This is a demo stand-alone image of the GNU
 system.")
       (license . ,(license-name gpl3+))
       (max-silent-time . 600)
@@ -211,29 +215,32 @@ system.")
                    (parameterize ((%graft? #f))
                      (->alist drv))))))
 
+  (define (build-image image)
+    (run-with-store store
+      (mbegin %store-monad
+        (set-guile-for-build (default-guile))
+        (lower-object (system-image image)))))
+
   (define MiB
     (expt 2 20))
 
-  (if (member system %guixsd-supported-systems)
-      (list (->job 'usb-image
-                   (run-with-store store
-                     (mbegin %store-monad
-                       (set-guile-for-build (default-guile))
-                       (lower-object
-                        (system-image
-                         (image
-                          (inherit efi-disk-image)
-                          (size (* 1500 MiB))
-                          (operating-system installation-os)))))))
-            (->job 'iso9660-image
-                   (run-with-store store
-                     (mbegin %store-monad
-                       (set-guile-for-build (default-guile))
-                       (lower-object
-                        (system-image
-                         (image
-                          (inherit iso9660-image)
-                          (operating-system installation-os))))))))
+  (if (member system %guix-system-supported-systems)
+      `(,(->job 'usb-image
+                (build-image
+                 (image
+                  (inherit efi-disk-image)
+                  (operating-system installation-os))))
+        ,(->job 'iso9660-image
+                (build-image
+                 (image
+                  (inherit iso9660-image)
+                  (operating-system installation-os))))
+        ;; Only cross-compile Guix System images from x86_64-linux for now.
+        ,@(if (string=? system "x86_64-linux")
+              (map (lambda (image)
+                     (->job (image-name image) (build-image image)))
+                   %guix-system-images)
+              '()))
       '()))
 
 (define channel-build-system
@@ -305,11 +312,7 @@ system.")
                                 "." system))))
       (cons name (test->thunk test))))
 
-  (if (and (member system %guixsd-supported-systems)
-
-           ;; XXX: Our build farm has too few ARMv7 machines and they are very
-           ;; slow, so skip system tests there.
-           (not (string=? system "armhf-linux")))
+  (if (member system %guix-system-supported-systems)
       ;; Override the value of 'current-guix' used by system tests.  Using a
       ;; channel instance makes tests that rely on 'current-guix' less
       ;; expensive.  It also makes sure we get a valid Guix package when this
@@ -486,7 +489,7 @@ Return #f if no such checkout is found."
                                   (package->job store package
                                                 system))))
                        (append (filter-map job all)
-                               (qemu-jobs store system)
+                               (image-jobs store system)
                                (system-test-jobs store system
                                                  #:source source
                                                  #:commit commit)

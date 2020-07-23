@@ -121,7 +121,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.5.4")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -129,11 +129,26 @@ human.")
                            "/releases/download/" version "/keepassxc-"
                            version "-src.tar.xz"))
        (sha256
-        (base32 "0jndssyvpl8bc5i2q3d6kq1ppynchxx9nvp1qhd2pc0qqc0hhpm5"))))
+        (base32 "0fpx6pq336g1xwjl5yzvsky6vqvaa38zb8pwkgswph9slybkvlnh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_ALL=YES"
-                           "-DWITH_XC_UPDATECHECK=NO")))
+                           "-DWITH_XC_UPDATECHECK=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-bin
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/keepassxc")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins"))
+                         '("qtbase" "qtsvg")))))
+             #t)))))
+    (native-inputs
+     `(("asciidoctor" ,ruby-asciidoctor)
+       ("qttools" ,qttools)))
     (inputs
      `(("argon2" ,argon2)
        ("libgcrypt" ,libgcrypt)
@@ -149,8 +164,6 @@ human.")
        ("readline" ,readline)
        ("yubikey-personalization" ,yubikey-personalization) ; XC_YUBIKEY
        ("zlib" ,zlib)))
-    (native-inputs
-     `(("qttools" ,qttools)))
     (home-page "https://www.keepassxc.org")
     (synopsis "Password manager")
     (description "KeePassXC is a password manager or safe which helps you to
@@ -202,7 +215,7 @@ algorithms AES or Twofish.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pwsafe/pwsafe.git")
+             (url "https://github.com/pwsafe/pwsafe")
              (commit version)))
        (sha256
         (base32 "1ka7xsl63v0559fzf3pwc1iqr37gwr4vq5iaxa2hzar2g28hsxvh"))
@@ -586,7 +599,7 @@ key URIs using the standard otpauth:// scheme.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/IJHack/QtPass.git")
+             (url "https://github.com/IJHack/QtPass")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -710,7 +723,7 @@ using password-store through rofi interface:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/browserpass/browserpass-native.git")
+             (url "https://github.com/browserpass/browserpass-native")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1210,3 +1223,46 @@ desired length.  It can also generate their corresponding hashes for a given
 encryption algorithm if so desired.")
       (home-page "https://github.com/khorben/makepasswd")
       (license license:gpl3))))
+
+(define-public pass-tomb
+  (package
+    (name "pass-tomb")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/roddhjav/pass-tomb")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qj7vx7svk1ljwihj3kv310k17mafnf919n30n4qn1yxmmsvj924"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)
+               (string-append "BASHCOMPDIR=" out "/etc/bash_completion.d")))
+       #:test-target "tests"
+       ;; tests are very dependent on system state (swap partition) and require
+       ;; access to /tmp/zsh which is not in the build container.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-tomb-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((tomb (assoc-ref inputs "tomb")))
+               (substitute* "tomb.bash"
+                 ((":-tomb")
+                  (string-append ":-" tomb "/bin/tomb"))))))
+         (delete 'configure))))
+    (inputs
+     `(("tomb" ,tomb)))
+    (home-page "https://github.com/roddhjav/pass-tomb")
+    (synopsis "Pass extension keeping the tree of passwords encrypted")
+    (description "Pass-tomb provides a convenient solution to put your
+password store in a Tomb and then keep your password tree encrypted when you
+are not using it.  It uses the same GPG key to encrypt passwords and tomb,
+therefore you don't need to manage more key or secret.  Moreover, you can ask
+pass-tomb to automatically close your store after a given time.")
+    (license license:gpl3+)))

@@ -290,7 +290,7 @@ directly.")
     (origin
       (method git-fetch)
       (uri (git-reference
-            (url "https://github.com/rails/rails-dom-testing.git")
+            (url "https://github.com/rails/rails-dom-testing")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
@@ -533,7 +533,7 @@ application bootup, plugins, generators, and Rake tasks.")
        ;; Download from GitHub as test files are not provided in the gem.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rails/web-console.git")
+             (url "https://github.com/rails/web-console")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

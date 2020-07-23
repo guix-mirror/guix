@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,11 +24,13 @@
 (define-module (gnu packages bash)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages guile)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -37,6 +39,7 @@
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:autoload   (guix gnupg) (gnupg-verify*)
   #:autoload   (guix base32) (bytevector->nix-base32-string)
 
@@ -327,7 +330,7 @@ completion for many common commands.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/illusori/bash-tap.git")
+             (url "https://github.com/illusori/bash-tap")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -361,4 +364,54 @@ test library")
 for Bash shell scripts and functions.  Along with the Test::More-style testing
 helpers it provides helper functions for mocking commands and in-process output
 capturing.")
+    (license expat)))
+
+(define-public bats
+  (package
+    (name "bats")
+    (version "1.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bats-core/bats-core")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0f59zh4d4pa1a7ybs5zl6h0csbqqv11lbnq0jl1dgwm1s6p49bsq"))))
+    (inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("guile" ,guile-3.0) ;for wrap-script
+       ("grep" ,grep)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (copy-recursively (assoc-ref %build-inputs "source") ".")
+         (setenv "PATH"
+                 (string-append (assoc-ref %build-inputs "bash") "/bin"
+                                ":" (assoc-ref %build-inputs "coreutils") "/bin"
+                                ":" (assoc-ref %build-inputs "grep") "/bin"
+                                ":" (assoc-ref %build-inputs "guile") "/bin"
+                                ":" (getenv "PATH")))
+         (for-each (lambda (file) (patch-shebang file)) (find-files "."))
+         (substitute* "bin/bats"
+           (("export BATS_ROOT" line)
+            (string-append "BATS_ROOT=\"${BATS_ROOT:-" %output "/libexec/bats-core}\"\n"
+                           line)))
+         ;; Install phase
+         (invoke "./install.sh" %output)
+         (wrap-script (string-append %output "/bin/bats")
+                      (list "PATH" 'prefix (string-split (getenv "PATH")
+                                                         #\:))))))
+    (build-system trivial-build-system)
+    (home-page "https://github.com/bats-core/bats-core/")
+    (synopsis "Bash Automated Testing System")
+    (description
+     "Bats is a @acronym{TAP, Test Anything Protocol}-compliant testing
+framework for Bash.  It provides a simple way to verify that the UNIX programs
+you write behave as expected.  Bats is most useful when testing software written
+in Bash, but you can use it to test any UNIX program.")
     (license expat)))

@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016, 2018, 2019 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -85,6 +85,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -124,6 +125,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
@@ -145,7 +147,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/nomius/ktsuss.git")
+         (url "https://github.com/nomius/ktsuss")
          (commit version)))
        (sha256
         (base32 "0q9931f9hp47v1n8scli4bdg2rkjpf5jf8v7jj2gdn83aia1r2hz"))
@@ -218,7 +220,7 @@ usual file attributes can be checked for inconsistencies.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Xfennec/progress.git")
+             (url "https://github.com/Xfennec/progress")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1cnb4ixlhshn139mj5sr42k5m6gjjbyqvkn1324c47niwrgp7dqm"))
@@ -1364,7 +1366,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.1")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1374,7 +1376,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1zxd6hxwhxqrm876wsn9bfajbfc4hc6l9ivzj5rjg80hzv71ch99"))
+                "05432672iilb7s52j9l9xzrlambb1wg3k7qvf5973i41y40x563w"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1486,7 +1488,7 @@ commands and their arguments.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Duncaen/OpenDoas.git")
+                    (url "https://github.com/Duncaen/OpenDoas")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1863,13 +1865,13 @@ development, not the kernel implementation of ACPI.")
 (define-public s-tui
   (package
     (name "s-tui")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "s-tui" version))
        (sha256
-        (base32 "0r5yhlsi5xiy7ii1w4kqkaxz9069v5bbfwi3x3xnxhk51yjfgr8n"))))
+        (base32 "0xkfdaz5np21311ffdvhks58155qby8j8scbcixhvjd913pj66qx"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)
@@ -1914,7 +1916,7 @@ system is under heavy load.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dharple/detox.git")
+                    (url "https://github.com/dharple/detox")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2104,7 +2106,7 @@ degradation and failure.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/adrianlopezroche/fdupes.git")
+             (url "https://github.com/adrianlopezroche/fdupes")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2163,13 +2165,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.9.9")
+    (version "2.9.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "1l99vwkl48iwr8ffd1ihqia995mz8h8hwk4akm4w0cgiifp88gg8"))))
+        (base32 "1c9ayh61qwasgncmlw7rjx5r4g5n2cpg1d5blgn53zg7xhrx1yc8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2356,7 +2358,7 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/opsengine/cpulimit.git")
+             (url "https://github.com/opsengine/cpulimit")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2395,7 +2397,7 @@ limits.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wting/autojump.git")
+             (url "https://github.com/wting/autojump")
              (commit (string-append "release-v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2441,7 +2443,7 @@ frequently used directories by typing only a small pattern.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/clvv/fasd.git")
+                    (url "https://github.com/clvv/fasd")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2673,7 +2675,7 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dagwieers/dstat.git")
+             (url "https://github.com/dagwieers/dstat")
              (commit (string-append "v" version))))
        (file-name (git-file-name "dstat" version))
        (sha256
@@ -2725,7 +2727,7 @@ throughput (in the same interval).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/nvbn/thefuck.git")
+             (url "https://github.com/nvbn/thefuck")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2801,7 +2803,7 @@ produce uniform output across heterogeneous networks.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/valr/cbatticon.git")
+             (url "https://github.com/valr/cbatticon")
              (commit version)))
        (sha256
         (base32 "0ivm2dzhsa9ir25ry418r2qg2llby9j7a6m3arbvq5c3kaj8m9jr"))
@@ -2837,7 +2839,7 @@ the status of your battery in the system tray.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/TrilbyWhite/interrobang.git")
+               (url "https://github.com/TrilbyWhite/interrobang")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -2913,7 +2915,7 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/linux-sunxi/sunxi-tools.git")
+             (url "https://github.com/linux-sunxi/sunxi-tools")
              (commit (string-append "v" version))))
        (sha256
         (base32 "04f3jqg8ww4jxsf9c6ddcdgy2xbhkyp0b3l5f1hvvbv94p81rjxd"))
@@ -3018,7 +3020,7 @@ in order to be able to find it.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/aureliojargas/sedsed.git")
+             (url "https://github.com/aureliojargas/sedsed")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3251,17 +3253,105 @@ generate those nifty terminal theme information and ASCII distribution logos in
 everyone's screenshots nowadays.")
     (license license:gpl3)))
 
+(define-public ufetch
+  (let ((commit "98b622023e03fe24dbc137e9a68104dfe1fbd04a")
+        (revision "1"))
+    (package
+      (name "ufetch")
+      (version (git-version "0.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/jschx/ufetch.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09c4zmikza16xpydinnqbi3hmcibfrrn10wij7j0j1wv1pj2sl2l"))))
+      (build-system trivial-build-system)
+      (inputs
+       `(("bash" ,bash)
+         ("tput" ,ncurses)))
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let* ((source (assoc-ref %build-inputs "source"))
+                  (output (assoc-ref %outputs "out"))
+                  (bindir (string-append output "/bin"))
+                  (docdir (string-append output "/share/doc/ufetch-" ,version))
+                  (tput (string-append (assoc-ref %build-inputs "tput") "/bin/tput")))
+             (install-file (string-append source "/LICENSE") docdir)
+             (setenv "PATH" (string-append (assoc-ref %build-inputs "bash") "/bin"))
+             (mkdir-p bindir)
+             (for-each (lambda (src)
+                         (let ((dst (string-append bindir "/" (basename src))))
+                           (copy-file src dst)
+                           (patch-shebang dst)
+                           (substitute* dst (("tput") tput))))
+                       (find-files source "ufetch-[[:alpha:]]*$"))
+             ;; Note: the `ufetch` we create below will only work if run under
+             ;; the Guix System.  I.e. a user trying to run `ufetch` on a
+             ;; foreign distro will not get great results.  The `screenfetch`
+             ;; program does actual runtime detection of the operating system,
+             ;; and would be a better choice in such a situation.
+             (symlink "ufetch-guix" (string-append bindir "/ufetch"))))))
+      (home-page "https://gitlab.com/jschx/ufetch")
+      (synopsis "Tiny system info")
+      (description "This package provides a tiny system info utility.")
+      (license license:isc))))
+
+(define-public pfetch
+  (let ((commit "e18a0959ab98b963744755ec4687e59dc11db3c5")
+        (revision "0"))
+    (package
+      (name "pfetch")
+      (version (git-version "0.7.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dylanaraps/pfetch")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1md40av6i3xvvwig5jzhy4kf3s5sgxxk35r0vcyrjd8qyndk927l"))))
+      (build-system trivial-build-system)
+      (inputs `(("bash" ,bash)))
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let* ((source (lambda (f)
+                            (string-append (assoc-ref %build-inputs "source") "/" f)))
+                  (output (assoc-ref %outputs "out"))
+                  (docdir (string-append output "/share/doc/pfetch-" ,version)))
+             (install-file (source "LICENSE.md") docdir)
+             (install-file (source "README.md") docdir)
+             (install-file (source "pfetch") (string-append output "/bin"))
+             (patch-shebang
+              (string-append output "/bin/pfetch")
+              (list (string-append (assoc-ref %build-inputs "bash") "/bin")))
+             #t))))
+      (home-page "https://github.com/dylanaraps/pfetch")
+      (synopsis "System information tool")
+      (description "This package provides a simple, configurable system
+information tool.")
+      (license license:expat))))
+
 (define-public nnn
   (package
     (name "nnn")
-    (version "3.2")
+    (version "3.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1zflz7yj5wzdnl0728g8qrld2z6dqn7sblbmkjvyqlv1fwjd1fsf"))))
+        (base32 "1jiaygylwrlz6rlls1q69xw10j6ypr96yshsbzisg0adk37lbchn"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -3333,7 +3423,7 @@ on systems running the Linux kernel.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/robertdavidgraham/masscan.git")
+             (url "https://github.com/robertdavidgraham/masscan")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -3444,7 +3534,7 @@ launch daemons into the relevant nodes.")
               ;; We use git checkout to avoid github auto-generated tarballs
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/hpc/Spindle.git")
+                    (url "https://github.com/hpc/Spindle")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3472,7 +3562,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.03-1")
+      (version "3.1.04-1")
       (source
        (origin
          (method git-fetch)
@@ -3481,7 +3571,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0539hvlq021wxhbwzdp7qliiq1jgw60mxlwrwx0z2x8qi1zqdzg6"))))
+          (base32 "1mirnrrqfjyl2r7fwnpjlk37i5hf8f7lxv2yxcbdfjf2b3dfbpvl"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -3655,7 +3745,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pwr/Solaar.git")
+                    (url "https://github.com/pwr/Solaar")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3671,10 +3761,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
               (("'--prefix' in sys\\.argv")
                "len([x.startswith('--prefix=') for x in sys.argv]) > 0"))
              #t))
-         (replace 'build
-           (lambda _
-             (invoke "python" "setup.py" "build")))
-         (add-before 'check 'setenv-PATH
+         (add-before 'build 'setenv-PATH
            (lambda _
              (setenv "PYTHONPATH" (string-append "lib:" (getenv "PYTHONPATH")))
              #t)))))
@@ -3863,3 +3950,124 @@ It supports mounting local filesystems of any kind the normal mount utility
 supports.  It can also mount encrypted LUKS volumes using the password
 supplied by the user when logging in.")
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public jc
+  (package
+    (name "jc")
+    (version "1.11.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kellyjonbrazil/jc")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rkckbgm04ql4r48wjgljfiqvsz36n99yqcpcyna8lvlm8h4nmwa"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-xmltodict" ,python-xmltodict)
+       ("python-pygments" ,python-pygments)))
+    (home-page "https://github.com/kellyjonbrazil/jc")
+    (synopsis "Convert the output of command-line tools to JSON")
+    (description "@code{jc} JSONifies the output of many CLI tools and
+file-types for easier parsing in scripts.")
+    (license license:expat)))
+
+(define-public jtbl
+  (package
+    (name "jtbl")
+    (version "1.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kellyjonbrazil/jtbl")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1zzd7rd63xva50f22d1rfja4r302aizrafarhwm67vv181swvdya"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-tabulate" ,python-tabulate)))
+    (home-page "https://github.com/kellyjonbrazil/jtbl")
+    (synopsis "Command-line tool to print JSON data as a table in the terminal")
+    (description "@code{jtbl} accepts piped JSON data from stdin and outputs a
+text table representation to stdout.")
+    (license license:expat)))
+
+(define-public hosts
+  (package
+    (name "hosts")
+    (version "3.6.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/xwmx/hosts")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ni4z89kxzgwm26hhx908g04f2h0fypy7lgfa0rvsz8d0wslgcsn"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("bats" ,bats) ;for test
+       ("awk" ,gawk)
+       ("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("diffutils" ,diffutils)
+       ("grep" ,grep)
+       ("ncurses" ,ncurses) ;tput
+       ("sed" ,sed)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         ;; copy source
+         (copy-recursively (assoc-ref %build-inputs "source") ".")
+         ;; patch-shebang phase
+         (setenv "PATH"
+                 (string-append (assoc-ref %build-inputs "bash") "/bin"
+                                ":" (assoc-ref %build-inputs "awk") "/bin"
+                                ":" (assoc-ref %build-inputs "coreutils") "/bin"
+                                ":" (assoc-ref %build-inputs "diffutils") "/bin"
+                                ":" (assoc-ref %build-inputs "grep") "/bin"
+                                ":" (assoc-ref %build-inputs "ncurses") "/bin"
+                                ":" (assoc-ref %build-inputs "sed") "/bin"
+                                ":" "/run/setuid-programs"
+                                ":" (getenv "PATH")))
+         (substitute* "hosts"
+           (("#!/usr/bin/env bash")
+            (string-append "#!" (which "bash")
+                           "\nPATH=" (getenv "PATH"))))
+         ;; check phase
+         (setenv "TERM" "linux") ;set to tty for test
+         (invoke (string-append (assoc-ref %build-inputs "bats") "/bin/bats")
+                 "test")
+         ;; install phase
+         (install-file "hosts" (string-append %output "/bin"))
+         (let ((bash-completion
+                (string-append %output "/etc/bash_completion.d")))
+           (mkdir-p bash-completion)
+           (copy-file "etc/hosts-completion.bash"
+                      (string-append bash-completion "/hosts")))
+         (let ((zsh-completion
+                (string-append %output "/share/zsh/site-functions")))
+           (mkdir-p zsh-completion)
+           (copy-file "etc/hosts-completion.zsh"
+                      (string-append zsh-completion "/_hosts")))
+         (let ((doc (string-append %output "/share/doc/" ,name "-" ,version)))
+           (mkdir-p doc)
+           (install-file "LICENSE" doc)
+           (install-file "README.md" doc))
+         #t)))
+    (home-page "https://github.com/xwmx/hosts/")
+    (synopsis "Script for editing a foreign distro's @file{/etc/hosts} file")
+    (description "Hosts is a command line program for managing
+@file{/etc/hosts} entries.  On Guix System, @file{/etc/hosts} is managed from
+the system configuration; hosts only works when using the Guix package manager
+on a foreign distro.  @command{hosts} works with existing hosts files and
+entries, providing commands to add, remove, comment, and search.")
+    (license license:expat)))

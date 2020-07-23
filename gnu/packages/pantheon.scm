@@ -18,11 +18,15 @@
 
 (define-module (gnu packages pantheon)
   #:use-module (gnu packages cmake)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages)
   #:use-module (guix build-system meson)
   #:use-module (guix git-download)
@@ -37,7 +41,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/elementary/granite.git")
+                    (url "https://github.com/elementary/granite")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -75,7 +79,7 @@ in apps built for the Pantheon desktop.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/elementary/calculator.git")
+             (url "https://github.com/elementary/calculator")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -107,3 +111,64 @@ in apps built for the Pantheon desktop.")
 arithmetic.  It is the default calculator application in the Pantheon
 desktop.")
     (license license:gpl3)))
+
+(define-public sideload
+  (package
+    (name "sideload")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/elementary/sideload")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mlc3nm2navzxm8k1rwpbw4w6mv30lmhqybm8jqxd4v8x7my73vq"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:configure-flags (list (string-append "-Dflatpak="
+                                              (assoc-ref %build-inputs "flatpak")
+                                              "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'set-environment-variables
+           (lambda _
+             ;; Disable compiling schemas and updating desktop databases
+             (setenv "DESTDIR" "/")
+             #t))
+         (add-after 'install 'install-symlinks
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/io.elementary.sideload"))
+                    (link (string-append out "/bin/sideload")))
+               (symlink bin link)
+               #t))))))
+    (inputs
+     `(("flatpak" ,flatpak)
+       ("glib" ,glib)
+       ("granite" ,granite)
+       ("gtk" ,gtk+)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("libgee" ,libgee)
+       ("libostree" ,libostree)
+       ("libxml2" ,libxml2)))
+    (propagated-inputs
+     ;; Sideload needs these in the environment to fetch data securely from
+     ;; Flatpak remotes.
+     `(("gnupg" ,gnupg)
+       ("gpgme" ,gpgme)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://github.com/elementary/sideload")
+    (synopsis "Graphical application to side-load Flatpaks")
+    (description "Sideload handles flatpakref files, like those you might find
+on Flathub or another third-party website providing a Flatpak app for
+download.")
+    (license license:gpl3+)))

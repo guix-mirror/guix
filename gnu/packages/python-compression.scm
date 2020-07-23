@@ -3,7 +3,7 @@
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -133,6 +133,26 @@ the LZ4 frame format.")
 (define-public python2-lzstring
   (package-with-python2 python-lzstring))
 
+(define-public python-brotli
+  (package
+    (name "python-brotli")
+    (version "1.0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Brotli" version ".zip"))
+        (sha256
+         (base32
+          "19x5dqxckb62n37mpnczp21rfxqvgpm0ki5ds8ac65zx8hbxqf05"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://github.com/google/brotli")
+    (synopsis "Python bindings for the Brotli compression library")
+    (description
+     "This package provides python bindings for the Brotli compression library.")
+    (license license:asl2.0)))
+
 (define-public bitshuffle
   (package
     (name "bitshuffle")
@@ -259,6 +279,7 @@ wrapper.  It provides a backport of the @code{Path} object.")
   (hidden-package
    (package/inherit
     python2-zipp
+    (name "python2-zipp-bootstrap")
     (arguments
      `(#:tests? #f
        ,@(package-arguments python2-zipp)))

@@ -177,7 +177,7 @@ is usually the formatter of \"man\" documentation pages.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/bagder/roffit.git")
+                      (url "https://github.com/bagder/roffit")
                       (commit commit)))
                 (file-name (string-append "roffit-" commit "-checkout"))
                 (sha256

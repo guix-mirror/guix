@@ -328,6 +328,54 @@ It includes the following programs:
     ;; The user can choose version 2 or 3 of the GPL, not later versions.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public parprouted
+  (package
+    (name "parprouted")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.hazard.maks.net/parprouted/"
+                                  "parprouted-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z6yg28i0pv20jivyy82pxb38hsryj95inhj27bs6ja1bp4l6dnn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'insert-absolute-iproute-reference
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let* ((iproute (assoc-ref inputs "iproute"))
+                             (ip (string-append iproute "/sbin/ip")))
+                        (substitute* "parprouted.c"
+                          (("/sbin/ip") ip))
+                        #t)))
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (sbin (string-append out "/sbin"))
+                             (man8 (string-append out "/share/man/man8")))
+                        ;; No configure script; hijack the phase to make
+                        ;; the necessary arrangements.
+                        (setenv "CC" ,(cc-for-target))
+                        (for-each mkdir-p (list sbin man8))
+                        (substitute* "Makefile"
+                          (("/usr/local/sbin") sbin)
+                          (("/usr/local/man/man8") man8))
+                        #t))))))
+    (inputs
+     `(("iproute" ,iproute)))
+    (home-page "https://www.hazard.maks.net/parprouted/")
+    (synopsis "Proxy ARP requests to other interfaces")
+    (description
+     "@command{parprouted} is a daemon for transparent IP (Layer@tie{}3)
+proxy ARP bridging.  Unlike standard bridging, proxy ARP bridging can bridge
+Ethernet networks behind wireless nodes.  Normal layer@tie{}2 bridging does
+not work between wireless nodes because wireless does not know about MAC
+addresses used in the wired Ethernet networks.  This daemon can also be
+useful for making transparent firewalls.")
+    (license license:gpl2)))
+
 (define-public socat
   (package
     (name "socat")
@@ -567,7 +615,7 @@ written in the C programming language.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/edenhill/librdkafka.git")
+                    (url "https://github.com/edenhill/librdkafka")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -603,13 +651,13 @@ containing both Producer and Consumer support.")
     (version "1.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://libndp.org/files/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "https://libndp.org/files/"
+                                  "libndp-" version ".tar.gz"))
               (sha256
                (base32
                 "1dlinhl39va00v55qygjc9ap77yqf7xvn4rwmvdr49xhzzxhlj1c"))))
     (build-system gnu-build-system)
-    (home-page "http://libndp.org/")
+    (home-page "https://libndp.org/")
     (synopsis "Library for Neighbor Discovery Protocol")
     (description
      "libndp contains a library which provides a wrapper for IPv6 Neighbor
@@ -733,7 +781,7 @@ intended as a substitute for the PPPStatus and EthStatus projects.")
 configuration, troubleshooting, or servers.  Utilities included are:
 
 @itemize @bullet
-@item @command{arping}: Ping hosts using the @dfn{Adress Resolution Protocol}.
+@item @command{arping}: Ping hosts using the @dfn{Address Resolution Protocol}.
 @item @command{clockdiff}: Compute time difference between network hosts
 using ICMP TSTAMP messages.
 @item @command{ninfod}: Daemon that responds to IPv6 Node Information Queries.
@@ -868,14 +916,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.2.4")
+    (version "3.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1amqgn94g6h6cfnsccm2zb4c73pfv1qmzi1i6h1hnbcyhhg4czfi"))))
+        (base32 "0h69m9maq6w5gik4gamv4kfqrr37hmi4kpwh225y1k36awm0b2dx"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -937,25 +985,26 @@ network frames.")
 (define-public fping
   (package
     (name "fping")
-    (version "4.2")
+    (version "4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://fping.org/dist/fping-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0jmnf4vmr43aiwk3h2b5qdsb95gxar8gz1yli8fswnm9nrs9ccvx"))))
+        (base32 "0b9ppwibc0dx2ns95m0z1b28939af1c8yvgjbhnr9f7p8bl0l14j"))))
     (build-system gnu-build-system)
     (home-page "https://fping.org/")
     (synopsis "Send ICMP ECHO_REQUEST packets to network hosts")
     (description
-     "fping is a ping like program which uses the Internet Control Message
-Protocol (ICMP) echo request to determine if a target host is responding.
-fping differs from ping in that you can specify any number of targets on the
-command line, or specify a file containing the lists of targets to ping.
-Instead of sending to one target until it times out or replies, fping will
-send out a ping packet and move on to the next target in a round-robin
-fashion.")
+     "fping is a ping-like program which uses @acronym{ICMP, Internet Control
+Message Protocol} echo requests to determine if a target host is responding.
+
+@command{fping} differs from @command{ping} in that you can specify any number
+of targets on the command line, or specify a file containing the lists of
+targets to ping.  Instead of sending to one target until it times out or
+replies, fping will send out a ping packet and move on to the next target in a
+round-robin fashion.")
     (license license:expat)))
 
 (define-public gandi.cli
@@ -1016,7 +1065,7 @@ virtual machines, and certificates.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/vishvananda/netns.git")
+                      (url "https://github.com/vishvananda/netns")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1042,7 +1091,7 @@ handling network namespaces in Go.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/ishidawataru/sctp.git")
+                      (url "https://github.com/ishidawataru/sctp")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1127,15 +1176,14 @@ TCP connection, TLS handshake and so on) in the terminal.")
 (define-public squid
   (package
     (name "squid")
-    (version "4.11")
+    (version "4.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.squid-cache.org/Versions/v4/squid-"
                            version ".tar.xz"))
        (sha256
-        (base32
-          "0z986kykx539wjqd7mr8y0abf3z6hz8byf8fmmbky9hh4ihlgnaf"))))
+        (base32 "05z34ysy2zn7as11vd365xxhh36bm1ysiwcbr0i0f0nwng406apl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1174,7 +1222,7 @@ reusing frequently-requested web pages.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/vgropp/bwm-ng.git")
+             (url "https://github.com/vgropp/bwm-ng")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1731,16 +1779,16 @@ library remains flexible, portable, and easily embeddable.")
 (define-public sslh
   (package
     (name "sslh")
-    (version "1.20")
+    (version "1.21b")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/yrutschle/sslh.git")
+             (url "https://github.com/yrutschle/sslh")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18zhkqlwfh6f5dg1a41a4p7p9g94dgb9nwls1ksy9r5yz174i2fx"))))
+        (base32 "1bws153l4x3vbwxshb92vqy3rnv8xfysmf7incp6hcmq43jsgjmr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Test dependencies.
@@ -1866,12 +1914,12 @@ gone wild and are suddenly taking up your bandwidth.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/nzbget/nzbget/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://github.com/nzbget/nzbget/releases"
+                           "/download/v" version
+                           "/nzbget-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0l3dzxz7d7jf6cyach41zirvsx1x0vs4nh053c0miycv7zjyrly7"))
+         "0lwd0pfrs4a5ms193hgz2qiyf7grrc925dw6y0nfc0gkp27db9b5"))
        (modules '((guix build utils)))
        (snippet
         ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.
@@ -1908,7 +1956,7 @@ procedure calls (RPCs).")
 (define-public openvswitch
   (package
     (name "openvswitch")
-    (version "2.12.0")
+    (version "2.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1916,7 +1964,7 @@ procedure calls (RPCs).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1y78ix5inhhcvicbvyy2ij38am1215nr55vydhab3d4065q45z8k"))))
+                "0cd5vmfr6zwgcnkwys6rag6cmz68v0librpaplianv734xs74pyx"))))
     (build-system gnu-build-system)
     (arguments
      '(;; FIXME: many tests fail with:
@@ -1943,11 +1991,9 @@ procedure calls (RPCs).")
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
        ;; for testing
        ("util-linux" ,util-linux)))
-    (propagated-inputs
-     `(("python-six" ,python2-six)))
     (inputs
      `(("libcap-ng" ,libcap-ng)
        ("openssl" ,openssl)))
@@ -2037,13 +2083,14 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     (version "3.0.19")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ptrrkssn/pidentd/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/ptrrkssn/pidentd")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0y3kd1bkydqkpc1qdff24yswysamsqivvadjy0468qri5730izgc"))))
+         "1k4rr0b4ygxssbnsykzjvz4hjhazzz4j5arlilyc1iq7b1wzsk7i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; No tests are included
@@ -2052,7 +2099,7 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     (home-page "https://www.lysator.liu.se/~pen/pidentd/")
     (synopsis "Small Ident Daemon")
     (description
-     "@dfn{Pidentd} (Peter's Ident Daemon) is a identd, which implements a
+     "@dfn{Pidentd} (Peter's Ident Daemon) is an identd, which implements a
 identification server.  Pidentd looks up specific TCP/IP connections and
 returns the user name and other information about the connection.")
     (license license:public-domain)))
@@ -2148,7 +2195,7 @@ updates to the zebra daemon.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/vanhauser-thc/thc-ipv6.git")
+                       (url "https://github.com/vanhauser-thc/thc-ipv6")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -2459,7 +2506,7 @@ networks using zeromq.  It has these key characteristics:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/linux-can/can-utils.git")
+                    (url "https://github.com/linux-can/can-utils")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2640,7 +2687,7 @@ SNMP v3 using both IPv4 and IPv6.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/GNS3/ubridge.git")
+             (url "https://github.com/GNS3/ubridge")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2679,7 +2726,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ZerBea/hcxtools.git")
+             (url "https://github.com/ZerBea/hcxtools")
              (commit version)))
        (sha256
         (base32 "0k2qlq9hz5zc21nyc6yrnfqzga7hydn5mm0x3rpl2fhkwl81lxcn"))
@@ -2713,7 +2760,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ZerBea/hcxdumptool.git")
+             (url "https://github.com/ZerBea/hcxdumptool")
              (commit version)))
        (sha256
         (base32 "1b4d543y64ib92w9gcmiyjn5hz2vyjqmxk3f3yr1zk04fhw16gmf"))
@@ -2827,7 +2874,7 @@ communication over HTTP.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Stiffstream/restinio.git")
+                    (url "https://github.com/Stiffstream/restinio")
                     (commit (string-append "v." version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2865,16 +2912,17 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "2.0.0")
+    (version "2.1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/savoirfairelinux/opendht.git")
+                    (url "https://github.com/savoirfairelinux/opendht")
                     (commit version)))
               (file-name (git-file-name name version))
+              (patches (search-patches "opendht-fix-jami.patch"))
               (sha256
                (base32
-                "1q1fwk8wwk9r6bp0indpr60ql668lsk16ykslacyhrh7kg97kvhr"))))
+                "1ax26ri1ifb6s8ppd28jmanka9yf8mw3np65q2h4djhhik0phhal"))))
     ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
     (build-system cmake-build-system)
     (inputs
@@ -3038,7 +3086,7 @@ module @code{batman-adv}, for Layer 2.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pagekite/PyPagekite.git")
+             (url "https://github.com/pagekite/PyPagekite")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3202,7 +3250,7 @@ cables.")
 (define-public haproxy
   (package
     (name "haproxy")
-    (version "2.1.6")
+    (version "2.1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.haproxy.org/download/"
@@ -3210,7 +3258,7 @@ cables.")
                                   "/src/haproxy-" version ".tar.gz"))
               (sha256
                (base32
-                "1pyz4gckdn8982vpb1iiw9agwp2s5p8wc0nn1qh1ic0wq3lrnpg6"))))
+                "0fd3c1znid5a9w3gcf77b85hm2a2558w9s02c4b7xzkmivqnqbir"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

@@ -268,7 +268,7 @@ prompt.")
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://github.com/perlpilot/Grammar-Profiler-Simple.git")
+                 (url "https://github.com/perlpilot/Grammar-Profiler-Simple")
                  (commit commit)))
           (file-name (git-file-name name version))
           (sha256
@@ -315,7 +315,7 @@ deserializing JSON.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/jonathanstowe/JSON-Class.git")
+               (url "https://github.com/jonathanstowe/JSON-Class")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -347,7 +347,7 @@ respectively.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/timo/json_fast.git")
+               (url "https://github.com/timo/json_fast")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
@@ -370,7 +370,7 @@ but it offers a few extra features.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/jonathanstowe/JSON-Marshal.git")
+               (url "https://github.com/jonathanstowe/JSON-Marshal")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -397,7 +397,7 @@ of the same class using @code{JSON::Unmarshal}.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/jonathanstowe/JSON-Name.git")
+               (url "https://github.com/jonathanstowe/JSON-Name")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -426,7 +426,7 @@ It will of course also be needed in classes thar are going to use
         (origin
           (method git-fetch)
           (uri (git-reference
-                 (url "https://github.com/tadzik/JSON-Unmarshal.git")
+                 (url "https://github.com/tadzik/JSON-Unmarshal")
                  (commit commit)))
         (file-name (git-file-name name version))
         (sha256
@@ -475,7 +475,7 @@ licences therein.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/jonathanstowe/META6.git")
+               (url "https://github.com/jonathanstowe/META6")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -612,7 +612,7 @@ with optional labels, or xy plots).")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/perl6/tap-harness6.git")
+               (url "https://github.com/perl6/tap-harness6")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -642,7 +642,7 @@ minimal wrapper around an instance of this module.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/tadzik/Terminal-ANSIColor.git")
+               (url "https://github.com/tadzik/Terminal-ANSIColor")
                ;; The commit where 0.5 was "tagged"
                (commit "edded4a7116ce11cbc9fb5a83669c7ba119d0212")))
         (file-name (git-file-name name version))
@@ -715,7 +715,7 @@ statement for @code{Test::Mock}.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/perl6-community-modules/uri.git")
+               (url "https://github.com/perl6-community-modules/uri")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
@@ -763,7 +763,7 @@ character numbering.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/ugexe/zef.git")
+               (url "https://github.com/ugexe/zef")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256

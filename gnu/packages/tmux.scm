@@ -7,6 +7,7 @@
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,11 +31,14 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages libevent)
-  #:use-module (gnu packages ncurses))
-
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages sphinx))
 
 (define-public tmux
   (package
@@ -70,7 +74,7 @@ continue running in the background, then later reattached.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/jimeh/tmux-themepack.git")
+                      (url "https://github.com/jimeh/tmux-themepack")
                       (commit commit)))
                 (sha256
                  (base32
@@ -100,7 +104,7 @@ continue running in the background, then later reattached.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/jimeh/tmuxifier.git")
+                   (url "https://github.com/jimeh/tmuxifier")
                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256
@@ -138,6 +142,88 @@ command and helper commands provided by tmuxifier to manage Tmux sessions and
 windows.")
     (license license:expat)))
 
+(define-public python-libtmux
+  (package
+    (name "python-libtmux")
+    (version "0.8.2")
+    (source
+     (origin
+       (method git-fetch)
+       ;; PyPI source tarball does not include tests.
+       (uri (git-reference
+             (url "https://github.com/tmux-python/libtmux")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1akjv6aqpc690c4l2cjh0fxbpxxg63sfjggapfjjjaqmcl38g1dz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("procps" ,procps)))             ;tests need top
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("tmux" ,tmux)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Extend PYTHONPATH so the built package will be found.
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             ;; Skip tests that I suspect fail because of a change
+             ;; in behavior in tmux 3 from tmux 2
+             ;; https://github.com/tmux-python/libtmux/issues/281
+             (invoke "pytest" "-vv" "-k"
+                     (string-append "not test_show_option_unknown "
+                                    "and not test_show_window_option_unknown"))
+             #t)))))
+    (home-page "https://github.com/tmux-python/libtmux")
+    (synopsis "Python API for tmux")
+    (description "Libtmux is the tool behind @command{tmuxp}, a tmux workspace
+manager in Python.  It creates object mappings to traverse, inspect and interact
+with live tmux sessions.")
+    (license license:expat)))
+
+(define-public python-daemux
+  (package
+    (name "python-daemux")
+    (version "0.1.0")
+    (source
+     ;; We fetch from the Git repo because there are no tests in the PyPI
+     ;; archive.
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edouardklein/daemux")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cb8v552f2hkwz6d3hwsmrz3gd28jikga3lcc3r1zlw8ra7804ph"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (mkdir-p "tmptmux")
+                      (setenv "TMUX_TMPDIR" (string-append (getcwd) "/tmptmux"))
+                      (invoke "tmux" "new-session" "-d")
+                      (invoke "make" "test"))))))
+    (propagated-inputs
+     `(("python-libtmux" ,python-libtmux)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-sphinx" ,python-sphinx)
+       ("tmux" ,tmux)))
+    (home-page "https://github.com/edouardklein/daemux")
+    (synopsis "Start, stop, restart and check daemons via tmux")
+    (description
+     "Daemux lets you run daemons in a @command{tmux} pane.  Users can launch
+long-running background tasks, and check these tasks' health by hand, relaunch
+them, etc., by attaching to the corresponding pane in tmux.")
+    (license license:agpl3+)))
+
 (define-public tmux-xpanes
   (package
     (name "tmux-xpanes")
@@ -145,7 +231,7 @@ windows.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/greymd/tmux-xpanes.git")
+                    (url "https://github.com/greymd/tmux-xpanes")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

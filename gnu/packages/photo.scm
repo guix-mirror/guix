@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -39,9 +41,11 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -51,12 +55,16 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages opencl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -457,7 +465,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "2.6.3")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -465,13 +473,22 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "1w3q3dhcxa0bs590zbsj61ap8z84wmn04xs5q3gjwisqhjf9j655"))))
+        (base32 "1yrnkw8c47kmy2x6m1xp69hwyk02xyc8pd9kvcmyj54lzrhzdfka"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
        #:configure-flags '("-DBINARY_PACKAGE_BUILD=On")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'prepare-build-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CC" "clang") (setenv "CXX" "clang++")
+             ;; Darktable looks for opencl-c.h in the LLVM dir. Guix installs
+             ;; it to the Clang dir. We fix this by patching CMakeLists.txt.
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{LLVM_INSTALL_PREFIX\\}")
+                (assoc-ref %build-inputs "clang")))
+             #t))
          (add-before 'configure 'set-LDFLAGS-and-CPATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "LDFLAGS"
@@ -483,35 +500,62 @@ photographic equipment.")
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "ilmbase")
                                     "/include/OpenEXR:" (or (getenv "CPATH") "")))
-             #t)))))
+             #t))
+          (add-after 'install 'wrap-program
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (wrap-program (string-append (assoc-ref outputs "out")
+                                           "/bin/darktable")
+                ;; For GtkFileChooserDialog.
+                `("GSETTINGS_SCHEMA_DIR" =
+                  (,(string-append (assoc-ref inputs "gtk+")
+                                   "/share/glib-2.0/schemas"))))
+              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("clang" ,clang-9)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("llvm" ,llvm-9) ;should match the Clang version
+       ("opencl-headers" ,opencl-headers)
        ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("po4a" ,po4a)))
     (inputs
-     `(("libxslt" ,libxslt)
-       ("libxml2" ,libxml2)
-       ("pugixml" ,pugixml)
-       ("gtk+" ,gtk+)
-       ("sqlite" ,sqlite)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("cairo" ,cairo)
-       ("lcms" ,lcms)
-       ("exiv2" ,exiv2)
-       ("libtiff" ,libtiff)
+     `(("cairo" ,cairo)
+       ("colord-gtk" ,colord-gtk)
+       ("cups" ,cups)
        ("curl" ,curl)
-       ("libgphoto2" ,libgphoto2)
        ("dbus-glib" ,dbus-glib)
-       ("openexr" ,openexr)
+       ("exiv2" ,exiv2)
+       ("freeimage" ,freeimage)
+       ("gmic" ,gmic)
+       ("graphicsmagick" ,graphicsmagick)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
        ("ilmbase" ,ilmbase)
-       ("libsoup" ,libsoup)
-       ("python-jsonschema" ,python-jsonschema)
-       ("libwebp" ,libwebp)
-       ("lensfun" ,lensfun)
-       ("librsvg" ,librsvg)
+       ("iso-codes" ,iso-codes)
        ("json-glib" ,json-glib)
-       ("freeimage" ,freeimage)))
+       ("lcms" ,lcms)
+       ("lensfun" ,lensfun)
+       ("libgphoto2" ,libgphoto2)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libomp" ,libomp)
+       ("libpng" ,libpng)
+       ("librsvg" ,librsvg)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("lua" ,lua) ;for plugins
+       ("openexr" ,openexr)
+       ("openjpeg" ,openjpeg)
+       ("osm-gps-map" ,osm-gps-map)
+       ("pugixml" ,pugixml)
+       ("python-jsonschema" ,python-jsonschema)
+       ("sqlite" ,sqlite)))
     (home-page "https://www.darktable.org")
     (synopsis "Virtual lighttable and darkroom for photographers")
     (description "Darktable is a photography workflow application and RAW
@@ -520,6 +564,51 @@ them through a zoomable lighttable and enables you to develop raw images
 and enhance them.")
     ;; See src/is_supported_platform.h for supported platforms.
     (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
+    (license (list license:gpl3+ ;; Darktable itself.
+                   license:lgpl2.1+)))) ;; Rawspeed library.
+
+(define-public photoflare
+  (package
+    (name "photoflare")
+    (version "1.6.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/photoflare/photoflare")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a394324h7ds567z3i3pw6kkii78n4qwdn129kgkkm996yh03q89"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((magickpp (assoc-ref inputs "graphicsmagick"))
+                   (out (assoc-ref outputs "out")))
+               (invoke "qmake"
+                       (string-append "INCLUDEPATH += " magickpp
+                                      "/include/GraphicsMagick")
+                       (string-append "PREFIX=" out)
+                       "Photoflare.pro")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("graphicsmagick" ,graphicsmagick)
+       ("libomp" ,libomp)
+       ("qtbase" ,qtbase)))
+    (home-page "https://photoflare.io")
+    (synopsis "Quick, simple but powerful image editor")
+    (description "Photoflare is a cross-platform image editor with an aim
+to balance between powerful features and a very friendly graphical user
+interface.  It suits a wide variety of different tasks and users who value a
+more nimble workflow.  Features include basic image editing capabilities,
+paint brushes, image filters, colour adjustments and more advanced features
+such as Batch image processing.")
     (license license:gpl3+)))
 
 (define-public hugin

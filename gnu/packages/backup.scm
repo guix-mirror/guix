@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -146,7 +146,7 @@ spying and/or modification by the server.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Parchive/par2cmdline.git")
+                    (url "https://github.com/Parchive/par2cmdline")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -310,7 +310,7 @@ random access nor for in-place modification.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/miekg/rdup.git")
+             (url "https://github.com/miekg/rdup")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -404,23 +404,24 @@ errors.")
 (define-public rdiff-backup
   (package
     (name "rdiff-backup")
-    (version "1.2.8")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/rdiff-backup/rdiff-backup-"
-                           version ".tar.gz"))
+       (uri (string-append "https://github.com/rdiff-backup/rdiff-backup/releases/"
+                           "download/v" version "/rdiff-backup-" version ".tar.gz"))
        (sha256
         (base32
-         "1nwmmh816f96h0ff1jxk95ad38ilbhbdl5dgibx1d4cl81dsi48d"))))
+         "1qfmvwwb942srhg6gw77ncy4z5z54b4wfz8bpd5bpml8hp1d5qh4"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (inputs
-     `(("python" ,python-2)
-       ("librsync" ,librsync-0.9)))
+     `(("python" ,python)
+       ("librsync" ,librsync)))
     (arguments
-     `(#:python ,python-2
-       #:tests? #f))
-    (home-page "https://www.nongnu.org/rdiff-backup/")
+     `(#:tests? #f))                    ; Tests require root/sudo
+    (home-page "https://rdiff-backup.net/")
     (synopsis "Local/remote mirroring+incremental backup")
     (description
      "Rdiff-backup backs up one directory to another, possibly over a network.
@@ -999,7 +1000,7 @@ precious backup space.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/zbackup/zbackup.git")
+             (url "https://github.com/zbackup/zbackup")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1053,12 +1054,12 @@ is format-agnostic, so you can feed virtually any files to it.")
        ("util-linux" ,util-linux "lib")
        ("e2fsprogs" ,e2fsprogs)))
     (home-page "https://dump.sourceforge.io/")
-    (synopsis "Ext2/3/4 filesystem dump/restore utilities")
-    (description "Dump examines files in a filesystem, determines which ones
+    (synopsis "Ext2/3/4 file system dump/restore utilities")
+    (description "Dump examines files in a file system, determines which ones
 need to be backed up, and copies those files to a specified disk, tape or
 other storage medium.  Subsequent incremental backups can then be layered on
 top of the full backup.  The restore command performs the inverse function of
-dump; it can restore a full backup of a filesystem.  Single files and
+dump; it can restore a full backup of a file system.  Single files and
 directory subtrees may also be restored from full or partial backups in
 interractive mode.")
     (license license:bsd-3)))

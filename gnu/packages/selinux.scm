@@ -52,7 +52,7 @@
               (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/SELinuxProject/selinux.git")
+                      (url "https://github.com/SELinuxProject/selinux")
                       (commit release)))
                 (file-name (string-append "selinux-" release "-checkout"))
                 (sha256
@@ -327,7 +327,7 @@ based on required access.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/TresysTechnology/setools.git")
+                    (url "https://github.com/TresysTechnology/setools")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256

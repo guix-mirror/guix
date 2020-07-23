@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
+  #:use-module (guix deprecation)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
@@ -187,7 +189,7 @@ structure of the predicted RNA.")
               (method git-fetch)
               ;; BamM is not available on pypi.
               (uri (git-reference
-                    (url "https://github.com/Ecogenomics/BamM.git")
+                    (url "https://github.com/Ecogenomics/BamM")
                     (commit version)
                     (recursive? #t)))
               (file-name (git-file-name name version))
@@ -281,7 +283,7 @@ instance, it implements several methods to assess contig-wise read coverage.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pezmaster31/bamtools.git")
+                    (url "https://github.com/pezmaster31/bamtools")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -359,7 +361,7 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/bedops/bedops.git")
+                    (url "https://github.com/bedops/bedops")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -482,7 +484,7 @@ BED, GFF/GTF, VCF.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/PacificBiosciences/pbbam.git")
+                    (url "https://github.com/PacificBiosciences/pbbam")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -538,7 +540,7 @@ Non-PacBio BAMs will cause exceptions to be thrown.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/PacificBiosciences/blasr_libcpp.git")
+                    (url "https://github.com/PacificBiosciences/blasr_libcpp")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -600,7 +602,7 @@ hdf and alignment.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/PacificBiosciences/blasr.git")
+                    (url "https://github.com/PacificBiosciences/blasr")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -691,7 +693,7 @@ provides the Ribotaper pipeline.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ratschlab/RiboDiff.git")
+             (url "https://github.com/ratschlab/RiboDiff")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -735,7 +737,7 @@ independently with transcriptional regulation.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/lh3/bioawk.git")
+                    (url "https://github.com/lh3/bioawk")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -898,7 +900,7 @@ Python.")
        ;; Use GitHub as source because PyPI distribution does not contain
        ;; test data: https://github.com/biocore/biom-format/issues/693
        (uri (git-reference
-             (url "https://github.com/biocore/biom-format.git")
+             (url "https://github.com/biocore/biom-format")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -941,7 +943,9 @@ Python.")
        ("python-future" ,python-future)
        ("python-click" ,python-click)
        ("python-h5py" ,python-h5py)
-       ("python-pandas" ,python-pandas)))
+       ;; FIXME: Upgrade to pandas 1.0 when
+       ;; https://github.com/biocore/biom-format/issues/837 is resolved.
+       ("python-pandas" ,python-pandas-0.25)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
@@ -1323,15 +1327,15 @@ package provides command line tools using the Bio++ library.")
 (define-public blast+
   (package
     (name "blast+")
-    (version "2.7.1")
+    (version "2.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/"
+                    "https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/"
                     version "/ncbi-blast-" version "+-src.tar.gz"))
               (sha256
                (base32
-                "1jlq0afxxgczpp35k6mxh8mn4jzq7vqcnaixk166sfj10wq8v9qh"))
+                "11kvrrl0mcwww6530r55hccpg3x3msmhr3051fwnjbq8rzg2j1qi"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1563,7 +1567,7 @@ errors at the end of reads.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/BenLangmead/bowtie2.git")
+                    (url "https://github.com/BenLangmead/bowtie2")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1779,7 +1783,7 @@ and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pkerpedjiev/bwa-pssm.git")
+                    (url "https://github.com/pkerpedjiev/bwa-pssm")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1809,7 +1813,7 @@ well as many of the command line options.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/brentp/bwa-meth.git")
+                    (url "https://github.com/brentp/bwa-meth")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1883,7 +1887,7 @@ multiple sequence alignments.")
               (method git-fetch)
               ;; Test data is missing on PyPi.
               (uri (git-reference
-                    (url "https://github.com/pysam-developers/pysam.git")
+                    (url "https://github.com/pysam-developers/pysam")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2032,7 +2036,7 @@ high-throughput sequencing data – with an emphasis on simplicity.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mhammell-laboratory/tetoolkit.git")
+                    (url "https://github.com/mhammell-laboratory/tetoolkit")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2149,7 +2153,7 @@ databases.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/YeoLab/clipper.git")
+                    (url "https://github.com/YeoLab/clipper")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2406,12 +2410,18 @@ interval trees with associated meta-data.  It is primarily used by the
     (name "python-deeptools")
     (version "3.4.3")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "deepTools" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/deeptools/deepTools")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1azgjniss5ff6a90nicdjkxyjwqmi3gzfn09gra42hwlz19hipxb"))))
+                "0l09vyynz6s6w7fnyd94rpys4a6aja6kp4gli64pngdxdz3md1nl"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
@@ -2421,7 +2431,7 @@ interval trees with associated meta-data.  It is primarily used by the
        ("python-pysam" ,python-pysam)
        ("python-scipy" ,python-scipy)
        ("python-deeptoolsintervals" ,python-deeptoolsintervals)
-       ("python-plotly" ,python-plotly)))
+       ("python-plotly" ,python-plotly-2.4.1)))
     (home-page "https://pypi.org/project/deepTools/")
     (synopsis "Useful tools for exploring deep sequencing data")
     (description "This package addresses the challenge of handling large amounts
@@ -2435,6 +2445,8 @@ annotations of the genome.")
     ;; The file deeptools/cm.py is licensed under the BSD license.  The
     ;; remainder of the code is licensed under the MIT license.
     (license (list license:bsd-3 license:expat))))
+
+(define-deprecated deeptools python-deeptools)
 
 (define-public cutadapt
   (package
@@ -2468,7 +2480,7 @@ other types of unwanted sequence from high-throughput sequencing reads.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dpryan79/libBigWig.git")
+                    (url "https://github.com/dpryan79/libBigWig")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2548,7 +2560,7 @@ accessing bigWig files.")
        (method git-fetch)
        ;; Source from GitHub so that tests are included.
        (uri (git-reference
-             (url "https://github.com/jeetsukumaran/DendroPy.git")
+             (url "https://github.com/jeetsukumaran/DendroPy")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -2599,51 +2611,6 @@ trees (phylogenies) and characters.")
 with Python.")
     (license license:expat)))
 
-(define-public deeptools
-  (package
-    (name "deeptools")
-    (version "3.1.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/deeptools/deepTools.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1vggnf52g6q2vifdl4cyi7s2fnfqq0ky2zrkj5zv2qfzsc3p3siw"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; This phase fails, but it's not needed.
-         (delete 'reset-gzip-timestamps))))
-    (inputs
-     `(("python-plotly" ,python-plotly)
-       ("python-scipy" ,python-scipy)
-       ("python-numpy" ,python-numpy)
-       ("python-numpydoc" ,python-numpydoc)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-pysam" ,python-pysam)
-       ("python-py2bit" ,python-py2bit)
-       ("python-pybigwig" ,python-pybigwig)))
-    (native-inputs
-     `(("python-mock" ,python-mock)   ;for tests
-       ("python-nose" ,python-nose)   ;for tests
-       ("python-pytz" ,python-pytz))) ;for tests
-    (home-page "https://github.com/deeptools/deepTools")
-    (synopsis "Tools for normalizing and visualizing deep-sequencing data")
-    (description
-     "DeepTools addresses the challenge of handling the large amounts of data
-that are now routinely generated from DNA sequencing centers.  To do so,
-deepTools contains useful modules to process the mapped reads data to create
-coverage files in standard bedGraph and bigWig file formats.  By doing so,
-deepTools allows the creation of normalized coverage files or the comparison
-between two files (for example, treatment and control).  Finally, using such
-normalized and standardized files, multiple visualizations can be created to
-identify enrichments with functional annotations of the genome.")
-    (license license:gpl3+)))
-
 (define-public delly
   (package
     (name "delly")
@@ -2651,7 +2618,7 @@ identify enrichments with functional annotations of the genome.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dellytools/delly.git")
+                    (url "https://github.com/dellytools/delly")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2698,7 +2665,7 @@ accurately delineate genomic rearrangements throughout the genome.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/bbuchfink/diamond.git")
+                    (url "https://github.com/bbuchfink/diamond")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2733,7 +2700,7 @@ data and settings.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/maaskola/discrover.git")
+             (url "https://github.com/maaskola/discrover")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2806,7 +2773,7 @@ of nucleic acid binding proteins.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/DReichLab/EIG.git")
+             (url "https://github.com/DReichLab/EIG")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3050,16 +3017,16 @@ dynamic programming or a variety of heuristics.")
 (define-public express
   (package
     (name "express")
-    (version "1.5.1")
+    (version "1.5.3")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "http://bio.math.berkeley.edu/eXpress/downloads/express-"
-                version "/express-" version "-src.tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/adarob/eXpress")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03rczxd0gjp2l1jxcmjfmf5j94j77zqyxa6x063zsc585nj40n0c"))))
+                "18nb22n7x820fzjngf4qgyb3mspqkw7xyk7v7s5ps6wfrd8qwscb"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -3076,6 +3043,12 @@ dynamic programming or a variety of heuristics.")
                (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
                 (string-append (assoc-ref inputs "bamtools") "/lib"))
                (("libprotobuf.a") "libprotobuf.so"))
+             #t))
+         (add-after 'unpack 'remove-update-check
+           (lambda _
+             (substitute* "src/main.cpp"
+               (("#include \"update_check.h\"") "")
+               (("check_version\\(PACKAGE_VERSION\\);") ""))
              #t)))))
     (inputs
      `(("boost" ,boost)
@@ -3099,7 +3072,7 @@ ChIP-Seq, and analysis of metagenomic data.")
    (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/dparks1134/ExpressBetaDiversity.git")
+                   (url "https://github.com/dparks1134/ExpressBetaDiversity")
                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256
@@ -3226,7 +3199,7 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/seqan/flexbar.git")
+                    (url "https://github.com/seqan/flexbar")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3369,7 +3342,7 @@ genes in incomplete assemblies or complete genomes.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ctSkennerton/fxtract.git")
+               (url "https://github.com/ctSkennerton/fxtract")
                (commit version)))
          (file-name (git-file-name name version))
          (sha256
@@ -3405,7 +3378,7 @@ genes in incomplete assemblies or complete genomes.")
           ,(origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/ctSkennerton/util.git")
+                   (url "https://github.com/ctSkennerton/util")
                    (commit util-commit)))
              (file-name (string-append
                          "ctstennerton-util-" util-commit "-checkout"))
@@ -3432,7 +3405,7 @@ comment or quality sections.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/xiangzhou/GEMMA.git")
+                    (url "https://github.com/xiangzhou/GEMMA")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3492,7 +3465,7 @@ association studies (GWAS).")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/nboley/grit.git")
+                    (url "https://github.com/nboley/grit")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3717,7 +3690,7 @@ from high-throughput sequencing assays.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/samtools/htsjdk.git")
+                    (url "https://github.com/samtools/htsjdk")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3767,7 +3740,7 @@ manipulating HTS data.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/samtools/htsjdk.git")
+                    (url "https://github.com/samtools/htsjdk")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3811,7 +3784,7 @@ manipulating HTS data.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/samtools/htsjdk.git")
+                    (url "https://github.com/samtools/htsjdk")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3839,7 +3812,7 @@ manipulating HTS data.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/broadinstitute/picard.git")
+                    (url "https://github.com/broadinstitute/picard")
                     (commit version)))
               (file-name (string-append "java-picard-" version "-checkout"))
               (sha256
@@ -3918,7 +3891,7 @@ VCF.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/broadinstitute/picard.git")
+                    (url "https://github.com/broadinstitute/picard")
                     (commit version)))
               (file-name (string-append "java-picard-" version "-checkout"))
               (sha256
@@ -4008,7 +3981,7 @@ VCF.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/broadinstitute/picard.git")
+                    (url "https://github.com/broadinstitute/picard")
                     (commit version)))
               (file-name (string-append "java-picard-" version "-checkout"))
               (sha256
@@ -4205,7 +4178,7 @@ The main functions of FastQC are:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OpenGene/fastp.git")
+             (url "https://github.com/OpenGene/fastp")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4285,7 +4258,7 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/nboley/idr.git")
+                    (url "https://github.com/nboley/idr")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -4376,7 +4349,7 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dib-lab/khmer.git")
+             (url "https://github.com/dib-lab/khmer")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4484,7 +4457,7 @@ experiments.")
               ;; The PyPi tarball does not contain tests.
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/taoliu/MACS.git")
+                    (url "https://github.com/taoliu/MACS")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -4607,7 +4580,7 @@ sequences).")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/marbl/mash.git")
+                    (url "https://github.com/marbl/mash")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -4746,7 +4719,7 @@ probabilistic distances of genome abundance and tetranucleotide frequency.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ctSkennerton/minced.git")
+                    (url "https://github.com/ctSkennerton/minced")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -4888,7 +4861,7 @@ program for nucleotide and protein sequences.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/tjunier/newick_utils.git")
+                      (url "https://github.com/tjunier/newick_utils")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -5026,7 +4999,7 @@ the phenotype as it models the data.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/PacificBiosciences/cDNA_primer.git")
+                      (url "https://github.com/PacificBiosciences/cDNA_primer")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -5247,7 +5220,7 @@ different command-line tools:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/hyattpd/Prodigal.git")
+                    (url "https://github.com/hyattpd/Prodigal")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -5396,7 +5369,7 @@ extremely diverse sets of genomes.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/stamatak/standard-RAxML.git")
+             (url "https://github.com/stamatak/standard-RAxML")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5437,7 +5410,7 @@ phylogenies.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/deweylab/RSEM.git")
+             (url "https://github.com/deweylab/RSEM")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1jlq11d1p8qp64w75yj8cnbbd1a93viq10pzsbwal7vdn8fg13j1"))
@@ -5726,7 +5699,7 @@ viewer.")
                 ;; There are no release tarballs nor tags.
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/wanpinglee/MOSAIK.git")
+                      (url "https://github.com/wanpinglee/MOSAIK")
                       (commit commit)))
                 (file-name (string-append name "-" version))
                 (sha256
@@ -5772,7 +5745,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ncbi/ngs.git")
+                    (url "https://github.com/ncbi/ngs")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -5838,7 +5811,7 @@ simultaneously.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ncbi/ncbi-vdb.git")
+                    (url "https://github.com/ncbi/ncbi-vdb")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -6010,7 +5983,7 @@ subsequent visualization, annotation and storage of results.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/chrchang/plink-ng.git")
+             (url "https://github.com/chrchang/plink-ng")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6049,7 +6022,7 @@ subsequent visualization, annotation and storage of results.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/smithlabcode/smithlab_cpp.git")
+                      (url "https://github.com/smithlabcode/smithlab_cpp")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -6198,7 +6171,7 @@ sequence itself can be retrieved from these databases.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ncbi/sra-tools.git")
+             (url "https://github.com/ncbi/sra-tools")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -6408,7 +6381,7 @@ is one that takes arguments.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/lh3/seqtk.git")
+                    (url "https://github.com/lh3/seqtk")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -6444,7 +6417,7 @@ optionally compressed by gzip.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/amplab/snap.git")
+                    (url "https://github.com/amplab/snap")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -6486,7 +6459,7 @@ of these reads to align data quickly through a hash-based indexing scheme.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/biocore/sortmerna.git")
+             (url "https://github.com/biocore/sortmerna")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -6532,7 +6505,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/alexdobin/STAR.git")
+                    (url "https://github.com/alexdobin/STAR")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -6760,7 +6733,7 @@ Cuffdiff or Ballgown programs.")
               ;; The Pypi version does not include tests.
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fhcrc/taxtastic.git")
+                    (url "https://github.com/fhcrc/taxtastic")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -6885,7 +6858,7 @@ sequence.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/hms-dbmi/scde.git")
+                    (url "https://github.com/hms-dbmi/scde")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -7013,14 +6986,14 @@ distribution.")
 (define-public r-dexseq
   (package
     (name "r-dexseq")
-    (version "1.34.0")
+    (version "1.34.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DEXSeq" version))
        (sha256
         (base32
-         "1inyxb89hd5bn0sl7a9qbv9d1g40z4v1s9qwxkcsx5c79fl04n1h"))))
+         "1m03awaw06mfv5gszq23k5apsqqzjqa5rcwp20y4xbpl7bywpsyl"))))
     (properties `((upstream-name . "DEXSeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7331,7 +7304,7 @@ annotation infrastructure.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/torognes/vsearch.git")
+             (url "https://github.com/torognes/vsearch")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -7532,13 +7505,13 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
 (define-public r-biocviews
   (package
     (name "r-biocviews")
-    (version "1.56.0")
+    (version "1.56.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biocViews" version))
               (sha256
                (base32
-                "1h4cmfbff79v9xrh271dp3rv0877ris06lmkvc39kqzj7yjsh7c2"))))
+                "0zcx8gha3x3jc0ra6ii6wwq2vfsmffrrnilknbq8h5xjrl55m6ci"))))
     (properties
      `((upstream-name . "biocViews")))
     (build-system r-build-system)
@@ -7716,13 +7689,13 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.24.0")
+    (version "1.24.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "0ab92nq7lvhvhgp512qhiiphpby0b17c666qska6p8a636zzmqiv"))))
+                "1cqs53p4m5q1dr59war72bccphy01ilw4xra24fmngrv4x32rznd"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
@@ -7921,13 +7894,13 @@ on Bioconductor or which replace R functions.")
 (define-public r-annotationdbi
   (package
     (name "r-annotationdbi")
-    (version "1.50.0")
+    (version "1.50.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AnnotationDbi" version))
               (sha256
                (base32
-                "10gplxal0qphcn29azv0i6hiim9q45lmhzvhhhsnwfhwpgja7p05"))))
+                "00pd8lsdppxlmx0l65phw0jhsm0qkwjc4wsdxpvgc31iiz9yslbj"))))
     (properties
      `((upstream-name . "AnnotationDbi")))
     (build-system r-build-system)
@@ -7950,13 +7923,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.44.0")
+    (version "2.44.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "0ag26q9283p9mfz4zx8qnx1w7b7ilmsb8wyx737z9cqy9a0i57wj"))))
+                "0np4nh3gj60mgb6312z7x0z9fg5bhrhw872sp3dzgmqc8q8b84iz"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -8119,13 +8092,13 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
-    (version "1.18.1")
+    (version "1.18.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "SummarizedExperiment" version))
               (sha256
                (base32
-                "07rc79k5dp0dnf4dvsxif995aa9cgfkf13yf84qnwl64k9pf3c2c"))))
+                "1raw5ycigr6gjgzn3kx3jls5hzww10fhnwd8c17c20hmhirf13rw"))))
     (properties
      `((upstream-name . "SummarizedExperiment")))
     (build-system r-build-system)
@@ -8232,13 +8205,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.40.0")
+    (version "1.40.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "09ffsflk2yhhj9ivm028y3qdkvv8idgxpm4il3y9rym7shc8b3f8"))))
+                "0zm7q957g952qyfqmvf27sldsnq6sqd0wlgnqzvmxayg9pxh0l0z"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -8442,7 +8415,7 @@ reference point and sorted by a user defined feature.")
        ("r-seqpattern" ,r-seqpattern)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
+    (home-page "https://bioinformatics.mdc-berlin.de/genomation/")
     (synopsis "Summary, annotation and visualization of genomic data")
     (description
      "This package provides a package for summary and annotation of genomic
@@ -8475,7 +8448,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
     (arguments `(#:substitutable? #f))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
+    (home-page "https://bioinformatics.mdc-berlin.de/genomation/")
     (synopsis "Experimental data for use with the genomation package")
     (description
      "This package contains experimental genetic data for use with the
@@ -8559,16 +8532,12 @@ two-dimensional genome scans.")
 (define-public r-qtl2
   (package
     (name "r-qtl2")
-    (version "0.20")
+    (version "0.22-11")
     (source (origin
-      (method git-fetch)
-      ;; Not yet available in cran.
-      (uri (git-reference
-             (url "https://github.com/rqtl/qtl2.git")
-             (commit version)))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32 "0l1asr28q25jzbwrbg5490962sg3y4sjrd0qf09p78ws1aq8vfs0"))))
+              (method url-fetch)
+              (uri (cran-uri "qtl2" version))
+              (sha256
+               (base32 "0dfdzjylqzc92dcszawc8cyinxccjm3p36v9vcq9ma818pqcanmr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
@@ -8578,11 +8547,12 @@ two-dimensional genome scans.")
        ("r-rsqlite" ,r-rsqlite)
        ("r-yaml" ,r-yaml)))
     (home-page "https://kbroman.org/qtl2/")
-    (synopsis
-     "QTL analysis software for high-dimensional data and complex cross designs")
+    (synopsis "Quantitative Trait Locus Mapping in Experimental Crosses")
     (description
-     "R/qtl2 (aka qtl2) is a reimplementation of the QTL analysis software
-R/qtl, to better handle high-dimensional data and complex cross designs.")
+     "This package provides a set of tools to perform @dfn{Quantitative Trait
+Locus} (QTL) analysis in experimental crosses.  It is a reimplementation of the
+@code{R/qtl} package to better handle high-dimensional data and complex cross
+designs.  Broman et al. (2018) <doi:10.1534/genetics.118.301595>.")
     (license license:gpl3)))
 
 (define-public r-zlibbioc
@@ -8839,7 +8809,7 @@ in SNV base substitution data.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ManuSetty/ChIPKernels.git")
+               (url "https://github.com/ManuSetty/ChIPKernels")
                (commit commit)))
          (file-name (string-append name "-" version))
          (sha256
@@ -8873,7 +8843,7 @@ Sequences.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ManuSetty/SeqGL.git")
+             (url "https://github.com/ManuSetty/SeqGL")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -8923,13 +8893,13 @@ of gene-level counts.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.32.0")
+    (version "2.32.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "097znwl95y2vd6asyqxs62m7binwxqmna7ss0302yl3b0s72skcy"))))
+                "1v6ygi0avh3gmaj2ld2nr7vww4ipw39b5kqci9w27i3ja985lb8j"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rhdf5lib" ,r-rhdf5lib)))
@@ -9049,7 +9019,7 @@ tools for sequence analysis into a seamless whole.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/arq5x/bits.git")
+                      (url "https://github.com/arq5x/bits")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -9095,7 +9065,7 @@ intervals (e.g. genes, sequence alignments).")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/smithlabcode/piranha.git")
+                      (url "https://github.com/smithlabcode/piranha")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -9134,7 +9104,7 @@ intervals (e.g. genes, sequence alignments).")
              (origin
                (method git-fetch)
                (uri (git-reference
-                     (url "https://github.com/smithlabcode/smithlab_cpp.git")
+                     (url "https://github.com/smithlabcode/smithlab_cpp")
                      (commit commit)))
                (file-name (string-append "smithlab_cpp-" commit "-checkout"))
                (sha256
@@ -9187,7 +9157,7 @@ group or two ChIP groups run under different conditions.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/ekg/filevercmp.git")
+                      (url "https://github.com/ekg/filevercmp")
                       (commit commit)))
                 (file-name (git-file-name name commit))
                 (sha256
@@ -9264,7 +9234,7 @@ common bioinformatics tools.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/vatlab/varianttools.git")
+             (url "https://github.com/vatlab/varianttools")
              ;; There is no tag corresponding to version 3.1.2
              (commit "813ae4a90d25b69abc8a40f4f70441fe09015249")))
        (file-name (git-file-name name version))
@@ -10840,14 +10810,14 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "1g848s0qc6i4ipd7y2s5pk8k1xggk2kfy0gnr8wjjs2gq3914aw4"))))
+         "01767v90nl0499jcicpxngbbs0af5p9c5aasi5va01w3v5bnqddn"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (inputs
@@ -10870,14 +10840,14 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "09ylwyk6a8sdrmi1mx7vpycpykqlqylmwa973g6jrcmk0h0qfa4w"))
+         "0f45sqrvzj6x4mckalyp8366hm8v0rrmzklx3xd4gs6l2wallcn9"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -10897,14 +10867,7 @@ block processing.")
              (for-each delete-file '("configure" "configure.ac"))
              ;; Do not make other packages link with the proprietary libsz.
              (substitute* "R/zzz.R"
-               (("'\"%s/libhdf5.a\" \"%s/libsz.a\" -lz'")
-                "'\"%s/libhdf5.a\" \"%s/libhdf5.a\" -lz'")
-               (("'\"%s/libhdf5_cpp.a\" \"%s/libhdf5.a\" \"%s/libsz.a\" -lz'")
-                "'\"%s/libhdf5_cpp.a\" \"%s/libhdf5.a\" \"%s/libhdf5.a\" -lz'")
-               (("'%s/libhdf5_hl.a %s/libhdf5.a %s/libsz.a -lz'")
-                "'%s/libhdf5_hl.a %s/libhdf5.a %s/libhdf5.a -lz'")
-               (("'%s/libhdf5_hl_cpp.a %s/libhdf5_hl.a %s/libhdf5_cpp.a %s/libhdf5.a %s/libsz.a -lz'")
-                "'%s/libhdf5_hl_cpp.a %s/libhdf5_hl.a %s/libhdf5_cpp.a %s/libhdf5.a %s/libhdf5.a -lz'"))
+               ((" \"%s/libsz.a\"") ""))
              (with-directory-excursion "src"
                (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
                (rename-file (string-append "hdf5-" ,(package-version hdf5-1.10))
@@ -11013,13 +10976,13 @@ libraries.")
 (define-public r-scater
   (package
     (name "r-scater")
-    (version "1.16.1")
+    (version "1.16.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "scater" version))
               (sha256
                (base32
-                "0pi4mpc3lvskj5biyhc9cskcnz9q2wjmfrz7xdnx8qqd8vpy84g3"))))
+                "1pa5wvgjb30rw1vsjwbnn07ss3sc5n8ck5d7khdby4r2s9177s33"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -11093,14 +11056,14 @@ variable and significantly correlated genes.")
 (define-public r-delayedmatrixstats
   (package
     (name "r-delayedmatrixstats")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DelayedMatrixStats" version))
        (sha256
         (base32
-         "0i6gw8058gw9yajya3w9qq6l3p634fq9sv8dh8ifigxz0k9b98r6"))))
+         "046sam0rz42ph0m7jz7v3bck7d3h2mp45gzywh5dvc1qkjq6fdxx"))))
     (properties
      `((upstream-name . "DelayedMatrixStats")))
     (build-system r-build-system)
@@ -11164,7 +11127,7 @@ Maximum Parsimony, distance methods and Hadamard conjugation.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/rajewsky-lab/dropbead.git")
+               (url "https://github.com/rajewsky-lab/dropbead")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -11194,7 +11157,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/lomereiter/htslib.git")
+               (url "https://github.com/lomereiter/htslib")
                (commit commit)))
          (file-name (string-append "htslib-" version "-checkout"))
          (sha256
@@ -11213,7 +11176,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lomereiter/sambamba.git")
+             (url "https://github.com/lomereiter/sambamba")
              (commit (string-append "v" version))))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
@@ -11262,7 +11225,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/biod/BioD.git")
+                   (url "https://github.com/biod/BioD")
                    (commit commit)))
              (file-name (string-append "biod-"
                                        (string-take commit 9)
@@ -11289,7 +11252,7 @@ sort, markdup, and depth.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/KlugerLab/Ritornello.git")
+                    (url "https://github.com/KlugerLab/Ritornello")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -11335,7 +11298,7 @@ with narrow binding events such as transcription factor ChIP-seq.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/FelixKrueger/TrimGalore.git")
+             (url "https://github.com/FelixKrueger/TrimGalore")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -11550,7 +11513,7 @@ applications for tackling some common problems in a user-friendly way.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/3DGenomes/TADbit.git")
+                    (url "https://github.com/3DGenomes/TADbit")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -11612,7 +11575,7 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ENCODE-DCC/kentUtils.git")
+             (url "https://github.com/ENCODE-DCC/kentUtils")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -11728,7 +11691,7 @@ browser.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/aboyle/F-seq.git")
+                      (url "https://github.com/aboyle/F-seq")
                       (commit commit)))
                 (file-name (string-append name "-" version))
                 (sha256
@@ -11786,7 +11749,7 @@ Browser.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/FelixKrueger/Bismark.git")
+             (url "https://github.com/FelixKrueger/Bismark")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
@@ -11938,7 +11901,7 @@ using nucleotide or amino-acid sequence data.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pachterlab/kallisto.git")
+                    (url "https://github.com/pachterlab/kallisto")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -11987,7 +11950,7 @@ accurate as existing quantification tools.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Kingsford-Group/libgff.git")
+                    (url "https://github.com/Kingsford-Group/libgff")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -12010,7 +11973,7 @@ dependency like SeqAn.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/kingsfordgroup/sailfish.git")
+                    (url "https://github.com/kingsfordgroup/sailfish")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -12125,7 +12088,7 @@ dependency like SeqAn.")
        ("rapmap" ,(origin
                     (method git-fetch)
                     (uri (git-reference
-                          (url "https://github.com/COMBINE-lab/RapMap.git")
+                          (url "https://github.com/COMBINE-lab/RapMap")
                           (commit (string-append "sf-v" version))))
                     (file-name (string-append "rapmap-sf-v" version "-checkout"))
                     (sha256
@@ -12160,7 +12123,7 @@ file(s) containing your reads.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/COMBINE-lab/staden-io_lib.git")
+                    (url "https://github.com/COMBINE-lab/staden-io_lib")
                     (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -12201,7 +12164,7 @@ The following file formats are supported:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/COMBINE-lab/salmon.git")
+                    (url "https://github.com/COMBINE-lab/salmon")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -12314,7 +12277,7 @@ The following file formats are supported:
        ("rapmap" ,(origin
                     (method git-fetch)
                     (uri (git-reference
-                          (url "https://github.com/COMBINE-lab/RapMap.git")
+                          (url "https://github.com/COMBINE-lab/RapMap")
                           (commit (string-append "salmon-v" version))))
                     (file-name (string-append "rapmap-salmon-v" version "-checkout"))
                     (sha256
@@ -12347,7 +12310,7 @@ variational inference.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/linnarsson-lab/loompy.git")
+                    (url "https://github.com/linnarsson-lab/loompy")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -12390,7 +12353,7 @@ single-cell RNA-seq data.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/cmzmasek/forester.git")
+                      (url "https://github.com/cmzmasek/forester")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -12596,7 +12559,7 @@ reading, writing, and exporting phylogenetic trees.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Core libraries of Java framework for processing biological data")
     (description "BioJava is a project dedicated to providing a Java framework
 for processing biological data.  It provides analytical and statistical
@@ -12639,7 +12602,7 @@ This package provides the core libraries.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Biojava interface to the forester phylogenomics library")
     (description "The phylo module provides a biojava interface layer to the
 forester phylogenomics library for constructing phylogenetic trees.")))
@@ -12676,7 +12639,7 @@ forester phylogenomics library for constructing phylogenetic trees.")))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Biojava API for genetic sequence alignment")
     (description "The alignment module of BioJava provides an API that
 contains
@@ -12733,7 +12696,7 @@ contains
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Biojava interface to the forester phylogenomics library")
     (description "The phylo module provides a biojava interface layer to the
 forester phylogenomics library for constructing phylogenetic trees.")))
@@ -12770,7 +12733,7 @@ forester phylogenomics library for constructing phylogenetic trees.")))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://biojava.org")
+    (home-page "https://biojava.org")
     (synopsis "Biojava API for genetic sequence alignment")
     (description "The alignment module of BioJava provides an API that
 contains
@@ -12982,7 +12945,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for RNA sequencing experiments")
     (description "PiGX RNAseq is an analysis pipeline for preprocessing and
 reporting for RNA sequencing experiments.  It is easy to use and produces high
@@ -13051,7 +13014,7 @@ expression report comparing samples in an easily configurable manner.")
        ("kentutils" ,kentutils)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for ChIP sequencing experiments")
     (description "PiGX ChIPseq is an analysis pipeline for preprocessing, peak
 calling and reporting for ChIP sequencing experiments.  It is easy to use and
@@ -13113,7 +13076,7 @@ in an easily configurable manner.")
        ("trim-galore" ,trim-galore)
        ("cutadapt" ,cutadapt)
        ("samtools" ,samtools)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Bisulfite sequencing pipeline from fastq to methylation reports")
     (description "PiGx BSseq is a data processing pipeline for raw fastq read
 data of bisulfite experiments; it produces reports on aggregate methylation
@@ -13177,7 +13140,7 @@ methylation and segmentation.")
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-stringr" ,r-stringr)
        ("r-yaml" ,r-yaml)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipeline for single-cell RNA sequencing experiments")
     (description "PiGX scRNAseq is an analysis pipeline for preprocessing and
 quality control for single cell RNA sequencing experiments.  The inputs are
@@ -13206,7 +13169,7 @@ based methods.")
        ("pigx-chipseq" ,pigx-chipseq)
        ("pigx-rnaseq" ,pigx-rnaseq)
        ("pigx-scrnaseq" ,pigx-scrnaseq)))
-    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Analysis pipelines for genomics")
     (description "PiGx is a collection of genomics pipelines.  It includes the
 following pipelines:
@@ -13230,7 +13193,7 @@ HTML reports with interesting findings about your samples.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/jsh58/Genrich.git")
+                    (url "https://github.com/jsh58/Genrich")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -13265,7 +13228,7 @@ enrichment.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/splatlab/mantis.git")
+                      (url "https://github.com/splatlab/mantis")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -13332,7 +13295,7 @@ rate speciation and extinction.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/pervouchine/sjcount-full.git")
+                      (url "https://github.com/pervouchine/sjcount-full")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -13437,14 +13400,14 @@ cases include:
    (name "miniasm")
    (version "0.3")
    (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/lh3/miniasm/archive/v"
-                  version ".tar.gz"))
-            (file-name (string-append name "-" version ".tar.gz"))
+            (method git-fetch)
+            (uri (git-reference
+                   (url "https://github.com/lh3/miniasm")
+                   (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
             (sha256
-               (base32
-                "0g89pa98dvh34idv7w1zv12bsbyr3a11c4qb1cdcz68gyda88s4v"))))
+             (base32
+              "04dv5wv8bhsw1imxwyd438bnn9kby7svp44nbcz8lsadzjjci5gs"))))
    (build-system gnu-build-system)
    (inputs
     `(("zlib" ,zlib)))
@@ -13457,7 +13420,8 @@ cases include:
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
               (install-file "miniasm" bin)
-              (install-file "minidot" bin)))))))
+              (install-file "minidot" bin)
+              #t))))))
    (home-page "https://github.com/lh3/miniasm")
    (synopsis "Ultrafast de novo assembly for long noisy reads")
    (description "Miniasm is a very fast OLC-based de novo assembler for noisy
@@ -13476,7 +13440,7 @@ Thus the per-base error rate is similar to the raw input reads.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/BIMSBbioinfo/ciRcus.git")
+             (url "https://github.com/BIMSBbioinfo/ciRcus")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -13522,7 +13486,7 @@ can be calculated, and a number of descriptive plots easily generated.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/gpertea/gffread.git")
+               (url "https://github.com/gpertea/gffread")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -13556,7 +13520,7 @@ can be calculated, and a number of descriptive plots easily generated.")
              (origin
                (method git-fetch)
                (uri (git-reference
-                     (url "https://github.com/gpertea/gclib.git")
+                     (url "https://github.com/gpertea/gclib")
                      (commit commit)))
                (file-name (git-file-name "gclib" version))
                (sha256
@@ -13583,7 +13547,7 @@ conversions, region filtering, FASTA sequence extraction and more.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/marvin-jens/find_circ.git")
+               (url "https://github.com/marvin-jens/find_circ")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -13863,7 +13827,7 @@ bound.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/4dn-dcic/pairix.git")
+             (url "https://github.com/4dn-dcic/pairix")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -13962,7 +13926,7 @@ such as Hi-C contact matrices.")
        ;; Version 12 is not available on pypi.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/deeptools/HiCMatrix.git")
+             (url "https://github.com/deeptools/HiCMatrix")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -14002,7 +13966,7 @@ the HiCExplorer and pyGenomeTracks packages.")
        ;; The latest version is not available on Pypi.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/deeptools/HiCExplorer.git")
+             (url "https://github.com/deeptools/HiCExplorer")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -14151,7 +14115,7 @@ sequencing data.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/renozao/xbioc.git")
+                      (url "https://github.com/renozao/xbioc")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -14184,7 +14148,7 @@ provided by Bioconductor packages.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/shenorrLab/csSAM.git")
+                      (url "https://github.com/shenorrLab/csSAM")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -14215,7 +14179,7 @@ SAM.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/shenorrLab/bseqsc.git")
+                      (url "https://github.com/shenorrLab/bseqsc")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -14263,7 +14227,7 @@ and intra-cell population structure.\" Baron et al. Cell Systems (2016)
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/rrwick/Porechop.git")
+               (url "https://github.com/rrwick/Porechop")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -14294,7 +14258,7 @@ Barcoding Kit or Rapid Barcoding Kit.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/arq5x/poretools.git")
+               (url "https://github.com/arq5x/poretools")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -14355,7 +14319,7 @@ absolute GSEA.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mahmoudibrahim/JAMM.git")
+             (url "https://github.com/mahmoudibrahim/JAMM")
              (commit (string-append "JAMMv" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -14555,7 +14519,7 @@ datasets.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/rrwick/Filtlong.git")
+               (url "https://github.com/rrwick/Filtlong")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -14616,7 +14580,7 @@ choosing which reads pass the filter.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/jts/nanopolish.git")
+               (url "https://github.com/jts/nanopolish")
                (commit commit)
                (recursive? #t)))
          (file-name (git-file-name name version))
@@ -14690,7 +14654,7 @@ polymorphisms) and indels with respect to a reference genome and more.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/etal/cnvkit.git")
+             (url "https://github.com/etal/cnvkit")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -14726,7 +14690,7 @@ Torrent.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/KlugerLab/pyFIt-SNE.git")
+             (url "https://github.com/KlugerLab/pyFIt-SNE")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -14989,7 +14953,7 @@ tools which build on STAR, Arriba does not require to reduce the
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/MikkelSchubert/adapterremoval.git")
+             (url "https://github.com/MikkelSchubert/adapterremoval")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -15028,7 +14992,7 @@ sequence for paired-ended data, for which this information is not available.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/matsen/pplacer.git")
+               (url "https://github.com/matsen/pplacer")
                (commit (string-append "v" version))))
          (file-name (git-file-name name version))
          (sha256
@@ -15250,7 +15214,7 @@ on the needs of the user.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ParkerLab/ataqv.git")
+             (url "https://github.com/ParkerLab/ataqv")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -15291,7 +15255,7 @@ might be caused by ATAC-seq library prep or sequencing.  The main program,
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/kcha/psiplot.git")
+             (url "https://github.com/kcha/psiplot")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -15322,7 +15286,7 @@ are generated using @code{ggplot2}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/nanoporetech/ont_fast5_api.git")
+             (url "https://github.com/nanoporetech/ont_fast5_api")
              (commit (string-append "release_" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -15353,7 +15317,7 @@ and reflect the fast5 file schema, and tools to convert between
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/phoenixding/tbsp.git")
+               (url "https://github.com/phoenixding/tbsp")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -15665,7 +15629,7 @@ manipulations on VCF files.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/ekg/freebayes.git")
+                      (url "https://github.com/ekg/freebayes")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -15783,7 +15747,7 @@ length of a short-read sequencing alignment.")
     (source (origin
       (method git-fetch)
       (uri (git-reference
-            (url "https://github.com/GregoryFaust/samblaster.git")
+            (url "https://github.com/GregoryFaust/samblaster")
             (commit (string-append "v." version))))
       (file-name (git-file-name name version))
       (sha256
@@ -15820,7 +15784,7 @@ pairs.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/velocyto-team/velocyto.R.git")
+               (url "https://github.com/velocyto-team/velocyto.R")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -15861,7 +15825,7 @@ patterns.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dpryan79/MethylDackel.git")
+                    (url "https://github.com/dpryan79/MethylDackel")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -15909,7 +15873,7 @@ containing the reference genome as well.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/daler/gffutils.git")
+               (url "https://github.com/daler/gffutils")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

@@ -38,6 +38,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages debian)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages docbook)
@@ -60,11 +62,19 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-apps)
+  #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages haskell-crypto)
+  #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
@@ -75,6 +85,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
@@ -82,6 +93,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages spice)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -348,6 +360,512 @@ server and embedded PowerPC, and S390 guests.")
                   '("libusb" "mesa" "sdl2" "spice" "virglrenderer" "gtk+"
                     "usbredir" "libdrm" "libepoxy" "pulseaudio" "vde2"
                     "libcacard")))))
+
+(define (system->qemu-target system)
+  (cond
+   ((string-prefix? "i686" system)
+    "qemu-system-i386")
+   ((string-prefix? "arm" system)
+    "qemu-system-arm")
+   (else
+    (string-append "qemu-system-" (match (string-split system #\-)
+                                    ((arch kernel) arch)
+                                    (_ system))))))
+
+(define-public ganeti
+  (package
+    (name "ganeti")
+    ;; Note: we use a pre-release for Python 3 compatibility as well as many
+    ;; other fixes.
+    (version "3.0.0beta1-24-g024cc9fa2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ganeti/ganeti")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "1ll34qd2mifni3bhg7cnir3xfnkafig8ch33qndqwrsby0y5ssia"))
+              (file-name (git-file-name name version))
+              (patches (search-patches "ganeti-shepherd-support.patch"
+                                       "ganeti-shepherd-master-failover.patch"
+                                       "ganeti-deterministic-manual.patch"
+                                       "ganeti-drbd-compat.patch"
+                                       "ganeti-os-disk-size.patch"
+                                       "ganeti-haskell-pythondir.patch"
+                                       "ganeti-disable-version-symlinks.patch"
+                                       "ganeti-preserve-PYTHONPATH.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:imported-modules (,@%gnu-build-system-modules
+                           (guix build haskell-build-system)
+                           (guix build python-build-system))
+       #:modules (,@%gnu-build-system-modules
+                  ((guix build haskell-build-system) #:prefix haskell:)
+                  ((guix build python-build-system) #:select (python-version))
+                  (ice-9 rdelim))
+
+       ;; The default test target includes a lot of checks that are only really
+       ;; relevant for developers such as NEWS file checking, line lengths, etc.
+       ;; We are only interested in the "py-tests" and "hs-tests" targets: this
+       ;; is the closest we've got even though it includes a little more.
+       #:test-target "check-TESTS"
+
+       #:configure-flags
+       (list "--localstatedir=/var"
+             "--sharedstatedir=/var"
+             "--sysconfdir=/etc"
+             "--enable-haskell-tests"
+
+             ;; By default, the build system installs everything to versioned
+             ;; directories such as $libdir/3.0 and relies on a $libdir/default
+             ;; symlink pointed from /etc/ganeti/{lib,share} to actually function.
+             ;; This is done to accommodate installing multiple versions in
+             ;; parallel, but is of little use to us as Guix users can just
+             ;; roll back and forth.  Thus, disable it for simplicity.
+             "--disable-version-links"
+
+             ;; Ganeti can optionally take control over SSH host keys and
+             ;; distribute them to nodes as they are added, and also rotate keys
+             ;; with 'gnt-cluster renew-crypto --new-ssh-keys'.  Thus it needs to
+             ;; know how to restart the SSH daemon.
+             "--with-sshd-restart-command='herd restart ssh-daemon'"
+
+             ;; Look for OS definitions in this directory by default.  It can
+             ;; be changed in the cluster configuration.
+             "--with-os-search-path=/run/current-system/profile/share/ganeti/os"
+
+             ;; The default QEMU executable to use.  We don't use the package
+             ;; here because this entry is stored in the cluster configuration.
+             (string-append "--with-kvm-path=/run/current-system/profile/bin/"
+                            ,(system->qemu-target (%current-system))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-vcs-version
+           (lambda _
+             ;; If we are building from a git checkout, we need to create a
+             ;; 'vcs-version' file manually because the build system does
+             ;; not have access to the git repository information.
+             (unless (file-exists? "vcs-version")
+               (call-with-output-file "vcs-version"
+                 (lambda (port)
+                   (format port "v~a~%" ,version))))
+             #t))
+         (add-after 'unpack 'patch-absolute-file-names
+           (lambda _
+             (substitute* '("lib/utils/process.py"
+                            "lib/utils/text.py"
+                            "src/Ganeti/Constants.hs"
+                            "src/Ganeti/HTools/CLI.hs"
+                            "test/py/ganeti.config_unittest.py"
+                            "test/py/ganeti.hooks_unittest.py"
+                            "test/py/ganeti.utils.process_unittest.py"
+                            "test/py/ganeti.utils.text_unittest.py"
+                            "test/py/ganeti.utils.wrapper_unittest.py")
+               (("/bin/sh") (which "sh"))
+               (("/bin/bash") (which "bash"))
+               (("/usr/bin/env") (which "env"))
+               (("/bin/true") (which "true")))
+
+             ;; This script is called by the node daemon at startup to perform
+             ;; sanity checks on the cluster IP addresses, and it is also used
+             ;; in a master-failover scenario.  Add absolute references to
+             ;; avoid propagating these executables.
+             (substitute* "tools/master-ip-setup"
+               (("arping") (which "arping"))
+               (("ndisc6") (which "ndisc6"))
+               (("fping") (which "fping"))
+               (("grep") (which "grep"))
+               (("ip addr") (string-append (which "ip") " addr")))
+             #t))
+         (add-after 'unpack 'override-builtin-PATH
+           (lambda _
+             ;; Ganeti runs OS install scripts and similar with a built-in
+             ;; hard coded PATH.  Patch so it works on Guix System.
+             (substitute* "src/Ganeti/Constants.hs"
+               (("/sbin:/bin:/usr/sbin:/usr/bin")
+                "/run/setuid-programs:/run/current-system/profile/sbin:\
+/run/current-system/profile/bin"))
+             #t))
+         (add-after 'bootstrap 'patch-sphinx-version-detection
+           (lambda _
+             ;; The build system runs 'sphinx-build --version' to verify that
+             ;; the Sphinx is recent enough, but does not expect the
+             ;; .sphinx-build-real executable name created by the Sphinx wrapper.
+             (substitute* "configure"
+               (("\\$SPHINX --version 2>&1")
+                "$SPHINX --version 2>&1 | sed 's/.sphinx-build-real/sphinx-build/g'"))
+             #t))
+
+         ;; The build system invokes Cabal and GHC, which do not work with
+         ;; GHC_PACKAGE_PATH: <https://github.com/haskell/cabal/issues/3728>.
+         ;; Tweak the build system to do roughly what haskell-build-system does.
+         (add-before 'configure 'configure-haskell
+           (assoc-ref haskell:%standard-phases 'setup-compiler))
+         (add-after 'configure 'do-not-use-GHC_PACKAGE_PATH
+           (lambda _
+             (unsetenv "GHC_PACKAGE_PATH")
+             (substitute* "Makefile"
+               (("\\$\\(CABAL\\)")
+                "$(CABAL) --package-db=../package.conf.d")
+               (("\\$\\(GHC\\)")
+                "$(GHC) -package-db=../package.conf.d"))
+             #t))
+
+         (add-after 'configure 'fix-installation-directories
+           (lambda _
+             (substitute* "Makefile"
+               ;; Do not attempt to create /var during install.
+               (("\\$\\(DESTDIR\\)\\$\\{localstatedir\\}")
+                "$(DESTDIR)${prefix}${localstatedir}")
+               ;; Similarly, do not attempt to install the sample ifup scripts
+               ;; to /etc/ganeti.
+               (("\\$\\(DESTDIR\\)\\$\\(ifupdir\\)")
+                "$(DESTDIR)${prefix}$(ifupdir)"))
+             #t))
+         (add-before 'build 'adjust-tests
+           (lambda _
+             ;; Disable tests that can not run.  Do it early to prevent
+             ;; touching the Makefile later and triggering a needless rebuild.
+             (substitute* "Makefile"
+               ;; These tests expect the presence of a 'root' user (via
+               ;; ganeti/runtime.py), which fails in the build environment.
+               (("test/py/ganeti\\.asyncnotifier_unittest\\.py") "")
+               (("test/py/ganeti\\.backend_unittest\\.py") "")
+               (("test/py/ganeti\\.daemon_unittest\\.py") "")
+               (("test/py/ganeti\\.tools\\.ensure_dirs_unittest\\.py") "")
+               (("test/py/ganeti\\.utils\\.io_unittest-runasroot\\.py") "")
+               ;; Disable the bash_completion test, as it requires the full
+               ;; bash instead of bash-minimal.
+               (("test/py/bash_completion\\.bash")
+                "")
+               ;; This test requires networking.
+               (("test/py/import-export_unittest\\.bash")
+                ""))
+
+             ;; Many of the Makefile targets reset PYTHONPATH before running
+             ;; the Python interpreter, which does not work very well for us.
+             (substitute* "Makefile"
+               (("PYTHONPATH=")
+                (string-append "PYTHONPATH=" (getenv "PYTHONPATH") ":")))
+             #t))
+         (add-after 'build 'build-bash-completions
+           (lambda _
+             (let ((orig-pythonpath (getenv "PYTHONPATH")))
+               (setenv "PYTHONPATH" (string-append ".:" orig-pythonpath))
+               (invoke "./autotools/build-bash-completion")
+               (setenv "PYTHONPATH" orig-pythonpath)
+               #t)))
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Set TZDIR so that time zones are found.
+             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
+                                            "/share/zoneinfo"))
+
+             ;; This test checks whether PYTHONPATH is untouched, and extends
+             ;; it to include test directories if so.  Add an else branch for
+             ;; our modified PYTHONPATH, in order to prevent a confusing test
+             ;; failure where expired certificates are not cleaned because
+             ;; check-cert-expired is silently crashing.
+             (substitute* "test/py/ganeti-cleaner_unittest.bash"
+               (("then export PYTHONPATH=(.*)" all testpath)
+                (string-append all "else export PYTHONPATH="
+                               (getenv "PYTHONPATH") ":" testpath "\n")))
+
+             (substitute* "test/py/ganeti.utils.process_unittest.py"
+               ;; This test attempts to run an executable with
+               ;; RunCmd(..., reset_env=True), which fails because the default
+               ;; PATH from Constants.hs does not exist in the build container.
+               ((".*def testResetEnv.*" all)
+                (string-append "  @unittest.skipIf(True, "
+                               "\"cannot reset env in the build container\")\n"
+                               all))
+
+               ;; XXX: Somehow this test fails in the build container, but
+               ;; works in 'guix environment -C', even without /bin/sh?
+               ((".*def testPidFile.*" all)
+                (string-append "  @unittest.skipIf(True, "
+                               "\"testPidFile fails in the build container\")\n"
+                               all)))
+
+             ;; XXX: Why are these links not added automatically.
+             (with-directory-excursion "test/hs"
+               (for-each (lambda (file)
+                           (symlink "../../src/htools" file))
+                         '("hspace" "hscan" "hinfo" "hbal" "hroller"
+                           "hcheck" "hail" "hsqueeze")))
+             #t))
+         (add-after 'install 'install-bash-completions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (compdir (string-append out "/etc/bash_completion.d")))
+               (mkdir-p compdir)
+               (copy-file "doc/examples/bash_completion"
+                             (string-append compdir "/ganeti"))
+               ;; The one file contains completions for many different
+               ;; executables.  Create symlinks for found completions.
+               (with-directory-excursion compdir
+                 (for-each
+                  (lambda (prog) (symlink "ganeti" prog))
+                  (call-with-input-file "ganeti"
+                    (lambda (port)
+                      (let loop ((line (read-line port))
+                                 (progs '()))
+                        (if (eof-object? line)
+                            progs
+                            (if (string-prefix? "complete" line)
+                                (loop (read-line port)
+                                      ;; Extract "prog" from lines of the form:
+                                      ;; "complete -F _prog -o filenames prog".
+                                      ;; Note that 'burnin' is listed with the
+                                      ;; absolute file name, which is why we
+                                      ;; run everything through 'basename'.
+                                      (cons (basename (car (reverse (string-split
+                                                                     line #\ ))))
+                                            progs))
+                                (loop (read-line port) progs))))))))
+               #t)))
+         ;; Wrap all executables with PYTHONPATH.  We can't borrow the phase
+         ;; from python-build-system because we also need to wrap the scripts
+         ;; in $out/lib/ganeti such as "node-daemon-setup".
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin"))
+                    (lib (string-append out "/lib"))
+                    (python (assoc-ref inputs "python"))
+                    (major+minor (python-version python))
+                    (PYTHONPATH (string-append lib "/python" major+minor
+                                               "/site-packages:"
+                                               (getenv "PYTHONPATH"))))
+               (define (shell-script? file)
+                 (call-with-ascii-input-file file
+                   (lambda (port)
+                     (let ((shebang (false-if-exception (read-line port))))
+                       (and shebang
+                            (string-prefix? "#!" shebang)
+                            (or (string-contains shebang "/bin/bash")
+                                (string-contains shebang "/bin/sh")))))))
+
+               (define (wrap? file)
+                 ;; Do not wrap shell scripts because some are meant to be
+                 ;; sourced, which breaks if they are wrapped.  We do wrap
+                 ;; the Haskell executables because some call out to Python
+                 ;; directly.
+                 (and (executable-file? file)
+                      (not (symbolic-link? file))
+                      (not (shell-script? file))))
+
+               (for-each (lambda (file)
+                           (wrap-program file
+                             `("PYTHONPATH" ":" prefix (,PYTHONPATH))))
+                         (filter wrap?
+                                 (append (find-files (string-append lib "/ganeti"))
+                                         (find-files sbin))))
+               #t))))))
+    (native-inputs
+     `(("haskell" ,ghc)
+       ("cabal" ,cabal-install)
+       ("m4" ,m4)
+
+       ;; These inputs are necessary to bootstrap the package, because we
+       ;; have patched the build system.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+
+       ;; For the documentation.
+       ("python-docutils" ,python-docutils)
+       ("sphinx" ,python-sphinx)
+       ("pandoc" ,ghc-pandoc)
+       ("dot" ,graphviz)
+
+       ;; Test dependencies.
+       ("fakeroot" ,fakeroot)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("python-mock" ,python-mock)
+       ("python-pyyaml" ,python-pyyaml)
+       ("openssh" ,openssh)
+       ("procps" ,procps)
+       ("shelltestrunner" ,shelltestrunner)
+       ("tzdata" ,tzdata-for-tests)))
+    (inputs
+     `(("arping" ,iputils)              ;must be the iputils version
+       ("curl" ,curl)
+       ("fping" ,fping)
+       ("iproute2" ,iproute)
+       ("ndisc6" ,ndisc6)
+       ("socat" ,socat)
+       ("qemu" ,qemu-minimal)           ;for qemu-img
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-curl" ,ghc-curl)
+       ("ghc-hinotify" ,ghc-hinotify)
+       ("ghc-hslogger" ,ghc-hslogger)
+       ("ghc-json" ,ghc-json)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-network" ,ghc-network)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-psqueue" ,ghc-psqueue)
+       ("ghc-regex-pcre" ,ghc-regex-pcre)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-zlib" ,ghc-zlib)
+
+       ;; For the optional metadata daemon.
+       ("ghc-snap-core" ,ghc-snap-core)
+       ("ghc-snap-server" ,ghc-snap-server)
+
+       ("python" ,python)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-simplejson" ,python-simplejson)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-pyinotify" ,python-pyinotify)
+       ("python-pycurl" ,python-pycurl)
+       ("python-bitarray" ,python-bitarray)
+       ("python-paramiko" ,python-paramiko)
+       ("python-psutil" ,python-psutil)))
+    (home-page "http://www.ganeti.org/")
+    (synopsis "Cluster-based virtual machine management system")
+    (description
+     "Ganeti is a virtual machine management tool built on top of existing
+virtualization technologies such as Xen or KVM.  Ganeti controls:
+
+@itemize @bullet
+@item Disk creation management;
+@item Operating system installation for instances (in co-operation with
+OS-specific install scripts); and
+@item Startup, shutdown, and failover between physical systems.
+@end itemize
+
+Ganeti is designed to facilitate cluster management of virtual servers and
+to provide fast and simple recovery after physical failures, using
+commodity hardware.")
+    (license license:bsd-2)))
+
+(define-public ganeti-instance-guix
+  (package
+    (name "ganeti-instance-guix")
+    (version "0.6")
+    (home-page "https://github.com/mbakke/ganeti-instance-guix")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0aa08irpcpns6mhjgsplc5f0p8ab1qcr9ah1gj5z66kxgqyflzrp"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--sysconfdir=/etc" "--localstatedir=/var")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("util-linux" ,util-linux)
+       ("qemu-img" ,qemu-minimal)))
+    (synopsis "Guix OS integration for Ganeti")
+    (description
+     "This package provides a guest OS definition for Ganeti that uses
+Guix to build virtual machines.")
+    (license license:gpl3+)))
+
+(define-public ganeti-instance-debootstrap
+  (package
+    (name "ganeti-instance-debootstrap")
+    ;; We need two commits on top of the latest release for compatibility
+    ;; with newer sfdisk, as well as gnt-network integration.
+    (version "0.16-2-ge145396")
+    (home-page "https://github.com/ganeti/instance-debootstrap")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0f2isw9d8lawzj21rrq1q9xhq8xfa65rqbhqmrn59z201x9q1336"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--sysconfdir=/etc" "--localstatedir=/var")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'add-absolute-references
+                    (lambda _
+                      (substitute* "common.sh.in"
+                        (("/sbin/blkid") (which "blkid"))
+                        (("kpartx -")
+                         (string-append (which "kpartx") " -")))
+                      (substitute* "import"
+                        (("restore -r")
+                         (string-append (which "restore") " -r")))
+                      (substitute* "export"
+                        (("dump -0")
+                         (string-append (which "dump") " -0")))
+                      (substitute* "create"
+                        (("debootstrap") (which "debootstrap"))
+                        (("`which run-parts`") (which "run-parts"))
+                        ;; Here we actually need to hard code /bin/passwd
+                        ;; because it's called via chroot, which fails if
+                        ;; "/bin" is not in PATH.
+                        (("passwd") "/bin/passwd"))
+                      #t))
+                  (add-after 'unpack 'set-dpkg-arch
+                    (lambda* (#:key system #:allow-other-keys)
+                      ;; The create script passes --arch to debootstrap,
+                      ;; and defaults to `dpkg --print-architecture` when
+                      ;; ARCH is not set in variant.conf.  Hard code the
+                      ;; build-time architecture to avoid the dpkg dependency.
+                      (let ((dpkg-arch
+                             (cond ((string-prefix? "x86_64" system)
+                                    "amd64")
+                                   ((string-prefix? "i686" system)
+                                    "i386")
+                                   ((string-prefix? "aarch64" system)
+                                    "arm64")
+                                   (else (car (string-split system #\-))))))
+                        (substitute* "create"
+                          (("`dpkg --print-architecture`")
+                           dpkg-arch))
+                        #t)))
+                  (add-after 'configure 'adjust-Makefile
+                    (lambda _
+                      ;; Do not attempt to create /etc/ganeti/instance-debootstrap
+                      ;; and /etc/default/ganeti-instance-debootstrap during install.
+                      ;; They are created by the Ganeti service.
+                      (substitute* "Makefile"
+                        (("\\$\\(variantsdir\\)")
+                         "$(prefix)/etc/ganeti/instance-debootstrap/variants")
+                        (("\\$\\(defaultsdir\\)")
+                         "$(prefix)/etc/default/ganeti-instance-debootstrap"))
+                      #t))
+                  (add-after 'install 'make-variants.list-symlink
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; The Ganeti OS API mandates a variants.list file that
+                      ;; describes all supported "variants" of this OS.
+                      ;; Guix generates this file, so make the original file
+                      ;; a symlink to it.
+                      (with-directory-excursion (string-append
+                                                 (assoc-ref outputs "out")
+                                                 "/share/ganeti/os/debootstrap")
+                        (delete-file "variants.list")
+                        (symlink "/etc/ganeti/instance-debootstrap/variants/variants.list"
+                                 "variants.list"))
+                      #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("debianutils" ,debianutils)
+       ("debootstrap" ,debootstrap)
+       ("dump" ,dump)
+       ("kpartx" ,multipath-tools)
+       ("util-linux" ,util-linux)))
+    (synopsis "Debian OS integration for Ganeti")
+    (description
+     "This package provides a guest OS definition for Ganeti.  It installs
+Debian or a derivative using @command{debootstrap}.")
+    (license license:gpl2+)))
 
 (define-public libosinfo
   (package
@@ -730,7 +1248,6 @@ virtualization library.")
        ("vte" ,vte)
        ("python-libvirt" ,python-libvirt)
        ("python-requests" ,python-requests)
-       ("python-ipaddress" ,python-ipaddress)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
        ("python-libxml2" ,python-libxml2)
@@ -878,7 +1395,7 @@ mainly implemented in user space.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/abbbi/qmpbackup.git")
+                     (url "https://github.com/abbbi/qmpbackup")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1024,19 +1541,19 @@ Open Container Initiative specification.")
 (define-public umoci
   (package
     (name "umoci")
-    (version "0.4.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/openSUSE/umoci/releases/download/v"
-                    version "/umoci.tar.xz"))
-              (file-name (string-append "umoci-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0x1yyvpllz6fyy9xip6f7b6c94v984n3faf8p50fr9y4ygkgi15a"))))
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/opencontainers/umoci/releases/download/v"
+             version "/umoci.tar.xz"))
+       (file-name (string-append "umoci-" version ".tar.xz"))
+       (sha256
+        (base32 "06q7xfwnqysc013hapx31jhlzmyg8qb467qfkynj673qc7p9bd6h"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "github.com/openSUSE/umoci"
+     '(#:import-path "github.com/opencontainers/umoci"
        #:install-source? #f
        #:phases
        (modify-phases %standard-phases
@@ -1197,7 +1714,7 @@ virtual machines.")
     (inputs
      `(("libcap" ,libcap)))
     (native-inputs
-     `(("python-2" ,python-2)
+     `(("python" ,python-wrapper)
        ("util-linux" ,util-linux)))
     (home-page "https://github.com/containers/bubblewrap")
     (synopsis "Unprivileged sandboxing tool")

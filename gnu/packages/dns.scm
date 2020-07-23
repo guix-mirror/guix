@@ -119,7 +119,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.16.4")
+    (version "9.16.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -127,7 +127,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "02ip1xvmnqla3p5k2rmfrksrw4q9iqbrhyg3mamvrj5a7n6hh8km"))))
+                "0xf07mmd0vi91jd15z8d3hhjva8v27l4ip4l8yzah4gg3zjv6y33"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -177,14 +177,28 @@ and BOOTP/TFTP for network booting of diskless machines.")
              (with-directory-excursion "fuzz"
                (invoke "make" "check"))
              #t)))))
-    (synopsis "An implementation of the Domain Name System")
+    (synopsis "Domain Name System (DNS) implementation")
     (description "BIND is an implementation of the @dfn{Domain Name System}
 (DNS) protocols for the Internet.  It is a reference implementation of those
 protocols, but it is also production-grade software, suitable for use in
-high-volume and high-reliability applications. The name BIND stands for
-\"Berkeley Internet Name Domain\", because the software originated in the early
-1980s at the University of California at Berkeley.")
-    (home-page "https://www.isc.org/downloads/bind")
+high-volume and high-reliability applications.  The name BIND stands for
+\"Berkeley Internet Name Domain\", because the software originated in the
+early 1980s at the University of California at Berkeley.  The @code{utils}
+output of this package contains the following DNS name servers related command
+line utilities:
+@table @code
+@item delv
+DNS lookup and validation utility
+@item dig
+DNS lookup utility
+@item host
+DNS lookup utility
+@item nslookup
+Internet name servers interactive query utility
+@item nsupdate
+Dynamic DNS update utility
+@end table")
+    (home-page "https://www.isc.org/bind/")
     (license (list license:mpl2.0))))
 
 (define-public dnscrypt-proxy
@@ -321,14 +335,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.2.4")
+    (version "4.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0z7j3vwqqj0hh8n5irb2yqwzl45k4sn2wczbq1b1lqv5cxv6vgcy"))))
+        (base32 "0ac3mbn5z4nc18782m9aswdpi2m9f4665vidw0ciyigdh0pywp2v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -723,8 +737,9 @@ synthesis, and on-the-fly re-configuration.")
        ("libuv" ,libuv)
        ("lmdb" ,lmdb)
        ("luajit" ,luajit)
-       ;; TODO: Add optional lua modules: basexx, cqueues and psl.
+       ;; TODO: Add optional lua modules: basexx and psl.
        ("lua-bitop" ,lua5.1-bitop)
+       ("lua-cqueues" ,lua5.1-cqueues)
        ("lua-filesystem" ,lua5.1-filesystem)
        ("lua-sec" ,lua5.1-sec)
        ("lua-socket" ,lua5.1-socket)))
@@ -747,7 +762,7 @@ LuaJIT, both a resolver library and a daemon.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ddclient/ddclient.git")
+             (url "https://github.com/ddclient/ddclient")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -914,7 +929,7 @@ local networks.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/publicsuffix/list.git")
+                      (url "https://github.com/publicsuffix/list")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -951,7 +966,7 @@ known public suffixes.")
 (define-public maradns
   (package
     (name "maradns")
-    (version "3.5.0004")
+    (version "3.5.0007")
     (source
      (origin
        (method url-fetch)
@@ -959,18 +974,13 @@ known public suffixes.")
                            (version-major+minor version) "/"
                            version "/maradns-" version ".tar.xz"))
        (sha256
-        (base32
-         "1zv0i6m4m05ay5zlhwq1h88hgjq2d81cjanpnb3gyhr0xhmjwk6a"))))
+        (base32 "0bc19xylg4whww9qaj5i4izwxcrh0c0ja7l1pfcn2la02hlvg1a6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; need to be root to run tests
+     `(#:tests? #f                      ; need to be root to run tests
        #:make-flags
        (list
-        (string-append "CC="
-                       (if ,(%current-target-system)
-                           (string-append (assoc-ref %build-inputs "cross-gcc")
-                                          "/bin/" ,(%current-target-system) "-gcc")
-                           "gcc"))
+        ,(string-append "CC=" (cc-for-target))
         (string-append "PREFIX=" %output)
         (string-append "RPM_BUILD_ROOT=" %output))
        #:phases

@@ -131,11 +131,21 @@ GNU/Hurd."
     (build-system gnu-build-system)
     ;; Flex is needed both at build and run time.
     (inputs `(("gnumach-headers" ,gnumach-headers)
-              ("flex" ,flex)))
+              ("flex" ,flex)
+              ("perl" ,perl)))
     (native-inputs
      `(("flex" ,flex)
        ("bison" ,bison)))
-    (arguments `(#:tests? #f))
+    (arguments `(#:tests? #f
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-after 'install 'patch-non-shebang-references
+                     (lambda* (#:key build inputs outputs #:allow-other-keys)
+                       (let ((perl (assoc-ref inputs "perl"))
+                             (out  (assoc-ref outputs "out")))
+                         (substitute* (string-append out "/bin/mig")
+                           (("perl ") (string-append perl "/bin/perl ")))
+                         #t))))))
     (home-page "https://www.gnu.org/software/hurd/microkernel/mach/mig/gnu_mig.html")
     (synopsis "Mach 3.0 interface generator for the Hurd")
     (description
@@ -254,13 +264,21 @@ Library for GNU/Hurd.")
     (arguments
      '(#:modules ((guix build union))
        #:builder (begin
-                   (use-modules (ice-9 match)
+                   (use-modules (srfi srfi-1)
+                                (srfi srfi-26)
+                                (ice-9 match)
                                 (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
+                   (let ((inputs (filter
+                                  (compose (cute member <> '("gnumach-headers"
+                                                             "hurd-headers"
+                                                             "hurd-minimal"))
+                                           car)
+                                  %build-inputs)))
+                     (match inputs
+                       (((names . directories) ...)
+                        (union-build (assoc-ref %outputs "out")
+                                     directories)
+                        #t))))))
     (inputs `(("gnumach-headers" ,gnumach-headers)
               ("hurd-headers" ,hurd-headers)
               ("hurd-minimal" ,hurd-minimal)))

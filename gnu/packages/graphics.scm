@@ -160,7 +160,7 @@ objects!")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/autotrace/autotrace.git")
+                      (url "https://github.com/autotrace/autotrace")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -301,7 +301,7 @@ application can be customized via its API for Python scripting.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/assimp/assimp.git")
+                    (url "https://github.com/assimp/assimp")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -359,7 +359,7 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.5.0")
+    (version "2.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -368,9 +368,8 @@ many more.")
               (file-name (git-file-name "ilmbase" version))
               (sha256
                (base32
-                "1k50cvi3sk6gf6w713lkk2gv5cvs74vkc7s7k4z6nmyhi4g89w4y"))
-              (patches (search-patches "ilmbase-fix-tests.patch"
-                                       "ilmbase-fix-test-arm.patch"))))
+                "1vf8bqld2bpcdi99jbr043y6vp01cp3fvbiasrn66xn91mf6imbn"))
+              (patches (search-patches "ilmbase-fix-tests.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -512,7 +511,7 @@ other vector formats such as:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/OGRECave/ogre.git")
+             (url "https://github.com/OGRECave/ogre")
              (commit (string-append "v" version))
              (recursive? #t)))          ;for Dear ImGui submodule
        (file-name (git-file-name name version))
@@ -589,11 +588,15 @@ graphics.")
            (lambda _
              (chdir "OpenEXR")
              #t))
-         (add-before 'check 'increase-test-timeout
+         (add-after 'change-directory 'increase-test-timeout
            (lambda _
              ;; On armhf-linux, we need to override the CTest default
              ;; timeout of 1500 seconds for the OpenEXR.IlmImf test.
-             (setenv "CTEST_TEST_TIMEOUT" "2000")
+             (substitute* "IlmImfTest/CMakeLists.txt"
+               (("add_test\\(NAME OpenEXR\\.IlmImf.*" all)
+                (string-append
+                 all
+                 "set_tests_properties(OpenEXR.IlmImf PROPERTIES TIMEOUT 2000)")))
              #t))
          ,@(if (not (target-64bit?))
                `((add-after 'change-directory 'disable-broken-test
@@ -625,7 +628,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/OpenImageIO/oiio.git")
+                    (url "https://github.com/OpenImageIO/oiio")
                     (commit (string-append "Release-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -945,7 +948,7 @@ output.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/wdas/brdf.git")
+                      (url "https://github.com/wdas/brdf")
                       (commit commit)))
                 (sha256
                  (base32
@@ -1214,7 +1217,7 @@ and GPU architectures.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/floriankirsch/OpenCSG.git")
+               (url "https://github.com/floriankirsch/OpenCSG")
                (commit (string-append "opencsg-"
                                       (string-map dot-to-dash version)
                                       "-release"))))

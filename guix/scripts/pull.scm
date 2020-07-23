@@ -63,7 +63,6 @@
   #:re-export (display-profile-content
                channel-commit-hyperlink)
   #:export (channel-list
-            with-git-error-handling
             guix-pull))
 
 
@@ -463,23 +462,6 @@ true, display what would be built without actually building it."
   "Use the right X.509 certificates for Git checkouts over HTTPS."
   (unless (honor-system-x509-certificates!)
     (honor-lets-encrypt-certificates! store)))
-
-(define (report-git-error error)
-  "Report the given Guile-Git error."
-  ;; Prior to Guile-Git commit b6b2760c2fd6dfaa5c0fedb43eeaff06166b3134,
-  ;; errors would be represented by integers.
-  (match error
-    ((? integer? error)                           ;old Guile-Git
-     (leave (G_ "Git error ~a~%") error))
-    ((? git-error? error)                         ;new Guile-Git
-     (leave (G_ "Git error: ~a~%") (git-error-message error)))))
-
-(define-syntax-rule (with-git-error-handling body ...)
-  (catch 'git-error
-    (lambda ()
-      body ...)
-    (lambda (key err)
-      (report-git-error err))))
 
 
 ;;;

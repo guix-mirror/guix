@@ -155,14 +155,14 @@ keys, no previous conversation is compromised.")
   (name "libsignal-protocol-c")
   (version "2.3.2")
   (source (origin
-           (method url-fetch)
-           (uri (string-append "https://github.com/WhisperSystems/"
-                               "libsignal-protocol-c/archive/v" version
-                               ".tar.gz"))
-           (file-name (string-append name "-" version ".tar.gz"))
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://github.com/WhisperSystems/libsignal-protocol-c")
+                  (commit (string-append "v" version))))
+           (file-name (git-file-name name version))
            (sha256
             (base32
-             "0380hl6fw3ppf265fg897pyrpqygpx4m9j8ifq118bim8lq6z0pk"))))
+             "1qj2w4csy6j9jg1jy66n1qwysx7hgjywk4n35hlqcnh1kpa14k3p"))))
   (arguments
    `(;; Required for proper linking and for tests to run.
      #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
@@ -235,7 +235,7 @@ identi.ca and status.net).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/sm00th/bitlbee-discord.git")
+             (url "https://github.com/sm00th/bitlbee-discord")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -370,20 +370,21 @@ dictionaries.  HexChat can be extended with multiple addons.")
 (define-public ngircd
   (package
     (name "ngircd")
-    (version "25")
+    (version "26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://arthur.barton.de/pub/ngircd/ngircd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0kpf5qi98m9f833r4rx9n6h9p31biwk798jwc1mgzmix7sp7r6f4"))
+                "1ijmv18fa648y7apxb9vp4j9iq6fxq850kz5v36rysaq614cdp2n"))
               (patches (search-patches "ngircd-handle-zombies.patch"))))
     (build-system gnu-build-system)
     ;; Needed for the test suite.
     (native-inputs `(("procps" ,procps)
                      ("expect" ,expect)
-                     ("inetutils" ,inetutils)))
+                     ("inetutils" ,inetutils)
+                     ("openssl" ,openssl)))
     ;; XXX Add libident.
     (inputs `(("zlib" ,zlib)
               ("libwrap" ,tcp-wrappers)
@@ -1004,7 +1005,7 @@ and prevent message loss.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/irungentoo/toxcore.git")
+                      (url "https://github.com/irungentoo/toxcore")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -1039,7 +1040,7 @@ and prevent message loss.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/TokTok/c-toxcore.git")
+             (url "https://github.com/TokTok/c-toxcore")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1070,7 +1071,7 @@ messenger protocol.")
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://github.com/uTox/uTox.git")
+           (url "https://github.com/uTox/uTox")
            (commit (string-append "v" version))
            (recursive? #t))) ;; Needed for 'minini' git submodule.
      (file-name (string-append name "-" version "-checkout"))
@@ -1194,7 +1195,7 @@ connect with friends and family without anyone else listening in.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Bitmessage/PyBitmessage.git")
+             (url "https://github.com/Bitmessage/PyBitmessage")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
@@ -1638,7 +1639,7 @@ is also scriptable and extensible via Guile.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/boothj5/libmesode.git")
+                    (url "https://github.com/boothj5/libmesode")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1669,7 +1670,7 @@ manual SSL certificate verification.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/strophe/libstrophe.git")
+             (url "https://github.com/strophe/libstrophe")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1694,14 +1695,14 @@ are both supported).")
 (define-public profanity
   (package
     (name "profanity")
-    (version "0.8.1")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://profanity-im.github.io/profanity-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15yrx2ir2bilxpjfaxpjb93yjpvpvcvh5r7wbsjx6kmmy7qg2zvb"))))
+                "00j9l9v62rz9hprgiy1vrz8v3v59ph18h8kskqxr31fgqvjv5xr3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1720,7 +1721,8 @@ are both supported).")
        ("libotr" ,libotr)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
-       ("readline" ,readline)))
+       ("readline" ,readline)
+       ("sqlite" ,sqlite)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)
@@ -1776,7 +1778,7 @@ building the IRC clients and bots.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/JFreegman/toxic.git")
+             (url "https://github.com/JFreegman/toxic")
              (commit (string-append "v" version))))
        (sha256
         (base32 "09l2j3lwvrq7bf3051vjsnml9w63790ly3iylgf26gkrmld6k31w"))
@@ -1856,16 +1858,16 @@ QMatrixClient project.")
 (define-public mtxclient
   (package
     (name "mtxclient")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Nheko-Reborn/mtxclient.git")
+             (url "https://github.com/Nheko-Reborn/mtxclient")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vf5xmn6yfi5lvskfgrdmnalvclzrapcrml92bj9qaa8vq8mfsf2"))))
+        (base32 "1dg4dq20g0ah62j5s3gpsxqq4ny7lxkxdxa9q6g54hdwkrb9ms7x"))))
     (arguments
      `(#:configure-flags
        (list
@@ -1906,16 +1908,16 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
 (define-public nheko
   (package
     (name "nheko")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Nheko-Reborn/nheko.git")
+             (url "https://github.com/Nheko-Reborn/nheko")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12sxibbrn79sxkf9jrm7jrlj7l5vz15claxrrll7pkv9mv44wady"))))
+        (base32 "1cbhgaf9klgxdirrxj571fqwspm0byl75c1xc40l727a6qswvp7s"))))
     (arguments
      `(#:tests? #f                      ;no test target
        #:configure-flags
@@ -2142,20 +2144,20 @@ Telegram messenger.")
     (license license:gpl2+)))
 
 (define-public tdlib
-  (let ((commit "278c7acdec83c5ac17d8e1ed0bb2cacbcea62460")
+  (let ((commit "f45d80fe16f99d112d545b7cd74ce46342fe3437")
         (revision "0")
-        (version "1.6.0"))
+        (version "1.6.6"))
     (package
       (name "tdlib")
       (version (git-version version revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/tdlib/td.git")
+                      (url "https://github.com/tdlib/td")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0zlzpl6fgszg18kwycyyyrnkm255dvc6fkq0b0y32m5wvwwl36cv"))
+                  "1q8zw26mqhpdzvqbgc7fmn8rzwm5amb8m7s6impin4342wj7h6nr"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments

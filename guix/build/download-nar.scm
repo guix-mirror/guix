@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +19,7 @@
 (define-module (guix build download-nar)
   #:use-module (guix build download)
   #:use-module (guix build utils)
-  #:use-module (guix serialization)
+  #:use-module ((guix serialization) #:hide (dump-port*))
   #:use-module (guix zlib)
   #:use-module (guix progress)
   #:use-module (web uri)
@@ -42,10 +42,10 @@
   "Return the fallback nar URL for ITEM--e.g.,
 \"/gnu/store/cabbag3…-foo-1.2-checkout\"."
   ;; Here we hard-code nar URLs without checking narinfos.  That's probably OK
-  ;; though.  Use berlin.guixsd.org instead of its ci.guix.gnu.org front end to
+  ;; though.  Use berlin.guix.gnu.org instead of its ci.guix.gnu.org front end to
   ;; avoid sending these requests to CDN providers without user consent.
   ;; TODO: Use HTTPS?  The downside is the extra dependency.
-  (let ((bases '("http://berlin.guixsd.org"))
+  (let ((bases '("http://berlin.guix.gnu.org"))
         (item  (basename item)))
     (append (map (cut string-append <> "/nar/gzip/" item) bases)
             (map (cut string-append <> "/nar/" item) bases))))

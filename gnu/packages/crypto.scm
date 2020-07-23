@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,9 +42,11 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libbsd)
@@ -69,8 +72,10 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
@@ -169,6 +174,58 @@ OpenBSD tool of the same name.")
                                           "file://base64.c"
                                           "See base64.c in the distribution for
                                            the license from IBM.")))))
+
+(define-public rust-minisign
+  (package
+    (name "rust-minisign")
+    (version "0.5.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "minisign" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0xmcvh2snravghaar8igc6b9r3s1snnmf9qam9l3zyhm4987767y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.1)
+        ("rust-rpassword" ,rust-rpassword-4)
+        ("rust-scrypt" ,rust-scrypt-0.3))))
+    (home-page "https://github.com/jedisct1/rust-minisign")
+    (synopsis "Crate to sign files and verify signatures")
+    (description
+     "This package provides a crate to sign files and verify signatures.")
+    (license license:expat)))
+
+(define-public go-minisign
+  (package
+    (name "go-minisign")
+    (version "0.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jedisct1/go-minisign")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0wc0rk5m60yz52f0cncmbgq67yvb1rcx91gvzjg6jpc4mpw2db27"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "vendor") #t))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/jedisct1/go-minisign"))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+    (home-page "https://github.com/jedisct1/go-minisign")
+    (synopsis "Minisign verification library for Golang")
+    (description "A Golang library to verify Minisign signatures.")
+    (license license:expat)))
 
 (define-public encfs
   (package
@@ -389,7 +446,7 @@ no man page, refer to the home page for usage details.")
                                  (error "program not found:" program)))
                            '("seq" "mkfs.ext4" "pinentry"
                              "gpg" "cryptsetup" "gettext" "lsof"
-                             "qrencode" "steghide" "findmnt")))))
+                             "qrencode" "steghide" "findmnt" "getent")))))
                #t)))
          (delete 'check)
          (add-after 'wrap 'check
@@ -456,7 +513,7 @@ attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/technion/libscrypt.git")
+             (url "https://github.com/technion/libscrypt")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -850,7 +907,7 @@ security.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/vstakhov/asignify.git")
+                       (url "https://github.com/vstakhov/asignify")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
