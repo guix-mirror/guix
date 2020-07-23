@@ -55,6 +55,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages ftp)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
@@ -80,7 +81,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.7.19")
+    (version "0.8.14")
     (source
      (origin
       (method url-fetch)
@@ -89,32 +90,36 @@
                           "-series/" version "/+download/duplicity-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0ag9dknslxlasslwfjhqgcqbkb1mvzzx93ry7lch2lfzcdd91am6"))))
+       (base32 "1af7rppsd8kj66xhbc04x1di3rpncrz0prxq1z7npg11c769vb1x"))))
     (build-system python-build-system)
     (native-inputs
-     `(("util-linux" ,util-linux)       ; setsid command, for the tests
+     `(("gettext" ,gnu-gettext)         ; for msgfmt
+       ("util-linux" ,util-linux)       ; setsid command, for the tests
        ("par2cmdline" ,par2cmdline)
-       ("python-pexpect" ,python2-pexpect)
-       ("python-fasteners" ,python2-fasteners)
+       ("python-fasteners" ,python-fasteners)
+       ("python-future" ,python-future) ; for tests
+       ("python-pexpect" ,python-pexpect)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-setuptools-scm" ,python-setuptools-scm)
        ("tzdata" ,tzdata-for-tests)
-       ("mock" ,python2-mock)))
+       ("mock" ,python-mock)))
     (propagated-inputs
-     `(("lockfile" ,python2-lockfile)
-       ("urllib3" ,python2-urllib3)))
+     `(("lockfile" ,python-lockfile)
+       ("urllib3" ,python-urllib3)))
     (inputs
-     `(("librsync" ,librsync-0.9)
+     `(("librsync" ,librsync)
        ("lftp" ,lftp)
        ("gnupg" ,gnupg)                 ; gpg executable needed
        ("util-linux" ,util-linux)))     ; for setsid
     (arguments
-     `(#:python ,python-2               ; setup assumes Python 2
-       #:test-target "test"
+     `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'use-store-file-names
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "duplicity/gpginterface.py"
-               (("self.call = 'gpg'")
+               (("self.call = u'gpg'")
                 (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
 
              (substitute* '("testing/functional/__init__.py"
