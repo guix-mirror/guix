@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -134,7 +135,9 @@ GID."
    (extensions
     (list (service-extension shepherd-root-service-type nix-shepherd-service)
           (service-extension account-service-type nix-accounts)
-          (service-extension activation-service-type nix-activation)))
+          (service-extension activation-service-type nix-activation)
+          (service-extension profile-service-type
+                             (compose list nix-configuration-package))))
    (description "Run the Nix daemon.")
    (default-value (nix-configuration))))
 
