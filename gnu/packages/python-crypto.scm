@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1446,3 +1447,30 @@ can decide how long it takes to hash a password and how much memory is required.
 data such as API keys, cryptocurrency wallets, or seeds for digital
 signatures.")
     (license (list license:expat license:asl2.0)))) ; dual licensed
+
+(define-public python-pgpy
+  (package
+    (name "python-pgpy")
+    (version "0.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "PGPy" version))
+        (sha256
+         (base32
+          "0i4lqhzdwkjkim3wab0kqadx28z3r5ixlh6qxj4lif4gif56c0m7"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-singledispatch" ,python-singledispatch)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/SecurityInnovation/PGPy")
+    (synopsis "Python implementation of OpenPGP")
+    (description
+     "Currently, PGPy can load keys and signatures of all kinds in both ASCII
+armored and binary formats.
+
+It can create and verify RSA, DSA, and ECDSA signatures, at the moment.  It
+can also encrypt and decrypt messages using RSA and ECDH.")
+    (license license:bsd-3)))
