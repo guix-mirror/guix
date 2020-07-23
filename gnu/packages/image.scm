@@ -1030,7 +1030,19 @@ supplies a generic doubly-linked list and some string functions.")
                     (delete-file-recursively (string-append "Source/" dir)))
                   '("LibJPEG" "LibOpenJPEG" "LibPNG" "LibRawLite"
                     "LibJXR" "LibWebP" "OpenEXR" "ZLib"))))
-            (patches (search-patches "freeimage-unbundle.patch"))))
+            (patches
+             (append
+              (search-patches "freeimage-unbundle.patch")
+              ;; Take one patch from Arch Linux that adds LibRaw 0.20 compatibility.
+              (list (origin
+                      (method url-fetch)
+                      (uri "https://raw.githubusercontent.com/archlinux\
+/svntogit-community/ca3e6a52f5a46dec87cbf85e9d84fe370e282c8c/trunk\
+/freeimage-libraw-0.20.patch")
+                      (file-name "freeimage-libraw-compat.patch")
+                      (sha256
+                       (base32
+                        "0cwjxjz0f4gs6igvwqg0p99mnrsrwzkal1l2n08yvz2xq9s5khki"))))))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases

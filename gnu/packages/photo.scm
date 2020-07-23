@@ -173,14 +173,14 @@ cards and generate meaningful file and folder names.")
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.19.5")
+    (version "0.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1x827sh6vl8j3ll2ihkcr234y07f31hi1v7sl08jfw3irkbn58j0"))))
+                "18wlsvj6c1rv036ph3695kknpgzc3lk2ikgshy8417yfl8ykh2hz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
