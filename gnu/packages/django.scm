@@ -44,13 +44,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "1.11.28")
+    (version "1.11.29")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "1ss1jyip7mlbfjn27m0j6wx80s8h4ksg6g5annkgwigp8xgy6g5k"))))
+                "171jsi54fbnxzi2n3l4hkdmmwfnfrwacs180rw59l0bqcvxsw022"))))
     (build-system python-build-system)
     (arguments
      '(#:modules ((srfi srfi-1)
