@@ -224,7 +224,7 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.230"
+   "4.9.231"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 
@@ -407,10 +407,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.230")
+(define-public linux-libre-4.9-version "4.9.231")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0z03djys7k3z6z55xrw8rj4mv5i4h763lckz2anwxwgbwdb95fnm")))
+        (hash (base32 "1sz8xk767yy4lxqvy4229yrgkwnm43hdrbr54aa1flns5yh3p12g")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
@@ -480,8 +480,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-4.9-source
   (source-with-patches linux-libre-4.9-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-fix-atheros-9271-patch)))
+                       (list %boot-logo-patch)))
 
 (define-public linux-libre-4.4-source
   (source-with-patches linux-libre-4.4-pristine-source
