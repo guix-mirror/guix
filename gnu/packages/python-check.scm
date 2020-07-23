@@ -180,6 +180,41 @@ are too large to conveniently hard-code them in the tests.")
 advanced doctest support and enables the testing of reStructuredText files.")
     (license license:bsd-3)))
 
+(define-public python-pytest-filter-subpackage
+  (package
+    (name "python-pytest-filter-subpackage")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-filter-subpackage" version))
+       (sha256
+        (base32 "1s4s2kd31yc65rfvl4xhy8xx806xhy59kc7668h6b6wq88xgrn5p"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; One test is failing. There's an issue reported upstream. See
+       ;; https://github.com/astropy/pytest-filter-subpackage/issues/3.
+       ;; Disable it for now.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k" "not test_with_rst"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-doctestplus"
+        ,python-pytest-doctestplus)))
+    (home-page "https://github.com/astropy/pytest-filter-subpackage")
+    (synopsis "Pytest plugin for filtering based on sub-packages")
+    (description
+     "This package contains a simple plugin for the pytest framework that
+provides a shortcut to testing all code and documentation for a given
+sub-package.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-vcr
   ;; This commit fixes integration with pytest-5
   (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
