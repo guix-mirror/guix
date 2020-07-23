@@ -282,6 +282,35 @@ developers to control unit tests that require access to data from the
 internet.")
     (license license:bsd-3)))
 
+(define-public python-pytest-mpl
+  (package
+    (name "python-pytest-mpl")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-mpl" version))
+       (sha256
+        (base32 "1km202c1s5kcn52fx0266p06qb34va3warcby594dh6vixxa9i96"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/matplotlib/pytest-mpl")
+    (synopsis "Pytest plugin to help with testing figures output from Matplotlib")
+    (description
+     "This is a plugin to facilitate image comparison for Matplotlib figures
+in Pytest.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-vcr
   ;; This commit fixes integration with pytest-5
   (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
