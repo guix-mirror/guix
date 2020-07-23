@@ -405,6 +405,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/openbox.scm			\
   %D%/packages/opencog.scm			\
   %D%/packages/openldap.scm			\
+  %D%/packages/openpgp.scm			\
   %D%/packages/openstack.scm			\
   %D%/packages/orpheus.scm			\
   %D%/packages/ots.scm				\
