@@ -218,7 +218,7 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.188"
+   "4.14.189"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 
@@ -399,10 +399,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.188")
+(define-public linux-libre-4.14-version "4.14.189")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0jq6cyxa0mxnvd33gi66a4x3xlfsih2aaifa6yyvgldihw9y0vvn")))
+        (hash (base32 "1qgr6hb714xi7rav4za4vk4l7c0ma3ndf0f2ca3q8ly5gd2j3rd7")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
@@ -445,9 +445,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256
      (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f"))))
 
-(define %linux-libre-fix-atheros-9271-patch
-  (search-patch "linux-libre-fix-atheros-9271.patch"))
-
 (define (source-with-patches source patches)
   (origin
     (inherit source)
@@ -475,8 +472,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-4.14-source
   (source-with-patches linux-libre-4.14-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-fix-atheros-9271-patch)))
+                       (list %boot-logo-patch)))
 
 (define-public linux-libre-4.9-source
   (source-with-patches linux-libre-4.9-pristine-source
