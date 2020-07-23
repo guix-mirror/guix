@@ -423,21 +423,21 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
 
 ;; 'make-ld-wrapper' can only work with an 'ld' executable, so we need
 ;; this trick to make it wrap 'lld'.
-(define lld-as-ld
-  (computed-file "lld-ld"
-                 #~(begin
-                     (mkdir #$output)
-                     (mkdir (string-append #$output "/bin"))
-                     (symlink #$(file-append lld "/bin/lld")
-                              (string-append #$output "/bin/ld")))))
+(define (make-lld-wrapper lld)
+  (define lld-as-ld
+    (computed-file "lld-ld"
+                   #~(begin
+                       (mkdir #$output)
+                       (mkdir (string-append #$output "/bin"))
+                       (symlink #$(file-append lld "/bin/lld")
+                                (string-append #$output "/bin/ld")))))
 
-;; Create a wrapper for LLD that inserts appropriate -rpath entries.
-(define lld-wrapper
-  (make-ld-wrapper "lld-wrapper"
-                   #:binutils lld-as-ld))
+  ;; Create a wrapper for LLD that inserts appropriate -rpath entries.
+  (define lld-wrapper
+    (make-ld-wrapper "lld-wrapper"
+                     #:binutils lld-as-ld))
 
-;; Clang looks for an 'ld.lld' executable, so we need to symlink it back.
-(define lld/wrapped
+  ;; Clang looks for an 'ld.lld' executable, so we need to symlink it back.
   (computed-file "lld-wrapped"
                  #~(begin
                      (mkdir #$output)
@@ -788,7 +788,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
        ("clang" ,clang-10)
        ("gn" ,gn)
        ("gperf" ,gperf)
-       ("ld-wrapper" ,lld/wrapped)
+       ("ld-wrapper" ,(make-lld-wrapper lld))
        ("ninja" ,ninja)
        ("node" ,node)
        ("pkg-config" ,pkg-config)
