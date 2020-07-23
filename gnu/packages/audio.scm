@@ -2858,17 +2858,31 @@ stretching and pitch scaling of audio.  This package contains the library.")
 (define-public wavpack
   (package
     (name "wavpack")
-    (version "5.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.wavpack.com/"
-                                  "wavpack-" version ".tar.xz"))
-              (sha256
-               (base32
-                "01r351ggha9pdfk7p601dlxac4ka1q89lgnb6zqk00zf1fd3fi5l"))))
+    (version "5.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dbry/WavPack")
+             (commit "e4e8d191e8dd74cbdbeaef3232c16a7ef517e68d")))
+       (sha256
+        (base32 "1zj8svk6giy1abq3940sz32ygz7zldppxl47852zgn5wfm3l2spx"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--disable-static")))
+     '(#:configure-flags
+       (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; Running ./autogen.sh would cause premature configuration.
+           (lambda _
+             (invoke "autoreconf" "-vif")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (home-page "http://www.wavpack.com/")
     (synopsis "Hybrid lossless audio codec")
     (description
