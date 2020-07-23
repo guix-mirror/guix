@@ -2,7 +2,7 @@
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +33,7 @@
 (define-public polyml
   (package
     (name "polyml")
-    (version "5.8")
+    (version "5.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -42,7 +42,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jabrf9cnmsppawga6q5pjiq1cdayilxp66fkxykczs6vv2gz7f9"))))
+                "1ag7n55ym1zxksi89dvs17j6iaa58v4mg47s92zpa1b49k4fql1k"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)
