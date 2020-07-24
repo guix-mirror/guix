@@ -5710,6 +5710,8 @@ of flash storage.")
                (base32
                 "1wql62cg8f95cwpy057cl764nni9g4sdn5lqj68x22kjs8w71yhz"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("gperf" ,gperf)
        ("which" ,which)))
