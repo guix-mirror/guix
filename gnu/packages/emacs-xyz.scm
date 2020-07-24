@@ -14163,7 +14163,7 @@ and @code{erc-send-modify-hook} to download and show images.")
 (define-public emacs-helm-gtags
   (package
     (name "emacs-helm-gtags")
-    (version "1.5.6")
+    (version "1.5.7")
     (source
      (origin
        (method git-fetch)
@@ -14172,7 +14172,7 @@ and @code{erc-send-modify-hook} to download and show images.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zyspn9rqfs3hkq8qx0q1w5qiv30ignbmycyv0vn3a6q7a5fsnhx"))))
+        (base32 "1kc1jzk10nfd2v20g8dwnb6a944afrwdwnkzl06w4ba8k4yim7gi"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
