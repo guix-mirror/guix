@@ -72,7 +72,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.52.1")
+    (version "3.55")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -83,7 +83,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0y4jb9095f7bbgw7d7kvzm4c3g4p5i6y68fwhb8wlkpb7b1imj5w"))
+                "0100hm7n1xrp144xy665z46s0wf1jpkqkncc6bk2w22snhyjwsgw"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))
@@ -108,7 +108,8 @@ in the Mozilla clients.")
                (string-append "NSPR_INCLUDE_DIR=" nspr "/include/nspr")
                ;; Add $out/lib/nss to RPATH.
                (string-append "RPATH=" rpath)
-               (string-append "LDFLAGS=" rpath)))
+               (string-append "LDFLAGS=" rpath)
+               "all"))
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (ice-9 ftw)
@@ -138,7 +139,7 @@ in the Mozilla clients.")
              ;; leading to test failures:
              ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
              ;; work around that, set the time to roughly the release date.
-             (invoke "faketime" "2020-02-01" "./nss/tests/all.sh")))
+             (invoke "faketime" "2020-07-01" "./nss/tests/all.sh")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -160,15 +161,6 @@ in the Mozilla clients.")
                  (copy-recursively "dist/public/nss" inc)
                  (copy-recursively (string-append obj "/bin") bin)
                  (copy-recursively (string-append obj "/lib") lib)
-
-                 ;; FIXME: libgtest1.so is installed in the above step, and it's
-                 ;; (unnecessarily) linked with several NSS libraries, but
-                 ;; without the needed rpaths, causing the 'validate-runpath'
-                 ;; phase to fail.  Here we simply delete libgtest1.so, since it
-                 ;; seems to be used only during the tests.
-                 (delete-file (string-append lib "/libgtest1.so"))
-                 (delete-file (string-append lib "/libgtestutil.so"))
-
                  #t))))))
     (inputs
      `(("sqlite" ,sqlite)
