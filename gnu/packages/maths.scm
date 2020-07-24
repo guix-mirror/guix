@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -510,6 +511,50 @@ functions in total.  Subject areas covered by the library include:
 differential equations, linear algebra, Fast Fourier Transforms and random
 numbers.")
     (license license:gpl3+)))
+
+(define-public sleef
+  (package
+    (name "sleef")
+    (version "3.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/shibatch/sleef")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gvf7cfvszmgjrsqivwmyy1jnp3hy80dmszxx827lhjz8yqq5019"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags (list "-DCMAKE_BUILD_TYPE=Release"
+                               (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                              (assoc-ref %outputs "out")
+                                              "/lib")
+                               (string-append "-DCMAKE_INSTALL_PREFIX="
+                                              (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; SLEEF generates a header library during the build process and writes
+         ;; to it via shell redirection.  Make the checkout writable so the
+         ;; build can succeed.
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t)))))
+    (inputs
+     `(("fftw" ,fftw)
+       ("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("openssl" ,openssl)))
+    (home-page "https://sleef.org/")
+    (synopsis "SIMD library for evaluating elementary functions and DFT")
+    (description
+     "SLEEF (SIMD Library for Evaluating Elementary Functions) is a library that
+implements vectorized versions of all C99 real floating point math functions.
+It can utilize SIMD instructions that are available on modern processors.")
+    (license (list license:boost1.0       ;sleef
+                   license:cc-by4.0))))   ;simplex algorithm
 
 (define-public glpk
   (package
