@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,52 +105,48 @@ manipulate maps.")
                    license:gpl2+))))    ; everything else
 
 (define-public gpscorrelate
-  ;; This program is "lightly maintained", so to speak, so we end up taking it
-  ;; directly from its Git repo.
-  (let ((commit "365f6e1b3f"))
-    (package
-      (name "gpscorrelate")
-      (version (string-append "1.6.1." commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/dfandrich/gpscorrelate")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "006a6l8p38a4h7y2959sqrmjjn29d8pd50zj9nypcp5ph18nybjb"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (replace 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               ;; This is a rudimentary build system.
-               (substitute* "Makefile"
-                 (("prefix[[:blank:]]*=.*$")
-                  (string-append "prefix = " (assoc-ref outputs "out")
-                                 "\n")))
-               #t)))
-         #:tests? #f))
-      (inputs
-       `(("gtk+" ,gtk+-2)
-         ("libxml2" ,libxml2)
-         ("exiv2" ,exiv2)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("docbook-xml" ,docbook-xml)
-         ("docbook-xsl" ,docbook-xsl)
-         ("libxslt" ,libxslt)))
-      (home-page "https://dfandrich.github.io/gpscorrelate/")
-      (synopsis "GPS photo correlation tool to geo-localize images")
-      (description
-       "GPS Correlate is a program to match a recorded GPS track with the EXIF
+  (package
+    (name "gpscorrelate")
+    (version "2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dfandrich/gpscorrelate")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1kvybhfnygz79q3pgwc1q2x4ccmnsfscx2hzxnmzjbnc6arnqari"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; This is a rudimentary build system.
+             (substitute* "Makefile"
+               (("prefix[[:blank:]]*=.*$")
+                (string-append "prefix = " (assoc-ref outputs "out")
+                               "\n")))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libxml2" ,libxml2)
+       ("exiv2" ,exiv2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxslt" ,libxslt)))
+    (home-page "https://dfandrich.github.io/gpscorrelate/")
+    (synopsis "GPS photo correlation tool to geo-localize images")
+    (description
+     "GPS Correlate is a program to match a recorded GPS track with the EXIF
 tags in digital camera photos, and update the EXIF tags with the location that
 the photo was taken.  It does this by using the timestamp in the photo and
 finding a data point in the GPS track that matches, or interpolating a point
 between two other data points.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public gama
   (package
