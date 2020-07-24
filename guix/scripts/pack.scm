@@ -875,7 +875,10 @@ last resort for relocation."
     (item (apply wrapped-package
                  (manifest-entry-item entry)
                  (manifest-entry-output entry)
-                 args))))
+                 args))
+    (dependencies (map (lambda (entry)
+                         (apply wrapped-manifest-entry entry args))
+                       (manifest-entry-dependencies entry)))))
 
 
 ;;;

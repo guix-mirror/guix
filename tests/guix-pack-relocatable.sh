@@ -111,3 +111,8 @@ esac
 tarball="`guix pack -R -S /share=share groff:doc`"
 (cd "$test_directory"; tar xvf "$tarball")
 test -d "$test_directory/share/doc/groff/html"
+
+# Ensure '-R' applies to propagated inputs.  Failing to do that, it would fail
+# with a profile collision error in this case because 'python-scipy'
+# propagates 'python-numpy'.  See <https://bugs.gnu.org/42510>.
+guix pack -RR python-numpy python-scipy --no-grafts -n
