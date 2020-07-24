@@ -5841,6 +5841,14 @@ The Flag.  You can even design your own maps!")
        (list "--with-system-enet")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-new-gcc
+           (lambda _
+             ;; Fix build with GCC6 and later by avoiding comparing ifstream
+             ;; to NULL.  Can be removed for versions > 1.21.
+             (substitute* "src/lev/Proxy.cc"
+               (("ifs != NULL")
+                "ifs"))
+             #t))
          (add-after 'unpack 'find-sdl
            (lambda _
              (substitute* "configure"
