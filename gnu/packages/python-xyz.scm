@@ -17555,6 +17555,41 @@ Public Suffix List's private domains as well.")
 (define-public python2-tldextract
   (package-with-python2 python-tldextract))
 
+(define-public python-nodeenv
+  (package
+    (name "python-nodeenv")
+    (version "1.4.0")
+    (source
+     (origin
+       ;; There's no tarball in PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ekalinin/nodeenv")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0y443icx0w7jlzmxmmcm4q8dqfiwgafbb9cp8jpm68mbqxbz40a7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; This test fails. It tries to open a network socket.
+             (invoke "pytest" "-vv" "-k" "not test_smoke"))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://ekalinin.github.io/nodeenv/")
+    (synopsis "Create isolated node.js environments")
+    (description
+     "Nodeenv (node.js virtual environment) is a tool to create isolated
+node.js environments.  It creates an environment that has its own installation
+directories, that doesn't share libraries with other node.js virtual
+environments.")
+    (license license:bsd-3)))
+
 (define-public python-pynamecheap
   (package
     (name "python-pynamecheap")
