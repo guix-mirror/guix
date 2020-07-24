@@ -264,6 +264,63 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public libdmapsharing
+  (package
+    (name "libdmapsharing")
+    (version "3.9.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.flyn.org/projects/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "152hnddwxv590cn802awv3mn27ixc3s6ac691a7z02d1c5fl45p2"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:tests? #f                      ; Tests require networking.
+       #:configure-flags
+       (list
+        "--disable-static"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc"
+               (substitute* "libdmapsharing-4.0-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.3/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t)))))
+    (native-inputs
+     `(("check" ,check)
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("gobject-introspection" ,gobject-introspection)
+       ("pedansee" ,pedansee)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("avahi" ,avahi)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("gee" ,libgee)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gtk+" ,gtk+)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("gstreamer" ,gstreamer)
+       ("libsoup" ,libsoup)))
+    (synopsis "Media management library")
+    (description "Libdmapsharing is a library which allows programs to access,
+share and control the playback of media content using DMAP (DAAP, DPAP & DACP).
+It is written in C using GObject and libsoup.")
+    (home-page "https://launchpad.net/gtx")
+    (license license:lgpl2.1+)))
+
 (define-public gtx
   (package
     (name "gtx")
