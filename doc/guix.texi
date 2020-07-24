@@ -4379,7 +4379,7 @@ say, on another machine, by providing a channel specification in
 (list (channel
        (name 'guix)
        (url "https://git.savannah.gnu.org/git/guix.git")
-       (commit "d894ab8e9bfabcefa6c49d9ba2e834dd5a73a300"))
+       (commit "6298c3ffd9654d3231a6f25390b056483e8f407c"))
       (channel
        (name 'my-personal-packages)
        (url "https://example.org/personal-packages.git")
