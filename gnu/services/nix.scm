@@ -35,7 +35,10 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (guix modules)
-  #:export (nix-service-type))
+  #:export (nix-service-type
+
+            nix-configuration
+            nix-configuration?))
 
 ;;; Commentary:
 ;;;
