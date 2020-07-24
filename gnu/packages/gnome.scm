@@ -141,6 +141,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages package-management)
@@ -8154,40 +8155,47 @@ like switching to windows and launching applications.")
 (define-public gtk-vnc
   (package
     (name "gtk-vnc")
-    (version "0.9.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "1dya1wc9vis8h0fv625pii1n70cckf1xjg1m2hndz989d118i6is"))))
-    (build-system gnu-build-system)
+        (base32 "1060ws037v556rx1qhfrcg02859rscksrzr8fq11himdg4d1y6m8"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:configure-flags '("--with-gtk=3.0")))
-    (propagated-inputs
-     `(("gtk+" ,gtk+))) ; required by gtk-vnc-2.0.pc.
-    (inputs
-     `(("cyrus-sasl" ,cyrus-sasl)
-       ("gnutls" ,gnutls)
-       ("libgcrypt" ,libgcrypt)
-       ("pulseaudio" ,pulseaudio)))
+     `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
     (native-inputs
-     `(("glib:bin" ,glib "bin")
+     `(("gjs" ,gjs)
+       ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
+       ("node" ,node)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python-wrapper" ,python-wrapper)
+       ("python" ,python-wrapper)
        ("vala" ,vala)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("glib" ,glib)
+       ("gnutls" ,gnutls)
+       ("libgcrypt" ,libgcrypt)
+       ("libsasl" ,cyrus-sasl)
+       ("pulseaudio" ,pulseaudio)
+       ("x11" ,libx11)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)))
+    (synopsis "VNC client viewer widget for GTK+")
+    (description "GTK-VNC is a project providing client side APIs for the RFB
+protocol / VNC remote desktop technology.  It is built using coroutines allowing
+it to be completely asynchronous while remaining single threaded.  It provides a
+core C library, and bindings for Python (PyGTK).")
     (home-page "https://wiki.gnome.org/Projects/gtk-vnc")
-    (synopsis "VNC viewer widget for GTK+")
-    (description
-     "GTK-VNC is a VNC viewer widget for GTK+, used by remote desktop viewing
-applications, for instance the Vinagre client, GNOME Boxes and virt-viewer.
-GTK-VNC implements client side RFB protocol and authentication extensions such
-as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
     (license license:lgpl2.1+)))
 
 (define-public gnome-autoar
