@@ -12251,7 +12251,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "1.0.9")
+    (version "1.0.10")
     ;; Poetry can only be built from source with Poetry.
     (source
      (origin
@@ -12259,7 +12259,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "1avp0db1a4hf6lz3wrzhpdvj4rpmzr4in3myrd3lp5j66nc5ck0a"))))
+         "1wm66xlsls4f0q4skmq96yb7aahjsqwgwvbrw4iax6rd4xfqj6sb"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;; Pypi does not have tests.
