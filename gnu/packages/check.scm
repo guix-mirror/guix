@@ -83,7 +83,7 @@
 (define-public check
   (package
     (name "check")
-    (version "0.14.0")
+    (version "0.15.1")
     (source
      (origin
       (method url-fetch)
@@ -91,7 +91,7 @@
                           version "/check-" version ".tar.gz"))
       (sha256
        (base32
-        "02zkfiyklckmivrfvdsrlzvzphkdsgjrz3igncw05dv5pshhq3xx"))))
+        "0080qvd7gj1c7j79v9wfiwkp259gcs0xi45b8a0ds3jwjxj3vk61"))))
     (build-system gnu-build-system)
     (home-page "https://libcheck.github.io/check/")
     (synopsis "Unit test framework for C")
@@ -104,7 +104,19 @@ faults or other signals.  The output from unit tests can be used within
 source code editors and IDEs.")
     (license license:lgpl2.1+)))
 
-;; Some packages require this older version.  Removed once no longer needed.
+;; Some packages require older versions.  Removed once no longer needed.
+(define-public check-0.14
+  (package
+    (inherit check)
+    (version "0.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/libcheck/check/releases"
+                                  "/download/" version "/check-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02zkfiyklckmivrfvdsrlzvzphkdsgjrz3igncw05dv5pshhq3xx"))))))
+
 (define-public check-0.12
   (package
    (inherit check)

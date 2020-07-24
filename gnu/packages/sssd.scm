@@ -160,7 +160,7 @@ fundamental object types for C.")
        ("tdb" ,tdb)
        ("tevent" ,tevent)))
     (native-inputs
-     `(("check" ,check)
+     `(("check" ,check-0.14)
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml)
        ("libxml2" ,libxml2)             ; for xmllint

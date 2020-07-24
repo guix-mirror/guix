@@ -88,7 +88,7 @@ to take care of the OS-specific details when writing software that uses serial p
                                               "/share/doc/libsigrokdecode"))
              #t)))))
     (native-inputs
-     `(("check" ,check)
+     `(("check" ,check-0.14)
        ("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
        ("pkg-config" ,pkg-config)))

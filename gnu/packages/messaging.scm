@@ -457,7 +457,7 @@ authentication.")
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("check" ,check)
+       ("check" ,check-0.14)
        ("intltool" ,intltool)
        ("gconf" ,gconf)
        ("python" ,python-2)

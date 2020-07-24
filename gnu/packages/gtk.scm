@@ -1513,7 +1513,7 @@ and routines to assist in editing internationalized text.")
        (sha256
         (base32 "08rpw9hkaprm4r853xy1d35i2af1pji8c3mzzl01mmwmyr9p0x8k"))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("check" ,check)
+                     ("check" ,check-0.14)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
                      ("xorg-server" ,xorg-server-for-tests)))

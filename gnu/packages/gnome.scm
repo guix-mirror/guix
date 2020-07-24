@@ -7119,7 +7119,7 @@ libxml2.")
        ("xmllint" ,libxml2)))
     (inputs
      `(("accountsservice" ,accountsservice)
-       ("check" ,check) ; for testing
+       ("check" ,check-0.14)            ;for testing
        ("elogind" ,elogind)
        ("gnome-session" ,gnome-session)
        ("gnome-settings-daemon" ,gnome-settings-daemon)

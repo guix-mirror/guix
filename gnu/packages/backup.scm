@@ -1102,7 +1102,7 @@ interractive mode.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("check" ,check)
+       ("check" ,check-0.14)
        ("pkg-config" ,pkg-config)))
     (home-page "https://burp.grke.org")
     (synopsis "Differential backup and restore")

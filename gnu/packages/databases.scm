@@ -1139,7 +1139,7 @@ organized in a hash table or B+ tree.")
 
     (native-inputs `(("bc" ,bc)
                      ("bash:include" ,bash "include")
-                     ("check" ,check)
+                     ("check" ,check-0.14)
                      ("libuuid" ,util-linux)
                      ("pkg-config" ,pkg-config)))
 

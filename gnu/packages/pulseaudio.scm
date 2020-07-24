@@ -219,7 +219,7 @@ rates.")
 
        ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
-     `(("check" ,check)
+     `(("check" ,check-0.14)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("m4" ,m4)

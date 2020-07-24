@@ -4976,7 +4976,7 @@ commenting.")
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
        ("pkg-config" ,pkg-config)
-       ("check" ,check)))               ;for tests
+       ("check" ,check-0.14)))          ;for tests
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/projects/libwapcaplet/")
     (synopsis "String internment library")
