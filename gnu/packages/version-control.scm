@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 John D. Boy <jboy@bius.moe>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1417,6 +1418,118 @@ also walk each side of a merge and test those changes individually.")
      "Gitolite is an access control layer on top of Git, providing fine access
 control to Git repositories.")
     (license license:gpl2)))
+
+(define-public pre-commit
+  (package
+    (name "pre-commit")
+    (version "2.6.0")
+    (source
+     (origin
+       ;; No tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pre-commit/pre-commit")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "144hcnz8vz07nkx7hk8a3ac822186ardwxa8jnl6s8qvm5ip92f2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-up-git
+           (lambda _
+             ;; Change from /homeless-shelter to /tmp for write permission.
+             (setenv "HOME" "/tmp")
+             ;; Environment variables used in the tests.
+             (setenv "GIT_AUTHOR_NAME" "Your Name")
+             (setenv "GIT_COMMITTER_NAME" "Your Name")
+             (setenv "GIT_AUTHOR_EMAIL" "you@example.com")
+             (setenv "GIT_COMMITTER_EMAIL" "you@example.com")
+             (invoke "git" "config" "--global" "user.name" "Your Name")
+             (invoke "git" "config" "--global" "user.email" "you@example.com")
+           #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "tests" "-k"
+                     (string-append
+                     ;; Disable conda tests.
+                      "not test_conda_hook"
+                      " and not test_conda_with_additional_dependencies_hook"
+                      " and not test_local_conda_additional_dependencies"
+                      ;; Disable cpan tests.
+                      " and not test_local_perl_additional_dependencies"
+                      " and not test_perl_hook"
+                      ;; Disable Ruby tests.
+                      " and not test_additional_ruby_dependencies_installed"
+                      " and not test_install_rbenv"
+                      " and not test_install_rbenv_with_version"
+                      " and not test_run_a_ruby_hook"
+                      " and not test_run_ruby_hook_with_disable_shared_gems"
+                      " and not test_run_versioned_ruby_hook"
+                      ;; Disable Cargo tests
+                      " and not test_additional_rust_cli_dependencies_installed"
+                      " and not test_additional_rust_lib_dependencies_installed"
+                      " and not test_local_rust_additional_dependencies"
+                      " and not test_rust_hook"
+                      ;; Disable python2 test.
+                      " and not test_switch_language_versions_doesnt_clobber"
+                      ;; These tests try to open a network socket.
+                      " and not test_additional_golang_dependencies_installed"
+                      " and not test_additional_node_dependencies_installed"
+                      " and not test_golang_hook"
+                      " and not test_golang_hook_still_works_when_gobin_is_set"
+                      " and not test_local_golang_additional_dependencies"
+                      " and not test_main"
+                      " and not test_node_hook_with_npm_userconfig_set"
+                      " and not test_run_a_node_hook"
+                      " and not test_run_versioned_node_hook"
+                      ;; Tests failing with a permission error.
+                      ;; They try to write to the filesystem.
+                      " and not test_autoupdate_hook_disappearing_repo"
+                      " and not test_hook_disppearing_repo_raises"
+                      " and not test_img_conflict"
+                      " and not test_img_something_unstaged"
+                      " and not test_installed_from_venv"
+                      " and not test_too_new_version"
+                      " and not test_try_repo_uncommitted_changes"
+                      " and not test_versions_ok"
+                      ;; This test tries to activate a virtualenv
+                      " and not test_healthy_venv_creator"
+                      ;; Fatal error: Not a Git repository.
+                      " and not test_all_cmds"
+                      " and not test_try_repo"
+                      ;; No module named 'pip._internal.cli.main'
+                      " and not test_additional_dependencies_roll_forward"
+                      ; Assertion errors
+                      " and not test_install_existing_hooks_no_overwrite"
+                      " and not test_uninstall_restores_legacy_hooks"))))
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure .gz files are writable so that the
+             ;; 'reset-gzip-timestamps' phase can do its work.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each make-file-writable
+                         (find-files out "\\.gz$"))
+               #t))))))
+    (native-inputs
+     `(("git" ,git)
+       ("python-pytest" ,python-pytest)))
+    (inputs
+     `(("python-cfgv" ,python-cfgv)
+       ("python-identify" ,python-identify)
+       ("python-nodeenv" ,python-nodeenv)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-toml" ,python-toml)
+       ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://pre-commit.com/")
+    (synopsis "Framework for managing and maintaining multi-language pre-commit hooks")
+    (description
+     "Pre-commit is a multi-language package manager for pre-commit hooks.  You
+specify a list of hooks you want and pre-commit manages the installation and
+execution of any hook written in any language before every commit.")
+    (license license:expat)))
 
 (define (mercurial-patch name revision hash)
   (origin
