@@ -23,7 +23,6 @@
   #:use-module (guix base32)
   #:use-module (guix memoization)
   #:use-module (gcrypt hash)
-  #:use-module (guix memoization)
   #:use-module (guix tests)
   #:use-module (guix build-system python)
   #:use-module ((guix build utils) #:select (delete-file-recursively which mkdir-p))

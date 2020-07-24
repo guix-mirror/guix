@@ -44,9 +44,7 @@
   #:use-module (ice-9 format)
   #:use-module ((ice-9 iconv) #:prefix iconv:)
   #:use-module (system foreign)
-  #:re-export (memoize                            ;for backwards compatibility
-
-               <location>
+  #:re-export (<location>                         ;for backwards compatibility
                location
                location?
                location-file
