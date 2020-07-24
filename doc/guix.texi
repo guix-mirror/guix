@@ -4245,10 +4245,28 @@ time-machine}, the command looks up the introductory commit and verifies
 that it is signed by the specified OpenPGP key.  From then on, it
 authenticates commits according to the rule above.
 
-To summarize, as the author of a channel, there are two things you have
+Additionally, your channel must provide all the OpenPGP keys that were
+ever mentioned in @file{.guix-authorizations}, stored as @file{.key}
+files, which can be either binary or ``ASCII-armored''.  By default,
+those @file{.key} files are searched for in the branch named
+@code{keyring} but you can specify a different branch name in
+@code{.guix-channel} like so:
+
+@lisp
+(channel
+  (version 0)
+  (keyring-reference "my-keyring-branch"))
+@end lisp
+
+To summarize, as the author of a channel, there are three things you have
 to do to allow users to authenticate your code:
 
 @enumerate
+@item
+Export the OpenPGP keys of past and present committers with @command{gpg
+--export} and store them in @file{.key} files, by default in a branch
+named @code{keyring} (we recommend making it an @dfn{orphan branch}).
+
 @item
 Introduce an initial @file{.guix-authorizations} in the channel's
 repository.  Do that in a signed commit (@pxref{Commit Access}, for
