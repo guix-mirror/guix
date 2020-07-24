@@ -23626,16 +23626,16 @@ source is detected.  More information can be found at
 @uref{https://linrunner.de/en/tlp/tlp.html, TLP home page}.
 
 @deffn {Scheme Variable} tlp-service-type
-The service type for the TLP tool.  Its value should be a valid
-TLP configuration (see below).  To use the default settings, simply
-write:
+The service type for the TLP tool.  The default settings are optimised
+for battery life on most systems, but you can tweak them to your heart's
+content by adding a valid @code{tlp-configuration}:
 @lisp
-(service tlp-service-type)
+(service tlp-service-type
+         (tlp-configuration
+          (cpu-scaling-governor-on-ac (list "performance"))
+          (sched-powersave-on-bat? #t)))
 @end lisp
 @end deffn
-
-By default TLP does not need much configuration but most TLP parameters
-can be tweaked using @code{tlp-configuration}.
 
 Each parameter definition is preceded by its type; for example,
 @samp{boolean foo} indicates that the @code{foo} parameter
