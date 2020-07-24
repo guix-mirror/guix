@@ -233,14 +233,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "20.0.7")
-
-    ;; Mesa 20.0.5 through 20.0.7 has problems with some graphic drivers, so
-    ;; we need this newer version.
-    ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/2882
-    ;; https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/4861
-    (replacement mesa-20.0.8)
-
+    (version "20.1.4")
     (source
       (origin
         (method url-fetch)
@@ -252,7 +245,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "0y517qpdg6v6dsdgzb365p03m30511sbyh8pq0mcvhvjwy7javpy"))
+          "1zlrczmmkcy42w332rfmlicihlnrxmkrnkpb21sl98725cf2f038"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
@@ -445,21 +438,6 @@ specifications - systems for rendering interactive 3D graphics.  A variety of
 device drivers allows Mesa to be used in many different environments ranging
 from software emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
-
-;; Replacement package to fix <https://gitlab.freedesktop.org/mesa/mesa/-/issues/2863>.
-(define mesa-20.0.8
-  (package
-    (inherit mesa)
-    (version "20.0.8")
-    (source (origin
-              (inherit (package-source mesa))
-              (uri (list (string-append "https://mesa.freedesktop.org/archive/"
-                                        "mesa-" version ".tar.xz")
-                         (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
-                                        "mesa-" version ".tar.xz")))
-              (sha256
-               (base32
-                "0v0bfh3ay07s6msxmklvwfaif0q02kq2yhy65fdhys49vw8c1w3c"))))))
 
 (define-public mesa-opencl
   (package/inherit mesa
