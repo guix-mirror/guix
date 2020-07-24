@@ -20,7 +20,7 @@
 
 (define-module (gnu tests)
   #:use-module (guix gexp)
-  #:use-module (guix utils)
+  #:use-module (guix diagnostics)
   #:use-module (guix records)
   #:use-module ((guix ui) #:select (warn-about-load-error))
   #:use-module (gnu bootloader)

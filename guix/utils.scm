@@ -37,32 +37,33 @@
   #:use-module (guix memoization)
   #:use-module ((guix build utils) #:select (dump-port mkdir-p delete-file-recursively))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
+  #:use-module (guix diagnostics)           ;<location>, &error-location, etc.
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module ((ice-9 iconv) #:prefix iconv:)
   #:use-module (system foreign)
-  #:re-export (memoize)         ; for backwards compatibility
+  #:re-export (memoize                            ;for backwards compatibility
+
+               <location>
+               location
+               location?
+               location-file
+               location-line
+               location-column
+               source-properties->location
+               location->source-properties
+
+               &error-location
+               error-location?
+               error-location)
   #:export (strip-keyword-arguments
             default-keyword-arguments
             substitute-keyword-arguments
             ensure-keyword-arguments
 
             current-source-directory
-
-            <location>
-            location
-            location?
-            location-file
-            location-line
-            location-column
-            source-properties->location
-            location->source-properties
-
-            &error-location
-            error-location?
-            error-location
 
             &fix-hint
             fix-hint?
@@ -833,48 +834,6 @@ be determined."
          ((or ('filename . #f) #f)
           ;; raising an error would upset Geiser users
           #f))))))
-
-;; A source location.
-(define-record-type <location>
-  (make-location file line column)
-  location?
-  (file          location-file)                   ; file name
-  (line          location-line)                   ; 1-indexed line
-  (column        location-column))                ; 0-indexed column
-
-(define (location file line column)
-  "Return the <location> object for the given FILE, LINE, and COLUMN."
-  (and line column file
-       (make-location file line column)))
-
-(define (source-properties->location loc)
-  "Return a location object based on the info in LOC, an alist as returned
-by Guile's `source-properties', `frame-source', `current-source-location',
-etc."
-  ;; In accordance with the GCS, start line and column numbers at 1.  Note
-  ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
-  (match loc
-    ((('line . line) ('column . col) ('filename . file)) ;common case
-     (and file line col
-          (make-location file (+ line 1) col)))
-    (#f
-     #f)
-    (_
-     (let ((file (assq-ref loc 'filename))
-           (line (assq-ref loc 'line))
-           (col  (assq-ref loc 'column)))
-       (location file (and line (+ line 1)) col)))))
-
-(define (location->source-properties loc)
-  "Return the source property association list based on the info in LOC,
-a location object."
-  `((line     . ,(and=> (location-line loc) 1-))
-    (column   . ,(location-column loc))
-    (filename . ,(location-file loc))))
-
-(define-condition-type &error-location &error
-  error-location?
-  (location  error-location))                     ;<location>
 
 (define-condition-type &fix-hint &condition
   fix-hint?

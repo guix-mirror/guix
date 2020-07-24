@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,8 +19,9 @@
 (define-module (guix diagnostics)
   #:use-module (guix colors)
   #:use-module (guix i18n)
-  #:autoload   (guix utils) (<location>)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:export (warning
@@ -28,7 +29,19 @@
             report-error
             leave
 
+            <location>
+            location
+            location?
+            location-file
+            location-line
+            location-column
+            source-properties->location
+            location->source-properties
             location->string
+
+            &error-location
+            error-location?
+            error-location
 
             guix-warning-port
             program-name))
@@ -162,12 +175,55 @@ messages."
                 (program-name) (program-name)
                 (prefix-color prefix)))))
 
+
+;; A source location.
+(define-record-type <location>
+  (make-location file line column)
+  location?
+  (file          location-file)                   ; file name
+  (line          location-line)                   ; 1-indexed line
+  (column        location-column))                ; 0-indexed column
+
+(define (location file line column)
+  "Return the <location> object for the given FILE, LINE, and COLUMN."
+  (and line column file
+       (make-location file line column)))
+
+(define (source-properties->location loc)
+  "Return a location object based on the info in LOC, an alist as returned
+by Guile's `source-properties', `frame-source', `current-source-location',
+etc."
+  ;; In accordance with the GCS, start line and column numbers at 1.  Note
+  ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
+  (match loc
+    ((('line . line) ('column . col) ('filename . file)) ;common case
+     (and file line col
+          (make-location file (+ line 1) col)))
+    (#f
+     #f)
+    (_
+     (let ((file (assq-ref loc 'filename))
+           (line (assq-ref loc 'line))
+           (col  (assq-ref loc 'column)))
+       (location file (and line (+ line 1)) col)))))
+
+(define (location->source-properties loc)
+  "Return the source property association list based on the info in LOC,
+a location object."
+  `((line     . ,(and=> (location-line loc) 1-))
+    (column   . ,(location-column loc))
+    (filename . ,(location-file loc))))
+
 (define (location->string loc)
   "Return a human-friendly, GNU-standard representation of LOC."
   (match loc
     (#f (G_ "<unknown location>"))
     (($ <location> file line column)
      (format #f "~a:~a:~a" file line column))))
+
+(define-condition-type &error-location &error
+  error-location?
+  (location  error-location))                     ;<location>
 
 
 (define guix-warning-port

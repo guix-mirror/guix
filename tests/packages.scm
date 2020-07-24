@@ -23,7 +23,8 @@
   #:use-module (guix monads)
   #:use-module (guix grafts)
   #:use-module ((guix gexp) #:select (local-file local-file-file))
-  #:use-module ((guix utils)
+  #:use-module (guix utils)
+  #:use-module ((guix diagnostics)
                 ;; Rename the 'location' binding to allow proper syntax
                 ;; matching when setting the 'location' field of a package.
                 #:renamer (lambda (name)

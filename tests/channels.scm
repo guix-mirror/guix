@@ -26,7 +26,7 @@
   #:use-module (guix derivations)
   #:use-module (guix sets)
   #:use-module (guix gexp)
-  #:use-module ((guix utils)
+  #:use-module ((guix diagnostics)
                 #:select (error-location? error-location location-line))
   #:use-module ((guix build utils) #:select (which))
   #:use-module (git)

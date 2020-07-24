@@ -23,7 +23,7 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix store)
-  #:use-module ((guix utils) #:select (source-properties->location))
+  #:use-module ((guix diagnostics) #:select (source-properties->location))
   #:use-module (srfi srfi-35)
   #:export (environment-type
             environment-type?
