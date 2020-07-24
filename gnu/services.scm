@@ -31,6 +31,7 @@
   #:use-module (guix sets)
   #:use-module (guix ui)
   #:use-module ((guix utils) #:select (source-properties->location))
+  #:autoload   (guix openpgp) (openpgp-format-fingerprint)
   #:use-module (guix modules)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
@@ -88,6 +89,7 @@
 
             system-service-type
             provenance-service-type
+            system-provenance
             boot-service-type
             cleanup-service-type
             activation-service-type
@@ -392,18 +394,48 @@ by the initrd once the root file system is mounted.")))
 (define (channel->code channel)
   "Return code to build CHANNEL, ready to be dropped in a 'channels.scm'
 file."
-  `(channel (name ',(channel-name channel))
-            (url ,(channel-url channel))
-            (branch ,(channel-branch channel))
-            (commit ,(channel-commit channel))))
+  ;; Since the 'introduction' field is backward-incompatible, and since it's
+  ;; optional when using the "official" 'guix channel, include it if and only
+  ;; if we're referring to a different channel.
+  (let ((intro (and (not (equal? (list channel) %default-channels))
+                    (channel-introduction channel))))
+    `(channel (name ',(channel-name channel))
+              (url ,(channel-url channel))
+              (branch ,(channel-branch channel))
+              (commit ,(channel-commit channel))
+              ,@(if intro
+                    `((introduction
+                       (make-channel-introduction
+                        ,(channel-introduction-first-signed-commit intro)
+                        (openpgp-fingerprint
+                         ,(openpgp-format-fingerprint
+                           (channel-introduction-first-commit-signer
+                            intro))))))
+                    '()))))
 
 (define (channel->sexp channel)
   "Return an sexp describing CHANNEL.  The sexp is _not_ code and is meant to
 be parsed by tools; it's potentially more future-proof than code."
+  ;; TODO: Add CHANNEL's introduction.  Currently we can't do that because
+  ;; older 'guix system describe' expect exactly name/url/branch/commit
+  ;; without any additional fields.
   `(channel (name ,(channel-name channel))
             (url ,(channel-url channel))
             (branch ,(channel-branch channel))
             (commit ,(channel-commit channel))))
+
+(define (sexp->channel sexp)
+  "Return the channel corresponding to SEXP, an sexp as found in the
+\"provenance\" file produced by 'provenance-service-type'."
+  (match sexp
+    (('channel ('name name)
+               ('url url)
+               ('branch branch)
+               ('commit commit)
+               rest ...)
+     ;; XXX: In the future REST may include a channel introduction.
+     (channel (name name) (url url)
+              (branch branch) (commit commit)))))
 
 (define (provenance-file channels config-file)
   "Return a 'provenance' file describing CHANNELS, a list of channels, and
@@ -456,6 +488,24 @@ channels in use and CONFIG-FILE, if it is true."
 itself: the channels used when building the system, and its configuration
 file, when available.")))
 
+(define (system-provenance system)
+  "Given SYSTEM, the file name of a system generation, return two values: the
+list of channels SYSTEM is built from, and its configuration file.  If that
+information is missing, return the empty list (for channels) and possibly
+#false (for the configuration file)."
+  (catch 'system-error
+    (lambda ()
+      (match (call-with-input-file (string-append system "/provenance")
+               read)
+        (('provenance ('version 0)
+                      ('channels channels ...)
+                      ('configuration-file config-file))
+         (values (map sexp->channel channels)
+                 config-file))
+        (_
+         (values '() #f))))
+    (lambda _
+      (values '() #f))))
 
 ;;;
 ;;; Cleanup.

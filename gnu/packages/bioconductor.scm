@@ -1587,7 +1587,7 @@ Affymetrix (CEL files) and NimbleGen arrays (XYS files).")
        ("r-reshape2" ,r-reshape2)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
-    (home-page "http://github.com/jdstorey/qvalue")
+    (home-page "https://github.com/StoreyLab/qvalue")
     (synopsis "Q-value estimation for false discovery rate control")
     (description
      "This package takes a list of p-values resulting from the simultaneous
@@ -2934,7 +2934,7 @@ qPCR data, but could be used with other types as well.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cole-trapnell-lab/monocle3.git")
+             (url "https://github.com/cole-trapnell-lab/monocle3")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -5781,14 +5781,14 @@ annotations.")
 (define-public r-rsubread
   (package
     (name "r-rsubread")
-    (version "2.2.2")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rsubread" version))
        (sha256
         (base32
-         "1wgilpaw70dwg0zilx5i1pmi4j8wri6wi2ha1d3bapfhlwc6igml"))))
+         "0yznfqgp5cbz68n3rrfvm752267da16kl538zdrb1g1aw9zdfqc6"))))
     (properties `((upstream-name . "Rsubread")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
@@ -6374,14 +6374,14 @@ delete entire rows with missing data.")
 (define-public r-depecher
   (package
     (name "r-depecher")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DepecheR" version))
        (sha256
         (base32
-         "0nmx04qybzf6nhfngmdxwpbbz9x32v34mbnpg8jq7a2cgchzsj9s"))))
+         "0dscfl6wxpl5538jzkrwisdwbr873d38rzd19vl6z5br71jvpv3v"))))
     (properties `((upstream-name . "DepecheR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6509,7 +6509,7 @@ accessibility data.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/cole-trapnell-lab/cicero-release.git")
+               (url "https://github.com/cole-trapnell-lab/cicero-release")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -6530,7 +6530,7 @@ accessibility data.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/aertslab/cisTopic.git")
+               (url "https://github.com/aertslab/cisTopic")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -7048,14 +7048,14 @@ arrays based on fast wavelet-based functional models.")
 (define-public r-variancepartition
   (package
     (name "r-variancepartition")
-    (version "1.18.0")
+    (version "1.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "variancePartition" version))
        (sha256
         (base32
-         "1rn655qq7dshbk1dd41n7y2hfz8498jxd2j4rk7p8hrikd3s32dm"))))
+         "19bhkb8vd44m3nkznw075fx3y2p3a1bsazbhcfiqw9n4190k9bgv"))))
     (properties
      `((upstream-name . "variancePartition")))
     (build-system r-build-system)
@@ -7187,21 +7187,20 @@ using whole genome sequencing data.")
 (define-public r-activepathways
   (package
     (name "r-activepathways")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActivePathways" version))
        (sha256
         (base32
-         "1xb0d1svmzw404pv8ja6wr4773k7x2lxkrzrayilvzqbfzj1wx20"))))
+         "1hxy760x141ykrpqdbfldq4ggj1svj3lsrpwi4rb2x7r4lna937l"))))
     (properties
      `((upstream-name . "ActivePathways")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-metap" ,r-metap)))
+       ("r-ggplot2" ,r-ggplot2)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ActivePathways/")

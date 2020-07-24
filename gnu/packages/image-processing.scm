@@ -587,7 +587,7 @@ recalculates.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/vxl/vxl.git")
+             (url "https://github.com/vxl/vxl")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -629,7 +629,7 @@ libraries designed for computer vision research and implementation.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/vxl/vxl.git")
+             (url "https://github.com/vxl/vxl")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -850,7 +850,7 @@ combine the information contained in both.")
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/pyushkevich/c3d.git")
+                   (url "https://github.com/pyushkevich/c3d")
                    (commit commit)))
              (file-name (git-file-name "c3d" version))
              (sha256
@@ -865,7 +865,7 @@ combine the information contained in both.")
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/pyushkevich/greedy.git")
+                   (url "https://github.com/pyushkevich/greedy")
                    (commit commit)))
              (file-name (git-file-name "greedy" version))
              (sha256

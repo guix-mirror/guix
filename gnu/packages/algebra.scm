@@ -155,7 +155,7 @@ line applications.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fplll/fplll.git")
+                    (url "https://github.com/fplll/fplll")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -205,7 +205,7 @@ the real span of the lattice.")
        ;; Github instead.
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/fplll/fpylll.git")
+             (url "https://github.com/fplll/fpylll")
              (commit (string-append version "dev"))))
        (file-name (git-file-name name version))
        (sha256
@@ -273,7 +273,7 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.11pl3")
+   (version "0.0.11pl4")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -281,7 +281,7 @@ PARI is also available as a C library to allow for faster computations.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "0yymbrgyjw500hqgmkj5m4nmscd7c9rs9w2c96lxgrcyab8krhrm"))))
+                "1cnnh7diqc97q76q5pyhpbljbhc0sz8mlrbqgiwi0sjkgh8iqsj0"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
@@ -351,7 +351,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.5.0-87")
+    (version "1.6.0-7")
     (source
      (origin
        (method url-fetch)
@@ -363,7 +363,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "1d0h1yb7qvh9x7wwv9yrzmcp712f49w1iljkxp4y6g9pzsmg1mmv"))))
+        (base32 "1pvgp137zcl0rbhdn1j41xxfml7fp771a7x4ph8qrhhlx0hxzn3p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -403,7 +403,7 @@ precision.")
                (delete-file (string-append out "/bin/xcasnew"))
                #t))))))
     (inputs
-     ;;; TODO: Add libnauty.
+;;; TODO: Add libnauty.
      `(("fltk" ,fltk)
        ("glpk" ,glpk)
        ("gmp" ,gmp)
@@ -440,16 +440,17 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.5.2")
+   (version "2.6.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://flintlib.org/flint-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "11syazv1a8rrnac3wj3hnyhhflpqcmq02q8pqk2m6g2k6h0gxwfb"))
-            (patches (search-patches "flint-ldconfig.patch"))))
+                     "0h08a71kn8347zsqjamqnmrxjpsnnzpmhvxb6d2xmfrcs6nyv2ch"))))
    (build-system gnu-build-system)
+   (inputs
+    `(("ntl" ,ntl)))
    (propagated-inputs
     `(("gmp" ,gmp)
       ("mpfr" ,mpfr))) ; header files from both are included by flint/arith.h
@@ -457,17 +458,24 @@ or text interfaces) or as a C++ library.")
     `(#:parallel-tests? #f ; seems to be necessary on arm
       #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'newer-c++
+           (lambda _
+             (substitute* "configure"
+               (("-ansi") ""))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (gmp (assoc-ref inputs "gmp"))
-                   (mpfr (assoc-ref inputs "mpfr")))
+                   (mpfr (assoc-ref inputs "mpfr"))
+                   (ntl (assoc-ref inputs "ntl")))
                ;; do not pass "--enable-fast-install", which makes the
                ;; homebrew configure process fail
                (invoke "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--with-gmp=" gmp)
-                       (string-append "--with-mpfr=" mpfr))
+                       (string-append "--with-mpfr=" mpfr)
+                       (string-append "--with-ntl=" ntl))
                #t))))))
    (synopsis "Fast library for number theory")
    (description
@@ -487,16 +495,16 @@ fast arithmetic.")
 (define-public arb
   (package
     (name "arb")
-    (version "2.17.0")
+    (version "2.18.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fredrik-johansson/arb.git")
+                    (url "https://github.com/fredrik-johansson/arb")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05lpy3hkl5f8ik19aw40cqydrb932xaf2n8hbq9ib5dnk7f010p1"))))
+                "15fx3dcbzgwddw9p1nysmx0dbh058afv5m8cj5pdjkcmcl7kw7z9"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("flint" ,flint)))               ; flint.h is included by arf.h
@@ -535,7 +543,7 @@ real and complex numbers, with automatic, rigorous error control.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fredrik-johansson/python-flint.git")
+                    (url "https://github.com/fredrik-johansson/python-flint")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -728,7 +736,7 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/extemporelang/kiss_fft.git")
+                    (url "https://github.com/extemporelang/kiss_fft")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -834,7 +842,7 @@ cosine/ sine transforms or DCT/DST).")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vkostyukov/la4j.git")
+                    (url "https://github.com/vkostyukov/la4j")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -956,7 +964,7 @@ algorithms from the FORTRAN library MINPACK.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/symengine/symengine.git")
+             (url "https://github.com/symengine/symengine")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1075,7 +1083,7 @@ features, and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/QuantStack/xtensor.git")
+                    (url "https://github.com/QuantStack/xtensor")
                     (commit version)))
               (sha256
                (base32
@@ -1356,14 +1364,15 @@ algebra, such as the row echelon form.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10j6dspbsq7d2l4q3y0c1l1xwmaqqba2fxg59q5bhgk9h5d7q571"))))
+                "10j6dspbsq7d2l4q3y0c1l1xwmaqqba2fxg59q5bhgk9h5d7q571"))
+              (patches (search-patches "linbox-fix-pkgconfig.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (inputs
+    (propagated-inputs
      `(("fflas-ffpack" ,fflas-ffpack)))
     (synopsis "C++ library for linear algebra over exact rings")
     (description

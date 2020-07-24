@@ -346,22 +346,9 @@ respectively."
                                                   (cons name args)))
                     #:guix-name hackage-name->package-name))
 
-(define (hackage-package? package)
-  "Return #t if PACKAGE is a Haskell package from Hackage."
-
-  (define haskell-url?
-    (let ((hackage-rx (make-regexp "https?://hackage.haskell.org")))
-      (lambda (url)
-        (regexp-exec hackage-rx url))))
-
-  (let ((source-url (and=> (package-source package) origin-uri))
-        (fetch-method (and=> (package-source package) origin-method)))
-    (and (eq? fetch-method url-fetch)
-         (match source-url
-           ((? string?)
-            (haskell-url? source-url))
-           ((source-url ...)
-            (any haskell-url? source-url))))))
+(define hackage-package?
+  (let ((hackage-rx (make-regexp "https?://hackage.haskell.org")))
+    (url-predicate (cut regexp-exec hackage-rx <>))))
 
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."

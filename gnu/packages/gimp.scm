@@ -311,7 +311,7 @@ brushstrokes which is used by MyPaint and GIMP.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mypaint/mypaint-brushes.git")
+             (url "https://github.com/mypaint/mypaint-brushes")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -337,7 +337,7 @@ MyPaint.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mypaint/mypaint-brushes.git")
+             (url "https://github.com/mypaint/mypaint-brushes")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

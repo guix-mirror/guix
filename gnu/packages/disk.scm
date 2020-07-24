@@ -78,6 +78,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
@@ -96,7 +97,7 @@
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/IgnorantGuru/udevil.git")
+         (url "https://github.com/IgnorantGuru/udevil")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -432,7 +433,7 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
                            version "/gparted-" version ".tar.gz"))
        (sha256
         (base32 "092rgwjh1825fal6v3yafq2wr0i61hh0a2n0j4296zn0zdx7pzp2"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
       ;; Tests require access to paths outside the build container, such
       ;; as '/dev/disk/by-id'
@@ -486,7 +487,7 @@ systems.  Output format is completely customizable.")
      (origin
       (method git-fetch)
       (uri (git-reference
-            (url "https://github.com/AltraMayor/f3.git")
+            (url "https://github.com/AltraMayor/f3")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
@@ -524,7 +525,7 @@ a card with a smaller capacity than stated.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dcantrell/pyparted.git")
+             (url "https://github.com/dcantrell/pyparted")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -565,7 +566,7 @@ a card with a smaller capacity than stated.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/markfasheh/duperemove.git")
+             (url "https://github.com/markfasheh/duperemove")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1scz76pvpljvrpfn176125xwaqwyy4pirlm11sc9spb2hyzknw2z"))
@@ -695,7 +696,7 @@ passphrases.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pmem/ndctl.git")
+                    (url "https://github.com/pmem/ndctl")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -846,7 +847,7 @@ LVM D-Bus API).")
 (define-public rmlint
   (package
     (name "rmlint")
-    (version "2.9.0")
+    (version "2.10.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -855,7 +856,7 @@ LVM D-Bus API).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b5cziam14h80xrfb285fmfrzz2rligxcpsq1xsig14xf4l2875i"))))
+                "15xfkcw1bkfyf3z8kl23k3rlv702m0h7ghqxvhniynvlwbgh6j2x"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -918,7 +919,7 @@ on your file system and offers to remove it.  @command{rmlint} can find:
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/gokcehan/lf.git")
+                    (url "https://github.com/gokcehan/lf")
                     (commit (string-append "r" version))))
               (file-name (git-file-name name version))
               (sha256

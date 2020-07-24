@@ -55,14 +55,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20200522")
+    (version "20200722")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "10is46v5dpccxibby0zikg1q68mdwpmgdpxk796zka93idd6id29"))))
+       (base32 "0vqd8nhf4lkvbfy7nnibxjkpzpfandpklqm0hrix5vki5x7x80a8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

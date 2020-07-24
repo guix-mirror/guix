@@ -45,7 +45,7 @@
             cve-id
             cve-data-type
             cve-data-format
-            cvs-references
+            cve-references
 
             cve-reference?
             cve-reference-url
@@ -88,7 +88,7 @@
                   "data_type" string->symbol)
   (data-format    cve-data-format                 ;'MITRE
                   "data_format" string->symbol)
-  (references     cve-item-references             ;list of <cve-reference>
+  (references     cve-references                  ;list of <cve-reference>
                   "references" reference-data->cve-references))
 
 (define-json-mapping <cve-reference> cve-reference cve-reference?

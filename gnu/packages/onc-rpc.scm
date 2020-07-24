@@ -147,7 +147,7 @@ from the protocol files.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/thkukuk/libnsl.git")
+                    (url "https://github.com/thkukuk/libnsl")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

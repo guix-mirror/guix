@@ -369,6 +369,8 @@ high-level, object-oriented functional programming language.  CLISP includes
 an interpreter, a compiler, a debugger, and much more.")
     (license license:gpl2+)))
 
+;; NOTE: SBCL 2.0.6 breaks named-readtables and consequently many Common Lisp packages.
+;; See https://github.com/melisgl/named-readtables/issues/19.
 (define-public sbcl
   (package
     (name "sbcl")
@@ -397,12 +399,13 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;     ABCL and ECL (as well as CCL, CMUCL, CLISP and SBCL itself)
      ;;
      ;; CCL is not bootstrappable so it won't do.  CLISP 2.49 seems to work.
-     ;; ECL too.  ECL builds SBCL about 20% slower than CLISP.  As of
-     ;; 2019-09-05, ECL was last updated in 2020 while CLISP was last updated
-     ;; in 2010.
+     ;; ECL too.  As of 2020-07-01, ECL was last updated in 2020 while CLISP
+     ;; was last updated in 2010, and both take about the same time to build SBCL.
      ;;
-     ;; For now we stick to CLISP for all systems.  We keep the `match' here to
-     ;; make it easier to change the host compiler for various architectures.
+     ;; For now we stick to CLISP for all systems.  We keep the `match' here
+     ;; to make it easier to change the host compiler for various
+     ;; architectures.  Consider switching to ECL if it gets faster than CLISP
+     ;; (maybe post 2020 release).
      `(,@(match (%current-system)
            ((or "x86_64-linux" "i686-linux")
             `(("clisp" ,clisp)))

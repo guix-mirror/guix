@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,12 +20,14 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
+  #:use-module (ice-9 match))
 
 (define-public xxhash
   (package
     (name "xxhash")
-    (version "0.7.3")
+    (version "0.7.4")
     (source
      (origin
        (method git-fetch)
@@ -34,11 +36,16 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bin0jch6lbzl4f8y052a7azfgq2n7iwqihzgqmcccv5vq4vcx5a"))))
+        (base32 "08j7wxshhzpyrnyilfnvhyv5ycm0yv5m7jf6q4kxcd7j4dcbhmpb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
+             ,(match (or (%current-target-system)
+                         (%current-system))
+                ;; Detect vector instruction set at run time.
+                ((or "i686-linux" "x86_64-linux") "DISPATCH=1")
+                (_ "DISPATCH=0"))
              "XXH_FORCE_MEMORY_ACCESS=1" ; improved performance with GCC
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases

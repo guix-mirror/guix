@@ -229,7 +229,6 @@ system.")
                 (build-image
                  (image
                   (inherit efi-disk-image)
-                  (size (* 1500 MiB))
                   (operating-system installation-os))))
         ,(->job 'iso9660-image
                 (build-image

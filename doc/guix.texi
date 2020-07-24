@@ -52,7 +52,7 @@ Copyright @copyright{} 2017, 2019, 2020 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
-Copyright @copyright{} 2017, 2018, 2019 Arun Isaac@*
+Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
@@ -791,11 +791,11 @@ The following dependencies are optional:
 
 @itemize
 @item
-@c Note: We need at least 0.12.0 for 'userauth-gssapi!'.
+@c Note: We need at least 0.13.0 for #:nodelay.
 Support for build offloading (@pxref{Daemon Offload Setup}) and
 @command{guix copy} (@pxref{Invoking guix copy}) depends on
 @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH},
-version 0.12.0 or later.
+version 0.13.0 or later.
 
 @item
 When @url{https://www.nongnu.org/lzip/lzlib.html, lzlib} is available, lzlib
@@ -1978,7 +1978,7 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guix-system-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX
+dd if=guix-system-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX status=progress
 sync
 @end example
 
@@ -3975,8 +3975,48 @@ deploys Guix itself from the official GNU@tie{}Guix repository.  This can be
 customized by defining @dfn{channels} in the
 @file{~/.config/guix/channels.scm} file.  A channel specifies a URL and branch
 of a Git repository to be deployed, and @command{guix pull} can be instructed
-to pull from one or more channels.  In other words, channels can be used to
-@emph{customize} and to @emph{extend} Guix, as we will see below.
+to pull from one or more channels.  In other words, channels can be used
+to @emph{customize} and to @emph{extend} Guix, as we will see below.
+Before that, some security considerations.
+
+@subsection Channel Authentication
+
+@anchor{channel-authentication}
+@cindex authentication, of channel code
+The @command{guix pull} and @command{guix time-machine} commands
+@dfn{authenticate} the code retrieved from channels: they make sure each
+commit that is fetched is signed by an authorized developer.  The goal
+is to protect from unauthorized modifications to the channel that would
+lead users to run malicious code.
+
+As a user, you must provide a @dfn{channel introduction} in your
+channels file so that Guix knows how to authenticate its first commit.
+A channel specification, including its introduction, looks something
+along these lines:
+
+@lisp
+(channel
+  (name 'my-channel)
+  (url "https://example.org/my-channel.git")
+  (introduction
+   (make-channel-introduction
+    "6f0d8cc0d88abb59c324b2990bfee2876016bb86"
+    (openpgp-fingerprint
+     "CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"))))
+@end lisp
+
+The specification above shows the name and URL of the channel.  The call
+to @code{make-channel-introduction} above specifies that authentication
+of this channel starts at commit @code{6f0d8cc@dots{}}, which is signed
+by the OpenPGP key with fingerprint @code{CABB A931@dots{}}.
+
+For the main channel, called @code{guix}, you automatically get that
+information from your Guix installation.  For other channels, include
+the channel introduction provided by the channel authors in your
+@file{channels.scm} file.  Make sure you retrieve the channel
+introduction from a trusted source since that is the root of your trust.
+
+If you're curious about the authentication mechanics, read on!
 
 @subsection Using a Custom Guix Channel
 
@@ -4121,7 +4161,15 @@ The meta-data file should contain a simple S-expression like this:
  (dependencies
   (channel
    (name some-collection)
-   (url "https://example.org/first-collection.git"))
+   (url "https://example.org/first-collection.git")
+
+   ;; The 'introduction' bit below is optional: you would
+   ;; provide it for dependencies that can be authenticated.
+   (introduction
+    (channel-introduction
+      (version 0)
+      (commit "a8883b58dc82e167c96506cf05095f37c2c2c6cd")
+      (signer "CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"))))
   (channel
    (name some-other-collection)
    (url "https://example.org/second-collection.git")
@@ -4149,6 +4197,106 @@ add a meta-data file @file{.guix-channel} that contains:
   (version 0)
   (directory "guix"))
 @end lisp
+
+@cindex channel authorizations
+@subsection Specifying Channel Authorizations
+
+@anchor{channel-authorizations}
+As we saw above, Guix ensures the source code it pulls from channels
+comes from authorized developers.  As a channel author, you need to
+specify the list of authorized developers in the
+@file{.guix-authorizations} file in the channel's Git repository.  The
+authentication rule is simple: each commit must be signed by a key
+listed in the @file{.guix-authorizations} file of its parent
+commit(s)@footnote{Git commits form a @dfn{directed acyclic graph}
+(DAG).  Each commit can have zero or more parents; ``regular'' commits
+have one parent and merge commits have two parent commits.  Read
+@uref{https://eagain.net/articles/git-for-computer-scientists/, @i{Git
+for Computer Scientists}} for a great overview.}  The
+@file{.guix-authorizations} file looks like this:
+
+@lisp
+;; Example '.guix-authorizations' file.
+
+(authorizations
+ (version 0)               ;current file format version
+
+ (("AD17 A21E F8AE D8F1 CC02  DBD9 F8AE D8F1 765C 61E3"
+   (name "alice"))
+  ("2A39 3FFF 68F4 EF7A 3D29  12AF 68F4 EF7A 22FB B2D5"
+   (name "bob"))
+  ("CABB A931 C0FF EEC6 900D  0CFB 090B 1199 3D9A EBB5"
+   (name "charlie"))))
+@end lisp
+
+Each fingerprint is followed by optional key/value pairs, as in the
+example above.  Currently these key/value pairs are ignored.
+
+This authentication rule creates a chicken-and-egg issue: how do we
+authenticate the first commit?  Related to that: how do we deal with
+channels whose repository history contains unsigned commits and lack
+@file{.guix-authorizations}?  And how do we fork existing channels?
+
+@cindex channel introduction
+Channel introductions answer these questions by describing the first
+commit of a channel that should be authenticated.  The first time a
+channel is fetched with @command{guix pull} or @command{guix
+time-machine}, the command looks up the introductory commit and verifies
+that it is signed by the specified OpenPGP key.  From then on, it
+authenticates commits according to the rule above.
+
+Additionally, your channel must provide all the OpenPGP keys that were
+ever mentioned in @file{.guix-authorizations}, stored as @file{.key}
+files, which can be either binary or ``ASCII-armored''.  By default,
+those @file{.key} files are searched for in the branch named
+@code{keyring} but you can specify a different branch name in
+@code{.guix-channel} like so:
+
+@lisp
+(channel
+  (version 0)
+  (keyring-reference "my-keyring-branch"))
+@end lisp
+
+To summarize, as the author of a channel, there are three things you have
+to do to allow users to authenticate your code:
+
+@enumerate
+@item
+Export the OpenPGP keys of past and present committers with @command{gpg
+--export} and store them in @file{.key} files, by default in a branch
+named @code{keyring} (we recommend making it an @dfn{orphan branch}).
+
+@item
+Introduce an initial @file{.guix-authorizations} in the channel's
+repository.  Do that in a signed commit (@pxref{Commit Access}, for
+information on how to sign Git commits.)
+
+@item
+Advertise the channel introduction, for instance on your channel's web
+page.  The channel introduction, as we saw above, is the commit/key
+pair---i.e., the commit that introduced @file{.guix-authorizations}, and
+the fingerprint of the OpenPGP used to sign it.
+@end enumerate
+
+Before pushing to your public Git repository, you can run @command{guix
+git-authenticate} to verify that you did sign all the commits you are
+about to push with an authorized key:
+
+@example
+guix git authenticate @var{commit} @var{signer}
+@end example
+
+@noindent
+where @var{commit} and @var{signer} are your channel introduction.
+@xref{Invoking guix git authenticate}, for details.
+
+Publishing a signed channel requires discipline: any mistake, such as an
+unsigned commit or a commit signed by an unauthorized key, will prevent
+users from pulling from your channel---well, that's the whole point of
+authentication!  Pay attention to merges in particular: merge commits
+are considered authentic if and only if they are signed by a key present
+in the @file{.guix-authorizations} file of @emph{both} branches.
 
 @cindex primary URL, channels
 @subsection Primary URL
@@ -4249,7 +4397,7 @@ say, on another machine, by providing a channel specification in
 (list (channel
        (name 'guix)
        (url "https://git.savannah.gnu.org/git/guix.git")
-       (commit "d894ab8e9bfabcefa6c49d9ba2e834dd5a73a300"))
+       (commit "6298c3ffd9654d3231a6f25390b056483e8f407c"))
       (channel
        (name 'my-personal-packages)
        (url "https://example.org/personal-packages.git")
@@ -4500,7 +4648,12 @@ $ guix describe -f channels
         (name 'guix)
         (url "https://git.savannah.gnu.org/git/guix.git")
         (commit
-          "e0fa68c7718fffd33d81af415279d6ddb518f727")))
+          "e0fa68c7718fffd33d81af415279d6ddb518f727")
+        (introduction
+          (make-channel-introduction
+            "9edb3f66fd807b096b48283debdcddccfea34bad"
+            (openpgp-fingerprint
+              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
 @end example
 
 @noindent
@@ -4526,6 +4679,12 @@ produce human-readable output;
 produce a list of channel specifications that can be passed to @command{guix
 pull -C} or installed as @file{~/.config/guix/channels.scm} (@pxref{Invoking
 guix pull});
+@item channels-sans-intro
+like @code{channels}, but omit the @code{introduction} field; use it to
+produce a channel specification suitable for Guix version 1.1.0 or
+earlier---the @code{introduction} field has to do with channel
+authentication (@pxref{Channels, Channel Authentication}) and is not
+supported by these older versions;
 @item json
 @cindex JSON
 produce a list of channel specifications in JSON format;
@@ -4735,9 +4894,10 @@ pack} command allows you to create @dfn{application bundles} that can be
 easily distributed to users who do not run Guix.
 
 @menu
-* Invoking guix environment::  Setting up development environments.
-* Invoking guix pack::         Creating software bundles.
-* The GCC toolchain::          Working with languages supported by GCC.
+* Invoking guix environment::   Setting up development environments.
+* Invoking guix pack::          Creating software bundles.
+* The GCC toolchain::           Working with languages supported by GCC.
+* Invoking guix git authenticate:: Authenticating Git repositories.
 @end menu
 
 @node Invoking guix environment
@@ -5475,6 +5635,68 @@ The package @code{gfortran-toolchain} provides a complete GCC toolchain
 for Fortran development.  For other languages, please use
 @samp{guix search gcc toolchain} (@pxref{guix-search,, Invoking guix package}).
 
+
+@node Invoking guix git authenticate
+@section Invoking @command{guix git authenticate}
+
+The @command{guix git authenticate} command authenticates a Git checkout
+following the same rule as for channels (@pxref{channel-authentication,
+channel authentication}).  That is, starting from a given commit, it
+ensures that all subsequent commits are signed by an OpenPGP key whose
+fingerprint appears in the @file{.guix-authorizations} file of its
+parent commit(s).
+
+You will find this command useful if you maintain a channel.  But in
+fact, this authentication mechanism is useful in a broader context, so
+you might want to use it for Git repositories that have nothing to do
+with Guix.
+
+The general syntax is:
+
+@example
+guix git authenticate @var{commit} @var{signer} [@var{options}@dots{}]
+@end example
+
+By default, this command authenticates the Git checkout in the current
+directory; it outputs nothing and exits with exit code zero on success
+and non-zero on failure.  @var{commit} above denotes the first commit
+where authentication takes place, and @var{signer} is the OpenPGP
+fingerprint of public key used to sign @var{commit}.  Together, they
+form a ``channel introduction'' (@pxref{channel-authentication, channel
+introduction}).  The options below allow you to fine-tune the process.
+
+@table @code
+@item --repository=@var{directory}
+@itemx -r @var{directory}
+Open the Git repository in @var{directory} instead of the current
+directory.
+
+@item --keyring=@var{reference}
+@itemx -k @var{reference}
+Load OpenPGP keyring from @var{reference}, the reference of a branch
+such as @code{origin/keyring} or @code{my-keyring}.  The branch must
+contain OpenPGP public keys in @file{.key} files, either in binary form
+or ``ASCII-armored''.  By default the keyring is loaded from the branch
+named @code{keyring}.
+
+@item --stats
+Display commit signing statistics upon completion.
+
+@item --cache-key=@var{key}
+Previously-authenticated commits are cached in a file under
+@file{~/.cache/guix/authentication}.  This option forces the cache to be
+stored in file @var{key} in that directory.
+
+@item --historical-authorizations=@var{file}
+By default, any commit whose parent commit(s) lack the
+@file{.guix-authorizations} file is considered inauthentic.  In
+contrast, this option considers the authorizations in @var{file} for any
+commit that lacks @file{.guix-authorizations}.  The format of @var{file}
+is the same as that of @file{.guix-authorizations}
+(@pxref{channel-authorizations, @file{.guix-authorizations} format}).
+@end table
+
+
 @c *********************************************************************
 @node Programming Interface
 @chapter Programming Interface
@@ -5489,7 +5711,7 @@ turned into concrete build actions.
 Build actions are performed by the Guix daemon, on behalf of users.  In a
 standard setup, the daemon has write access to the store---the
 @file{/gnu/store} directory---whereas users do not.  The recommended
-setup also has the daemon perform builds in chroots, under a specific
+setup also has the daemon perform builds in chroots, under specific
 build users, to minimize interference with the rest of the system.
 
 @cindex derivation
@@ -6605,6 +6827,48 @@ helps creating the file. You need to pass the outputs and the source of the
 package, it's name (the same as the @code{file-name} parameter), the package
 uuid, the package version, and a list of dependencies specified by their name
 and their uuid.
+@end defvr
+
+@defvr {Scheme Variable} maven-build-system
+This variable is exported by @code{(guix build-system maven)}.  It implements
+a build procedure for @uref{https://maven.apache.org, Maven} packages.  Maven
+is a dependency and lifecycle management tool for Java.  A user of Maven
+specifies dependencies and plugins in a @file{pom.xml} file that Maven reads.
+When Maven does not have one of the dependencies or plugins in its repository,
+it will download them and use them to build the package.
+
+The maven build system ensures that maven will not try to download any
+dependency by running in offline mode.  Maven will fail if a dependency is
+missing.  Before running Maven, the @file{pom.xml} (and subprojects) are
+modified to specify the version of dependencies and plugins that match the
+versions available in the guix build environment.  Dependencies and plugins
+must be installed in the fake maven repository at @file{lib/m2}, and are
+symlinked into a proper repository before maven is run.  Maven is instructed
+to use that repository for the build and installs built artifacts there.
+Changed files are copied to the @file{lib/m2} directory of the package output.
+
+You can specify a @file{pom.xml} file with the @code{#:pom-file} argument,
+or let the build system use the default @file{pom.xml} file in the sources.
+
+In case you need to specify a dependency's version manually, you can use the
+@code{#:local-packages} argument.  It takes an association list where the key
+is the groupId of the package and its value is an association list where the
+key is the artifactId of the package and its value is the version you want to
+override in the @file{pom.xml}.
+
+Some packages use dependencies or plugins that are not useful at runtime nor
+at build time in Guix.  You can alter the @file{pom.xml} file to remove them
+using the @code{#:exclude} argument.  Its value is an association list where
+the key is the groupId of the plugin or dependency you want to remove, and
+the value is a list of artifactId you want to remove.
+
+You can override the default @code{jdk} and @code{maven} packages with the
+corresponding argument, @code{#:jdk} and @code{#:maven}.
+
+The @code{#:maven-plugins} argument is a list of maven plugins used during
+the build, with the same format as the @code{inputs} fields of the package
+declaration.  Its default value is @code{(default-maven-plugins)} which is
+also exported.
 @end defvr
 
 @defvr {Scheme Variable} minify-build-system
@@ -9801,6 +10065,8 @@ list of updaters).  Currently, @var{updater} may be one of:
 @table @code
 @item gnu
 the updater for GNU packages;
+@item savannah
+the updater for packages hosted at @uref{https://savannah.gnu.org, Savannah};
 @item gnome
 the updater for GNOME packages;
 @item kde
@@ -13595,12 +13861,14 @@ illustrates that.
         (with-imported-modules (source-module-closure
                                 '((guix build utils)))
           #~(begin
-              (define %min-level 20)
               (use-modules (guix build utils)
                            (ice-9 popen)
                            (ice-9 regex)
                            (ice-9 textual-ports)
                            (srfi srfi-2))
+
+              (define %min-level 20)
+
               (setenv "LC_ALL" "C")     ;ensure English output
               (and-let* ((input-pipe (open-pipe*
                                       OPEN_READ
@@ -14044,6 +14312,9 @@ It takes the following parameters:
 @table @asis
 @item @code{wpa-supplicant} (default: @code{wpa-supplicant})
 The WPA Supplicant package to use.
+
+@item @code{requirement} (default: @code{'(user-processes dbus-system loopback syslogd)}
+List of services that should be started before WPA Supplicant starts.
 
 @item @code{dbus?} (default: @code{#t})
 Whether to listen for requests on D-Bus.
@@ -15328,7 +15599,7 @@ auto-login session.
 @cindex Xorg, configuration
 @deftp {Data Type} xorg-configuration
 This data type represents the configuration of the Xorg graphical display
-server.  Note that there is not Xorg service; instead, the X server is started
+server.  Note that there is no Xorg service; instead, the X server is started
 by a ``display manager'' such as GDM, SDDM, and SLiM.  Thus, the configuration
 of these display managers aggregates an @code{xorg-configuration} record.
 
@@ -24768,6 +25039,650 @@ the @code{--snapshot} flag using something along these lines:
           (options '("--hda"))))
 @end lisp
 
+@subsubheading Ganeti
+
+@cindex ganeti
+
+@quotation Note
+This service is considered experimental.  Configuration options may be changed
+in a backwards-incompatible manner, and not all features have been thorougly
+tested.  Users of this service are encouraged to share their experience at
+@email{guix-devel@@gnu.org}.
+@end quotation
+
+Ganeti is a virtual machine management system.  It is designed to keep virtual
+machines running on a cluster of servers even in the event of hardware failures,
+and to make maintenance and recovery tasks easy.  It consists of multiple
+services which are described later in this section.  In addition to the Ganeti
+service, you will need the OpenSSH service (@pxref{Networking Services,
+@code{openssh-service-type}}), and update the @file{/etc/hosts} file
+(@pxref{operating-system Reference, @code{hosts-file}}) with the cluster name
+and address (or use a DNS server).
+
+All nodes participating in a Ganeti cluster should have the same Ganeti and
+@file{/etc/hosts} configuration.  Here is an example configuration for a Ganeti
+cluster node that supports multiple storage backends, and installs the
+@code{debootstrap} and @code{guix} @dfn{OS providers}:
+
+@lisp
+(use-package-modules virtualization)
+(use-service-modules base ganeti networking ssh)
+(operating-system
+  ;; @dots{}
+  (host-name "node1")
+  (hosts-file (plain-file "hosts" (format #f "
+127.0.0.1       localhost
+::1             localhost
+
+192.168.1.200   ganeti.example.com
+192.168.1.201   node1.example.com node1
+192.168.1.202   node2.example.com node2
+")))
+
+  ;; Install QEMU so we can use KVM-based instances, and LVM, DRBD and Ceph
+  ;; in order to use the "plain", "drbd" and "rbd" storage backends.
+  (packages (append (map specification->package
+                         '("qemu" "lvm2" "drbd-utils" "ceph"
+                           ;; Add the debootstrap and guix OS providers.
+                           "ganeti-instance-guix" "ganeti-instance-debootstrap"))
+                    %base-packages))
+  (services
+   (append (list (static-networking-service "eth0" "192.168.1.201"
+                                            #:netmask "255.255.255.0"
+                                            #:gateway "192.168.1.254"
+                                            #:name-servers '("192.168.1.252"
+                                                             "192.168.1.253"))
+
+                 ;; Ganeti uses SSH to communicate between nodes.
+                 (service openssh-service-type
+                          (openssh-configuration
+                           (permit-root-login 'without-password)))
+
+                 (service ganeti-service-type
+                          (ganeti-configuration
+                           ;; This list specifies allowed file system paths
+                           ;; for storing virtual machine images.
+                           (file-storage-paths '("/srv/ganeti/file-storage"))
+                           ;; This variable configures a single "variant" for
+                           ;; both Debootstrap and Guix that works with KVM.
+                           (os %default-ganeti-os))))
+           %base-services)))
+@end lisp
+
+Users are advised to read the
+@url{http://docs.ganeti.org/ganeti/master/html/admin.html,Ganeti
+administrators guide} to learn about the various cluster options and
+day-to-day operations.  There is also a
+@url{https://guix.gnu.org/blog/2020/running-a-ganeti-cluster-on-guix/,blog post}
+describing how to configure and initialize a small cluster.
+
+@defvr {Scheme Variable} ganeti-service-type
+This is a service type that includes all the various services that Ganeti
+nodes should run.
+
+Its value is a @code{ganeti-configuration} object that defines the package
+to use for CLI operations, as well as configuration for the various daemons.
+Allowed file storage paths and available guest operating systems are also
+configured through this data type.
+@end defvr
+
+@deftp {Data Type} ganeti-configuration
+The @code{ganeti} service takes the following configuration options:
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use.  It will be installed to the system profile
+and make @command{gnt-cluster}, @command{gnt-instance}, etc available.  Note
+that the value specified here does not affect the other services as each refer
+to a specific @code{ganeti} package (see below).
+
+@item @code{noded-configuration} (default: @code{(ganeti-noded-configuration)})
+@itemx @code{confd-configuration} (default: @code{(ganeti-confd-configuration)})
+@itemx @code{wconfd-configuration} (default: @code{(ganeti-wconfd-configuration)})
+@itemx @code{luxid-configuration} (default: @code{(ganeti-luxid-configuration)})
+@itemx @code{rapi-configuration} (default: @code{(ganeti-rapi-configuration)})
+@itemx @code{kvmd-configuration} (default: @code{(ganeti-kvmd-configuration)})
+@itemx @code{mond-configuration} (default: @code{(ganeti-mond-configuration)})
+@itemx @code{metad-configuration} (default: @code{(ganeti-metad-configuration)})
+@itemx @code{watcher-configuration} (default: @code{(ganeti-watcher-configuration)})
+@itemx @code{cleaner-configuration} (default: @code{(ganeti-cleaner-configuration)})
+
+These options control the various daemons and cron jobs that are distributed
+with Ganeti.  The possible values for these are described in detail below.
+To override a setting, you must use the configuration type for that service:
+
+@lisp
+(service ganeti-service-type
+         (ganeti-configuration
+          (rapi-configuration
+           (ganeti-rapi-configuration
+            (interface "eth1"))))
+          (watcher-configuration
+           (ganeti-watcher-configuration
+            (rapi-ip "10.0.0.1"))))
+@end lisp
+
+@item @code{file-storage-paths} (default: @code{'()})
+List of allowed directories for file storage backend.
+
+@item @code{os} (default: @code{%default-ganeti-os})
+List of @code{<ganeti-os>} records.
+@end table
+
+In essence @code{ganeti-service-type} is shorthand for declaring each service
+individually:
+
+@lisp
+(service ganeti-noded-service-type)
+(service ganeti-confd-service-type)
+(service ganeti-wconfd-service-type)
+(service ganeti-luxid-service-type)
+(service ganeti-kvmd-service-type)
+(service ganeti-mond-service-type)
+(service ganeti-metad-service-type)
+(service ganeti-watcher-service-type)
+(service ganeti-cleaner-service-type)
+@end lisp
+
+Plus a service extension for @code{etc-service-type} that configures the file
+storage backend and OS variants.
+
+@end deftp
+
+@deftp {Data Type} ganeti-os
+This data type is suitable for passing to the @code{os} parameter of
+@code{ganeti-configuration}.  It takes the following parameters:
+
+@table @asis
+@item @code{name}
+The name for this OS provider.  It is only used to specify where the
+configuration ends up.  Setting it to ``debootstrap'' will create
+@file{/etc/ganeti/instance-debootstrap}.
+
+@item @code{extension}
+The file extension for variants of this OS type.  For example
+@file{.conf} or @file{.scm}.
+
+@item @code{variants} (default: @code{'()})
+List of @code{ganeti-os-variant} objects for this OS.
+
+@end table
+@end deftp
+
+@deftp {Data Type} ganeti-os-variant
+This is the data type for a Ganeti OS variant.  It takes the following
+parameters:
+
+@table @asis
+@item @code{name}
+The name of this variant.
+
+@item @code{configuration}
+A configuration file for this variant.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} %default-debootstrap-hooks
+This variable contains hooks to configure networking and the GRUB bootloader.
+@end defvr
+
+@defvr {Scheme Variable} %default-debootstrap-extra-pkgs
+This variable contains a list of packages suitable for a fully-virtualized guest.
+@end defvr
+
+@deftp {Data Type} debootstrap-configuration
+
+This data type creates configuration files suitable for the debootstrap OS provider.
+
+@table @asis
+@item @code{hooks} (default: @code{%default-debootstrap-hooks})
+When not @code{#f}, this must be a G-expression that specifies a directory with
+scripts that will run when the OS is installed.  It can also be a list of
+@code{(name . file-like)} pairs.  For example:
+
+@lisp
+`((99-hello-world . ,(plain-file "#!/bin/sh\necho Hello, World")))
+@end lisp
+
+That will create a directory with one executable named @code{99-hello-world}
+and run it every time this variant is installed.  If set to @code{#f}, hooks
+in @file{/etc/ganeti/instance-debootstrap/hooks} will be used, if any.
+@item @code{proxy} (default: @code{#f})
+Optional HTTP proxy to use.
+@item @code{mirror} (default: @code{#f})
+The Debian mirror.  Typically something like @code{http://ftp.no.debian.org/debian}.
+The default varies depending on the distribution.
+@item @code{arch} (default: @code{#f})
+The dpkg architecture.  Set to @code{armhf} to debootstrap an ARMv7 instance
+on an AArch64 host.  Default is to use the current system architecture.
+@item @code{suite} (default: @code{"stable"})
+When set, this must be a Debian distribution ``suite'' such as @code{buster}
+or @code{focal}.  If set to @code{#f}, the default for the OS provider is used.
+@item @code{extra-pkgs} (default: @code{%default-debootstrap-extra-pkgs})
+List of extra packages that will get installed by dpkg in addition
+to the minimal system.
+@item @code{components} (default: @code{#f})
+When set, must be a list of Debian repository ``components''.  For example
+@code{'("main" "contrib")}.
+@item @code{generate-cache?} (default: @code{#t})
+Whether to automatically cache the generated debootstrap archive.
+@item @code{clean-cache} (default: @code{14})
+Discard the cache after this amount of days.  Use @code{#f} to never
+clear the cache.
+@item @code{partition-style} (default: @code{'msdos})
+The type of partition to create.  When set, it must be one of
+@code{'msdos}, @code{'none} or a string.
+@item @code{partition-alignment} (default: @code{2048})
+Alignment of the partition in sectors.
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} debootstrap-variant @var{name} @var{configuration}
+This is a helper procedure that creates a @code{ganeti-os-variant} record.  It
+takes two parameters: a name and a @code{debootstrap-configuration} object.
+@end deffn
+
+@deffn {Scheme Procedure} debootstrap-os @var{variants}@dots{}
+This is a helper procedure that creates a @code{ganeti-os} record.  It takes
+a list of variants created with @code{debootstrap-variant}.
+@end deffn
+
+@deffn {Scheme Procedure} guix-variant @var{name} @var{configuration}
+This is a helper procedure that creates a @code{ganeti-os-variant} record for
+use with the Guix OS provider.  It takes a name and a G-expression that returns
+a ``file-like'' (@pxref{G-Expressions, file-like objects}) object containing a
+Guix System configuration.
+@end deffn
+
+@deffn {Scheme Procedure} guix-os @var{variants}@dots{}
+This is a helper procedure that creates a @code{ganeti-os} record.  It
+takes a list of variants produced by @code{guix-variant}.
+@end deffn
+
+@defvr {Scheme Variable} %default-debootstrap-variants
+This is a convenience variable to make the debootstrap provider work
+``out of the box'' without users having to declare variants manually.  It
+contains a single debootstrap variant with the default configuration:
+
+@lisp
+(list (debootstrap-variant
+       "default"
+       (debootstrap-configuration)))
+@end lisp
+@end defvr
+
+@defvr {Scheme Variable} %default-guix-variants
+This is a convenience variable to make the Guix OS provider work without
+additional configuration.  It creates a virtual machine that has an SSH
+server, a serial console, and authorizes the Ganeti hosts SSH keys.
+
+@lisp
+(list (guix-variant
+       "default"
+       (file-append ganeti-instance-guix
+                    "/share/doc/ganeti-instance-guix/examples/dynamic.scm")))
+@end lisp
+@end defvr
+
+Users can implement support for OS providers unbeknownst to Guix by extending
+the @code{ganeti-os} and @code{ganeti-os-variant} records appropriately.
+For example:
+
+@lisp
+(ganeti-os
+ (name "custom")
+ (extension ".conf")
+ (variants
+  (list (ganeti-os-variant
+         (name "foo")
+         (configuration (plain-file "bar" "this is fine"))))))
+@end lisp
+
+That creates @file{/etc/ganeti/instance-custom/variants/foo.conf} which points
+to a file in the store with contents @code{this is fine}.  It also creates
+@file{/etc/ganeti/instance-custom/variants/variants.list} with contents @code{foo}.
+
+Obviously this may not work for all OS providers out there.  If you find the
+interface limiting, please reach out to @email{guix-devel@@gnu.org}.
+
+The rest of this section documents the various services that are included by
+@code{ganeti-service-type}.
+
+@defvr {Scheme Variable} ganeti-noded-service-type
+@command{ganeti-noded} is the daemon responsible for node-specific functions
+within the Ganeti system.  The value of this service must be a
+@code{ganeti-noded-configuration} object.
+@end defvr
+
+@deftp {Data Type} ganeti-noded-configuration
+This is the configuration for the @code{ganeti-noded} service.
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for this service.
+
+@item @code{port} (default: @code{1811})
+The TCP port on which the node daemon listens for network requests.
+
+@item @code{address} (default: @code{"0.0.0.0"})
+The network address that the daemon will bind to.  The default address means
+bind to all available addresses.
+
+@item @code{interface} (default: @code{#f})
+When this is set, it must be a specific network interface (e.g.@: @code{eth0})
+that the daemon will bind to.
+
+@item @code{max-clients} (default: @code{20})
+This sets a limit on the maximum number of simultaneous client connections
+that the daemon will handle.  Connections above this count are accepted, but
+no responses will be sent until enough connections have closed.
+
+@item @code{ssl?} (default: @code{#t})
+Whether to use SSL/TLS to encrypt network communications.  The certificate
+is automatically provisioned by the cluster and can be rotated with
+@command{gnt-cluster renew-crypto}.
+
+@item @code{ssl-key} (default: @file{"/var/lib/ganeti/server.pem"})
+This can be used to provide a specific encryption key for TLS communications.
+
+@item @code{ssl-cert} (default: @file{"/var/lib/ganeti/server.pem"})
+This can be used to provide a specific certificate for TLS communications.
+
+@item @code{debug?} (default: @code{#f})
+When true, the daemon performs additional logging for debugging purposes.
+Note that this will leak encryption details to the log files, use with caution.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} ganeti-confd-service-type
+@command{ganeti-confd} answers queries related to the configuration of a
+Ganeti cluster.  The purpose of this daemon is to have a highly available
+and fast way to query cluster configuration values.  It is automatically
+active on all @dfn{master candidates}.  The value of this service must be a
+@code{ganeti-confd-configuration} object.
+
+@end defvr
+
+@deftp {Data Type} ganeti-confd-configuration
+This is the configuration for the @code{ganeti-confd} service.
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for this service.
+
+@item @code{port} (default: @code{1814})
+The UDP port on which to listen for network requests.
+
+@item @code{address} (default: @code{"0.0.0.0"})
+Network address that the daemon will bind to.
+
+@item @code{debug?} (default: @code{#f})
+When true, the daemon performs additional logging for debugging purposes.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} ganeti-wconfd-service-type
+@command{ganeti-wconfd} is the daemon that has authoritative knowledge
+about the cluster configuration and is the only entity that can accept
+changes to it.  All jobs that need to modify the configuration will do so
+by sending appropriate requests to this daemon.  It only runs on the
+@dfn{master node} and will automatically disable itself on other nodes.
+
+The value of this service must be a
+@code{ganeti-wconfd-configuration} object.
+@end defvr
+
+@deftp {Data Type} ganeti-wconfd-configuration
+This is the configuration for the @code{ganeti-wconfd} service.
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for this service.
+
+@item @code{no-voting?} (default: @code{#f})
+The daemon will refuse to start if the majority of cluster nodes does not
+agree that it is running on the master node.  Set to @code{#t} to start
+even if a quorum can not be reached (dangerous, use with caution).
+
+@item @code{debug?} (default: @code{#f})
+When true, the daemon performs additional logging for debugging purposes.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} ganeti-luxid-service-type
+@command{ganeti-luxid} is a daemon used to answer queries related to the
+configuration and the current live state of a Ganeti cluster.  Additionally,
+it is the authorative daemon for the Ganeti job queue.   Jobs can be
+submitted via this daemon and it schedules and starts them.
+
+It takes a @code{ganeti-luxid-configuration} object.
+@end defvr
+
+@deftp {Data Type} ganeti-luxid-configuration
+This is the configuration for the @code{ganeti-wconfd} service.
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for this service.
+
+@item @code{no-voting?} (default: @code{#f})
+The daemon will refuse to start if it cannot verify that the majority of
+cluster nodes believes that it is running on the master node.  Set to
+@code{#t} to ignore such checks and start anyway (this can be dangerous).
+
+@item @code{debug?} (default: @code{#f})
+When true, the daemon performs additional logging for debugging purposes.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} ganeti-rapi-service-type
+@command{ganeti-rapi} provides a remote API for Ganeti clusters.  It runs on
+the master node and can be used to perform cluster actions programmatically
+via a JSON-based RPC protocol.
+
+Most query operations are allowed without authentication (unless
+@var{require-authentication?} is set), whereas write operations require
+explicit authorization via the @file{/var/lib/ganeti/rapi/users} file.  See
+the @url{http://docs.ganeti.org/ganeti/master/html/rapi.html, Ganeti Remote
+API documentation} for more information.
+
+The value of this service must be a @code{ganeti-rapi-configuration} object.
+@end defvr
+
+@deftp {Data Type} ganeti-rapi-configuration
+This is the configuration for the @code{ganeti-rapi} service.
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for this service.
+
+@item @code{require-authentication?} (default: @code{#f})
+Whether to require authentication even for read-only operations.
+
+@item @code{port} (default: @code{5080})
+The TCP port on which to listen to API requests.
+
+@item @code{address} (default: @code{"0.0.0.0"})
+The network address that the service will bind to.  By default it listens
+on all configured addresses.
+
+@item @code{interface} (default: @code{#f})
+When set, it must specify a specific network interface such as @code{eth0}
+that the daemon will bind to.
+
+@item @code{max-clients} (default: @code{20})
+The maximum number of simultaneous client requests to handle.  Further
+connections are allowed, but no responses are sent until enough connections
+have closed.
+
+@item @code{ssl?} (default: @code{#t})
+Whether to use SSL/TLS encryption on the RAPI port.
+
+@item @code{ssl-key} (default: @file{"/var/lib/ganeti/server.pem"})
+This can be used to provide a specific encryption key for TLS communications.
+
+@item @code{ssl-cert} (default: @file{"/var/lib/ganeti/server.pem"})
+This can be used to provide a specific certificate for TLS communications.
+
+@item @code{debug?} (default: @code{#f})
+When true, the daemon performs additional logging for debugging purposes.
+Note that this will leak encryption details to the log files, use with caution.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} ganeti-kvmd-service-type
+@command{ganeti-kvmd} is responsible for determining whether a given KVM
+instance was shut down by an administrator or a user.  Normally Ganeti will
+restart an instance that was not stopped through Ganeti itself.  If the
+cluster option @code{user_shutdown} is true, this daemon monitors the
+@code{QMP} socket provided by QEMU and listens for shutdown events, and
+marks the instance as @dfn{USER_down} instead of @dfn{ERROR_down} when
+it shuts down gracefully by itself.
+
+It takes a @code{ganeti-kvmd-configuration} object.
+@end defvr
+
+@deftp {Data Type} ganeti-kvmd-configuration
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for this service.
+
+@item @code{debug?} (default: @code{#f})
+When true, the daemon performs additional logging for debugging purposes.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} ganeti-mond-service-type
+@command{ganeti-mond} is an optional daemon that provides Ganeti monitoring
+functionality.  It is responsible for running data collectors and publish the
+collected information through a HTTP interface.
+
+It takes a @code{ganeti-mond-configuration} object.
+@end defvr
+
+@deftp {Data Type} ganeti-mond-configuration
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for this service.
+
+@item @code{port} (default: @code{1815})
+The port on which the daemon will listen.
+
+@item @code{address} (default: @code{"0.0.0.0"})
+The network address that the daemon will bind to.  By default it binds to all
+available interfaces.
+
+@item @code{debug?} (default: @code{#f})
+When true, the daemon performs additional logging for debugging purposes.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} ganeti-metad-service-type
+@command{ganeti-metad} is an optional daemon that can be used to provide
+information about the cluster to instances or OS install scripts.
+
+It takes a @code{ganeti-metad-configuration} object.
+@end defvr
+
+@deftp {Data Type} ganeti-metad-configuration
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for this service.
+
+@item @code{port} (default: @code{80})
+The port on which the daemon will listen.
+
+@item @code{address} (default: @code{#f})
+If set, the daemon will bind to this address only.  If left unset, the behavior
+depends on the cluster configuration.
+
+@item @code{debug?} (default: @code{#f})
+When true, the daemon performs additional logging for debugging purposes.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} ganeti-watcher-service-type
+@command{ganeti-watcher} is a script designed to run periodically and ensure
+the health of a cluster.  It will automatically restart instances that have
+stopped without Ganetis consent, and repairs DRBD links in case a node has
+rebooted.  It also archives old cluster jobs and restarts Ganeti daemons
+that are not running.  If the cluster parameter @code{ensure_node_health}
+is set, the watcher will also shutdown instances and DRBD devices if the
+node it is running on is declared offline by known master candidates.
+
+It can be paused on all nodes with @command{gnt-cluster watcher pause}.
+
+The service takes a @code{ganeti-watcher-configuration} object.
+@end defvr
+
+@deftp {Data Type} ganeti-watcher-configuration
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for this service.
+
+@item @code{schedule} (default: @code{'(next-second-from (next-minute (range 0 60 5)))})
+How often to run the script.  The default is every five minutes.
+
+@item @code{rapi-ip} (default: @code{#f})
+This option needs to be specified only if the RAPI daemon is configured to use
+a particular interface or address.  By default the cluster address is used.
+
+@item @code{job-age} (default: @code{(* 6 3600)})
+Archive cluster jobs older than this age, specified in seconds.  The default
+is 6 hours.  This keeps @command{gnt-job list} manageable.
+
+@item @code{verify-disks?} (default: @code{#t})
+If this is @code{#f}, the watcher will not try to repair broken DRBD links
+automatically.  Administrators will need to use @command{gnt-cluster verify-disks}
+manually instead.
+
+@item @code{debug?} (default: @code{#f})
+When @code{#t}, the script performs additional logging for debugging purposes.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} ganeti-cleaner-service-type
+@command{ganeti-cleaner} is a script designed to run periodically and remove
+old files from the cluster.  This service type controls two @dfn{cron jobs}:
+one intended for the master node that permanently purges old cluster jobs,
+and one intended for every node that removes expired X509 certificates, keys,
+and outdated @command{ganeti-watcher} information.  Like all Ganeti services,
+it is safe to include even on non-master nodes as it will disable itself as
+necessary.
+
+It takes a @code{ganeti-cleaner-configuration} object.
+@end defvr
+
+@deftp {Data Type} ganeti-cleaner-configuration
+
+@table @asis
+@item @code{ganeti} (default: @code{ganeti})
+The @code{ganeti} package to use for the @command{gnt-cleaner} command.
+
+@item @code{master-schedule} (default: @code{"45 1 * * *"})
+How often to run the master cleaning job.  The default is once per day, at
+01:45:00.
+
+@item @code{node-schedule} (default: @code{"45 2 * * *"})
+How often to run the node cleaning job.  The default is once per day, at
+02:45:00.
+
+@end table
+@end deftp
+
 @node Version Control Services
 @subsection Version Control Services
 
@@ -24796,39 +25711,41 @@ access to exported@footnote{By creating the magic file
 Data type representing the configuration for @code{git-daemon-service}.
 
 @table @asis
-@item @code{package} (default: @var{git})
+@item @code{package} (default: @code{git})
 Package object of the Git distributed version control system.
 
-@item @code{export-all?} (default: @var{#f})
+@item @code{export-all?} (default: @code{#f})
 Whether to allow access for all Git repositories, even if they do not
 have the @file{git-daemon-export-ok} file.
 
 @item @code{base-path} (default: @file{/srv/git})
 Whether to remap all the path requests as relative to the given path.
-If you run git daemon with @var{(base-path "/srv/git")} on example.com,
-then if you later try to pull @code{git://example.com/hello.git}, git
-daemon will interpret the path as @code{/srv/git/hello.git}.
+If you run @command{git daemon} with @code{(base-path "/srv/git")} on
+@samp{example.com}, then if you later try to pull
+@indicateurl{git://example.com/hello.git}, git daemon will interpret the
+path as @file{/srv/git/hello.git}.
 
-@item @code{user-path} (default: @var{#f})
+@item @code{user-path} (default: @code{#f})
 Whether to allow @code{~user} notation to be used in requests.  When
-specified with empty string, requests to @code{git://host/~alice/foo} is
-taken as a request to access @code{foo} repository in the home directory
-of user @code{alice}.  If @var{(user-path "path")} is specified, the
-same request is taken as a request to access @code{path/foo} repository
-in the home directory of user @code{alice}.
+specified with empty string, requests to
+@indicateurl{git://host/~alice/foo} is taken as a request to access
+@code{foo} repository in the home directory of user @code{alice}.  If
+@code{(user-path "@var{path}")} is specified, the same request is taken
+as a request to access @file{@var{path}/foo} repository in the home
+directory of user @code{alice}.
 
-@item @code{listen} (default: @var{'()})
+@item @code{listen} (default: @code{'()})
 Whether to listen on specific IP addresses or hostnames, defaults to
 all.
 
-@item @code{port} (default: @var{#f})
+@item @code{port} (default: @code{#f})
 Whether to listen on an alternative port, which defaults to 9418.
 
-@item @code{whitelist} (default: @var{'()})
+@item @code{whitelist} (default: @code{'()})
 If not empty, only allow access to this list of directories.
 
-@item @code{extra-options} (default: @var{'()})
-Extra options will be passed to @code{git daemon}, please run
+@item @code{extra-options} (default: @code{'()})
+Extra options will be passed to @command{git daemon}, please run
 @command{man git-daemon} for more information.
 
 @end table
@@ -24860,14 +25777,14 @@ Package object of the Git distributed version control system.
 @item @code{git-root} (default: @file{/srv/git})
 Directory containing the Git repositories to expose to the world.
 
-@item @code{export-all?} (default: @var{#f})
+@item @code{export-all?} (default: @code{#f})
 Whether to expose access for all Git repositories in @var{git-root},
 even if they do not have the @file{git-daemon-export-ok} file.
 
-@item @code{uri-path} (default: @file{/git/})
-Path prefix for Git access.  With the default @code{/git/} prefix, this
-will map @code{http://@var{server}/git/@var{repo}.git} to
-@code{/srv/git/@var{repo}.git}.  Requests whose URI paths do not begin
+@item @code{uri-path} (default: @samp{/git/})
+Path prefix for Git access.  With the default @samp{/git/} prefix, this
+will map @indicateurl{http://@var{server}/git/@var{repo}.git} to
+@file{/srv/git/@var{repo}.git}.  Requests whose URI paths do not begin
 with this prefix are not passed on to this Git instance.
 
 @item @code{fcgiwrap-socket} (default: @code{127.0.0.1:9000})
@@ -26612,6 +27529,55 @@ setuid-root (@pxref{Setuid Programs}) such that unprivileged users can invoke
 @command{singularity run} and similar commands.
 @end defvr
 
+@cindex rshiny
+@subsubheading R-Shiny service
+
+The @code{(gnu services science)} module provides the following service.
+
+@defvr {Scheme Variable} rshiny-service-type
+
+This is a type of service which is used to run a webapp created with
+@code{r-shiny}.  This service sets the @code{R_LIBS_USER} environment
+variable and runs the provided script to call @code{runApp}.
+
+@deftp {Data Type} rshiny-configuration
+This is the data type representing the configuration of rshiny.
+
+@table @asis
+
+@item @code{package} (default: @code{r-shiny})
+The package to use.
+
+@item @code{binary} (defaunlt @code{"rshiny"})
+The name of the binary or shell script located at @code{package/bin/} to
+run when the service is run.
+
+The common way to create this file is as follows:
+
+@lisp
+@dots{}
+(let* ((out       (assoc-ref %outputs "out"))
+       (targetdir (string-append out "/share/" ,name))
+       (app       (string-append out "/bin/" ,name))
+       (Rbin      (string-append (assoc-ref %build-inputs "r-min")
+                                 "/bin/Rscript")))
+@dots{}
+  (mkdir-p (string-append out "/bin"))
+  (call-with-output-file app
+    (lambda (port)
+      (format port
+"#!~a
+library(shiny)
+setwd(\"~a\")
+runApp(launch.browser=0, port=4202)~%\n"
+      Rbin targetdir)))
+@dots{}
+@end lisp
+
+@end table
+@end deftp
+@end defvr
+
 @cindex Nix
 @subsubheading Nix service
 
@@ -26652,6 +27618,27 @@ $ source /run/current-system/profile/etc/profile.d/nix.sh
 @end example
 
 @end defvr
+
+@deftp {Data Type} nix-configuration
+This data type represents the configuration of the Nix daemon.
+
+@table @asis
+@item @code{nix} (default: @code{nix})
+The Nix package to use.
+
+@item @code{sandbox} (default: @code{#t})
+Specifies whether builds are sandboxed by default.
+
+@item @code{build-sandbox-items} (default: @code{'()})
+This is a list of strings or objects appended to the
+@code{build-sandbox-items} field of the configuration file.
+
+@item @code{extra-config} (default: @code{'()})
+This is a list of strings or objects appended to the configuration file.
+It is used to pass extra text to be added verbatim to the configuration
+file.
+@end table
+@end deftp
 
 @node Setuid Programs
 @section Setuid Programs
@@ -27419,11 +28406,16 @@ an older system generation at boot time should you need it.
 Upon completion, the new system is deployed under
 @file{/run/current-system}.  This directory contains @dfn{provenance
 meta-data}: the list of channels in use (@pxref{Channels}) and
-@var{file} itself, when available.  This information is useful should
-you later want to inspect how this particular generation was built.
+@var{file} itself, when available.  You can view it by running:
 
-In fact, assuming @var{file} is self-contained, you can later rebuild
-generation @var{n} of your operating system with:
+@example
+guix system describe
+@end example
+
+This information is useful should you later want to inspect how this
+particular generation was built.  In fact, assuming @var{file} is
+self-contained, you can later rebuild generation @var{n} of your
+operating system with:
 
 @example
 guix time-machine \
@@ -27436,6 +28428,12 @@ You can think of it as some sort of built-in version control!  Your
 system is not just a binary artifact: @emph{it carries its own source}.
 @xref{Service Reference, @code{provenance-service-type}}, for more
 information on provenance tracking.
+
+By default, @command{reconfigure} @emph{prevents you from downgrading
+your system}, which could (re)introduce security vulnerabilities and
+also cause problems with ``stateful'' services such as database
+management systems.  You can override that behavior by passing
+@option{--allow-downgrades}.
 
 @item switch-generation
 @cindex generations
@@ -27616,7 +28614,7 @@ the device corresponding to a USB stick, one can copy the image to it
 using the following command:
 
 @example
-# dd if=$(guix system disk-image my-os.scm) of=/dev/sdc
+# dd if=$(guix system disk-image my-os.scm) of=/dev/sdc status=progress
 @end example
 
 When using @code{docker-image}, a Docker image is produced.  Guix builds
@@ -27762,6 +28760,22 @@ appear in the @code{operating-system} declaration actually exist
 (@pxref{File Systems}), and that any Linux kernel modules that may be
 needed at boot time are listed in @code{initrd-modules} (@pxref{Initial
 RAM Disk}).  Passing this option skips these tests altogether.
+
+@item --allow-downgrades
+Instruct @command{guix system reconfigure} to allow system downgrades.
+
+By default, @command{reconfigure} prevents you from downgrading your
+system.  It achieves that by comparing the provenance info of your
+system (shown by @command{guix system describe}) with that of your
+@command{guix} command (shown by @command{guix describe}).  If the
+commits for @command{guix} are not descendants of those used for your
+system, @command{guix system reconfigure} errors out.  Passing
+@option{--allow-downgrades} allows you to bypass these checks.
+
+@quotation Note
+Make sure you understand its security implications before using
+@option{--allow-downgrades}.
+@end quotation
 
 @cindex on-error
 @cindex on-error strategy

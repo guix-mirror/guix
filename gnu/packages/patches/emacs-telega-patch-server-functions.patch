@@ -1,0 +1,31 @@
+Remove interactive build for telega-server, as it fails on Guix.
+Modify the `telega-server--find-bin' function to only use the version
+of telega-server installed by Guix.
+
+Created by Brett Gilio <brettg@gnu.org>
+
+--- a/telega-server.el
++++ b/telega-server.el
+@@ -113,7 +113,6 @@ If already deferring, then just executes the BODY."
+ If BUILD-FLAGS is specified, then rebuild server without any
+ queries using this flags for building, could be empty string.
+ Otherwise query user about building flags."
+-  (interactive)
+   (telega-test-env 'quiet)
+   (when (or build-flags
+             (y-or-n-p "Build `telega-server'? "))
+@@ -137,11 +136,8 @@ Otherwise query user about building flags."
+ (defun telega-server--find-bin ()
+   "Find telega-server executable.
+ Raise error if not found."
+-  (let ((exec-path (cons telega-directory exec-path)))
+-    (or (executable-find "telega-server")
+-        (progn (telega-server-build)
+-               (executable-find "telega-server"))
+-        (error "`telega-server' not found in exec-path"))))
++  (or (executable-find "telega-server")
++      (error "`telega-server' not found in exec-path")))
+ 
+ (defun telega-server-version ()
+   "Return telega-server version."
+

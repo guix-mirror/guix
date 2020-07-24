@@ -162,7 +162,7 @@ and many other languages.")
             (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/wxWidgets/wxWidgets.git")
+                    (url "https://github.com/wxWidgets/wxWidgets")
                     (commit (string-append "v" version))))
               (file-name (git-file-name "wxwidgets" version))
               (sha256

@@ -140,9 +140,11 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                 (download-nar #$output)
 
                 ;; As a last resort, attempt to download from Software Heritage.
+                ;; Disable X.509 certificate verification to avoid depending
+                ;; on nss-certs--we're authenticating the checkout anyway.
                 ;; XXX: Currently recursive checkouts are not supported.
                 (and (not recursive?)
-                     (begin
+                     (parameterize ((%verify-swh-certificate? #f))
                        (format (current-error-port)
                                "Trying to download from Software Heritage...~%")
                        (swh-download (getenv "git url") (getenv "git commit")

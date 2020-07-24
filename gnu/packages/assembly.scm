@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Andy Tai <atai@atai.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages xml)
   #:use-module ((guix utils)
                 #:select (%current-system)))
@@ -259,16 +261,16 @@ runtime")
 (define-public rgbds
   (package
     (name "rgbds")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rednex/rgbds.git")
+                    (url "https://github.com/rednex/rgbds")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15680964nlsa83nqgxk7knxajn98lddz2hg6jnn8ffmnms5wdam7"))))
+                "05djzl3h18zg2z5p2a881wjbmgikzkhf67cgk00frhw4v05sq0lf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -306,21 +308,21 @@ package for the Game Boy and Game Boy Color.  It consists of:
 (define-public wla-dx
   (package
     (name "wla-dx")
-    (version "9.10")
+    (version "9.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vhelin/wla-dx.git")
+                    (url "https://github.com/vhelin/wla-dx")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "022isf7s9q5i0j4xj69zpp0lgw8p9n37sn7ii25v68r15zaahk2w"))))
+                "0i8pxvyaih79pqnyvqyqd9rwdid91pna76cap0k1n5zhg8xswf2f"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("sphinx" ,python-sphinx)))      ; to generate man pages
     (arguments
-     `(#:tests? #f)) ; no tests
+     `(#:tests? #f))                    ; no tests
     (home-page "https://github.com/vhelin/wla-dx")
     (synopsis "Assemblers for various processors")
     (description "WLA DX is a set of tools to assemble assembly files to
@@ -371,3 +373,129 @@ It understands mnemonics and generates code for NMOS 6502s (such
 as 6502A, 6504, 6507, 6510, 7501, 8500, 8501, 8502 ...),
  CMOS 6502s (65C02 and Rockwell R65C02) and the 65816.")
     (license license:gpl2)))
+
+(define-public armips
+  (package
+    (name "armips")
+    (version "0.11.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kingcom/armips")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1c4dhjkvynqn9xm2vcvwzymk7yg8h25alnawkz4z1dnn1z1k3r9g"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "./armipstests" "../source/Tests")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "armips" (string-append (assoc-ref outputs "out")
+                                                   "/bin"))
+             #t)))))
+    (home-page "https://github.com/Kingcom/armips")
+    (synopsis "Assembler for various ARM and MIPS platforms")
+    (description
+     "armips is an assembler with full support for the MIPS R3000, MIPS R4000,
+Allegrex and RSP instruction sets, partial support for the EmotionEngine
+instruction set, as well as complete support for the ARM7 and ARM9 instruction
+sets, both THUMB and ARM mode.")
+    (license license:expat)))
+
+(define-public intel-xed
+  (package
+    (name "intel-xed")
+    (version "11.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/intelxed/xed")
+             (commit version)))
+       (sha256 (base32 "1jffayski2gpd54vaska7fmiwnnia8v3cka4nfyzjgl8xsky9v2s"))
+       (file-name (git-file-name name version))
+       (patches (search-patches "intel-xed-fix-nondeterminism.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python-wrapper" ,python-wrapper)
+       ("tcsh" ,tcsh)
+       ;; As of the time of writing this comment, mbuild does not exist in the
+       ;; Python Package Index and seems to only be used by intel-xed, so we
+       ;; opt to include it here instead of packaging separately.  Note also
+       ;; that the git repository contains no version tags, so we directly
+       ;; reference the "version" variable from setup.py instead.
+       ("mbuild"
+        ,(let ((name "mbuild")
+               (version "0.2496"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/intelxed/mbuild.git")
+                   (commit "5304b94361fccd830c0e2417535a866b79c1c297")))
+             (sha256
+              (base32
+               "0r3avc3035aklqxcnc14rlmmwpj3jp09vbcbwynhvvmcp8srl7dl"))
+             (file-name (git-file-name name version)))))))
+    (outputs '("out" "lib"))
+    (arguments
+     `(#:phases
+       ;; Upstream uses the custom Python build tool `mbuild', so we munge
+       ;; gnu-build-system to fit.  The build process for this package is
+       ;; documented at https://intelxed.github.io/build-manual/.
+       (let* ((build-dir "build")
+              (kit-dir "kit"))
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((mbuild (assoc-ref inputs "mbuild")))
+                 (setenv "PYTHONPATH" (string-append
+                                       (getenv "PYTHONPATH") ":" mbuild))
+                 (invoke "./mfile.py"
+                         (string-append "--build-dir=" build-dir)
+                         (string-append "--install-dir=" kit-dir)
+                         "examples"
+                         "doc"
+                         "install"))))
+           (replace 'check
+             (lambda _
+               ;; Skip broken test group `tests/tests-avx512pf'.
+               (invoke "tests/run-cmd.py"
+                       (string-append "--build-dir=" kit-dir "/bin")
+                       "--tests" "tests/tests-base"
+                       "--tests" "tests/tests-avx512"
+                       "--tests" "tests/tests-cet"
+                       "--tests" "tests/tests-via"
+                       "--tests" "tests/tests-syntax"
+                       "--tests" "tests/tests-xop")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (assoc-ref outputs "lib")))
+                 (copy-recursively (string-append kit-dir "/bin")
+                                   (string-append out "/bin"))
+                 (copy-recursively (string-append kit-dir "/include")
+                                   (string-append lib "/include"))
+                 (copy-recursively (string-append kit-dir "/lib")
+                                   (string-append lib "/lib"))
+                 #t)))))))
+    (home-page "https://intelxed.github.io/")
+    (synopsis "Encoder and decoder for x86 (IA32 and Intel64) instructions")
+    (description "The Intel X86 Encoder Decoder (XED) is a software library and
+for encoding and decoding X86 (IA32 and Intel64) instructions.  The decoder
+takes sequences of 1-15 bytes along with machine mode information and produces
+a data structure describing the opcode, operands, and flags.  The encoder takes
+a similar data structure and produces a sequence of 1 to 15 bytes.  Disassembly
+is essentially a printing pass on the data structure.
+
+The library and development files are under the @code{lib} output, with a
+family of command line utility wrappers in the default output.  Each of the cli
+tools is named like @code{xed*}.  Documentation for the cli tools is sparse, so
+this is a case where ``the code is the documentation.''")
+    (license license:asl2.0)))

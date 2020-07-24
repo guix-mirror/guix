@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,54 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
+
+(define-public hss
+  (package
+    (name "hss")
+    (version "1.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/six-ddc/hss")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rpysj65j9ls30bf2c5k5hykzzjfknrihs58imp178bx1wqzw4jl"))))
+    (inputs
+     `(("readline" ,readline)))
+    (arguments
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target))
+             (string-append "INSTALL_BIN=" (assoc-ref %outputs "out") "/bin"))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-file-names
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/local/opt/readline")
+                (assoc-ref inputs "readline")))
+             #t))
+         (delete 'configure))))         ; no configure script
+    (build-system gnu-build-system)
+    (home-page "https://github.com/six-ddc/hss/")
+    (synopsis "Interactive SSH client for multiple servers")
+    (description
+     "@command{hss} is an interactive SSH client for multiple servers.  Commands
+are executed on all servers in parallel.  Execution on one server does not need
+to wait for that on another server to finish before starting.  One can run a
+command on hundreds of servers at the same time, with almost the same experience
+as a local Bash shell.
+
+It supports:
+@itemize @bullet
+@item interactive input: based on GNU readline.
+@item history: responding to the @kbd{C-r} key.
+@item auto-completion: @key{TAB}-completion from remote servers for commands and
+file names.
+@end itemize\n")
+    (license license:expat)))
 
 (define-public libssh
   (package
@@ -248,7 +297,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.12.0")
+    (version "0.13.0")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               (method git-fetch)
@@ -258,7 +307,7 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "054hd9rzfhb48gc1hw3rphhp0cnnd4bs5qmidy5ygsyvy9ravlad"))
+                "1q96h98p6x7ah6nc0d2wfx503fmsj36riv9ka9s79z3lzwaf0k26"))
               (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
@@ -352,26 +401,25 @@ libssh library.")
     (version "2.0")
     (source
      (origin
-       (method url-fetch)
-       ;; The agroman.net domain name expired on 2017-03-23, and the original
-       ;; "http://www.agroman.net/corkscrew/corkscrew-2.0.tar.gz" now returns
-       ;; bogus HTML.  Perhaps it will yet return.  Until then, use a mirror.
-       (uri (string-append "https://downloads.openwrt.org/sources/"
-                           "corkscrew-" version ".tar.gz"))
-       (sha256 (base32
-                "1gmhas4va6gd70i2x2mpxpwpgww6413mji29mg282jms3jscn3qd"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/patpadgett/corkscrew")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0g4pkczrc1zqpnxyyjwcjmyzdj5qqcpzwf1bm3965zdwp94bpppf"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            ;; Replace configure phase as the ./configure script does not like
-           ;; CONFIG_SHELL and SHELL passed as parameters
+           ;; CONFIG_SHELL and SHELL passed as parameters.
            (lambda* (#:key outputs build target #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
                     (bash  (which "bash"))
                     ;; Set --build and --host flags as the provided config.guess
-                    ;; is not able to detect them
+                    ;; is not able to detect them.
                     (flags `(,(string-append "--prefix=" out)
                              ,(string-append "--build=" build)
                              ,(string-append "--host=" (or target build)))))
@@ -381,9 +429,9 @@ libssh library.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (doc (string-append out "/share/doc/" ,name "-" ,version)))
-               (install-file "README" doc)
+               (install-file "README.markdown" doc)
                #t))))))
-    (home-page "http://www.agroman.net/corkscrew")
+    (home-page "https://github.com/patpadgett/corkscrew")
     (synopsis "SSH tunneling through HTTP(S) proxies")
     (description
      "Corkscrew tunnels SSH connections through most HTTP and HTTPS proxies.
@@ -405,6 +453,12 @@ authentication scheme.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-FHS-file-names
+           (lambda _
+             (substitute* "scripts/mosh.pl"
+               (("/bin/sh")
+                (which "sh")))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure 'mosh' can find 'mosh-client' and
@@ -440,7 +494,7 @@ responsive, especially over Wi-Fi, cellular, and long-distance links.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/MisterTea/EternalTCP.git")
+             (url "https://github.com/MisterTea/EternalTCP")
              (commit (string-append "et-v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -465,7 +519,7 @@ TCP, not the SSH protocol.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2019.78")
+    (version "2020.80")
     (source
      (origin
        (method url-fetch)
@@ -473,7 +527,7 @@ TCP, not the SSH protocol.")
              "https://matt.ucc.asn.au/dropbear/releases/"
              "dropbear-" version ".tar.bz2"))
        (sha256
-        (base32 "19242qlr40pbqfqd0gg6h8qpj38q6lgv03ja6sahj9vj2abnanaj"))))
+        (base32 "0jbrbpdzyv11x5rkljdimzq9p6a7da5siw9k405ibnpjj4dr89yr"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f))  ; there is no "make check" or anything similar
     ;; TODO: Investigate unbundling libtommath and libtomcrypt or at least
@@ -773,7 +827,7 @@ of existing remote shell facilities such as SSH.")
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/skeeto/endlessh.git")
+              (url "https://github.com/skeeto/endlessh")
               (commit version)))
         (file-name (git-file-name name version))
         (sha256

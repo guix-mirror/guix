@@ -333,7 +333,7 @@ tool lex or flex for C/C++.")
        ("alsa-lib" ,alsa-lib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.haskell.org/haskellwiki/ALSA")
+    (home-page "https://wiki.haskell.org/ALSA")
     (synopsis "Binding to the ALSA Library API (Exceptions)")
     (description "This package provides access to ALSA infrastructure, that is
 needed by both alsa-seq and alsa-pcm.")
@@ -937,7 +937,7 @@ the bounds of \"base\" as well.")
         (base32
          "1ia6li7qjg1zkak4gf6mnbshw45mq9bfjr0jch58ds0lscmvwyzf"))))
     (build-system haskell-build-system)
-    (home-page "http://www.haskell.org/haskellwiki/Unicode-symbols")
+    (home-page "https://wiki.haskell.org/Unicode-symbols")
     (synopsis "Unicode alternatives for common functions and operators")
     (description "This package defines new symbols for a number of functions,
 operators and types in the base package.  All symbols are documented with
@@ -2113,7 +2113,7 @@ nothing.")
    ;; ghc-test-framework -> ghc-ansi-terminal -> ghc-colour.
    `(#:tests? #f))
   (build-system haskell-build-system)
-  (home-page "https://www.haskell.org/haskellwiki/Colour")
+  (home-page "https://wiki.haskell.org/Colour")
   (synopsis "Model for human colour perception")
   (description
    "This package provides a data type for colours and transparency.
@@ -2472,7 +2472,7 @@ interface}.")
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
-    (home-page "http://github.com/bos/configurator")
+    (home-page "https://github.com/bos/configurator")
     (synopsis "Configuration management")
     (description
      "This package provides a configuration management library for programs
@@ -2644,7 +2644,7 @@ function performs the conversion you desire.")
        (sha256
         (base32 "1fq4gygxbz0bd0mzgvc1sl3m4gjnsv8nbgpnmdpa29zj5lb9agxc"))))
     (build-system haskell-build-system)
-    (home-page "https://www.haskell.org/haskellwiki/Record_access")
+    (home-page "https://wiki.haskell.org/Record_access")
     (synopsis
      "Haskell utilities for accessing and manipulating fields of records")
     (description "This package provides Haskell modules for accessing and
@@ -2665,7 +2665,7 @@ manipulating fields of records.")
         (base32 "0yp030vafbpddl27m606aibbbr5ar5j5bsv4bksscz3cq4yq5j10"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-data-accessor" ,ghc-data-accessor)))
-    (home-page "https://www.haskell.org/haskellwiki/Record_access")
+    (home-page "https://wiki.haskell.org/Record_access")
     (synopsis "Use Accessor to access state in transformers State monad")
     (description "This package provides Haskell modules to allow use of
 Accessor to access state in transformers State monad.")
@@ -4762,7 +4762,7 @@ matching patterns against file paths.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-openglraw" ,ghc-openglraw)))
-    (home-page "https://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Raw Haskell bindings GLU")
     (description "GLURaw is a raw Haskell binding for the GLU 1.3 OpenGL
 utility library.  It is basically a 1:1 mapping of GLU's C API, intended as a
@@ -4789,7 +4789,7 @@ basis for a nicer interface.")
        ("ghc-opengl" ,ghc-opengl)
        ("ghc-openglraw" ,ghc-openglraw)
        ("freeglut" ,freeglut)))
-    (home-page "https://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Haskell bindings for the OpenGL Utility Toolkit")
     (description "This library provides Haskell bindings for the OpenGL
 Utility Toolkit, a window system-independent toolkit for writing OpenGL
@@ -4825,7 +4825,7 @@ programs.")
                (substitute* "os/generic/Graphics/Gnuplot/Private/OS.hs"
                  (("(gnuplotName = ).*$" all cmd)
                   (string-append cmd "\"" gnuplot "/bin/gnuplot\"")))))))))
-    (home-page "https://www.haskell.org/haskellwiki/Gnuplot")
+    (home-page "https://wiki.haskell.org/Gnuplot")
     (synopsis "2D and 3D plots using gnuplot")
     (description "This package provides a Haskell module for creating 2D and
 3D plots using gnuplot.")
@@ -5129,7 +5129,7 @@ the ‘haddock’ package.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/haskell/haddock.git")
+             (url "https://github.com/haskell/haddock")
              (commit (string-append "haddock-" version "-release"))))
        (file-name (git-file-name name version))
        (sha256
@@ -5145,7 +5145,7 @@ the ‘haddock’ package.")
     (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-xml" ,ghc-xml)))
-    (home-page "http://www.haskell.org/haddock/")
+    (home-page "https://www.haskell.org/haddock/")
     (synopsis "Test utilities for Haddock")
     (description "This package provides test utilities for Haddock.")
     (license license:bsd-3)
@@ -5492,7 +5492,7 @@ template-haskell abstract syntax.")
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-microlens-platform" ,ghc-microlens-platform)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://github.com/MarcWeber/hasktags")
+    (home-page "https://github.com/MarcWeber/hasktags")
     (synopsis "Make @code{Ctags} and @code{Etags} files for Haskell programs")
     (description
      "This package provides a means of generating tag files for Emacs and
@@ -6991,7 +6991,7 @@ Kaseorg.")
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://github.com/ekmett/linear/")
+    (home-page "https://github.com/ekmett/linear/")
     (synopsis "Linear algebra library for Haskell")
     (description
      "This package provides types and combinators for linear algebra on free
@@ -7625,7 +7625,8 @@ used both from lens and microlens).")
      `(("ghc-errorcall-eq-instance" ,ghc-errorcall-eq-instance)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "https://software.complete.org/missingh")
+    ;; ‘Official’ <http://software.complete.org/missingh> redirects to a 404.
+    (home-page "https://github.com/haskell-hvr/missingh")
     (synopsis "Large utility library")
     (description
      "MissingH is a library of all sorts of utility functions for Haskell
@@ -8258,7 +8259,7 @@ IPv4, IPv6 and MAC addresses.")
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)))
-    (home-page "http://github.com/sjakobi/newtype-generics")
+    (home-page "https://github.com/sjakobi/newtype-generics")
     (synopsis "Typeclass and set of functions for working with newtypes")
     (description "The @code{Newtype} typeclass represents the packing and
 unpacking of a newtype, and allows you to operate under that newtype with
@@ -8441,7 +8442,7 @@ old @code{time} library.  For new projects, the newer
        ("ghc-gluraw" ,ghc-gluraw)
        ("ghc-statevar" ,ghc-statevar)
        ("ghc-openglraw" ,ghc-openglraw)))
-    (home-page "https://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Haskell bindings for the OpenGL graphics system")
     (description "This package provides Haskell bindings for the OpenGL
 graphics system (GL, version 4.5) and its accompanying utility library (GLU,
@@ -8467,7 +8468,7 @@ version 1.3).")
      `(("ghc-half" ,ghc-half)
        ("ghc-fixed" ,ghc-fixed)
        ("glu" ,glu)))
-    (home-page "https://www.haskell.org/haskellwiki/Opengl")
+    (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Raw Haskell bindings for the OpenGL graphics system")
     (description "OpenGLRaw is a raw Haskell binding for the OpenGL 4.5
 graphics system and lots of OpenGL extensions.  It is basically a 1:1 mapping
@@ -8883,7 +8884,7 @@ suitable for inclusion in pandoc YAML metadata.")
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
        ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://johnmacfarlane.net/pandoc")
+    (home-page "https://johnmacfarlane.net/pandoc")
     (synopsis "Types for representing a structured document")
     (description
      "This module defines the @code{Pandoc} data structure, which is used by
@@ -9622,7 +9623,7 @@ ByteStrings in the style of other common *nix hex dump tools.")
     (inputs
      `(("ghc-haskell-lexer" ,ghc-haskell-lexer)
        ("ghc-happy" ,ghc-happy)))
-    (home-page "http://wiki.github.com/yav/pretty-show")
+    (home-page "https://wiki.github.com/yav/pretty-show")
     (synopsis "Tools for working with derived `Show` instances")
     (description
      "This package provides a library and an executable for working with
@@ -10565,7 +10566,7 @@ code where you can safely allocate resources.")
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)
        ("ghc-hedgehog" ,ghc-hedgehog)))
-    (home-page "http://github.com/Soostone/retry")
+    (home-page "https://github.com/Soostone/retry")
     (synopsis "Retry combinators for monadic actions that may fail")
     (description "This package exposes combinators that can wrap
 arbitrary monadic actions.  They run the action and potentially retry
@@ -11966,7 +11967,7 @@ together.")
        ("ghc-unsafe" ,ghc-unsafe)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-syb" ,ghc-syb)))
-    (home-page "https://www.haskell.org/haskellwiki/Storable_Vector")
+    (home-page "https://wiki.haskell.org/Storable_Vector")
     (synopsis "Fast, packed, strict storable arrays with a list interface")
     (description "This library provides fast, packed, strict storable
 arrays with a list interface, a chunky lazy list interface with variable
@@ -13456,7 +13457,7 @@ constant-time:
      `(("ghc-syb" ,ghc-syb)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-unordered-containers" ,ghc-unordered-containers)))
-    (home-page "http://community.haskell.org/~ndm/uniplate/")
+    (home-page "https://github.com/ndmitchell/uniplate")
     (synopsis "Simple, concise and fast generic operations")
     (description "Uniplate is a library for writing simple and concise generic
 operations.  Uniplate has similar goals to the original Scrap Your Boilerplate
@@ -14351,7 +14352,7 @@ parts.")
         (base32
          "0azlzaxp2dn4l1nr7shsxah2magk1szf6fx0mv75az00qsjw6qg4"))))
     (build-system haskell-build-system)
-    (home-page "http://github.com/willdonnelly/xdg-basedir")
+    (home-page "https://github.com/willdonnelly/xdg-basedir")
     (synopsis "XDG Base Directory library for Haskell")
     (description "This package provides a library implementing the XDG Base Directory spec.")
     (license license:bsd-3)))

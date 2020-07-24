@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -410,7 +410,7 @@ decoding .opus files.")
 (define opusfile
   (package
     (name "opusfile")
-    (version "0.11")
+    (version "0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -418,8 +418,10 @@ decoding .opus files.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1gq3aszzl5glgbajw5p1f5a1kdyf23w5vjdmwwrk246syin9pkkl"))))
+                "02smwc5ah8nb3a67mnkjzqmrzk43j356hgj2a97s9midq40qd38i"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     ;; Required by opusfile.pc and opusurl.pc.
     (propagated-inputs
      `(("libogg" ,libogg)

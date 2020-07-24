@@ -78,7 +78,7 @@
        ("lapack" ,lapack)
        ("openblas" ,openblas)
        ("zlib" ,zlib)))
-    (home-page "http://igraph.org")
+    (home-page "https://igraph.org")
     (synopsis "Network analysis and visualization")
     (description
      "This package provides a library for the analysis of networks and graphs.
@@ -145,7 +145,7 @@ more.")
      `(("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
        ("r-pkgconfig" ,r-pkgconfig)))
-    (home-page "http://igraph.org")
+    (home-page "https://igraph.org")
     (synopsis "Network analysis and visualization")
     (description
      "This package provides routines for simple graphs and network analysis.
@@ -216,7 +216,7 @@ objects from the @code{graph} package.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/wjrl/RBioFabric.git")
+                      (url "https://github.com/wjrl/RBioFabric")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -240,7 +240,7 @@ lines.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/plotly/plotly.py.git")
+                    (url "https://github.com/plotly/plotly.py")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -318,7 +318,7 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vtraag/louvain-igraph.git")
+                    (url "https://github.com/vtraag/louvain-igraph")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -351,7 +351,7 @@ not be used for new projects.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/facebookresearch/faiss.git")
+                    (url "https://github.com/facebookresearch/faiss")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

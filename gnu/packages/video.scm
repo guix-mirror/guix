@@ -43,6 +43,7 @@
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -135,6 +136,7 @@
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
@@ -527,7 +529,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public straw-viewer
   (package
     (name "straw-viewer")
-    (version "0.0.2")
+    (version "0.0.6")
     (source
      (origin
        (method git-fetch)
@@ -536,7 +538,8 @@ H.264 (MPEG-4 AVC) video streams.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "067j8wdfy29bi5ahky10xzzs8cr3mn95wl4kyqqjvjzri77a25j3"))))
+        (base32
+         "0a9g10r56jdm2jx2yg9i8j8nczq74x78c29bhannr7ybnm2r6w2a"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -611,7 +614,7 @@ available.")
 (define-public x265
   (package
     (name "x265")
-    (version "3.3")
+    (version "3.4")
     (outputs '("out" "static"))
     (source
       (origin
@@ -621,7 +624,7 @@ available.")
                    (string-append "https://download.videolan.org/videolan/x265/"
                                   "x265_" version ".tar.gz")))
         (sha256
-         (base32 "170b61cgpcs5n35qps0p40dqs1q81vkgagzbs4zv7pzls6718vpj"))
+         (base32 "0wl62hfsdqpf3r3z3s6l9bz7pdb1rcik5ll00b3yaadplqipy162"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -638,8 +641,7 @@ available.")
        #:configure-flags
          ;; Ensure position independent code for everyone.
          (list "-DENABLE_PIC=TRUE"
-               ,@(if (string-prefix? "armhf" (or (%current-system)
-                                                 (%current-target-system)))
+               ,@(if (target-arm?)
                      '("-DENABLE_ASSEMBLY=OFF")
                      '())
                (string-append "-DCMAKE_INSTALL_PREFIX="
@@ -650,9 +652,6 @@ available.")
            (lambda _
              (delete-file-recursively "build")
              (chdir "source")
-             ;; recognize armv8 in 32-bit mode as ARM
-             (substitute* "CMakeLists.txt"
-              (("armv6l") "armv8l"))
              #t))
          (add-before 'configure 'build-12-bit
            (lambda* (#:key (configure-flags '()) #:allow-other-keys)
@@ -819,14 +818,14 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.5.2")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
                            "libmatroska/libmatroska-" version ".tar.xz"))
        (sha256
-        (base32 "0qn9lfs0877wbv581yxw2gywxywxpvwslc5q07q4f7bqpyzxxiha"))))
+        (base32 "0cs03ghf7h65yvv8yf915bx4a47i6d3w2mjbs5zpz000spmrrj7y"))))
     (build-system cmake-build-system)
     (inputs
      `(("libebml" ,libebml)))
@@ -938,14 +937,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.3")
+    (version "4.3.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0pbrsv5v96yd8qzb9bk4kw7qk4xqpi03rsd5xfbwnjzlhijd02hx"))))
+               "1yrg9nri54iav86vxy5i8pj51dhikksa04x20d77nc3fsi09405d"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
@@ -1173,7 +1172,7 @@ audio/video codec library.")
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/stepmania/ffmpeg.git")
+              (url "https://github.com/stepmania/ffmpeg")
               (commit "eda6effcabcf9c238e4635eb058d72371336e09b")))
         (sha256
          (base32 "1by8rmbva8mfrivdbbkr2gx4kga89zqygkd4cfjl76nr8mdcdamb"))
@@ -1199,7 +1198,7 @@ audio/video codec library.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/dirkvdb/ffmpegthumbnailer.git")
+                    (url "https://github.com/dirkvdb/ffmpegthumbnailer")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1472,7 +1471,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mpv-player/mpv.git")
+                    (url "https://github.com/mpv-player/mpv")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1649,7 +1648,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.06.16")
+    (version "2020.06.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1657,7 +1656,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1fgqi8pvw13p79gl38lnpl7ifa7cwxhzk53c6lmjsk1yhz5455m9"))))
+                "1q0080cvxpfakgbzigbnl9adnga3jz1sqig2rsiq52rarqbc01px"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1801,7 +1800,7 @@ other site that youtube-dl supports.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/soimort/you-get.git")
+                    (url "https://github.com/soimort/you-get")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1840,7 +1839,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/trizen/youtube-viewer.git")
+                    (url "https://github.com/trizen/youtube-viewer")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2224,7 +2223,7 @@ capabilities.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vapoursynth/vapoursynth.git")
+                    (url "https://github.com/vapoursynth/vapoursynth")
                     (commit (string-append "R" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2329,7 +2328,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/BasioMeusPuga/twitchy.git")
+               (url "https://github.com/BasioMeusPuga/twitchy")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -2372,7 +2371,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mltframework/mlt.git")
+                    (url "https://github.com/mltframework/mlt")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2465,7 +2464,7 @@ be used for realtime video capture via Linux-specific APIs.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/obsproject/obs-studio.git")
+                    (url "https://github.com/obsproject/obs-studio")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -2629,17 +2628,17 @@ making @dfn{screencasts}.")
 (define-public simplescreenrecorder
   (package
     (name "simplescreenrecorder")
-    (version "0.3.11")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/MaartenBaert/ssr.git")
+             (url "https://github.com/MaartenBaert/ssr")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0n702dnv4qshgn3b90ixvplfafjhgz6040yir5vy8khjdpciysq4"))))
+         "1dzp5yzqlha65crzklx2qlan6ssw1diwzfpc4svd7gnr858q2292"))))
     (build-system cmake-build-system)
     ;; Although libx11, libxfixes, libxext are listed as build dependencies in
     ;; README.md, the program builds and functions properly without them.
@@ -2650,6 +2649,7 @@ making @dfn{screencasts}.")
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("libxi" ,libxi)
+       ("libxinerama" ,libxinerama)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
@@ -2746,14 +2746,14 @@ specifications.")
 (define-public libaacs
   (package
     (name "libaacs")
-    (version "0.9.0")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://ftp.videolan.org/pub/videolan/libaacs/"
-                           version "/" name "-" version ".tar.bz2"))
+                           version "/libaacs-" version ".tar.bz2"))
        (sha256
-        (base32 "1kms92i0c7i1yl659kqjf19lm8172pnpik5lsxp19xphr74vvq27"))))
+        (base32 "11skjqjlldmbjkyxdcz4fmcn6y4p95r1xagbcnjy4ndnzf0l723d"))))
     (inputs
      `(("libgcrypt" ,libgcrypt)))
     (native-inputs
@@ -2774,7 +2774,7 @@ Content System specification.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/mps-youtube/mps-youtube.git")
+             (url "https://github.com/mps-youtube/mps-youtube")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3229,7 +3229,7 @@ and ITU-T H.222.0.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/FFMS/ffms2.git")
+                    (url "https://github.com/FFMS/ffms2")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3331,7 +3331,7 @@ tools for styling them, including a built-in real-time video preview.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pitivi/gst-transcoder.git")
+             (url "https://github.com/pitivi/gst-transcoder")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -3445,7 +3445,7 @@ It counts more than 100 plugins.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Motion-Project/motion.git")
+                    (url "https://github.com/Motion-Project/motion")
                     (commit (string-append "release-" version))))
               (sha256
                (base32
@@ -3492,7 +3492,7 @@ changed.  Or in other words, it can detect motion.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/alexanderwink/subdl.git")
+                      (url "https://github.com/alexanderwink/subdl")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -3526,7 +3526,7 @@ save it to the appropriate filename.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/l-smash/l-smash.git")
+                    (url "https://github.com/l-smash/l-smash")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3590,7 +3590,7 @@ online.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/georgmartius/vid.stab.git")
+                      (url "https://github.com/georgmartius/vid.stab")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -3739,7 +3739,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
       (origin
         (method url-fetch)
@@ -3747,7 +3747,7 @@ transitions, and effects and then export your film to many common formats.")
                             "/dav1d/" version "/dav1d-" version ".tar.xz"))
         (sha256
          (base32
-          "0xcykraf42gkymzqx1k1lcdclgk9y5yf7rr56vslrgmr0r849qnk"))))
+          "1hnkfcg57bv5rib6cnj39dy1jx0q7zi5fb2fz52hf2y0bv8bad1k"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")
@@ -3766,7 +3766,7 @@ speed and correctness.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/atomnuker/wlstream.git")
+               (url "https://github.com/atomnuker/wlstream")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -3863,7 +3863,7 @@ to convenience of translating and batch processing of multiple documents.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/FNA-XNA/Theorafile.git")
+               (url "https://github.com/FNA-XNA/Theorafile")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -3920,16 +3920,16 @@ transcode or reformat the videos in any way, producing perfect backups.")
 (define-public svt-av1
   (package
     (name "svt-av1")
-    (version "0.8.3")
+    (version "0.8.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/OpenVisualCloud/SVT-AV1.git")
+                     (url "https://github.com/OpenVisualCloud/SVT-AV1")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rh4sz1bmrsxyxfxajsffw5jd17djcrymhwsi877v02fgln027qr"))))
+                "0xad35q9sv5w0iihcf9q1f1m7br5anl3vsyx9svnx128iqf0n997"))))
     (build-system cmake-build-system)
     ;; SVT-AV1 only supports Intel-compatible CPUs.
     (supported-systems '("x86_64-linux" "i686-linux"))
@@ -3985,7 +3985,7 @@ result in several formats:
 (define-public rav1e
   (package
     (name "rav1e")
-    (version "0.3.0")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
@@ -3994,60 +3994,54 @@ result in several formats:
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1bsmj8kqzs5pf8dl98rsl6a67cljj1gkj3b5hmd8hn8wdy4ya173"))))
+          "053bh8hc6jj81ydq4gcak01b0ady59hvkl7d87im3y8nafg7xzb4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-simd-helpers" ,rust-simd-helpers-0.1)
-        ("rust-ivf" ,rust-ivf-0.1)
-        ("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-paste" ,rust-paste-0.1)
-        ("rust-signal-hook" ,rust-signal-hook-0.1)
-        ("rust-aom-sys" ,rust-aom-sys-0.1)
-        ("rust-nasm-rs" ,rust-nasm-rs-0.1)
+       (("rust-aom-sys" ,rust-aom-sys-0.1)
         ("rust-arbitrary" ,rust-arbitrary-0.2)
-        ("rust-better-panic" ,rust-better-panic-0.2)
-        ("rust-noop-proc-macro"
-         ,rust-noop-proc-macro-0.2)
-        ("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-rand-chacha" ,rust-rand-chacha-0.2)
-        ("rust-err-derive" ,rust-err-derive-0.2)
-        ("rust-interpolate-name"
-         ,rust-interpolate-name-0.2)
-        ("rust-rustc-version" ,rust-rustc-version-0.2)
-        ("rust-scan-fmt" ,rust-scan-fmt-0.2)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-image" ,rust-image-0.22)
-        ("rust-arg-enum-proc-macro"
-         ,rust-arg-enum-proc-macro-0.3)
-        ("rust-num-derive" ,rust-num-derive-0.3)
-        ("rust-dav1d-sys" ,rust-dav1d-sys-0.3)
-        ("rust-backtrace" ,rust-backtrace-0.3)
-        ("rust-log" ,rust-log-0.4)
-        ("rust-y4m" ,rust-y4m-0.5)
+        ("rust-arg-enum-proc-macro" ,rust-arg-enum-proc-macro-0.3)
         ("rust-arrayvec" ,rust-arrayvec-0.5)
-        ("rust-toml" ,rust-toml-0.5)
-        ("rust-fern" ,rust-fern-0.5)
-        ("rust-rust-hawktracer"
-         ,rust-rust-hawktracer-0.7)
-        ("rust-rand" ,rust-rand-0.7)
-        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-bitstream-io" ,rust-bitstream-io-0.8)
-        ("rust-console" ,rust-console-0.9)
-        ("rust-serde" ,rust-serde-1.0)
-        ("rust-cc" ,rust-cc-1.0)
-        ("rust-rayon" ,rust-rayon-1)
         ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-clap" ,rust-clap-2)
+        ("rust-console" ,rust-console-0.11)
+        ("rust-dav1d-sys" ,rust-dav1d-sys-0.3)
+        ("rust-fern" ,rust-fern-0.6)
+        ("rust-image" ,rust-image-0.23)
+        ("rust-interpolate-name" ,rust-interpolate-name-0.2)
+        ("rust-itertools" ,rust-itertools-0.9)
+        ("rust-ivf" ,rust-ivf-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-noop-proc-macro" ,rust-noop-proc-macro-0.2)
+        ("rust-num-derive" ,rust-num-derive-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-paste" ,rust-paste-0.1)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.2)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-rust-hawktracer" ,rust-rust-hawktracer-0.7)
+        ("rust-scan-fmt" ,rust-scan-fmt-0.2)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-simd-helpers" ,rust-simd-helpers-0.1)
+        ("rust-thiserror" ,rust-thiserror-1.0)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-y4m" ,rust-y4m-0.5)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-nasm-rs" ,rust-nasm-rs-0.1)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-vergen" ,rust-vergen-3.1))
        #:cargo-development-inputs
-       (("rust-rand-chacha" ,rust-rand-chacha-0.2)
-        ("rust-interpolate-name"
-         ,rust-interpolate-name-0.2)
+       (("rust-assert-cmd" ,rust-assert-cmd-1)
         ("rust-criterion" ,rust-criterion-0.3)
-        ("rust-pretty-assertions"
-         ,rust-pretty-assertions-0.6)
+        ("rust-interpolate-name" ,rust-interpolate-name-0.2)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
         ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.2)
         ("rust-semver" ,rust-semver-0.9))
        #:phases
        (modify-phases %standard-phases
@@ -4074,7 +4068,7 @@ result in several formats:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/phw/peek.git")
+             (url "https://github.com/phw/peek")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -4108,7 +4102,7 @@ can also directly record to WebM or MP4 if you prefer.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ammen99/wf-recorder.git")
+                    (url "https://github.com/ammen99/wf-recorder")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -4169,3 +4163,60 @@ brightness, contrast, and frame rate.")
 
     ;; 'COPYING' is GPLv3 but source headers say GPLv2+.
     (license license:gpl2+)))
+
+(define-public get-iplayer
+  (package
+    (name "get-iplayer")
+    (version "3.26")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/get-iplayer/get_iplayer")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0lsz5hz1ia5j612540rb0f31y7j2k5gf7x5i43l8k06b90wi73d6"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f  ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "get_iplayer" bin)
+               (install-file "get_iplayer.cgi" bin)
+               (install-file "get_iplayer.1" man))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (perllib (string-append out "/lib/perl5/site_perl/"
+                                            ,(package-version perl))))
+               (wrap-program (string-append out "/bin/get_iplayer")
+                 `("PERL5LIB" ":"
+                   prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
+               (wrap-program (string-append out "/bin/get_iplayer.cgi")
+                 `("PERL5LIB" ":"
+                   prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
+               #t))))))
+    (inputs
+     `(("perl-mojolicious" ,perl-mojolicious)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "https://github.com/get-iplayer/get_iplayer")
+    (synopsis "Download or stream available BBC iPlayer TV and radio programmes")
+    (description "@code{get_iplayer} lists, searches and records BBC iPlayer
+TV/Radio, BBC Podcast programmes.  Other third-party plugins may be available.
+@code{get_iplayer} has three modes: recording a complete programme for later
+playback, streaming a programme directly to a playback application, such as
+mplayer; and as a @dfn{Personal Video Recorder} (PVR), subscribing to search
+terms and recording programmes automatically.  It can also stream or record live
+BBC iPlayer output.")
+    (license license:gpl3+)))

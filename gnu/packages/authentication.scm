@@ -101,7 +101,7 @@ and the time-based @dfn{TOTP} algorithm (RFC6238).")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/Yubico/yubico-pam.git")
+                      (url "https://github.com/Yubico/yubico-pam")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

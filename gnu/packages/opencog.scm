@@ -44,7 +44,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/opencog/cogutil.git")
+                      (url "https://github.com/opencog/cogutil")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -76,7 +76,7 @@ utilities use for typical programming tasks in multiple OpenCog projects.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/opencog/atomspace.git")
+                      (url "https://github.com/opencog/atomspace")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -122,7 +122,7 @@ features not otherwise available.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/opencog/cogserver.git")
+                      (url "https://github.com/opencog/cogserver")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -164,7 +164,7 @@ OpenCog framework.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/opencog/attention.git")
+                      (url "https://github.com/opencog/attention")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -209,7 +209,7 @@ tasks.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/opencog/opencog.git")
+                      (url "https://github.com/opencog/opencog")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -260,7 +260,7 @@ combination.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/opencog/agi-bio.git")
+                      (url "https://github.com/opencog/agi-bio")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

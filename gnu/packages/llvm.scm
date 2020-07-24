@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -387,6 +388,25 @@ given PATCHES.  When TOOLS-EXTRA is given, it must point to the
                                 (("@GLIBC_LIBDIR@")
                                  (string-append libc "/lib"))))))
                         #t)))
+                  (add-after 'install 'symlink-cfi_blacklist
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (lib-share (string-append out "/lib/clang/"
+                                                       ,version "/share"))
+                             (compiler-rt (assoc-ref inputs "clang-runtime"))
+                             ;; The location varies between Clang versions.
+                             (cfi-blacklist
+                              (cond ((file-exists?
+                                      (string-append compiler-rt "/cfi_blacklist.txt"))
+                                     (string-append compiler-rt "/cfi_blacklist.txt"))
+                                    (else (string-append compiler-rt
+                                                         "/share/cfi_blacklist.txt")))))
+                        (mkdir-p lib-share)
+                        ;; Symlink cfi_blacklist.txt to where Clang expects
+                        ;; to find it.
+                        (symlink cfi-blacklist
+                                 (string-append lib-share "/cfi_blacklist.txt"))
+                        #t)))
                   (add-after 'install 'install-clean-up-/share/clang
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -510,7 +530,12 @@ output), and Binutils.")
        (uri (llvm-download-uri "llvm" version))
        (sha256
         (base32
-         "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))))))
+         "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))
+       (patch-flags '("-p2"))
+       (patches (search-patches
+                  "llvm-9-fix-bitcast-miscompilation.patch"
+                  "llvm-9-fix-scev-miscompilation.patch"
+                  "llvm-9-fix-lpad-miscompilation.patch"))))))
 
 (define-public clang-runtime-9
   (clang-runtime-from-llvm
@@ -531,6 +556,30 @@ output), and Binutils.")
 (define-public clang-runtime clang-runtime-9)
 (define-public clang clang-9)
 (define-public clang-toolchain clang-toolchain-9)
+
+(define-public lld
+  (package
+    (name "lld")
+    (version (package-version llvm-10))
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-download-uri "lld" version))
+              (sha256
+               (base32
+                "026pwcbczcg0j5c9h7hxxrn3ki81ia9m9sfn0sy0bvzffv2xg85r"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("llvm" ,llvm-10)))
+    (arguments
+     `(#:build-type "Release"
+       ;; TODO: Tests require the lit tool, which isn't installed by the LLVM
+       ;; package.
+       #:tests? #f))
+    (home-page "https://lld.llvm.org/")
+    (synopsis "Linker from the LLVM project")
+    (description "LLD is a high-performance linker, built as a set of reusable
+components which highly leverage existing libraries in the larger LLVM Project.")
+    (license license:asl2.0))) ; With LLVM exception
 
 (define-public llvm-8
   (package
@@ -835,7 +884,7 @@ use with Clang, targeting C++11, C++14 and above.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/llvm/llvm-project.git")
+             (url "https://github.com/llvm/llvm-project")
              (commit (string-append "llvmorg-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -919,28 +968,32 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
      `(#:tests? #f))
     (inputs
      `(("llvm"
-        ,(package
-           (inherit llvm-7)
-           (source (origin
-                     (inherit (package-source llvm-7))
-                     (patches
-                      (list
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append "https://raw.githubusercontent.com/numba/"
-                                             "llvmlite/v" version "/conda-recipes/"
-                                             "D47188-svml-VF.patch"))
-                         (sha256
-                          (base32
-                           "0wxhgb61k17f0zg2m0726sf3hppm41f8jar2kkg2n8sl5cnjj9mr")))
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append "https://raw.githubusercontent.com/numba/"
-                                             "llvmlite/v" version "/conda-recipes/"
-                                             "twine_cfg_undefined_behavior.patch"))
-                         (sha256
-                          (base32
-                           "07h71n2m1mn9zcfgw04zglffknplb233zqbcd6pckq0wygkrxflp")))))))))))
+        ,(let ((patches-commit "486edd5fb2a6667feb5c865f300c0da73785434a"))
+           (package
+             (inherit llvm-7)
+             (source
+              (origin
+                (inherit (package-source llvm-7))
+                (patches
+                 (list
+                  (origin
+                    (method url-fetch)
+                    (uri (string-append
+                          "https://raw.githubusercontent.com/numba/"
+                          "llvmlite/" patches-commit "/conda-recipes/"
+                          "D47188-svml-VF.patch"))
+                    (sha256
+                     (base32
+                      "0wxhgb61k17f0zg2m0726sf3hppm41f8jar2kkg2n8sl5cnjj9mr")))
+                  (origin
+                    (method url-fetch)
+                    (uri (string-append
+                          "https://raw.githubusercontent.com/numba/"
+                          "llvmlite/" patches-commit "/conda-recipes/"
+                          "twine_cfg_undefined_behavior.patch"))
+                    (sha256
+                     (base32
+                      "07h71n2m1mn9zcfgw04zglffknplb233zqbcd6pckq0wygkrxflp"))))))))))))
     (home-page "http://llvmlite.pydata.org")
     (synopsis "Wrapper around basic LLVM functionality")
     (description

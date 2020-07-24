@@ -211,7 +211,7 @@ visualization tool suite.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pygraphviz/pygraphviz.git")
+             (url "https://github.com/pygraphviz/pygraphviz")
              (commit (string-append "pygraphviz-" version))))
        (file-name (string-append "pygraphviz-" version "-checkout"))
        (sha256

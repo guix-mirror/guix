@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
@@ -181,8 +181,42 @@ the Rust programming language.")
     (license (list license:bsd-3
                    license:zlib))))
 
+(define-public rust-afl-0.8
+  (package
+    (name "rust-afl")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "afl" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1rw11hycfjhqbc7z1smn75m0sczq519msjwimxh7b8s6n4pzk5r7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1.0)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-xdg" ,rust-xdg-2.2))
+       #:cargo-development-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-xdg" ,rust-xdg-2.2))))
+    (home-page "https://github.com/rust-fuzz/afl.rs")
+    (synopsis
+     "Fuzzing Rust code with american-fuzzy-lop")
+    (description
+     "Fuzz Rust code with american-fuzzy-lop.")
+    (license license:asl2.0)))
+
 (define-public rust-afl-0.5
   (package
+    (inherit rust-afl-0.8)
     (name "rust-afl")
     (version "0.5.2")
     (source
@@ -194,23 +228,20 @@ the Rust programming language.")
         (sha256
          (base32
           "0azpi917l8nhvx25n2v670nvkxkrhcwmddfi85qnr6kchmi6y946"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-cc" ,rust-cc-1.0)
         ("rust-xdg" ,rust-xdg-2.2)
-        ("rust-clap" ,rust-clap-2))))
-    (home-page "https://github.com/rust-fuzz/afl.rs")
-    (synopsis
-     "Fuzzing Rust code with american-fuzzy-lop")
-    (description
-     "Fuzz Rust code with american-fuzzy-lop.")
-    (license license:asl2.0)))
+        ("rust-clap" ,rust-clap-2))
+       #:cargo-development-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-xdg" ,rust-xdg-2.2))))))
 
 (define-public rust-afl-0.4
   (package
+    (inherit rust-afl-0.5)
     (name "rust-afl")
     (version "0.4.3")
     (source
@@ -221,21 +252,7 @@ the Rust programming language.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0g2chc18ji7qxi0d03n2ai140qdcww958v5si6rcjnnhmri1vyfb"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-cc" ,rust-cc-1.0)
-        ("rust-clap" ,rust-clap-2)
-        ("rust-rustc-version" ,rust-rustc-version-0.2)
-        ("rust-xdg" ,rust-xdg-2.2))))
-    (home-page "https://github.com/rust-fuzz/afl.rs")
-    (synopsis
-     "Fuzzing Rust code with american-fuzzy-lop")
-    (description
-     "Fuzz Rust code with american-fuzzy-lop.")
-    (license license:asl2.0)))
+         "0g2chc18ji7qxi0d03n2ai140qdcww958v5si6rcjnnhmri1vyfb"))))))
 
 (define-public rust-aho-corasick-0.7
   (package
@@ -252,7 +269,7 @@ the Rust programming language.")
          "11hfmqf90rdvjdpk0x1lixw1s9n08y3fxfy9zqsk0k2wpbc68c84"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-memchr" ,rust-memchr-2.3))
+     `(#:cargo-inputs (("rust-memchr" ,rust-memchr-2))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3))))
     (home-page "https://github.com/BurntSushi/aho-corasick")
@@ -278,7 +295,7 @@ the Rust programming language.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-memchr" ,rust-memchr-2.2))
+       (("rust-memchr" ,rust-memchr-2))
        #:cargo-development-inputs
        (("rust-csv" ,rust-csv-1.1)
         ("rust-docopt" ,rust-docopt-1.1)
@@ -393,7 +410,7 @@ code that is generic with regard to the algebraic entity types.")
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-line-drawing" ,rust-line-drawing-0.7)
         ("rust-rusttype" ,rust-rusttype-0.7)
-        ("rust-walkdir" ,rust-walkdir-2.2)
+        ("rust-walkdir" ,rust-walkdir-2.3)
         ("rust-xdg" ,rust-xdg-2.2)
         ("rust-xml-rs" ,rust-xml-rs-0.8))
        #:cargo-development-inputs
@@ -523,7 +540,7 @@ text or blue underlined text, on ANSI terminals.")
 (define-public rust-aom-sys-0.1
   (package
     (name "rust-aom-sys")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
       (origin
         (method url-fetch)
@@ -532,12 +549,11 @@ text or blue underlined text, on ANSI terminals.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0ix3djcf84kk53h6fac73n7jc614745n7kbmikxwi3s73b6vzgsr"))))
+          "1bqcpkycv1d67r6jcl9npfbw6rkl829rdq9w6vlpb0rjqxp0xzsn"))))
     (build-system cargo-build-system)
     (arguments
-     `(;#:skip-build? #t
-       #:cargo-inputs
-       (("rust-bindgen" ,rust-bindgen-0.51)
+     `(#:cargo-inputs
+       (("rust-bindgen" ,rust-bindgen-0.53)
         ("rust-metadeps" ,rust-metadeps-1.1))
        #:phases
        (modify-phases %standard-phases
@@ -885,6 +901,63 @@ Mac, and Unix.")
     (description "This package helps testing CLI Applications.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-assert-cmd-1
+  (package
+    (name "rust-assert-cmd")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "assert-cmd" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1nhqr0zimizcnqfggccfznyrmvklgqwhklsh0f1yq5lwdyi9r2y8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-predicates" ,rust-predicates-1)
+        ("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-predicates-tree" ,rust-predicates-tree-1)
+        ("rust-wait-timeout" ,rust-wait-timeout-0.2))
+       #:cargo-development-inputs
+       (("rust-escargot" ,rust-escargot-0.5))))
+    (home-page "https://github.com/assert-rs/assert_cmd")
+    (synopsis "Test CLI Applications")
+    (description "Test CLI Applications.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-assert-fs-0.11
+  (package
+    (name "rust-assert-fs")
+    (version "0.11.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "assert-fs" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1h1q90qskbylv4g3jyizdanj73835q7vvq7q10y555x4gnavmrjc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-globwalk" ,rust-globwalk-0.5)
+        ("rust-predicates" ,rust-predicates-1)
+        ("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-predicates-tree" ,rust-predicates-tree-1)
+        ("rust-tempfile" ,rust-tempfile-3))
+       #:cargo-development-inputs
+       (("rust-docmatic" ,rust-docmatic-0.1))))
+    (home-page "https://github.com/assert-rs/assert_fs")
+    (synopsis "Filesystem fixtures and assertions for testing")
+    (description
+     "Filesystem fixtures and assertions for testing.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-assert-matches-1.3
   (package
     (name "rust-assert-matches")
@@ -991,8 +1064,46 @@ Mac, and Unix.")
           "1chwgimpx5z7xbag7krr9d8asxfqbh683qhgl9kn3hxk2l0djj8x"))))
     (arguments '(#:skip-build? #t))))
 
+(define-public rust-average-0.10
+  (package
+    (name "rust-average")
+    (version "0.10.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "average" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1dmsxqcr1n0i20qr9g2g6j89kkx8dy6w18dbqzx1wi42wj1chgvh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-conv" ,rust-conv-0.3)
+        ("rust-float-ord" ,rust-float-ord-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-big-array" ,rust-serde-big-array-0.2)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-quantiles" ,rust-quantiles-0.7)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-distr" ,rust-rand-distr-0.2)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.4)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-streaming-stats" ,rust-streaming-stats-0.2))))
+    (home-page "https://github.com/vks/average")
+    (synopsis "Calculate statistics iteratively")
+    (description "This crate provides for calculating statistics iteratively
+in Rust.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-average-0.9
   (package
+    (inherit rust-average-0.10)
     (name "rust-average")
     (version "0.9.4")
     (source
@@ -1003,7 +1114,6 @@ Mac, and Unix.")
        (sha256
         (base32
          "1f8ya00bv6qki9m7b4lb3bn845rj473mx02qpm7wgy5qc1yp75xs"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-conv" ,rust-conv-0.3)
@@ -1018,12 +1128,7 @@ Mac, and Unix.")
         ("rust-quantiles" ,rust-quantiles-0.7)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-serde-json" ,rust-serde-json-1.0)
-        ("rust-streaming-stats" ,rust-streaming-stats-0.2))))
-    (home-page "https://github.com/vks/average")
-    (synopsis "Calculate statistics iteratively")
-    (description "This crate provides for calculating statistics iteratively
-in Rust.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-streaming-stats" ,rust-streaming-stats-0.2))))))
 
 (define-public rust-backtrace-0.3
   (package
@@ -1249,10 +1354,10 @@ and no more (caveat: black_box is still missing!).")
 tracebacks.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-bincode-1.2
+(define-public rust-bincode-1
   (package
     (name "rust-bincode")
-    (version "1.2.1")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
@@ -1261,7 +1366,7 @@ tracebacks.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1gvxm3n67xv1874fwxmnlircdlphlk1hcw75ykrrnw9l2nky4lsp"))))
+          "0vc9pjh6hfp9vfq752sa88rxwg93ydhm0dvvy58rcvx2p8wkl3gk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -1278,32 +1383,108 @@ tracebacks.")
 that uses Serde for transforming structs into bytes and vice versa!")
     (license license:expat)))
 
-(define-public rust-bincode-1.1
+(define-public rust-bindgen-0.54
   (package
-    (inherit rust-bincode-1.2)
-    (name "rust-bincode")
-    (version "1.1.4")
+    (name "rust-bindgen")
+    (version "0.54.1")
     (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "bincode" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1xx6bp39irvsndk6prnmmq8m1l9p6q2qj21j6mfks2y81pjsa14z"))))
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bindgen" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0dn7dlwa0abjlqbl2kvwfdy6k6kgcqg6ixcjmk6pc3dpps09pm7l"))))
+    (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f  ; not all test files included
        #:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-0.1)
-        ("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-serde" ,rust-serde-1.0))
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cexpr" ,rust-cexpr-0.4)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-clang-sys" ,rust-clang-sys-0.29)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-lazycell" ,rust-lazycell-1.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-peeking-take-while" ,rust-peeking-take-while-0.1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-rustc-hash" ,rust-rustc-hash-1.1)
+        ("rust-shlex" ,rust-shlex-0.1)
+        ("rust-which" ,rust-which-3.1))
        #:cargo-development-inputs
-       (("rust-serde-bytes" ,rust-serde-bytes-0.11)
-        ("rust-serde-derive" ,rust-serde-derive-1.0))))))
+       (("rust-clap" ,rust-clap-2)
+        ("rust-diff" ,rust-diff-0.1)
+        ("rust-shlex" ,rust-shlex-0.1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))
+    (inputs
+     `(("libclang" ,clang)))
+    (home-page "https://rust-lang.github.io/rust-bindgen/")
+    (synopsis
+     "Automatically generates Rust FFI bindings to C and C++ libraries")
+    (description
+     "Automatically generates Rust FFI bindings to C and C++ libraries.")
+    (license license:bsd-3)))
+
+(define-public rust-bindgen-0.53
+  (package
+    (inherit rust-bindgen-0.54)
+    (name "rust-bindgen")
+    (version "0.53.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bindgen" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1rc9grfd25bk5b2acmqljhx55ndbzmh7w8b3x6q707cb4s6rfan7"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cexpr" ,rust-cexpr-0.4)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-clang-sys" ,rust-clang-sys-0.29)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-lazycell" ,rust-lazycell-1.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-peeking-take-while" ,rust-peeking-take-while-0.1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-rustc-hash" ,rust-rustc-hash-1.1)
+        ("rust-shlex" ,rust-shlex-0.1)
+        ("rust-which" ,rust-which-3.1))
+       #:cargo-development-inputs
+       (("rust-clap" ,rust-clap-2)
+        ("rust-diff" ,rust-diff-0.1)
+        ("rust-shlex" ,rust-shlex-0.1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))))
 
 (define-public rust-bindgen-0.52
   (package
+    (inherit rust-bindgen-0.53)
     (name "rust-bindgen")
     (version "0.52.0")
     (source
@@ -1315,7 +1496,6 @@ that uses Serde for transforming structs into bytes and vice versa!")
         (sha256
          (base32
           "0mzy2gjiaggl602yn4a11xzrxfj18kl7pwqa5yv32njkxd257j7i"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-shlex" ,rust-shlex-0.1)
@@ -1346,15 +1526,7 @@ that uses Serde for transforming structs into bytes and vice versa!")
              (let ((clang (assoc-ref inputs "libclang")))
                (setenv "LIBCLANG_PATH"
                        (string-append clang "/lib")))
-             #t)))))
-    (inputs
-     `(("libclang" ,clang)))
-    (home-page "https://rust-lang.github.io/rust-bindgen/")
-    (synopsis
-     "Automatically generates Rust FFI bindings to C and C++ libraries")
-    (description
-     "Automatically generates Rust FFI bindings to C and C++ libraries.")
-    (license license:bsd-3)))
+             #t)))))))
 
 (define-public rust-bindgen-0.51
   (package
@@ -1823,14 +1995,60 @@ BLAKE2bp hash functions.")
      `(#:skip-build? #t
        #:cargo-development-inputs
        (("rust-objc-test-utils" ,rust-objc-test-utils-0.0))))
-    (home-page "http://github.com/SSheldon/rust-block")
+    (home-page "https://github.com/SSheldon/rust-block")
     (synopsis "Rust interface for Apple's C language extension of blocks")
     (description "This package provides a rust interface for Apple's C language
 extension of blocks.")
     (license license:expat)))
 
+(define-public rust-block-buffer-0.9
+  (package
+    (name "rust-block-buffer")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "block-buffer" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1r4pf90s7d7lj1wdjhlnqa26vvbm6pnc33z138lxpnp9srpi2lj1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-padding" ,rust-block-padding-0.2)
+        ("rust-generic-array" ,rust-generic-array-0.14))))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Fixed size buffer for block processing of data")
+    (description
+     "Fixed size buffer for block processing of data.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-block-buffer-0.8
+  (package
+    (inherit rust-block-buffer-0.9)
+    (name "rust-block-buffer")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "block-buffer" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0c9x5b8pk25i13bajqjkzf03bm5hx2y8pi9llfvjpy3nhr295kyv"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-padding" ,rust-block-padding-0.1)
+        ("rust-byte-tools" ,rust-byte-tools-0.3)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-generic-array" ,rust-generic-array-0.14))))))
+
 (define-public rust-block-buffer-0.7
   (package
+    (inherit rust-block-buffer-0.9)
     (name "rust-block-buffer")
     (version "0.7.3")
     (source
@@ -1842,22 +2060,36 @@ extension of blocks.")
        (sha256
         (base32
          "12v8wizynqin0hqf140kmp9s38q223mp1b0hkqk8j5pk8720v560"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-block-padding" ,rust-block-padding-0.1)
         ("rust-byte-tools" ,rust-byte-tools-0.3)
         ("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-generic-array" ,rust-generic-array-0.12))))
+        ("rust-generic-array" ,rust-generic-array-0.12))))))
+
+(define-public rust-block-padding-0.2
+  (package
+    (name "rust-block-padding")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "block-padding" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0x6b2dgink7rc3755r8jl4kmndydy5563h3wz7z9jqrb25ygv2y9"))))
+    (build-system cargo-build-system)
     (home-page "https://github.com/RustCrypto/utils")
-    (synopsis "Fixed size buffer for block processing of data")
+    (synopsis "Padding and unpadding of messages divided into blocks")
     (description
-     "Fixed size buffer for block processing of data.")
-    (license (list license:asl2.0 license:expat))))
+     "Padding and unpadding of messages divided into blocks.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-block-padding-0.1
   (package
+    (inherit rust-block-padding-0.2)
     (name "rust-block-padding")
     (version "0.1.4")
     (source
@@ -1869,16 +2101,9 @@ extension of blocks.")
        (sha256
         (base32
          "02fz9wx5dmgpc79ndrb9xfxqlrkk7lg5wki2blz2zqg27spw6kbd"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-byte-tools" ,rust-byte-tools-0.3))))
-    (home-page "https://github.com/RustCrypto/utils")
-    (synopsis "Padding and unpadding of messages divided into blocks")
-    (description
-     "Padding and unpadding of messages divided into blocks.")
-    (license (list license:asl1.1 license:expat))))
+     `(#:cargo-inputs
+       (("rust-byte-tools" ,rust-byte-tools-0.3))))))
 
 (define-public rust-bresenham-0.1
   (package
@@ -1920,7 +2145,7 @@ Bresenham's line algorithm.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-regex-automata" ,rust-regex-automata-0.1)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
@@ -1975,11 +2200,11 @@ UTF-8.")
      "This package provides a fast bump allocation arena for Rust.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-bumpalo-2.5
+(define-public rust-bumpalo-2
   (package
     (inherit rust-bumpalo-3)
     (name "rust-bumpalo")
-    (version "2.5.0")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -1988,9 +2213,9 @@ UTF-8.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "018b5calz3895v04shk9bn7i73r4zf8yf7p1dqg92s3xya13vm1c"))))
+         "020psxs5dlm0gdbs83rx2rcavibdshdr0fpzk3mmw65zq8ppz05d"))))
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f      ; cargo_readme_up_to_date test fails
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.8))))))
@@ -2086,6 +2311,26 @@ in a byte slice, fast.")
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.6)
         ("rust-rand" ,rust-rand-0.4))))))
+
+(define-public rust-bytemuck-1
+  (package
+    (name "rust-bytemuck")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bytemuck" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0cclc9v10hc1abqrxgirg3qbwa3ra3s0dai3xiwv9v4j4bgi7yip"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/Lokathor/bytemuck")
+    (synopsis "crate for mucking around with piles of bytes")
+    (description
+     "This package provides a crate for mucking around with piles of bytes.")
+    (license license:zlib)))
 
 (define-public rust-byteorder-1.3
   (package
@@ -2677,7 +2922,7 @@ used in argon2rs' bench suite.")
 (define-public rust-cc-1.0
   (package
     (name "rust-cc")
-    (version "1.0.50")
+    (version "1.0.58")
     (source
       (origin
         (method url-fetch)
@@ -2685,10 +2930,10 @@ used in argon2rs' bench suite.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1kdqm8ka7xg9h56b694pcz29ka33fsz27mzrphqc78gx96h8zqlm"))))
+          "065m2fphrv5csy8hvv37msi3a739mfkgw7pcg71dfw9jwnr6z87r"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f
        #:cargo-inputs
        (("rust-jobserver" ,rust-jobserver-0.1))
        #:cargo-development-inputs
@@ -2702,8 +2947,44 @@ archive to be linked into Rustcode.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cexpr-0.4
+  (package
+    (name "rust-cexpr")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cexpr" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09qd1k1mrhcqfhqmsz4y1bya9gcs29si7y3w96pqkgid4y2dpbpl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nom" ,rust-nom-5))
+       #:cargo-development-inputs
+       (("rust-clang-sys" ,rust-clang-sys-0.28))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))
+    (inputs
+     `(("libclang" ,clang)))
+    (home-page "https://github.com/jethrogb/rust-cexpr")
+    (synopsis "C expression parser and evaluator")
+    (description
+     "This package provides a C expression parser and evaluator.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-cexpr-0.3
   (package
+    (inherit rust-cexpr-0.4)
     (name "rust-cexpr")
     (version "0.3.6")
     (source
@@ -2715,18 +2996,19 @@ archive to be linked into Rustcode.")
        (sha256
         (base32
          "07fdfj4ff2974y33yixrb657riq9zl9b9h9lr0h7ridhhvxvbrgw"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-nom" ,rust-nom-4.2))
        #:cargo-development-inputs
-       (("rust-clang-sys" ,rust-clang-sys-0.28))))
-    (home-page "https://github.com/jethrogb/rust-cexpr")
-    (synopsis "C expression parser and evaluator")
-    (description
-     "This package provides a C expression parser and evaluator.")
-    (license (list license:asl2.0 license:expat))))
+       (("rust-clang-sys" ,rust-clang-sys-0.28))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))))
 
 (define-public rust-cexpr-0.2
   (package
@@ -2755,9 +3037,7 @@ archive to be linked into Rustcode.")
              (let ((clang (assoc-ref inputs "libclang")))
                (setenv "LIBCLANG_PATH"
                        (string-append clang "/lib")))
-             #t)))))
-    (inputs
-     `(("libclang" ,clang)))))
+             #t)))))))
 
 (define-public rust-cfg-if-0.1
   (package
@@ -2773,8 +3053,7 @@ archive to be linked into Rustcode.")
           "08h80ihs74jcyp24cd75wwabygbbdgl05k6p5dmq8akbr78vv1a7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
     (home-page "https://github.com/alexcrichton/cfg-if")
@@ -2940,8 +3219,7 @@ for computer graphics.")
          "00pr17g6q6i752acrkycg0hkq3lm0p634anm41g3m6lqg8q83s75"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))))
     (home-page "https://github.com/sagiegurari/ci_info")
@@ -2950,10 +3228,10 @@ for computer graphics.")
      "This package provides current CI environment information.")
     (license license:asl2.0)))
 
-(define-public rust-clang-sys-0.28
+(define-public rust-clang-sys-0.29
   (package
     (name "rust-clang-sys")
-    (version "0.28.1")
+    (version "0.29.3")
     (source
       (origin
         (method url-fetch)
@@ -2961,7 +3239,7 @@ for computer graphics.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0ls8zcqi5bmmrvrk3b6r1ym4wlivinbv590d2dvg2xn9f44mbpl1"))))
+          "02nibl74zbz5x693iy5vdbhnfckja47m7j1mp2bj7fjw3pgkfs7y"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -2983,6 +3261,20 @@ for computer graphics.")
     (description
      "This package provides Rust bindings for @code{libclang}.")
     (license license:asl2.0)))
+
+(define-public rust-clang-sys-0.28
+  (package
+    (inherit rust-clang-sys-0.29)
+    (name "rust-clang-sys")
+    (version "0.28.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clang-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ls8zcqi5bmmrvrk3b6r1ym4wlivinbv590d2dvg2xn9f44mbpl1"))))))
 
 (define-public rust-clang-sys-0.26
   (package
@@ -3138,8 +3430,7 @@ Command Line Argument Parser.")
           "07klix8nbpwk0cg1k4h0kkiijm1jxvrzndqdkr7dqr6xvkjjw24h"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
@@ -3255,7 +3546,7 @@ pitfalls in Rust.")
 (define-public rust-cmake-0.1
   (package
     (name "rust-cmake")
-    (version "0.1.42")
+    (version "0.1.44")
     (source
       (origin
         (method url-fetch)
@@ -3263,11 +3554,10 @@ pitfalls in Rust.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0qkwibkvx5xjazvv9v8gvdlpky2jhjxvcz014nrixgzqfyv2byw1"))))
+          "1fv346ipxmvff6qrnh78rild0s8k72ilfjkdsrk869562y62cmhf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-cc" ,rust-cc-1.0))))
+     `(#:cargo-inputs (("rust-cc" ,rust-cc-1.0))))
     (home-page "https://github.com/alexcrichton/cmake-rs")
     (synopsis "Rust build dependency for running cmake")
     (description
@@ -3357,15 +3647,21 @@ CMAKE environmental variable is set.")
           "0nbc1czs512h1k696y7glv1kjrb2b914zpxraic6q5fgv80wizzl"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f
        #:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1))
        #:cargo-development-inputs
        (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ;("rust-rspec" ,rust-rspec-1.0)
-        )))
+        ("rust-rspec" ,rust-rspec-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-requirements
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("1.0.0-beta.3") ,(package-version rust-rspec-1)))
+             #t)))))
     (home-page "https://github.com/mackwic/colored")
     (synopsis "Add colors in your terminal")
     (description
@@ -3382,8 +3678,7 @@ CMAKE environmental variable is set.")
        (uri (crate-uri "colored" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0fildacm47g86acmx44yvxx6cka8fdym5qkgfm8x8gh2hsrghc7r"))))
-    (build-system cargo-build-system)))
+        (base32 "0fildacm47g86acmx44yvxx6cka8fdym5qkgfm8x8gh2hsrghc7r"))))))
 
 ;; This package requires features which are unavailable
 ;; on the stable releases of Rust.
@@ -3493,8 +3788,40 @@ harness.")
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-console-0.11
+  (package
+    (name "rust-console")
+    (version "0.11.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "console" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0nmwkbb1j1zjb2z4akk83rqgnbv7j3dla4nxv0ibk9xvavk982cc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-encode-unicode" ,rust-encode-unicode-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-terminal-size" ,rust-terminal-size-0.1)
+        ("rust-termios" ,rust-termios-0.3)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-winapi-util" ,rust-winapi-util-0.1))))
+    (home-page "https://github.com/mitsuhiko/console")
+    (synopsis "Terminal and console abstraction for Rust")
+    (description
+     "This package provides a terminal and console abstraction for Rust")
+    (license license:expat)))
+
 (define-public rust-console-0.9
   (package
+    (inherit rust-console-0.11)
     (name "rust-console")
     (version "0.9.2")
     (source
@@ -3506,7 +3833,6 @@ harness.")
         (sha256
          (base32
           "1h765951c9mywff534f0191slazykmif4290g2yarcwhd2cg7q25"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-unicode-width" ,rust-unicode-width-0.1)
@@ -3516,12 +3842,7 @@ harness.")
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-clicolors-control" ,rust-clicolors-control-1.0)
         ("rust-regex" ,rust-regex-1)
-        ("rust-lazy-static" ,rust-lazy-static-1))))
-    (home-page "https://github.com/mitsuhiko/console")
-    (synopsis "Terminal and console abstraction for Rust")
-    (description
-     "This package provides a terminal and console abstraction for Rust")
-    (license license:expat)))
+        ("rust-lazy-static" ,rust-lazy-static-1))))))
 
 (define-public rust-console-0.7
   (package
@@ -3822,7 +4143,7 @@ intrinsics.")
 (define-public rust-cpp-demangle-0.2
   (package
     (name "rust-cpp-demangle")
-    (version "0.2.14")
+    (version "0.2.16")
     (source
      (origin
        (method url-fetch)
@@ -3831,12 +4152,12 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1mm064x84868q06r4m4b7byf999nrkbhx7iyc4nchyssaxpsy5a1"))))
+         "0bamx2c78xzjhhvpg6p9bjarl6qm6j8npm6756kiqdh784w29j8k"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-afl" ,rust-afl-0.4)
+       (("rust-afl" ,rust-afl-0.8)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-glob" ,rust-glob-0.3))
        #:cargo-development-inputs
@@ -3846,6 +4167,27 @@ intrinsics.")
     (synopsis "Demangle C++ symbols")
     (description
      "This package provides a crate for demangling C++ symbols.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-cpuid-bool-0.1
+  (package
+    (name "rust-cpuid-bool")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cpuid-bool" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1r3v22cxly1shvw8qi0153708kggdqvh8jp0g82wbxi06d1mqdvd"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Lightweight alternative to is_x86_feature_detected")
+    (description
+     "This package provides a lightweight @code{no-std} compatible alternative
+to @code{is_x86_feature_detected}.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-crates-index-0.13
@@ -3987,7 +4329,7 @@ intrinsics.")
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-tinytemplate" ,rust-tinytemplate-1.0)
-        ("rust-walkdir" ,rust-walkdir-2.2))
+        ("rust-walkdir" ,rust-walkdir-2.3))
        #:cargo-development-inputs
        (("rust-approx" ,rust-approx-0.3)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
@@ -4048,7 +4390,7 @@ intrinsics.")
 (define-public rust-crossbeam-0.7
   (package
     (name "rust-crossbeam")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
@@ -4057,19 +4399,18 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0g5jysq5x4gndc1v5sq9n3f1m97k7qihwdpigw6ar6knj14qm09d"))))
+         "13kzn2d49n2qn5q42y2dj48kyv6aln2d9smq8x9n675l3zzknck9"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.3)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4)
         ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
-        ("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.7)
-        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
+        ("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.8)
+        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.2)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
+       (("rust-rand" ,rust-rand-0.6))))
     (home-page "https://github.com/crossbeam-rs/crossbeam")
     (synopsis "Tools for concurrent programming")
     (description "Tools for concurrent programming.")
@@ -4078,7 +4419,7 @@ intrinsics.")
 (define-public rust-crossbeam-channel-0.4
   (package
     (name "rust-crossbeam-channel")
-    (version "0.4.0")
+    (version "0.4.2")
     (source
       (origin
         (method url-fetch)
@@ -4087,12 +4428,12 @@ intrinsics.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "135ncx9680afs8jkjz8g3iq3naay9rn7942gxrdg2n9m1cxrmv5c"))))
+          "0qd05n5bcwafkmbzq1lspwrfi29xnzlw46qarg1sl0lwj68qdvfc"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
+     `(#:cargo-inputs
+        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+         ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
         #:cargo-development-inputs
         (("rust-num-cpus" ,rust-num-cpus-1)
          ("rust-rand" ,rust-rand-0.6)
@@ -4122,8 +4463,7 @@ intrinsics.")
         (base32
          "1ylyzb1m9qbvd1nd3vy38x9073wdmcy295ncjs7wf7ap476pzv68"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
        #:cargo-development-inputs
        (("rust-num-cpus" ,rust-num-cpus-1)
@@ -4133,7 +4473,7 @@ intrinsics.")
 (define-public rust-crossbeam-deque-0.7
   (package
     (name "rust-crossbeam-deque")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
@@ -4142,13 +4482,13 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1jm3rqb3qfpfywrakyy81f61xnl4jsim7lam9digw6w6cdfr9an3"))))
+         "11c2c0x5grdba3ah3g94yn6b8s47xi8qwm85h8hq5vmf9nbsy0lz"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam-epoch" ,rust-crossbeam-epoch-0.8)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))
     (home-page
@@ -4181,7 +4521,7 @@ intrinsics.")
 (define-public rust-crossbeam-epoch-0.8
   (package
     (name "rust-crossbeam-epoch")
-    (version "0.8.0")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
@@ -4190,15 +4530,15 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1b2mgc2gxxvyzyxgd5wvn9k42gr6f9phi2swwjawpqswy3dynr2h"))))
+         "1knsf0zz7rgzxn0nwz5gajjcrivxpw3zrdcp946gdhdgr9sd53h5"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-autocfg" ,rust-autocfg-0.1)
+     `(#:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg-1.0)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0)
         ("rust-memoffset" ,rust-memoffset-0.5)
         ("rust-scopeguard" ,rust-scopeguard-1.0))
        #:cargo-development-inputs
@@ -4213,7 +4553,7 @@ intrinsics.")
   (package
     (inherit rust-crossbeam-epoch-0.8)
     (name "rust-crossbeam-epoch")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
@@ -4222,23 +4562,22 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1d408b9x82mdbnb405gw58v5mmdbj2rl28a1h7b9rmn25h8f7j84"))))
+         "1a9prma2nalqvys7f8wrazkdzh26w3mi5gzrk8mdmwrp5rvxdp7y"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-arrayvec" ,rust-arrayvec-0.4)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-memoffset" ,rust-memoffset-0.2)
-        ("rust-scopeguard" ,rust-scopeguard-0.3))
+        ("rust-memoffset" ,rust-memoffset-0.5)
+        ("rust-scopeguard" ,rust-scopeguard-1.0))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))))
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossbeam-queue-0.2
   (package
     (name "rust-crossbeam-queue")
-    (version "0.2.1")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
@@ -4246,18 +4585,17 @@ intrinsics.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1nwkjh185bdwjrv1zj2g7an9lglv8sp4459268m4fwvi3v5fx5f6"))))
+        (base32 "0w15z68nz3ac4f2s4djhwha8vmlwsh9dlfrmsl4x84y2ah5acjvp"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-maybe-uninit" ,rust-maybe-uninit-2.0))
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.6))))
     (home-page
-     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-utils")
+     "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-queue")
     (synopsis "Concurrent queues in Rust")
     (description
      "This crate provides concurrent queues that can be shared among threads.")
@@ -4280,11 +4618,10 @@ intrinsics.")
         (base32
          "0jsa9dbxnwqcxfws09vaschf92d4imlbbikmcn4ka8z7rzb9r5vw"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))))
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossbeam-utils-0.7
   (package
@@ -4318,7 +4655,7 @@ intrinsics.")
   (package
     (inherit rust-crossbeam-utils-0.7)
     (name "rust-crossbeam-utils")
-    (version "0.6.5")
+    (version "0.6.6")
     (source
      (origin
        (method url-fetch)
@@ -4327,14 +4664,13 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0p5aa8k3wpsn17md4rx038ac2azm9354knbxdfvn7dd7yk76yc7q"))))
+         "1rk0r9n04bmq4a3g2q5qhvvlmrmx780gc6h9lmc94mwndslkz5q4"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))))
+       (("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-crossterm-0.13
   (package
@@ -4382,8 +4718,34 @@ manipulating terminals.")
 around common WinAPI calls.")
     (license license:expat)))
 
+(define-public rust-crypto-mac-0.8
+  (package
+    (name "rust-crypto-mac")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "crypto-mac" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1axfs4zmy74rn9666p92j7nmcv11zdp2d51yrppc2dv26cqa715m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.14)
+        ("rust-subtle" ,rust-subtle-2))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Trait for Message Authentication Code (MAC) algorithms")
+    (description "This package provides trait for @dfn{Message Authentication
+Code} (MAC) algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crypto-mac-0.7
   (package
+    (inherit rust-crypto-mac-0.8)
     (name "rust-crypto-mac")
     (version "0.7.0")
     (source
@@ -4395,20 +4757,52 @@ around common WinAPI calls.")
        (sha256
         (base32
          "1rbrq6qy9dl0pj4ym2zy33miaaa8vpzdss60p9bdb58xy46l0d24"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-blobby" ,rust-blobby-0.1)
         ("rust-generic-array" ,rust-generic-array-0.12)
-        ("rust-subtle" ,rust-subtle-1.0))))
-    (home-page "https://github.com/RustCrypto/traits")
-    (synopsis "Trait for Message Authentication Code (MAC) algorithms")
-    (description "This package provides trait for @dfn{Message Authentication
-Code} (MAC) algorithms.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-subtle" ,rust-subtle-1.0))))))
+
+(define-public rust-cssparser-0.27
+  (package
+    (name "rust-cssparser")
+    (version "0.27.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cssparser" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "02nbm690rmkaz1ca0383qq7mc1g066w3s85f17pdihnda79njjvm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Not all files included in the tarball.
+       #:cargo-inputs
+       (("rust-cssparser-macros" ,rust-cssparser-macros-0.6)
+        ("rust-dtoa-short" ,rust-dtoa-short-0.3)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-phf" ,rust-phf-0.8)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-syn" ,rust-syn-1.0))
+       #:cargo-development-inputs
+       (("rust-difference" ,rust-difference-2.0)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/servo/rust-cssparser")
+    (synopsis "Rust implementation of CSS Syntax Level 3")
+    (description
+     "This package contains a Rust implementation of CSS Syntax Level 3.")
+    (license license:mpl2.0)))
 
 (define-public rust-cssparser-0.25
   (package
+    (inherit rust-cssparser-0.27)
     (name "rust-cssparser")
     (version "0.25.9")
     (source
@@ -4420,7 +4814,6 @@ Code} (MAC) algorithms.")
         (sha256
          (base32
           "03klvpdzsk4cyh8k0dbnlngzafv7gqywqrnsqqb3gfmrxyj8rqgv"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Some test files missing.
        #:cargo-inputs
@@ -4440,15 +4833,35 @@ Code} (MAC) algorithms.")
        #:cargo-development-inputs
        (("rust-difference" ,rust-difference-2.0)
         ("rust-encoding-rs" ,rust-encoding-rs-0.8)
-        ("rust-serde-json" ,rust-serde-json-1.0))))
+        ("rust-serde-json" ,rust-serde-json-1.0))))))
+
+(define-public rust-cssparser-macros-0.6
+  (package
+    (name "rust-cssparser-macros")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cssparser-macros" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0vp13g4blyjvhg3j4r9b7vrwhnfi1y2fmhv8hxgficpjazg7bbnz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))))
     (home-page "https://github.com/servo/rust-cssparser")
-    (synopsis "Rust implementation of CSS Syntax Level 3")
+    (synopsis "Procedural macros for cssparser")
     (description
-     "This package contains a Rust implementation of CSS Syntax Level 3.")
+     "This package provides the procedural macros for rust-cssparser.")
     (license license:mpl2.0)))
 
 (define-public rust-cssparser-macros-0.3
   (package
+    (inherit rust-cssparser-macros-0.6)
     (name "rust-cssparser-macros")
     (version "0.3.6")
     (source
@@ -4460,19 +4873,13 @@ Code} (MAC) algorithms.")
         (sha256
          (base32
           "1vqyc5xm8a4va92vs1nn0cc46c930l2n21gccijnc5y7hx7cicav"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-phf-codegen" ,rust-phf-codegen-0.7)
         ("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-procedural-masquerade" ,rust-procedural-masquerade-0.1)
         ("rust-quote" ,rust-quote-1.0)
-        ("rust-syn" ,rust-syn-1.0))))
-    (home-page "https://github.com/servo/rust-cssparser")
-    (synopsis "Procedural macros for cssparser")
-    (description
-     "This package provides the procedural macros for rust-cssparser.")
-    (license license:mpl2.0)))
+        ("rust-syn" ,rust-syn-1.0))))))
 
 (define-public rust-csv-1.1
   (package
@@ -4541,9 +4948,9 @@ Code} (MAC) algorithms.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-memchr" ,rust-memchr-2.3))
+       (("rust-memchr" ,rust-memchr-2))
        #:cargo-development-inputs
-       (("rust-arrayvec" ,rust-arrayvec-0.4))))
+       (("rust-arrayvec" ,rust-arrayvec-0.5))))
     (home-page "https://github.com/BurntSushi/rust-csv")
     (synopsis
      "Bare bones CSV parsing with no_std support")
@@ -4575,7 +4982,7 @@ Transparency logs for use with sct crate.")
 (define-public rust-ctor-0.1
   (package
     (name "rust-ctor")
-    (version "0.1.13")
+    (version "0.1.15")
     (source
       (origin
         (method url-fetch)
@@ -4584,16 +4991,14 @@ Transparency logs for use with sct crate.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1qgwkwyxishpp3wkbwq5i27zdxz539ii0sz129xj061ffnnfbia7"))))
+          "09x2my9x33srjdip8yf4lm5gq7xqis2694abvpa64r60pajqm19r"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-syn" ,rust-syn-1.0)
         ("rust-quote" ,rust-quote-1.0))
-       ;#:cargo-development-inputs
-       ;(("rust-libc-print" ,rust-libc-print-0.1))
-       ))
+       #:cargo-development-inputs
+       (("rust-libc-print" ,rust-libc-print-0.1))))
     (home-page "https://github.com/mmastrac/rust-ctor")
     (synopsis "__attribute__((constructor)) for Rust")
     (description
@@ -4781,7 +5186,7 @@ and arithmetic.")
 (define-public rust-dav1d-sys-0.3
   (package
     (name "rust-dav1d-sys")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
       (origin
         (method url-fetch)
@@ -4790,12 +5195,11 @@ and arithmetic.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1022czzp3s54r42x6rhr870w1fwzyp7b6qn0zirpz55zmqjpgnwa"))))
+          "1jdxhnlxcml6jd67lx78ifzkn1xm18zfk4li7vjdh3fa61i073kx"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-bindgen" ,rust-bindgen-0.52)
+       (("rust-bindgen" ,rust-bindgen-0.54)
         ("rust-metadeps" ,rust-metadeps-1.1))
        #:phases
        (modify-phases %standard-phases
@@ -4812,7 +5216,7 @@ and arithmetic.")
        ("llvm" ,llvm)))
     (home-page "https://github.com/rust-av/dav1d-rs")
     (synopsis "FFI bindings to dav1d")
-    (description "FFI bindings to dav1d")
+    (description "This package provides FFI bindings to dav1d.")
     (license license:expat)))
 
 (define-public rust-decimal-2.0
@@ -4845,8 +5249,37 @@ and arithmetic.")
      "Decimal floating point arithmetic for Rust.")
     (license license:asl2.0)))
 
+(define-public rust-deflate-0.8
+  (package
+    (name "rust-deflate")
+    (version "0.8.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "deflate" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0x6iqlayg129w63999kz97m279m0jj4x4sm6gkqlvmp73y70yxvk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; not all test files included
+       #:cargo-inputs
+       (("rust-adler32" ,rust-adler32-1)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-gzip-header" ,rust-gzip-header-0.3))
+       #:cargo-development-inputs
+       (("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))
+    (home-page "https://github.com/image-rs/deflate-rs")
+    (synopsis "DEFLATE, zlib and gzip encoder written in rust")
+    (description
+     "This package provides a DEFLATE, zlib and gzip encoder written in rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-deflate-0.7
   (package
+    (inherit rust-deflate-0.8)
     (name "rust-deflate")
     (version "0.7.20")
     (source
@@ -4858,18 +5291,12 @@ and arithmetic.")
        (sha256
         (base32
          "1d7d9fpmgjnznrksmd3vlv3dyw01wsrm11ifil6ag22871xnlyvh"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-adler32" ,rust-adler32-1)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-gzip-header" ,rust-gzip-header-0.3)
-        ("rust-flate2" ,rust-flate2-1.0))))
-    (home-page "https://github.com/image-rs/deflate-rs")
-    (synopsis "DEFLATE, zlib and gzip encoder written in rust")
-    (description
-     "This package provides a DEFLATE, zlib and gzip encoder written in rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-flate2" ,rust-flate2-1.0))))))
 
 (define-public rust-defmac-0.2
   (package
@@ -5007,6 +5434,44 @@ for arbitrary structs.")
     (description "Internal helper library for the derive_builder crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-derive-more-0.99
+  (package
+    (name "rust-derive-more")
+    (version "0.99.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive-more" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xizcpj39rx0474mbbx8m0xww98qh92zsg82gf52qnvbryqri299"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Some test files missing.
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))
+       #:cargo-development-inputs
+       (("rust-peg" ,rust-peg-0.5)
+        ("rust-rustc-version" ,rust-rustc-version-0.2))))
+    (home-page "https://github.com/JelteF/derive_more")
+    (synopsis "Adds derive macros for more traits")
+    (description
+     "Rust has lots of builtin traits that are implemented for its basic
+types, such as @code{Add}, @code{Not}, @code{From} or @code{Display}.
+However, when wrapping these types inside your own structs or enums you lose
+the implementations of these traits and are required to recreate them.  This is
+especially annoying when your own structures are very simple, such as when
+using the commonly advised newtype pattern (e.g. @code{MyInt(i32)}).
+
+This library tries to remove these annoyances and the corresponding
+boilerplate code.  It does this by allowing you to derive lots of commonly used
+traits for both structs and enums.")
+    (license license:expat)))
+
 (define-public rust-derive-new-0.5
   (package
     (name "rust-derive-new")
@@ -5101,8 +5566,33 @@ structs and enums.")
        #:cargo-development-inputs
        (("rust-term" ,rust-term-0.2))))))
 
+(define-public rust-digest-0.9
+  (package
+    (name "rust-digest")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "digest" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0rmhvk33rgvd6ll71z8sng91a52rw14p0drjn1da0mqa138n1pfk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.14))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Traits for cryptographic hash functions")
+    (description
+     "Traits for cryptographic hash functions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-digest-0.8
   (package
+    (inherit rust-digest-0.9)
     (name "rust-digest")
     (version "0.8.1")
     (source
@@ -5114,16 +5604,40 @@ structs and enums.")
        (sha256
         (base32
          "1madjl27f3kj5ql7kwgvb9c8b7yb7bv7yfgx7rqzj4i3fp4cil7k"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-blobby" ,rust-blobby-0.1)
-        ("rust-generic-array" ,rust-generic-array-0.13))))
-    (home-page "https://github.com/RustCrypto/traits")
-    (synopsis "Traits for cryptographic hash functions")
+        ("rust-generic-array" ,rust-generic-array-0.13))))))
+
+(define-public rust-directories-3
+  (package
+    (name "rust-directories")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "directories" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03ysv4m6mhsc3w1xnvncd5sxf7v2dz917awq6ksx0n0bsqwxdzpq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dirs-sys" ,rust-dirs-sys-0.3))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1))))
+    (home-page "https://github.com/dirs-dev/directories-rs")
+    (synopsis "Library for standard locations of data directories")
     (description
-     "Traits for cryptographic hash functions.")
+     "This package provides a tiny mid-level library that provides
+platform-specific standard locations of directories for config,
+cache and other data on Linux, Windows and macOS by leveraging the
+mechanisms defined by the XDG base/user directory specifications
+on Linux, the Known Folder API on Windows, and the Standard
+Directory guidelines on macOS.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-dirs-2.0
@@ -5140,8 +5654,7 @@ structs and enums.")
          (base32
           "1qymhyq7w7wlf1dirq6gsnabdyzg6yi2yyxkx6c4ldlkbjdaibhk"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-dirs-sys" ,rust-dirs-sys-0.3))))
     (build-system cargo-build-system)
@@ -5178,7 +5691,7 @@ Windows, and the Standard Directory guidelines on macOS.")
 (define-public rust-dirs-sys-0.3
   (package
     (name "rust-dirs-sys")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
@@ -5187,11 +5700,10 @@ Windows, and the Standard Directory guidelines on macOS.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0yyykdcmbc476z1v9m4z5jb8y91dw6kgzpkiqi2ig07xx0yv585g"))))
+         "0ym5843xack45b1yjahrh3q2f72shnwf1dd2jncf9qsxf3sxg4wf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-redox-users" ,rust-redox-users-0.3)
@@ -5240,7 +5752,7 @@ for intentionally leaking memory")
          "019nzy993hxaiazcdnayx3csv2iki34i535asw11ki96hakkrs84"))))
     (build-system cargo-build-system)
     (arguments '(#:tests? #f))  ; Tests only run on Mac.
-    (home-page "http://github.com/SSheldon/rust-dispatch")
+    (home-page "https://github.com/SSheldon/rust-dispatch")
     (synopsis "Rust wrapper for Apple's Grand Central Dispatch")
     (description "This package provides a Rust wrapper for Apple's Grand
 Central Dispatch.")
@@ -5933,7 +6445,7 @@ encodings.")
         ("rust-packed-simd" ,rust-packed-simd-0.3)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1)
+       (("rust-bincode" ,rust-bincode-1)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0))))
     (home-page "https://docs.rs/encoding_rs/")
@@ -6116,7 +6628,7 @@ variables.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-indexmap" ,rust-indexmap-1.0))))
+       (("rust-indexmap" ,rust-indexmap-1))))
     (home-page "https://github.com/sagiegurari/envmnt")
     (synopsis "Environment variables utility functions")
     (description
@@ -6294,6 +6806,34 @@ variables.")
     (arguments
      `(#:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3))))))
+
+(define-public rust-escargot-0.5
+  (package
+    (name "rust-escargot")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "escargot" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0vd9phbpd6yrnsksn2as8flvq8ykzvck2zlz143xpp42qaz9dkvl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; not all test files included
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))
+       #:cargo-development-inputs
+       (("rust-assert-fs" ,rust-assert-fs-0.11))))
+    (home-page "https://github.com/crate-ci/escargot")
+    (synopsis "Cargo API written in Paris")
+    (description "Cargo API written in Paris.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-euclid-0.20
   (package
@@ -6485,8 +7025,42 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
     (description "Fallible streaming iteration")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fern-0.6
+  (package
+    (name "rust-fern")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fern" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0rghkbmpm7ckchd2fr2ifahprc7ll3qs0fbwsspsgj6cy0h4i6lc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-colored" ,rust-colored-1.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-reopen" ,rust-reopen-0.3)
+        ("rust-syslog" ,rust-syslog-3.3)
+        ("rust-syslog" ,rust-syslog-4.0))
+       #:cargo-development-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/daboross/fern")
+    (synopsis "Simple, efficient logging")
+    (description
+     "This package provides a simple, efficient logging system for Rust.")
+    (license license:expat)))
+
 (define-public rust-fern-0.5
   (package
+    (inherit rust-fern-0.6)
     (name "rust-fern")
     (version "0.5.9")
     (source
@@ -6498,7 +7072,6 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
         (sha256
          (base32
           "1anslk0hx9an4ypcaxqff080hgbcxm7ji7d4qf4f6qx1mkav16p6"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
@@ -6510,12 +7083,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
         ("rust-syslog" ,rust-syslog-4.0))
        #:cargo-development-inputs
        (("rust-clap" ,rust-clap-2)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://github.com/daboross/fern")
-    (synopsis "Simple, efficient logging")
-    (description
-     "This package provides a simple, efficient logging system for Rust.")
-    (license license:expat)))
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-filetime-0.2
   (package
@@ -6576,8 +7144,28 @@ cross platform API.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-fixedbitset-0.2
+  (package
+    (name "rust-fixedbitset")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fixedbitset" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0kg03p777wc0dajd9pvlcnsyrwa8dhqwf0sd9r4dw0p82rs39arp"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/petgraph/fixedbitset")
+    (synopsis "FixedBitSet is a simple bitset collection")
+    (description "FixedBitSet is a simple bitset collection.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-fixedbitset-0.1
   (package
+    (inherit rust-fixedbitset-0.2)
     (name "rust-fixedbitset")
     (version "0.1.9")
     (source
@@ -6587,14 +7175,7 @@ cross platform API.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0czam11mi80dbyhf4rd4lz0ihcf7vkfchrdcrn45wbs0h40dxm46"))))
-    (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
-    (home-page "https://github.com/petgraph/fixedbitset")
-    (synopsis "FixedBitSet is a simple bitset collection")
-    (description "FixedBitSet is a simple bitset collection.")
-    (license (list license:asl2.0
-                   license:expat))))
+          "0czam11mi80dbyhf4rd4lz0ihcf7vkfchrdcrn45wbs0h40dxm46"))))))
 
 (define-public rust-flame-0.2
   (package
@@ -6691,8 +7272,31 @@ Reader/Writer streams.  Contains bindings for zlib, deflate, and gzip-based
 streams.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-float-cmp-0.6
+  (package
+    (name "rust-float-cmp")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "float-cmp" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0zb1lv3ga18vsnpjjdg87yazbzvmfwwllj3aiid8660rp3qw8qns"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/mikedilger/float-cmp")
+    (synopsis "Floating point approximate comparison traits")
+    (description
+     "Floating point approximate comparison traits in Rust.")
+    (license license:expat)))
+
 (define-public rust-float-cmp-0.5
   (package
+    (inherit rust-float-cmp-0.6)
     (name "rust-float-cmp")
     (version "0.5.3")
     (source
@@ -6703,15 +7307,7 @@ streams.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "03hmx3n48hjm0x1ig84n1j87kzp75lzr6cj1sgi6a6pykgn4n8km"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs (("rust-num-traits" ,rust-num-traits-0.2))))
-    (home-page "https://github.com/mikedilger/float-cmp")
-    (synopsis "Floating point approximate comparison traits")
-    (description
-     "Floating point approximate comparison traits in Rust.")
-    (license license:expat)))
+          "03hmx3n48hjm0x1ig84n1j87kzp75lzr6cj1sgi6a6pykgn4n8km"))))))
 
 (define-public rust-float-cmp-0.3
   (package
@@ -7751,7 +8347,7 @@ futures-rs library.")
         ("rust-futures-macro" ,rust-futures-macro-0.3)
         ("rust-futures-sink" ,rust-futures-sink-0.3)
         ("rust-futures-task" ,rust-futures-task-0.3)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-pin-utils" ,rust-pin-utils-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
         ("rust-proc-macro-nested" ,rust-proc-macro-nested-0.1)
@@ -7787,7 +8383,7 @@ for the futures-rs library.")
         ("rust-futures-select-macro-preview"
          ,rust-futures-select-macro-preview-0.3)
         ("rust-futures-sink-preview" ,rust-futures-sink-preview-0.3)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-pin-utils" ,rust-pin-utils-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
         ("rust-proc-macro-nested" ,rust-proc-macro-nested-0.1)
@@ -7879,10 +8475,10 @@ archive to be linked into Rustcode.")
 API library @code{gdi32}.")
     (license license:expat)))
 
-(define-public rust-gdk-pixbuf-0.7
+(define-public rust-gdk-pixbuf-0.8
   (package
     (name "rust-gdk-pixbuf")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
       (origin
         (method url-fetch)
@@ -7891,16 +8487,14 @@ API library @code{gdi32}.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1k2g3w2p57m68bi5sldvkmgjgslgqswrjsijjhqaibdvw67409lp"))))
+          "1mxxca0fkcw2rsd3kl3nvlb8ys4cgxqx4n5isjbv0adk8q624j72"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-fragile" ,rust-fragile-0.3)
-        ("rust-futures-preview" ,rust-futures-preview-0.3)
-        ("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.9)
-        ("rust-gio" ,rust-gio-0.7)
+       (("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.9)
+        ("rust-gio" ,rust-gio-0.8)
         ("rust-gio-sys" ,rust-gio-sys-0.9)
-        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib" ,rust-glib-0.9)
         ("rust-glib-sys" ,rust-glib-sys-0.9)
         ("rust-gobject-sys" ,rust-gobject-sys-0.9)
         ("rust-libc" ,rust-libc-0.2)
@@ -7914,6 +8508,35 @@ API library @code{gdi32}.")
     (description
      "Rust bindings for the GdkPixbuf library.")
     (license license:expat)))
+
+(define-public rust-gdk-pixbuf-0.7
+  (package
+    (inherit rust-gdk-pixbuf-0.8)
+    (name "rust-gdk-pixbuf")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gdk-pixbuf" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1k2g3w2p57m68bi5sldvkmgjgslgqswrjsijjhqaibdvw67409lp"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fragile" ,rust-fragile-0.3)
+        ("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.9)
+        ("rust-gio" ,rust-gio-0.7)
+        ("rust-gio-sys" ,rust-gio-sys-0.9)
+        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
 (define-public rust-gdk-pixbuf-sys-0.9
   (package
@@ -7973,8 +8596,38 @@ API library @code{gdi32}.")
     (description "Stackfull Generator Library in Rust.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-generic-array-0.14
+  (package
+    (name "rust-generic-array")
+    (version "0.14.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "generic-array" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "107r1fpm8zcab3lzci4x9par6ik8bra390c60rhxvnmz7dgnlx5c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0)
+        ("rust-typenum" ,rust-typenum-1)
+        ("rust-version-check" ,rust-version-check-0.9))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/fizyk20/generic-array.git")
+    (synopsis
+     "Generic types implementing functionality of arrays")
+    (description
+     "Generic types implementing functionality of arrays.")
+    (license license:expat)))
+
 (define-public rust-generic-array-0.13
   (package
+    (inherit rust-generic-array-0.14)
     (name "rust-generic-array")
     (version "0.13.2")
     (source
@@ -7986,22 +8639,13 @@ API library @code{gdi32}.")
        (sha256
         (base32
          "1kddwxpd58y807y1r3lijg7sw3gxm6nczl6wp57gamhv6mhygl8f"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1.0)
-        ("rust-typenum" ,rust-typenum-1.10))
+        ("rust-typenum" ,rust-typenum-1))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1)
-        ("rust-serde-json" ,rust-serde-json-1.0))))
-    (home-page
-     "https://github.com/fizyk20/generic-array")
-    (synopsis
-     "Generic types implementing functionality of arrays")
-    (description
-     "Generic types implementing functionality of arrays.")
-    (license license:expat)))
+       (("rust-bincode" ,rust-bincode-1)
+        ("rust-serde-json" ,rust-serde-json-1.0))))))
 
 (define-public rust-generic-array-0.12
   (package
@@ -8320,7 +8964,7 @@ retrieving random data from system source.")
         ("rust-stable-deref-trait"
          ,rust-stable-deref-trait-1.1)
         ("rust-smallvec" ,rust-smallvec-1)
-        ("rust-indexmap" ,rust-indexmap-1.3)
+        ("rust-indexmap" ,rust-indexmap-1)
         ("rust-byteorder" ,rust-byteorder-1.3))))
     (home-page "https://github.com/gimli-rs/gimli")
     (synopsis "Library for reading and writing the DWARF debugging format")
@@ -8347,7 +8991,7 @@ retrieving random data from system source.")
        (("rust-arrayvec" ,rust-arrayvec-0.4)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
-        ("rust-indexmap" ,rust-indexmap-1.0)
+        ("rust-indexmap" ,rust-indexmap-1)
         ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1))
        #:cargo-development-inputs
        (("rust-crossbeam" ,rust-crossbeam-0.7)
@@ -8366,8 +9010,49 @@ retrieving random data from system source.")
 DWARF debugging format.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-gio-0.8
+  (package
+    (name "rust-gio")
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gio" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "19cnla2ya0mi6wwaabd5mxbq2kzq46dg6jq2z19rpqyc2na0zl8c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Not all files included in the tarball.
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-gio-sys" ,rust-gio-sys-0.9)
+        ("rust-glib" ,rust-glib-0.9)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1)
+        ("rust-serial-test" ,rust-serial-test-0.1)
+        ("rust-serial-test-derive" ,rust-serial-test-derive-0.1))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "Rust bindings for the Gio library")
+    (description "Rust bindings for the Gio library.")
+    (license license:expat)))
+
 (define-public rust-gio-0.7
   (package
+    (inherit rust-gio-0.8)
     (name "rust-gio")
     (version "0.7.0")
     (source
@@ -8379,7 +9064,6 @@ DWARF debugging format.")
         (sha256
          (base32
           "1qv0wc1hqyb81c03h81s3xrl9jslrw23fr4yhygxbhih9k9vaqb2"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -8393,13 +9077,7 @@ DWARF debugging format.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
        #:cargo-development-inputs
-       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
-    (inputs
-     `(("glib" ,glib)))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "Rust bindings for the Gio library")
-    (description "Rust bindings for the Gio library.")
-    (license license:expat)))
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
 (define-public rust-gio-sys-0.9
   (package
@@ -8858,6 +9536,33 @@ the process of matching one or more glob patterns against a single candidate
 path simultaneously, and returning all of the globs that matched.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-globwalk-0.5
+  (package
+    (name "rust-globwalk")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "globwalk" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09axyql26s09z60sgi3y3lkin9swy2b5km3b0v6mm84xhlljxyl9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ignore" ,rust-ignore-0.4)
+        ("rust-walkdir" ,rust-walkdir-2.3))
+       #:cargo-development-inputs
+       (("rust-docmatic" ,rust-docmatic-0.1)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/gilnaa/globwalk")
+    (synopsis "Glob-matched recursive file system walking")
+    (description
+     "Glob-matched recursive file system walking.")
+    (license license:expat)))
+
 (define-public rust-glutin-0.22
   (package
     (name "rust-glutin")
@@ -9174,7 +9879,7 @@ loading crate.")
         ("rust-grep-searcher" ,rust-grep-searcher-0.1))
        #:cargo-development-inputs
        (("rust-termcolor" ,rust-termcolor-1)
-        ("rust-walkdir" ,rust-walkdir-2.2))))
+        ("rust-walkdir" ,rust-walkdir-2.3))))
     (home-page "https://github.com/BurntSushi/ripgrep")
     (synopsis "Line oriented regex searching as a library")
     (description
@@ -9230,7 +9935,7 @@ loading crate.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-memchr" ,rust-memchr-2.2))
+       (("rust-memchr" ,rust-memchr-2))
        #:cargo-development-inputs
        (("rust-regex" ,rust-regex-1))))
     (home-page "https://github.com/BurntSushi/ripgrep")
@@ -9429,7 +10134,7 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
         ("rust-fnv" ,rust-fnv-1.0)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-http" ,rust-http-0.1)
-        ("rust-indexmap" ,rust-indexmap-1.0)
+        ("rust-indexmap" ,rust-indexmap-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-slab" ,rust-slab-0.4)
         ("rust-string" ,rust-string-0.2)
@@ -9500,7 +10205,7 @@ IEEE 754-2008 binary16 type.")
          ("rust-quick-error" ,rust-quick-error-1.2)
          ("rust-serde" ,rust-serde-1.0)
          ("rust-serde-json" ,rust-serde-json-1.0)
-         ("rust-walkdir" ,rust-walkdir-2.2))
+         ("rust-walkdir" ,rust-walkdir-2.3))
         #:cargo-development-inputs
         (("rust-criterion" ,rust-criterion-0.2)
          ("rust-env-logger" ,rust-env-logger-0.6)
@@ -9540,7 +10245,7 @@ the template engine that renders the official Rust website")
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.5)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-rustc-hash" ,rust-rustc-hash-1.0)
+        ("rust-rustc-hash" ,rust-rustc-hash-1.1)
         ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/rust-lang/hashbrown")
     (synopsis "Rust port of Google's SwissTable hash map")
@@ -9801,8 +10506,88 @@ compile time.")
      `(#:cargo-inputs
        (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.4))))))
 
+(define-public rust-hmac-0.8
+  (package
+    (name "rust-hmac")
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hmac" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0h48wc7iysh4xd6ci4prh8bb7nszijrh9w3blaaq8a6cilk8hs0j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.8)
+        ("rust-digest" ,rust-digest-0.9))
+       #:cargo-development-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.8)
+        ("rust-md-5" ,rust-md-5-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))))
+    (home-page "https://github.com/RustCrypto/MACs")
+    (synopsis "Generic implementation of Hash-based Message Authentication Code")
+    (description
+     "This package provides a generic implementation of @acronym{HMAC,
+Hash-based Message Authentication Code}.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-hmac-0.7
+  (package
+    (inherit rust-hmac-0.8)
+    (name "rust-hmac")
+    (version "0.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hmac" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "15cnwpssp2n1kdm9x7abir67f2hp3q6rdfj1mcck3hm4rmj5xjsx"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.7)
+        ("rust-digest" ,rust-digest-0.8))
+       #:cargo-development-inputs
+       (("rust-crypto-mac" ,rust-crypto-mac-0.7)
+        ("rust-md-5" ,rust-md-5-0.8)
+        ("rust-sha2" ,rust-sha2-0.8))))))
+
+(define-public rust-hostname-0.3
+  (package
+    (name "rust-hostname")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hostname" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0rz8yf70cvzl3nry71m4bz9w6x4j9kdz3qng6pnwhk2h20z1qwrw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-match-cfg" ,rust-match-cfg-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-version-sync" ,rust-version-sync-0.8))))
+    (home-page "https://github.com/svartalf/hostname")
+    (synopsis "Get hostname for Rust")
+    (description
+     "Get hostname for Rust.")
+    (license license:expat)))
+
 (define-public rust-hostname-0.1
   (package
+    (inherit rust-hostname-0.3)
     (name "rust-hostname")
     (version "0.1.5")
     (source
@@ -9813,22 +10598,16 @@ compile time.")
         (sha256
          (base32
           "0kprf862qaa7lwdms6aw7f3275h0j2rwhs9nz5784pm8hdmb9ki1"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-winutil" ,rust-winutil-0.1))))
-    (home-page "https://github.com/svartalf/hostname")
-    (synopsis "Get hostname for Rust")
-    (description
-     "Get hostname for Rust.")
-    (license license:expat)))
+        ("rust-winutil" ,rust-winutil-0.1))))))
 
-(define-public rust-html5ever-0.23
+(define-public rust-html5ever-0.24
   (package
     (name "rust-html5ever")
-    (version "0.23.0")
+    (version "0.24.1")
     (source
      (origin
        (method url-fetch)
@@ -9836,14 +10615,13 @@ compile time.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1dx8k7synrmf3fl6gcfm5q1cybfglvhc9xnvly3s5xcc0b45mrjw"))))
+        (base32 "1js4cr04941ld4r4fqpblvfigy75ds48qcbqhnr7nmz4l6q86m02"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-log" ,rust-log-0.4)
         ("rust-mac" ,rust-mac-0.1)
-        ("rust-markup5ever" ,rust-markup5ever-0.8)
+        ("rust-markup5ever" ,rust-markup5ever-0.9)
         ("rust-proc-macro2" ,rust-proc-macro2-0.4)
         ("rust-quote" ,rust-quote-0.6)
         ("rust-syn" ,rust-syn-0.15))
@@ -9857,6 +10635,31 @@ compile time.")
     (description
      "High-performance browser-grade HTML5 parser.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-html5ever-0.23
+  (package/inherit rust-html5ever-0.24
+    (name "rust-html5ever")
+    (version "0.23.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "html5ever" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1dx8k7synrmf3fl6gcfm5q1cybfglvhc9xnvly3s5xcc0b45mrjw"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-mac" ,rust-mac-0.1)
+        ("rust-markup5ever" ,rust-markup5ever-0.8)
+        ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.2)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-rustc-test" ,rust-rustc-test-0.3)
+        ("rust-typed-arena" ,rust-typed-arena-1.4))))))
 
 (define-public rust-http-0.2
   (package
@@ -9878,7 +10681,7 @@ compile time.")
         ("rust-itoa" ,rust-itoa-0.4))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-indexmap" ,rust-indexmap-1.0)
+        ("rust-indexmap" ,rust-indexmap-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-seahash" ,rust-seahash-3.0)
@@ -9910,7 +10713,7 @@ requests and responses.")
         ("rust-fnv" ,rust-fnv-1.0)
         ("rust-itoa" ,rust-itoa-0.4))
        #:cargo-development-inputs
-       (("rust-indexmap" ,rust-indexmap-1.0)
+       (("rust-indexmap" ,rust-indexmap-1)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
         ("rust-rand" ,rust-rand-0.4)
         ("rust-seahash" ,rust-seahash-3.0)
@@ -9978,7 +10781,7 @@ or response body.")
        #:cargo-inputs
        ;; Haven't packaged rustls and webpki because of license
        (("rust-native-tls" ,rust-native-tls-0.2)
-        ("rust-unicase" ,rust-unicase-2.4))))
+        ("rust-unicase" ,rust-unicase-2))))
     (home-page "https://github.com/jayjamesjay/http_req")
     (synopsis
      "HTTP client with built-in HTTPS support")
@@ -10216,11 +11019,11 @@ SystemTime}}.")
         ("rust-globset" ,rust-globset-0.4)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-regex" ,rust-regex-1)
         ("rust-same-file" ,rust-same-file-1.0)
         ("rust-thread-local" ,rust-thread-local-1.0)
-        ("rust-walkdir" ,rust-walkdir-2.2)
+        ("rust-walkdir" ,rust-walkdir-2.3)
         ("rust-winapi-util" ,rust-winapi-util-0.1))
        #:cargo-development-inputs
        (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.4))))
@@ -10231,8 +11034,49 @@ SystemTime}}.")
 ignore files such as .gitignore against file paths.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-image-0.23
+  (package
+    (name "rust-image")
+    (version "0.23.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "image" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1d2a80k7pwqshliqi5fw1dwkz7q9zd6pjnwpw8zxc1v4xhzmbc5m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test images are missing from the release.
+       #:cargo-inputs
+       (("rust-bytemuck" ,rust-bytemuck-1)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-gif" ,rust-gif-0.10)
+        ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.1)
+        ("rust-num-iter" ,rust-num-iter-0.1)
+        ("rust-num-rational" ,rust-num-rational-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-png" ,rust-png-0.16)
+        ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
+        ("rust-tiff" ,rust-tiff-0.5))
+       #:cargo-development-inputs
+       (("rust-crc32fast" ,rust-crc32fast-1.2)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-num-complex" ,rust-num-complex-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page "https://github.com/image-rs/image")
+    (synopsis "Imaging library written in Rust")
+    (description
+     "Imaging library written in Rust.  Provides basic filters and decoders
+for the most common image formats.")
+    (license license:expat)))
+
 (define-public rust-image-0.22
   (package
+    (inherit rust-image-0.23)
     (name "rust-image")
     (version "0.22.5")
     (source
@@ -10244,7 +11088,6 @@ ignore files such as .gitignore against file paths.")
        (sha256
         (base32
          "0jpbd0p1q7xx6395ba9ikz2k4cfp26qczisa8m2v15w3hzd2mv88"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Some test images are missing from the release.
        #:cargo-inputs
@@ -10261,13 +11104,7 @@ ignore files such as .gitignore against file paths.")
        (("rust-crc32fast" ,rust-crc32fast-1.2)
         ("rust-glob" ,rust-glob-0.3)
         ("rust-num-complex" ,rust-num-complex-0.2)
-        ("rust-quickcheck" ,rust-quickcheck-0.9))))
-    (home-page "https://github.com/image-rs/image")
-    (synopsis "Imaging library written in Rust")
-    (description
-     "Imaging library written in Rust.  Provides basic filters and decoders
-for the most common image formats.")
-    (license license:expat)))
+        ("rust-quickcheck" ,rust-quickcheck-0.9))))))
 
 (define-public rust-image-0.21
   (package
@@ -10331,10 +11168,10 @@ for the most common image formats.")
         ("rust-num-complex" ,rust-num-complex-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.6))))))
 
-(define-public rust-indexmap-1.3
+(define-public rust-indexmap-1
   (package
     (name "rust-indexmap")
-    (version "1.3.2")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
@@ -10343,14 +11180,20 @@ for the most common image formats.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "14i2gmq9pwaafvlxmsc12j6539hjgqk4j4jz40fz763vbcn08vq7"))))
+          "1ziabh0lc4wwahv3qgv6aqckyydcrczpagpfp770jn5m2fqv5663"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1.0)
         ("rust-serde" ,rust-serde-1.0)
-        ("rust-rayon" ,rust-rayon-1))))
+        ("rust-rayon" ,rust-rayon-1))
+       #:cargo-development-inputs
+       (("rust-fnv" ,rust-fnv-1.0)
+        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/bluss/indexmap")
     (synopsis "Hash table with consistent order and fast iteration.")
     (description
@@ -10362,48 +11205,6 @@ hash table functionality, it preserves insertion order except after
 removals, and it allows lookup of its elements by either hash table key
 or numerical index.  A corresponding hash set type is also provided.")
     (license (list license:asl2.0 license:expat))))
-
-(define-public rust-indexmap-1.0
-  (package
-    (name "rust-indexmap")
-    (version "1.0.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "indexmap" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "13f5k1kl2759y4xfy0vhays35fmrkmhqngbr2ny8smvrbz0ag0by"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-serde" ,rust-serde-1.0))
-       #:cargo-development-inputs
-       (("rust-fnv" ,rust-fnv-1.0)
-        ("rust-itertools" ,rust-itertools-0.8)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-quickcheck" ,rust-quickcheck-0.8)
-        ("rust-rand" ,rust-rand-0.4)
-        ("rust-serde-test" ,rust-serde-test-1.0))))
-    (home-page "https://github.com/bluss/indexmap")
-    (synopsis
-     "Hash table with consistent order and fast iteration")
-    (description
-     "This package provides a hash table with consistent order and fast iteration.
-
-The indexmap is a hash table where the iteration order of the
-key-value pairs is independent of the hash values of the keys.  It has
-the usual hash table functionality, it preserves insertion order
-except after removals, and it allows lookup of its elements by either
-hash table key or numerical index.  A corresponding hash set type is
-also provided.
-
-This crate was initially published under the name ordermap, but it was
-renamed to indexmap.")
-    (license (list license:expat license:asl2.0))))
 
 (define-public rust-inflate-0.4
   (package
@@ -10663,8 +11464,46 @@ immutable interval tree.")
     (description "Parsing ISO8601 dates using nom.")
     (license license:expat)))
 
+(define-public rust-itertools-0.9
+  (package
+    (name "rust-itertools")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "itertools" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0jyml7ygr7kijkcjdl3fk5f34y5h5jsavclim7l13zjiavw1hkr8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-either" ,rust-either-1.5))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-permutohedron" ,rust-permutohedron-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("=0.3.0") "0.3"))
+             #t)))))
+    (home-page
+     "https://github.com/rust-itertools/itertools")
+    (synopsis
+     "Extra iterator adaptors, iterator methods, free functions, and macros")
+    (description
+     "Extra iterator adaptors, iterator methods, free functions, and macros.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-itertools-0.8
   (package
+    (inherit rust-itertools-0.9)
     (name "rust-itertools")
     (version "0.8.2")
     (source
@@ -10676,7 +11515,6 @@ immutable interval tree.")
        (sha256
         (base32
          "1154j48aw913v5jnyhpxialxhdn2sfpl4d7bwididyb1r05jsspm"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -10684,14 +11522,7 @@ immutable interval tree.")
        #:cargo-development-inputs
        (("rust-permutohedron" ,rust-permutohedron-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.7)
-        ("rust-rand" ,rust-rand-0.6))))
-    (home-page
-     "https://github.com/rust-itertools/itertools")
-    (synopsis
-     "Extra iterator adaptors, iterator methods, free functions, and macros")
-    (description
-     "Extra iterator adaptors, iterator methods, free functions, and macros.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-itertools-0.7
   (package
@@ -10712,6 +11543,27 @@ immutable interval tree.")
        #:cargo-development-inputs
        (("rust-permutohedron" ,rust-permutohedron-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.5))))))
+
+(define-public rust-itertools-0.5
+  (package
+    (inherit rust-itertools-0.7)
+    (name "rust-itertools")
+    (version "0.5.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "itertools" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1z4lyrakgynvhylya72qb3vizmxmd62whjmg4r8k01d4inbxccs8"))))
+    (arguments
+     `(#:tests? #f ; Tests fail to compile
+       #:cargo-inputs
+       (("rust-either" ,rust-either-1.5))
+       #:cargo-development-inputs
+       (("rust-permutohedron" ,rust-permutohedron-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.4))))))
 
 (define-public rust-itertools-num-0.1
   (package
@@ -10979,7 +11831,7 @@ primitives to an @code{io::Write}.")
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-png" ,rust-png-0.14)
-        ("rust-walkdir" ,rust-walkdir-2.2))))
+        ("rust-walkdir" ,rust-walkdir-2.3))))
     (home-page "https://github.com/image-rs/jpeg-decoder")
     (synopsis "JPEG decoder")
     (description "JPEG decoder written in Rust.")
@@ -11368,14 +12220,14 @@ values of all the exported APIs match the platform that libc is compiled for.")
 (define-public rust-libc-print-0.1
   (package
     (name "rust-libc-print")
-    (version "0.1.11")
+    (version "0.1.13")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "libc-print" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1sh4l815w7zxg8w17fvwj63y421sjqxxrdamzwyvg90n6mr70phv"))))
+        (base32 "0cjvz622b9bmf32q3mzmxv9ddxfdla6z2v647v8f3qx7lci9kmji"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
@@ -11696,9 +12548,10 @@ graphics and video games.")
           "1ffa2whkyh9mwvdlpk6v8pjkg8p8mlzyjfymq5adll9a18sl80zk"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-safemem" ,rust-safemem-0.3))))
+     `(#:cargo-inputs
+       (("rust-safemem" ,rust-safemem-0.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.5))))
     (home-page "https://bitbucket.org/marshallpierce/line-wrap-rs/src")
     (synopsis "Efficiently insert line separators")
     (description
@@ -11708,7 +12561,7 @@ graphics and video games.")
 (define-public rust-linked-hash-map-0.5
   (package
     (name "rust-linked-hash-map")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -11717,11 +12570,10 @@ graphics and video games.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10qgbvh00q36ql0jh00rxh2jlq6qvl11n6mig0cvkpf4xf5bd4df"))))
+         "0jih3za0p1mywlnwcakc462q1byk6z8vnrzdm36hg6cxk7asdmcd"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-clippy" ,rust-clippy-0.0)
         ("rust-heapsize" ,rust-heapsize-0.4)
         ("rust-serde" ,rust-serde-1.0)
@@ -11893,7 +12745,7 @@ by inspecting the system for user preference.")
 (define-public rust-lock-api-0.3
   (package
     (name "rust-lock-api")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
@@ -11902,7 +12754,7 @@ by inspecting the system for user preference.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0yzlz7f5xl5sm129dq8jqsrcrkyv7jjnqwd4zr4ijsdlxjaxxckr"))))
+         "0xgc5dzmajh0akbh5d6d7rj9mh5rzpk74pyrc946v2ixgakj9nn4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -12332,8 +13184,40 @@ platform-independently.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-markup5ever-0.10
+  (package
+    (name "rust-markup5ever")
+    (version "0.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "markup5ever" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1aqxl1lsc8s6ycsw5ibwynadnb9qpiab4ggwgdq9pjlnjdk8vqxa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-phf" ,rust-phf-0.8)
+        ("rust-string-cache" ,rust-string-cache-0.8)
+        ("rust-tendril" ,rust-tendril-0.4)
+        ("rust-phf-codegen" ,rust-phf-codegen-0.8)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-string-cache-codegen" ,rust-string-cache-codegen-0.5))))
+    (home-page "https://github.com/servo/html5ever")
+    (synopsis "Common code for xml5ever and html5ever")
+    (description
+     "Common code for xml5ever and html5ever.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-markup5ever-0.9
   (package
+    (inherit rust-markup5ever-0.10)
     (name "rust-markup5ever")
     (version "0.9.0")
     (source
@@ -12345,7 +13229,6 @@ platform-independently.")
         (sha256
           (base32
             "00wxigkiw8f777pjp7q5kfq77xpwda9zskkwp698assh8yfisf35"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-log" ,rust-log-0.4)
@@ -12356,12 +13239,7 @@ platform-independently.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
-        ("rust-string-cache-codegen" ,rust-string-cache-codegen-0.4))))
-    (home-page "https://github.com/servo/html5ever")
-    (synopsis "Common code for xml5ever and html5ever")
-    (description
-     "Common code for xml5ever and html5ever.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-string-cache-codegen" ,rust-string-cache-codegen-0.4))))))
 
 (define-public rust-markup5ever-0.8
   (package
@@ -12377,6 +13255,29 @@ platform-independently.")
        (sha256
         (base32
          "08ayl9aqjnmf7ly1ipy6dk3wjvyfn4w51l40jzh1fh984ykldbzi"))))))
+
+(define-public rust-match-cfg-0.1
+  (package
+    (name "rust-match-cfg")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "match-cfg" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1r5j3zqc3qr8ybcx95bk8q57mkizmgmffj5lmicd4i8d9riyigpz"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/gnzlbg/match_cfg")
+    (synopsis
+     "Define an item depending on a large number of `#[cfg]` parameters")
+    (description
+     "This package provides a convenience macro to ergonomically define an item
+depending on a large number of @code{#[cfg]} parameters.  Structured like match
+statement, the first matching branch is the item that gets emitted.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-matches-0.1
   (package
@@ -12464,6 +13365,58 @@ parallelize and optimize.")
      "This package provides MaybeUninit for friends of backwards compatibility.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-md-5-0.9
+  (package
+    (name "rust-md-5")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "md-5" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "14x7yxfi4pk4qy3zmn9dj69yc18fg3cyind346kribjd93077qij"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-buffer" ,rust-block-buffer-0.8)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-md5-asm" ,rust-md5-asm-0.4)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.2))
+       #:cargo-development-inputs
+       (("rust-digest" ,rust-digest-0.9)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "MD5 hash function")
+    (description "MD5 hash function.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-md-5-0.8
+  (package
+    (inherit rust-md-5-0.9)
+    (name "rust-md-5")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "md-5" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1j5rfxy2p76xf5f1lgaw85xla0b1bbv2lknvdhv1j0ibmzfg72m1"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-buffer" ,rust-block-buffer-0.7)
+        ("rust-digest" ,rust-digest-0.8)
+        ("rust-md5-asm" ,rust-md5-asm-0.4)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.2))
+       #:cargo-development-inputs
+       (("rust-digest" ,rust-digest-0.8)
+        ("rust-hex-literal" ,rust-hex-literal-0.1))))))
+
 (define-public rust-md5-0.6
   (package
     (name "rust-md5")
@@ -12498,7 +13451,59 @@ parallelize and optimize.")
         (base32
          "0j2s8aqdkhwhy7awga2bmv5n8qq8bgy8672iha9f3y871dm6vibr"))))))
 
-(define-public rust-memchr-2.3
+(define-public rust-md5-asm-0.4
+  (package
+    (name "rust-md5-asm")
+    (version "0.4.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "md5-asm" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0gpk5647js1k084jc7pg2gji0cvl6hjkkbfia6lnpk8y4shyairv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1.0))))
+    (home-page "https://github.com/RustCrypto/asm-hashes")
+    (synopsis "Assembly implementation of MD5 compression function")
+    (description "This package contains an assembly implementation of MD5
+compression function.")
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (license license:expat)))
+
+(define-public rust-measureme-0.7
+  (package
+    (name "rust-measureme")
+    (version "0.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "measureme" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0cmrrh86b3rvws6d7xp07wfn703yw02cakzirykvn4vh4p9hkxzy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-parking-lot" ,rust-parking-lot-0.9)
+        ("rust-rustc-hash" ,rust-rustc-hash-1.1))))
+    (home-page "https://github.com/rust-lang/measureme")
+    (synopsis "Support crate for rustc's self-profiling feature")
+    (description
+     "Record rustc compiler events and serializing them to a compact binary
+format with this support package.  It is integrated into rustc via the
+unstable -Z self-profile flag.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-memchr-2
   (package
     (name "rust-memchr")
     (version "2.3.3")
@@ -12522,35 +13527,9 @@ parallelize and optimize.")
 for searching bytes.")
     (license (list license:unlicense license:expat))))
 
-(define-public rust-memchr-2.2
-  (package
-    (name "rust-memchr")
-    (version "2.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "memchr" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "13j6ji9x9ydpi9grbss106gqqr3xn3bcfp28aydqfa4751qrfmw8"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2))
-       #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.8))))
-    (home-page
-     "https://github.com/BurntSushi/rust-memchr")
-    (synopsis "Safe interface to memchr")
-    (description "The @code{memchr} crate provides heavily optimized routines
-for searching bytes.")
-    (license (list license:expat license:unlicense))))
-
 (define-public rust-memchr-1.0
   (package
-    (inherit rust-memchr-2.2)
+    (inherit rust-memchr-2)
     (name "rust-memchr")
     (version "1.0.2")
     (source
@@ -13177,8 +14156,52 @@ checking.")
     (description "Run NASM during your Cargo build.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-nalgebra-0.19
+  (package
+    (name "rust-nalgebra")
+    (version "0.19.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "nalgebra" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0i87k57nav221lnr9z7ljlwxh8073qsx33bajdm146y00q805fqa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-abomonation" ,rust-abomonation-0.7)
+        ("rust-alga" ,rust-alga-0.9)
+        ("rust-approx" ,rust-approx-0.3)
+        ("rust-generic-array" ,rust-generic-array-0.13)
+        ("rust-matrixmultiply" ,rust-matrixmultiply-0.2)
+        ("rust-mint" ,rust-mint-0.5)
+        ("rust-num-complex" ,rust-num-complex-0.2)
+        ("rust-num-rational" ,rust-num-rational-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-pest" ,rust-pest-2.1)
+        ("rust-pest-derive" ,rust-pest-derive-2.1)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-distr" ,rust-rand-distr-0.2)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-typenum" ,rust-typenum-1))
+       #:cargo-development-inputs
+       (("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://nalgebra.org")
+    (synopsis "Linear algebra library")
+    (description
+     "This package provides a linear algebra library with transformations and
+statically-sized or dynamically-sized matrices.")
+    (license license:bsd-3)))
+
 (define-public rust-nalgebra-0.18
   (package
+    (inherit rust-nalgebra-0.19)
     (name "rust-nalgebra")
     (version "0.18.1")
     (source
@@ -13190,7 +14213,6 @@ checking.")
         (sha256
          (base32
           "18i1npny8s45ff67p5qpdwwsn36fp23mal8847fkb32cqgdzvada"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-abomonation" ,rust-abomonation-0.7)
@@ -13208,16 +14230,10 @@ checking.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
-        ("rust-typenum" ,rust-typenum-1.10))
+        ("rust-typenum" ,rust-typenum-1))
        #:cargo-development-inputs
        (("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
-        ("rust-serde-json" ,rust-serde-json-1.0))))
-    (home-page "https://nalgebra.org")
-    (synopsis "Linear algebra library")
-    (description
-     "This package provides a linear algebra library with transformations and
-statically-sized or dynamically-sized matrices.")
-    (license license:bsd-3)))
+        ("rust-serde-json" ,rust-serde-json-1.0))))))
 
 (define-public rust-named-pipe-0.4
   (package
@@ -13613,7 +14629,7 @@ implementation (which is unstable / requires nightly).")
        #:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-lexical-core" ,rust-lexical-core-0.7)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-regex" ,rust-regex-1)
         ("rust-version-check" ,rust-version-check-0.9))
        #:cargo-development-inputs
@@ -13656,7 +14672,7 @@ combinators library.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-regex" ,rust-regex-1)
         ("rust-version-check" ,rust-version-check-0.1))
        #:cargo-development-inputs
@@ -13727,6 +14743,28 @@ combinators library.")
       "No-op proc_macro, literally does nothing")
     (license license:expat)))
 
+(define-public rust-normalize-line-endings-0.3
+  (package
+    (name "rust-normalize-line-endings")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "normalize-line-endings" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1gp52dfn2glz26a352zra8h04351icf0fkqzw1shkwrgh1vpz031"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/derekdreery/normalize-line-endings")
+    (synopsis
+     "Iterate over chars and returns a new iterator with all line endings")
+    (description
+     "This package takes an iterator over characters and returns a new iterator
+with all line endings.")
+    (license license:asl2.0)))
+
 (define-public rust-notify-4
   (package
     (name "rust-notify")
@@ -13752,7 +14790,7 @@ combinators library.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-mio" ,rust-mio-0.6)
         ("rust-mio-extras" ,rust-mio-extras-2)
-        ("rust-walkdir" ,rust-walkdir-2.2)
+        ("rust-walkdir" ,rust-walkdir-2.3)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))
@@ -13814,8 +14852,37 @@ including bigint, complex, rational, range iterators, generic integers, and more
         ("rust-num-rational" ,rust-num-rational-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2))))))
 
+(define-public rust-num-bigint-0.3
+  (package
+    (name "rust-num-bigint")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num-bigint" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "186glgapg71zicah3wjld3sr5kx6rkcf6rf43gxmjw39wdszrwxp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-autocfg" ,rust-autocfg-1.0))))
+    (home-page "https://github.com/rust-num/num-bigint")
+    (synopsis "Big integer implementation for Rust")
+    (description
+     "Big integer implementation for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-bigint-0.2
   (package
+    (inherit rust-num-bigint-0.3)
     (name "rust-num-bigint")
     (version "0.2.6")
     (source
@@ -13827,7 +14894,6 @@ including bigint, complex, rational, range iterators, generic integers, and more
        (sha256
         (base32
          "015k3wixdi4w698sappvy43pf8bvkw0f88xplmdgc3zfk2cpy309"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-num-integer" ,rust-num-integer-0.1)
@@ -13838,12 +14904,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
         ("rust-serde" ,rust-serde-1.0)
         ("rust-autocfg" ,rust-autocfg-1.0))
        #:cargo-development-inputs
-       (("rust-serde-test" ,rust-serde-test-1.0))))
-    (home-page "https://github.com/rust-num/num-bigint")
-    (synopsis "Big integer implementation for Rust")
-    (description
-     "Big integer implementation for Rust.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-serde-test" ,rust-serde-test-1.0))))))
 
 (define-public rust-num-bigint-0.1
   (package
@@ -13869,8 +14930,36 @@ including bigint, complex, rational, range iterators, generic integers, and more
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-num-complex-0.3
+  (package
+    (name "rust-num-complex")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num-complex" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1dczd81f2xb092dhb0brbdbf19pyfn0v9xmkf6qm0w4pv1dx0nmh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde" ,rust-serde-1.0))))
+    (home-page
+     "https://github.com/rust-num/num-complex")
+    (synopsis
+     "Complex numbers implementation for Rust")
+    (description
+     "Complex numbers implementation for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-complex-0.2
   (package
+    (inherit rust-num-complex-0.3)
     (name "rust-num-complex")
     (version "0.2.4")
     (source
@@ -13882,20 +14971,12 @@ including bigint, complex, rational, range iterators, generic integers, and more
        (sha256
         (base32
          "15dwaksw729r3v14sgzc9723s3fnfixiir8jzwx7b7kim48r9cdn"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-rand" ,rust-rand-0.5)
         ("rust-serde" ,rust-serde-1.0)
-        ("rust-autocfg" ,rust-autocfg-1.0))))
-    (home-page
-     "https://github.com/rust-num/num-complex")
-    (synopsis
-     "Complex numbers implementation for Rust")
-    (description
-     "Complex numbers implementation for Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-autocfg" ,rust-autocfg-1.0))))))
 
 (define-public rust-num-complex-0.1
   (package
@@ -14045,8 +15126,36 @@ including bigint, complex, rational, range iterators, generic integers, and more
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-num-rational-0.3
+  (package
+    (name "rust-num-rational")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num-rational" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0f41j1l1kn5jj36a8xdy8kv242wlwq0ka578vm8gnb1n1wvdgd55"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-autocfg" ,rust-autocfg-1.0))))
+    (home-page "https://github.com/rust-num/num-rational")
+    (synopsis "Rational numbers implementation for Rust")
+    (description
+     "Rational numbers implementation for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-num-rational-0.2
   (package
+    (inherit rust-num-rational-0.3)
     (name "rust-num-rational")
     (version "0.2.3")
     (source
@@ -14058,19 +15167,13 @@ including bigint, complex, rational, range iterators, generic integers, and more
        (sha256
         (base32
          "18q3vq3xldhaj0z3f92am8f59m1awywgdj28c7wvx0bcksgwfkfs"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-num-bigint" ,rust-num-bigint-0.2)
         ("rust-num-integer" ,rust-num-integer-0.1)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde" ,rust-serde-1.0)
-        ("rust-autocfg" ,rust-autocfg-1.0))))
-    (home-page "https://github.com/rust-num/num-rational")
-    (synopsis "Rational numbers implementation for Rust")
-    (description
-     "Rational numbers implementation for Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-autocfg" ,rust-autocfg-1.0))))))
 
 (define-public rust-num-rational-0.1
   (package
@@ -14217,7 +15320,7 @@ giga, kibi.")
        #:cargo-inputs
        (("rust-malloc-buf" ,rust-malloc-buf-0.0)
         ("rust-objc-exception" ,rust-objc-exception-0.1))))
-    (home-page "http://github.com/SSheldon/rust-objc")
+    (home-page "https://github.com/SSheldon/rust-objc")
     (synopsis "Objective-C Runtime bindings and wrapper for Rust")
     (description "This package provides an Objective-C Runtime bindings and
 wrapper for Rust.")
@@ -14241,7 +15344,7 @@ wrapper for Rust.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-cc" ,rust-cc-1.0))))
-    (home-page "http://github.com/SSheldon/rust-objc-exception")
+    (home-page "https://github.com/SSheldon/rust-objc-exception")
     (synopsis "Rust interface for Objective-C's throw and try/catch statements")
     (description
      "This package provides a Rust interface for Objective-C's throw and
@@ -14268,7 +15371,7 @@ try/catch statements.")
        (("rust-block" ,rust-block-0.1)
         ("rust-objc" ,rust-objc-0.2)
         ("rust-objc-id" ,rust-objc-id-0.1))))
-    (home-page "http://github.com/SSheldon/rust-objc-foundation")
+    (home-page "https://github.com/SSheldon/rust-objc-foundation")
     (synopsis "Rust wrapper for Objective-C's Foundation framework")
     (description "This package provides a rust wrapper for Objective-C's
 Foundation framework.")
@@ -14291,7 +15394,7 @@ Foundation framework.")
     (arguments
      `(#:tests? #f  ; Tests require gcc-objc.
        #:cargo-inputs (("rust-objc" ,rust-objc-0.2))))
-    (home-page "http://github.com/SSheldon/rust-objc-id")
+    (home-page "https://github.com/SSheldon/rust-objc-id")
     (synopsis "Rust smart pointers for Objective-C reference counting")
     (description
      "This package provides Rust smart pointers for Objective-C reference counting.")
@@ -14315,7 +15418,7 @@ Foundation framework.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-gcc" ,rust-gcc-0.3))))
-    (home-page "http://github.com/SSheldon/rust-objc")
+    (home-page "https://github.com/SSheldon/rust-objc")
     (synopsis "Utilities for testing Objective-C interop")
     (description
      "This package provides utilities for testing Objective-C interop.")
@@ -14345,7 +15448,7 @@ Foundation framework.")
         ("rust-uuid" ,rust-uuid-0.8)
         ("rust-flate2" ,rust-flate2-1.0)
         ("rust-crc32fast" ,rust-crc32fast-1.2)
-        ("rust-indexmap" ,rust-indexmap-1.3))))
+        ("rust-indexmap" ,rust-indexmap-1))))
     (home-page "https://github.com/gimli-rs/object")
     (synopsis "Unified interface for reading and writing object file formats")
     (description "This package provides a unified interface for reading and
@@ -14398,16 +15501,15 @@ formats.")
          "0rdnxa0na4897yb0svb3figz35g4imxjv61yfm2j21gbh5q8v8d9"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-rawpointer" ,rust-rawpointer-0.1)
         ("rust-rawslice" ,rust-rawslice-0.1)
         ("rust-unchecked-index" ,rust-unchecked-index-0.2))
        #:cargo-development-inputs
-       (("rust-itertools" ,rust-itertools-0.8)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-memchr" ,rust-memchr-2.2)
-        ("rust-quickcheck" ,rust-quickcheck-0.8))))
+       (("rust-itertools" ,rust-itertools-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-quickcheck" ,rust-quickcheck-0.4))))
     (home-page "https://github.com/bluss/odds")
     (synopsis "Extra functionality for slices, strings and other things")
     (description
@@ -14415,6 +15517,32 @@ formats.")
 slices (@code{.find()}, @code{RevSlice}), strings and other things.
 Things in odds may move to more appropriate crates if we find them.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-odds-0.2
+  (package
+    (inherit rust-odds-0.3)
+    (name "rust-odds")
+    (version "0.2.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "odds" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08pvngx0nf7yl9cgk4bahn1a0s8na5g9knbhq7y29kysp58h3bjf"))))
+    (arguments
+     `(#:tests? #f      ; doc tests fail
+       #:cargo-inputs
+       (("rust-rawpointer" ,rust-rawpointer-0.1)
+        ("rust-rawslice" ,rust-rawslice-0.1)
+        ("rust-unchecked-index" ,rust-unchecked-index-0.2))
+       #:cargo-development-inputs
+       (("rust-itertools" ,rust-itertools-0.5)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-quickcheck" ,rust-quickcheck-0.4))))))
 
 (define-public rust-onig-5.0
   (package
@@ -14437,7 +15565,7 @@ Things in odds may move to more appropriate crates if we find them.")
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-onig-sys" ,rust-onig-sys-69.2))))
-    (home-page "http://github.com/iwillspeak/rust-onig")
+    (home-page "https://github.com/rust-onig/rust-onig")
     (synopsis
      "Rust bindings for the Oniguruma regular expression library")
     (description
@@ -14466,7 +15594,7 @@ character encodings and regex syntaxes.")
        (("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-bindgen" ,rust-bindgen-0.50)
         ("rust-cc" ,rust-cc-1.0))))
-    (home-page "http://github.com/iwillspeak/rust-onig")
+    (home-page "https://github.com/rust-onig/rust-onig")
     (synopsis
      "Rust bindings to the oniguruma library.")
     (description
@@ -14546,8 +15674,29 @@ You probably don't want to link to this crate directly; instead check out the
       "This package provides a tiny, robust PRNG implementation.")
     (license license:expat)))
 
+(define-public rust-opaque-debug-0.3
+  (package
+    (name "rust-opaque-debug")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "opaque-debug" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1m8kzi4nd6shdqimn0mgb24f0hxslhnqd1whakyq06wcqd086jk2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Macro for opaque debug trait implementation")
+    (description
+     "This package provides a macro for opaque debug trait implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-opaque-debug-0.2
   (package
+    (inherit rust-opaque-debug-0.3)
     (name "rust-opaque-debug")
     (version "0.2.2")
     (source
@@ -14558,13 +15707,7 @@ You probably don't want to link to this crate directly; instead check out the
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "02942l2gc7w5r4js7i9063x99szic5mzzk1055j83v4diqpbpxck"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/RustCrypto/utils")
-    (synopsis "Macro for opaque Debug trait implementation")
-    (description
-     "Macro for opaque Debug trait implementation.")
-    (license (list license:asl2.0 license:expat))))
+         "02942l2gc7w5r4js7i9063x99szic5mzzk1055j83v4diqpbpxck"))))))
 
 (define-public rust-openssl-0.10
   (package
@@ -15050,10 +16193,10 @@ normally prevent moving a type that has been borrowed from.")
      "Automatically implement traits from the palette crate.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-pango-0.7
+(define-public rust-pango-0.8
   (package
     (name "rust-pango")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
       (origin
         (method url-fetch)
@@ -15062,12 +16205,12 @@ normally prevent moving a type that has been borrowed from.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "11np7nxb69g3kid2l78b7k519x1wk1c3f9yy7swgzy24n5qs0grr"))))
+          "0xq50950il3228grzs4xvc5s6phxcl5l50grz6syvs0vixr6p70y"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib" ,rust-glib-0.9)
         ("rust-glib-sys" ,rust-glib-sys-0.9)
         ("rust-gobject-sys" ,rust-gobject-sys-0.9)
         ("rust-lazy-static" ,rust-lazy-static-1)
@@ -15083,6 +16226,33 @@ normally prevent moving a type that has been borrowed from.")
     (description
      "Rust bindings for the Pango library.")
     (license license:expat)))
+
+(define-public rust-pango-0.7
+  (package
+    (inherit rust-pango-0.8)
+    (name "rust-pango")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pango" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "11np7nxb69g3kid2l78b7k519x1wk1c3f9yy7swgzy24n5qs0grr"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango-sys" ,rust-pango-sys-0.9)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
 (define-public rust-pango-sys-0.9
   (package
@@ -15115,8 +16285,46 @@ normally prevent moving a type that has been borrowed from.")
     (description "This package provides FFI bindings to @code{libpango-1.0}.")
     (license license:expat)))
 
+(define-public rust-pangocairo-0.9
+  (package
+    (name "rust-pangocairo")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pangocairo" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0bap3h78hdqdyln58349qjjbcv45m8a0a16c4n9fprdj1my0gldx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cairo-rs" ,rust-cairo-rs-0.8)
+        ("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.9)
+        ("rust-glib" ,rust-glib-0.9)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango" ,rust-pango-0.8)
+        ("rust-pango-sys" ,rust-pango-sys-0.9)
+        ("rust-pangocairo-sys" ,rust-pangocairo-sys-0.10)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "Rust bindings for the PangoCairo library")
+    (description
+     "Rust bindings for the PangoCairo library.")
+    (license license:expat)))
+
 (define-public rust-pangocairo-0.8
   (package
+    (inherit rust-pangocairo-0.9)
     (name "rust-pangocairo")
     (version "0.8.0")
     (source
@@ -15128,7 +16336,6 @@ normally prevent moving a type that has been borrowed from.")
         (sha256
          (base32
           "0qjiwsp73x3w0493dzycyjzxnzwq7ixwmf1ccr5r41pjhxbnk1kl"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -15143,14 +16350,7 @@ normally prevent moving a type that has been borrowed from.")
         ("rust-pangocairo-sys" ,rust-pangocairo-sys-0.10)
         ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
        #:cargo-development-inputs
-       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
-    (inputs
-     `(("gtk+" ,gtk+)))
-    (home-page "http://gtk-rs.org/")
-    (synopsis "Rust bindings for the PangoCairo library")
-    (description
-     "Rust bindings for the PangoCairo library.")
-    (license license:expat)))
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
 (define-public rust-pangocairo-sys-0.10
   (package
@@ -15263,7 +16463,7 @@ deserialization, and interpreter in Rust.")
 (define-public rust-parking-lot-0.10
   (package
     (name "rust-parking-lot")
-    (version "0.10.0")
+    (version "0.10.2")
     (source
      (origin
        (method url-fetch)
@@ -15272,14 +16472,14 @@ deserialization, and interpreter in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1z0wgf2sd1266y768kxxs3313zjfzj9r3k7j4arfaz0bmd4qrscj"))))
+         "0pjhcbyk6n0g6jsr6s9nf4x8wribm1b2yf8fgc8drbqa77mh99yk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-lock-api" ,rust-lock-api-0.3)
         ("rust-parking-lot-core" ,rust-parking-lot-core-0.7))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1)
+       (("rust-bincode" ,rust-bincode-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.7))))
     (home-page "https://github.com/Amanieu/parking_lot")
@@ -15309,7 +16509,7 @@ synchronization primitives.")
        (("rust-lock-api" ,rust-lock-api-0.3)
         ("rust-parking-lot-core" ,rust-parking-lot-core-0.6))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1)
+       (("rust-bincode" ,rust-bincode-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.4)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))))
@@ -15334,7 +16534,7 @@ synchronization primitives.")
        (("rust-lock-api" ,rust-lock-api-0.2)
         ("rust-parking-lot-core" ,rust-parking-lot-core-0.5))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1)
+       (("rust-bincode" ,rust-bincode-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.4)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))))
@@ -15359,7 +16559,7 @@ synchronization primitives.")
        (("rust-lock-api" ,rust-lock-api-0.1)
         ("rust-parking-lot-core" ,rust-parking-lot-core-0.4))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1)
+       (("rust-bincode" ,rust-bincode-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.4)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))))
@@ -15367,7 +16567,7 @@ synchronization primitives.")
 (define-public rust-parking-lot-core-0.7
   (package
     (name "rust-parking-lot-core")
-    (version "0.7.0")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
@@ -15376,7 +16576,7 @@ synchronization primitives.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1wdbrvh35nn09ga570vl5062dpwfbrwgzyrlhhy78ifzhj2870km"))))
+         "18s0cw5y32447c06fhg2mp3xfng22fn1h9fpx3il98sbimv7r36m"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -15384,7 +16584,7 @@ synchronization primitives.")
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-cloudabi" ,rust-cloudabi-0.0)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-petgraph" ,rust-petgraph-0.4)
+        ("rust-petgraph" ,rust-petgraph-0.5)
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-smallvec" ,rust-smallvec-1)
         ("rust-thread-id" ,rust-thread-id-3.3)
@@ -15538,6 +16738,70 @@ synchronization primitives.")
      "Implementation detail of the paste crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-pbkdf2-0.4
+  (package
+    (name "rust-pbkdf2")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pbkdf2" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1g8cm3nwrsydazjc1gjs549hzafgxq8qb49gixrhl3qrd9calvi1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.12)
+        ("rust-crypto-mac" ,rust-crypto-mac-0.8)
+        ("rust-hmac" ,rust-hmac-0.8)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-subtle" ,rust-subtle-2))
+       #:cargo-development-inputs
+       (("rust-hmac" ,rust-hmac-0.8)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))))
+    (home-page "https://github.com/RustCrypto/password-hashing")
+    (synopsis "Generic implementation of PBKDF2")
+    (description "This package contains a collection of password hashing
+algorithms, otherwise known as password-based key derivation functions, written
+in pure Rust.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-pbkdf2-0.3
+  (package
+    (inherit rust-pbkdf2-0.4)
+    (name "rust-pbkdf2")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pbkdf2" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1na2fmmfcmksz4xk7m0ihl778501c1krx88dcylrand48f506v00"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-crypto-mac" ,rust-crypto-mac-0.7)
+        ("rust-hmac" ,rust-hmac-0.7)
+        ("rust-rand" ,rust-rand-0.5)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-sha2" ,rust-sha2-0.8)
+        ("rust-subtle" ,rust-subtle-1.0))
+       #:cargo-development-inputs
+       (("rust-hmac" ,rust-hmac-0.7)
+        ("rust-sha-1" ,rust-sha-1-0.8)
+        ("rust-sha2" ,rust-sha2-0.8))))))
+
 (define-public rust-pcre2-0.2
   (package
     (name "rust-pcre2")
@@ -15620,6 +16884,99 @@ value.  This allows you to use @code{Iterator::by_ref} and
 the @code{take_while} predicate returned false after dropping the @code{by_ref}.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-peg-0.6
+  (package
+    (name "rust-peg")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "peg" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15rfp12dgsynplphp443zfw47m2d5snvdm6a25gz48dv2if8fxch"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-peg-macros" ,rust-peg-macros-0.6)
+        ("rust-peg-runtime" ,rust-peg-runtime-0.6))
+       #:cargo-development-inputs
+       (("rust-trybuild" ,rust-trybuild-1.0))))
+    (home-page "https://github.com/kevinmehall/rust-peg")
+    (synopsis "Simple Parsing Expression Grammar (PEG) parser generator")
+    (description
+     "PEG provides a simple Parsing Expression Grammar (PEG) parser generator
+in Rust.")
+    (license license:expat)))
+
+(define-public rust-peg-0.5
+  (package
+    (inherit rust-peg-0.6)
+    (name "rust-peg")
+    (version "0.5.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "peg" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "11az3bs3ngvfip920xfr0zwblfkyg6cjgz1v9hmfsdnqw7fi5ps0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-quote" ,rust-quote-0.3))))))
+
+(define-public rust-peg-macros-0.6
+  (package
+    (name "rust-peg-macros")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "peg-macros" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0li8qrb8hyqr7v5mhrkym0xp7ijnbksqviqc2i3556cysdgick62"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-peg-runtime" ,rust-peg-runtime-0.6)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0))))
+    (home-page "https://github.com/kevinmehall/rust-peg")
+    (synopsis "Procedural macros for rust-peg")
+    (description
+     "PEG provides a Parsing Expression Grammar.  This package provides
+procedural macros for rust-peg.  To use rust-peg, see the peg package.")
+    (license license:expat)))
+
+(define-public rust-peg-runtime-0.6
+  (package
+    (name "rust-peg-runtime")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "peg-runtime" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0r583cq923v0narrpq73qmp780yg4pablzklhrwnr64xwsbjh6hc"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/kevinmehall/rust-peg")
+    (synopsis "Runtime support for rust-peg grammars")
+    (description
+     "PEG provides a Parsing Expression Grammar.  This package provides
+runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
+    (license license:expat)))
 
 (define-public rust-percent-encoding-2.1
   (package
@@ -15779,8 +17136,42 @@ algorithm.")
      "Pest meta language parser and validator.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-petgraph-0.5
+  (package
+    (name "rust-petgraph")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "petgraph" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dzxda6z17sfxly11m8ja3iargh73pw0s1sdgjyp0qp5dm51cza6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fixedbitset" ,rust-fixedbitset-0.2)
+        ("rust-ordermap" ,rust-ordermap-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))
+       #:cargo-development-inputs
+       (("rust-defmac" ,rust-defmac-0.1)
+        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-odds" ,rust-odds-0.2)
+        ("rust-rand" ,rust-rand-0.5))))
+    (home-page "https://github.com/petgraph/petgraph")
+    (synopsis "Graph data structure library")
+    (description
+     "Graph data structure library.  Provides graph types and graph
+algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-petgraph-0.4
   (package
+    (inherit rust-petgraph-0.5)
     (name "rust-petgraph")
     (version "0.4.13")
     (source
@@ -15792,26 +17183,25 @@ algorithm.")
        (sha256
         (base32
          "0kyfmca854s54jk26g2x1kjb04c3k7cjilaxyr0if8lhxv8mjdlw"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-fixedbitset" ,rust-fixedbitset-0.1)
+        ("rust-odds" ,rust-odds-0.2)
         ("rust-ordermap" ,rust-ordermap-0.3)
-        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-quickcheck" ,rust-quickcheck-0.4)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))
        #:cargo-development-inputs
-       (("rust-defmac" ,rust-defmac-0.2)
-        ("rust-itertools" ,rust-itertools-0.8)
-        ("rust-odds" ,rust-odds-0.3)
-        ("rust-rand" ,rust-rand-0.4))))
-    (home-page "https://github.com/petgraph/petgraph")
-    (synopsis "Graph data structure library")
-    (description
-     "Graph data structure library.  Provides graph types and graph
-algorithms.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-defmac" ,rust-defmac-0.1)
+        ("rust-itertools" ,rust-itertools-0.7)
+        ("rust-rand" ,rust-rand-0.4))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'ignore-failing-test
+           (lambda _
+             (substitute* "tests/graph.rs"
+               (("fn dot\\(\\) \\{" all)
+                (string-append "#[ignore] " all))))))))))
 
 (define-public rust-phf-0.8
   (package
@@ -16039,7 +17429,7 @@ function data structures.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-siphasher" ,rust-siphasher-0.3)
-        ("rust-unicase" ,rust-unicase-2.6))))
+        ("rust-unicase" ,rust-unicase-2))))
     (home-page "https://github.com/sfackler/rust-phf")
     (synopsis "Support code shared by PHF libraries")
     (description
@@ -16655,8 +18045,44 @@ both WASM and native applications")
      "Build script helper for building PNaCl/NaCl C/CXX libraries from source")
     (license license:mpl2.0)))
 
+(define-public rust-png-0.16
+  (package
+    (name "rust-png")
+    (version "0.16.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "png" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1393s3v3kg4bxnn86d7yn2vyz8xj6g64ighdfkc3vzpsg5sbyl61"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-crc32fast" ,rust-crc32fast-1.2)
+        ("rust-deflate" ,rust-deflate-0.8)
+        ("rust-miniz-oxide" ,rust-miniz-oxide-0.3))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-getopts" ,rust-getopts-0.2)
+        ;; TODO: glium has many cyclic dependencies with other packages
+        ;; ("rust-glium" ,rust-glium-0.24)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-term" ,rust-term-0.6))))
+    (home-page "https://github.com/image-rs/image-png.git")
+    (synopsis "PNG decoding and encoding library in pure Rust")
+    (description
+     "PNG decoding and encoding library in pure Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-png-0.15
   (package
+    (inherit rust-png-0.16)
     (name "rust-png")
     (version "0.15.3")
     (source
@@ -16668,7 +18094,6 @@ both WASM and native applications")
        (sha256
         (base32
          "10x2qkhyfnm3si5vgx77r2ik811gaap7ahi825wfxgsb0lirm1gg"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -16682,12 +18107,7 @@ both WASM and native applications")
         ;;("rust-glium" ,rust-glium-0.24)
         ("rust-glob" ,rust-glob-0.3)
         ("rust-rand" ,rust-rand-0.7)
-        ("rust-term" ,rust-term-0.6))))
-    (home-page "https://github.com/image-rs/image-png.git")
-    (synopsis "PNG decoding and encoding library in pure Rust")
-    (description
-     "PNG decoding and encoding library in pure Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-term" ,rust-term-0.6))))))
 
 (define-public rust-png-0.14
   (package
@@ -16768,7 +18188,7 @@ applications.")
 (define-public rust-podio-0.1
   (package
     (name "rust-podio")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
@@ -16777,9 +18197,8 @@ applications.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ga5arhwakj5rwrqzf9410zrbwnf24jd59af8kr9rgwbd6vb83vq"))))
+         "06bzjxrl0h8rp5860n51dlr1g143grg2jmx4g6y1mdn2ignyz2xi"))))
     (build-system cargo-build-system)
-    ;(arguments '(#:skip-build? #t))
     (home-page "https://github.com/mvdnes/podio.git")
     (synopsis "Additional trait to read and write Plain Old Data")
     (description
@@ -16789,7 +18208,7 @@ applications.")
 (define-public rust-ppv-lite86-0.2
   (package
     (name "rust-ppv-lite86")
-    (version "0.2.6")
+    (version "0.2.8")
     (source
       (origin
         (method url-fetch)
@@ -16797,7 +18216,7 @@ applications.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06zs492wbms7j5qhy58cs3976c7kyc47rx0d6fn63rgvp580njbl"))))
+          "1shj4q7jwj0azssr8cg51dk3kh7d4lg9rmbbz1kbqk971vc5wyi3"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/cryptocorrosion/cryptocorrosion")
     (synopsis "Implementation of the crypto-simd API for x86")
@@ -16829,6 +18248,83 @@ for x86.")
      "This package provides a library intending to be a base
 dependency to expose a precomputed hash.")
     (license license:expat)))
+
+(define-public rust-predicates-1
+  (package
+    (name "rust-predicates")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "predicates" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0c0hafd7z7v97218na8nampmy64f7fw61yvjk2y3dri11dpinyil"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-difference" ,rust-difference-2.0)
+        ("rust-float-cmp" ,rust-float-cmp-0.6)
+        ("rust-normalize-line-endings" ,rust-normalize-line-endings-0.3)
+        ("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-regex" ,rust-regex-1))
+       #:cargo-development-inputs
+       (("rust-predicates-tree" ,rust-predicates-tree-1))))
+    (home-page "https://github.com/assert-rs/predicates-rs")
+    (synopsis
+     "Implementation of boolean-valued predicate functions")
+    (description
+     "An implementation of boolean-valued predicate functions.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-predicates-core-1
+  (package
+    (name "rust-predicates-core")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "predicates-core" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0y3ingf2i4xx7r61f1a8wizs57j8hh32hylyjbw9ymcj7qx5q1q6"))))
+    (build-system cargo-build-system)
+    (home-page
+     "https://github.com/assert-rs/predicates-rs/tree/master/predicates-core")
+    (synopsis "API for boolean-valued predicate functions")
+    (description
+     "An API for boolean-valued predicate functions.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-predicates-tree-1
+  (package
+    (name "rust-predicates-tree")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "predicates-tree" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "090148qjilm2c722l873z7g31fhzj5j4qhd2xiv8mcqkj22w8qwf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-treeline" ,rust-treeline-0.1))))
+    (home-page
+     "https://github.com/assert-rs/predicates-rs/tree/master/predicates-tree")
+    (synopsis
+     "Render boolean-valued predicate functions results as a tree")
+    (description
+     "Render boolean-valued predicate functions results as a tree.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-pretty-assertions-0.6
   (package
@@ -16879,8 +18375,32 @@ replacements, adding colorful diffs.")
 replacements, adding colorful diffs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-pretty-env-logger-0.4
+  (package
+    (name "rust-pretty-env-logger")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pretty-env-logger" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "17gva1rlf9fhgr0jr19kv39f8bir3f4pa4jz02qbhl9qanwkcvcj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-log" ,rust-log-0.4))))
+    (home-page "https://github.com/seanmonstar/pretty-env-logger")
+    (synopsis "Visually pretty env_logger")
+    (description "This package provides a visually pretty env_logger.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pretty-env-logger-0.3
   (package
+    (inherit rust-pretty-env-logger-0.4)
     (name "rust-pretty-env-logger")
     (version "0.3.1")
     (source
@@ -16892,17 +18412,12 @@ replacements, adding colorful diffs.")
         (sha256
          (base32
           "0x4hyjlnvvhyk9m74iypzybm22w3dl2k8img4b956239n5vf8zki"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-log" ,rust-log-0.4)
         ("rust-chrono" ,rust-chrono-0.4)
-        ("rust-env-logger" ,rust-env-logger-0.6))))
-    (home-page "https://github.com/seanmonstar/pretty-env-logger")
-    (synopsis "Visually pretty env_logger")
-    (description "This package provides a visually pretty env_logger.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-env-logger" ,rust-env-logger-0.6))))))
 
 (define-public rust-prettytable-rs-0.8
   (package
@@ -16989,7 +18504,7 @@ formatted tables in terminal.")
 (define-public rust-proc-macro-hack-0.5
   (package
     (name "rust-proc-macro-hack")
-    (version "0.5.15")
+    (version "0.5.16")
     (source
      (origin
        (method url-fetch)
@@ -16998,7 +18513,7 @@ formatted tables in terminal.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0qqbfm1byabjkph56r2rlvv4cliz4960j6hav3ljazyjqvkryr8d"))))
+         "1r657v7d9vh1ivrvq65rvg9gjb29dpa0l3zg2fgrn5j8znz5c13y"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
@@ -17060,7 +18575,7 @@ formatted tables in terminal.")
 (define-public rust-proc-macro-nested-0.1
   (package
     (name "rust-proc-macro-nested")
-    (version "0.1.3")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -17069,9 +18584,8 @@ formatted tables in terminal.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0bmlksm8vl44wkwihmwr7jsjznhbg0n7aibcw1cs2jgjcp86x6in"))))
+         "0nnwm9bvp1fmr8nqjp8ynrkj97yzpsdh3062li8b0f4hzgd818gb"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
     (home-page "https://github.com/dtolnay/proc-macro-hack")
     (synopsis
      "Support for nested proc-macro-hack invocations")
@@ -17154,7 +18668,7 @@ macro use case.")
 (define-public rust-procedural-masquerade-0.1
   (package
     (name "rust-procedural-masquerade")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
       (origin
         (method url-fetch)
@@ -17163,7 +18677,7 @@ macro use case.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1l098px1hwdzqnxl376a9hfxb9q8kmj2n0y0s8k7plrz3jjp85cs"))))
+          "17dnfdk0qadh2h38bkwcy14cq8a1ild3j3hqmh1yjbq9ykgq64wg"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/servo/rust-cssparser")
     (synopsis "Macro rules for proc-macro-derive")
@@ -17272,7 +18786,7 @@ macro use case.")
 (define-public rust-psm-0.1
   (package
     (name "rust-psm")
-    (version "0.1.6")
+    (version "0.1.10")
     (source
       (origin
         (method url-fetch)
@@ -17281,7 +18795,7 @@ macro use case.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1q1hdbnp2j3zz1vhzp1xhds6ynan3mg5bhjlhfy5m1sg8n5wckxi"))))
+          "1kr9sal8g9zil4ch8ra0ry96d5cl15xslk1p0wnqk1504ib3hb89"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
@@ -17311,8 +18825,8 @@ stack pointer and inspect the properties of the stack.")
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-getopts" ,rust-getopts-0.2)
-        ("rust-memchr" ,rust-memchr-2.2)
-        ("rust-unicase" ,rust-unicase-2.4))
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-unicase" ,rust-unicase-2))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-html5ever" ,rust-html5ever-0.23)
@@ -17485,7 +18999,6 @@ stack pointer and inspect the properties of the stack.")
          (base32
           "1q6za3v78hsspisc197bg3g7rpc989qycy8ypr8ap8igv10ikl51"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
     (home-page "https://github.com/tailhook/quick-error")
     (synopsis "Macro which makes error types pleasant to write")
     (description "This crate provides a macro which makes error types pleasant
@@ -17718,9 +19231,8 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
          (base32
           "1s01fh0jl8qv4xggs85yahw0h507nzrxkjbf7vay3zw8d3kcyjcr"))))
     (arguments
-      `(#:skip-build? #t
-        #:cargo-inputs
-        (("rust-proc-macro2" ,rust-proc-macro2-0.3))))))
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.3))))))
 
 (define-public rust-quote-0.3
   (package
@@ -17738,6 +19250,56 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
          "0yhnnix4dzsv8y4wwz4csbnqjfh73al33j35msr10py6cl5r4vks"))))
     (arguments '())))
 
+(define-public rust-racer-cargo-metadata-0.1
+  (package
+    (name "rust-racer-cargo-metadata")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "racer-cargo-metadata" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vvwbfi991gjbk2k9a7yl7fqc8amvwlf7sa9lsx1sr0s55rcsq1b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-racer-interner" ,rust-racer-interner-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/racer-rust/racer")
+    (synopsis "Lightweight cargo metadata parser for racer")
+    (description
+     "This crate provides parsing for cargo metadata.  It is used mostly in
+Racer.")
+    (license license:expat)))
+
+(define-public rust-racer-interner-0.1
+  (package
+    (name "rust-racer-interner")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "racer-interner" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0k7ssjjcr4kr9r1jbz93rglisfsx1m6fkx3wz6yng5rizm528si0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-serde" ,rust-serde-1.0))))
+    (home-page "https://github.com/racer-rust/racer")
+    (synopsis "Thread-local string interner for Racer")
+    (description
+     "This package allows one to intern strings in Rust in a thread-local
+fashion.  It is mostly used in Racer.")
+    (license license:expat)))
+
 (define-public rust-rand-0.7
   (package
     (name "rust-rand")
@@ -17752,8 +19314,7 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
           "00sdaimkbz491qgi6qxkv582yivl32m2jd401kzbn94vsiwicsva"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-getrandom" ,rust-getrandom-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
@@ -17832,7 +19393,7 @@ useful types and distributions, and some randomness-related algorithms.")
         ("rust-stdweb" ,rust-stdweb-0.4)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))))
+       (("rust-bincode" ,rust-bincode-1))))))
 
 (define-public rust-rand-0.4
   (package
@@ -17995,6 +19556,32 @@ useful types and distributions, and some randomness-related algorithms.")
        #:cargo-inputs
        (("rust-rand-core" ,rust-rand-core-0.3))))))
 
+(define-public rust-rand-distr-0.2
+  (package
+    (name "rust-rand-distr")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand-distr" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1cpz577qid09lirjjhhn98yqdwsv0c01jf973pxpcr9svp5pm5wn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand" ,rust-rand-0.7))
+       #:cargo-development-inputs
+       (("rust-average" ,rust-average-0.10)
+        ("rust-rand-pcg" ,rust-rand-pcg-0.2))))
+    (home-page "https://crates.io/crates/rand_distr")
+    (synopsis "Sampling from random number distributions")
+    (description
+     "Sampling from random number distributions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rand-hc-0.2
   (package
     (name "rust-rand-hc")
@@ -18053,7 +19640,7 @@ generator that uses the HC-128 algorithm.")
        (("rust-rand-core" ,rust-rand-core-0.5)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
+       (("rust-bincode" ,rust-bincode-1))))
     (home-page "https://crates.io/crates/rand_isaac")
     (synopsis "ISAAC random number generator")
     (description "This package implements the @code{ISAAC} and @code{ISAAC-64}
@@ -18080,7 +19667,7 @@ Add, and Count\" which are the principal bitwise operations employed.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))))
+       (("rust-bincode" ,rust-bincode-1))))))
 
 (define-public rust-rand-jitter-0.1
   (package
@@ -18111,7 +19698,7 @@ generator based on timing jitter.")
 (define-public rust-rand-os-0.2
   (package
     (name "rust-rand-os")
-    (version "0.2.0")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
@@ -18120,7 +19707,7 @@ generator based on timing jitter.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "06is69f8rfzs620g5b54k6cgy5yaycrsyqg55flyfrsf8g88733f"))))
+         "12m59l42aa07khcjnhq8lkw2332brj4d7gqr3jxgqv39vczax257"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -18175,7 +19762,7 @@ generator based on timing jitter.")
        (("rust-rand-core" ,rust-rand-core-0.5)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
+       (("rust-bincode" ,rust-bincode-1))))
     (home-page "https://crates.io/crates/rand_pcg")
     (synopsis
      "Selected PCG random number generators")
@@ -18204,7 +19791,7 @@ generator based on timing jitter.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))))
+       (("rust-bincode" ,rust-bincode-1))))))
 
 (define-public rust-rand-xorshift-0.2
   (package
@@ -18225,7 +19812,7 @@ generator based on timing jitter.")
        (("rust-rand-core" ,rust-rand-core-0.5)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
+       (("rust-bincode" ,rust-bincode-1))))
     (home-page "https://crates.io/crates/rand-xorshift")
     (synopsis "Xorshift random number generator")
     (description
@@ -18251,7 +19838,7 @@ generator based on timing jitter.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
+       (("rust-bincode" ,rust-bincode-1))))
     (home-page "https://crates.io/crates/rand-xorshift")
     (synopsis "Xorshift random number generator")
     (description
@@ -18278,7 +19865,7 @@ generator based on timing jitter.")
        (("rust-rand-core" ,rust-rand-core-0.5)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
+       (("rust-bincode" ,rust-bincode-1))))
     (home-page "https://crates.io/crates/rand_xoshiro")
     (synopsis "Xoshiro, xoroshiro and splitmix64 random number generators")
     (description "This package provides the xoshiro, xoroshiro and splitmix64
@@ -18305,7 +19892,7 @@ random number generators.")
         ("rust-rand-core" ,rust-rand-core-0.5)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))))
+       (("rust-bincode" ,rust-bincode-1))))))
 
 (define-public rust-rand-xoshiro-0.1
   (package
@@ -18389,7 +19976,7 @@ and @code{ptrdistance}.")
 (define-public rust-rawslice-0.1
   (package
     (name "rust-rawslice")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
@@ -18398,14 +19985,13 @@ and @code{ptrdistance}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "09bympww1rpsd422da3w444q5w1znjbjh7mjninhq9gaaygkpci2"))))
+         "1kfidydpw770wfzp2c4y7jfq1vr5jbql5sk86xg2wx3an84cj8wf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-rawpointer" ,rust-rawpointer-0.1))
+     `(#:cargo-inputs
+       (("rust-rawpointer" ,rust-rawpointer-0.2))
        #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.8))))
+       (("rust-quickcheck" ,rust-quickcheck-0.4))))
     (home-page "https://github.com/bluss/rawslice/")
     (synopsis "Reimplementation of the slice iterators, with extra features")
     (description
@@ -18666,7 +20252,7 @@ functionality.")
 (define-public rust-ref-cast-1.0
   (package
     (name "rust-ref-cast")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -18675,7 +20261,7 @@ functionality.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vy378bdzb4kcz13kh96c5n5qw1jinhfrya5j4bf9rxz65x1jzq7"))))
+         "08r6qz7228k55nlyl5v7ykdzxrasnawgzmb1jrbfbnkx2s3ifp3l"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -18718,7 +20304,7 @@ functionality.")
 (define-public rust-ref-cast-impl-1.0
   (package
     (name "rust-ref-cast-impl")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -18727,7 +20313,7 @@ functionality.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "07rc752npmkyc5b8xcqk2ydbl3gxi1n4fzrq0wx9wz5qd4mvavn3"))))
+         "0i1i3an8si070aqg2mvz6yqc6y2pl9zhd6dd2piz17l7mdsv88bx"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -18772,7 +20358,7 @@ functionality.")
     (arguments
      `(#:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.7)
-        ("rust-memchr" ,rust-memchr-2.3)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
         ("rust-thread-local" ,rust-thread-local-1.0))
        #:cargo-development-inputs
@@ -18805,7 +20391,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.6)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-regex-syntax" ,rust-regex-syntax-0.5)
         ("rust-thread-local" ,rust-thread-local-0.3)
         ("rust-utf8-ranges" ,rust-utf8-ranges-1.0))
@@ -18956,19 +20542,25 @@ uses finite automata and guarantees linear time matching on all inputs.")
 (define-public rust-remove-dir-all-0.5
   (package
     (name "rust-remove-dir-all")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "remove_dir_all" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0bkrlyg26mgizpiy1yb2hhpgscxcag8r5fnckqsvk25608vzm0sa"))))
+          "1rzqbsgkmr053bxxl04vmvsd1njyz0nxvly97aip6aa2cmb15k9s"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; 'doctest' isn't stable until rust-1.40
+           (substitute* "src/lib.rs"
+             (("\\(doctest") "(test"))
+           #t))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3))))
@@ -19004,10 +20596,33 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (description "File reopening utility.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-resize-0.3
+  (package
+    (name "rust-resize")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "resize" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1ai83laz5yvg4r7z9q8d1m0vq0fqj2ycyprw5fxzxyzaj3im7rmr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-png" ,rust-png-0.15))))
+    (home-page "https://github.com/PistonDevelopers/resize")
+    (synopsis "Simple image resampling library in pure Rust")
+    (description
+     "This package provides a simple image resampling library in pure Rust.")
+    (license license:expat)))
+
 (define-public rust-resolv-conf-0.6
   (package
     (name "rust-resolv-conf")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
       (origin
         (method url-fetch)
@@ -19015,19 +20630,48 @@ uses finite automata and guarantees linear time matching on all inputs.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1jvdsmksdf6yiipm3aqahyv8n1cjd7wqc8sa0p0gzsax3fmb8qxj"))))
+          "0jlzifww1h7j23jnjj49xz8q0fpd9rqpd0ks8c4y651vgw9lx0qi"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f  ; Not all test files included.
        #:cargo-inputs
        (("rust-quick-error" ,rust-quick-error-1.2)
-        ("rust-hostname", rust-hostname-0.1))))
+        ("rust-hostname" ,rust-hostname-0.3))))
     (home-page "https://github.com/tailhook/resolv-conf")
     (synopsis "Parser for /etc/resolv.conf")
     (description
      "An /etc/resolv.conf parser crate for Rust.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-rgb-0.8
+  (package
+    (name "rust-rgb")
+    (version "0.8.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rgb" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "15hrf0gb1l1a8rhx7b6gzrcmb43xlll4r1ym0mq55c7068dhc537"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://lib.rs/crates/rgb")
+    (synopsis "Struct for sharing pixels between crates")
+    (description
+     "This package provides @code{struct RGB/RGBA/etc.} for sharing pixels
+between crates + convenience methods for color manipulation.  It allows no-copy
+high-level interoperability.  It also adds common convenience methods and
+implements standard Rust traits to make `RGB`/`RGBA` pixels and slices
+first-class Rust objects.")
+    (license license:expat)))
 
 (define-public rust-ring-0.16
   (package
@@ -19079,10 +20723,62 @@ uses finite automata and guarantees linear time matching on all inputs.")
         ;; build dependencies
         ("rust-cc" ,rust-cc-1.0))))))
 
+(define-public rust-rle-decode-fast-1
+  (package
+    (name "rust-rle-decode-fast")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rle-decode-fast" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1b4h7qs4mssc5dnlhs3f91ya8pb40bv72zzshl18gify2jllzgna"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-criterion" ,rust-criterion-0.2))))
+    (home-page "https://github.com/WanzenBug/rle-decode-helper")
+    (synopsis "Implement decoding for Run Length Encoded data in Rust")
+    (description
+     "This crate provides a fast way to implement any kind of decoding
+for Run Length Encoded data in Rust.
+
+Writing a fast decoder that is also safe can be quite challenging, so
+this crate is here to save you the hassle of maintaining and testing
+your own implementation.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rls-span-0.5
+  (package
+    (name "rust-rls-span")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rls-span" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0d6rwya5zsyw6vmrj8d8g3fgvic0xyp1lvfhv62vswk2dzavxsgj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://github.com/rust-lang/rls")
+    (synopsis "Types for identifying code spans/ranges")
+    (description
+     "Identify Rust code spans and ranges using these types - for use with the
+Rust Language Server.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ron-0.4
   (package
     (name "rust-ron")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
@@ -19091,7 +20787,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1mrqdgw3w0yypg24jyq9mphp4zr9lr0ks7yam82m4n34x6njijyr"))))
+         "13ypx80ac1minrmn9w9sgnbxlknwiv7qhx5n50azh0s484j2mx8p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -19100,7 +20796,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-serde-bytes" ,rust-serde-bytes-0.11)
+       (;("rust-serde-bytes" ,rust-serde-bytes-0.10)
         ("rust-serde-json" ,rust-serde-json-1.0))))
     (home-page "https://github.com/ron-rs/ron")
     (synopsis "Rusty Object Notation")
@@ -19184,7 +20880,7 @@ console applications.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.15)
         ("rust-lru-cache" ,rust-lru-cache-0.1)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-time" ,rust-time-0.1)
         ("rust-url" ,rust-url-1.7)
@@ -19193,7 +20889,7 @@ console applications.")
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-tempdir" ,rust-tempdir-0.3)
-        ("rust-unicase" ,rust-unicase-2.4)
+        ("rust-unicase" ,rust-unicase-2)
         ("rust-uuid" ,rust-uuid-0.7))))
     (home-page "https://github.com/rusqlite/rusqlite")
     (synopsis "Wrapper for SQLite")
@@ -19363,6 +21059,322 @@ password hashing function.")
      "This package provides a sys crate for the rust_hawktracer library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-ap-arena-654
+  (package
+    (name "rust-rustc-ap-arena")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-arena" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18yc4i5m2vf6w8na29i5jv8l4l0yknsf6xn0z2mk7mfz1nxwzpw1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rustc-ap-rustc-data-structures"
+         ,rust-rustc-ap-rustc-data-structures-654)
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (home-page  "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published version of the arena package used in rustc")
+    (description
+     "Use the arena library used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-ap-graphviz-654
+  (package
+    (name "rust-rustc-ap-graphviz")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-graphviz" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z8rs3k9zcd1i2clrnzgvfaq1q05m02wjcyy3d9zk9qln03vp43l"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published versions of the graphviz crate used in rustc")
+    (description
+     "Use the graphviz library used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-ap-rustc-ast-654
+  (package
+    (name "rust-rustc-ap-rustc-ast")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_ast" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0n4yhkd7x0c3nqyqz99lwjiix7mf1j5xbkn9fj90h4fxp3did7qq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rustc-ap-rustc-data-structures"
+         ,rust-rustc-ap-rustc-data-structures-654)
+        ("rust-rustc-ap-rustc-index" ,rust-rustc-ap-rustc-index-654)
+        ("rust-rustc-ap-rustc-lexer" ,rust-rustc-ap-rustc-lexer-654)
+        ("rust-rustc-ap-rustc-macros" ,rust-rustc-ap-rustc-macros-654)
+        ("rust-rustc-ap-serialize" ,rust-rustc-ap-serialize-654)
+        ("rust-rustc-ap-rustc-span" ,rust-rustc-ap-rustc-span-654)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0)
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published version of the Rust ast used in rustc")
+    (description
+     "Use the Rust ast used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-ap-rustc-data-structures-654
+  (package
+    (name "rust-rustc-ap-rustc-data-structures")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_data_structures" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fhppy18n1i2iykdihfs05d6s1ivwz882ipc9cpnjcvqcsbhj4yj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-ena" ,rust-ena-0.13)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-jobserver" ,rust-jobserver-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-measureme" ,rust-measureme-0.7)
+        ("rust-parking-lot" ,rust-parking-lot-0.10)
+        ("rust-rustc-ap-graphviz" ,rust-rustc-ap-graphviz-654)
+        ("rust-rustc-ap-rustc-index" ,rust-rustc-ap-rustc-index-654)
+        ("rust-rustc-ap-serialize" ,rust-rustc-ap-serialize-654)
+        ("rust-rustc-hash" ,rust-rustc-hash-1.1)
+        ("rust-rustc-rayon" ,rust-rustc-rayon-0.3)
+        ("rust-rustc-rayon-core" ,rust-rustc-rayon-core-0.3)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis "Automatically published versions of rustc data structures")
+    (description
+     "Use data structures used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-ap-rustc-index-654
+  (package
+    (name "rust-rustc-ap-rustc-index")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_index" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qqnvdn3zbwrn884ziw0nrmi1wqmr9yp8js7whw6y8nzdhz0q8ij"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rustc-ap-serialize" ,rust-rustc-ap-serialize-654)
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (home-page  "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published version of the types of indexes in rustc")
+    (description
+     "Use the types of index used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-ap-rustc-lexer-654
+  (package
+    (name "rust-rustc-ap-rustc-lexer")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_lexer" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19bx2z4gxxzqfjh9m11jp52lgdzz0k5fb0p1ad739bdc5cm4sciv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-unicode-xid" ,rust-unicode-xid-0.2))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis "Automatically published versions of rustc macros")
+    (description
+     "Use the lexer used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-ap-rustc-macros-654
+  (package
+    (name "rust-rustc-ap-rustc-macros")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03zfp8a10jz43z8lsx1drx7g5jimxmbw4w7hs13yvczismb6qs2r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0)
+        ("rust-synstructure" ,rust-synstructure-0.12))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis "Automatically published versions of rustc macros")
+    (description
+     "Use macros used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-ap-rustc-span-654
+  (package
+    (name "rust-rustc-ap-rustc-span")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_span" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hj23syxxqqmk1y4kdvb0cb0xxi8wy429hhyd27bbmpya1h18j56"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-md-5" ,rust-md-5-0.8)
+        ("rust-rustc-ap-arena" ,rust-rustc-ap-arena-654)
+        ("rust-rustc-ap-rustc-data-structures"
+         ,rust-rustc-ap-rustc-data-structures-654)
+        ("rust-rustc-ap-rustc-index" ,rust-rustc-ap-rustc-index-654)
+        ("rust-rustc-ap-rustc-macros" ,rust-rustc-ap-rustc-macros-654)
+        ("rust-rustc-ap-serialize" ,rust-rustc-ap-serialize-654)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0)
+        ("rust-sha-1" ,rust-sha-1-0.8)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published version of the source code spans used in rustc")
+    (description
+     "Use the spans used in the Rust compiler to represent source code with
+this crate.  It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-ap-rustc-target-654
+  (package
+    (name "rust-rustc-ap-rustc-target")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_target" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i579l4jx4ky5wm0ah8zdy6dd6201rii6rv1wc4bi209ixwjikr8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rustc-ap-rustc-data-structures"
+         ,rust-rustc-ap-rustc-data-structures-654)
+        ("rust-rustc-ap-rustc-index" ,rust-rustc-ap-rustc-index-654)
+        ("rust-rustc-ap-rustc-macros" ,rust-rustc-ap-rustc-macros-654)
+        ("rust-rustc-ap-serialize" ,rust-rustc-ap-serialize-654)
+        ("rust-rustc-ap-rustc-span" ,rust-rustc-ap-rustc-span-654))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published version of the compile targets used in rustc")
+    (description
+     "Use the compile targets as expressed in the Rust compiler with this
+crate.  It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-ap-serialize-654
+  (package
+    (name "rust-rustc-ap-serialize")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-serialize" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vwfa3q4f9k0nfryr53jnwmf8vhaq7ijbgw8449nx467dr98yvkm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-indexmap" ,rust-indexmap-1)
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published versions of the serialize crate used in rustc")
+    (description
+     "Use the serialize library used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-demangle-0.1
   (package
     (name "rust-rustc-demangle")
@@ -19403,37 +21415,86 @@ password hashing function.")
             "1qkc5khrmv5pqi5l5ca9p5nl5hs742cagrndhbrlk3dhlrx3zm08"))))
     (build-system cargo-build-system)
     (arguments `(#:skip-build? #t))
-    (home-page
-      "https://github.com/rust-lang-nursery/rustc-hash")
-    (synopsis
-      "speed, non-cryptographic hash used in rustc")
-    (description
-      "speed, non-cryptographic hash used in rustc")
-    (license (list license:asl2.0 license:expat))))
-
-(define-public rust-rustc-hash-1.0
-  (package
-    (name "rust-rustc-hash")
-    (version "1.0.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "rustc-hash" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "1f4cnbcmz2c3zjidqszc9c4fip37ch4xl74nkkp9dw291j5zqh3m"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3))))
     (home-page "https://github.com/rust-lang/rustc-hash")
     (synopsis "Speedy, non-cryptographic hash used in rustc")
     (description
      "This package provides a speedy, non-cryptographic hash used in rustc.")
-    (license (list license:asl2.0
-                   license:expat))))
+    (license (list license:asl2.0 license:expat))))
+
+(define-public rust-rustc-rayon-0.3
+  (package
+    (name "rust-rustc-rayon")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-rayon" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fjvy8bf0hd1zq9d3fdxbdp4z4p1k8jfyx51k5qip3wk1pwnf9zk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-either" ,rust-either-1.5)
+        ("rust-rustc-rayon-core" ,rust-rustc-rayon-core-0.3))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-docopt" ,rust-docopt-1.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://github.com/rust-lang/rustc-rayon")
+    (synopsis
+     "Simple work-stealing parallelism for Rust - fork for rustc")
+    (description
+     "Rustc-rayon is a fork of the Rayon crate.  It adds a few \"in progress\"
+features that rustc is using, mostly around deadlock detection.  These features
+are not stable and should not be used by others -- though they may find their
+way into rayon proper at some point.  In general, if you are not rustc, you
+should be using the real rayon crate, not rustc-rayon.")
+    (license (list license:asl2.0 license:expat))))
+
+(define-public rust-rustc-rayon-core-0.3
+  (package
+    (name "rust-rustc-rayon-core")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rustc-rayon-core" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1cwc50mcclzfmhmi87953fjk6cc9ppmchn9mlwzfllq03y1jf97a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num-cpus" ,rust-num-cpus-1))
+       #:cargo-development-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0))))
+    (home-page "https://github.com/rust-lang/rustc-rayon")
+    (synopsis "Core APIs for Rayon - fork for rustc")
+    (description
+     "Note: This package is an unstable fork made for use in rustc
+
+Rayon-core represents the \"core, stable\" APIs of Rayon: join, scope, and so
+forth, as well as the ability to create custom thread-pools with ThreadPool.")
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-rustc-serialize-0.3
   (package
@@ -19746,7 +21807,7 @@ rustc compiler.")
         ("rust-linked-hash-map" ,rust-linked-hash-map-0.5)
         ("rust-num-cpus" ,rust-num-cpus-1)
         ("rust-ordered-float" ,rust-ordered-float-1.0)
-        ("rust-rustc-hash" ,rust-rustc-hash-1.0)
+        ("rust-rustc-hash" ,rust-rustc-hash-1.1)
         ("rust-stb-truetype" ,rust-stb-truetype-0.3))))
     (home-page "https://gitlab.redox-os.org/redox-os/rusttype")
     (synopsis "Pure Rust alternative to libraries like FreeType")
@@ -20111,6 +22172,60 @@ with one of the implemented strategies.")
          (base32
           "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
 
+(define-public rust-scrypt-0.3
+  (package
+    (name "rust-scrypt")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scrypt" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1apicbvp7cgc1z2nl5l48g8h3kp7p592r4zbkx9vsri2ivnvgv43"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.12)
+        ("rust-hmac" ,rust-hmac-0.8)
+        ("rust-pbkdf2" ,rust-pbkdf2-0.4)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-core" ,rust-rand-core-0.5)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-subtle" ,rust-subtle-2))))
+    (home-page "https://github.com/RustCrypto/password-hashes")
+    (synopsis "Scrypt password-based key derivation function")
+    (description
+     "Scrypt password-based key derivation function.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-scrypt-0.2
+  (package
+    (inherit rust-scrypt-0.3)
+    (name "rust-scrypt")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scrypt" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1pfgqgzdjxjf7c8r1wfka0ackfpv1g8w7wvbr25b42hdx787jv35"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-byte-tools" ,rust-byte-tools-0.3)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-hmac" ,rust-hmac-0.7)
+        ("rust-pbkdf2" ,rust-pbkdf2-0.3)
+        ("rust-rand" ,rust-rand-0.5)
+        ("rust-sha2" ,rust-sha2-0.8)
+        ("rust-subtle" ,rust-subtle-1.0))))))
+
 (define-public rust-scroll-0.10
   (package
     (name "rust-scroll")
@@ -20360,6 +22475,40 @@ proven statistical guarantees.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-selectors-0.22
+  (package
+    (name "rust-selectors")
+    (version "0.22.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "selectors" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1zhjpvww238lh4nz7kdw4ywlpmjbmzvrm76w1jyacjxci4c0ycnz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cssparser" ,rust-cssparser-0.27)
+        ("rust-derive-more" ,rust-derive-more-0.99)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-phf" ,rust-phf-0.8)
+        ("rust-precomputed-hash" ,rust-precomputed-hash-0.1)
+        ("rust-servo-arc" ,rust-servo-arc-0.1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-thin-slice" ,rust-thin-slice-0.1))
+       #:cargo-development-inputs
+       (("rust-phf-codegen" ,rust-phf-codegen-0.8))))
+    (home-page "https://github.com/servo/servo")
+    (synopsis "CSS Selectors matching for Rust")
+    (description "This package provides CSS Selectors matching for Rust.")
+    (license license:mpl2.0)))
+
 (define-public rust-sema-0.1
   (package
     (name "rust-sema")
@@ -20544,19 +22693,19 @@ proven statistical guarantees.")
      `(#:skip-build? #t
        #:cargo-inputs (("rust-num" ,rust-num-0.2))))))
 
-(define-public rust-serde-big-array-0.1
+(define-public rust-serde-big-array-0.2
   (package
     (name "rust-serde-big-array")
-    (version "0.1.5")
+    (version "0.2.0")
     (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "serde-big-array" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0gkyqxk760mp1lfcg6lhjk95ajc89nr0qdd0vl4ic0g8pyxcy9mr"))))
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde-big-array" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0kj0h99y7ma9nsayv87fj2n680bcrwv2mrcbmc774lgak18ywgl8"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -20568,6 +22717,21 @@ proven statistical guarantees.")
     (synopsis "Big array helper for serde")
     (description "This package provides a big array helper for serde.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-serde-big-array-0.1
+  (package
+    (inherit rust-serde-big-array-0.2)
+    (name "rust-serde-big-array")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-big-array" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gkyqxk760mp1lfcg6lhjk95ajc89nr0qdd0vl4ic0g8pyxcy9mr"))))))
 
 (define-public rust-serde-bytes-0.11
   (package
@@ -20587,7 +22751,7 @@ proven statistical guarantees.")
        #:cargo-inputs
        (("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1)
+       (("rust-bincode" ,rust-bincode-1)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/serde-rs/bytes")
@@ -20768,7 +22932,7 @@ for the serde framework.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-indexmap" ,rust-indexmap-1.3)
+       (("rust-indexmap" ,rust-indexmap-1)
         ("rust-itoa" ,rust-itoa-0.4)
         ("rust-ryu" ,rust-ryu-1.0)
         ("rust-serde" ,rust-serde-1.0))
@@ -20951,6 +23115,78 @@ for the serde framework.")
     (description "YAML support for Serde.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-serial-test-0.1
+  (package
+    (name "rust-serial-test")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serial-test" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0qywhzjc4jh6dqqng90maai0mjlmafk9aa5rrl9g3d2g01wdn8ms"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1))))
+    (home-page "https://github.com/palfrey/serial_test/")
+    (synopsis "Serialised Rust tests")
+    (description
+     "Allows for the creation of serialised Rust tests.")
+    (license license:expat)))
+
+(define-public rust-serial-test-derive-0.1
+  (package
+    (name "rust-serial-test-derive")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serial-test-derive" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "17fkqrba233sjhdak986y4w3z4yjxa4idjkh46l7zxgcgjlvrnic"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15))))
+    (home-page "https://github.com/palfrey/serial_test/")
+    (synopsis "Helper crate for serial_test")
+    (description "This package provides a helper crate for @code{serial_test}.")
+    (license license:expat)))
+
+(define-public rust-servo-arc-0.1
+  (package
+    (name "rust-servo-arc")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "servo-arc" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0cjljr9znwahry6p95xvd3p4pmy24wlf6gbfidnmglg002w3i0nr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nodrop" ,rust-nodrop-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1))))
+    (home-page "https://github.com/servo/servo")
+    (synopsis "Fork of std::sync::Arc with some extra functionality")
+    (description
+     "This package provides a fork of @code{std::sync::Arc} with some extra
+functionality and without weak references.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-servo-fontconfig-0.4
   (package
     (name "rust-servo-fontconfig")
@@ -21044,10 +23280,42 @@ for the serde framework.")
      "This package provides a Rust wrapper around the FreeType library.")
     (license license:mpl2.0)))  ; build.rs is mpl2.0
 
-(define-public rust-sha-1-0.8
+(define-public rust-sha-1-0.9
   (package
     (name "rust-sha-1")
-    (version "0.8.1")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sha-1" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0w37j7swjkbzgi9mf7ihkw0zfik6vl97fs6jdpqs6r68hvm3c2hp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-buffer" ,rust-block-buffer-0.9)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cpuid-bool" ,rust-cpuid-bool-0.1)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3)
+        ("rust-sha1-asm" ,rust-sha1-asm-0.4))
+       #:cargo-development-inputs
+       (("rust-digest" ,rust-digest-0.9)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "SHA-1 hash function")
+    (description "SHA-1 hash function.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-sha-1-0.8
+  (package
+    (inherit rust-sha-1-0.9)
+    (name "rust-sha-1")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
@@ -21056,23 +23324,18 @@ for the serde framework.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0s6fdy5wp3x4h2z4fcl2d9vjvrpzr87v4h49r51xcq8nm4qj35i3"))))
-    (build-system cargo-build-system)
+         "1pv387q0r7llk2cqzyq0nivzvkgqgzsiygqzlv7b68z9xl5lvngp"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-block-buffer" ,rust-block-buffer-0.7)
         ("rust-digest" ,rust-digest-0.8)
         ("rust-fake-simd" ,rust-fake-simd-0.1)
         ("rust-opaque-debug" ,rust-opaque-debug-0.2)
+        ("rust-libc" ,rust-libc-0.2)
         ("rust-sha1-asm" ,rust-sha1-asm-0.4))
        #:cargo-development-inputs
        (("rust-digest" ,rust-digest-0.8)
-        ("rust-hex-literal" ,rust-hex-literal-0.2))))
-    (home-page "https://github.com/RustCrypto/hashes")
-    (synopsis "SHA-1 hash function")
-    (description "SHA-1 hash function.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-hex-literal" ,rust-hex-literal-0.1))))))
 
 (define-public rust-sha1-0.6
   (package
@@ -21145,8 +23408,7 @@ for the serde framework.")
          "1i1i8viy6y30mv9v5hwhg9w6b722qkyh9c6n8bn4d27jpv14pg0s"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
+     `(#:cargo-inputs
        (("rust-cc" ,rust-cc-1.0))))
     (home-page "https://github.com/RustCrypto/asm-hashes")
     (synopsis "Assembly implementation of SHA-1 compression function")
@@ -21154,18 +23416,51 @@ for the serde framework.")
      "Assembly implementation of SHA-1 compression function.")
     (license license:expat)))
 
-(define-public rust-sha2-0.8
+(define-public rust-sha2-0.9
   (package
     (name "rust-sha2")
-    (version "0.8.1")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sha2" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1hdqrx2d9073hgf34y6ilgw6ni5vv3d5nmccyhkfm9zdvy6kfcr9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-buffer" ,rust-block-buffer-0.9)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cpuid-bool" ,rust-cpuid-bool-0.1)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3)
+        ("rust-sha2-asm" ,rust-sha2-asm-0.5))
+       #:cargo-development-inputs
+       (("rust-digest" ,rust-digest-0.9)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/hashes")
+    (synopsis "SHA-2 hash functions")
+    (description
+     "This package provides a pure Rust implementation of the SHA-2 hash
+function family including SHA-224, SHA-256, SHA-384, and SHA-512.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-sha2-0.8
+  (package
+    (inherit rust-sha2-0.9)
+    (name "rust-sha2")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "sha2" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1827pplynq0ahxid1xq281kiv56kj2afp7gm97v7gw71sbgll117"))))
-    (build-system cargo-build-system)
+        (base32 "0s9yddvyg6anaikdl86wmwfim25c0d4m0xq0y2ghs34alxpg8mm2"))))
     (arguments
      `(#:cargo-inputs
        (("rust-block-buffer" ,rust-block-buffer-0.7)
@@ -21175,25 +23470,20 @@ for the serde framework.")
         ("rust-opaque-debug" ,rust-opaque-debug-0.2)
         ("rust-sha2-asm" ,rust-sha2-asm-0.5))
        #:cargo-development-inputs
-       (("rust-cc" ,rust-cc-1.0) ;; FIXME for rust-sha2-asm, why again?
-        ("rust-digest" ,rust-digest-0.8)
-        ("rust-hex-literal" ,rust-hex-literal-0.1))))
-    (home-page "https://github.com/RustCrypto/hashes")
-    (synopsis "SHA-2 hash functions")
-    (description "SHA-2 hash functions")
-    (license (list license:expat license:asl2.0))))
+       (("rust-digest" ,rust-digest-0.8)
+        ("rust-hex-literal" ,rust-hex-literal-0.1))))))
 
 (define-public rust-sha2-asm-0.5
   (package
     (name "rust-sha2-asm")
-    (version "0.5.3")
+    (version "0.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "sha2-asm" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0k3qwv2yl8fyi2i6cprfb8d874ii5kmcmckgnjkwnz2ac9fayyl1"))))
+        (base32 "0y4n8r4362y2fa6p2j0dgny4zfi194gdf01l6j850n9vf8ha3kwj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -21653,7 +23943,7 @@ data type.")
 (define-public rust-smallvec-1
   (package
     (name "rust-smallvec")
-    (version "1.2.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
@@ -21662,13 +23952,13 @@ data type.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1z6f47i3qpg9pdjzzvb0g5i1vvdm2ymk3kqc1mdnl8fdkgnb4bsw"))))
+         "0gqgmbfj8228lc55xxg331flizzwq6hfyy6gw4j2y6hni6fwnmrp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))
+       (("rust-bincode" ,rust-bincode-1))))
     (home-page "https://github.com/servo/rust-smallvec")
     (synopsis "Small vector optimization")
     (description
@@ -21695,7 +23985,7 @@ stack.")
        (("rust-maybe-uninit" ,rust-maybe-uninit-2.0)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1))))))
+       (("rust-bincode" ,rust-bincode-1))))))
 
 (define-public rust-smithay-client-toolkit-0.6
   (package
@@ -22303,8 +24593,37 @@ crate.")
 configurable byte storage.")
     (license license:expat)))
 
+(define-public rust-string-cache-0.8
+  (package
+    (name "rust-string-cache")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "string-cache" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "12i0synp8l0qpnzi5qki4pjq3jx28ykikyffjjjg6fsfxddwfh19"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-new-debug-unreachable" ,rust-new-debug-unreachable-1.0)
+        ("rust-phf-shared" ,rust-phf-shared-0.8)
+        ("rust-precomputed-hash" ,rust-precomputed-hash-0.1)
+        ("rust-serde" ,rust-serde-1.0))))
+    (home-page "https://github.com/servo/string-cache")
+    (synopsis "String interning library for Rust")
+    (description
+     "This package provides a string interning library for Rust,
+developed as part of the Servo project.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-string-cache-0.7
   (package
+    (inherit rust-string-cache-0.8)
     (name "rust-string-cache")
     (version "0.7.5")
     (source
@@ -22316,7 +24635,6 @@ configurable byte storage.")
        (sha256
         (base32
          "0rrdb822gc1fs3qq4camgj3kh4182bs79hpqxhdrpmlz5yl5ih49"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
@@ -22328,16 +24646,38 @@ configurable byte storage.")
         ("rust-string-cache-codegen" ,rust-string-cache-codegen-0.4)
         ("rust-string-cache-shared" ,rust-string-cache-shared-0.3))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
+       (("rust-rand" ,rust-rand-0.4))))))
+
+(define-public rust-string-cache-codegen-0.5
+  (package
+    (name "rust-string-cache-codegen")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "string-cache-codegen" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "15vbk5i7kkj5bbx7f0fi477js4svw5py39gi4rk74anj35g8wk7j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-phf-generator" ,rust-phf-generator-0.8)
+        ("rust-phf-shared" ,rust-phf-shared-0.8)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0))))
     (home-page "https://github.com/servo/string-cache")
-    (synopsis "String interning library for Rust")
+    (synopsis "Codegen library for string-cache")
     (description
-     "This package provides a string interning library for Rust,
+     "This package provides a codegen library for string-cache,
 developed as part of the Servo project.")
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-string-cache-codegen-0.4
   (package
+    (inherit rust-string-cache-codegen-0.5)
     (name "rust-string-cache-codegen")
     (version "0.4.4")
     (source
@@ -22349,21 +24689,13 @@ developed as part of the Servo project.")
        (sha256
         (base32
          "1ik78h9gs874i24rkyh0myg6x4ni2a9cazbv5yzs9yavnv8mxx7h"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-phf-generator" ,rust-phf-generator-0.7)
         ("rust-phf-shared" ,rust-phf-shared-0.7)
         ("rust-proc-macro2" ,rust-proc-macro2-1.0)
         ("rust-quote" ,rust-quote-1.0)
-        ("rust-string-cache-shared"
-         ,rust-string-cache-shared-0.3))))
-    (home-page "https://github.com/servo/string-cache")
-    (synopsis "Codegen library for string-cache")
-    (description
-     "This package provides a codegen library for string-cache,
-developed as part of the Servo project.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-string-cache-shared" ,rust-string-cache-shared-0.3))))))
 
 (define-public rust-string-cache-shared-0.3
   (package
@@ -22553,8 +24885,31 @@ and Jaro-Winkler.")
      "Parse command line argument by defining a struct, derive crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-subtle-2
+  (package
+    (name "rust-subtle")
+    (version "2.2.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "subtle" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1h9jd7v0imksyl5mvnjk2rw54sa3xrril76z0md61mq2gh056bah"))))
+    (build-system cargo-build-system)
+    (home-page "https://dalek.rs/")
+    (synopsis
+     "Pure-Rust traits and utilities for cryptographic implementations")
+    (description
+     "This package provides Pure-Rust traits and utilities for constant-time
+cryptographic implementations.")
+    (license license:bsd-3)))
+
 (define-public rust-subtle-1.0
   (package
+    (inherit rust-subtle-2)
     (name "rust-subtle")
     (version "1.0.0")
     (source
@@ -22565,15 +24920,7 @@ and Jaro-Winkler.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))
-    (build-system cargo-build-system)
-    (home-page "https://dalek.rs/")
-    (synopsis
-     "Pure-Rust traits and utilities for cryptographic implementations")
-    (description
-     "This package provides Pure-Rust traits and utilities for constant-time
-cryptographic implementations.")
-    (license license:bsd-3)))
+         "1vm80mxbwfj334izwm8x8l65v1xl9hr0kwrg36r1rq565fkaarrd"))))))
 
 (define-public rust-sval-0.4
   (package
@@ -22687,7 +25034,7 @@ cryptographic implementations.")
         ("rust-ref-cast" ,rust-ref-cast-0.2)
         ("rust-regex" ,rust-regex-1)
         ("rust-termcolor" ,rust-termcolor-1)
-        ("rust-walkdir" ,rust-walkdir-2.2))))
+        ("rust-walkdir" ,rust-walkdir-2.3))))
     (properties '())))
 
 (define-public rust-syn-0.11
@@ -22883,7 +25230,7 @@ cryptographic implementations.")
         ("rust-fnv" ,rust-fnv-1.0)
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-lazycell" ,rust-lazycell-1.2)
-        ("rust-bincode" ,rust-bincode-1.2)
+        ("rust-bincode" ,rust-bincode-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-walkdir" ,rust-walkdir-2.3)
         ("rust-onig" ,rust-onig-5.0))))
@@ -23018,7 +25365,7 @@ syntax extension expansion.")
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-failure" ,rust-failure-0.1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-walkdir" ,rust-walkdir-2.2))))
+        ("rust-walkdir" ,rust-walkdir-2.3))))
     (home-page "https://github.com/johalun/sysctl-rs")
     (synopsis "Simplified interface to libc::sysctl")
     (description
@@ -23460,6 +25807,31 @@ writing colored text to a terminal.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-terminal-size-0.1
+  (package
+    (name "rust-terminal-size")
+    (version "0.1.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "terminal-size" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "04qy9i0k3qkhl749xk30xga0l7w61rf4bj5zy0r44w3jijgws54s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Tests expect access to /dev/stderr
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/eminence/terminal-size")
+    (synopsis "Gets the size of your Linux or Windows terminal")
+    (description
+     "This package gets the size of your Linux or Windows terminal.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-terminfo-0.6
   (package
     (name "rust-terminfo")
@@ -23612,6 +25984,27 @@ for display in commandline applications.  It is designed to be efficient and
 handle Unicode characters correctly.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define-public rust-thin-slice-0.1
+  (package
+    (name "rust-thin-slice")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "thin-slice" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0g4z51g3yarah89ijpakbwhrrknw6d7k3ry0m1zqcn3hbhiq3alf"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/heycam/thin-slice")
+    (synopsis
+     "Owned slice that packs the slice storage into a single word when possible")
+    (description
+     "An owned slice that packs the slice storage into a single word when possible.")
+    (license license:mpl2.0)))
 
 (define-public rust-thiserror-1.0
   (package
@@ -23793,8 +26186,36 @@ fixed set of worker threads.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tiff-0.5
+  (package
+    (name "rust-tiff")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tiff" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0bzzvxcx21pzryxgd7x7a1himiqs2y4k55754wzlr56sqj3qlfrz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; not all test files included
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-lzw" ,rust-lzw-0.10)
+        ("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))
+    (home-page "https://github.com/image-rs/image-tiff")
+    (synopsis
+     "TIFF decoding and encoding library in pure Rust")
+    (description
+     "TIFF decoding and encoding library in pure Rust.")
+    (license license:expat)))
+
 (define-public rust-tiff-0.3
   (package
+    (inherit rust-tiff-0.5)
     (name "rust-tiff")
     (version "0.3.1")
     (source
@@ -23806,7 +26227,6 @@ fixed set of worker threads.")
        (sha256
         (base32
          "0zgmbny2f8rssqmjdfvnysy0vqwcvlwl6q9f5yixhavlqk7w5dyp"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Tests images not included with release.
        #:cargo-inputs
@@ -23815,13 +26235,7 @@ fixed set of worker threads.")
         ("rust-num-derive" ,rust-num-derive-0.2)
         ("rust-num-traits" ,rust-num-traits-0.2))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3))))
-    (home-page "https://github.com/image-rs/image-tiff")
-    (synopsis
-     "TIFF decoding and encoding library in pure Rust")
-    (description
-     "TIFF decoding and encoding library in pure Rust.")
-    (license license:expat)))
+       (("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-tiff-0.2
   (package
@@ -23924,7 +26338,7 @@ in Rust.")
         ("rust-iovec" ,rust-iovec-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-memchr" ,rust-memchr-2)
         ("rust-mio" ,rust-mio-0.6)
         ("rust-mio-named-pipes" ,rust-mio-named-pipes-0.1)
         ("rust-mio-uds" ,rust-mio-uds-0.6)
@@ -24745,7 +27159,7 @@ pool.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-        (("rust-indexmap" ,rust-indexmap-1.0)
+        (("rust-indexmap" ,rust-indexmap-1)
          ("rust-serde" ,rust-serde-1.0))
         #:cargo-development-inputs
         (("rust-serde-derive" ,rust-serde-derive-1.0)
@@ -24829,6 +27243,26 @@ serializing Rust str")
     (description "Unsafe helpers for dealing with raw trait objects.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-treeline-0.1
+  (package
+    (name "rust-treeline")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "treeline" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0hcdgyk5xzcx2ylm0fr9czzs9cjznm7l9q5qz51qi97i82r43xx7"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/softprops/treeline")
+    (synopsis "Library for visualizing tree structured data")
+    (description
+     "This package provides a library for visualizing tree structured data.")
+    (license license:expat)))
 
 (define-public rust-try-from-0.3
   (package
@@ -24961,10 +27395,10 @@ serializing Rust str")
      "A typesafe store for many value types.")
     (license license:expat)))
 
-(define-public rust-typenum-1.10
+(define-public rust-typenum-1
   (package
     (name "rust-typenum")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
       (origin
         (method url-fetch)
@@ -24972,7 +27406,7 @@ serializing Rust str")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0sc1jirllfhdi52z1xv9yqzxzpk6v7vadd13n7wvs1wnjipn6bb1"))))
+          "0cvbksljz61ian21fnn0h51kphl0pwpzb932bv4s0rwy1wh8lg1p"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/paholg/typenum")
     (synopsis "Rust library for type-level numbers evaluated at compile time")
@@ -25073,7 +27507,7 @@ with the Unicode character database.")
      "Unchecked indexing wrapper using regular index syntax.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-unicase-2.6
+(define-public rust-unicase-2
   (package
     (name "rust-unicase")
     (version "2.6.0")
@@ -25097,31 +27531,9 @@ with the Unicode character database.")
      "This package provides a case-insensitive wrapper around strings.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-unicase-2.4
-  (package
-    (name "rust-unicase")
-    (version "2.4.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "unicase" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "1xmpmkakhhblq7dzab1kwyv925kv7fqjkjsxjspg6ix9n88makm8"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs (("rust-version-check" ,rust-version-check-0.1))))
-    (home-page "https://github.com/seanmonstar/unicase")
-    (synopsis "Case-insensitive wrapper around strings")
-    (description
-     "A case-insensitive wrapper around strings.")
-    (license (list license:asl2.0
-                   license:expat))))
-
 (define-public rust-unicase-1
   (package
-    (inherit rust-unicase-2.4)
+    (inherit rust-unicase-2)
     (name "rust-unicase")
     (version "1.4.2")
     (source
@@ -25171,7 +27583,7 @@ with the Unicode character database.")
 (define-public rust-unicode-normalization-0.1
   (package
     (name "rust-unicode-normalization")
-    (version "0.1.9")
+    (version "0.1.11")
     (source
      (origin
        (method url-fetch)
@@ -25179,12 +27591,11 @@ with the Unicode character database.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1kviyqg3bmds4p5hgwf9qgihw8xxvq7ljgyrrk7ygxa2k450gj09"))))
+        (base32 "1kxxb5ndb5dzyp1flajjdxnbwyjw6ml9xvy0pz7b8srjn9ky4qdm"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-smallvec" ,rust-smallvec-0.6))))
+     `(#:cargo-inputs
+       (("rust-smallvec" ,rust-smallvec-1))))
     (home-page "https://github.com/unicode-rs/unicode-normalization")
     (synopsis
      "This crate provides functions for normalization of Unicode strings")
@@ -25261,7 +27672,7 @@ boundaries according to Unicode Standard Annex #29 rules.")
 (define-public rust-unicode-xid-0.2
   (package
     (name "rust-unicode-xid")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
       (origin
         (method url-fetch)
@@ -25270,7 +27681,7 @@ boundaries according to Unicode Standard Annex #29 rules.")
           (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0z09fn515xm7zyr0mmdyxa9mx2f7azcpv74pqmg611iralwpcvl2"))))
+          "0r6mknipyy9vpz8mwmxvkx65ff2ha1n2pxqjj6f46lcn8yrhpzpp"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/unicode-rs/unicode-xid")
     (synopsis "Determine Unicode XID related properties")
@@ -25310,14 +27721,14 @@ or XID_Continue properties according to Unicode Standard Annex #31.")
 (define-public rust-unindent-0.1
   (package
     (name "rust-unindent")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "unindent" version))
         (file-name (string-append name "-" version ".crate"))
         (sha256
-         (base32 "14s97blyqgf9hzxk22iazrghj60midajkw2801dfspz3n2iqmwb3"))))
+         (base32 "0hl9l4w9mhv5qacx7cirm6rarrphw35b5syw2plx13vz884dfhdg"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/dtolnay/indoc")
     (synopsis "Remove a column of leading whitespace from a string")
@@ -25398,7 +27809,7 @@ whitespace from a string.")
 (define-public rust-untrusted-0.7
   (package
     (name "rust-untrusted")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
       (origin
         (method url-fetch)
@@ -25406,7 +27817,7 @@ whitespace from a string.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1kmfykcwif6ashkwg54gcnhxj03kpba2i9vc7z5rpr0xlgvrwdk0"))))
+          "0jkbqaj9d3v5a91pp3wp9mffvng1nhycx6sh4qkdd9qyr62ccmm1"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/briansmith/untrusted")
     (synopsis "Zero-allocation parsing of untrusted inputs in Rust")
@@ -25491,7 +27902,7 @@ untrusted inputs in Rust.")
 (define-public rust-urlocator-0.1
  (package
    (name "rust-urlocator")
-   (version "0.1.2")
+   (version "0.1.3")
    (source
     (origin
       (method url-fetch)
@@ -25500,9 +27911,9 @@ untrusted inputs in Rust.")
        (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1xzhwmqrqyk8p3s5npqpidrn0gjapqx5fshrx633fk56j7cm8qm1"))))
+        "0r5ig00np3svjpvb1gha3ni798cwj2w7rnlwrc8jrrw7bvlb2yri"))))
    (build-system cargo-build-system)
-   (home-page "https://github.com/chrisduerr/urlocator.git")
+   (home-page "https://github.com/alacritty/urlocator")
    (synopsis "Locate URLs in character streams")
    (description "Locate URLs in character streams.")
    (license (list license:expat license:asl2.0))))
@@ -25722,7 +28133,7 @@ Unix users and groups.")
         ("rust-slog" ,rust-slog-2.4)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-bincode" ,rust-bincode-1.1)
+       (("rust-bincode" ,rust-bincode-1)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-serde-test" ,rust-serde-test-1.0))))
@@ -25757,7 +28168,7 @@ Unix users and groups.")
 (define-public rust-vcpkg-0.2
   (package
     (name "rust-vcpkg")
-    (version "0.2.8")
+    (version "0.2.10")
     (source
       (origin
         (method url-fetch)
@@ -25765,7 +28176,7 @@ Unix users and groups.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0s1ijdrsg6917imja2hb07l0z4vbx7ydm8m2i1n9g62fg7r3ki1z"))))
+          "132hlmsc4maava91vl4lh677sl1c7vr8ccl53fnr5w41y6dh4m34"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Tests want mysql, harfbuzz, graphite2.
@@ -25783,7 +28194,7 @@ Unix users and groups.")
 (define-public rust-vec-map-0.8
   (package
     (name "rust-vec-map")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
       (origin
         (method url-fetch)
@@ -25791,7 +28202,7 @@ Unix users and groups.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06n8hw4hlbcz328a3gbpvmy0ma46vg1lc0r5wf55900szf3qdiq5"))))
+          "1481w9g1dw9rxp3l6snkdqihzyrd2f8vispzqmwjwsdyhw8xzggi"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -25848,7 +28259,7 @@ designed for reexporting.")
        (("rust-chrono" ,rust-chrono-0.4)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-bitflags" ,rust-bitflags-1))))
-    (home-page "http://github.com/rustyhorde/vergen")
+    (home-page "https://github.com/rustyhorde/vergen")
     (synopsis "Generate version related functions")
     (description
      "Generate version related functions.")
@@ -26064,35 +28475,9 @@ specified across Unix and Windows platforms.")
     (description "Recursively walk a directory.")
     (license (list license:unlicense license:expat))))
 
-(define-public rust-walkdir-2.2
-  (package
-    (name "rust-walkdir")
-    (version "2.2.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "walkdir" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "07ppalpvxkf8cnqr64np422792y4z5bs9m8b4nrflh5rm17wjn4n"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-same-file" ,rust-same-file-1.0)
-        ("rust-winapi" ,rust-winapi-0.3)
-        ("rust-winapi-util" ,rust-winapi-util-0.1))
-       #:cargo-development-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3))))
-    (home-page  "https://github.com/BurntSushi/walkdir")
-    (synopsis "Recursively walk a directory")
-    (description "Recursively walk a directory.")
-    (license (list license:unlicense
-                   license:expat))))
-
 (define-public rust-walkdir-1.0
   (package
-    (inherit rust-walkdir-2.2)
+    (inherit rust-walkdir-2.3)
     (name "rust-walkdir")
     (version "1.0.7")
     (source
@@ -26740,13 +29125,12 @@ the wayland protocol, client side.")
         ("rust-quote" ,rust-quote-0.6)
         ("rust-xml-rs" ,rust-xml-rs-0.8))))
     (home-page "https://github.com/smithay/wayland-rs")
-    (synopsis
-     "Wayland Scanner for generating rust APIs from XML wayland protocol files")
+    (synopsis "Generate Rust APIs from XML Wayland protocol files")
     (description
-     "Wayland Scanner for generating rust APIs from XML wayland protocol files.
-Intented for use with wayland-sys.  You should only need this crate if
-you are working on custom wayland protocol extensions.
-Look at the crate wayland-client for usable bindings.")
+     "Wayland Scanner generates Rust APIs from XML Wayland protocol files.
+It is intended for use with wayland-sys.  You should only need this crate if
+you are working on custom Wayland protocol extensions.
+Look at the wayland-client crate for usable bindings.")
     (license license:expat)))
 
 (define-public rust-wayland-scanner-0.21
@@ -27084,7 +29468,7 @@ Locate installed executable in cross platforms.")
 (define-public rust-widestring-0.4
   (package
     (name "rust-widestring")
-    (version "0.4.0")
+    (version "0.4.2")
     (source
       (origin
         (method url-fetch)
@@ -27092,11 +29476,10 @@ Locate installed executable in cross platforms.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1dhx6dndjsz1y7c9w06922412kdxyrrkqblvggm76mh8z17hxz7g"))))
+          "13565qy4jhpg4x0xw8mwxzzsh0p8c93p5208lh6kpwp0q01y6qx7"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
+     `(#:cargo-development-inputs
        (("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/starkat99/widestring-rs")
     (synopsis "Wide string Rust FFI library")
@@ -27110,7 +29493,7 @@ UTF-32 types are provided, including support for malformed encoding.")
 (define-public rust-winapi-0.3
   (package
     (name "rust-winapi")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
       (origin
         (method url-fetch)
@@ -27118,7 +29501,7 @@ UTF-32 types are provided, including support for malformed encoding.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1ii9j9lzrhwri0902652awifzx9fpayimbp6hfhhc296xcg0k4w0"))))
+          "06gl025x418lchw1wxj64ycr7gha83m44cjr5sarhynd9xkrm0sw"))))
     (build-system cargo-build-system)
     ;; This package depends unconditionally on these two crates.
     (arguments
@@ -27190,7 +29573,7 @@ i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
 (define-public rust-winapi-util-0.1
   (package
     (name "rust-winapi-util")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
       (origin
         (method url-fetch)
@@ -27198,7 +29581,7 @@ i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0vj3984cxwnf1ys3fdz6bpl7p0kdsgykpzbhmcmwi759cd8mqlgs"))))
+          "0y71bp7f6d536czj40dhqk0d55wfbbwqfp2ymqf1an5ibgl6rv3h"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
@@ -27234,7 +29617,7 @@ x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
 (define-public rust-wincolor-1.0
   (package
     (name "rust-wincolor")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
       (origin
         (method url-fetch)
@@ -27242,7 +29625,7 @@ x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1agaf3hcav113i86912ajnw6jxcy4rvkrgyf8gdj8kc031mh3xcn"))))
+          "017x33ljndwc76cp5z9llgndn0nh7v8jcjaykbizkawmwy9n3pyp"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -27503,7 +29886,7 @@ color in a Windows console.")
 (define-public rust-x11-dl-2
   (package
     (name "rust-x11-dl")
-    (version "2.18.4")
+    (version "2.18.5")
     (source
      (origin
        (method url-fetch)
@@ -27511,8 +29894,7 @@ color in a Windows console.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0n1w837xagxqgwx2880d7c9ks6l3g1kk00yd75afdaiv58sf2rdy"))))
+        (base32 "1y7yq4sfvv56shk4v3s7gvlrwk9d0migj622fl4i4c5klpiq3y9b"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -27591,19 +29973,18 @@ extended attributes.")
     (name "rust-xdg")
     (version "2.2.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "xdg" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "0mws8a0fr3cqk5nh7aq9lmkmhzghvasqy4mhw6nnza06l4d6i2fh"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xdg" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "0mws8a0fr3cqk5nh7aq9lmkmhzghvasqy4mhw6nnza06l4d6i2fh"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/whitequark/rust-xdg")
     (synopsis "Store and retrieve files according to XDG specification")
     (description
      "This package provides a library for storing and retrieving files according
-to XDG Base Directory specification")
+to XDG Base Directory specification.")
     (license (list license:asl2.0
                    license:expat))))
 
@@ -27637,10 +30018,40 @@ to XDG Base Directory specification")
     (description "An XML library in pure Rust.")
     (license license:expat)))
 
+(define-public rust-xml5ever-0.16
+  (package
+    (name "rust-xml5ever")
+    (version "0.16.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "xml5ever" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0nbapmdrn4zqry5p01l2mmbb48fcq0gga377p1c4lkb1x3k546qb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-mac" ,rust-mac-0.1)
+        ("rust-markup5ever" ,rust-markup5ever-0.10)
+        ("rust-time" ,rust-time-0.1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-rustc-test" ,rust-rustc-test-0.3))))
+    (home-page
+     "https://github.com/servo/html5ever/blob/master/xml5ever/README.md")
+    (synopsis "Push based streaming parser for xml")
+    (description
+     "Push based streaming parser for xml.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-y4m-0.5
   (package
     (name "rust-y4m")
-    (version "0.5.0")
+    (version "0.5.3")
     (source
       (origin
         (method url-fetch)
@@ -27648,10 +30059,12 @@ to XDG Base Directory specification")
         (file-name
           (string-append name "-" version ".tar.gz"))
         (sha256
-          (base32
-            "06g8c53qk4cla3xczywx5qlklvzsw54x77vm727mhizlsp5n93ar"))))
+         (base32
+          "1933677by64y06zfgip2yq8b2dza8xnljhaksx93czq90b54kscz"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-resize" ,rust-resize-0.3))))
     (home-page "https://github.com/image-rs/y4m")
     (synopsis "YUV4MPEG2 (.y4m) Encoder/Decoder.")
     (description "YUV4MPEG2 (.y4m) Encoder/Decoder.")
@@ -27721,10 +30134,60 @@ to XDG Base Directory specification")
     (description "This package provides an implementation of zbase32.")
     (license license:lgpl3+)))
 
+(define-public rust-zeroize-1
+  (package
+    (name "rust-zeroize")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zeroize" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1f5547q8l8bpi16yy6lix2gl9rf1qz45lj06bq7wjk525gnw5fiw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;2 doc tests fail
+       #:cargo-inputs
+       (("rust-zeroize-derive" ,rust-zeroize-derive-1))))
+    (home-page "https://github.com/iqlusioninc/crates/")
+    (synopsis "Securely clear secrets from memory")
+    (description
+     "Zeroize securely clears secrets from memory with a simple trait built on
+stable Rust primitives, which guarantee memory is zeroed using an operation
+will not be ``optimized away'' by the compiler.  It uses a portable pure Rust
+implementation that works everywhere, even WASM!")
+    (license (list license:asl2.0 license:expat))))
+
+(define-public rust-zeroize-derive-1
+  (package
+    (name "rust-zeroize-derive")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zeroize-derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18lc9xq9dwvmv81y3bqnw20974nbrs7d20rljb1inz7wd7n1w9fy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0)
+        ("rust-synstructure" ,rust-synstructure-0.12))))
+    (home-page "https://github.com/iqlusioninc/crates/")
+    (synopsis "Custom derive support for zeroize")
+    (description "This crate provides custom derive support for Zeroize.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-zip-0.5
   (package
     (name "rust-zip")
-    (version "0.5.4")
+    (version "0.5.6")
     (source
      (origin
        (method url-fetch)
@@ -27733,7 +30196,7 @@ to XDG Base Directory specification")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1biv5kh4fl7wpjlsxfczvgrdjlybf0xjaw7s36didql8lxxz67z4"))))
+         "0zfv0ascxl8gqqxgjck99kypcb0f67lg2k1a3zwza1w5swl7qa2q"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs

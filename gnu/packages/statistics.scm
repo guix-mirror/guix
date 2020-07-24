@@ -160,14 +160,14 @@ simulation not wholly unlike BUGS.  JAGS was written with three aims in mind:
 (define-public libxls
   (package
     (name "libxls")
-    (version "1.5.2")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/libxls/libxls/releases/download/"
                            "v" version "/libxls-" version ".tar.gz"))
        (sha256
-        (base32 "1akadsyl10rp101ccjmrxr7933c3v641k377bn74jv6cdkcm4zld"))))
+        (base32 "0rl513wpq5qh7wkmdk4g9c68rzffv3mcbz48p4xyg4969zrx8lnm"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/libxls/libxls")
     (synopsis "Read binary (.xls) Excel spreadsheet files")
@@ -1187,19 +1187,21 @@ and to generate base64 encoded string from raster matrix.")
 (define-public r-svglite
   (package
     (name "r-svglite")
-    (version "1.2.3")
+    (version "1.2.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "svglite" version))
        (sha256
         (base32
-         "1zivykbi1pxdxhrkc1if1ihdn5p27j0nai2q0abca1dwry3wg2yl"))))
+         "00n8bg4iligl0h24v42cka417w26zmcxrr4r6k8wdal1riwhgmi5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-gdtools" ,r-gdtools)
        ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/svglite")
     (synopsis "SVG graphics device")
     (description
@@ -1617,13 +1619,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.4.6")
+    (version "0.4.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "1jik4lywg4688dfi5fh8jbnmsxvq3382ii0nsw5armjzfq3v309s"))))
+                "0f4rhnhyhgrv874l0yzm80ij6vcqdykfd7bzmnqs0wbgyhkxk8vq"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
@@ -1635,14 +1637,14 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "3.0.1")
+    (version "3.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "17m7xvn423snq9dmr0bhx42j5rbc53w1viizxx4bvq37nz7m4i8m"))))
+         "0f4yi87w6509lnaz1lhk9s8nm3bzx21ij3273s0zx7vpbp0qlxxz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -2282,13 +2284,13 @@ tables, autolinks and strikethrough text.")
 (define-public r-roxygen2
   (package
     (name "r-roxygen2")
-    (version "7.1.0")
+    (version "7.1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "roxygen2" version))
               (sha256
                (base32
-                "00s1wzx5960k8pzgpz4kikjf4k061hyhnd278y65q6n0wzv3d6vy"))))
+                "0qc8akwfwmaqsjaza87f5fi0zk6sh3l6j3assbs6chvx0gnmvidx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brew" ,r-brew)
@@ -2304,6 +2306,8 @@ tables, autolinks and strikethrough text.")
        ("r-stringi" ,r-stringi)
        ("r-stringr" ,r-stringr)
        ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/klutometis/roxygen")
     (synopsis "In-source documentation system for R")
     (description
@@ -2314,19 +2318,20 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "1ihz2qi33lhngl19xdanq0pbmfaacy63794mg8ll7z2lab3yryzp"))))
+         "17fkc6pr8w5z3rpadg692a689p1v4j7xl5ak0y64is7c74cxgljx"))))
     (build-system r-build-system)
     (inputs
      `(("libressl" ,libressl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-askpass" ,r-askpass)))
     (home-page "https://github.com/jeroenooms/openssl")
@@ -2871,13 +2876,13 @@ ldap, and also supports cookies, redirects, authentication, etc.")
 (define-public r-xml
   (package
     (name "r-xml")
-    (version "3.99-0.3")
+    (version "3.99-0.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "XML" version))
               (sha256
                (base32
-                "0lzpqwajs5xaqdna50vl24qkp9xvh00zypjjzy6kgdzk11isgdw1"))))
+                "1bw6wr17gp0vdnxc5hip47n15nhxwacin3a5992sc7yfb55kaxm5"))))
     (properties
      `((upstream-name . "XML")))
     (build-system r-build-system)
@@ -3546,13 +3551,13 @@ persistent (on the file system).")
 (define-public r-r-rsp
   (package
     (name "r-r-rsp")
-    (version "0.43.2")
+    (version "0.44.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.rsp" version))
               (sha256
                (base32
-                "128zqyvbq9hm9gy86jzhj609lkfw57vr24mdxgh46ncmx66ag4gj"))))
+                "0n9sxrffahgxcc8h9vgxg5i446g14cibixpf82nkpm5bvidhfsc9"))))
     (properties `((upstream-name . "R.rsp")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4212,20 +4217,22 @@ including:
 (define-public r-gplots
   (package
     (name "r-gplots")
-    (version "3.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gplots" version))
        (sha256
         (base32
-         "0hs6mk48i9yd43rg9wfjc2nxsjjwrnpifxqvxkv8ah18kvpd6xnp"))))
+         "15ip3v4xiqzbanf8bc5fj90cbwdgixr72aj5jrp34jfdzdx0gxwg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-catools" ,r-catools)
        ("r-gdata" ,r-gdata)
        ("r-gtools" ,r-gtools)
        ("r-kernsmooth" ,r-kernsmooth)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/gplots")
     (synopsis "Various R programming tools for plotting data")
     (description
@@ -4918,14 +4925,14 @@ of the points.")
 (define-public r-fpc
   (package
     (name "r-fpc")
-    (version "2.2-6")
+    (version "2.2-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fpc" version))
        (sha256
         (base32
-         "0lpn951gy58039gk2wh8nsw6qss8m3flkawv55yq3l6373ly79if"))))
+         "1xnp3j36hggfg675v39mnr6rgvp7i11pfng7nmyy3k2ldgklz0j9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
@@ -5087,18 +5094,19 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.55")
+    (version "5.61")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
-        (base32 "1zjc8p95kb0ypxa6nxp0lkdq8armkjmmhf8484m25n5f14a59qfb"))))
+        (base32 "0kby1crnzkdg5sczwqapfpkr58apyzrrx85khigcqggmhhwl44wk"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
     (propagated-inputs
-     `(("r-matrix" ,r-matrix)
+     `(("r-conquer" ,r-conquer)
+       ("r-matrix" ,r-matrix)
        ("r-matrixmodels" ,r-matrixmodels)
        ("r-sparsem" ,r-sparsem)))
     (home-page "https://www.r-project.org")
@@ -5114,14 +5122,14 @@ expected shortfall risk are also included.")
 (define-public r-nloptr
   (package
     (name "r-nloptr")
-    (version "1.2.2.1")
+    (version "1.2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nloptr" version))
        (sha256
         (base32
-         "1bhh2v14phzndjhiq7yw9vych6vzn5yy3vk9q35zcp3jhjjbwdyh"))))
+         "0whkilb85k4wixvr3k7rygfw1rcs1fs9h8c18kz4p3y1k9hsj3p8"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr) ; for building vignettes
@@ -5302,14 +5310,14 @@ normals.")
 (define-public r-mnormt
   (package
     (name "r-mnormt")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
         (uri (cran-uri "mnormt" version))
         (sha256
           (base32
-           "1gxhma0zqsx5pkc0871vszq1y7akwdmpm8rhws5b3gr6w9mx4agf"))))
+           "00nn0b6nksn2jbpg0np5wphryp4f9v95vqxf5v628yysnawgkcwq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-tmvnsim" ,r-tmvnsim)))
@@ -5442,14 +5450,14 @@ genome-wide association studies can be analyzed efficiently.")
 (define-public r-cairo
   (package
     (name "r-cairo")
-    (version "1.5-12")
+    (version "1.5-12.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Cairo" version))
        (sha256
         (base32
-         "02v29am4fac3fyq6y1w6r89zwbqqkxjsxrafcwb5s124ikxyl22f"))))
+         "14hgz5wmnhlbqkd1g662n1agmjnlj3pq69gfng1vb0ivr02l2lnx"))))
     (properties `((upstream-name . "Cairo")))
     (build-system r-build-system)
     (inputs
@@ -5627,7 +5635,7 @@ parameters.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/Gibbsdavidl/CatterPlots.git")
+                      (url "https://github.com/Gibbsdavidl/CatterPlots")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -5650,7 +5658,7 @@ shaped points?  Now you can!")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jalvesaq/colorout.git")
+             (url "https://github.com/jalvesaq/colorout")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

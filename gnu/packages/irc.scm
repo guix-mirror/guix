@@ -80,12 +80,10 @@
           "0mg8jydc70vlylppzich26q4s40kr78r3ysfyjwisfvlg2byxvs8"))
         (patches (search-patches "quassel-qt-514-compat.patch"))
         (modules '((guix build utils)))
-        ;; We don't want to install the bundled scripts.
+        ;; We don't want to install the bundled inxi script.
         (snippet
          '(begin
-            (delete-file-recursively "data/scripts")
-            (substitute* "data/CMakeLists.txt"
-              (("NOT WIN32") "WIN32"))
+            (delete-file "data/scripts/inxi")
             #t))))
     (build-system cmake-build-system)
     (arguments
@@ -103,8 +101,7 @@
          (add-after 'unpack 'patch-inxi-reference
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((inxi (string-append (assoc-ref inputs "inxi") "/bin/inxi")))
-               (substitute* "src/common/aliasmanager.cpp"
-                 ((" inxi ") (string-append " " inxi " ")))
+               (symlink inxi "data/scripts/inxi")
                #t))))
        #:tests? #f)) ; no test target
     (native-inputs

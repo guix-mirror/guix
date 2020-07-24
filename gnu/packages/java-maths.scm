@@ -37,7 +37,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mikiobraun/jblas.git")
+                    (url "https://github.com/mikiobraun/jblas")
                     (commit (string-append "jblas-" version))))
               (file-name (git-file-name name version))
               (sha256

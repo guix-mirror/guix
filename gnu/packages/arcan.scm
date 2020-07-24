@@ -59,7 +59,7 @@
                 (method git-fetch)
                 (file-name (git-file-name name version))
                 (uri (git-reference
-                      (url "https://github.com/letoram/arcan.git")
+                      (url "https://github.com/letoram/arcan")
                       (commit commit)))
                 (sha256
                  (base32 "1pd0avlzc2rig1hd37zbhc7r2s6fjzdhshfg9l9cfzibl7caclyw"))))
@@ -145,7 +145,7 @@
                             (method git-fetch)
                             (file-name "arcan-openal-0.5.4")
                             (uri (git-reference
-                                  (url "https://github.com/letoram/openal.git")
+                                  (url "https://github.com/letoram/openal")
                                   (commit "1c7302c580964fee9ee9e1d89ff56d24f934bdef")))
                             (sha256
                              (base32
@@ -195,7 +195,7 @@ engine programmable using Lua.")
          (method git-fetch)
          (file-name (git-file-name name version))
          (uri (git-reference
-               (url "https://github.com/letoram/xarcan.git")
+               (url "https://github.com/letoram/xarcan")
                (commit commit)))
          (sha256
           (base32 "0zng7cs6733mnf0p6g5wv02981f2sf567n56csax6cmzb8fpamym"))))

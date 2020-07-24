@@ -48,7 +48,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/grpc/grpc.git")
+                    (url "https://github.com/grpc/grpc")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -124,7 +124,7 @@ browsers to backend services.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/grpc/grpc.git")
+                    (url "https://github.com/grpc/grpc")
                     (commit (string-append "v" version))))
               (file-name (git-file-name "grpc" version))
               (sha256
@@ -207,7 +207,7 @@ with the HTTP/2-based RPC framework gRPC.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/apache/thrift.git")
+             (url "https://github.com/apache/thrift")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

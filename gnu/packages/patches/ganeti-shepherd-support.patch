@@ -1,0 +1,87 @@
+Ganeti uses an internal tool to start/stop daemons during init and
+upgrade.  This patch makes the tool use native Shepherd facilities.
+
+diff --git a/daemons/daemon-util.in b/daemons/daemon-util.in
+--- a/daemons/daemon-util.in
++++ b/daemons/daemon-util.in
+@@ -184,6 +184,21 @@ use_systemctl() {
+   return 1
+ }
+ 
++# Checks if we should use the Shepherd to start/stop daemons
++use_shepherd() {
++  # Is Shepherd running as PID 1?
++  ps --no-headers -p 1 -o cmd | grep -q shepherd || return 1
++
++  type -p herd >/dev/null || return 1
++
++  # Does Shepherd know about Ganeti at all?
++  if herd status | grep -q ganeti; then
++    return 0
++  fi
++
++  return 1
++}
++
+ # Prints path to PID file for a daemon.
+ daemon_pidfile() {
+   if [[ "$#" -lt 1 ]]; then
+@@ -261,6 +276,13 @@ check() {
+     else
+       return 1
+     fi
++  elif use_shepherd; then
++    activestate="$(herd status ${name})"
++    if echo $activestate | grep -q Running ; then
++      return 0
++    else
++      return 1
++    fi
+   elif type -p start-stop-daemon >/dev/null; then
+     start-stop-daemon --stop --signal 0 --quiet \
+       --pidfile $pidfile --name "$name"
+@@ -291,6 +313,20 @@ start() {
+     return $?
+   fi
+ 
++  if use_shepherd; then
++    if herd status "$name" | grep -q "disabled"; then
++      # The Shepherd will disable a service that has stopped, even if it exits
++      # gracefully.  Thus, we must re-enable it in case of a master failover.
++      herd enable "${name}"
++    fi
++    # Note: unlike systemd, which happily starts a service and returns success
++    # even if the daemon immediately exits, the Shepherd actually waits for it
++    # to come up.  Thus, ignore the exit status from 'herd start' in case of
++    # master daemons running on the wrong node, or ganeti-kvmd disabled, etc.
++    herd start "${name}"
++    return 0
++  fi
++
+   # Read $<daemon>_ARGS and $EXTRA_<daemon>_ARGS
+   eval local args="\"\$${ucname}_ARGS \$EXTRA_${ucname}_ARGS\""
+ 
+@@ -336,6 +372,13 @@ stop() {
+ 
+   if use_systemctl; then
+     systemctl stop "${name}.service"
++  elif use_shepherd; then
++    if herd status | grep -q "$name"; then
++      herd stop "$name"
++    else
++      # Do not raise an error if the service has not been enabled.
++      return 0
++    fi
+   elif type -p start-stop-daemon >/dev/null; then
+     start-stop-daemon --stop --quiet --oknodo --retry 30 \
+       --pidfile $pidfile --name "$name"
+@@ -352,6 +395,9 @@ check_and_start() {
+     if use_systemctl; then
+       echo "${name} supervised by systemd but not running, will not restart."
+       return 1
++    elif use_shepherd; then
++      echo "${name} supervised by shepherd but not running, will not restart."
++      return 1
+     fi
+ 
+     start $name

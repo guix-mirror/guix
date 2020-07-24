@@ -188,7 +188,7 @@ Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/douglascrockford/JSON-js.git")
+                      (url "https://github.com/douglascrockford/JSON-js")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -303,7 +303,7 @@ HTML tables with minimal effort.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/requirejs/requirejs.git")
+                     (url "https://github.com/requirejs/requirejs")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256

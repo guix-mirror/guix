@@ -316,25 +316,13 @@ in RELEASE, a <cpan-release> record."
   (let ((release (cpan-fetch (module->name module-name))))
     (and=> release cpan-module->sexp)))
 
-(define (cpan-package? package)
-  "Return #t if PACKAGE is a package from CPAN."
-  (define cpan-url?
-    (let ((cpan-rx (make-regexp (string-append "("
-                                               "mirror://cpan" "|"
-                                               "https?://www.cpan.org" "|"
-                                               "https?://cpan.metacpan.org"
-                                               ")"))))
-      (lambda (url)
-        (regexp-exec cpan-rx url))))
-
-  (let ((source-url (and=> (package-source package) origin-uri))
-        (fetch-method (and=> (package-source package) origin-method)))
-    (and (eq? fetch-method url-fetch)
-         (match source-url
-           ((? string?)
-            (cpan-url? source-url))
-           ((source-url ...)
-            (any cpan-url? source-url))))))
+(define cpan-package?
+  (let ((cpan-rx (make-regexp (string-append "("
+                                             "mirror://cpan" "|"
+                                             "https?://www.cpan.org" "|"
+                                             "https?://cpan.metacpan.org"
+                                             ")"))))
+    (url-predicate (cut regexp-exec cpan-rx <>))))
 
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."

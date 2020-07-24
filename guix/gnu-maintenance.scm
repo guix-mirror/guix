@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -62,6 +62,7 @@
 
             %gnu-updater
             %gnu-ftp-updater
+            %savannah-updater
             %xorg-updater
             %kernel.org-updater))
 
@@ -207,14 +208,17 @@ network to check in GNU's database."
                 (member host '("www.gnu.org" "gnu.org"))))))
 
       (or (gnu-home-page? package)
-          (let ((url  (and=> (package-source package) origin-uri))
-                (name (package-upstream-name package)))
-            (case (and (string? url) (mirror-type url))
-              ((gnu) #t)
-              ((non-gnu) #f)
-              (else
-               (and (member name (map gnu-package-name (official-gnu-packages)))
-                    #t))))))))
+          (match (package-source package)
+            ((? origin? origin)
+             (let ((url  (origin-uri origin))
+                   (name (package-upstream-name package)))
+               (case (and (string? url) (mirror-type url))
+                 ((gnu) #t)
+                 ((non-gnu) #f)
+                 (else
+                  (and (member name (map gnu-package-name (official-gnu-packages)))
+                       #t)))))
+            (_ #f))))))
 
 
 ;;;
@@ -236,7 +240,7 @@ network to check in GNU's database."
   (make-regexp "^([^.]+)-([0-9]|[^-])+(-(src|gnu[0-9]))?\\.(tar\\.|zip$)"))
 
 (define %alpha-tarball-rx
-  (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
+  (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|RC|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
 
 (define (release-file? project file)
   "Return #f if FILE is not a release tarball of PROJECT, otherwise return
@@ -494,9 +498,8 @@ return the corresponding signature URL, or #f it signatures are unavailable."
               (version version)
               (urls (list (string-append base-url directory "/" url)))
               (signature-urls
-               (list (string-append base-url directory "/"
-                                    (file-sans-extension url)
-                                    ".sign")))))))
+               (list (file->signature
+                      (string-append base-url directory "/" url))))))))
 
     (define candidates
       (filter-map url->release (html-links sxml)))
@@ -612,8 +615,51 @@ releases are on gnu.org."
 (define gnu-hosted?
   (url-prefix-predicate "mirror://gnu/"))
 
+(define (url-prefix-rewrite old new)
+  "Return a one-argument procedure that rewrites URL prefix OLD to NEW."
+  (lambda (url)
+    (if (string-prefix? old url)
+        (string-append new (string-drop url (string-length old)))
+        url)))
+
+(define (adjusted-upstream-source source rewrite-url)
+  "Rewrite URLs in SOURCE by apply REWRITE-URL to each of them."
+  (upstream-source
+   (inherit source)
+   (urls (map rewrite-url (upstream-source-urls source)))
+   (signature-urls (and=> (upstream-source-signature-urls source)
+                          (lambda (urls)
+                            (map rewrite-url urls))))))
+
+(define savannah-package?
+  (url-prefix-predicate "mirror://savannah/"))
+
+(define %savannah-base
+  ;; One of the Savannah mirrors listed at
+  ;; <http://download0.savannah.gnu.org/mirmon/savannah/> that serves valid
+  ;; HTML (unlike <https://download.savannah.nongnu.org/releases>.)
+  "https://nongnu.freemirror.org/nongnu")
+
+(define (latest-savannah-release package)
+  "Return the latest release of PACKAGE."
+  (let* ((uri       (string->uri
+                     (match (origin-uri (package-source package))
+                       ((? string? uri) uri)
+                       ((uri mirrors ...) uri))))
+         (package   (package-upstream-name package))
+         (directory (dirname (uri-path uri)))
+         (rewrite   (url-prefix-rewrite %savannah-base
+                                        "mirror://savannah")))
+    ;; Note: We use the default 'file->signature', which adds ".sig", but not
+    ;; all projects on Savannah follow that convention: some use ".asc" and
+    ;; perhaps some lack signatures altogether.
+    (and=> (latest-html-release package
+                                #:base-url %savannah-base
+                                #:directory directory)
+           (cut adjusted-upstream-source <> rewrite))))
+
 (define (latest-xorg-release package)
-  "Return the latest release of PACKAGE, the name of an X.org package."
+  "Return the latest release of PACKAGE."
   (let ((uri (string->uri (origin-uri (package-source package)))))
     (false-if-ftp-error
      (latest-ftp-release
@@ -632,13 +678,19 @@ releases are on gnu.org."
   (define (file->signature file)
     (string-append (file-sans-extension file) ".sign"))
 
-  (let* ((uri       (string->uri (origin-uri (package-source package))))
+  (let* ((uri       (string->uri
+                     (match (origin-uri (package-source package))
+                       ((? string? uri) uri)
+                       ((uri mirrors ...) uri))))
          (package   (package-upstream-name package))
-         (directory (dirname (uri-path uri))))
-    (latest-html-release package
-                         #:base-url %kernel.org-base
-                         #:directory directory
-                         #:file->signature file->signature)))
+         (directory (dirname (uri-path uri)))
+         (rewrite   (url-prefix-rewrite %kernel.org-base
+                                        "mirror://kernel.org")))
+    (and=> (latest-html-release package
+                                #:base-url %kernel.org-base
+                                #:directory directory
+                                #:file->signature file->signature)
+           (cut adjusted-upstream-source <> rewrite))))
 
 (define %gnu-updater
   ;; This is for everything at ftp.gnu.org.
@@ -658,6 +710,13 @@ releases are on gnu.org."
            (and (not (gnu-hosted? package))
                 (pure-gnu-package? package))))
    (latest latest-release*)))
+
+(define %savannah-updater
+  (upstream-updater
+   (name 'savannah)
+   (description "Updater for packages hosted on savannah.gnu.org")
+   (pred (url-prefix-predicate "mirror://savannah/"))
+   (latest latest-savannah-release)))
 
 (define %xorg-updater
   (upstream-updater

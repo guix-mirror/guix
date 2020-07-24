@@ -53,6 +53,8 @@ guix/scripts/upgrade.scm
 guix/scripts/search.scm
 guix/scripts/show.scm
 guix/scripts/gc.scm
+guix/scripts/git.scm
+guix/scripts/git/authenticate.scm
 guix/scripts/hash.scm
 guix/scripts/import.scm
 guix/scripts/import/cran.scm

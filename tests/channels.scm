@@ -402,6 +402,27 @@
                          (channel-news-for-commit channel commit5 commit1))
                     '(#f "tag-for-first-news-entry")))))))
 
+(unless (which (git-command)) (test-skip 1))
+(test-assert "latest-channel-instances, missing introduction for 'guix'"
+  (with-temporary-git-repository directory
+      '((add "a.txt" "A")
+        (commit "first commit")
+        (add "b.scm" "#t")
+        (commit "second commit"))
+    (with-repository directory repository
+      (let* ((commit1 (find-commit repository "first"))
+             (commit2 (find-commit repository "second"))
+             (channel (channel (url (string-append "file://" directory))
+                               (name 'guix))))
+
+        (guard (c ((message-condition? c)
+                   (->bool (string-contains (condition-message c)
+                                            "introduction"))))
+          (with-store store
+            ;; Attempt a downgrade from NEW to OLD.
+            (latest-channel-instances store (list channel))
+            #f))))))
+
 (unless (gpg+git-available?) (test-skip 1))
 (test-equal "authenticate-channel, wrong first commit signer"
   #t
@@ -430,12 +451,11 @@
       (with-repository directory repository
         (let* ((commit1 (find-commit repository "first"))
                (commit2 (find-commit repository "second"))
-               (intro   ((@@ (guix channels) make-channel-introduction)
+               (intro   (make-channel-introduction
                          (commit-id-string commit1)
                          (openpgp-public-key-fingerprint
                           (read-openpgp-packet
-                           %ed25519bis-public-key-file)) ;different key
-                         #f))                     ;no signature
+                           %ed25519bis-public-key-file)))) ;different key
                (channel (channel (name 'example)
                                  (url (string-append "file://" directory))
                                  (introduction intro))))
@@ -448,7 +468,8 @@
             'failed))))))
 
 (unless (gpg+git-available?) (test-skip 1))
-(test-assert "authenticate-channel, .guix-authorizations"
+(test-equal "authenticate-channel, .guix-authorizations"
+  #t
   (with-fresh-gnupg-setup (list %ed25519-public-key-file
                                 %ed25519-secret-key-file
                                 %ed25519bis-public-key-file
@@ -486,12 +507,11 @@
         (let* ((commit1 (find-commit repository "first"))
                (commit2 (find-commit repository "second"))
                (commit3 (find-commit repository "third"))
-               (intro   ((@@ (guix channels) make-channel-introduction)
+               (intro   (make-channel-introduction
                          (commit-id-string commit1)
                          (openpgp-public-key-fingerprint
                           (read-openpgp-packet
-                           %ed25519-public-key-file))
-                         #f))                     ;no signature
+                           %ed25519-public-key-file))))
                (channel (channel (name 'example)
                                  (url (string-append "file://" directory))
                                  (introduction intro))))
@@ -515,5 +535,55 @@
                                        (commit-id-string commit3)
                                        #:keyring-reference-prefix "")
                  'failed)))))))
+
+(unless (gpg+git-available?) (test-skip 1))
+(test-equal "latest-channel-instances, authenticate dependency"
+  #t
+  ;; Make sure that a channel dependency that has an introduction is
+  ;; authenticated.  This test checks that an authentication error is raised
+  ;; as it should when authenticating the dependency.
+  (with-fresh-gnupg-setup (list %ed25519-public-key-file
+                                %ed25519-secret-key-file)
+    (with-temporary-git-repository dependency-directory
+        `((add ".guix-channel"
+               ,(object->string
+                 '(channel (version 0)
+                           (keyring-reference "master"))))
+          (add ".guix-authorizations"
+               ,(object->string
+                 `(authorizations (version 0) ())))
+          (add "signer.key" ,(call-with-input-file %ed25519-public-key-file
+                               get-string-all))
+          (commit "zeroth commit"
+                  (signer ,(key-fingerprint %ed25519-public-key-file)))
+          (add "foo.txt" "evil")
+          (commit "unsigned commit"))
+      (with-repository dependency-directory dependency
+        (let* ((commit0 (find-commit dependency "zeroth"))
+               (commit1 (find-commit dependency "unsigned"))
+               (intro   `(channel-introduction
+                          (version 0)
+                          (commit ,(commit-id-string commit0))
+                          (signer ,(openpgp-format-fingerprint
+                                    (openpgp-public-key-fingerprint
+                                     (read-openpgp-packet
+                                      %ed25519-public-key-file)))))))
+          (with-temporary-git-repository directory
+              `((add ".guix-channel"
+                     ,(object->string
+                       `(channel (version 0)
+                                 (dependencies
+                                  (channel
+                                   (name test-channel)
+                                   (url ,dependency-directory)
+                                   (introduction ,intro))))))
+                (commit "single commit"))
+            (let ((channel (channel (name 'test) (url directory))))
+              (guard (c ((unsigned-commit-error? c)
+                         (oid=? (git-authentication-error-commit c)
+                                (commit-id commit1))))
+                (with-store store
+                  (latest-channel-instances store (list channel))
+                  'failed)))))))))
 
 (test-end "channels")

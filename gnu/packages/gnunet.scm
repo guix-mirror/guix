@@ -32,6 +32,7 @@
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -250,7 +251,7 @@ supports HTTP, HTTPS and GnuTLS.")
 (define-public gnunet
   (package
    (name "gnunet")
-   (version "0.12.2")
+   (version "0.13.1")
    (source
     (origin
       (method url-fetch)
@@ -258,7 +259,7 @@ supports HTTP, HTTPS and GnuTLS.")
                           ".tar.gz"))
       (sha256
        (base32
-        "1mwcy7fj1rpd39w7j7k3jdwlil5s889b2qlhfdggqmhigl28na5c"))))
+        "15jnca5zxng7r6m3qzq9lr73xxq0v6mvcp0lny3zrlkz5s2nmmq3"))))
    (build-system gnu-build-system)
    (inputs
     `(("bluez" ,bluez)
@@ -274,6 +275,7 @@ supports HTTP, HTTPS and GnuTLS.")
       ("libltdl" ,libltdl)
       ("libmicrohttpd" ,libmicrohttpd)
       ("libogg" ,libogg)
+      ("libsodium" ,libsodium)
       ("libunistring" ,libunistring)
       ("miniupnpc" ,miniupnpc)
       ("opus" ,opus)
@@ -282,7 +284,8 @@ supports HTTP, HTTPS and GnuTLS.")
       ("zbar" ,zbar)
       ("zlib" ,zlib)))
    (native-inputs
-    `(("pkg-config" ,pkg-config)
+    `(("curl" ,curl)
+      ("pkg-config" ,pkg-config)
       ("python" ,python)
       ("xxd" ,xxd)
       ("which" ,(@ (gnu packages base) which))))
@@ -293,17 +296,6 @@ supports HTTP, HTTPS and GnuTLS.")
         (add-after 'configure 'remove-failing-tests
           ;; These tests fail in Guix's building environment.
           (lambda _
-            (substitute* "src/cadet/Makefile"
-              (("test_cadet_2_reopen\\$\\(EXEEXT\\) \\\\\n") "test_cadet_2_reopen$(EXEEXT)")
-              (("test_cadet_5_forward\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_signal\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_keepalive\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed_ack\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed_reliable\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed_reliable_backwards\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_speed_backwards\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_cadet_5_reopen\\$\\(EXEEXT\\)") ""))
             (substitute* "src/transport/Makefile"
               (("\\$\\(am__EXEEXT_15\\)") "") ; test_transport_api_https
               (("test_transport_api_manipulation_cfg\\$\\(EXEEXT\\) \\\\\n") "")
@@ -311,8 +303,9 @@ supports HTTP, HTTPS and GnuTLS.")
               (("test_transport_blacklisting_multiple_plugins\\$\\(EXEEXT\\) \\\\\n") ""))
             (substitute* "src/testbed/Makefile"
               (("test_testbed_api_2peers_1controller\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_testbed_api_test\\$\\(EXEEXT\\) \\\\\n") "")
               (("test_testbed_api_statistics\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_testbed_api_test\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_testbed_api_test_timeout\\$\\(EXEEXT\\) \\\\\n") "")
               (("test_testbed_api_topology\\$\\(EXEEXT\\) \\\\\n") "")
               (("test_testbed_api_topology_clique\\$\\(EXEEXT\\) \\\\\n") ""))
             (substitute* "src/topology/Makefile"

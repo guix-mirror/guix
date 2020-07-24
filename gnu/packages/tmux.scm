@@ -74,7 +74,7 @@ continue running in the background, then later reattached.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/jimeh/tmux-themepack.git")
+                      (url "https://github.com/jimeh/tmux-themepack")
                       (commit commit)))
                 (sha256
                  (base32
@@ -104,7 +104,7 @@ continue running in the background, then later reattached.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/jimeh/tmuxifier.git")
+                   (url "https://github.com/jimeh/tmuxifier")
                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256
@@ -151,7 +151,7 @@ windows.")
        (method git-fetch)
        ;; PyPI source tarball does not include tests.
        (uri (git-reference
-             (url "https://github.com/tmux-python/libtmux.git")
+             (url "https://github.com/tmux-python/libtmux")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -196,7 +196,7 @@ with live tmux sessions.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/edouardklein/daemux.git")
+             (url "https://github.com/edouardklein/daemux")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -231,7 +231,7 @@ them, etc., by attaching to the corresponding pane in tmux.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/greymd/tmux-xpanes.git")
+                    (url "https://github.com/greymd/tmux-xpanes")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

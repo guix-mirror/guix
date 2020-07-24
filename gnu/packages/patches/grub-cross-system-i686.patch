@@ -2,18 +2,20 @@ Not upstreamed.
 Fixes cross-build for the Hurd, from i686-linux,
 see <https://bugs.gnu.org/41982>.
 
-From 270667540146f8ef9ea7a44258a71b3837a7af4a Mon Sep 17 00:00:00 2001
+From 17b242e7b80108f1467037e15b605595e4823b2e Mon Sep 17 00:00:00 2001
 From: "Jan (janneke) Nieuwenhuizen" <janneke@gnu.org>
 Date: Sun, 21 Jun 2020 15:10:40 +0200
-Subject: [PATCH] grub-core: Build fixes for i386
+Subject: [PATCH v2] grub-core: Build fixes for i386
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
 
 * grub-core/lib/i386/relocator64.S: Avoid x86_64 instructions on i386.
 ---
- grub-core/lib/i386/relocator64.S | 26 +++++++++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+ grub-core/lib/i386/relocator64.S | 33 +++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/grub-core/lib/i386/relocator64.S b/grub-core/lib/i386/relocator64.S
-index 148f38adb..45fed9444 100644
+index 148f38adb..ea39908c1 100644
 --- a/grub-core/lib/i386/relocator64.S
 +++ b/grub-core/lib/i386/relocator64.S
 @@ -63,7 +63,9 @@ VARIABLE(grub_relocator64_cr3)
@@ -41,7 +43,22 @@ index 148f38adb..45fed9444 100644
  
  #ifdef GRUB_MACHINE_EFI
  	jmp	LOCAL(skip_efi_stack_align)
-@@ -95,8 +104,15 @@ LOCAL(skip_efi_stack_align):
+@@ -85,7 +94,14 @@ VARIABLE(grub_relocator64_rsp)
+ 	 */
+ VARIABLE(grub_relocator64_efi_start)
+ 	/* Align the stack as UEFI spec requires. */
++#ifndef __x86_64__
++	.byte 0x48
++        .byte 0x83
++        .byte 0xe4
++        .byte 0xf0
++#else
+ 	andq	$~15, %rsp
++#endif
+ 
+ LOCAL(skip_efi_stack_align):
+ #endif
+@@ -95,8 +111,15 @@ LOCAL(skip_efi_stack_align):
  VARIABLE(grub_relocator64_rsi)
  	.quad	0
  
@@ -58,7 +75,7 @@ index 148f38adb..45fed9444 100644
  	/* mov imm64, %rax */
  	.byte 	0x48
  	.byte	0xb8
-@@ -128,6 +144,14 @@ VARIABLE(grub_relocator64_rdx)
+@@ -128,6 +151,14 @@ VARIABLE(grub_relocator64_rdx)
  #ifdef __APPLE__
  	.byte 0xff, 0x25
  	.quad 0

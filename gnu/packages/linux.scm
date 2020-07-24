@@ -45,6 +45,8 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,8 +74,10 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cpio)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages compression)
@@ -196,37 +200,37 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.7
   (linux-libre-deblob-scripts
-   "5.7.1"
-   (base32 "1c0n39wg6xij4x63ppg0m80kfcffkn3iilm3chyiix09n9g7vb78")
-   (base32 "02is246xaql1br3kizqicrkp982nw4gdwpn7nlzjazvsmyd1hcv2")))
+   "5.7.10"
+   (base32 "1gharhw104wxp9dxjkzzvsqc2xn44mc9yvacc3v7jh7b6bb0a64a")
+   (base32 "1n198gx18rxc7xflgiwya43inkwayc91pgb129kngfza8sm6v8ks")))
 
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
-   "5.4.37"
+   "5.4.53"
    (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
    (base32 "10qb890is4z58vr8czh3xx69q62l3b3j38y410kgiw8nii3zx5lr")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   "4.19.103"
+   "4.19.134"
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
    (base32 "1w2wgxblpq09i33qmqgw5v3r5rm9vkkygr6m0sgv4zgczk9s29wr")))
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.170"
+   "4.14.189"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
    (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.213"
+   "4.9.231"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   "4.4.213"
+   "4.4.231"
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
    (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 
@@ -371,50 +375,50 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.7-version "5.7.6")
+(define-public linux-libre-5.7-version "5.7.10")
 (define-public linux-libre-5.7-pristine-source
   (let ((version linux-libre-5.7-version)
-        (hash (base32 "1rhhys2fvfrfsc6lk0qkq59p83qhwvns4jhk0jlyylyzqqywkm4z")))
+        (hash (base32 "0i1x347q1rs9r11f7qic62d5465dzngxs0n44ryknmxpcl6469a7")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.7)))
 
-(define-public linux-libre-5.4-version "5.4.49")
+(define-public linux-libre-5.4-version "5.4.53")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0g2psjf2q10mfc3vv6brjn6s2nkg73ll1s04gpshw907d9irpn2m")))
+        (hash (base32 "08bd7lgj2c26h3rm8lm7w6dvi8zhjiilmrxf1rpp5m90jbwvd9zs")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.130")
+(define-public linux-libre-4.19-version "4.19.134")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "03zhsizj53ngwxn7d4mzix9xbxxd5lhbzrvawvbb91f83pkc14m6")))
+        (hash (base32 "0vrsiqqsiv0z4jhafqch2g27ig28nmw69hw32a8lc5fkcm7shzbx")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.186")
+(define-public linux-libre-4.14-version "4.14.189")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0q52fmkiqa9hpdkf0wlpcqnc6wqssqz6cgfk1ix1anq0h5hl4ns4")))
+        (hash (base32 "1qgr6hb714xi7rav4za4vk4l7c0ma3ndf0f2ca3q8ly5gd2j3rd7")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.228")
+(define-public linux-libre-4.9-version "4.9.231")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0d7w2zzs79ywxzfrh4bmk5lw318qbkcb8mcsyyh3cc25qqlz9gwg")))
+        (hash (base32 "1sz8xk767yy4lxqvy4229yrgkwnm43hdrbr54aa1flns5yh3p12g")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.228")
+(define-public linux-libre-4.4-version "4.4.231")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0y1xc5lk8j3p5maarksmh18wy921rgcngzsih7q1a82rah1fsjxr")))
+        (hash (base32 "1c6p5hv18isa328pvpa3qmmsg4qsssf2mwsx3hzn489rb8ycdxp7")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -617,6 +621,30 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     ("CONFIG_FUSE_FS" . m)
     ("CONFIG_CIFS" . m)
     ("CONFIG_9P_FS" . m)))
+
+;; See https://github.com/iovisor/bcc/blob/master/INSTALL.md#kernel-configuration
+(define %bpf-extra-linux-options
+  `(;; Needed for probes
+    ("CONFIG_UPROBE_EVENTS" . #t)
+    ("CONFIG_KPROBE_EVENTS" . #t)
+    ;; kheaders module also helpful for tracing
+    ("CONFIG_IKHEADERS" . #t)
+    ("CONFIG_BPF" . #t)
+    ("CONFIG_BPF_SYSCALL" . #t)
+    ("CONFIG_BPF_JIT_ALWAYS_ON" . #t)
+    ;; optional, for tc filters
+    ("CONFIG_NET_CLS_BPF" . m)
+    ;; optional, for tc actions
+    ("CONFIG_NET_ACT_BPF" . m)
+    ("CONFIG_BPF_JIT" . #t)
+    ;; for Linux kernel versions 4.1 through 4.6
+    ;; ("CONFIG_HAVE_BPF_JIT" . y)
+    ;; for Linux kernel versions 4.7 and later
+    ("CONFIG_HAVE_EBPF_JIT" . #t)
+    ;; optional, for kprobes
+    ("CONFIG_BPF_EVENTS" . #t)
+    ;; kheaders module
+    ("CONFIG_IKHEADERS" . #t)))
 
 (define (config->string options)
   (string-join (map (match-lambda
@@ -936,6 +964,23 @@ It has been modified to remove all non-free binary blobs.")
                      '("riscv64-linux")
                      #:extra-version "riscv64-generic"))
 
+(define-public linux-libre-with-bpf
+  (let ((base-linux-libre
+         (make-linux-libre*
+          linux-libre-5.4-version
+          linux-libre-5.4-source
+          '("x86_64-linux" "i686-linux" "armhf-linux"
+            "aarch64-linux" "riscv64-linux")
+          #:extra-version "bpf"
+          #:configuration-file kernel-config
+          #:extra-options
+          (append %bpf-extra-linux-options
+                  %default-extra-linux-options))))
+    (package
+      (inherit base-linux-libre)
+      (inputs `(("cpio" ,cpio) ,@(package-inputs base-linux-libre))))))
+
+
 
 ;;;
 ;;; Linux kernel modules.
@@ -951,7 +996,7 @@ It has been modified to remove all non-free binary blobs.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/teleshoes/acpi_call.git")
+               (url "https://github.com/teleshoes/acpi_call")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -994,7 +1039,7 @@ and should be used with caution, especially on untested models.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/aircrack-ng/rtl8812au.git")
+               (url "https://github.com/aircrack-ng/rtl8812au")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1040,7 +1085,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/tomaspinho/rtl8821ce.git")
+               (url "https://github.com/tomaspinho/rtl8821ce")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -1163,7 +1208,7 @@ supported under @file{/sys/class/backlight/}.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/umlaeute/v4l2loopback.git")
+                    (url "https://github.com/umlaeute/v4l2loopback")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2506,14 +2551,14 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.12")
+    (version "2.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://01.org/sites/default/files/downloads/"
                            "powertop-" version ".tar.gz"))
        (sha256
-        (base32 "1kiiwa5p2r7h1lzcf53xq61ckaa4wk565s9fs6vw4bfk84y3mfsw"))))
+        (base32 "0y1ixw8v17fdb1ima0zshrd0rh4zxdh10r93nrrvq6d4lhn9jpx6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2980,16 +3025,16 @@ for systems using the Linux kernel.  This includes commands such as
 (define-public inotify-tools
   (package
     (name "inotify-tools")
-    (version "3.20.1")
+    (version "3.20.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rvoicilas/inotify-tools.git")
+                    (url "https://github.com/rvoicilas/inotify-tools")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14dci1i4mhsd5sa33k8h3ayphk19kizynh5ql9ryibdpmcanfiyq"))))
+                "1r12bglkb0bkqff6kgxjm81hk6z20nrxq3m7iv15d4nrqf9pm7s0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3063,7 +3108,7 @@ from the module-init-tools project.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/rfjakob/earlyoom.git")
+                    (url "https://github.com/rfjakob/earlyoom")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3351,6 +3396,37 @@ mapper.  Kernel components are part of Linux-libre.")
                #t))))))
     (synopsis "Logical volume management for Linux (statically linked)")))
 
+(define-public thin-provisioning-tools
+  (package
+    (name "thin-provisioning-tools")
+    (version "0.8.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jthornber/thin-provisioning-tools")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01wl8c0cjbx1smbhj8dx6av5bnw5775m58gasc3vqwvsj0s9hq19"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; Doesn't build with --enable-testing due to a function name collision
+     ;; with glibc. Fixed upstream. TODO: Enable tests when 0.9.0 is released.
+     `(#:tests? #f))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoreconf" ,autoconf)))
+    (inputs
+     `(("boost" ,boost)
+       ("expat" ,expat)
+       ("libaio" ,libaio)))
+    (synopsis "Tools for manipulating the metadata of device-mapper targets")
+    (description "A suite of tools for manipulating the metadata of the
+dm-thin, dm-cache and dm-era device-mapper targets.")
+    (home-page "https://github.com/jthornber/thin-provisioning-tools")
+    (license license:gpl3+)))
+
 (define-public wireless-tools
   (package
     (name "wireless-tools")
@@ -3567,7 +3643,7 @@ country-specific regulations for the wireless spectrum.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/groeck/lm-sensors.git")
+             (url "https://github.com/groeck/lm-sensors")
              (commit (string-append "V" (string-join
                                          (string-split version #\.) "-")))))
        (file-name (git-file-name name version))
@@ -3852,12 +3928,18 @@ thanks to the use of namespaces.")
      `(#:configure-flags '("--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-reference-to-squashfs-tools
+         (add-after 'unpack 'patch-references
            (lambda _
              (substitute* "libexec/cli/build.exec"
                (("if ! singularity_which mksquashfs") "if 0")
                (("if ! mksquashfs")
                 (string-append "if ! " (which "mksquashfs"))))
+             (substitute* (list "libexec/cli/help.exec"
+                                "libexec/bootstrap-scripts/functions"
+                                "libexec/bootstrap-scripts/post.sh"
+                                "libexec/functions")
+               (("egrep ")
+                (string-append (which "egrep") " ")))
              #t))
          (add-after 'install 'set-PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3926,7 +4008,7 @@ Translation (@dfn{SAT}) are also supported.")
 (define-public nvme-cli
   (package
     (name "nvme-cli")
-    (version "1.11.2")
+    (version "1.12")
     (home-page "https://github.com/linux-nvme/nvme-cli")
     (source (origin
               (method git-fetch)
@@ -3934,7 +4016,7 @@ Translation (@dfn{SAT}) are also supported.")
                     (url home-page)
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "0ngh7zffjf6ac8b22hdi4ry7hjlafih172hrbpw8j17r7c0wjy9i"))
+               (base32 "0ldky34sn0m5c4hgiip0fkzm465nca69bhxicpd5dg8wxhzxqrp3"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -4971,7 +5053,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/vmatare/thinkfan.git")
+             (url "https://github.com/vmatare/thinkfan")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -5029,7 +5111,7 @@ from userspace.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/teleshoes/tpacpi-bat.git")
+             (url "https://github.com/teleshoes/tpacpi-bat")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5366,16 +5448,16 @@ cpufreq sub-system is enabled or not.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.8")
+    (version "1.9.13")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jirka-h/haveged.git")
+             (url "https://github.com/jirka-h/haveged")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1znr58fb3faq4nmrvc3c5whkc1f3chivm4vhicdwr9pdsyqqsd51"))))
+        (base32 "0g3hcvpky76cabgcfqh65fay7nnjkms32sgmlf33q969833hijqz"))))
     (build-system gnu-build-system)
     (home-page "https://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
@@ -5584,7 +5666,7 @@ exceeded.")
 (define-public mtd-utils
   (package
     (name "mtd-utils")
-    (version "2.1.1")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5592,7 +5674,7 @@ exceeded.")
                     "mtd-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1lijl89l7hljx8xx70vrz9srd3h41v5gh4b0lvqnlv831yvyh5cd"))))
+                "1mp9fqgnz5r69s8ly98ry6k2blqnaqpllwi8m930dm0n8zrwbm4a"))))
     (arguments
      '(#:configure-flags '("--enable-unit-tests")))
     (native-inputs
@@ -5618,7 +5700,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.4.3")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -5626,10 +5708,20 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "07crwxqzvl5k2b90a47ii9wgvi09s9hsy5b5jddw9ylp351d25fg"))))
+                "1wql62cg8f95cwpy057cl764nni9g4sdn5lqj68x22kjs8w71yhz"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'skip-load-test
+                    (lambda _
+                      ;; This test does a native system call and fails when
+                      ;; run under QEMU user-mode emulation.  Just skip it.
+                      (delete-file "tests/52-basic-load.tests")
+                      #t)))))
     (native-inputs
-     `(("which" ,which)))
+     `(("gperf" ,gperf)
+       ("which" ,which)))
     (synopsis "Interface to Linux's seccomp syscall filtering mechanism")
     (description "The libseccomp library provides an easy to use, platform
 independent, interface to the Linux Kernel's syscall filtering mechanism.  The
@@ -5648,7 +5740,7 @@ developers.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/clbr/radeontop.git")
+             (url "https://github.com/clbr/radeontop")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5802,7 +5894,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/haikarainen/light.git")
+             (url "https://github.com/haikarainen/light")
              (commit (string-append "v" version))))
        (sha256
         (base32 "1a70zcf88ifsnwll486aicjnh48zisdf8f7vi34ihw61kdadsq9s"))
@@ -5890,7 +5982,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/linrunner/TLP.git")
+             (url "https://github.com/linrunner/TLP")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -6009,7 +6101,7 @@ every time the power supply source is changed.")
 (define-public lshw
   (package
     (name "lshw")
-    (version "B.02.18")
+    (version "B.02.19.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.ezix.org/software/"
@@ -6017,7 +6109,7 @@ every time the power supply source is changed.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "0brwra4jld0d53d7jsgca415ljglmmx1l2iazpj4ndilr48yy8mf"))))
+                "100gm1c6gb2hkfws22h0xhvv7nz38p49lxd1csikj8qlhyn4gcwv"))))
     (build-system gnu-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -6084,7 +6176,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.9.5")
+    (version "0.9.6")
     (source
      (origin
        (method url-fetch)
@@ -6093,7 +6185,7 @@ used by nftables.")
                   (string-append "https://www.nftables.org/projects/nftables"
                                  "/files/nftables-" version ".tar.bz2")))
        (sha256
-        (base32 "05kyri19q776mymkbcxq3786l6nrf4xg7f3n8my0aw63mdz9bhgj"))))
+        (base32 "0vmn6xwqa1nq6crfxshh049b199d0aj6hfgin7k068xhibzgvmk8"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
@@ -6122,7 +6214,7 @@ userspace queueing component and the logging subsystem.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/proot-me/PRoot.git")
+             (url "https://github.com/proot-me/PRoot")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6339,7 +6431,7 @@ the MTP device as a file system.")
 itself and its environment as possible.  It can be used as a test
 tool, to understand the type of environment a process runs in, and for
 comparing system environments.")
-   (home-page "http://github.com/jamesodhunt/procenv/")
+   (home-page "https://github.com/jamesodhunt/procenv/")
    (license license:gpl3+)))
 
 (define-public libfabric
@@ -6565,7 +6657,7 @@ interface to this kernel feature.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dgraziotin/mbpfan.git")
+             (url "https://github.com/dgraziotin/mbpfan")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -6600,7 +6692,7 @@ privileges.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/intel/opa-psm2.git")
+                    (url "https://github.com/intel/opa-psm2")
                     (commit (string-append "PSM2_" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -6718,7 +6810,7 @@ management tools in userspace.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vishvananda/netlink.git")
+                    (url "https://github.com/vishvananda/netlink")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -6790,7 +6882,7 @@ file systems.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/jeremie-koenig/genext2fs.git")
+                    (url "https://github.com/jeremie-koenig/genext2fs")
                     ;; 1.4.1-3 had a VCS tag but 1.4.1-4 doesn't.
                     (commit "9ee43894634998b0b2b309d636f25c64314c9421")))
               (file-name (git-file-name name version))
@@ -6943,7 +7035,7 @@ set as @code{LD_PRELOAD} to override the C library file system functions.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/linuxwacom/input-wacom.git")
+                    (url "https://github.com/linuxwacom/input-wacom")
                     (commit (string-append "input-wacom-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -7139,3 +7231,50 @@ cache data store that is used by network file systems such as @code{AFS} and
 @code{NFS} to cache data locally on disk.  The content of the cache is
 persistent over reboots.")
     (license license:gpl2+)))
+
+(define-public libbpf
+  (package
+    (name "libbpf")
+    (version "0.0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libbpf/libbpf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18l0gff7nm841mwhr7bc7x863xcyvwh58zl7mc0amnsjqlbrvqg7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libelf" ,libelf)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags
+       (list
+        (string-append "PREFIX=''")
+        (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+        (string-append "LIBDIR=/lib")
+        (string-append
+         "CC=" (assoc-ref %build-inputs "gcc") "/bin/gcc"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'pre-build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "scripts/check-reallocarray.sh"
+               (("/bin/rm" rm)
+                (string-append (assoc-ref inputs "coreutils") rm)))
+             (chdir "src")
+             #t)))))
+    (home-page "https://github.com/libbpf/libbpf")
+    (synopsis "BPF CO-RE (Compile Once – Run Everywhere)")
+    (description
+     "Libbpf supports building BPF CO-RE-enabled applications, which, in
+contrast to BCC, do not require the Clang/LLVM runtime or linux kernel
+headers.")
+    (license `(,license:lgpl2.1 ,license:bsd-2))))

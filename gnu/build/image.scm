@@ -131,20 +131,23 @@ given CONFIG file."
 (define* (register-closure prefix closure
                            #:key
                            (deduplicate? #t) (reset-timestamps? #t)
-                           (schema (sql-schema)))
+                           (schema (sql-schema))
+                           (wal-mode? #t))
   "Register CLOSURE in PREFIX, where PREFIX is the directory name of the
 target store and CLOSURE is the name of a file containing a reference graph as
 produced by #:references-graphs..  As a side effect, if RESET-TIMESTAMPS? is
 true, reset timestamps on store files and, if DEDUPLICATE? is true,
-deduplicates files common to CLOSURE and the rest of PREFIX."
+deduplicates files common to CLOSURE and the rest of PREFIX.  Pass WAL-MODE?
+to call-with-database."
   (let ((items (call-with-input-file closure read-reference-graph)))
     (parameterize ((sql-schema schema))
       (with-database (store-database-file #:prefix prefix) db
-        (register-items db items
-                        #:prefix prefix
-                        #:deduplicate? deduplicate?
-                        #:reset-timestamps? reset-timestamps?
-                        #:registration-time %epoch)))))
+       #:wal-mode? wal-mode?
+       (register-items db items
+                       #:prefix prefix
+                       #:deduplicate? deduplicate?
+                       #:reset-timestamps? reset-timestamps?
+                       #:registration-time %epoch)))))
 
 (define* (initialize-efi-partition root
                                    #:key
@@ -164,14 +167,16 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
                                     (register-closures? #t)
                                     system-directory
                                     make-device-nodes
+                                    (wal-mode? #t)
                                     #:allow-other-keys)
   "Initialize the given ROOT directory. Use BOOTCFG and BOOTCFG-LOCATION to
 install the bootloader configuration.
 
 If REGISTER-CLOSURES? is true, register REFERENCES-GRAPHS in the store.  If
 DEDUPLICATE? is true, then also deduplicate files common to CLOSURES and the
-rest of the store when registering the closures. SYSTEM-DIRECTORY is the name
-of the directory of the 'system' derivation."
+rest of the store when registering the closures.  SYSTEM-DIRECTORY is the name
+of the directory of the 'system' derivation.  Pass WAL-MODE? to
+register-closure."
   (populate-root-file-system system-directory root)
   (populate-store references-graphs root)
 
@@ -184,7 +189,8 @@ of the directory of the 'system' derivation."
                 (register-closure root
                                   closure
                                   #:reset-timestamps? #t
-                                  #:deduplicate? deduplicate?))
+                                  #:deduplicate? deduplicate?
+                                  #:wal-mode? wal-mode?))
               references-graphs))
 
   (when bootloader-installer

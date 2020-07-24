@@ -1,0 +1,153 @@
+Description: use the system-wide minizip instead of the embeeded one if found.
+Forwarded-Upstream: It was provided by upstream: http://bazaar.launchpad.net/~widelands-dev/widelands/b19-debian/revision/8147
+ .
+ Thanks to Fòram na Gàidhlig for the patch.
+ 
+I just added this line to make its use easier:
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/Modules)
+
+=== modified file 'CMakeLists.txt'
+---
+ CMakeLists.txt                     |    3 +++
+ Modules/FindMinizip.cmake          |   37 +++++++++++++++++++++++++++++++++++++
+ cmake/WlFunctions.cmake            |    7 +++++++
+ src/io/CMakeLists.txt              |    2 +-
+ src/third_party/CMakeLists.txt     |   20 +++++++++++---------
+ src/third_party/minizip/README.txt |    4 ++++
+ 6 files changed, 63 insertions(+), 10 deletions(-)
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -43,6 +43,7 @@
+ endif(POLICY CMP0074)
+ 
+ include("${CMAKE_SOURCE_DIR}/cmake/WlFunctions.cmake")
++set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/Modules)
+ 
+ option(OPTION_USE_GLBINDING "Use glbinding instead of GLEW" OFF)
+ option(OPTION_GLEW_STATIC "Use static GLEW Library" OFF)
+@@ -105,6 +106,8 @@
+ find_package(SDL2_ttf REQUIRED)
+ find_package(ZLIB REQUIRED)
+ find_package(ICU REQUIRED)
++find_package(Minizip)
++
+ if(OPTION_USE_GLBINDING)
+   find_package(glbinding REQUIRED)
+ else()
+--- /dev/null
++++ b/Modules/FindMinizip.cmake
+@@ -0,0 +1,37 @@
++# - Try to find Minizip
++# Once done this will define
++#  
++#  MINIZIP_FOUND        - system has MINIZIP
++#  MINIZIP_INCLUDE_DIR  - the MINIZIP include directory
++#  MINIZIP_LIBRARY_DIR  - where the libraries are
++#  MINIZIP_LIBRARY      - Link these to use MINIZIP
++#   
++
++IF (MINIZIP_INCLUDE_DIR)
++  # Already in cache, be silent
++  SET(MINIZIP_FIND_QUIETLY TRUE)
++ENDIF (MINIZIP_INCLUDE_DIR)
++
++FIND_PATH( MINIZIP_INCLUDE_DIR 
++	  NAMES zip.h unzip.h ioapi.h
++	  PATHS /usr/local/include /usr/include
++	  PATH_SUFFIXES minizip/ )
++SET( MINIZIP_NAMES minizip MINIZIP )
++FIND_LIBRARY( MINIZIP_LIBRARY
++	      NAMES ${MINIZIP_NAMES}
++	      PATHS /usr/lib /usr/local/lib )
++
++GET_FILENAME_COMPONENT( MINIZIP_LIBRARY_DIR ${MINIZIP_LIBRARY} PATH )
++
++IF (MINIZIP_INCLUDE_DIR AND MINIZIP_LIBRARY)
++   SET(MINIZIP_FOUND TRUE)
++   SET(MINIZIP_LIBRARY_DIR ${MINIZIP_LIBRARY} )
++   IF (NOT MINIZIP_FIND_QUIETLY)
++     MESSAGE (STATUS "Found Minizip: ${MINIZIP_LIBRARY} ${MINIZIP_INCLUDE_DIR}")
++   ENDIF (NOT MINIZIP_FIND_QUIETLY)
++ELSE (MINIZIP_INCLUDE_DIR AND MINIZIP_LIBRARY)
++   SET( MINIZIP_FOUND FALSE )
++   SET( MINIZIP_LIBRARY_DIR )
++   SET( MINIZIP_EXTRA_DEFINITIONS )
++ENDIF (MINIZIP_INCLUDE_DIR AND MINIZIP_LIBRARY)
++
+--- a/cmake/WlFunctions.cmake
++++ b/cmake/WlFunctions.cmake
+@@ -81,6 +81,14 @@
+   if(ARG_USES_ZLIB)
+     wl_include_system_directories(${NAME} ${ZLIB_INCLUDE_DIRS})
+     target_link_libraries(${NAME} ${ZLIB_LIBRARY})
++    if (MINIZIP_FOUND)
++      wl_include_system_directories(${NAME}  ${MINIZIP_INCLUDE_DIR})
++      target_link_libraries(${NAME}  ${MINIZIP_LIBRARY})
++      target_compile_definitions(${NAME} PUBLIC -DHAVE_SYSTEM_MINIZIP)
++    else(MINIZIP_FOUND)
++      target_link_libraries(${NAME}  third_party_minizip)
++      message(FATAL_ERROR "You are using widelands-bundled minizip sources. Please install your distribution's minizip dev library or urge your distribution maintainer to include the minizip library in your package repository. Thank you.")
++    endif(MINIZIP_FOUND)
+   endif()
+ 
+   # OpenGL and GLEW are one thing for us. If you use the one, you also use the
+--- a/src/third_party/CMakeLists.txt
++++ b/src/third_party/CMakeLists.txt
+@@ -1,12 +1,14 @@
+-wl_library(third_party_minizip
+-  THIRD_PARTY
+-  SRCS
+-    minizip/ioapi.h
+-    minizip/unzip.cc
+-    minizip/unzip.h
+-    minizip/zip.h
+-  USES_ZLIB
+-)
++if(NOT MINIZIP_FOUND)
++  wl_library(third_party_minizip
++    THIRD_PARTY
++    SRCS
++      ioapi.h
++      unzip.cc
++      unzip.h
++      zip.h
++    USES_ZLIB
++  )
++endif(NOT MINIZIP_FOUND)
+ 
+ wl_library(third_party_eris
+   THIRD_PARTY
+--- a/src/io/filesystem/CMakeLists.txt
++++ b/src/io/filesystem/CMakeLists.txt
+@@ -12,6 +12,7 @@
+     zip_exceptions.h
+     zip_filesystem.cc
+     zip_filesystem.h
++  USES_ZLIB
+   DEPENDS
+     base_exceptions
+     base_i18n
+@@ -19,5 +20,4 @@
+     base_macros
+     graphic_text_layout
+     io_stream
+-    third_party_minizip
+ )
+--- a/src/io/filesystem/zip_filesystem.h
++++ b/src/io/filesystem/zip_filesystem.h
+@@ -28,8 +28,14 @@
+ #include "io/filesystem/filesystem.h"
+ #include "io/streamread.h"
+ #include "io/streamwrite.h"
++
++#ifndef HAVE_SYSTEM_MINIZIP
+ #include "third_party/minizip/unzip.h"
+ #include "third_party/minizip/zip.h"
++#else
++#include <minizip/unzip.h>
++#include <minizip/zip.h>
++#endif
+ 
+ class ZipFilesystem : public FileSystem {
+ public:

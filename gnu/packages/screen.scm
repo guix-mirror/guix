@@ -159,7 +159,7 @@ window manager as well as the Tmux terminal multiplexer.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/nelhage/reptyr.git")
+             (url "https://github.com/nelhage/reptyr")
              (commit (string-append "reptyr-" version))))
        (file-name (git-file-name name version))
        (sha256

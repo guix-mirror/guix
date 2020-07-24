@@ -96,7 +96,7 @@ features not found in the core libraries.")))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/bourgesl/marlin-renderer.git")
+                    (url "https://github.com/bourgesl/marlin-renderer")
                     (commit (string-append "v" (string-map (match-lambda
                                                              (#\. #\_)
                                                              (c c))

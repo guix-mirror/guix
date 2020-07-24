@@ -57,7 +57,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cryos/avogadro.git")
+             (url "https://github.com/cryos/avogadro")
              (commit version)))
        (sha256
         (base32 "0258py3lkba85qhs5ynancinyym61vlp0zaq9yrfs3hhnhpzv9n2"))
@@ -313,7 +313,7 @@ NumPy < 1.9.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/gromacs/tng.git")
+                    (url "https://github.com/gromacs/tng")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

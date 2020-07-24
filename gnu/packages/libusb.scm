@@ -128,7 +128,7 @@ version of libusb to run with newer libusb.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/usb4java/libusb4java.git")
+                      (url "https://github.com/usb4java/libusb4java")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -356,7 +356,7 @@ I2C and SPI devices attached to the USB Hub.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/libimobiledevice/libplist.git")
+             (url "https://github.com/libimobiledevice/libplist")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -596,7 +596,7 @@ devices.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/libusb/hidapi.git")
+             (url "https://github.com/libusb/hidapi")
              (commit (string-append "hidapi-" version))))
        (file-name (git-file-name name version))
        (sha256

@@ -151,7 +151,7 @@ designs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/clojure/algo.generic.git")
+             (url "https://github.com/clojure/algo.generic")
              (commit (string-append "algo.generic-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -176,7 +176,7 @@ that can be implemented for any data type.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/clojure/algo.monads.git")
+             (url "https://github.com/clojure/algo.monads")
              (commit (string-append "algo.monads-" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -205,7 +205,7 @@ defining and using monads and useful monadic functions.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/clojure/core.match.git")
+                      (url "https://github.com/clojure/core.match")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -232,7 +232,7 @@ It supports Clojure 1.5.1 and later as well as ClojureScript.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/Engelberg/instaparse.git")
+                      (url "https://github.com/Engelberg/instaparse")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -283,7 +283,7 @@ tree.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/clojure/tools.macro.git")
+             (url "https://github.com/clojure/tools.macro")
              (commit (string-append "tools.macro-" version))))
        (file-name (git-file-name name version))
        (sha256

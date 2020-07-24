@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -184,59 +186,26 @@ represented as strings.")
     (license license:public-domain)
     (home-page "https://github.com/miguelmarco/libhomfly")))
 
-;; The following three packages from the Linbox group are needed in
-;; an outdated version for Sage.
-
-(define-public givaro-4.0.4
-  (package (inherit givaro)
-    (name "givaro")
-    (version "4.0.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/linbox-team/givaro")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "199p8wyj5i63jbnk7j8qbdbfp5rm2lpmcxyk3mdjy9bz7ygx3hhy"))))))
-
-(define-public fflas-ffpack-2.3.2
-  (package (inherit fflas-ffpack)
-    (name "fflas-ffpack")
-    (version "2.3.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/linbox-team/fflas-ffpack")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1cqhassj2dny3gx0iywvmnpq8ca0d6m82xl5rz4mb8gaxr2kwddl"))))
-    (propagated-inputs
-     `(("givaro" ,givaro-4.0.4)))
-    ;; A test fails, but since all tests pass in the latest version,
-    ;; there is not much point in investigating.
-    (arguments
-     (substitute-keyword-arguments (package-arguments fflas-ffpack)
-       ((#:tests? _ #f) #f)))))
-
-(define-public linbox-1.5.2
-  (package (inherit linbox)
-    (version "1.5.2")
-    (name "linbox")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/linbox-team/linbox")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1wfivlwp30mzdy1697w7rzb8caajim50mc8h27k82yipn2qc5n4i"))))
-    (inputs
-     `(("fflas-ffpack" ,fflas-ffpack-2.3.2)))))
+;; Sage 9.1 doesn't build with ECL 20.  This won't be necessary once 9.2 is
+;; released.  See https://trac.sagemath.org/ticket/22191
+(define-public ecl-16
+  (package
+    (inherit ecl)
+    (version "16.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://common-lisp.net/project/ecl/static/files/release/ecl"
+             "-" version ".tgz"))
+       (sha256
+        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))
+       (patches (search-patches
+                  "ecl-16-libffi.patch"
+                  "ecl-16-ignore-stderr-write-error.patch"
+                  "ecl-16-format-directive-limit.patch"))))
+    ;; Current ECL uses LGPL 2.1+
+    (license license:lgpl2.0+)))
 
 (define-public pynac
   (package
@@ -399,10 +368,7 @@ used as internal storage type for polynomial structures.")
              (let ((out (assoc-ref outputs "out")))
                (substitute* "Makefile"
                  (("^INSTALL_DIR= /usr/local")
-                  (string-append "INSTALL_DIR=" out))
-                 ;; Sage renames the include directory, so we do it also.
-                 (("include/Lfunction")
-                  "include/libLfunction")))
+                  (string-append "INSTALL_DIR=" out))))
              #t))
          (add-before 'install 'make-output-dirs
            (lambda* (#:key outputs #:allow-other-keys)

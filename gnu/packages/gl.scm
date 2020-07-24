@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -193,7 +193,7 @@ Polygon meshes, and Extruded polygon meshes.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/divVerent/s2tc.git")
+             (url "https://github.com/divVerent/s2tc")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -701,7 +701,7 @@ OpenGL graphics API.")
 (define-public libglvnd
   (package
     (name "libglvnd")
-    (version "1.3.1")
+    (version "1.3.2")
     (home-page "https://gitlab.freedesktop.org/glvnd/libglvnd")
     (source (origin
               (method git-fetch)
@@ -711,7 +711,7 @@ OpenGL graphics API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mkzdzdxjxjl794rblq4mq33wmb8ikqmfswbqdbr8gw2kw4wlhdl"))))
+                "10x7fgb114r4gikdg6flszl3kwzcb9y5qa7sj9936mk0zxhjaylz"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Dx11=enabled")
@@ -833,7 +833,7 @@ and surfaces, receiving input and events.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/extemporelang/nanovg.git")
+                      (url "https://github.com/extemporelang/nanovg")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -893,7 +893,7 @@ mixed vector/bitmap output.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/VirtualGL/virtualgl.git")
+             (url "https://github.com/VirtualGL/virtualgl")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256

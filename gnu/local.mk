@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-# Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
+# Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -24,7 +24,7 @@
 # Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
-# Copyright © 2019 Brett Gilio <brettg@gnu.org>
+# Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 # Copyright © 2019 Amin Bandali <bandali@gnu.org>
 # Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 # Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -359,9 +359,11 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/maths.scm			\
   %D%/packages/matrix.scm			\
   %D%/packages/maven.scm			\
+  %D%/packages/maven-parent-pom.scm		\
   %D%/packages/mc.scm				\
   %D%/packages/mcrypt.scm			\
   %D%/packages/medical.scm			\
+  %D%/packages/mercury.scm			\
   %D%/packages/mes.scm				\
   %D%/packages/messaging.scm			\
   %D%/packages/mingw.scm			\
@@ -403,6 +405,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/openbox.scm			\
   %D%/packages/opencog.scm			\
   %D%/packages/openldap.scm			\
+  %D%/packages/openpgp.scm			\
   %D%/packages/openstack.scm			\
   %D%/packages/orpheus.scm			\
   %D%/packages/ots.scm				\
@@ -435,6 +438,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pth.scm				\
   %D%/packages/pulseaudio.scm			\
   %D%/packages/pumpio.scm			\
+  %D%/packages/presentation.scm		\
   %D%/packages/pretty-print.scm			\
   %D%/packages/protobuf.scm			\
   %D%/packages/pure.scm				\
@@ -504,6 +508,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/stalonetray.scm			\
   %D%/packages/statistics.scm			\
   %D%/packages/stb.scm				\
+  %D%/packages/stenography.scm			\
   %D%/packages/storage.scm			\
   %D%/packages/suckless.scm			\
   %D%/packages/swig.scm				\
@@ -584,6 +589,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/docker.scm			\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
+  %D%/services/ganeti.scm			\
   %D%/services/getmail.scm				\
   %D%/services/guix.scm			\
   %D%/services/hurd.scm				\
@@ -599,6 +605,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/nix.scm				\
   %D%/services/nfs.scm			\
   %D%/services/pam-mount.scm			\
+  %D%/services/science.scm			\
   %D%/services/security-token.scm		\
   %D%/services/shepherd.scm			\
   %D%/services/sound.scm			\
@@ -635,8 +642,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/images/hurd.scm			\
 						\
   %D%/machine.scm				\
-  %D%/machine/digital-ocean.scm			\
-  %D%/machine/ssh.scm				\
 						\
   %D%/build/accounts.scm			\
   %D%/build/activation.scm			\
@@ -661,6 +666,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/desktop.scm				\
   %D%/tests/dict.scm				\
   %D%/tests/docker.scm				\
+  %D%/tests/ganeti.scm				\
   %D%/tests/guix.scm				\
   %D%/tests/monitoring.scm                      \
   %D%/tests/nfs.scm				\
@@ -670,6 +676,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/mail.scm				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
+  %D%/tests/package-management.scm		\
   %D%/tests/reconfigure.scm			\
   %D%/tests/rsync.scm				\
   %D%/tests/security-token.scm			\
@@ -713,6 +720,14 @@ INSTALLER_MODULES =                             \
   %D%/installer/newt/utils.scm			\
   %D%/installer/newt/welcome.scm		\
   %D%/installer/newt/wifi.scm
+
+if HAVE_GUILE_SSH
+
+GNU_SYSTEM_MODULES +=         			\
+  %D%/machine/digital-ocean.scm			\
+  %D%/machine/ssh.scm
+
+endif HAVE_GUILE_SSH
 
 # Always ship the installer modules but compile them only when
 # ENABLE_INSTALLER is true.
@@ -884,6 +899,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/dstat-skip-devices-without-io.patch	\
   %D%/packages/patches/dune-istl-2.7-fix-non-mpi-tests.patch	\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
+  %D%/packages/patches/ecl-16-format-directive-limit.patch	\
+  %D%/packages/patches/ecl-16-ignore-stderr-write-error.patch	\
+  %D%/packages/patches/ecl-16-libffi.patch			\
   %D%/packages/patches/eigen-stabilise-sparseqr-test.patch	\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
@@ -892,6 +910,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/elm-compiler-fix-map-key.patch		\
   %D%/packages/patches/emacs27-exec-path.patch			\
   %D%/packages/patches/emacs-exec-path.patch			\
+  %D%/packages/patches/emacs-exwm-fix-fullscreen-states.patch	\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
@@ -899,6 +918,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-libgit-use-system-libgit2.patch    \
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
+  %D%/packages/patches/emacs-telega-patch-server-functions.patch	\
   %D%/packages/patches/emacs-telega-test-env.patch		\
   %D%/packages/patches/emacs-undohist-ignored.patch	\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
@@ -928,13 +948,21 @@ dist_patch_DATA =						\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-test-rwlock-threads.patch	\
   %D%/packages/patches/flann-cmake-3.11.patch			\
-  %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/foobillard++-pkg-config.patch		\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
   %D%/packages/patches/fontconfig-hurd-path-max.patch		\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
+  %D%/packages/patches/ganeti-deterministic-manual.patch	\
+  %D%/packages/patches/ganeti-disable-version-symlinks.patch	\
+  %D%/packages/patches/ganeti-drbd-compat.patch			\
+  %D%/packages/patches/ganeti-haskell-pythondir.patch		\
+  %D%/packages/patches/ganeti-os-disk-size.patch		\
+  %D%/packages/patches/ganeti-preserve-PYTHONPATH.patch		\
+  %D%/packages/patches/ganeti-shepherd-master-failover.patch	\
+  %D%/packages/patches/ganeti-shepherd-support.patch		\
+  %D%/packages/patches/gash-utils-ls-test.patch			\
   %D%/packages/patches/gawk-shell.patch				\
   %D%/packages/patches/gcc-arm-bug-71399.patch			\
   %D%/packages/patches/gcc-arm-link-spec-fix.patch		\
@@ -1106,9 +1134,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/id3lib-UTF16-writing-bug.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
-  %D%/packages/patches/ilmbase-fix-test-arm.patch		\
   %D%/packages/patches/inetutils-hurd.patch			\
   %D%/packages/patches/inkscape-poppler-0.76.patch		\
+  %D%/packages/patches/intel-xed-fix-nondeterminism.patch	\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/iputils-libcap-compat.patch		\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
@@ -1202,7 +1230,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
   %D%/packages/patches/libqalculate-3.8.0-libcurl-ssl-fix.patch	\
-  %D%/packages/patches/libreoffice-poppler-compat.patch		\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
@@ -1220,8 +1247,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libutils-add-includes.patch		\
   %D%/packages/patches/libutils-remove-damaging-includes.patch	\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
-  %D%/packages/patches/libvnc-CVE-2018-20750.patch		\
-  %D%/packages/patches/libvnc-CVE-2019-15681.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
@@ -1230,6 +1255,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-newer-libconfig.patch		\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
+  %D%/packages/patches/linbox-fix-pkgconfig.patch		\
   %D%/packages/patches/linkchecker-tests-require-network.patch	\
   %D%/packages/patches/linphoneqt-tabbutton.patch		\
   %D%/packages/patches/linux-libre-support-for-Pinebook-Pro.patch \
@@ -1237,6 +1263,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
+  %D%/packages/patches/llvm-9-fix-bitcast-miscompilation.patch	\
+  %D%/packages/patches/llvm-9-fix-lpad-miscompilation.patch	\
+  %D%/packages/patches/llvm-9-fix-scev-miscompilation.patch	\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
   %D%/packages/patches/lrcalc-includes.patch    		\
   %D%/packages/patches/lrzip-CVE-2017-8842.patch		\
@@ -1247,13 +1276,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/lua-liblua-so.patch                      \
   %D%/packages/patches/luajit-no_ldconfig.patch			\
   %D%/packages/patches/luit-posix.patch				\
-  %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mariadb-client-test-32bit.patch		\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
   %D%/packages/patches/maxima-defsystem-mkdir.patch		\
+  %D%/packages/patches/maven-enforcer-api-fix-old-dependencies.patch	\
   %D%/packages/patches/maven-generate-component-xml.patch		\
   %D%/packages/patches/maven-generate-javax-inject-named.patch		\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
@@ -1330,6 +1359,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
   %D%/packages/patches/opencascade-oce-glibc-2.26.patch		\
   %D%/packages/patches/opencv-rgbd-aarch64-test-fix.patch	\
+  %D%/packages/patches/opendht-fix-jami.patch			\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
@@ -1353,12 +1383,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/pam-mount-luks2-support.patch		\
   %D%/packages/patches/pango-skip-libthai-test.patch		\
   %D%/packages/patches/pciutils-hurd-configure.patch		\
+  %D%/packages/patches/ppsspp-disable-upgrade-and-gold.patch		\
   %D%/packages/patches/sdl-pango-api_additions.patch		\
   %D%/packages/patches/sdl-pango-blit_overflow.patch		\
   %D%/packages/patches/sdl-pango-fillrect_crash.patch		\
   %D%/packages/patches/sdl-pango-header-guard.patch		\
   %D%/packages/patches/sdl-pango-matrix_declarations.patch	\
   %D%/packages/patches/sdl-pango-sans-serif.patch		\
+  %D%/packages/patches/sqlite-hurd.patch			\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
@@ -1421,6 +1453,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3.8-fix-tests.patch		\
   %D%/packages/patches/python-CVE-2018-14647.patch		\
   %D%/packages/patches/python-aiohttp-3.6.2-no-warning-fail.patch	\
+  %D%/packages/patches/python-aionotify-0.2.0-py3.8.patch	\
   %D%/packages/patches/python-alembic-exceptions-cause.patch	\
   %D%/packages/patches/python-argcomplete-1.11.1-fish31.patch	\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
@@ -1450,6 +1483,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-shouldbe-0.1.2-cpy3.8.patch	\
   %D%/packages/patches/python-slugify-depend-on-unidecode.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
+  %D%/packages/patches/python-tinycss2-flake8-compat.patch	\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
@@ -1457,6 +1491,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
   %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
+  %D%/packages/patches/qtbase-absolute-runpath.patch		\
+  %D%/packages/patches/qtbase-fix-krita-deadlock.patch		\
   %D%/packages/patches/qtbase-moc-ignore-gcc-macro.patch	\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
@@ -1482,11 +1518,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/racket-store-checksum-override.patch	\
   %D%/packages/patches/retroarch-disable-online-updater.patch	\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch	\
+  %D%/packages/patches/ruby-rubocop-break-dependency-cycle.patch\
   %D%/packages/patches/ruby-sanitize-system-libxml.patch	\
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/runc-CVE-2019-5736.patch			\
   %D%/packages/patches/rust-1.19-mrustc.patch			\
   %D%/packages/patches/rust-1.25-accept-more-detailed-gdb-lines.patch \
+  %D%/packages/patches/rust-1.45-linker-locale.patch		\
   %D%/packages/patches/rust-bootstrap-stage0-test.patch		\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
   %D%/packages/patches/rust-nettle-disable-vendor.patch		 \
@@ -1530,6 +1568,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
   %D%/packages/patches/t1lib-CVE-2011-1552+.patch		\
   %D%/packages/patches/t4k-common-libpng16.patch		\
+  %D%/packages/patches/tao-add-missing-headers.patch		\
+  %D%/packages/patches/tao-fix-parser-types.patch		\
   %D%/packages/patches/tar-remove-wholesparse-check.patch	\
   %D%/packages/patches/tar-skip-unreliable-tests.patch		\
   %D%/packages/patches/tcc-boot-0.9.27.patch			\
@@ -1550,7 +1590,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/tipp10-fix-compiling.patch		\
   %D%/packages/patches/tipp10-remove-license-code.patch		\
   %D%/packages/patches/tk-find-library.patch			\
-  %D%/packages/patches/transmission-CVE-2018-10756.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
@@ -1558,16 +1597,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-bcg729.patch			\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
-  %D%/packages/patches/u-boot-DT-for-Pinebook-Pro.patch		\
-  %D%/packages/patches/u-boot-add-boe-nv140fhmn49-display.patch	\
-  %D%/packages/patches/u-boot-gpio-keys-binding-cons.patch	\
-  %D%/packages/patches/u-boot-leds-common-binding-con.patch	\
-  %D%/packages/patches/u-boot-support-Pinebook-Pro-laptop.patch	\
-  %D%/packages/patches/u-boot-video-rockchip-fix-build.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
-  %D%/packages/patches/ungoogled-chromium-system-jsoncpp.patch	\
-  %D%/packages/patches/ungoogled-chromium-system-zlib.patch	\
+  %D%/packages/patches/ungoogled-chromium-system-nspr.patch	\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\
   %D%/packages/patches/unzip-CVE-2014-8141.patch		\
@@ -1606,6 +1638,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\
   %D%/packages/patches/wicd-urwid-1.3.patch			\
   %D%/packages/patches/wicd-wpa2-ttls.patch			\
+  %D%/packages/patches/widelands-system-wide_minizip.patch	\
   %D%/packages/patches/wmctrl-64-fix.patch			\
   %D%/packages/patches/wmfire-update-for-new-gdk-versions.patch	\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
@@ -1626,6 +1659,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xplanet-1.3.1-libdisplay_DisplayOutput.cpp.patch	\
   %D%/packages/patches/xplanet-1.3.1-libimage_gif.c.patch	\
   %D%/packages/patches/xplanet-1.3.1-xpUtil-Add2017LeapSecond.cpp.patch	\
+  %D%/packages/patches/xpra-4.0.1-systemd-run.patch	\
   %D%/packages/patches/xsane-fix-memory-leak.patch		\
   %D%/packages/patches/xsane-fix-pdf-floats.patch		\
   %D%/packages/patches/xsane-fix-snprintf-buffer-length.patch	\

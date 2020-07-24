@@ -52,10 +52,17 @@
 
   #:export (%hurd-vm-operating-system
             hurd-vm-configuration
+            hurd-vm-configuration?
+            hurd-vm-configuration-os
+            hurd-vm-configuration-qemu
+            hurd-vm-configuration-image
+            hurd-vm-configuration-disk-size
+            hurd-vm-configuration-memory-size
+            hurd-vm-configuration-options
+            hurd-vm-configuration-id
+            hurd-vm-configuration-net-options
             hurd-vm-disk-image
-            hurd-vm-id
             hurd-vm-net-options
-            hurd-vm-options
             hurd-vm-service-type
 
             libvirt-configuration

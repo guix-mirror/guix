@@ -847,7 +847,7 @@ XEv.")
 (define-public exempi
   (package
     (name "exempi")
-    (version "2.5.1")
+    (version "2.5.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -855,11 +855,22 @@ XEv.")
                    name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1j4vx054l1c2cggw4aka4iw48jkcf68qk5y064pbqw1k3ddks2qh"))))
+               "1mdfxb36p8251n5m7l55gx3fcqpk46yz9v568xfr8igxmqa47xaj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--with-boost="
-                               (assoc-ref %build-inputs "boost")))))
+                                              (assoc-ref %build-inputs "boost")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; XXX: Some tests fail to build with --disable-static due to
+             ;; symbols not being visible in the shared library:
+             ;; <https://gitlab.freedesktop.org/libopenraw/exempi/-/issues/17>.
+             ;; Simply delete the static library instead to save ~4.3 MiB.
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/lib/libexempi.a"))
+             #t)))))
     (native-inputs
      `(("boost" ,boost))) ; tests
     (inputs

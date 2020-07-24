@@ -69,7 +69,12 @@
             channel-location
 
             channel-introduction?
-            ;; <channel-introduction> accessors purposefully omitted for now.
+            make-channel-introduction
+            channel-introduction-first-signed-commit
+            channel-introduction-first-commit-signer
+
+            openpgp-fingerprint->bytevector
+            openpgp-fingerprint
 
             %default-channels
             guix-channel?
@@ -123,16 +128,36 @@
 
 ;; Channel introductions.  A "channel introduction" provides a commit/signer
 ;; pair that specifies the first commit of the authentication process as well
-;; as its signer's fingerprint.  The pair must be signed by the signer of that
-;; commit so that only them may emit this introduction.  Introductions are
-;; used to bootstrap trust in a channel.
+;; as its signer's fingerprint.  Introductions are used to bootstrap trust in
+;; a channel.
 (define-record-type <channel-introduction>
-  (make-channel-introduction first-signed-commit first-commit-signer
-                             signature)
+  (%make-channel-introduction first-signed-commit first-commit-signer)
   channel-introduction?
-  (first-signed-commit  channel-introduction-first-signed-commit) ;hex string
-  (first-commit-signer  channel-introduction-first-commit-signer) ;bytevector
-  (signature            channel-introduction-signature))          ;string
+  (first-signed-commit  channel-introduction-first-signed-commit)  ;hex string
+  (first-commit-signer  channel-introduction-first-commit-signer)) ;bytevector
+
+(define (make-channel-introduction commit signer)
+  "Return a new channel introduction: COMMIT is the introductory where
+authentication starts, and SIGNER is the OpenPGP fingerprint (a bytevector) of
+the signer of that commit."
+  (%make-channel-introduction commit signer))
+
+(define (openpgp-fingerprint->bytevector str)
+  "Convert STR, an OpenPGP fingerprint (hexadecimal string with whitespace),
+to the corresponding bytevector."
+  (base16-string->bytevector
+   (string-downcase (string-filter char-set:hex-digit str))))
+
+(define-syntax openpgp-fingerprint
+  (lambda (s)
+    "Convert STR, an OpenPGP fingerprint (hexadecimal string with whitespace),
+to the corresponding bytevector."
+    (syntax-case s ()
+      ((_ str)
+       (string? (syntax->datum #'str))
+       (openpgp-fingerprint->bytevector (syntax->datum #'str)))
+      ((_ str)
+       #'(openpgp-fingerprint->bytevector str)))))
 
 (define %guix-channel-introduction
   ;; Introduction of the official 'guix channel.  The chosen commit is the
@@ -142,11 +167,8 @@
   ;; & co.
   (make-channel-introduction
    "9edb3f66fd807b096b48283debdcddccfea34bad"     ;2020-05-26
-   (base16-string->bytevector
-    (string-downcase
-     (string-filter char-set:hex-digit            ;mbakke
-                    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
-   #f))                   ;TODO: Add an intro signature so it can be exported.
+   (openpgp-fingerprint                           ;mbakke
+    "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
 
 (define %default-channel-url
   ;; URL of the default 'guix' channel.
@@ -201,6 +223,14 @@ introduction, add it."
     (#f      `(branch . ,(channel-branch channel)))
     (commit  `(commit . ,(channel-commit channel)))))
 
+(define sexp->channel-introduction
+  (match-lambda
+    (('channel-introduction ('version 0)
+                            ('commit commit) ('signer signer)
+                            _ ...)
+     (make-channel-introduction commit (openpgp-fingerprint signer)))
+    (x #f)))
+
 (define (read-channel-metadata port)
   "Read from PORT channel metadata in the format expected for the
 '.guix-channel' file.  Return a <channel-metadata> record, or raise an error
@@ -228,7 +258,9 @@ if valid metadata could not be read from PORT."
                     (name name)
                     (branch branch)
                     (url url)
-                    (commit (get 'commit))))))
+                    (commit (get 'commit))
+                    (introduction (and=> (get 'introduction)
+                                         sexp->channel-introduction))))))
              dependencies)
         news-file
         keyring-reference
@@ -283,100 +315,44 @@ result is unspecified."
 (define commit-short-id
   (compose (cut string-take <> 7) oid->string commit-id))
 
-(define (verify-introductory-commit repository introduction keyring)
-  "Raise an exception if the first commit described in INTRODUCTION doesn't
-have the expected signer."
-  (define commit-id
-    (channel-introduction-first-signed-commit introduction))
-
-  (define actual-signer
-    (openpgp-public-key-fingerprint
-     (commit-signing-key repository (string->oid commit-id)
-                         keyring)))
-
-  (define expected-signer
-    (channel-introduction-first-commit-signer introduction))
-
-  (unless (bytevector=? expected-signer actual-signer)
-    (raise (condition
-            (&message
-             (message (format #f (G_ "initial commit ~a is signed by '~a' \
-instead of '~a'")
-                              commit-id
-                              (openpgp-format-fingerprint actual-signer)
-                              (openpgp-format-fingerprint expected-signer))))))))
-
 (define* (authenticate-channel channel checkout commit
                                #:key (keyring-reference-prefix "origin/"))
   "Authenticate the given COMMIT of CHANNEL, available at CHECKOUT, a
 directory containing a CHANNEL checkout.  Raise an error if authentication
 fails."
+  (define intro
+    (channel-introduction channel))
+
+  (define cache-key
+    (string-append "channels/" (symbol->string (channel-name channel))))
+
+  (define keyring-reference
+    (channel-metadata-keyring-reference
+     (read-channel-metadata-from-source checkout)))
+
+  (define (make-reporter start-commit end-commit commits)
+    (format (current-error-port)
+            (G_ "Authenticating channel '~a', commits ~a to ~a (~h new \
+commits)...~%")
+            (channel-name channel)
+            (commit-short-id start-commit)
+            (commit-short-id end-commit)
+            (length commits))
+
+    (progress-reporter/bar (length commits)))
+
   ;; XXX: Too bad we need to re-open CHECKOUT.
   (with-repository checkout repository
-    (define start-commit
-      (commit-lookup repository
-                     (string->oid
-                      (channel-introduction-first-signed-commit
-                       (channel-introduction channel)))))
-
-    (define end-commit
-      (commit-lookup repository (string->oid commit)))
-
-    (define cache-key
-      (string-append "channels/" (symbol->string (channel-name channel))))
-
-    (define keyring-reference
-      (channel-metadata-keyring-reference
-       (read-channel-metadata-from-source checkout)))
-
-    (define keyring
-      (load-keyring-from-reference repository
-                                   (string-append keyring-reference-prefix
-                                                  keyring-reference)))
-
-    (define authenticated-commits
-      ;; Previously-authenticated commits that don't need to be checked again.
-      (filter-map (lambda (id)
-                    (false-if-exception
-                     (commit-lookup repository (string->oid id))))
-                  (previously-authenticated-commits cache-key)))
-
-    (define commits
-      ;; Commits to authenticate, excluding the closure of
-      ;; AUTHENTICATED-COMMITS.
-      (commit-difference end-commit start-commit
-                         authenticated-commits))
-
-    (define reporter
-      (progress-reporter/bar (length commits)))
-
-    ;; When COMMITS is empty, it's because END-COMMIT is in the closure of
-    ;; START-COMMIT and/or AUTHENTICATED-COMMITS, in which case it's known to
-    ;; be authentic already.
-    (unless (null? commits)
-      (format (current-error-port)
-              (G_ "Authenticating channel '~a', \
-commits ~a to ~a (~h new commits)...~%")
-              (channel-name channel)
-              (commit-short-id start-commit)
-              (commit-short-id end-commit)
-              (length commits))
-
-      ;; If it's our first time, verify CHANNEL's introductory commit.
-      (when (null? authenticated-commits)
-        (verify-introductory-commit repository
-                                    (channel-introduction channel)
-                                    keyring))
-
-      (call-with-progress-reporter reporter
-        (lambda (report)
-          (authenticate-commits repository commits
-                                #:keyring keyring
-                                #:report-progress report)))
-
-      (cache-authenticated-commit cache-key
-                                  (oid->string
-                                   (commit-id end-commit))))))
+    (authenticate-repository repository
+                             (string->oid
+                              (channel-introduction-first-signed-commit intro))
+                             (channel-introduction-first-commit-signer intro)
+                             #:end (string->oid commit)
+                             #:keyring-reference
+                             (string-append keyring-reference-prefix
+                                            keyring-reference)
+                             #:make-reporter make-reporter
+                             #:cache-key cache-key)))
 
 (define* (latest-channel-instance store channel
                                   #:key (patches %patches)
@@ -406,9 +382,16 @@ their relation.  When AUTHENTICATE? is false, CHANNEL is not authenticated."
             ;; TODO: Warn for all the channels once the authentication interface
             ;; is public.
             (when (guix-channel? channel)
-              (warning (G_ "channel '~a' lacks an introduction and \
-cannot be authenticated~%")
-                       (channel-name channel))))
+              (raise (condition
+                      (&message
+                       (message (format #f (G_ "channel '~a' lacks an \
+introduction and cannot be authenticated~%")
+                                        (channel-name channel))))
+                      (&fix-hint
+                       (hint (G_ "Add the missing introduction to your
+channels file to address the issue.  Alternatively, you can pass
+@option{--disable-authentication}, at the risk of running unauthenticated and
+thus potentially malicious code.")))))))
         (warning (G_ "channel authentication disabled~%")))
 
     (when (guix-channel? channel)
@@ -822,8 +805,9 @@ derivation."
   "Return a profile manifest with entries for all of INSTANCES, a list of
 channel instances."
   (define (instance->entry instance drv)
-    (let ((commit  (channel-instance-commit instance))
-          (channel (channel-instance-channel instance)))
+    (let* ((commit  (channel-instance-commit instance))
+           (channel (channel-instance-channel instance))
+           (intro   (channel-introduction channel)))
       (manifest-entry
         (name (symbol->string (channel-name channel)))
         (version (string-take commit 7))
@@ -838,7 +822,19 @@ channel instances."
                     (version 0)
                     (url ,(channel-url channel))
                     (branch ,(channel-branch channel))
-                    (commit ,commit))))))))
+                    (commit ,commit)
+                    ,@(if intro
+                          `((introduction
+                             (channel-introduction
+                              (version 0)
+                              (commit
+                               ,(channel-introduction-first-signed-commit
+                                 intro))
+                              (signer
+                               ,(openpgp-format-fingerprint
+                                 (channel-introduction-first-commit-signer
+                                  intro))))))
+                          '()))))))))
 
   (mlet* %store-monad ((derivations (channel-instance-derivations instances))
                        (entries ->  (map instance->entry instances derivations)))
@@ -912,11 +908,16 @@ PROFILE is not a profile created by 'guix pull', return the empty list."
                                          ('url url)
                                          ('branch branch)
                                          ('commit commit)
-                                         _ ...))
+                                         rest ...))
                    (channel (name (string->symbol
                                    (manifest-entry-name entry)))
                             (url url)
-                            (commit commit)))
+                            (commit commit)
+                            (introduction
+                             (match (assq 'introduction rest)
+                               (#f #f)
+                               (('introduction intro)
+                                (sexp->channel-introduction intro))))))
 
                   ;; No channel information for this manifest entry.
                   ;; XXX: Pre-0.15.0 Guix did not provide that information,

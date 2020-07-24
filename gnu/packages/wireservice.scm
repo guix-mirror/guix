@@ -67,7 +67,7 @@
    (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/wireservice/leather.git")
+                   (url "https://github.com/wireservice/leather")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -93,7 +93,7 @@ charts now and don't care if they're perfect.")))
    (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/wireservice/agate.git")
+                   (url "https://github.com/wireservice/agate")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -126,7 +126,7 @@ code.  Agate was previously known as journalism.")))
    (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/wireservice/agate-sql.git")
+                   (url "https://github.com/wireservice/agate-sql")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -152,7 +152,7 @@ support to all @code{agate.Table} instances.")))
    (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/wireservice/agate-dbf.git")
+                   (url "https://github.com/wireservice/agate-dbf")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -177,7 +177,7 @@ for dbf files support to all @code{agate.Table} instances.")))
    (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/wireservice/agate-excel.git")
+                   (url "https://github.com/wireservice/agate-excel")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256

@@ -74,7 +74,7 @@ files in the destination.")
        (source (origin
             (method git-fetch)
             (uri (git-reference
-                   (url "https://github.com/librsync/librsync.git")
+                   (url "https://github.com/librsync/librsync")
                    (commit (string-append "v" version))))
             (file-name (git-file-name name version))
             (sha256

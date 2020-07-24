@@ -342,6 +342,7 @@ used to apply commands with arbitrarily long arguments.")
               (list (string-append "XFAIL_TESTS=tests/misc/env-S.pl"
                                    " tests/misc/kill.sh"
                                    " tests/misc/nice.sh"
+                                   " tests/misc/pwd-long.sh"
                                    " tests/split/fail.sh"
                                    " test-fdutimensat"
                                    " test-futimens"

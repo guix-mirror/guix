@@ -163,7 +163,7 @@ export GUIX_BUILD_OPTIONS=--no-grafts
 guix build isc-dhcp
 parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 1.4G \\
+  mkpart primary ext2 3M 1.6G \\
   set 1 boot on \\
   set 1 bios_grub on
 mkfs.ext4 -L my-root /dev/vdb2
@@ -188,7 +188,7 @@ guix --version
 export GUIX_BUILD_OPTIONS=--no-grafts
 guix build isc-dhcp
 parted --script /dev/vdb mklabel gpt \\
-  mkpart ext2 1M 1.4G \\
+  mkpart ext2 1M 1.6G \\
   set 1 legacy_boot on
 mkfs.ext4 -L my-root -O '^64bit' /dev/vdb1
 mount /dev/vdb1 /mnt
@@ -419,7 +419,7 @@ export GUIX_BUILD_OPTIONS=--no-grafts
 guix build isc-dhcp
 parted --script /dev/vda mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 1.4G \\
+  mkpart primary ext2 3M 1.6G \\
   set 1 boot on \\
   set 1 bios_grub on
 mkfs.ext4 -L my-root /dev/vda2
@@ -631,8 +631,8 @@ guix --version
 export GUIX_BUILD_OPTIONS=--no-grafts
 parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 1.4G \\
-  mkpart primary ext2 1.4G 2.8G \\
+  mkpart primary ext2 3M 1.6G \\
+  mkpart primary ext2 1.6G 3.2G \\
   set 1 boot on \\
   set 1 bios_grub on
 yes | mdadm --create /dev/md0 --verbose --level=mirror --raid-devices=2 \\
@@ -658,7 +658,7 @@ by 'mdadm'.")
                                                %raid-root-os-source
                                                #:script
                                                %raid-root-installation-script
-                                               #:target-size (* 2800 MiB)))
+                                               #:target-size (* 3200 MiB)))
                          (command (qemu-command/writable-image image)))
       (run-basic-test %raid-root-os
                       `(,@command) "raid-root-os")))))
@@ -719,7 +719,7 @@ export GUIX_BUILD_OPTIONS=--no-grafts
 ls -l /run/current-system/gc-roots
 parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 1.4G \\
+  mkpart primary ext2 3M 1.6G \\
   set 1 boot on \\
   set 1 bios_grub on
 echo -n " %luks-passphrase " | \\

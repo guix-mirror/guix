@@ -380,40 +380,63 @@ decompression.")
     (home-page "https://web.archive.org/web/20180801004107/http://www.bzip.org/")))
 
 (define-public lbzip2
-  (package
-    (name "lbzip2")
-    (version "2.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://archive.lbzip2.org/lbzip2-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1sahaqc5bw4i0iyri05syfza4ncf5cml89an033fspn97klmxis6"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 (substitute* (find-files "lib" "\\.c$")
-                   (("#if defined _IO_ftrylockfile")
-                    "#if defined _IO_EOF_SEEN"))
-                 (substitute* "lib/stdio-impl.h"
-                   (("^/\\* BSD stdio derived implementations")
-                    (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
-                                   "# define _IO_IN_BACKUP 0x100\n"
-                                   "#endif\n\n"
-                                   "/* BSD stdio derived implementations")))
-                 #t))))
-    (build-system gnu-build-system)
-    (synopsis "Parallel bzip2 compression utility")
-    (description
-     "lbzip2 is a multi-threaded compression utility with support for the
+  ;; The last 2.5 release is 4 years behind the newest commit (from 2018) and
+  ;; may create files that can't even be decompressed by newer bzip2 versions.
+  (let ((commit "b6dc48a7b9bfe6b340ed1f6d72133608ad57144b")
+        (revision "0"))
+    (package
+      (name "lbzip2")
+      (version (git-version "2.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kjn/lbzip2")
+               (commit commit)))
+         (sha256
+          (base32 "140xp00dmjsr6c3dwb4dwf0pzlgf159igri321inbinsjiclkngy"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-gnulib
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((gnulib (assoc-ref inputs "gnulib")))
+                 (copy-recursively gnulib "lib")
+                 (setenv "PATH" (string-append "lib:" (getenv "PATH")))
+                 #t)))
+           (delete 'bootstrap)          ; gnulib still has unpatched shebangs
+           (add-after 'patch-source-shebangs 'bootstrap
+             (lambda _
+               (invoke "sh" "build-aux/autogen.sh")
+               #t)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("gnulib"
+          ,(let ((commit "2d431ac35c4943a3655c07ba91870d2323321b43"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "git://git.savannah.gnu.org/gnulib.git")
+                     (commit commit)))
+               (sha256
+                (base32 "1f0xr4w89bqvhzsfcflcagdixidrk41k00k7kpr91w9lazfis4kf"))
+               (file-name (git-file-name "gnulib" commit)))))
+         ("perl" ,perl)))
+      (synopsis "Parallel bzip2 compression utility")
+      (description
+       "lbzip2 is a multi-threaded compression utility with support for the
 bzip2 compressed file format.  lbzip2 can process standard bz2 files in
 parallel.  It uses POSIX threading model (pthreads), which allows it to take
 full advantage of symmetric multiprocessing (SMP) systems.  It has been proven
 to scale linearly, even to over one hundred processor cores.  lbzip2 is fully
 compatible with bzip2 – both at file format and command line level.")
-    (home-page "http://www.lbzip2.org/")
-    (license license:gpl3+)))
+      ;; lbzip2.org now looks fishy.  There is no source code to be found.
+      ;; Reported upstream: <https://github.com/kjn/lbzip2/issues/26>.
+      (home-page "https://github.com/kjn/lbzip2")
+      (license license:gpl3+))))
 
 (define-public pbzip2
   (package
@@ -679,7 +702,7 @@ This package is mostly for compatibility and historical interest.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/raboof/sfArkLib.git")
+                     (url "https://github.com/raboof/sfArkLib")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -715,7 +738,7 @@ with the sfArk algorithm.")
                 ;; commit at this time.
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/raboof/sfarkxtc.git")
+                      (url "https://github.com/raboof/sfarkxtc")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1004,7 +1027,7 @@ smaller than those produced by @code{Xdelta}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jmacd/xdelta.git")
+             (url "https://github.com/jmacd/xdelta")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1078,7 +1101,7 @@ well as bzip2.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/google/snappy.git")
+              (url "https://github.com/google/snappy")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1612,14 +1635,14 @@ recreates the stored directory structure by default.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.6.1")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/libzip-" version ".tar.xz"))
               (sha256
                (base32
-                "0h9nsgkw0dk4srsvmz6xy6f9l4h815xn07j8h40l8gqvcxxaqpbh"))))
+                "0ck1dk7zn5qzpgxklg0r26nfsf04xb6c46gsig060hkvvgzp6156"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
@@ -1816,7 +1839,7 @@ non-Windows systems without running the actual installer using wine.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/google/brotli.git")
+             (url "https://github.com/google/brotli")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1947,7 +1970,7 @@ download times, and other distribution and storage costs.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/stachenov/quazip.git")
+                    (url "https://github.com/stachenov/quazip")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1980,20 +2003,26 @@ reading from and writing to ZIP archives. ")
 (define-public zutils
   (package
     (name "zutils")
-    ;; Check and remove the lint-hidden-cve property when updating.
-    (version "1.8")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/zutils/zutils-" version ".tar.lz"))
        (sha256
-        (base32 "0dx35mv78fgqgz6sszs05ng8ipz2xy09ry9vpmka2rmy08b7x907"))))
+        (base32 "0y2wm8wqr1wi1b1fv45dn50njv4q81p6ifx0279ji1bq56qkrn2r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--sysconfdir=/etc")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'disable-failing-tests
+           ;; XXX https://lists.nongnu.org/archive/html/zutils-bug/2020-07/msg00005.html
+           (lambda _
+             (substitute* "testsuite/check.sh"
+               (("\"\\$\\{ZGREP\\}\" -N -L \"GNU\"") "true")
+               (("\"\\$\\{ZGREP\\}\" -N -L \"nx_pattern\"") "false"))
+             #t))
          (replace 'install
           (lambda* (#:key make-flags outputs #:allow-other-keys)
             (apply invoke "make" "install"
@@ -2003,7 +2032,6 @@ reading from and writing to ZIP archives. ")
     (native-inputs
      ;; Needed to extract the source tarball and run the test suite.
      `(("lzip" ,lzip)))
-    (properties `((lint-hidden-cve . ("CVE-2018-1000637"))))
     (home-page "https://www.nongnu.org/zutils/zutils.html")
     (synopsis "Utilities that transparently operate on compressed files")
     (description
@@ -2107,7 +2135,7 @@ file compression algorithm.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ib/xarchiver.git")
+             (url "https://github.com/ib/xarchiver")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2137,7 +2165,7 @@ archiver is not installed.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/AQUAOSOTech/tarsplitter.git")
+                    (url "https://github.com/AQUAOSOTech/tarsplitter")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2171,7 +2199,7 @@ chunks.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Blosc/c-blosc.git")
+                    (url "https://github.com/Blosc/c-blosc")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

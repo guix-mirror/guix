@@ -37,17 +37,17 @@
 (define-public synergy
   (package
     (name "synergy")
-    (version "1.11.0")
+    (version "1.11.1")
     (source
      (origin
       (method git-fetch)
       (uri (git-reference
-            (url "https://github.com/symless/synergy-core.git")
-            (commit (string-append version "-stable"))))
+            (url "https://github.com/symless/synergy-core")
+            (commit (string-append "v" version "-stable"))))
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "1jk60xw4h6s5crha89wk4y8rrf1f3bixgh5mzh3cq3xyrkba41gh"))
+        "0dn0h3mdqy0mbg4yyhsh4rhvvsssqlknnln3naplc97my10lk2a0"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove unnecessary bundled source and binaries
@@ -65,7 +65,15 @@
                      (string-append (assoc-ref inputs "avahi")
                                     "/include/avahi-compat-libdns_sd:"
                                     (or (getenv "CPLUS_INCLUDE_PATH") "")))
-             #t)))))
+             #t))
+         (add-after 'install 'patch-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out "/share/applications/synergy.desktop")
+                 (("/usr") out))
+               #t))))))
+    (native-inputs
+     `(("qttools" ,qttools)))           ; for Qt5LinguistTools
     (inputs
      `(("avahi" ,avahi)
        ("python"  ,python-wrapper)
@@ -74,7 +82,6 @@
        ("libxi"   ,libxi)
        ("libx11"  ,libx11)
        ("libxtst" ,libxtst)
-       ("xinput"  ,xinput)
        ("qtbase" ,qtbase)))
     (home-page "https://symless.com/synergy")
     (synopsis "Mouse and keyboard sharing utility")

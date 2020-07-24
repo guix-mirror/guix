@@ -129,7 +129,11 @@ Throw an error on failure."
                                ;; We need lightweight compression when
                                ;; exchanging full archives.
                                #:compression compression
-                               #:compression-level 3)))
+                               #:compression-level 3
+
+                               ;; Speed up RPCs by creating sockets with
+                               ;; TCP_NODELAY.
+                               #:nodelay #t)))
 
     ;; Honor ~/.ssh/config.
     (session-parse-config! session)

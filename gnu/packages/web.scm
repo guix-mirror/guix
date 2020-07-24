@@ -198,7 +198,7 @@ and its related documentation.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/GrahamDumpleton/mod_wsgi.git")
+                    (url "https://github.com/GrahamDumpleton/mod_wsgi")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -229,14 +229,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.19.0")
+    (version "1.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1j1n3rlvan6l9j3vw8axbbdm96w7s0x6ygmgqvbplzfd3wbid9j4"))))
+                "14jlcn8gywa4r9brmm41ddg2dczskslnn4dnr5xmqg7dcin7f150"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -423,7 +423,7 @@ documentation.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/giom/nginx_accept_language_module.git")
+               (url "https://github.com/giom/nginx_accept_language_module")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -647,7 +647,7 @@ APIs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/gnosek/fcgiwrap.git")
+             (url "https://github.com/gnosek/fcgiwrap")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -844,7 +844,7 @@ It aims to conform to RFC 7159.")
               ;; do not use auto-generated tarballs
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/udp/json-parser.git")
+                    (url "https://github.com/udp/json-parser")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -874,7 +874,7 @@ project)
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/flavio/qjson.git")
+                    (url "https://github.com/flavio/qjson")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -914,7 +914,7 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ayoy/qoauth.git")
+                    (url "https://github.com/ayoy/qoauth")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1045,7 +1045,7 @@ current version of any major web browser.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Tencent/rapidjson.git")
+                    (url "https://github.com/Tencent/rapidjson")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1086,7 +1086,7 @@ style API.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/lloyd/yajl.git")
+                    (url "https://github.com/lloyd/yajl")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1117,7 +1117,7 @@ parser written in ANSI C and a small validating JSON generator.")
               ;; things from Git.
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/warmcat/libwebsockets.git")
+                    (url "https://github.com/warmcat/libwebsockets")
                     (commit (string-append "v" version
                                            "-chrome37-firefox30"))))
               (sha256
@@ -1196,7 +1196,7 @@ other systems that want to manipulate WebAssembly files.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/zaphoyd/websocketpp.git")
+             (url "https://github.com/zaphoyd/websocketpp")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1225,16 +1225,16 @@ high performance.")
 (define-public wslay
   (package
     (name "wslay")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tatsuhiro-t/wslay.git")
+             (url "https://github.com/tatsuhiro-t/wslay")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ak9a6hsanhys40yhv7c2gqkfghpm6jx36j1pnml8ajvgaky5q98"))))
+        (base32 "1w32iljg4inqf0712w5fxxhggvmjh6ipl2lnz0h36dv1xrj0d964"))))
     (build-system gnu-build-system)
     (arguments
      ;; Parallel builds don't reliably succeed.
@@ -1406,7 +1406,7 @@ of people.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/novnc/websockify.git")
+                    (url "https://github.com/novnc/websockify")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1492,16 +1492,15 @@ hash/signatures.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "http://pyyaml.org/download/libyaml/yaml-"
-             version ".tar.gz"))
+       (uri (string-append "https://pyyaml.org/download/libyaml/yaml-"
+                           version ".tar.gz"))
        (sha256
         (base32
          "1x4fcw13r3lqy8ndydr3ili87wicplw2awbcv6r21qgyfndswhn6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
-    (home-page "http://pyyaml.org/wiki/LibYAML")
+    (home-page "https://pyyaml.org/wiki/LibYAML")
     (synopsis "YAML 1.1 parser and emitter written in C")
     (description
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
@@ -1669,7 +1668,7 @@ minimum to provide high performance operation.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/sass/libsass.git")
+                    (url "https://github.com/sass/libsass")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1703,7 +1702,7 @@ stylesheets, you'll need to use another program that uses this library,
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/sass/sassc.git")
+                    (url "https://github.com/sass/sassc")
                     (commit  version)))
               (file-name (git-file-name name version))
               (sha256
@@ -1760,7 +1759,7 @@ language known as SASS.")
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/sass/libsass.git")
+                   (url "https://github.com/sass/libsass")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -5023,7 +5022,7 @@ written in C.  It is developed as part of the NetSurf project.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tlsa/libcyaml.git")
+             (url "https://github.com/tlsa/libcyaml")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -5043,8 +5042,7 @@ written in C.  It is developed as part of the NetSurf project.")
     (inputs
      `(("libyaml" ,libyaml)))
     (native-inputs
-     `(("git", git)
-       ("pkg-config", pkg-config)))
+     `(("pkg-config", pkg-config)))
     (synopsis "C library for reading and writing YAML")
     (description
      "LibCYAML is a C library written in ISO C11 for reading and writing
@@ -5505,14 +5503,14 @@ on the fly.")
 (define-public hitch
   (package
     (name "hitch")
-    (version "1.5.2")
+    (version "1.6.0")
     (home-page "https://hitch-tls.org/")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "source/hitch-" version ".tar.gz"))
               (sha256
                (base32
-                "1nnzqqigfw78nqhp81a72x1s8d6v49ayw4w5df0zzm2cb1jgv95i"))))
+                "01n70yf8hx42jb801jv5q1xhrpqxyjnqhd98hjf81lvxpd5fnisf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -5750,7 +5748,7 @@ additional capabilities.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/openSUSE/xinetd.git")
+             (url "https://github.com/openSUSE/xinetd")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -5825,7 +5823,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.10")
+    (version "10.11")
     (source
      (origin
        (method url-fetch)
@@ -5838,7 +5836,7 @@ functions of Tidy.")
                              (list "extra/nghttp2.tgz" "mbedtls"))
                    #t))
        (sha256
-        (base32 "1nd46cx1qp5lh2kwnn2mlwk9zm8jm7pgf90xs9vpwr7saxbnzr5m"))))
+        (base32 "09wpgilbv13zal71v9lbsqr8c3fignygadykpd1p1pb8blb5vn3r"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
@@ -6048,15 +6046,14 @@ inspired by Ruby's @code{fakeweb}.")
 (define-public jo
   (package
     (name "jo")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jpmens/jo/releases/download/"
                            version "/jo-" version ".tar.gz"))
        (sha256
-        (base32
-         "0r6yb8pjsbcqfyac4240a0sj93pb91fv385bpk395cx3f5bcj9fy"))))
+        (base32 "18jna9xlpxci3cak3z85c448zv2zr41baclgym3hk433p0p4vii4"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/jpmens/jo")
     (synopsis "Output JSON from a shell")
@@ -7235,7 +7232,10 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
              `(("jemalloc" ,jemalloc))) ; fight nghttpd{,x} heap fragmentation
        ("libev" ,libev)
        ("libxml2" ,libxml2)             ; for ‘nghttp -a’
-       ("openssl" ,openssl)))
+       ("openssl" ,openssl)
+       ,@(if (hurd-target?)
+             `(("openssl-static" ,openssl "static"))
+             '())))
     (arguments
      `(#:configure-flags
        (list (string-append "--libdir=" (assoc-ref %outputs "lib") "/lib")
@@ -7311,7 +7311,7 @@ compressed JSON header blocks.
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/UMCUGenetics/hpcguix-web.git")
+                      (url "https://github.com/UMCUGenetics/hpcguix-web")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -7372,7 +7372,8 @@ compressed JSON header blocks.
          ("uglify-js" ,uglify-js)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
+       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+         ("guix" ,guix)))
       (propagated-inputs
        `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("guile-commonmark" ,guile-commonmark)

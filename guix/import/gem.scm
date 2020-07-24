@@ -166,20 +166,8 @@ package on RubyGems."
     ((or "Apache License, Version 2.0" "Apache 2.0") license:asl2.0)
     (_ #f)))
 
-(define (gem-package? package)
-  "Return true if PACKAGE is a gem package from RubyGems."
-
-  (define (rubygems-url? url)
-    (string-prefix? "https://rubygems.org/downloads/" url))
-
-  (let ((source-url (and=> (package-source package) origin-uri))
-        (fetch-method (and=> (package-source package) origin-method)))
-    (and (eq? fetch-method download:url-fetch)
-         (match source-url
-           ((? string?)
-            (rubygems-url? source-url))
-           ((source-url ...)
-            (any rubygems-url? source-url))))))
+(define gem-package?
+  (url-prefix-predicate "https://rubygems.org/downloads/"))
 
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."

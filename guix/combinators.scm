@@ -47,7 +47,7 @@
              (lambda (result1 result2)
                (loop result1 result2 (cdr lst)))))))
     ((proc seed1 seed2 lst1 lst2)
-     "Like `fold', but with a two lists and two seeds."
+     "Like `fold', but with two lists and two seeds."
      (let loop ((result1 seed1)
                 (result2 seed2)
                 (lst1    lst1)

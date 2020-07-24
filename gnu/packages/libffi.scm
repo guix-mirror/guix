@@ -248,5 +248,5 @@ project.")
 dynamic libraries, binding functions within them, and calling those functions
 from Ruby code.  Moreover, a Ruby-FFI extension works without changes on Ruby
 and JRuby.")
-    (home-page "http://wiki.github.com/ffi/ffi")
+    (home-page "https://wiki.github.com/ffi/ffi")
     (license bsd-3)))

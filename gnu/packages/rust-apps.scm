@@ -265,7 +265,7 @@ gitignore rules.")
 (define-public rust-cbindgen
   (package
     (name "rust-cbindgen")
-    (version "0.13.1")
+    (version "0.13.2")
     (source
       (origin
         (method url-fetch)
@@ -273,7 +273,7 @@ gitignore rules.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0w70bnwwqyf9fr6z3rcs7m7ad791fmfmhxy828va0dkfwvamp59c"))))
+          "0673pq96hs7waavkv58v2pakpxpsfyjvbraa5kyl2b44phgdzcid"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -371,7 +371,7 @@ blanks grouped by language.")
 (define-public rust-cargo-c
   (package
     (name "rust-cargo-c")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
       (origin
         (method url-fetch)
@@ -380,12 +380,12 @@ blanks grouped by language.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1is72jm0r73pqx2g3h1n6lvrcirwd91mmajsmb3jjg4jnayfkp0w"))))
+          "0hsag5g4qngm8alfil2dyvl5sagpqi5nb40c7bhwng2z8mv9r41k"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-cbindgen" ,rust-cbindgen-0.12)
-        ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.3)
+       (("rust-cbindgen" ,rust-cbindgen)
+        ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.4)
         ("rust-structopt" ,rust-structopt-0.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-toml" ,rust-toml-0.5)

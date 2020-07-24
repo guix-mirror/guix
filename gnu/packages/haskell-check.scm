@@ -392,7 +392,7 @@ been added since previous test run.")
     (inputs
      `(("ghc-tagged" ,ghc-tagged)
        ("ghc-tasty" ,ghc-tasty)))
-    (home-page "http://github.com/nomeata/tasty-expected-failure")
+    (home-page "https://github.com/nomeata/tasty-expected-failure")
     (synopsis "Mark tasty tests as failure expected")
     (description
      "With the function @code{Test.Tasty.ExpectedFailure.expectFail} in the

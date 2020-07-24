@@ -10,7 +10,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
+;;; Copyright © 2019, 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
@@ -74,7 +74,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "3.4")
+    (version "3.4.1")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -82,7 +82,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0r83zincbfnk8g13xwm2qaccml9srnwlsmpc1f0nhwjkqyjmqm0q"))))
+                "0yvvj1s7ayn0lwils582smwkmckdk0gij5c58g45n4xh981n693q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -120,77 +120,46 @@ actions.")
               "See 'COPYING' in the distribution."))))
 
 (define-public geeqie
-  ;; The latest release, 1.4, fails to build with Exiv2 0.27.1.  The upstream
-  ;; repo has several fixes for that, so take a snapshot.
-  (let ((commit "c220ddefb1b6b11b54f7598f0d44dd0723325ed4")
-        (revision "1"))
-    (package
-      (name "geeqie")
-      (version (git-version "1.4" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/BestImageViewer/geeqie")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "07424nzrnwbksgalgg1a6ig2snd986w79kca1cfnv1q9kc7x2h3x"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `( ;; Enable support for a "map" pane using GPS data.
-         #:configure-flags '("--enable-map")
-
-         ;; Parallel builds fail with something like:
-         ;;   image-load.c:143:9: error: ‘gq_marshal_VOID__INT_INT_INT_INT’ undeclared
-         ;; due to unexpressed makefile dependencies.
-         #:parallel-build? #f
-
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'bootstrap 'pre-bootstrap
-             (lambda _
-               (define (write-dummy-changelog port)
-                 (display "See Git history for a change log.\n" port))
-               ;; Create ChangeLog{,.html} to placate the makefile, which would
-               ;; otherwise require access to the Git repo.
-               (call-with-output-file "ChangeLog"
-                 write-dummy-changelog)
-               (call-with-output-file "ChangeLog.html"
-                 write-dummy-changelog)
-
-               ;; Don't try to run 'git' for the version number.
-               (substitute* "configure.ac"
-                 (("m4_esyscmd_s\\([^)]+\\)")
-                  (string-append "[" ,version "]")))
-
-               ;; Remove references to non-existent files.
-               (substitute* "po/POTFILES.in"
-                 (("^plugins/import/.*") ""))
-               #t)))))
-      (inputs
-       `(("clutter" ,clutter)
-         ("libchamplain" ,libchamplain)
-         ("lcms" ,lcms)
-         ("exiv2" ,exiv2)
-         ("libpng" ,libpng)
-         ("gtk+" ,gtk+)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("glib" ,glib "bin")                     ; glib-gettextize
-         ("intltool" ,intltool)
-         ("pkg-config" ,pkg-config)))
-      (home-page "http://www.geeqie.org/")
-      (synopsis "Lightweight GTK+ based image viewer")
-      (description
-       "Geeqie is a lightweight GTK+ based image viewer for Unix like operating
+  (package
+    (name "geeqie")
+    (version "1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/BestImageViewer/geeqie")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0nf45sh3pwsv98sppcrqj81b6mdi31n1sbc7gn88m8mhpfp1qq6k"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `( ;; Enable support for a "map" pane using GPS data.
+       #:configure-flags '("--enable-map"
+                           "--enable-gtk3")))
+    (inputs
+     `(("clutter" ,clutter)
+       ("libchamplain" ,libchamplain)
+       ("lcms" ,lcms)
+       ("exiv2" ,exiv2)
+       ("libpng" ,libpng)
+       ("gtk+" ,gtk+)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")                       ; glib-gettextize
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://www.geeqie.org/")
+    (synopsis "Lightweight GTK+ based image viewer")
+    (description
+     "Geeqie is a lightweight GTK+ based image viewer for Unix like operating
 systems.  It features: EXIF, IPTC and XMP metadata browsing and editing
 interoperability; easy integration with other software; geeqie works on files
 and directories, there is no need to import images; fast preview for many raw
 image formats; tools for image comparison, sorting and managing photo
 collection.  Geeqie was initially based on GQview.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public gpicview
   (package
@@ -222,7 +191,7 @@ It is the default image viewer on LXDE desktop environment.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/muennich/sxiv.git")
+                    (url "https://github.com/muennich/sxiv")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -268,7 +237,7 @@ it and customize it for your needs.")
       (origin
         (method git-fetch)
         (uri (git-reference
-               (url "https://github.com/hellosiyan/Viewnior.git")
+               (url "https://github.com/hellosiyan/Viewnior")
                (commit (string-append name "-" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -320,7 +289,7 @@ your images.  Among its features are:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/posva/catimg.git")
+             (url "https://github.com/posva/catimg")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -360,7 +329,7 @@ It supports JPEG, PNG and GIF formats.")
 (define-public luminance-hdr
   (package
     (name "luminance-hdr")
-    (version "2.4.0")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -368,8 +337,7 @@ It supports JPEG, PNG and GIF formats.")
                     version "/luminance-hdr-" version ".tar.bz2"))
               (sha256
                (base32
-                "00fldbcizrx8jcnjgq74n3zmbm27dxzl96fxa7q49689mfnlw08l"))
-              (patches (search-patches "luminance-hdr-qt-printer.patch"))))
+                "188q0l63nfasqfvwbq4mwx2vh7wsfi2bq9n5nksddspl1qz01lnp"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -377,8 +345,10 @@ It supports JPEG, PNG and GIF formats.")
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)
        ("qtwebkit" ,qtwebkit)
        ("boost" ,boost)
+       ("eigen" ,eigen)
        ;; ("gtest" ,gtest)
        ("libraw" ,libraw)
        ("zlib" ,zlib)
@@ -391,7 +361,8 @@ It supports JPEG, PNG and GIF formats.")
        ("gsl" ,gsl)
        ("libtiff" ,libtiff)))
     (arguments
-     '(#:phases
+     '(#:tests? #f  ;XXX: some tests fail to compile
+       #:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'add-ilmbase-include-path
            (lambda* (#:key inputs #:allow-other-keys)
@@ -519,7 +490,7 @@ For PDF support, install the @emph{mupdf} package.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jurplel/qView.git")
+             (url "https://github.com/jurplel/qView")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -562,19 +533,21 @@ preloading.")
 (define-public chafa
   (package
     (name "chafa")
-    (version "1.2.2")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hpjansson.org/chafa/releases/chafa-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0aa7119514rhsak5i0kgvwllb9z74lnfzfn7dzfhs27fc8cvx1dg"))))
+                "18rb82bfqj1sj2g4irazx4lwq9q4b4k7my1r0q714vf9yhs41ls6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
+     `(("freetype" ,freetype)
+       ("libjpeg" ,libjpeg-turbo)
+       ("glib" ,glib)
        ("imagemagick" ,imagemagick)))
     (synopsis "Convert images to ANSI/Unicode characters")
     (description

@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,8 +119,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.1.0")
-        (commit "c00564192a9924ab2218c243342963aba89d67d1")
-        (revision 12))
+        (commit "36a1925f21ee6787d8b80025f1b96238309f4b96")
+        (revision 17))
     (package
       (name "guix")
 
@@ -135,7 +136,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "008ywpdkc5f2jh25x6rr9glzvq4a6qih7v73w5dbxscpddx5c5g2"))
+                  "05f7w6hyl1bw58q1fph9ws17rx0zgs638mrsxwz026bwjyy2xxr0"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -486,9 +487,10 @@ the Nix package manager.")
    (package
      (inherit guix)
      (name "guix-minimal")
-     (inputs
-      `(("guile" ,guile-2.2)
-        ,@(alist-delete "guile" (package-inputs guix))))
+     (native-inputs
+      (fold alist-delete
+            (package-native-inputs guix)
+            '("guile-ssh")))
      (propagated-inputs
       (fold alist-delete
             (package-propagated-inputs guix)
@@ -981,7 +983,7 @@ environments.")
                          "-s")
                    "\",\n\t\t\""))
                  (("guix-jupyter-kernel.scm")
-                  (string-append out "/share/guile/site/2.2/"
+                  (string-append out "/share/guile/site/3.0/"
                                  "guix-jupyter-kernel.scm")))
                #t))))))
     (native-inputs
@@ -1129,7 +1131,7 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.6.3")
+   (version "1.8.0")
    (source
     (origin
      (method url-fetch)
@@ -1137,7 +1139,7 @@ the boot loader configuration.")
                          version "/flatpak-" version ".tar.xz"))
      (sha256
       (base32
-       "17s8nqdxd4xdy7ag9bw06adxccha78jmlsa3zpqnl3qh92pg0hji"))))
+       "0d4x79z96r60rc2gnf415da7z9x1my5hdyjdlklfiwll57jbqr23"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.
@@ -1189,6 +1191,7 @@ cp -r /tmp/locale/*/en_US.*")))
       ("libcap" ,libcap)
       ("pkg-config" ,pkg-config)
       ("python" ,python)
+      ("python-pyparsing" ,python-pyparsing)
       ("socat" ,socat)
       ("which" ,which)))
    (propagated-inputs `(("glib-networking" ,glib-networking)

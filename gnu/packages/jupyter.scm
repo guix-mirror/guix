@@ -145,7 +145,7 @@ Messaging Protocol}.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/QuantStack/xeus.git")
+                    (url "https://github.com/QuantStack/xeus")
                     (commit version)))
               (sha256
                (base32

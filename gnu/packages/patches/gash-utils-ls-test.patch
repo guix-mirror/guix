@@ -1,0 +1,25 @@
+'ls.scm' monkey-patches (ice-9 getopt-long) to allow it to recognize '-1'
+as a valid option.  Unfortunately, monkey patching no longer works with
+Guile 3.0 due to inlining, so change the test to make do without '-1'.
+
+diff --git a/tests/core-utils.org b/tests/core-utils.org
+index d35ede8..22718e3 100644
+--- a/tests/core-utils.org
++++ b/tests/core-utils.org
+@@ -93,14 +93,11 @@
+ * ls
+ :script:
+ #+begin_src sh
+-  ls -1 tests/data/star
++  ls tests/data/star
+ #+end_src
+ :stdout:
+ #+begin_example
+-  0
+-  1
+-  2
+-  3
++  0  1  2  3                                                                    
+ #+end_example
+ 
+ * test-file

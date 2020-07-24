@@ -33,7 +33,7 @@
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://github.com/vlang/v.git")
+           (url "https://github.com/vlang/v")
            (commit version)))
      (file-name (git-file-name name version))
      (sha256
@@ -103,7 +103,7 @@
           (origin
             (method git-fetch)
             (uri (git-reference
-                  (url "https://github.com/vlang/vc.git")
+                  (url "https://github.com/vlang/vc")
                   (commit vc-version)))
             (file-name (git-file-name "vc" vc-version))
             (sha256

@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017,2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -87,6 +87,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
@@ -308,7 +309,7 @@ Currently all documentation resides in @file{pnglite.h}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ImageOptim/libimagequant.git")
+             (url "https://github.com/ImageOptim/libimagequant")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -332,7 +333,7 @@ and other PNG optimizers.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/kornelski/pngquant.git")
+             (url "https://github.com/kornelski/pngquant")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -553,7 +554,7 @@ extracting icontainer icon files.")
    (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.osgeo.org/libtiff/tiff-"
+       (uri (string-append "https://download.osgeo.org/libtiff/tiff-"
                            version ".tar.gz"))
        (sha256
         (base32
@@ -588,7 +589,7 @@ collection of tools for doing simple manipulations of TIFF images.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/DanBloomberg/leptonica.git")
+             (url "https://github.com/DanBloomberg/leptonica")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -995,7 +996,7 @@ more modular, simple, and flexible.")
     (home-page
      ;; This vanished page is universally accepted as giblib's home despite not
      ;; mentioning the package once.
-     (string-append "https://web.archive.org/web/20140907071208"
+     (string-append "https://web.archive.org/web/20140907071208/"
                     "https://linuxbrit.co.uk/software/"))
     (synopsis "Wrapper library for imlib2")
     (description
@@ -1029,7 +1030,19 @@ supplies a generic doubly-linked list and some string functions.")
                     (delete-file-recursively (string-append "Source/" dir)))
                   '("LibJPEG" "LibOpenJPEG" "LibPNG" "LibRawLite"
                     "LibJXR" "LibWebP" "OpenEXR" "ZLib"))))
-            (patches (search-patches "freeimage-unbundle.patch"))))
+            (patches
+             (append
+              (search-patches "freeimage-unbundle.patch")
+              ;; Take one patch from Arch Linux that adds LibRaw 0.20 compatibility.
+              (list (origin
+                      (method url-fetch)
+                      (uri "https://raw.githubusercontent.com/archlinux\
+/svntogit-community/ca3e6a52f5a46dec87cbf85e9d84fe370e282c8c/trunk\
+/freeimage-libraw-0.20.patch")
+                      (file-name "freeimage-libraw-compat.patch")
+                      (sha256
+                       (base32
+                        "0cwjxjz0f4gs6igvwqg0p99mnrsrwzkal1l2n08yvz2xq9s5khki"))))))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -1258,14 +1271,14 @@ channels.")
 (define-public exiv2
   (package
     (name "exiv2")
-    (version "0.27.2")
+    (version "0.27.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.exiv2.org/builds/exiv2-" version
                            "-Source.tar.gz"))
        (sha256
-        (base32 "0gqminvj14xm3rgbnydbywf22608js80rp7nmxxk4497j5mzali6"))))
+        (base32 "0y77wfadjsrcxijdqgkr3q88b6mm9y3rg8kqsmaig8iah49md7x7"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ; no test suite
     (propagated-inputs
@@ -1356,7 +1369,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/mdadams/jasper.git")
+                    (url "https://github.com/mdadams/jasper")
                     (commit (string-append "version-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1379,7 +1392,7 @@ ISO/IEC 15444-1).")
       (origin
         (method git-fetch)
         (uri (git-reference
-              (url "https://github.com/sekrit-twc/zimg.git")
+              (url "https://github.com/sekrit-twc/zimg")
               (commit (string-append "release-" version))))
         (file-name (git-file-name name version))
         (sha256
@@ -1407,7 +1420,7 @@ the programmer.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/myint/perceptualdiff.git")
+             (url "https://github.com/myint/perceptualdiff")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1481,7 +1494,7 @@ changed, making the embedding resistant against first-order statistical tests.")
       (source
        (origin (method git-fetch)
                (uri (git-reference
-                     (url "https://github.com/extemporelang/stb.git")
+                     (url "https://github.com/extemporelang/stb")
                      (commit commit)))
                (sha256
                 (base32
@@ -1687,7 +1700,7 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/thezbyg/gpick.git")
+                    (url "https://github.com/thezbyg/gpick")
                     (commit (string-append name "-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -1750,7 +1763,7 @@ parsing, viewing, modifying, and saving this metadata.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lupoDharkael/flameshot.git")
+             (url "https://github.com/lupoDharkael/flameshot")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1863,7 +1876,7 @@ identical visual appearance.")
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://github.com/emersion/grim.git")
+           (url "https://github.com/emersion/grim")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
@@ -1889,7 +1902,7 @@ identical visual appearance.")
     (origin
      (method git-fetch)
      (uri (git-reference
-           (url "https://github.com/emersion/slurp.git")
+           (url "https://github.com/emersion/slurp")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
@@ -2120,3 +2133,55 @@ It can create and edit indexed palette or 24bit RGB images, offers basic
 painting and palette manipulation tools.  It also handles JPEG, JPEG2000,
 GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
     (license license:gpl3+)))
+
+(define-public phockup
+  (package
+    (name "phockup")
+    (version "1.5.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ivandokov/phockup")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "13ajj0xch7yfqaaxbw0awxs0fz17n1rxir4gqh2wcgxjysqk1j2y"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan '(("src" "share/phockup/")
+                        ("phockup.py" "share/phockup/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (list "src/dependency.py" "src/exif.py")
+               (("exiftool")
+                (string-append (assoc-ref inputs "perl-image-exiftool")
+                               "/bin/exiftool")))
+             #t))
+         (add-before 'install 'check
+           (lambda _
+             (invoke "pytest")))
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir (string-append out "/bin"))
+               (symlink (string-append out "/share/phockup/phockup.py")
+                        (string-append out "/bin/phockup")))
+             #t)))))
+    (inputs
+     `(("perl-image-exiftool" ,perl-image-exiftool)
+       ("python" ,python)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (home-page "https://github.com/ivandokov/phockup")
+    (synopsis "Organize photos and videos in folders")
+    (description "Phockup is a media sorting tool that uses creation date and
+time information in photos and videos to organize them into folders by year,
+month and day.  All files which are not images or videos or those which do not
+have creation date information will be placed in a folder called
+@file{unknown}.")
+    (license license:expat)))

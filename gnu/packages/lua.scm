@@ -515,7 +515,7 @@ to be non-intrusive, composable, and embeddable within existing applications.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Tieske/Penlight.git")
+             (url "https://github.com/Tieske/Penlight")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -555,7 +555,7 @@ standard libraries.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/stevedonovan/LDoc.git")
+             (url "https://github.com/stevedonovan/LDoc")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -732,7 +732,7 @@ Grammars (PEGs).")
               ;; not include the pkg-config files.
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/luvit/luv.git")
+                    (url "https://github.com/luvit/luv")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -765,7 +765,7 @@ Grammars (PEGs).")
         ,(origin
            (method git-fetch)
            (uri (git-reference
-                 (url "https://github.com/keplerproject/lua-compat-5.3.git")
+                 (url "https://github.com/keplerproject/lua-compat-5.3")
                  (commit "daebe77a2f498817713df37f0bb316db1d82222f")))
            (file-name "lua-compat-5.3-checkout")
            (sha256
@@ -832,7 +832,7 @@ on numbers.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/jeremyong/Selene.git")
+                    (url "https://github.com/jeremyong/Selene")
                     ;; The release is quite old.
                     (commit "ffe1ade2568d4cff5894552be8f43e63e379a4c9")))
               (file-name "Selene")

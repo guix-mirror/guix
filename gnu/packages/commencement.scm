@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -140,7 +141,7 @@ pure Scheme to Tar and decompression in one easy step.")
     (name "gash-boot")
     (source (origin
               (inherit (package-source gash))
-              (modules '())))
+              (snippet #f)))            ;discard snippet for Guile 3.0 support
     (arguments
      `(#:implicit-inputs? #f
        #:tests? #f
@@ -170,6 +171,10 @@ pure Scheme to Tar and decompression in one easy step.")
   (package
     (inherit gash-utils)
     (name "gash-utils-boot")
+    (source (origin
+              (inherit (package-source gash-utils))
+              (patches '())
+              (snippet #f)))            ;discard snippet for Guile 3.0 support
     (arguments
      `(#:implicit-inputs? #f
        #:tests? #f
@@ -3828,14 +3833,17 @@ COREUTILS-FINAL vs. COREUTILS, etc."
        '(#:modules ((guix build union))
          #:builder (begin
                      (use-modules (ice-9 match)
+                                  (srfi srfi-1)
                                   (srfi srfi-26)
                                   (guix build union))
 
                      (let ((out (assoc-ref %outputs "out")))
-
-                       (match %build-inputs
-                         (((names . directories) ...)
-                          (union-build out directories)))
+                       (union-build out
+                                    (filter-map (match-lambda
+                                                  (("libc-debug" . _) #f)
+                                                  (("libc-static" . _) #f)
+                                                  ((_ . directory) directory))
+                                                %build-inputs))
 
                        (union-build (assoc-ref %outputs "debug")
                                     (list (assoc-ref %build-inputs
@@ -3893,6 +3901,14 @@ binaries, plus debugging symbols in the @code{debug} output), and Binutils.")
 
 (define-public gcc-toolchain-10
   (make-gcc-toolchain gcc-10))
+
+(define-public gdc-toolchain-10
+  (package (inherit (make-gcc-toolchain gdc-10))
+    (synopsis "Complete GCC tool chain for D lang development")
+    (description "This package provides a complete GCC tool chain for
+D lang development to be installed in user profiles.  This includes
+gdc, as well as libc (headers and binaries, plus debugging symbols
+in the @code{debug} output), and binutils.")))
 
 ;; Provide the Fortran toolchain package only for the version of gfortran that
 ;; is used by Guix internally to build Fortran libraries, because combining

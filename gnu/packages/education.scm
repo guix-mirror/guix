@@ -274,16 +274,16 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "5.4.5")
+    (version "6.0.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jmoenig/Snap.git")
+             (url "https://github.com/jmoenig/Snap")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1z6dbcsgvxxs40p23qysfsk4vzpg8jlrr5pqfnjf8q3kpz1xvzxf"))))
+        (base32 "1j5hcnms12hpnl2ba7haf00l08rkpb5wpfsgax07p838q5dc7cam"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -612,14 +612,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.45.0")
+    (version "5.45.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "04jns6wc20rz6cp410znsllknhp4zlf4rn8wgv712855nffs42c6"))))
+        (base32 "1pg47jk6fw46fr7m32l1ypm1zyjfz1ik5f333ynqqr705f1c0ij5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1000,7 +1000,8 @@ machine, and more.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/exercism/cli/exercism"
-       #:unpack-path "github.com/exercism/cli"))
+       #:unpack-path "github.com/exercism/cli"
+       #:install-source? #f))
     (inputs
      `(("github.com/blang/semver" ,go-github-com-blang-semver)
        ("github.com/spf13/cobra" ,go-github-com-spf13-cobra)

@@ -311,7 +311,7 @@ any other grammar rules.")
 (define-public sparse
   (package
     (name "sparse")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -319,7 +319,7 @@ any other grammar rules.")
                               "sparse-"  version ".tar.xz"))
               (sha256
                (base32
-                "0qavyryxmhd1rf11akgn1nq3r15k11bqa3qajaq36a56r225rc7x"))))
+                "1z11chawwcmf5xxx5v52cj7wrr3warz6q5wlcjvxpif1jbga172i"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
@@ -351,7 +351,7 @@ releases.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rsyslog/libestr.git")
+             (url "https://github.com/rsyslog/libestr")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -384,7 +384,7 @@ more, like escaping special characters.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rsyslog/libfastjson.git")
+             (url "https://github.com/rsyslog/libfastjson")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -411,7 +411,7 @@ with essential JSON handling functions, sufficiently good JSON support (not
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/rsyslog/liblogging.git")
+             (url "https://github.com/rsyslog/liblogging")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

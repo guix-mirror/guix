@@ -61,8 +61,12 @@
   #~(lambda* (#:rest args)
       (apply initialize-root-partition
              (append args
-                     (list #:make-device-nodes
-                           make-hurd-device-nodes)))))
+                     (list #:make-device-nodes make-hurd-device-nodes
+                           ;; XXX Creating a db.sqlite with journal_mode=WAL
+                           ;; yields "unable to open database file" on GNU/Hurd
+                           ;; for an sqlite with the hurd-locking-mode.patch;
+                           ;; see <https://bugs.gnu.org/42151>.
+                           #:wal-mode? #f)))))
 
 (define hurd-disk-image
   (image

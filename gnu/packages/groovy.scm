@@ -36,7 +36,7 @@
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/apache/groovy.git")
+             (url "https://github.com/apache/groovy")
              (commit (string-append
                       "GROOVY_"
                       (string-map (lambda (x) (if (eq? x #\.) #\_ x))

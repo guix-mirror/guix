@@ -70,6 +70,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnunet) ; libmicrohttpd
@@ -395,17 +396,17 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.3.3")
+    (version "2.4.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/audacity/audacity.git")
+             (url "https://github.com/audacity/audacity")
              (commit (string-append "Audacity-" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0707fsnrl4vjalsi21w4blwgz024qhd0w8rdd5j5vpxf5lyk2rbk"))
+         "1xk0piv72d2xd3p7igr916fhcbrm76fhjr418k1rlqdzzg1hfljn"))
        (patches (search-patches "audacity-build-with-system-portaudio.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -718,7 +719,7 @@ tools (analyzer, mono/stereo tools, crossovers).")
              ;; Actually https://github.com/moddevices/caps-lv2.git, but it's
              ;; missing fixes for newer glibc, so using the origin of a pull
              ;; request regarding this issue:
-             (url "https://github.com/jujudusud/caps-lv2.git")
+             (url "https://github.com/jujudusud/caps-lv2")
              (commit "9c9478b7fbd8f9714f552ebe2a6866398b0babfb")))
        (file-name (git-file-name name version))
        (sha256
@@ -754,7 +755,7 @@ generators of mostly elementary and occasionally exotic nature.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/ssj71/infamousPlugins.git")
+                    (url "https://github.com/ssj71/infamousPlugins")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -793,7 +794,7 @@ envelope follower, distortion effects, tape effects and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/swh/ladspa.git")
+                    (url "https://github.com/swh/ladspa")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -823,7 +824,7 @@ envelope follower, distortion effects, tape effects and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/swh/lv2.git")
+                    (url "https://github.com/swh/lv2")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -861,6 +862,76 @@ flanger), ringmodulator, distortion, filters, pitchshift, oscillators,
 emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
     (license license:gpl3+)))
 
+(define-public tao
+  (package
+    (name "tao")
+    (version "1.0-beta-10May2006")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/taopm/Tao/"
+                                  "tao-" version "/"
+                                  "tao-" version ".tar.gz"))
+              (sha256
+               (base32
+                "156py3g6mmglldfd0j76bn7n242hdwf49diaprjpj7crp8vgf2pz"))
+              (patches
+               (search-patches "tao-add-missing-headers.patch"
+                               "tao-fix-parser-types.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "configure"
+                    (("SHELL=/bin/sh") ""))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("TAO_RELEASE=-beta")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-references
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "user-scripts/tao.in"
+               (("taoparse")
+                (string-append (assoc-ref outputs "out") "/bin/taoparse"))
+               (("grep") (which "grep"))
+               (("sed -f \\$distdir/user-scripts/")
+                (string-append (which "sed") " -f $distdir/"))
+               (("distdir=.*")
+                (string-append "distdir="
+                               (assoc-ref outputs "out") "/share/tao")))
+             #t))
+         (add-after 'install 'install-extra-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/tao/"))
+                    (inc (string-append out "/include/tao/")))
+               (mkdir-p share)
+               (mkdir-p inc)
+               (install-file "user-scripts/error.parse" share)
+               (copy-recursively "examples" (string-append share "examples"))
+               (for-each (lambda (file) (install-file file inc))
+                         (find-files "include" "\\.h"))
+               #t))))))
+    (inputs
+     `(("audiofile" ,audiofile)
+       ("libxi" ,libxi)
+       ("libxmu" ,libxmu)
+       ("mesa" ,mesa)
+       ("glut" ,freeglut)
+       ("flex" ,flex)
+       ("bison" ,bison)
+       ("sed" ,sed)
+       ("grep" ,grep)))
+    (home-page "http://taopm.sourceforge.net/")
+    (synopsis "Sound Synthesis with Physical Models")
+    (description "Tao is a software package for sound synthesis using physical
+models.  It provides a virtual acoustic material constructed from masses and
+springs which can be used as the basis for building quite complex virtual
+musical instruments.  Tao comes with a synthesis language for creating and
+playing instruments and a C++ API for those who would like to use it as an
+object library.")
+    (license license:gpl2+)))
+
 (define-public csound
   (package
     (name "csound")
@@ -869,7 +940,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/csound/csound.git")
+             (url "https://github.com/csound/csound")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -1255,16 +1326,16 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.1.3")
+    (version "2.1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/FluidSynth/fluidsynth.git")
+                    (url "https://github.com/FluidSynth/fluidsynth")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dv6jprz2bzasvk91x2rv2pqyyvxkc72s4r6vsqw723a3kqa5bhc"))))
+                "1r3khwyw57ybg5m4x0rvdzq7hgw2484sd52k6bm19akbw8yicfna"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1339,7 +1410,7 @@ PS, and DAB+.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/grame-cncm/faust.git")
+                    (url "https://github.com/grame-cncm/faust")
                     (commit (string-append "v"
                                            (string-map (lambda (c)
                                                          (if (char=? c #\.) #\- c))
@@ -1619,15 +1690,16 @@ especially for creating reverb effects.  It supports impulse responses with 1,
   (package
     (name "jack")
     (version "0.125.0")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://jackaudio.org/downloads/jack-audio-connection-kit-"
-                   version
-                   ".tar.gz"))
-             (sha256
-              (base32
-               "0i6l25dmfk2ji2lrakqq9icnwjxklgcjzzk65dmsff91z2zva5rm"))))
+    (source
+     (origin
+       (method url-fetch)
+       ;; jackaudio.org/downloads/jack-audio-connection-kit-0.125.0.tar.gz
+       ;; no longer exists (404).  Use an unofficial mirror.
+       (uri (string-append "https://crux.ster.zone/downloads/"
+                           "jack-audio-connection-kit/"
+                           "jack-audio-connection-kit-" version ".tar.gz"))
+       (sha256
+        (base32 "0i6l25dmfk2ji2lrakqq9icnwjxklgcjzzk65dmsff91z2zva5rm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1647,7 +1719,7 @@ especially for creating reverb effects.  It supports impulse responses with 1,
        ("bdb" ,bdb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://jackaudio.org/")
+    (home-page "https://jackaudio.org/")
     (synopsis "JACK audio connection kit")
     (description
      "JACK is a low-latency audio server.  It can connect a number of
@@ -2023,21 +2095,21 @@ significantly faster and have minimal dependencies.")
     (version "1.18.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://lv2plug.in/spec/lv2-"
+             (uri (string-append "https://lv2plug.in/spec/lv2-"
                                  version ".tar.bz2"))
              (sha256
               (base32
                "0gs7401xz23q9vajqr31aa2db8dvssgyh5zrvr4ipa6wig7yb8wh"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f  ; no check target
+     `(#:tests? #f                      ; no check target
        #:configure-flags '("--no-plugins")))
     (inputs
      ;; Leaving off cairo and gtk+-2.0 which are needed for example plugins
      `(("libsndfile" ,libsndfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://lv2plug.in/")
+    (home-page "https://lv2plug.in/")
     (synopsis "LV2 audio plugin specification")
     (description
      "LV2 is an open specification for audio plugins and host applications.
@@ -2100,7 +2172,7 @@ software.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/lvtk/lvtk.git")
+                   (url "https://github.com/lvtk/lvtk")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -2302,7 +2374,7 @@ into various outputs and to start, stop and configure jackd")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/orouits/qjackrcd.git")
+                    (url "https://github.com/orouits/qjackrcd")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -2337,7 +2409,7 @@ background file post-processing.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/supercollider/supercollider.git")
+                    (url "https://github.com/supercollider/supercollider")
                     (commit (string-append "Version-" version))
                     ;; for nova-simd, nova-tt, hidapi, TLSF, oscpack
                     (recursive? #t)))
@@ -2786,17 +2858,31 @@ stretching and pitch scaling of audio.  This package contains the library.")
 (define-public wavpack
   (package
     (name "wavpack")
-    (version "5.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.wavpack.com/"
-                                  "wavpack-" version ".tar.xz"))
-              (sha256
-               (base32
-                "01r351ggha9pdfk7p601dlxac4ka1q89lgnb6zqk00zf1fd3fi5l"))))
+    (version "5.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dbry/WavPack")
+             (commit "e4e8d191e8dd74cbdbeaef3232c16a7ef517e68d")))
+       (sha256
+        (base32 "1zj8svk6giy1abq3940sz32ygz7zldppxl47852zgn5wfm3l2spx"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--disable-static")))
+     '(#:configure-flags
+       (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; Running ./autogen.sh would cause premature configuration.
+           (lambda _
+             (invoke "autoreconf" "-vif")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (home-page "http://www.wavpack.com/")
     (synopsis "Hybrid lossless audio codec")
     (description
@@ -3084,7 +3170,7 @@ synthesizer written in C++.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Themaister/RSound.git")
+             (url "https://github.com/Themaister/RSound")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3123,7 +3209,7 @@ with a much different focus than most other audio daemons.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/johnhldavis/xjackfreak.git")
+                    (url "https://github.com/johnhldavis/xjackfreak")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3203,7 +3289,7 @@ engine.")
 (define-public zita-resampler
   (package
     (name "zita-resampler")
-    (version "1.3.0")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3213,26 +3299,28 @@ engine.")
               (snippet
                ;; Don't optimize for a specific processor architecture.
                '(begin
-                  (substitute* '("apps/Makefile" "libs/Makefile")
+                  (substitute* '("apps/Makefile" "source/Makefile")
                     (("^CXXFLAGS \\+= -march=native") ""))
                   #t))
               (modules '((guix build utils)))
               (sha256
                (base32
-                "0r9ary5sc3y8vba5pad581ha7mgsrlyai83w7w4x2fmhfy64q0wq"))))
+                "1my5k2dh2dkvjp6xjnf9qy6i7s28z13kw1n9pwa4a2cpwbzawfr3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "SUFFIX="))
        #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'patch-makefile-and-enter-directory
           (lambda _
-            (substitute* "libs/Makefile"
+            (substitute* "source/Makefile"
               (("ldconfig") "true")
               (("^LIBDIR =.*") "LIBDIR = lib\n"))
-            (chdir "libs")
+            (chdir "source")
             #t))
          (add-after
           'install 'install-symlink
@@ -3254,7 +3342,7 @@ provide high-quality sample rate conversion.")
 (define-public zita-alsa-pcmi
   (package
     (name "zita-alsa-pcmi")
-    (version "0.2.0")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3263,19 +3351,21 @@ provide high-quality sample rate conversion.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1rgv332g82rrrlm4vdam6p2pyrisxbi7b3izfaa0pcjglafsy7j9"))))
+                "12d7vdg74yh21w69qi0wg57iz4876j94qbiq09bvscih6xz9y78s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "SUFFIX="))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-makefile-and-enter-directory
            (lambda _
-             (substitute* "libs/Makefile"
+             (substitute* "source/Makefile"
                (("ldconfig") "true")
                (("^LIBDIR =.*") "LIBDIR = lib\n"))
-             (chdir "libs")
+             (chdir "source")
              #t))
          (add-after 'install 'install-symlink
            (lambda _
@@ -3304,7 +3394,7 @@ point audio data.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/svend/cuetools.git")
+                   (url "https://github.com/svend/cuetools")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
@@ -3354,7 +3444,7 @@ use them split WAVE data into multiple files.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/foo86/dcadec.git")
+                    (url "https://github.com/foo86/dcadec")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3432,7 +3522,7 @@ loudness of audio and video files to the same level.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/irungentoo/filter_audio.git")
+               (url "https://github.com/irungentoo/filter_audio")
                (commit commit)))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
@@ -3541,7 +3631,7 @@ mixers.")
               ;; bootstrapped build system.
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Arkq/bluez-alsa.git")
+                    (url "https://github.com/Arkq/bluez-alsa")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -3586,14 +3676,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "20.4")
+    (version "20.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "0irdizlng2s3akmxdbfxcbd93bbjz9543nh7fisszim6v0ks59d9"))))
+                "1frg64q2d8cia6v7jia7kahzx0apwdl0z252mzlbwqdz5960nv90"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -3650,7 +3740,7 @@ the Snd sources), Ruby, or Forth.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/lucianodato/noise-repellent.git")
+                    (url "https://github.com/lucianodato/noise-repellent")
                     (commit version)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
@@ -3695,7 +3785,7 @@ the following features:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dpayne/cli-visualizer.git")
+             (url "https://github.com/dpayne/cli-visualizer")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3740,7 +3830,7 @@ representations.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/karlstav/cava.git")
+                    (url "https://github.com/karlstav/cava")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -3893,7 +3983,7 @@ library.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/FNA-XNA/FAudio.git")
+             (url "https://github.com/FNA-XNA/FAudio")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -3998,6 +4088,45 @@ stream to one or more IceCast and/or ShoutCast servers.")
     (home-page "https://x42.github.io/libltc/")
     (license license:lgpl3+)))
 
+(define-public ttaenc
+  (package
+    (name "ttaenc")
+    (version "3.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tta/"
+                           "tta/ttaenc-src"
+                           "/ttaenc-" version "-src.tgz"))
+       (sha256
+        (base32
+         "1iixpr4b89g9g1hwn8ak8k8iflcww3r5f09a117qdidc2nqcijdj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "INSDIR=" (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure
+         (add-before 'install 'make-bindir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               #t))))))
+    (synopsis "TTA lossless audio encoder")
+    (description
+     "TTA performs lossless compression on multichannel 8,16 and 24 bits
+data of the Wav audio files.  Being lossless means that no data-
+quality is lost in the compression - when uncompressed, the data will
+be identical to the original.  The compression ratios of TTA depend on
+the type of music file being compressed, but the compression size
+will generally range between 30% - 70% of the original.  TTA format
+supports both of ID3v1/v2 and APEv2 tags.")
+    (home-page "http://tausoft.org/")
+    (license license:gpl2+)))
+
 (define-public redkite
   (package
     (name "redkite")
@@ -4030,18 +4159,18 @@ as is the case with audio plugins.")
 (define-public carla
   (package
     (name "carla")
-    (version "2.0.0")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://github.com/falkTX/Carla.git")
+         (url "https://github.com/falkTX/Carla")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fqgncqlr86n38yy7pa118mswfacmfczj7w9xx6c6k0jav3wk29k"))))
+         "0c3y4a6cgi4bv1mg57i3qn5ia6pqjqlaylvkapj6bmpsw71ig22g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -4072,6 +4201,7 @@ as is the case with audio plugins.")
        ("file" ,file)
        ("liblo" ,liblo)
        ("libsndfile" ,libsndfile)
+       ("gtk2" ,gtk+-2)   ;needed for bridging GTK2 plugins in GTK3 hosts
        ("gtk+" ,gtk+)
        ("python-pyliblo" ,python-pyliblo)
        ("python-pyqt" ,python-pyqt)
@@ -4143,7 +4273,7 @@ in the package.")
 (define-public libaudec
   (package
     (name "libaudec")
-    (version "0.2")
+    (version "0.2.2")
     (source
       (origin
         (method git-fetch)
@@ -4153,7 +4283,7 @@ in the package.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "0lfydvs92b0hr72z71ci3yi356rjzi162pgms8dphgg18bz8dazv"))))
+            "04mpmfmqc43asw0m3zxhb6jj4qms7x4jw7mx4xb1d3lh16xllniz"))))
    (build-system meson-build-system)
    (arguments
     `(#:configure-flags `("-Denable_tests=true -Denable_ffmpeg=true")))
@@ -4287,7 +4417,7 @@ minimum.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/drowe67/codec2.git")
+             (url "https://github.com/drowe67/codec2")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -4320,7 +4450,7 @@ digital radio.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Ableton/link.git")
+                    (url "https://github.com/Ableton/link")
                     (commit (string-append "Link-" version))))
               (file-name (git-file-name name version))
               (sha256

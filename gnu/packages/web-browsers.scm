@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages web-browsers)
+  #:use-module (guix build-system asdf)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
+  #:use-module (guix build-system python)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
@@ -38,16 +47,19 @@
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnome-xyz)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages gnome-xyz)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -55,20 +67,10 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages image)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages webkit)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages gcc)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system glib-or-gtk)
-  #:use-module (guix build-system python)
-  #:use-module (guix build-system asdf)
-  #:use-module (guix build-system go))
+  #:use-module (gnu packages xorg))
 
 (define-public midori
   (package
@@ -187,14 +189,16 @@ older or slower computers and embedded systems.")
                        (string-append "--prefix=" out)
                        "--enable-graphics")
                #t))))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("zlib" ,zlib)
-              ("openssl" ,openssl)
-              ("libjpeg" ,libjpeg-turbo)
-              ("libtiff" ,libtiff)
+    (native-inputs `(("linux-libre-headers" ,linux-libre-headers)
+                     ("pkg-config" ,pkg-config)))
+    (inputs `(("gpm" ,gpm)
               ("libevent" ,libevent)
+              ("libjpeg" ,libjpeg-turbo)
               ("libpng" ,libpng)
-              ("libxt" ,libxt)))
+              ("libtiff" ,libtiff)
+              ("libxt" ,libxt)
+              ("openssl" ,openssl)
+              ("zlib" ,zlib)))
     (synopsis "Text and graphics mode web browser")
     (description "Links is a graphics and text mode web browser, with many
 features including, tables, builtin image display, bookmarks, SSL and more.")
@@ -215,7 +219,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/luakit/luakit.git")
+                     (url "https://github.com/luakit/luakit")
                      (commit version)))
               (file-name (git-file-name name version))
               (sha256
@@ -340,7 +344,7 @@ access.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "1.12.0")
+    (version "1.13.1")
     (source
      (origin
        (method url-fetch)
@@ -348,7 +352,7 @@ access.")
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
-        (base32 "0pywyhi4v6ymxpn85grrdr1agmcxsnm5jfqf3rlxqx5swbnxbfs1"))))
+        (base32 "1n72dvrv4dch4i07lsis76p7g16a039fwx8rk7w8q9f60wgqb5i8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-attrs" ,python-attrs))) ; for tests
@@ -452,247 +456,136 @@ vim editor and also easily configurable during runtime.  Vimb is mostly keyboard
 driven and does not detract you from your daily work.")
     (license license:gpl3+)))
 
-(define next-gtk-webkit
-  (package
-    (name "next-gtk-webkit")
-    (version "1.5.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             ;; TODO: Mirror seems to hang, let's fallback to GitHub for now.
-             ;; (url "https://source.atlas.engineer/public/next")
-             (url "https://github.com/atlas-engineer/next")
-             (commit version)))
-       (sha256
-        (base32
-         "1gqkp185wcwaxr8py90hqk44nqjblrrdwvig19gizrbzr2gx2zhy"))
-       (file-name (git-file-name "next" version))))
-    (build-system glib-or-gtk-build-system)
-    (arguments
-     `(#:tests? #f                      ; no tests
-       #:make-flags (list "gtk-webkit"
-                          "CC=gcc"
-                          (string-append "PREFIX=" %output))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (apply invoke "make" "install-gtk-webkit" make-flags))))))
-    (inputs
-     `(("glib-networking" ,glib-networking)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "https://next.atlas.engineer")
-    (synopsis "Extensible web-browser in Common Lisp")
-    (description "Next is a keyboard-oriented, extensible web-browser
+(define-public nyxt
+  ;; 1.5.0 does not build anymore, let's use the master which is more stable anyways.
+  (let ((commit "9440980a9c5f75232b08ca98183b22be4a3d9bc3"))
+    (package
+      (name "nyxt")
+      (version (git-version "1.5.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               ;; TODO: Mirror seems to hang, let's fallback to GitHub for now.
+               ;; (url "https://source.atlas.engineer/public/nyxt")
+               (url "https://github.com/atlas-engineer/nyxt")
+               (commit commit)))
+         (sha256
+          (base32
+           "079n5ffsa8136i9ik5mn4rwa3iv0avncw6y973gj3hlf8sf4wv7g"))
+         (file-name (git-file-name "nyxt" version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "nyxt" "NYXT_INTERNAL_QUICKLISP=false"
+                            (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+                            "PREFIX=")
+         #:strip-binaries? #f           ; Stripping breaks SBCL binaries.
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-version ; Version is guessed from .git which Guix does not have.
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((version (format #f "~a" ,version)))
+                 (substitute* "source/global.lisp"
+                   (("version\\)\\)\\)")
+                    (string-append "version)))"
+                                   "\n"
+                                   "(setf +version+ \"" version "\")"))))
+               #t))
+           (add-before 'build 'make-desktop-version-number
+             (lambda _
+               (with-output-to-file "version"
+                 (lambda _
+                   (format #t "~a" ,version)))))
+
+           (delete 'configure)
+           (add-before 'build 'fix-common-lisp-cache-folder
+             (lambda _
+               (setenv "HOME" "/tmp")
+               #t))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((bin (string-append (assoc-ref outputs "out") "/bin/nyxt"))
+                      (glib-networking (assoc-ref inputs "glib-networking"))
+                      (libs '("gsettings-desktop-schemas"))
+                      (path (string-join
+                             (map (lambda (lib)
+                                    (string-append (assoc-ref inputs lib) "/lib"))
+                                  libs)
+                             ":"))
+                      (gi-path (string-join
+                                (map (lambda (lib)
+                                       (string-append (assoc-ref inputs lib) "/lib/girepository-1.0"))
+                                     libs)
+                                ":"))
+                      (xdg-path (string-join
+                                 (map (lambda (lib)
+                                        (string-append (assoc-ref inputs lib) "/share"))
+                                      libs)
+                                 ":")))
+                 (wrap-program bin
+                   `("GIO_EXTRA_MODULES" prefix
+                     (,(string-append glib-networking "/lib/gio/modules")))
+                   `("GI_TYPELIB_PATH" prefix (,gi-path))
+                   `("LD_LIBRARY_PATH" ":" prefix (,path))
+                   `("XDG_DATA_DIRS" ":" prefix (,xdg-path)))
+                 #t))))))
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("sbcl" ,sbcl)))
+      (inputs
+       ;; We need to avoid sbcl-* inputs (sbcl-cl-cffi-gtk in particular) as they
+       ;; seem to cause Nyxt to hang into a hogging process in about 10 minutes.
+       ;; Probably an issue between CFFI and how we build SBCL packages.
+       ;; See https://github.com/atlas-engineer/nyxt/issues/680.
+       `(("alexandria" ,cl-alexandria)
+         ("bordeaux-threads" ,cl-bordeaux-threads)
+         ("cl-containers" ,cl-containers)
+         ("cl-css" ,cl-css)
+         ("cl-json" ,cl-json)
+         ("cl-markup" ,cl-markup)
+         ("cl-ppcre" ,cl-ppcre)
+         ("cl-prevalence" ,cl-prevalence)
+         ("closer-mop" ,cl-closer-mop)
+         ("cluffer" ,cl-cluffer)
+         ("dexador" ,cl-dexador)
+         ("enchant" ,cl-enchant)
+         ("fset" ,cl-fset)
+         ("iolib" ,cl-iolib)
+         ("local-time" ,cl-local-time)
+         ("log4cl" ,cl-log4cl)
+         ("lparallel" ,cl-lparallel)
+         ("mk-string-metrics" ,cl-mk-string-metrics)
+         ("moptilities" ,cl-moptilities)
+         ("osicat" ,sbcl-osicat)       ; SBCL version needed for libosicat.so.
+         ("parenscript" ,cl-parenscript)
+         ("plump" ,cl-plump)
+         ("quri" ,cl-quri)
+         ("serapeum" ,cl-serapeum)
+         ("str" ,cl-str)
+         ("swank" ,cl-slime-swank)
+         ("trivia" ,cl-trivia)
+         ("trivial-clipboard" ,cl-trivial-clipboard)
+         ("trivial-features" ,cl-trivial-features)
+         ("trivial-package-local-nicknames" ,cl-trivial-package-local-nicknames)
+         ("trivial-types" ,cl-trivial-types)
+         ("unix-opts" ,cl-unix-opts)
+         ;; WebKitGTK deps
+         ("cl-cffi-gtk" ,cl-cffi-gtk)
+         ("cl-webkit" ,cl-webkit)
+         ("glib-networking" ,glib-networking)
+         ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+      (synopsis "Extensible web-browser in Common Lisp")
+      (home-page "https://nyxt.atlas.engineer")
+      (description "Nyxt is a keyboard-oriented, extensible web-browser
 designed for power users.  The application has familiar Emacs and VI
 key-bindings and is fully configurable and extensible in Common Lisp.")
-    (license license:bsd-3)))
-
-(define sbcl-next-download-manager
-  (package
-    (inherit next-gtk-webkit)
-    (name "sbcl-next-download-manager")
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     `(#:tests? #f                      ; Need online access.
-       #:asd-file "next.asd"
-       #:asd-system-name "next/download-manager"))
-    (inputs
-     `(("cl-ppcre" ,sbcl-cl-ppcre)
-       ("dexador" ,sbcl-dexador)
-       ("log4cl" ,sbcl-log4cl)
-       ("lparallel" ,sbcl-lparallel)
-       ("quri" ,sbcl-quri)
-       ("str" ,sbcl-cl-str)))
-    (native-inputs
-     `(("trivial-features" ,sbcl-trivial-features)
-       ("prove-asdf" ,sbcl-prove-asdf)))
-    (synopsis "Extensible web-browser in Common Lisp (download manager)")))
-
-(define sbcl-next-ring
-  (package
-    (inherit next-gtk-webkit)
-    (name "sbcl-next-ring")
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     `(#:tests? #t
-       #:asd-file "next.asd"
-       #:asd-system-name "next/ring"))
-    (native-inputs
-     `(("trivial-features" ,sbcl-trivial-features)
-       ("prove-asdf" ,sbcl-prove-asdf)))
-    (synopsis "Extensible web-browser in Common Lisp (ring)")))
-
-(define sbcl-next-history-tree
-  (package
-    (inherit next-gtk-webkit)
-    (name "sbcl-next-history-tree")
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     `(#:tests? #t
-       #:asd-file "next.asd"
-       #:asd-system-name "next/history-tree"))
-    (native-inputs
-     `(("trivial-features" ,sbcl-trivial-features)
-       ("prove-asdf" ,sbcl-prove-asdf)))
-    (synopsis "Extensible web-browser in Common Lisp (history-tree)")))
-
-(define sbcl-next-password-manager
-  (package
-    (inherit next-gtk-webkit)
-    (name "sbcl-next-password-manager")
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     `(#:tests? #t
-       #:asd-file "next.asd"
-       #:asd-system-name "next/password-manager"))
-    (inputs
-     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("cl-annot" ,sbcl-cl-annot)
-       ("cl-ppcre" ,sbcl-cl-ppcre)
-       ("str" ,sbcl-cl-str)
-       ("trivial-clipboard" ,sbcl-trivial-clipboard)))
-    (native-inputs
-     `(("trivial-features" ,sbcl-trivial-features)
-       ("prove-asdf" ,sbcl-prove-asdf)))
-    (synopsis "Extensible web-browser in Common Lisp (password manager)")))
-
-(define sbcl-next-hooks
-  (package
-    (inherit next-gtk-webkit)
-    (name "sbcl-next-hooks")
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     `(#:tests? #t
-       #:asd-file "next.asd"
-       #:asd-system-name "next/hooks"))
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("serapeum" ,sbcl-serapeum)))
-    (native-inputs
-     `(("trivial-features" ,sbcl-trivial-features)
-       ("prove-asdf" ,sbcl-prove-asdf)))
-    (synopsis "Infinitely extensible web-browser (hooks)")))
+      (license license:bsd-3))))
 
 (define-public next
-  (let ((version (package-version next-gtk-webkit)))
-    (package
-      (inherit next-gtk-webkit)
-      (name "next")
-      (build-system asdf-build-system/sbcl)
-      (outputs '("out" "lib"))
-      (arguments
-       `(#:tests? #f                    ; no tests
-         #:asd-system-name "next"
-         #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'patch-platform-port-path
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (substitute* "source/ports/gtk-webkit.lisp"
-                          (("\"next-gtk-webkit\"")
-                           (string-append "\"" (assoc-ref inputs "next-gtk-webkit")
-                                          "/bin/next-gtk-webkit\"")))
-                        #t))
-                    (add-after 'patch-platform-port-path 'patch-version
-                      ;; When the version is not just dot-separated numerals
-                      ;; (e.g. a git-commit version), Guix modifies the .asd with
-                      ;; an illegal version number, and then Next fails to query
-                      ;; it.  So we hard-code it here.
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (let ((version (format #f "~a" ,version)))
-                          (substitute* "source/global.lisp"
-                            (("version\\)\\)\\)")
-                             (string-append "version)))
-(setf +version+ \"" version "\")"))))
-                        #t))
-                    (add-before 'cleanup 'move-bundle
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (define lib (assoc-ref outputs "lib"))
-                        (define actual-fasl (string-append
-                                             lib
-                                             "/lib/sbcl/next.fasl"))
-                        (define expected-fasl (string-append
-                                               lib
-                                               "/lib/sbcl/next--system.fasl"))
-                        (copy-file actual-fasl expected-fasl)
-                        #t))
-                    (add-after 'create-symlinks 'build-program
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (build-program
-                         (string-append (assoc-ref outputs "out") "/bin/next")
-                         outputs
-                         #:entry-program '((next:entry-point) 0))))
-                    (add-before 'build 'install-assets
-                      ;; Since the ASDF build system generates a new .asd with a
-                      ;; possibly suffixed and thus illegal version number, assets
-                      ;; should not be installed after the 'build phase or else
-                      ;; the illegal version will result in NIL in the .desktop
-                      ;; file.
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (with-output-to-file "version"
-                          (lambda _
-                            (format #t "~a" ,(package-version next-gtk-webkit))))
-                        (invoke "make" "install-assets"
-                                (string-append "PREFIX="
-                                               (assoc-ref outputs "out")))))
-                    (add-after 'unpack 'fix-lambda-list
-                      ;; Starting from SBCL 2.0.2, Next 1.5.0 won't build
-                      ;; because of a weird lambda list type.
-                      (lambda _
-                        (substitute* "source/keymap.lisp"
-                          (("^\\(declaim .* define-key\\)\\)") ""))
-                        (substitute* "source/search-buffer.lisp"
-                          (("define-key :keymap keymap \"C-s\"") "define-key \"C-s\"")
-                          (("\\(update-selection-highlight-hint :follow t :scroll t\\)\\)\\)")
-                           "(update-selection-highlight-hint :follow t :scroll t)) :keymap keymap)")))))))
-      (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("bordeaux-threads" ,sbcl-bordeaux-threads)
-         ("cl-annot" ,sbcl-cl-annot)
-         ("cl-ansi-text" ,sbcl-cl-ansi-text)
-         ("cl-css" ,sbcl-cl-css)
-         ("cl-json" ,sbcl-cl-json)
-         ("cl-markup" ,sbcl-cl-markup)
-         ("cl-ppcre" ,sbcl-cl-ppcre)
-         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
-         ("cl-prevalence" ,sbcl-cl-prevalence)
-         ("closer-mop" ,sbcl-closer-mop)
-         ("dbus" ,cl-dbus)
-         ("dexador" ,sbcl-dexador)
-         ("ironclad" ,sbcl-ironclad)
-         ("local-time" ,sbcl-local-time)
-         ("log4cl" ,sbcl-log4cl)
-         ("lparallel" ,sbcl-lparallel)
-         ("mk-string-metrics" ,sbcl-mk-string-metrics)
-         ("parenscript" ,sbcl-parenscript)
-         ("plump" ,sbcl-plump)
-         ("quri" ,sbcl-quri)
-         ("serapeum" ,sbcl-serapeum)
-         ("sqlite" ,sbcl-cl-sqlite)
-         ("str" ,sbcl-cl-str)
-         ("swank" ,sbcl-slime-swank)
-         ("trivia" ,sbcl-trivia)
-         ("trivial-clipboard" ,sbcl-trivial-clipboard)
-         ("unix-opts" ,sbcl-unix-opts)
-         ;; Local deps
-         ("next-gtk-webkit" ,next-gtk-webkit)
-         ("next-download-manager" ,sbcl-next-download-manager)
-         ("next-ring" ,sbcl-next-ring)
-         ("next-history-tree" ,sbcl-next-history-tree)
-         ("next-password-manager" ,sbcl-next-password-manager)
-         ("next-hooks" ,sbcl-next-hooks)))
-      (native-inputs
-       `(("trivial-features" ,sbcl-trivial-features)
-         ("trivial-types" ,sbcl-trivial-types)
-         ("prove-asdf" ,sbcl-prove-asdf)))
-      (synopsis "Extensible web-browser in Common Lisp"))))
+  (deprecated-package "next" nyxt))
 
 (define-public sbcl-next
-  (deprecated-package "sbcl-next" next))
+  (deprecated-package "sbcl-next" nyxt))
 
 (define-public bombadillo
   (package
@@ -728,7 +621,7 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
                           (install-file "bombadillo.1" mandir)
                           (install-file "bombadillo-icon.png" pixdir)
                           #t)))))))
-    (home-page "http://bombadillo.colorfield.space")
+    (home-page "https://bombadillo.colorfield.space")
     (synopsis "Terminal browser for the gopher, gemini, and finger protocols")
     (description "Bombadillo is a non-web browser for the terminal with
 vim-like key bindings, a document pager, configurable settings, and robust

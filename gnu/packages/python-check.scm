@@ -126,35 +126,38 @@ interactions, which will update them to correspond to the new API.")
     (license license:expat)))
 
 (define-public python-pytest-vcr
-  (package
-    (name "python-pytest-vcr")
-    (version "1.0.2")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/ktosiek/pytest-vcr")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "1i6fin91mklvbi8jzfiswvwf1m91f43smpj36a17xrzk4gisfs6i"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "tests/"))))))
-    (propagated-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-vcrpy" ,python-vcrpy)))
-    (home-page "https://github.com/ktosiek/pytest-vcr")
-    (synopsis "Plugin for managing VCR.py cassettes")
-    (description
-     "Plugin for managing VCR.py cassettes.")
-    (license license:expat)))
+  ;; This commit fixes integration with pytest-5
+  (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
+        (revision "1"))
+    (package
+      (name "python-pytest-vcr")
+      (version (git-version "1.0.2" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/ktosiek/pytest-vcr")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1yk988zi0la6zpcm3fff0mxf942di2jiymrfqas19nyngj5ygaqs"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "tests/"))))))
+      (propagated-inputs
+       `(("python-pytest" ,python-pytest)
+         ("python-vcrpy" ,python-vcrpy)))
+      (home-page "https://github.com/ktosiek/pytest-vcr")
+      (synopsis "Plugin for managing VCR.py cassettes")
+      (description
+       "Plugin for managing VCR.py cassettes.")
+      (license license:expat))))
 
 (define-public python-pytest-checkdocs
   (package
@@ -183,14 +186,14 @@ of the project to ensure it renders properly.")
 (define-public python-pytest-flake8
   (package
     (name "python-pytest-flake8")
-    (version "1.0.4")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-flake8" version))
        (sha256
         (base32
-         "1h30gd21fjsafqxwclf25sdh89vrdz7rsh4lzw11aiw7ww9mq8jd"))))
+         "09vhn7r77s1yiqnlwfvh5585f904zpyd6620a90dpccfr1cbp0hv"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flake8" ,python-flake8)))
@@ -384,6 +387,52 @@ for the @code{pytest} framework.")
 rounds that are calibrated to the chosen timer.")
     (license license:bsd-2)))
 
+(define-public python-pytest-services
+  (package
+    (name "python-pytest-services")
+    (version "1.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pytest-services" version))
+        (sha256
+         (base32
+          "0b2zfv04w6m3gp2v44ifdhx22vcji069qnn95ry3zcyxib7cjnq3"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; Tests not included in release tarball.
+    (propagated-inputs
+     `(("python-psutil" ,python-psutil)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/pytest-dev/pytest-services")
+    (synopsis "Services plugin for pytest testing framework")
+    (description
+     "This plugin provides a set of fixtures and utility functions to start
+service processes for your tests with pytest.")
+    (license license:expat)))
+
+(define-public python-pytest-aiohttp
+  (package
+    (name "python-pytest-aiohttp")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-aiohttp" version))
+       (sha256
+        (base32
+         "0kx4mbs9bflycd8x9af0idcjhdgnzri3nw1qb0vpfyb3751qaaf9"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)))
+    (home-page "https://github.com/aio-libs/pytest-aiohttp/")
+    (synopsis "Pytest plugin for aiohttp support")
+    (description "This package provides a pytest plugin for aiohttp support.")
+    (license license:asl2.0)))
+
 (define-public python-pytest-flask
   (package
     (name "python-pytest-flask")
@@ -451,3 +500,37 @@ analysing code quality.")
     (description "This package provides a library for replying fake data to
 Python software under test, when they make an HTTP query.")
     (license license:asl2.0)))
+
+(define-public python-atpublic
+  (package
+    (name "python-atpublic")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "atpublic" version))
+        (sha256
+         (base32
+          "0i3sbxkdlbb4560rrlmwwd5y4ps7k73lp4d8wnmd7ag9k426gjkx"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'enable-c-implementation
+           (lambda _
+             (setenv "ATPUBLIC_BUILD_EXTENSION" "yes")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "nose2" "-v"))))))
+    (native-inputs
+     `(("python-nose2" ,python-nose2)))
+    (home-page "https://public.readthedocs.io/")
+    (synopsis "@code{@@public} decorator for populating @code{__all__}")
+    (description
+     "This Python module adds a @code{@@public} decorator and function which
+populates a module's @code{__all__} and optionally the module globals.  With
+it, the declaration of a name's public export semantics are not separated from
+the implementation of that name.")
+    (license (list license:asl2.0
+                   license:lgpl3))))    ; only for setup_helpers.py

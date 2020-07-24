@@ -253,7 +253,7 @@ reconstruction capability.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cdrdao/cdrdao.git")
+             (url "https://github.com/cdrdao/cdrdao")
              (commit
               (string-append "rel_" (string-replace-substring version "." "_")))))
        (file-name (git-file-name name version))
@@ -555,7 +555,7 @@ graphical interface.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/lipnitsk/libcue.git")
+                   (url "https://github.com/lipnitsk/libcue")
                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256

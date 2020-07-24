@@ -288,7 +288,7 @@ across a broad spectrum of applications.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/boostorg/sync.git")
+                      (url "https://github.com/boostorg/sync")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -317,7 +317,7 @@ Boost.Thread.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/boostorg/signals2.git")
+                    (url "https://github.com/boostorg/signals2")
                     (commit (string-append "boost-" version))))
               (file-name (git-file-name name version))
               (sha256

@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +64,7 @@
   (match-lambda
     ("" #f)
     ((? string? str) str)
-    ((or #nil #f) #f)))
+    ((or 'null #f) #f)))
 
 ;; PyPI project.
 (define-json-mapping <pypi-project> make-pypi-project pypi-project?
@@ -510,23 +511,13 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
     ("MPL 2.0" license:mpl2.0)
     (_ #f)))
 
-(define (pypi-package? package)
-  "Return true if PACKAGE is a Python package from PyPI."
-
-  (define (pypi-url? url)
-    (or (string-prefix? "https://pypi.org/" url)
-        (string-prefix? "https://pypi.python.org/" url)
-        (string-prefix? "https://pypi.org/packages" url)
-        (string-prefix? "https://files.pythonhosted.org/packages" url)))
-
-  (let ((source-url (and=> (package-source package) origin-uri))
-        (fetch-method (and=> (package-source package) origin-method)))
-    (and (eq? fetch-method download:url-fetch)
-         (match source-url
-           ((? string?)
-            (pypi-url? source-url))
-           ((source-url ...)
-            (any pypi-url? source-url))))))
+(define pypi-package?
+  (url-predicate
+   (lambda (url)
+     (or (string-prefix? "https://pypi.org/" url)
+         (string-prefix? "https://pypi.python.org/" url)
+         (string-prefix? "https://pypi.org/packages" url)
+         (string-prefix? "https://files.pythonhosted.org/packages" url)))))
 
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."

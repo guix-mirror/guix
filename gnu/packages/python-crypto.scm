@@ -205,14 +205,14 @@ This package provides a Python interface for BLAKE2.")
 (define-public python-paramiko
   (package
     (name "python-paramiko")
-    (version "2.4.2")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "paramiko" version))
        (sha256
         (base32
-         "1jqgj2gl1pz7bi2aab1r2xq0ml0gskmm9p235cg9y32nydymm5x8"))))
+         "17wx8lkhqxmddfdq7z7x45xqq2w3gwa974hpq1n3y0dqbn4r414j"))))
     (build-system python-build-system)
     (arguments
      `(;; FIXME: Tests require many unpackaged libraries, see dev-requirements.txt.
@@ -719,7 +719,7 @@ ECB and OFB).")
       (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/wbond/asn1crypto.git")
+              (url "https://github.com/wbond/asn1crypto")
               (commit version)))
         (file-name (git-file-name name version))
         (sha256
@@ -744,26 +744,44 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 (define-public python-pynacl
   (package
     (name "python-pynacl")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyNaCl" version))
        (modules '((guix build utils)))
-       ;; Remove bundled libsodium.
-       (snippet '(begin (delete-file-recursively "src/libsodium")
-                        #t))
+       (snippet
+        '(begin
+           ;; Remove spurious dependency on python-wheel, can be removed
+           ;; for 1.5.
+           (substitute* "setup.py"
+             (("\"wheel\"") ""))
+           ;; Remove bundled libsodium.
+           (delete-file-recursively "src/libsodium")
+           #t))
        (sha256
         (base32
-         "0330wyvggm19xhmwmz9rrr97lzbv3siwfy50gmax3vvgs7nh0q8c"))))
+         "01b56hxrbif3hx8l6rwz5kljrgvlbj7shmmd2rjh0hn7974a5sal"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
+     `(#:modules (,@%python-build-system-modules
+                  (guix build utils)
+                  (ice-9 ftw)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases (@ (guix build python-build-system) %standard-phases)
          (add-before 'build 'use-system-sodium
            (lambda _
              (setenv "SODIUM_INSTALL" "system")
-             #t)))))
+             #t))
+         (replace 'check
+           (lambda _
+             (let ((build-directory
+                    (car (scandir "build" (cut string-prefix? "lib" <>)))))
+               (setenv "PYTHONPATH"
+                       (string-append "./build/" build-directory ":"
+                                      (getenv "PYTHONPATH")))
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)))
@@ -1202,7 +1220,6 @@ Password-Authenticated Key Exchange algorithm.")
      `(("python-automat" ,python-automat)
        ("python-idna" ,python-idna)
        ("python-incremental" ,python-incremental)
-       ("python-ipaddress" ,python-ipaddress)
        ("python-service-identity" ,python-service-identity)
        ("python-twisted" ,python-twisted)
        ("python-zope-interface" ,python-zope-interface)))

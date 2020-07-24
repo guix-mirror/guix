@@ -66,6 +66,7 @@
 /doc/stamp-vti
 /doc/version.texi
 /doc/version-*.texi
+/etc/committer.scm
 /etc/gnu-store.mount
 /etc/guix-daemon.cil
 /etc/guix-daemon.conf
@@ -88,17 +89,8 @@
 /m4/nls.m4
 /m4/po.m4
 /m4/progtest.m4
-/nix-setuid-helper
-/nix/AUTHORS
-/nix/COPYING
 /nix/config.h
 /nix/config.h.in
-/nix/nix-daemon/nix-daemon.cc
-/nix/nix-setuid-helper/nix-setuid-helper.cc
-/nix/scripts/authenticate
-/nix/scripts/list-runtime-roots
-/nix/scripts/offload
-/nix/scripts/substitute
 /po/doc/*.mo
 /po/guix/*.gmo
 /po/guix/*.insert-header

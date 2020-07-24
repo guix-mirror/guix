@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +64,7 @@
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/HowardHinnant/date.git")
+               (url "https://github.com/HowardHinnant/date")
                (commit "9a0ee2542848ab8625984fc8cdbfb9b5414c0082")))
          (file-name (git-file-name name version))
          (sha256
@@ -194,6 +195,12 @@ data units.")
             (install-file
              "doc/build/man/khal.1"
              (string-append (assoc-ref outputs "out") "/share/man/man1"))
+            #t))
+        (add-before 'check 'fix-tests
+          (lambda _
+            ;; Reported upstream: <https://github.com/pimutils/khal/issues/947>.
+            (substitute* "tests/cli_test.py"
+             (("Invalid value for \"\\[ICS\\]\"") "Invalid value for \\'[ICS]\\'"))
             #t))
         (replace 'check
           (lambda* (#:key inputs #:allow-other-keys)

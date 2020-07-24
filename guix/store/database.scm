@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019 Caleb Ristvedt <caleb.ristvedt@cune.org>
 ;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 (define-module (guix store database)
   #:use-module (sqlite3)
   #:use-module (guix config)
+  #:use-module (guix gexp)
   #:use-module (guix serialization)
   #:use-module (guix store deduplication)
   #:use-module (guix base16)
@@ -27,6 +29,7 @@
   #:use-module (guix build syscalls)
   #:use-module ((guix build utils)
                 #:select (mkdir-p executable-file?))
+  #:use-module (guix utils)
   #:use-module (guix build store-copy)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -97,17 +100,20 @@ as specified by SQL-SCHEMA."
 
   (sqlite-exec db (call-with-input-file schema get-string-all)))
 
-(define (call-with-database file proc)
+(define* (call-with-database file proc #:key (wal-mode? #t))
   "Pass PROC a database record corresponding to FILE.  If FILE doesn't exist,
-create it and initialize it as a new database."
+create it and initialize it as a new database.  Unless WAL-MODE? is set to #f,
+set journal_mode=WAL."
   (let ((new? (and (not (file-exists? file))
                    (begin
                      (mkdir-p (dirname file))
                      #t)))
         (db   (sqlite-open file)))
-    ;; Turn DB in "write-ahead log" mode, which should avoid SQLITE_LOCKED
-    ;; errors when we have several readers: <https://www.sqlite.org/wal.html>.
-    (sqlite-exec db "PRAGMA journal_mode=WAL;")
+    ;; Using WAL breaks for the Hurd <https://bugs.gnu.org/42151>.
+    (when wal-mode?
+      ;; Turn DB in "write-ahead log" mode, which should avoid SQLITE_LOCKED
+      ;; errors when we have several readers: <https://www.sqlite.org/wal.html>.
+      (sqlite-exec db "PRAGMA journal_mode=WAL;"))
 
     ;; Install a busy handler such that, when the database is locked, sqlite
     ;; retries until 30 seconds have passed, at which point it gives up and
@@ -200,10 +206,15 @@ prior to returning."
   ;; Default location of the store database.
   (string-append %store-database-directory "/db.sqlite"))
 
-(define-syntax-rule (with-database file db exp ...)
-  "Open DB from FILE and close it when the dynamic extent of EXP... is left.
-If FILE doesn't exist, create it and initialize it as a new database."
-  (call-with-database file (lambda (db) exp ...)))
+(define-syntax with-database
+  (syntax-rules ()
+    "Open DB from FILE and close it when the dynamic extent of EXP... is left.
+If FILE doesn't exist, create it and initialize it as a new database.  Pass
+#:wal-mode? to call-with-database."
+    ((_ file db #:wal-mode? wal-mode? exp ...)
+     (call-with-database file (lambda (db) exp ...) #:wal-mode? wal-mode?))
+    ((_ file db exp ...)
+     (call-with-database file (lambda (db) exp ...)))))
 
 (define (sqlite-finalize stmt)
   ;; As of guile-sqlite3 0.1.0, cached statements aren't reset when

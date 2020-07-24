@@ -35,6 +35,7 @@
   #:use-module (ice-9 popen)
   #:use-module ((ice-9 ftw) #:select (scandir))
   #:export (%swh-base-url
+            %verify-swh-certificate?
             %allow-request?
 
             request-rate-limit-reached?
@@ -126,6 +127,10 @@
   ;; Presumably we won't need to change it.
   (make-parameter "https://archive.softwareheritage.org"))
 
+(define %verify-swh-certificate?
+  ;; Whether to verify the X.509 HTTPS certificate for %SWH-BASE-URL.
+  (make-parameter #t))
+
 (define (swh-url path . rest)
   ;; URLs returned by the API may be relative or absolute. This has changed
   ;; without notice before. Handle both cases by detecting whether the path
@@ -142,6 +147,13 @@
   (if (string-suffix? "/" url)
       url
       (string-append url "/")))
+
+;; XXX: Work around a bug in Guile 3.0.2 where #:verify-certificate? would
+;; be ignored (<https://bugs.gnu.org/40486>).
+(define* (http-get* uri #:rest rest)
+  (apply http-request uri #:method 'GET rest))
+(define* (http-post* uri #:rest rest)
+  (apply http-request uri #:method 'POST rest))
 
 (define %date-regexp
   ;; Match strings like "2014-11-17T22:09:38+01:00" or
@@ -174,11 +186,12 @@ Software Heritage."
   ;; Converts "string or #nil" coming from JSON to "string or #f".
   (match-lambda
     ((? string? str) str)
-    ((? null?) #f)))
+    ((? null?) #f)                                ;Guile-JSON 3.x
+    ('null #f)))                                  ;Guile-JSON 4.x
 
 (define %allow-request?
   ;; Takes a URL and method (e.g., the 'http-get' procedure) and returns true
-  ;; to keep going.  This can be used to disallow a requests when
+  ;; to keep going.  This can be used to disallow requests when
   ;; 'request-rate-limit-reached?' returns true, for instance.
   (make-parameter (const #t)))
 
@@ -194,7 +207,7 @@ Software Heritage."
     (string->uri url))
 
   (define reset-time
-    (if (and (eq? method http-post)
+    (if (and (eq? method http-post*)
              (string-prefix? "/api/1/origin/save/" (uri-path uri)))
         %save-rate-limit-reset-time
         %general-rate-limit-reset-time))
@@ -207,21 +220,23 @@ RESPONSE."
   (let ((uri (string->uri url)))
     (match (assq-ref (response-headers response) 'x-ratelimit-reset)
       ((= string->number (? number? reset))
-       (if (and (eq? method http-post)
+       (if (and (eq? method http-post*)
                 (string-prefix? "/api/1/origin/save/" (uri-path uri)))
            (set! %save-rate-limit-reset-time reset)
            (set! %general-rate-limit-reset-time reset)))
       (_
        #f))))
 
-(define* (call url decode #:optional (method http-get)
+(define* (call url decode #:optional (method http-get*)
                #:key (false-if-404? #t))
   "Invoke the endpoint at URL using METHOD.  Decode the resulting JSON body
 using DECODE, a one-argument procedure that takes an input port.  When
 FALSE-IF-404? is true, return #f upon 404 responses."
   (and ((%allow-request?) url method)
        (let*-values (((response port)
-                      (method url #:streaming? #t)))
+                      (method url #:streaming? #t
+                              #:verify-certificate?
+                              (%verify-swh-certificate?))))
          ;; See <https://archive.softwareheritage.org/api/#rate-limiting>.
          (match (assq-ref (response-headers response) 'x-ratelimit-remaining)
            (#f #t)
@@ -466,7 +481,7 @@ directory entries; if it has type 'file, return its <content> object."
 (define* (save-origin url #:optional (type "git"))
   "Request URL to be saved."
   (call (swh-url "/api/1/origin/save" type "url" url) json->save-reply
-        http-post))
+        http-post*))
 
 (define-query (save-origin-status url type)
   "Return the status of a /save request for URL and TYPE (e.g., \"git\")."
@@ -488,7 +503,7 @@ directory entries; if it has type 'file, return its <content> object."
 to the vault.  Return a <vault-reply>."
   (call (swh-url "/api/1/vault" (symbol->string kind) id)
         json->vault-reply
-        http-post))
+        http-post*))
 
 (define* (vault-fetch id kind
                       #:key (log-port (current-error-port)))
@@ -507,8 +522,10 @@ revision, it is a gzip-compressed stream for 'git fast-import'."
          ('done
           ;; Fetch the bundle.
           (let-values (((response port)
-                        (http-get (swh-url (vault-reply-fetch-url reply))
-                                  #:streaming? #t)))
+                        (http-get* (swh-url (vault-reply-fetch-url reply))
+                                   #:streaming? #t
+                                   #:verify-certificate?
+                                   (%verify-swh-certificate?))))
             (if (= (response-code response) 200)
                 port
                 (begin                            ;shouldn't happen

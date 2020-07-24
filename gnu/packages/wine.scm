@@ -76,7 +76,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "5.3")
+    (version "5.12")
     (source
      (origin
        (method url-fetch)
@@ -88,7 +88,7 @@
               (string-append "https://dl.winehq.org/wine/source/" dir
                              "wine-" version ".tar.xz")))
        (sha256
-        (base32 "1pkzj3656ad0vmc7ciwfzn45lb2kxwbyymfwnqaa105dicicf6wv"))))
+        (base32 "0bl4ii4h1w4z8kb6dpdc1pgwk0wrhm61c2q2nzpcckkrqra75wc7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -328,7 +328,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "5.8")
+    (version "5.12.1")
     (source
      (origin
        (method git-fetch)
@@ -337,7 +337,7 @@ integrate Windows applications into your desktop.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07i11alcymkfj1vgadcxd6khvjk1ay0x2dddwrvnc4gag9lvkddr"))))
+        (base32 "135ddf4zsxwbi0nhvjpqfvqjrh18f3c6hmhcsbm5mc8zmpjpmzdj"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
@@ -375,19 +375,20 @@ integrate Windows applications into your desktop.")
     (name "wine-staging")
     (version (package-version wine-staging-patchset-data))
     (source
-     (origin
-       (method url-fetch)
-       (uri (let ((dir (string-append
-                        (version-major version)
-                        (if (string-suffix? ".0" (version-major+minor version))
-                            ".0"
-                            ".x"))))
-              (string-append
-               "https://dl.winehq.org/wine/source/" dir
-               "/wine-" version ".tar.xz")))
-       (file-name (string-append name "-" version ".tar.xz"))
-       (sha256
-        (base32 "1krk68lsfvisi0zpx7890cz0z5bp7jl7rka5d70vwyj3c7109bfb"))))
+     (let* ((wine-version (version-major+minor version))
+            (subdirectory (string-append
+                           (version-major version)
+                           (if (string-suffix? ".0" wine-version)
+                               ".0"
+                               ".x"))))
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://dl.winehq.org/wine/source/"
+                             subdirectory "/"
+                             "wine-" wine-version ".tar.xz"))
+         (file-name (string-append name "-" wine-version ".tar.xz"))
+         (sha256
+          (base32 "0bl4ii4h1w4z8kb6dpdc1pgwk0wrhm61c2q2nzpcckkrqra75wc7")))))
     (inputs `(("autoconf" ,autoconf)    ; for autoreconf
               ("ffmpeg" ,ffmpeg)
               ("gtk+" ,gtk+)

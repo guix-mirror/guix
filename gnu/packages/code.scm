@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@goebel-consult.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,8 @@
   #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graphviz)
@@ -235,7 +238,7 @@ COCOMO model or user-provided parameters.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/AlDanial/cloc.git")
+             (url "https://github.com/AlDanial/cloc")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -419,7 +422,7 @@ expressions, and its ability to generate emacs-style TAGS files.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cameronwhite/withershins.git")
+             (url "https://github.com/cameronwhite/withershins")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -479,7 +482,7 @@ stack traces.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/linux-test-project/lcov.git")
+                      (url "https://github.com/linux-test-project/lcov")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -522,6 +525,47 @@ textual @command{gcov} output to implement the following enhanced
 functionality such as HTML output.")
       (license license:gpl2+))))
 
+(define-public kcov
+  (package
+    (name "kcov")
+    (version "38")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/SimonKagstrom/kcov")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zqg21xwivi16csl6a5wby6679ny01bjaw4am3y4qcgjdyihifp8"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-/bin/bash-references
+           (lambda _
+             (substitute* (find-files "src" ".*\\.cc?$")
+               (("/bin/bash") (which "bash"))
+               (("/bin/sh") (which "sh")))
+             #t)))))
+    (inputs
+     `(("curl" ,curl)
+       ("elfutils" ,elfutils)
+       ("libelf" ,libelf)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("python" ,python)))
+    (home-page "https://github.com/SimonKagstrom/kcov")
+    (synopsis "Code coverage tester for compiled languages, Python and Bash")
+    (description "Kcov is a FreeBSD/Linux/OSX code coverage tester for compiled
+languages, Python and Bash.  Kcov was originally a fork of Bcov, but has since
+evolved to support a large feature set in addition to that of Bcov.
+
+Kcov uses DWARF debugging information for compiled programs to make it
+possible to collect coverage information without special compiler switches.")
+    (license license:gpl2+)))
+
 (define-public rtags
   (package
     (name "rtags")
@@ -530,7 +574,7 @@ functionality such as HTML output.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Andersbakken/rtags.git")
+             (url "https://github.com/Andersbakken/rtags")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (patches (search-patches "rtags-separate-rct.patch"))
@@ -582,7 +626,7 @@ importantly we give you proper follow-symbol and find-references support.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pagekite/Colormake.git")
+             (url "https://github.com/pagekite/Colormake")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -632,7 +676,7 @@ produce colored output.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/lindenb/makefile2graph.git")
+             (url "https://github.com/lindenb/makefile2graph")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256

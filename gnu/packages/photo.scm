@@ -55,6 +55,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
@@ -63,6 +64,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages opencl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -171,14 +173,14 @@ cards and generate meaningful file and folder names.")
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.19.5")
+    (version "0.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1x827sh6vl8j3ll2ihkcr234y07f31hi1v7sl08jfw3irkbn58j0"))))
+                "18wlsvj6c1rv036ph3695kknpgzc3lk2ikgshy8417yfl8ykh2hz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -480,7 +482,13 @@ photographic equipment.")
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "CC" "clang") (setenv "CXX" "clang++")))
+             (setenv "CC" "clang") (setenv "CXX" "clang++")
+             ;; Darktable looks for opencl-c.h in the LLVM dir. Guix installs
+             ;; it to the Clang dir. We fix this by patching CMakeLists.txt.
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{LLVM_INSTALL_PREFIX\\}")
+                (assoc-ref %build-inputs "clang")))
+             #t))
          (add-before 'configure 'set-LDFLAGS-and-CPATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "LDFLAGS"
@@ -508,7 +516,8 @@ photographic equipment.")
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
-       ("llvm" ,llvm)
+       ("llvm" ,llvm-9) ;should match the Clang version
+       ("opencl-headers" ,opencl-headers)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("po4a" ,po4a)))
@@ -520,6 +529,7 @@ photographic equipment.")
        ("dbus-glib" ,dbus-glib)
        ("exiv2" ,exiv2)
        ("freeimage" ,freeimage)
+       ("gmic" ,gmic)
        ("graphicsmagick" ,graphicsmagick)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
@@ -539,7 +549,7 @@ photographic equipment.")
        ("libwebp" ,libwebp)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("lua" ,lua)
+       ("lua" ,lua) ;for plugins
        ("openexr" ,openexr)
        ("openjpeg" ,openjpeg)
        ("osm-gps-map" ,osm-gps-map)

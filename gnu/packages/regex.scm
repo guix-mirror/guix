@@ -30,7 +30,7 @@
 (define-public re2
    (package
      (name "re2")
-     (version "2020-06-01")
+     (version "2020-07-06")
      (home-page "https://github.com/google/re2")
      (source (origin
                (method git-fetch)
@@ -38,16 +38,7 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "10jdgnp5dvkj3ay7grmdy539vv1srglnfxaqc5kb9v53cbql5hm8"))
-               (modules '((guix build utils)))
-               (snippet
-                '(begin
-                   ;; Fix test failure on 32-bit platforms, see
-                   ;; <https://github.com/google/re2/issues/256>.
-                   (substitute* "re2/testing/compile_test.cc"
-                     (("re->CompileToProg\\(920\\)")
-                      "re->CompileToProg(850)"))
-                   #t))))
+                 "12a9r9y7ry3hq0qf4znl9j7pn9mb5k6xp1f8nrk1sagfj1a504mq"))))
      (build-system gnu-build-system)
      (arguments
       `(#:modules ((guix build gnu-build-system)

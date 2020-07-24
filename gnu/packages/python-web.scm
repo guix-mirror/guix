@@ -187,7 +187,7 @@ aiohttp.  It supports SOCKS4(a) and SOCKS5.")
      `(("python-pycares" ,python-pycares)))
     (arguments
      `(#:tests? #f))                    ;tests require internet access
-    (home-page "http://github.com/saghul/aiodns")
+    (home-page "https://github.com/saghul/aiodns")
     (synopsis "Simple DNS resolver for asyncio")
     (description "@code{aiodns} provides a simple way for doing
 asynchronous DNS resolutions with a synchronous looking interface by
@@ -372,14 +372,14 @@ other HTTP libraries.")
 (define-public httpie
   (package
     (name "httpie")
-    (version "2.0.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "httpie" version))
        (sha256
         (base32
-         "02bw20cwv3a1lzrn919dk25dq4v81x6q786zlrqsqzhsdxszj14c"))))
+         "18058k0i3cc4ixvgzj882w693lf40283flvspbrvd876iq42ib1i"))))
     (build-system python-build-system)
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run them.
@@ -608,14 +608,14 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 (define-public python-pycurl
   (package
     (name "python-pycurl")
-    (version "7.43.0.2")
+    (version "7.43.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.bintray.com/pycurl/pycurl/pycurl-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1915kb04k1j4y6k1dx1sgnbddxrl9r1n4q928if2lkrdm73xy30g"))))
+        (base32 "1cwlb76vddqp2mxqvjbhf367caddzy82rhangddjjhjqaj8x4zgc"))))
     (build-system python-build-system)
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run
@@ -1087,17 +1087,21 @@ dispatching systems can be built.")
 (define-public python-zope-interface
   (package
     (name "python-zope-interface")
-    (version "4.7.2")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.interface" version))
        (sha256
         (base32
-         "0r9kvb1q3lxrdhxabliv9nwhjsdmn1n0vcjv93rlqkyb7yyh24gx"))))
+         "03nrl6b8cb600dnnh46y149awvrm0gxyqgwq5hdw3lvys8mw9r20"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; test suite can't find python-zope-testing
     (native-inputs
-     `(("python-zope-event" ,python-zope-event)))
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)
+       ("python-zope-event" ,python-zope-event)
+       ("python-zope-testing" ,python-zope-testing)))
     (home-page "https://github.com/zopefoundation/zope.interface")
     (synopsis "Python implementation of the \"design by contract\"
 methodology")
@@ -1112,17 +1116,23 @@ conforming to a given API or contract.")
 (define-public python-zope-exceptions
   (package
     (name "python-zope-exceptions")
-    (version "4.3")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.exceptions" version))
        (sha256
         (base32
-         "04bjskwas17yscl8bs3l44maxspw1gdji0zcmr499fs420y9r9az"))))
+         "1nkgfwawswmyc6i0b8g3ymvja4mb507m8yhid8s4rbxq3dmqhwhd"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f))                ; circular dependency with zope.testrunner
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "zope-testrunner" "--test-path=src"))))))
+    (native-inputs
+     `(("python-zope-testrunner" ,python-zope-testrunner-bootstrap)))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
     (home-page "https://pypi.org/project/zope.exceptions/")
@@ -1130,6 +1140,14 @@ conforming to a given API or contract.")
     (description "Zope.exceptions provides general-purpose exception types
 that have uses outside of the Zope framework.")
     (license license:zpl2.1)))
+
+(define-public python-zope-exceptions-bootstrap
+  (package
+    (inherit python-zope-exceptions)
+    (arguments `(#:tests? #f))
+    (propagated-inputs `())
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
 
 (define-public python2-zope-exceptions
   (package-with-python2 python-zope-exceptions))
@@ -1158,14 +1176,14 @@ forms, HTTP servers, regular expressions, and more.")
 (define-public python-zope-testrunner
   (package
     (name "python-zope-testrunner")
-    (version "5.1")
+    (version "5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.testrunner" version))
        (sha256
         (base32
-         "0w3q66cy4crpj7c0hw0vvvvwf3g931rnvw7wwa20av7yqvv6ajim"))))
+         "0jyyf1dcz156q95x2y7yw2v420q2xn3cff0c5aci7hmdmcbn0gc7"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
@@ -1180,6 +1198,15 @@ forms, HTTP servers, regular expressions, and more.")
     (description "Zope.testrunner provides a script for running Python
 tests.")
     (license license:zpl2.1)))
+
+(define-public python-zope-testrunner-bootstrap
+  (package
+    (inherit python-zope-testrunner)
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-zope-exceptions" ,python-zope-exceptions-bootstrap)))
+    (properties `((hidden? . #t)))))
 
 (define-public python2-zope-testrunner
   (package-with-python2 python-zope-testrunner))
@@ -1213,17 +1240,24 @@ internationalized messages within program source text.")
 (define-public python-zope-schema
   (package
     (name "python-zope-schema")
-    (version "5.0.1")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.schema" version))
        (sha256
         (base32
-         "0q93j0x52a42khw12al90jw2bk0wly3jwghql3a25zpwwxvn24ya"))))
+          "09jg47bxhfg1ahr1jxb5y0cbiszyk1j6fn1r1r7s6svjl3lbryr0"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; FIXME: Tests can't find zope.event.
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (if tests?
+               (invoke "zope-testrunner" "--test-path=src")
+               #t))))))
     (propagated-inputs
      `(("python-zope-event" ,python-zope-event)
        ("python-zope-interface" ,python-zope-interface)))
@@ -1243,18 +1277,17 @@ defining data schemas.")
 (define-public python-zope-configuration
   (package
     (name "python-zope-configuration")
-    (version "4.3.1")
+    (version "4.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "zope.configuration" version))
               (sha256
                (base32
-                "1qb88764fd7nkkmqv7fl9bxd1jirynkg5vbqkpqdiffnkxzp85kf"))))
+                "0g6vrl7y27z9cj5xyrww9xlzk4npj55mgmlrcd9d2nj08jn2pw79"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (native-inputs
-     `(("python-zope-testing" ,python-zope-testing)
+     `(("python-manuel" ,python-manuel)
+       ("python-zope-testing" ,python-zope-testing)
        ("python-zope-testrunner" ,python-zope-testrunner)))
     (propagated-inputs
      `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
@@ -1266,25 +1299,62 @@ defining data schemas.")
 Markup Language.")
     (license license:zpl2.1)))
 
+(define-public python-zope-configuration-bootstrap
+  (package
+    (inherit python-zope-configuration)
+    (arguments `(#:tests? #f))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-configuration
   (package-with-python2 python-zope-configuration))
+
+(define-public python-zope-copy
+  (package
+    (name "python-zope-copy")
+    (version "4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "zope.copy" version))
+        (sha256
+         (base32
+          "06m75434krl57n6p73c2qj55k5i3fixg887j8ss01ih6zw4rvfs7"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "zope-testrunner" "--test-path=src" "\\[]"))))))
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-zope-component" ,python-zope-component-bootstrap)
+       ("python-zope-location" ,python-zope-location-bootstrap)
+       ("python-zope-testing" ,python-zope-testing)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
+    (home-page "https://github.com/zopefoundation/zope.copy")
+    (synopsis "Pluggable object copying mechanism")
+    (description
+     "This package provides a pluggable mechanism for copying persistent objects.")
+    (license license:zpl2.1)))
 
 (define-public python-zope-proxy
   (package
     (name "python-zope-proxy")
-    (version "4.3.4")
+    (version "4.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.proxy" version))
        (sha256
         (base32
-         "1g0rcfnbchpvqhm76aixqlz544dawrgmy8gw9zwmijhk6wfl9f26"))))
+         "14h7nyfbl5vpfk0rbviy4ygdfx0yx5kncvg6jpbdb0dhwna0ssm6"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (native-inputs
-     `(("python-zope-testrunner" ,python-zope-testrunner)))
+     `(("python-zope-security" ,python-zope-security-bootstrap)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
     (home-page "https://pypi.org/project/zope.proxy/")
@@ -1296,8 +1366,40 @@ only when necessary to apply the policy (e.g., access checking, location
 brokering, etc.) for which the proxy is responsible.")
     (license license:zpl2.1)))
 
+(define-public python-zope-proxy-bootstrap
+  (package
+    (inherit python-zope-proxy)
+    (arguments `(#:tests? #f))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-proxy
   (package-with-python2 python-zope-proxy))
+
+(define-public python-zope-hookable
+  (package
+    (name "python-zope-hookable")
+    (version "5.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "zope.hookable" version))
+        (sha256
+         (base32
+          "0hc82lfr7bk53nvbxvjkibkarngyrzgfk2i6bg8wshl0ly0pdl19"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-zope-testing" ,python-zope-testing)))
+    (home-page "https://github.com/zopefoundation/zope.hookable")
+    (synopsis "Zope hookable")
+    (description "This package supports the efficient creation of hookable
+objects, which are callable objects that are meant to be optionally replaced.
+The idea is that you create a function that does some default thing and make i
+hookable.  Later, someone can modify what it does by calling its sethook method
+and changing its implementation.  All users of the function, including those
+that imported it, will see the change.")
+    (license license:zpl2.1)))
 
 (define-public python-zope-location
   (package
@@ -1325,23 +1427,28 @@ brokering, etc.) for which the proxy is responsible.")
 Zope3, which are are special objects that have a structural location.")
     (license license:zpl2.1)))
 
+(define-public python-zope-location-bootstrap
+  (package
+    (inherit python-zope-location)
+    (arguments `(#:tests? #f))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-location
   (package-with-python2 python-zope-location))
 
 (define-public python-zope-security
   (package
     (name "python-zope-security")
-    (version "5.1.0")
+    (version "5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.security" version))
        (sha256
         (base32
-         "1npfrgnm202v48wavpwn3450dsn7az12lfww95vbhxyjl11f14yb"))))
+         "11lfw67cigscfax9c5j63xcvz2qcj724zx5fcdqyc94am2glim0h"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; FIXME: Tests can't find zope.testrunner.
     (propagated-inputs
      `(("python-zope-component" ,python-zope-component)
        ("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
@@ -1350,14 +1457,29 @@ Zope3, which are are special objects that have a structural location.")
        ("python-zope-proxy" ,python-zope-proxy)
        ("python-zope-schema" ,python-zope-schema)))
     (native-inputs
-     `(("python-zope-configuration" ,python-zope-configuration)
-       ("python-zope-testrunner" ,python-zope-testrunner)
-       ("python-zope-testing" ,python-zope-testing)))
+     `(("python-btrees" ,python-btrees)
+       ("python-zope-component" ,python-zope-component-bootstrap)
+       ("python-zope-configuration" ,python-zope-configuration-bootstrap)
+       ("python-zope-location" ,python-zope-location-bootstrap)
+       ("python-zope-testing" ,python-zope-testing)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
     (home-page "https://pypi.org/project/zope.security/")
     (synopsis "Zope security framework")
     (description "Zope.security provides a generic mechanism to implement
 security policies on Python objects.")
     (license license:zpl2.1)))
+
+(define-public python-zope-security-bootstrap
+  (package
+    (inherit python-zope-security)
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
+       ("python-zope-interface" ,python-zope-interface)
+       ("python-zope-proxy" ,python-zope-proxy-bootstrap)
+       ("python-zope-schema" ,python-zope-schema)))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
 
 (define-public python2-zope-security
   (package-with-python2 python-zope-security))
@@ -1365,25 +1487,37 @@ security policies on Python objects.")
 (define-public python-zope-component
   (package
     (name "python-zope-component")
-    (version "4.3.0")
+    (version "4.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.component" version))
        (sha256
         (base32
-         "1hlvzwj1kcfz1qms1dzhwsshpsf38z9clmyksb1gh41n8k3kchdv"))))
+         "14iwp95hh6q5dj4k9h1iw75cbp89bs27nany4dinyglb44c8jqli"))))
     (build-system python-build-system)
     (arguments
-     ;; Skip tests due to circular dependency with python-zope-security.
-     '(#:tests? #f))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "setup.py" "test"))))))
     (native-inputs
-     `(("python-zope-testing" ,python-zope-testing)))
-    (propagated-inputs
-     `(("python-zope-event" ,python-zope-event)
-       ("python-zope-interface" ,python-zope-interface)
+     `(("python-persistent" ,python-persistent)
+       ("python-zope-configuration" ,python-zope-configuration-bootstrap)
        ("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
-       ("python-zope-configuration" ,python-zope-configuration)))
+       ("python-zope-location" ,python-zope-location-bootstrap)
+       ("python-zope-proxy" ,python-zope-proxy-bootstrap)
+       ("python-zope-security" ,python-zope-security-bootstrap)
+       ("python-zope-testing" ,python-zope-testing)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
+    (propagated-inputs
+     `(("python-zope-deferredimport" ,python-zope-deferredimport)
+       ("python-zope-deprecation" ,python-zope-deprecation)
+       ("python-zope-event" ,python-zope-event)
+       ("python-zope-hookable" ,python-zope-hookable)
+       ("python-zope-interface" ,python-zope-interface)))
     (home-page "https://github.com/zopefoundation/zope.component")
     (synopsis "Zope Component Architecture")
     (description "Zope.component represents the core of the Zope Component
@@ -1391,8 +1525,41 @@ Architecture.  Together with the zope.interface package, it provides
 facilities for defining, registering and looking up components.")
     (license license:zpl2.1)))
 
+(define-public python-zope-component-bootstrap
+  (package
+    (inherit python-zope-component)
+    (arguments `(#:tests? #f))
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python2-zope-component
   (package-with-python2 python-zope-component))
+
+(define-public python-zope-deferredimport
+  (package
+    (name "python-zope-deferredimport")
+    (version "4.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "zope.deferredimport" version))
+        (sha256
+         (base32
+          "1q89v54dwniiqypjbwywwdfjdr4kdkqlyqsgrpplgvsygdg39cjp"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-zope-proxy" ,python-zope-proxy)))
+    (native-inputs
+     `(("python-zope-testrunner" ,python-zope-testrunner)))
+    (home-page "https://github.com/zopefoundation/zope.deferredimport")
+    (synopsis "Defer imports until used by code")
+    (description
+     "Often, especially for package modules, you want to import names for
+convenience, but not actually perform the imports until necessary.  The
+@code{zope.deferredimport} package provided facilities for defining names in
+modules that will be imported from somewhere else when used.  You can also cause
+deprecation warnings to be issued when a variable is used.")
+    (license license:zpl2.1)))
 
 (define-public python-ndg-httpsclient
   (package
@@ -2015,7 +2182,9 @@ library.")
      `(("python-gevent" ,python-gevent)
        ("python-requests" ,python-requests)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)
+       ("python-zope.interface" ,python-zope-interface)
+       ("python-zope.event" ,python-zope-event)))
     (home-page "https://github.com/kennethreitz/grequests")
     (synopsis "Python library for asynchronous HTTP requests")
     (description "GRequests is a Python library that allows you to use
@@ -2371,7 +2540,7 @@ pretty printer and a tree visitor.")
        ("python-itsdangerous" ,python-itsdangerous)
        ("python-passlib" ,python-passlib)
        ("python-tox" ,python-tox)))
-    (home-page "http://github.com/carsongee/flask-htpasswd")
+    (home-page "https://github.com/carsongee/flask-htpasswd")
     (synopsis "Basic authentication via htpasswd files in Flask applications")
     (description "This package provides Basic authentication via
 @file{htpasswd} files and access_token authentication in Flask
@@ -2535,7 +2704,7 @@ on the command line.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/maxcountryman/flask-login.git")
+             (url "https://github.com/maxcountryman/flask-login")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2767,7 +2936,7 @@ for Flask programs that are using @code{python-alembic}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/edgewall/genshi.git")
+             (url "https://github.com/edgewall/genshi")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -2948,14 +3117,14 @@ addon modules.")
 (define-public python-bottle
   (package
     (name "python-bottle")
-    (version "0.12.13")
+    (version "0.12.18")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "bottle" version))
       (sha256
         (base32
-          "0m9k2a7yxvggc4kw8fsvj381vgsvfcdshg5nzy6vwrxiw2p53drr"))))
+          "17pn43kzr7m6czjbm4nda7kzs4ap9mmb30qfbhifyzas2i5vf688"))))
     (build-system python-build-system)
     (home-page "http://bottlepy.org/")
     (synopsis "WSGI framework for small web-applications.")
@@ -3109,7 +3278,7 @@ more.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;tests require internet access
-    (home-page "http://github.com/saghul/pycares")
+    (home-page "https://github.com/saghul/pycares")
     (synopsis "Python interface for @code{c-ares}")
     (description "@code{pycares} is a Python module which provides an
 interface to @code{c-ares}, a C library that performs DNS requests and
@@ -3414,6 +3583,7 @@ library to create slugs from unicode strings while keeping it DRY.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "tinycss2" version))
+       (patches (search-patches "python-tinycss2-flake8-compat.patch"))
        (sha256
         (base32 "1kw84y09lggji4krkc58jyhsfj31w8npwhznr7lf19d0zbix09v4"))))
     (build-system python-build-system)
@@ -3539,8 +3709,8 @@ and fairly speedy.")
   (package
     (inherit gunicorn)
     (name "gunicorn")
-	(arguments `(#:tests? #f))
-	(properties '((hidden? . #t)))
+    (arguments `(#:tests? #f))
+    (properties '((hidden? . #t)))
     (native-inputs `())))
 
 (define-public python-translation-finder
@@ -4081,4 +4251,150 @@ REST APIs.  Flask-RESTX encourages best practices with minimal setup.  If you ar
  with Flask, Flask-RESTX should be easy to pick up.  It provides a coherent collection of
 decorators and tools to describe your API and expose its documentation properly using
 Swagger.")
+    (license license:bsd-3)))
+
+(define-public python-manuel
+  (package
+    (name "python-manuel")
+    (version "1.10.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "manuel" version))
+        (sha256
+         (base32
+          "1bdzay7j70fly5fy6wbdi8fbrxjrrlxnxnw226rwry1c8a351rpy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-zope-testing" ,python-zope-testing)))
+    (home-page "https://pypi.org/project/manuel/")
+    (synopsis "Build tested documentation")
+    (description
+     "Manuel lets you mix and match traditional doctests with custom test syntax.")
+    (license license:asl2.0)))
+
+(define-public python-persistent
+  (package
+    (name "python-persistent")
+    (version "4.6.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "persistent" version))
+        (sha256
+         (base32
+          "0imm9ji03lhkpcfmhid7x5209ix8g2rlgki9ik1qxks4b8sm8gzq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-manuel" ,python-manuel)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
+    (home-page "https://github.com/zopefoundation/persistent/")
+    (synopsis "Translucent persistent objects")
+    (description "This package contains a generic persistence implementation for
+Python.  It forms the core protocol for making objects interact
+\"transparently\" with a database such as the ZODB.")
+    (license license:zpl2.1)))
+
+(define-public python-btrees
+  (package
+    (name "python-btrees")
+    (version "4.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "BTrees" version))
+        (sha256
+         (base32
+          "0iiq0g9k1g6qgqq84q9h6639vlvzznk1rgdm0rfcnnqkbkmsbr3w"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-persistent" ,python-persistent)
+       ("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-persistent" ,python-persistent)
+       ("python-transaction" ,python-transaction)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
+    (home-page "https://github.com/zopefoundation/BTrees")
+    (synopsis "Scalable persistent object containers")
+    (description
+     "This package contains a set of persistent object containers built around a
+modified BTree data structure.  The trees are optimized for use inside ZODB's
+\"optimistic concurrency\" paradigm, and include explicit resolution of
+conflicts detected by that mechanism.")
+    (license license:zpl2.1)))
+
+(define-public python-transaction
+  (package
+    (name "python-transaction")
+    (version "3.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "transaction" version))
+        (sha256
+         (base32
+          "0bdaks31bgfh78wnj3sij24bfysmqk25crsis6amz8kzrc0d82iv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/zopefoundation/transaction")
+    (synopsis "Transaction management for Python")
+    (description "This package contains a generic transaction implementation
+for Python.  It is mainly used by the ZODB.")
+    (license license:zpl2.1)))
+
+(define-public python-robot-detection
+  (package
+    (name "python-robot-detection")
+    (version "0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "robot-detection" version))
+        (sha256
+         (base32
+          "1xd2jm3yn31bnk1kqzggils2rxj26ylxsfz3ap7bhr3ilhnbg3rx"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; Tests not shipped in pypi release.
+    (propagated-inputs `(("python-six" ,python-six)))
+    (home-page "https://github.com/rory/robot-detection")
+    (synopsis "Detect web crawlers")
+    (description
+     "@code{robot_detection} is a python module to detect if a given HTTP User
+Agent is a web crawler.  It uses the list of registered robots from
+@url{http://www.robotstxt.org}.")
+    (license license:gpl3+)))
+
+(define-public python-pysolr
+  (package
+    (name "python-pysolr")
+    (version "3.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pysolr" version))
+        (sha256
+         (base32
+          "1rj5jmscvxjwcmlfi6hmkj44l4x6n3ln5p7d8d18j566hzmmzw3f"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; Tests require network access.
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/django-haystack/pysolr/")
+    (synopsis "Lightweight python wrapper for Apache Solr")
+    (description
+     "This module provides an interface that queries the Apache Solr server
+using a pure Python implementation.")
     (license license:bsd-3)))

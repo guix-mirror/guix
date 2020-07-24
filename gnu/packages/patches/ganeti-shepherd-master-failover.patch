@@ -1,0 +1,18 @@
+By default, master-failover will call "herd start ganeti-wconfd" with
+extra arguments such as --force-node.  That does not work with the
+Shepherd, so the Guix service has a "force-start" action for this purpose.
+
+diff --git a/lib/bootstrap.py b/lib/bootstrap.py
+--- a/lib/bootstrap.py
++++ b/lib/bootstrap.py
+@@ -1011,9 +1011,7 @@ def MasterFailover(no_voting=False):
+ 
+   try:
+     # Forcefully start WConfd so that we can access the configuration
+-    result = utils.RunCmd([pathutils.DAEMON_UTIL,
+-                           "start", constants.WCONFD, "--force-node",
+-                           "--no-voting", "--yes-do-it"])
++    result = utils.RunCmd(["herd", "force-start", constants.WCONFD])
+     if result.failed:
+       raise errors.OpPrereqError("Could not start the configuration daemon,"
+                                  " command %s had exitcode %s and error %s" %

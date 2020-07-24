@@ -354,7 +354,7 @@ curses-style interfaces.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/masmu/pulseaudio-dlna.git")
+               (url "https://github.com/masmu/pulseaudio-dlna")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -403,7 +403,7 @@ install one or more of the following packages alongside pulseaudio-dlna:
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/cdemoulins/pamixer.git")
+             (url "https://github.com/cdemoulins/pamixer")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -438,7 +438,7 @@ volume levels of the sinks (get, set, decrease, increase, toggle mute, etc).")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/christophgysin/pasystray.git")
+             (url "https://github.com/christophgysin/pasystray")
              (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256

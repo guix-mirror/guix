@@ -88,7 +88,7 @@ and freshness without requiring additional information from the user.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ldc-developers/ldc.git")
+               (url "https://github.com/ldc-developers/ldc")
                (commit (string-append "v" version))))
          (file-name (git-file-name name version))
          (sha256
@@ -156,7 +156,7 @@ and freshness without requiring additional information from the user.")
           ,(origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/ldc-developers/phobos.git")
+                   (url "https://github.com/ldc-developers/phobos")
                    (commit (string-append "ldc-v" version))))
              (file-name (git-file-name "phobos" version))
              (sha256
@@ -166,7 +166,7 @@ and freshness without requiring additional information from the user.")
           ,(origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/ldc-developers/druntime.git")
+                   (url "https://github.com/ldc-developers/druntime")
                    (commit (string-append "ldc-v" version))))
              (file-name (git-file-name "druntime" version))
              (sha256
@@ -175,7 +175,7 @@ and freshness without requiring additional information from the user.")
           ,(origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/ldc-developers/dmd-testsuite.git")
+                   (url "https://github.com/ldc-developers/dmd-testsuite")
                    (commit (string-append "ldc-v" version))))
              (file-name (git-file-name "dmd-testsuite" version))
              (sha256
@@ -206,7 +206,7 @@ bootstrapping more recent compilers written in D.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/ldc-developers/ldc.git")
+               (url "https://github.com/ldc-developers/ldc")
                (commit (string-append "v" version))))
          (file-name (git-file-name name version))
          (sha256
@@ -273,7 +273,7 @@ bootstrapping more recent compilers written in D.")
           ,(origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/ldc-developers/phobos.git")
+                   (url "https://github.com/ldc-developers/phobos")
                    (commit (string-append "ldc-v" older-version))))
              (file-name (git-file-name "phobos" older-version))
              (sha256
@@ -292,7 +292,7 @@ bootstrapping more recent compilers written in D.")
           ,(origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/ldc-developers/druntime.git")
+                   (url "https://github.com/ldc-developers/druntime")
                    (commit (string-append "ldc-v" older-version))))
              (file-name (git-file-name "druntime" older-version))
              (sha256
@@ -301,7 +301,7 @@ bootstrapping more recent compilers written in D.")
           ,(origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/ldc-developers/dmd-testsuite.git")
+                   (url "https://github.com/ldc-developers/dmd-testsuite")
                    (commit (string-append "ldc-v" older-version))))
              (file-name (git-file-name "dmd-testsuite" older-version))
              (sha256
@@ -315,7 +315,7 @@ bootstrapping more recent compilers written in D.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/dlang/dub.git")
+             (url "https://github.com/dlang/dub")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
