@@ -36,7 +36,7 @@
 (define-public pciutils
   (package
     (name "pciutils")
-    (version "3.6.4")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -45,7 +45,7 @@
               (patches (search-patches "pciutils-hurd-configure.patch"))
               (sha256
                (base32
-                "0mb0f2phdcmp4kfiqsszn2k6nlln0w160ffzrjjv4bbfjwrgfzzn"))))
+                "1ss0rnfsx8gvqjxaji4mvbhf9xyih4cadmgadbwwv8mnx1xvjh4x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
