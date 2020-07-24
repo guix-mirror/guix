@@ -17578,6 +17578,38 @@ Let's Encrypt.")
 (define-public python2-dns-lexicon
   (package-with-python2 python-dns-lexicon))
 
+(define-public python-cfgv
+  (package
+    (name "python-cfgv")
+    (version "3.1.0")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asottile/cfgv")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vvkkqw92sak4b28bpscpppq483amy52ch2yqy1i2m23q7xjkabx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-covdefaults" ,python-covdefaults)
+       ("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/asottile/cfgv")
+    (synopsis "Configuration validation library")
+    (description
+     "This library helps to validate configuration files and produce human
+readable error messages.")
+    (license license:expat)))
+
 (define-public python-commandlines
   (package
     (name "python-commandlines")
