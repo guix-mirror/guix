@@ -311,6 +311,37 @@ internet.")
 in Pytest.")
     (license license:bsd-3)))
 
+(define-public python-covdefaults
+  (package
+    (name "python-covdefaults")
+    (version "1.1.0")
+    (source
+     (origin
+       ;; The PyPI tarball does not include tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asottile/covdefaults")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11a24c0wzv01n55fy4kdpnyqna4m9k0mp58kmhiaks34xw4k37hq"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/asottile/covdefaults")
+    (synopsis "Coverage plugin to provide opinionated default settings")
+    (description
+     "Covdefaults is a coverage plugin to provide opinionated default
+ settings.")
+    (license license:expat)))
+
 (define-public python-pytest-vcr
   ;; This commit fixes integration with pytest-5
   (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
