@@ -2466,7 +2466,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.8.0")
+    (version "1.9.1")
     (source
      (origin
        (method url-fetch)
@@ -2474,7 +2474,7 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "04a2klvii0in9ln8r85mk2cm73jq8ry2m3yzmf2z8xyjxzjcmlr0"))))
+         "1jvsphdrs1i54ccjcn6ll26jy42am7h28lbsvwa6pmxgqm43qq7m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
