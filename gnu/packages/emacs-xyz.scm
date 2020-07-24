@@ -8083,7 +8083,7 @@ window edge.")
 (define-public emacs-writeroom
   (package
     (name "emacs-writeroom")
-    (version "3.9")
+    (version "3.10")
     (source
      (origin
        (method git-fetch)
@@ -8093,7 +8093,7 @@ window edge.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1nrppnfqsaki6myp58w8jhmzb94rzskh5n98glcn4ghr8sqnafi8"))))
+         "0la4q2dm123l4rdfh0ry03b99ihvh324y7iw12az909198bcx335"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
