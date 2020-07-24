@@ -8350,7 +8350,7 @@ for search-based navigation of buffers.")
 (define-public emacs-helm-ag
   (package
     (name "emacs-helm-ag")
-    (version "0.59")
+    (version "0.62")
     (source
      (origin
        (method git-fetch)
@@ -8359,7 +8359,7 @@ for search-based navigation of buffers.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vsz2b5qw4qahlf74059z4p1grinhfz28f0psw4c3qf4jasv3b9j"))))
+        (base32 "0xgbpp8xqdiyvfs64x0q909g77ml28z3irw2lnasvpsg0dfdm2zy"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
