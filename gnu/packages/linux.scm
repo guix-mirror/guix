@@ -5711,7 +5711,14 @@ of flash storage.")
                 "1wql62cg8f95cwpy057cl764nni9g4sdn5lqj68x22kjs8w71yhz"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--disable-static")))
+     '(#:configure-flags '("--disable-static")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'skip-load-test
+                    (lambda _
+                      ;; This test does a native system call and fails when
+                      ;; run under QEMU user-mode emulation.  Just skip it.
+                      (delete-file "tests/52-basic-load.tests")
+                      #t)))))
     (native-inputs
      `(("gperf" ,gperf)
        ("which" ,which)))
