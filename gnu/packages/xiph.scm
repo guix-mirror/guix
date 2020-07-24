@@ -86,14 +86,14 @@ periodic timestamps for seeking.")
 (define libvorbis
   (package
    (name "libvorbis")
-   (version "1.3.6")
+   (version "1.3.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://downloads.xiph.org/releases/vorbis/"
                                 "libvorbis-" version ".tar.xz"))
             (sha256
              (base32
-              "05dlzjkdpv46zb837wysxqyn8l636x3dw8v8ymlrwz2fg1dbn05g"))))
+              "0jwmf87x5sdis64rbv0l87mdpah1rbilkkxszipbzg128f9w8g5k"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("libogg" ,libogg)))
    (arguments `(#:configure-flags '("LDFLAGS=-lm"
