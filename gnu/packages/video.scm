@@ -2509,7 +2509,7 @@ and JACK.")
 (define-public libvdpau
   (package
     (name "libvdpau")
-    (version "1.3")
+    (version "1.4")
     (source
       (origin
         (method git-fetch)
@@ -2519,7 +2519,7 @@ and JACK.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1fb1nh5apr9kzx9bm2lysjwpyva1s60b2l2p230nqgvb11q25hd2"))))
+          "1hc4mcrbr1yhfiy4zfd8wc2iiqbp90z6jswap0jia20vmyk5lqld"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
