@@ -514,6 +514,12 @@ Go.  It also includes runtime support libraries for these languages.")
 
     (inputs
      `(("isl" ,isl)
+
+       ;; XXX: This gross hack allows us to have libstdc++'s <bits/c++config.h>
+       ;; in the search path, thereby avoiding misconfiguration of libstdc++:
+       ;; <https://bugs.gnu.org/42392>.
+       ("libstdc++" ,libstdc++-headers)
+
        ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-7
@@ -607,6 +613,31 @@ using compilers other than GCC."
     (propagated-inputs '())
     (synopsis "GNU C++ standard library")))
 
+(define libstdc++
+  ;; Libstdc++ matching the default GCC.
+  (make-libstdc++ gcc))
+
+(define libstdc++-headers
+  ;; XXX: This package is for internal use to work around
+  ;; <https://bugs.gnu.org/42392> (see above).  The main difference compared
+  ;; to the libstdc++ headers that come with 'gcc' is that <bits/c++config.h>
+  ;; is right under include/c++ and not under
+  ;; include/c++/x86_64-unknown-linux-gnu (aka. GPLUSPLUS_TOOL_INCLUDE_DIR).
+  (package
+    (inherit libstdc++)
+    (name "libstdc++-headers")
+    (outputs '("out"))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:builder (let* ((out       (assoc-ref %outputs "out"))
+                        (libstdc++ (assoc-ref %build-inputs "libstdc++")))
+                   (mkdir out)
+                   (mkdir (string-append out "/include"))
+                   (symlink (string-append libstdc++ "/include")
+                            (string-append out "/include/c++")))))
+    (inputs `(("libstdc++" ,libstdc++)))
+    (synopsis "Headers of GNU libstdc++")))
+
 (define-public libstdc++-4.9
   (make-libstdc++ gcc-4.9))
 
@@ -689,7 +720,13 @@ as the 'native-search-paths' field."
 
 (define-public gfortran
   (hidden-package
-   (custom-gcc gcc "gfortran" '("fortran")
+   (custom-gcc (package
+                 (inherit gcc)
+                 ;; XXX: Remove LIBSTDC++-HEADERS from the inputs just to
+                 ;; avoid a rebuild of all the GFORTRAN dependents.
+                 ;; TODO: Remove this hack on the next rebuild cycle.
+                 (inputs (alist-delete "libstdc++" (package-inputs gcc))))
+               "gfortran" '("fortran")
                %generic-search-paths)))
 
 (define-public gdc-10
