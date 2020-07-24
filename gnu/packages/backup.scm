@@ -63,6 +63,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mcrypt)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
@@ -1096,6 +1097,7 @@ interractive mode.")
     (inputs
      `(("acl" ,acl)
        ("librsync" ,librsync)
+       ("ncurses" ,ncurses)             ; for the live status monitor
        ("openssl" ,openssl)
        ("uthash" ,uthash)
        ("zlib" ,zlib)))
