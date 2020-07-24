@@ -52,6 +52,7 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11668,3 +11669,40 @@ game.")  ;thanks to Debian for description
      "With PokerTH you can play the Texas holdem poker game, either against
 computer opponents or against real players online.")
     (license license:agpl3+)))
+
+(define-public azimuth
+  (package
+    (name "azimuth")
+    ;; Not marked as latest release, but it fixes a compiling issue
+    ;; and adds the install target.
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mdsteele/azimuth")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1znfvpmqiixd977jv748glk5zc4cmhw5813zp81waj07r9b0828r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         ;; Build release version instead of debug version.
+         (add-after 'unpack 'set-release
+           (lambda _
+             (setenv "BUILDTYPE" "release") #t))
+         (add-after 'unpack 'fix-install ; set install directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile" (("/usr") (assoc-ref outputs "out"))) #t)))))
+    (inputs `(("sdl" ,sdl)))
+    (home-page "https://mdsteele.games/azimuth/")
+    (synopsis "Metroidvania game with vector graphics")
+    (description
+     "Pilot your ship inside a planet to find and rescue the colonists trapped
+inside the Zenith Colony.")
+    (license license:gpl3+)))
