@@ -10480,14 +10480,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "17bd6r9ynp4hyfckkia0bb8gpd98f42jfl5rmzdpbld59bbcaf9i"))))
+         "09ywrmhr6gdyfx6d5727wwjnz73i6rklqcb4c14m7sqc830wi5c1"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
