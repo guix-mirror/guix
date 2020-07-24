@@ -673,6 +673,26 @@ service processes for your tests with pytest.")
      "This pytest plugin provides fixtures to simplify Flask app testing.")
     (license license:expat)))
 
+(define-public python-pytest-env
+  (package
+    (name "python-pytest-env")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-env" version))
+       (sha256
+        (base32 "1hl0ln0cicdid4qjk7mv90lw9xkb0v71dlj7q7rn89vzxxm9b53y"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/MobileDynasty/pytest-env")
+    (synopsis "Pytest plugin that allows you to add environment variables")
+    (description
+     "This is a @code{py.test} plugin that enables you to set environment
+variables in the @file{pytest.ini} file.")
+    (license license:expat)))
+
 (define-public python-codacy-coverage
   (package
     (name "python-codacy-coverage")
