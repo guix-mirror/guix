@@ -23,7 +23,7 @@
   #:use-module (guix records)
   #:use-module ((guix modules) #:hide (file-name->module-name))
   #:use-module (guix i18n)
-  #:use-module ((guix utils)
+  #:use-module ((guix diagnostics)
                 #:select (source-properties->location
                           &fix-hint
                           &error-location))

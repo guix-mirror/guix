@@ -29,7 +29,6 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
-  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 ftw)
   #:use-module (rnrs io ports)                    ;need 'port-position' etc.
@@ -55,17 +54,17 @@
 
                &error-location
                error-location?
-               error-location)
+               error-location
+
+               &fix-hint
+               fix-hint?
+               condition-fix-hint)
   #:export (strip-keyword-arguments
             default-keyword-arguments
             substitute-keyword-arguments
             ensure-keyword-arguments
 
             current-source-directory
-
-            &fix-hint
-            fix-hint?
-            condition-fix-hint
 
             nix-system->gnu-triplet
             gnu-triplet->nix-system
@@ -832,10 +831,6 @@ be determined."
          ((or ('filename . #f) #f)
           ;; raising an error would upset Geiser users
           #f))))))
-
-(define-condition-type &fix-hint &condition
-  fix-hint?
-  (hint condition-fix-hint))                      ;string
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-progress-reporter 'scheme-indent-function 1)

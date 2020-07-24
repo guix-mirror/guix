@@ -20,7 +20,7 @@
   #:use-module (guix store)
   #:use-module (guix inferior)
   #:use-module (guix i18n)
-  #:use-module ((guix utils) #:select (&fix-hint))
+  #:use-module ((guix diagnostics) #:select (&fix-hint))
   #:use-module (gcrypt pk-crypto)
   #:use-module (ssh session)
   #:use-module (ssh auth)

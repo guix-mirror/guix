@@ -32,6 +32,7 @@
   #:use-module ((guix utils) #:hide (package-name->name+version))
   #:use-module ((guix build utils)
                 #:select (package-name->name+version mkdir-p))
+  #:use-module ((guix diagnostics) #:select (&fix-hint))
   #:use-module (guix i18n)
   #:use-module (guix records)
   #:use-module (guix packages)

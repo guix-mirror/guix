@@ -40,10 +40,6 @@
   #:use-module (guix sets)
   #:use-module (guix store)
   #:use-module (guix i18n)
-  #:use-module ((guix utils)
-                #:select (source-properties->location
-                          &error-location
-                          &fix-hint))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)

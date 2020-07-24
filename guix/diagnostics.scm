@@ -43,6 +43,10 @@
             error-location?
             error-location
 
+            &fix-hint
+            fix-hint?
+            condition-fix-hint
+
             guix-warning-port
             program-name))
 
@@ -224,6 +228,10 @@ a location object."
 (define-condition-type &error-location &error
   error-location?
   (location  error-location))                     ;<location>
+
+(define-condition-type &fix-hint &condition
+  fix-hint?
+  (hint condition-fix-hint))                      ;string
 
 
 (define guix-warning-port

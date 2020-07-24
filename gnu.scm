@@ -20,7 +20,6 @@
 
 (define-module (gnu)
   #:use-module (guix i18n)
-  #:use-module ((guix utils) #:select (&fix-hint))
   #:use-module (guix diagnostics)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
