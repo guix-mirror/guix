@@ -162,6 +162,7 @@
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -17486,6 +17487,40 @@ library to allow local file system access via @code{file://} URLs.")
 
 (define-public python2-requests-file
   (package-with-python2 python-requests-file))
+
+(define-public python-identify
+  (package
+    (name "python-identify")
+    (version "1.4.25")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chriskuehl/identify")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fqgci6skckcq0x5pnxh6k2qjzn1ndsrgha1j6wwv1ld4g9bd3hz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-editdistance" ,python-editdistance)))
+    (home-page "https://github.com/chriskuehl/identify")
+    (synopsis "File identification library for Python")
+    (description
+     "@code{identify} is a file identification library for Python.  Given
+a file (or some information about a file), return a set of standardized tags
+identifying what the file is.")
+    (license license:expat)))
 
 (define-public python-tldextract
   (package
