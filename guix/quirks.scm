@@ -139,18 +139,30 @@ corresponds to the given Guix COMMIT, a SHA1 hexadecimal string."
     (define (accesses-guile-2.2-optimization-options? source commit)
       (catch 'system-error
         (lambda ()
-          (match (call-with-input-file
-                     (string-append source "/guix/build/compile.scm")
-                   read)
-            (('define-module ('guix 'build 'compile)
-               _ ...
-               #:use-module ('language 'tree-il 'optimize)
-               #:use-module ('language 'cps 'optimize)
-               #:export ('%default-optimizations
-                         '%lightweight-optimizations
-                         'compile-files))
-             #t)
-            (_ #f)))
+          (call-with-input-file (string-append source
+                                               "/guix/build/compile.scm")
+            (lambda (port)
+              (match (read port)
+                (('define-module ('guix 'build 'compile)
+                   _ ...
+                   #:use-module ('language 'tree-il 'optimize)
+                   #:use-module ('language 'cps 'optimize)
+                   #:export ('%default-optimizations
+                             '%lightweight-optimizations
+                             'compile-files))
+                 #t)
+                (_
+                 ;; Before v1.0.0 (ca. Dec. 2018), the 'use-modules' form
+                 ;; would show up in a subsequent 'cond-expand' clause.
+                 ;; See <https://bugs.gnu.org/42519>.
+                 (match (read port)
+                   (('cond-expand
+                      ('guile-2.2 ('use-modules ('language 'tree-il 'optimize)
+                                                _ ...))
+                      _ ...)
+                    #t)
+                   (_
+                    #f)))))))
         (const #f)))
 
     (define (build-with-guile-2.2 source)
