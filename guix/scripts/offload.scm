@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,11 +33,12 @@
   #:use-module ((guix serialization)
                 #:select (nar-error? nar-error-file))
   #:use-module (guix nar)
-  #:use-module (guix utils)
+  #:use-module ((guix utils) #:select (%current-system))
   #:use-module ((guix build syscalls)
                 #:select (fcntl-flock set-thread-name))
   #:use-module ((guix build utils) #:select (which mkdir-p))
   #:use-module (guix ui)
+  #:use-module (guix diagnostics)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -156,10 +157,9 @@ can interpret meaningfully."
     (lambda ()
       (private-key-from-file file))
     (lambda (key proc str . rest)
-      (raise (condition
-              (&message (message (format #f (G_ "failed to load SSH \
+      (raise (formatted-message (G_ "failed to load SSH \
 private key from '~a': ~a")
-                                         file str))))))))
+                                file str)))))
 
 (define* (open-ssh-session machine #:optional (max-silent-time -1))
   "Open an SSH session for MACHINE and return it.  Throw an error on failure."

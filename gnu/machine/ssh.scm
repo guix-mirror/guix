@@ -179,11 +179,9 @@ exist on the machine."
                             (lambda args
                               (system-error-errno args)))))
       (when (number? errno)
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "device '~a' not found: ~a")
+        (raise (formatted-message (G_ "device '~a' not found: ~a")
                                   (file-system-device fs)
-                                  (strerror errno)))))))))
+                                  (strerror errno))))))
 
   (define (check-labeled-file-system fs)
     (define remote-exp
@@ -196,11 +194,9 @@ exist on the machine."
 
     (remote-let ((result remote-exp))
       (unless result
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "no file system with label '~a'")
+        (raise (formatted-message (G_ "no file system with label '~a'")
                                   (file-system-label->string
-                                   (file-system-device fs))))))))))
+                                   (file-system-device fs)))))))
 
   (define (check-uuid-file-system fs)
     (define remote-exp
@@ -217,10 +213,8 @@ exist on the machine."
 
     (remote-let ((result remote-exp))
       (unless result
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "no file system with UUID '~a'")
-                                  (uuid->string (file-system-device fs))))))))))
+        (raise (formatted-message (G_ "no file system with UUID '~a'")
+                                  (uuid->string (file-system-device fs)))))))
 
   (append (map check-literal-file-system
                (filter (lambda (fs)
@@ -285,12 +279,10 @@ by MACHINE."
         (system (remote-system (machine-ssh-session machine))))
     (when (and (machine-ssh-configuration-build-locally? config)
                (not (string= system (machine-ssh-configuration-system config))))
-      (raise (condition
-              (&message
-               (message (format #f (G_ "incorrect target system\
+      (raise (formatted-message (G_ "incorrect target system\
  ('~a' was given, while the system reports that it is '~a')~%")
                                 (machine-ssh-configuration-system config)
-                                system))))))))
+                                system)))))
 
 (define (check-deployment-sanity machine)
   "Raise a '&message' error condition if it is clear that deploying MACHINE's
@@ -402,11 +394,9 @@ environment type of 'managed-host."
   (when (machine-ssh-configuration-authorize?
          (machine-configuration machine))
     (unless (file-exists? %public-key-file)
-      (raise (condition
-              (&message
-               (message (format #f (G_ "no signing key '~a'. \
+      (raise (formatted-message (G_ "no signing key '~a'. \
 have you run 'guix archive --generate-key?'")
-                                %public-key-file))))))
+                                %public-key-file)))
     (remote-authorize-signing-key (call-with-input-file %public-key-file
                                     (lambda (port)
                                       (string->canonical-sexp
@@ -497,9 +487,7 @@ connection to the host.")))
   (let ((config (machine-configuration machine))
         (environment (environment-type-name (machine-environment machine))))
     (unless (and config (machine-ssh-configuration? config))
-      (raise (condition
-              (&message
-               (message (format #f (G_ "unsupported machine configuration '~a'
+      (raise (formatted-message (G_ "unsupported machine configuration '~a'
 for environment of type '~a'")
                                 config
-                                environment))))))))
+                                environment)))))

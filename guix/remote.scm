@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module (guix ssh)
   #:use-module (guix gexp)
   #:use-module (guix i18n)
+  #:use-module ((guix diagnostics) #:select (formatted-message))
   #:use-module (guix inferior)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -72,11 +73,9 @@ BECOME-COMMAND is given, use that to invoke the remote Guile REPL."
     (when (eof-object? (peek-char pipe))
       (let ((status (channel-get-exit-status pipe)))
         (close-port pipe)
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "remote command '~{~a~^ ~}' failed \
+        (raise (formatted-message (G_ "remote command '~{~a~^ ~}' failed \
 with status ~a")
-                                  repl-command status)))))))
+                                  repl-command status))))
     pipe))
 
 (define* (%remote-eval lowered session #:optional become-command)

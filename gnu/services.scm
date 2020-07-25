@@ -30,7 +30,7 @@
   #:use-module (guix describe)
   #:use-module (guix sets)
   #:use-module (guix ui)
-  #:use-module ((guix utils) #:select (source-properties->location))
+  #:use-module (guix diagnostics)
   #:autoload   (guix openpgp) (openpgp-format-fingerprint)
   #:use-module (guix modules)
   #:use-module (gnu packages base)
@@ -242,13 +242,13 @@ TYPE does not have a default value, an error is raised."
     (if (eq? default &no-default-value)
         (let ((location (source-properties->location location)))
           (raise
-           (condition
-            (&missing-value-service-error (type type) (location location))
-            (&message
-             (message (format #f (G_ "~a: no value specified \
+           (make-compound-condition
+            (condition
+             (&missing-value-service-error (type type) (location location)))
+            (formatted-message (G_ "~a: no value specified \
 for service of type '~a'")
-                              (location->string location)
-                              (service-type-name type)))))))
+                               (location->string location)
+                               (service-type-name type)))))
         (service type default))))
 
 (define-condition-type &service-error &error
@@ -725,10 +725,8 @@ and FILE could be \"/usr/bin/env\"."
         (() #t)
         (((file _) rest ...)
          (when (set-contains? seen file)
-           (raise (condition
-                   (&message
-                    (message (format #f (G_ "duplicate '~a' entry for /etc")
-                                     file))))))
+           (raise (formatted-message (G_ "duplicate '~a' entry for /etc")
+                                     file)))
          (loop rest (set-insert file seen))))))
 
   ;; Detect duplicates early instead of letting them through, eventually
@@ -1000,12 +998,12 @@ TARGET-TYPE; return the root service adjusted accordingly."
        vlist-null))
     (()
      (raise
-      (condition (&missing-target-service-error
-                  (service #f)
-                  (target-type target-type))
-                 (&message
-                  (message (format #f (G_ "service of type '~a' not found")
-                                   (service-type-name target-type)))))))
+      (make-compound-condition
+       (condition (&missing-target-service-error
+                   (service #f)
+                   (target-type target-type)))
+       (formatted-message (G_ "service of type '~a' not found")
+                          (service-type-name target-type)))))
     (x
      (raise
       (condition (&ambiguous-target-service-error

@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix diagnostics)
   #:use-module (guix discovery)
   #:use-module (guix memoization)
   #:use-module ((guix build utils)
@@ -92,9 +93,8 @@
 (define (search-patch file-name)
   "Search the patch FILE-NAME.  Raise an error if not found."
   (or (search-path (%patch-path) file-name)
-      (raise (condition
-              (&message (message (format #f (G_ "~a: patch not found")
-                                         file-name)))))))
+      (raise (formatted-message (G_ "~a: patch not found")
+                                file-name))))
 
 (define-syntax-rule (search-patches file-name ...)
   "Return the list of absolute file names corresponding to each

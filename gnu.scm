@@ -78,10 +78,8 @@
                   (raise
                    (apply
                     make-compound-condition
-                    (condition
-                     (&message
-                      (message (format #f (G_ "module ~a not found")
-                                       module))))
+                    (formatted-message (G_ "module ~a not found")
+                                       module)
                     (condition
                      (&error-location (location location)))
                     (or (and=> (make-hint module) list)

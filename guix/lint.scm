@@ -668,7 +668,12 @@ patch could not be found."
               ;; Use %make-warning, as condition-mesasge is already
               ;; translated.
               (%make-warning package (condition-message c)
-                             #:field 'patch-file-names))))
+                             #:field 'patch-file-names)))
+            ((formatted-message? c)
+             (list (%make-warning package
+                                  (apply format #f
+                                         (G_ (formatted-message-string c))
+                                         (formatted-message-arguments c))))))
     (define patches
       (match (package-source package)
         ((? origin? origin) (origin-patches origin))
@@ -955,7 +960,14 @@ descriptions maintained upstream."
                    (make-warning package
                                  (G_ "failed to create ~a derivation: ~a")
                                  (list system
-                                       (condition-message c)))))
+                                       (condition-message c))))
+                  ((formatted-message? c)
+                   (let ((str (apply format #f
+                                     (formatted-message-string c)
+                                     (formatted-message-arguments c))))
+                     (make-warning package
+                                   (G_ "failed to create ~a derivation: ~a")
+                                   (list system str)))))
           (parameterize ((%graft? #f))
             (package-derivation store package system #:graft? #f)
 

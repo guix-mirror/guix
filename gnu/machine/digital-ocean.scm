@@ -26,6 +26,7 @@
   #:use-module (guix base32)
   #:use-module (guix derivations)
   #:use-module (guix i18n)
+  #:use-module ((guix diagnostics) #:select (formatted-message))
   #:use-module (guix import json)
   #:use-module (guix monads)
   #:use-module (guix records)
@@ -414,9 +415,7 @@ one procured from https://cloud.digitalocean.com/account/api/tokens.")))))))
   (let ((config (machine-configuration machine))
         (environment (environment-type-name (machine-environment machine))))
     (unless (and config (digital-ocean-configuration? config))
-      (raise (condition
-              (&message
-               (message (format #f (G_ "unsupported machine configuration '~a'
+      (raise (formatted-message (G_ "unsupported machine configuration '~a' \
 for environment of type '~a'")
                                 config
-                                environment))))))))
+                                environment)))))

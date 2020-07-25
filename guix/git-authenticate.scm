@@ -24,6 +24,7 @@
   #:use-module ((guix git)
                 #:select (commit-difference false-if-git-not-found))
   #:use-module (guix i18n)
+  #:use-module ((guix diagnostics) #:select (formatted-message))
   #:use-module (guix openpgp)
   #:use-module ((guix utils)
                 #:select (cache-directory with-atomic-file-output))
@@ -105,23 +106,21 @@ not in KEYRING."
                   (lambda _
                     (values #f #f)))))
     (unless signature
-      (raise (condition
-              (&unsigned-commit-error (commit commit-id))
-              (&message
-               (message (format #f (G_ "commit ~a lacks a signature")
-                                (oid->string commit-id)))))))
+      (raise (make-compound-condition
+              (condition (&unsigned-commit-error (commit commit-id)))
+              (formatted-message (G_ "commit ~a lacks a signature")
+                                 (oid->string commit-id)))))
 
     (let ((signature (string->openpgp-packet signature)))
       (when (memq (openpgp-signature-hash-algorithm signature)
                   `(,@disallowed-hash-algorithms md5))
-        (raise (condition
-                (&unsigned-commit-error (commit commit-id))
-                (&message
-                 (message (format #f (G_ "commit ~a has a ~a signature, \
+        (raise (make-compound-condition
+                (condition (&unsigned-commit-error (commit commit-id)))
+                (formatted-message (G_ "commit ~a has a ~a signature, \
 which is not permitted")
-                                  (oid->string commit-id)
-                                  (openpgp-signature-hash-algorithm
-                                   signature)))))))
+                                   (oid->string commit-id)
+                                   (openpgp-signature-hash-algorithm
+                                    signature)))))
 
       (with-fluids ((%default-port-encoding "UTF-8"))
         (let-values (((status data)
@@ -130,23 +129,22 @@ which is not permitted")
           (match status
             ('bad-signature
              ;; There's a signature but it's invalid.
-             (raise (condition
-                     (&signature-verification-error (commit commit-id)
-                                                    (signature signature)
-                                                    (keyring keyring))
-                     (&message
-                      (message (format #f (G_ "signature verification failed \
+             (raise (make-compound-condition
+                     (condition
+                      (&signature-verification-error (commit commit-id)
+                                                     (signature signature)
+                                                     (keyring keyring)))
+                     (formatted-message (G_ "signature verification failed \
 for commit ~a")
-                                       (oid->string commit-id)))))))
+                                        (oid->string commit-id)))))
             ('missing-key
-             (raise (condition
-                     (&missing-key-error (commit commit-id)
-                                         (signature signature))
-                     (&message
-                      (message (format #f (G_ "could not authenticate \
+             (raise (make-compound-condition
+                     (condition (&missing-key-error (commit commit-id)
+                                                    (signature signature)))
+                     (formatted-message (G_ "could not authenticate \
 commit ~a: key ~a is missing")
-                                       (oid->string commit-id)
-                                       (openpgp-format-fingerprint data)))))))
+                                        (oid->string commit-id)
+                                        (openpgp-format-fingerprint data)))))
             ('good-signature data)))))))
 
 (define (read-authorizations port)
@@ -179,13 +177,13 @@ does not specify anything, fall back to DEFAULT-AUTHORIZATIONS."
     ;; If COMMIT removes the '.guix-authorizations' file found in one of its
     ;; parents, raise an error.
     (when (parents-have-authorizations-file? commit)
-      (raise (condition
-              (&unauthorized-commit-error (commit (commit-id commit))
-                                          (signing-key #f))
-              (&message
-               (message (format #f (G_ "commit ~a attempts \
+      (raise (make-compound-condition
+              (condition
+               (&unauthorized-commit-error (commit (commit-id commit))
+                                           (signing-key #f)))
+              (formatted-message (G_ "commit ~a attempts \
 to remove '.guix-authorizations' file")
-                                (oid->string (commit-id commit)))))))))
+                                 (oid->string (commit-id commit)))))))
 
   (define (commit-authorizations commit)
     (catch 'git-error
@@ -234,16 +232,16 @@ not specify anything, fall back to DEFAULT-AUTHORIZATIONS."
   (unless (member (openpgp-public-key-fingerprint signing-key)
                   (commit-authorized-keys repository commit
                                           default-authorizations))
-    (raise (condition
-            (&unauthorized-commit-error (commit id)
-                                        (signing-key signing-key))
-            (&message
-             (message (format #f (G_ "commit ~a not signed by an authorized \
+    (raise (make-compound-condition
+            (condition
+             (&unauthorized-commit-error (commit id)
+                                         (signing-key signing-key)))
+            (formatted-message (G_ "commit ~a not signed by an authorized \
 key: ~a")
-                              (oid->string id)
-                              (openpgp-format-fingerprint
-                               (openpgp-public-key-fingerprint
-                                signing-key))))))))
+                               (oid->string id)
+                               (openpgp-format-fingerprint
+                                (openpgp-public-key-fingerprint
+                                 signing-key))))))
 
   signing-key)
 
@@ -366,13 +364,11 @@ EXPECTED-SIGNER."
      (commit-signing-key repository (commit-id commit) keyring)))
 
   (unless (bytevector=? expected-signer actual-signer)
-    (raise (condition
-            (&message
-             (message (format #f (G_ "initial commit ~a is signed by '~a' \
+    (raise (formatted-message (G_ "initial commit ~a is signed by '~a' \
 instead of '~a'")
                               (oid->string (commit-id commit))
                               (openpgp-format-fingerprint actual-signer)
-                              (openpgp-format-fingerprint expected-signer))))))))
+                              (openpgp-format-fingerprint expected-signer)))))
 
 (define* (authenticate-repository repository start signer
                                   #:key

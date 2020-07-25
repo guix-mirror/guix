@@ -618,12 +618,11 @@
          (string=? (derivation->output-path drv)
                    (package-output %store package "out")))))
 
-(test-assert "patch not found yields a run-time error"
-  (guard (c ((condition-has-type? c &message)
-             (and (string-contains (condition-message c)
-                                   "does-not-exist.patch")
-                  (string-contains (condition-message c)
-                                   "not found"))))
+(test-equal "patch not found yields a run-time error"
+  '("~a: patch not found\n" "does-not-exist.patch")
+  (guard (c ((formatted-message? c)
+             (cons (formatted-message-string c)
+                   (formatted-message-arguments c))))
     (let ((p (package
                (inherit (dummy-package "p"))
                (source (origin

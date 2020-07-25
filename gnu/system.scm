@@ -1113,9 +1113,7 @@ TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
   "Variant of 'locale-name->definition' that raises an error upon failure."
   (match (locale-name->definition name)
     (#f
-     (raise (condition
-             (&message
-              (message (format #f (G_ "~a: invalid locale name") name))))))
+     (raise (formatted-message (G_ "~a: invalid locale name") name)))
     (def def)))
 
 (define (operating-system-locale-directory os)
