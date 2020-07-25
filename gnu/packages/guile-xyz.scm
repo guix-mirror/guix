@@ -2972,9 +2972,9 @@ perform geometrical transforms on JPEG images.")
        ("perl" ,perl)))
     (inputs
      `(("guile" ,guile-2.2)
-       ("guile-lib" ,guile-lib)
-       ("guile-gcrypt" ,guile-gcrypt)
-       ("guile-readline" ,guile-readline)
+       ("guile-lib" ,guile2.2-lib)
+       ("guile-gcrypt" ,guile2.2-gcrypt)
+       ("guile-readline" ,guile2.2-readline)
        ("gnutls" ,gnutls)
        ("shroud" ,shroud)
        ("emacsy" ,emacsy-minimal)
@@ -2994,6 +2994,9 @@ perform geometrical transforms on JPEG images.")
                   (ice-9 popen)
                   (ice-9 rdelim)
                   (srfi srfi-26))
+       #:configure-flags
+       ;; Ignore ‘error: ‘GTimeVal’ is deprecated: Use 'GDateTime' instead.’
+       (list "CFLAGS=-Wno-error")
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'start-xorg-server
