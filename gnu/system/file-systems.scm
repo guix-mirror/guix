@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -28,6 +28,8 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (guix records)
+  #:use-module ((guix diagnostics) #:select (&fix-hint))
+  #:use-module (guix i18n)
   #:use-module (gnu system uuid)
   #:re-export (uuid                               ;backward compatibility
                string->uuid
@@ -613,12 +615,13 @@ store is located, else #f."
     ;; XXX: Deriving the subvolume name based from a subvolume ID is not
     ;; supported, as we'd need to query the actual file system.
     (or (and=> (assoc-ref options "subvol") prepend-slash/maybe)
-        ;; FIXME: Use &fix-hint once it no longer pulls in (guix utils).
         (raise (condition
                 (&message
                  (message "The store is on a Btrfs subvolume, but the \
-subvolume name is unknown.
-Hint: Use the \"subvol\" Btrfs file system option.")))))))
+subvolume name is unknown."))
+                (&fix-hint
+                 (hint
+                  (G_ "Use the @code{subvol} Btrfs file system option."))))))))
 
 
 ;;; file-systems.scm ends here
