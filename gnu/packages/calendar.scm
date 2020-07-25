@@ -123,6 +123,7 @@ the <tz.h> library for handling time zones and leap seconds.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; test suite appears broken
+       #:parallel-build? #f             ;may cause GIR generation failure
        #:configure-flags '("-DSHARED_ONLY=true"
                            ;; required by evolution-data-server
                            "-DGOBJECT_INTROSPECTION=true"
