@@ -57,22 +57,22 @@
 ;;;
 ;;; Code:
 
+(define (trivial-format-string? fmt)
+  (define len
+    (string-length fmt))
+
+  (let loop ((start 0))
+    (or (>= (+ 1 start) len)
+        (let ((tilde (string-index fmt #\~ start)))
+          (or (not tilde)
+              (case (string-ref fmt (+ tilde 1))
+                ((#\a #\A #\%) (loop (+ tilde 2)))
+                (else          #f)))))))
+
 (define-syntax highlight-argument
   (lambda (s)
     "Given FMT and ARG, expand ARG to a call that highlights it, provided FMT
 is a trivial format string."
-    (define (trivial-format-string? fmt)
-      (define len
-        (string-length fmt))
-
-      (let loop ((start 0))
-        (or (>= (+ 1 start) len)
-            (let ((tilde (string-index fmt #\~ start)))
-              (or (not tilde)
-                  (case (string-ref fmt (+ tilde 1))
-                    ((#\a #\A #\%) (loop (+ tilde 2)))
-                    (else          #f)))))))
-
     ;; Be conservative: limit format argument highlighting to cases where the
     ;; format string contains nothing but ~a escapes.  If it contained ~s
     ;; escapes, this strategy wouldn't work.
@@ -132,7 +132,15 @@ messages."
                   args (... ...))
             (free-identifier=? #'N-underscore #'N_)
             #'(name #f (N-underscore singular plural n)
-                    args (... ...)))))))))
+                    args (... ...)))
+           (id
+            (identifier? #'id)
+            ;; Run-time variant.
+            #'(lambda (location fmt . args)
+                (emit-diagnostic fmt args
+                                 #:location location
+                                 #:prefix prefix
+                                 #:colors colors)))))))))
 
 ;; XXX: This doesn't work well for right-to-left languages.
 ;; TRANSLATORS: The goal is to emit "warning:" followed by a short phrase;
@@ -146,6 +154,20 @@ messages."
   (begin
     (report-error args ...)
     (exit 1)))
+
+(define* (emit-diagnostic fmt args
+                          #:key location (colors (color)) (prefix ""))
+  "Report diagnostic message FMT with the given ARGS and the specified
+LOCATION, COLORS, and PREFIX.
+
+This procedure is used as a last resort when the format string is not known at
+macro-expansion time."
+  (print-diagnostic-prefix (gettext prefix %gettext-domain)
+                           location #:colors colors)
+  (apply format (guix-warning-port) fmt
+         (if (trivial-format-string? fmt)
+             (map %highlight-argument args)
+             args)))
 
 (define %warning-color (color BOLD MAGENTA))
 (define %info-color (color BOLD))
