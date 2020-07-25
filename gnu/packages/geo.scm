@@ -59,6 +59,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
@@ -100,6 +101,69 @@
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
+
+(define-public memphis
+  (package
+    (name "memphis")
+    (version "0.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/jiuka/memphis.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "068c3943pgbpfjq44pmvn5fmkh005ak5aa67vvrq3fn487c6w54q"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-gtk-doc"
+        "--enable-vala"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-autogen
+           (lambda _
+             (substitute* "autogen.sh"
+               (("\\./configure \"\\$@\"")
+                ""))
+             #t))
+         (add-after 'patch-autogen 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs/reference"
+               (substitute* "libmemphis-docs.sgml"
+                 (("http://www.oasis-open.org/docbook/xml/4.3/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("seed" ,seed)
+       ("vala" ,vala)))
+    (inputs
+     `(("expat" ,expat)
+       ("glib" ,glib)))
+    (propagated-inputs
+     `(("cairo" ,cairo)))
+    (synopsis "Map-rendering for OpenSteetMap")
+    (description "Memphis is a map-rendering application and a library for
+OpenStreetMap written in C using eXpat, Cairo and GLib.")
+    (home-page "http://trac.openstreetmap.ch/trac/memphis/")
+    (license license:lgpl2.1+)))
 
 (define-public geos
   (package
