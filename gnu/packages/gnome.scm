@@ -3478,17 +3478,16 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.34.0")
+    (version "0.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://gnome/sources/" name "/"
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
-              (patches (search-patches "dconf-meson-0.52.patch"))
               (sha256
                (base32
-                "0lnsl85cp2vpzgp8pkf6l6yd2i3lp02jdvga1icfa78j2smr8fll"))))
+                "0bfs069pjv6lhp7xrzmrhz3876ay2ryqxzc6mlva1hhz34ibprlz"))))
     (build-system meson-build-system)
     (propagated-inputs
      ;; In Requires of dconf.pc.
