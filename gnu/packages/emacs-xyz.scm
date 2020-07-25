@@ -11277,29 +11277,31 @@ lines, and @code{gc} to comment out the target of a motion.")
 ;; Tests for emacs-ansi have a circular dependency with ert-runner, and
 ;; therefore cannot be run
 (define-public emacs-ansi
-  (package
-    (name "emacs-ansi")
-    (version "0.4.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/rejeep/ansi.el")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1hbddxarr40ygvaw4pwaivq2l4f0brszw73w1r50lkjlggb7bl3g"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-s" ,emacs-s)))
-    (home-page "https://github.com/rejeep/ansi.el")
-    (synopsis "Convert strings to ANSI")
-    (description "@code{emacs-ansi} defines functions that turns simple
+  (let ((commit "a41d5cc719297515d85bb5256980cd1204a71b88")
+        (revision "1"))
+    (package
+      (name "emacs-ansi")
+      (version (git-version "0.4.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rejeep/ansi.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "051v8dmji90chwbsyqsqry7h35mksal2j6rgw1kpmjsni86d79y1"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/rejeep/ansi.el")
+      (synopsis "Convert strings to ANSI")
+      (description "@code{emacs-ansi} defines functions that turns simple
 strings to ANSI strings.  Turning a string into an ANSI string can be to add
 color to a text, add color in the background of a text or adding a style, such
 as bold, underscore or italic.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 ;; Tests for emacs-commander have a circular dependency with ert-runner, and
 ;; therefore cannot be run
