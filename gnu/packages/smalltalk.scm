@@ -124,23 +124,18 @@ such as ones for networking and GUI programming.")
                             "unix/cmake/squeak.sh.in")
                (("^PATH=.*") ""))
              #t))
-         (add-after 'unpack 'create-build-dir
+         (add-before 'configure 'enter-build-directory
            (lambda _
-             (mkdir "bld")
+             (mkdir "build")
+             (chdir "build")
              #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (with-directory-excursion "bld"
-                 (invoke "../unix/cmake/configure"
-                           (string-append "--prefix=" out)
-                           "--without-quartz")
-                 #t))))
-         (replace 'build
-           (lambda _
-             (with-directory-excursion "bld"
-               (invoke "make"))
-             #t)))))
+               (invoke "../unix/cmake/configure"
+                       (string-append "--prefix=" out)
+                       "--without-quartz")
+               #t))))))
     (synopsis "Smalltalk programming language and environment")
     (description "Squeak is a full-featured implementation of the Smalltalk
 programming language and environment based on (and largely compatible with)
