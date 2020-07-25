@@ -292,6 +292,86 @@ bindings.")
     (home-page "https://wiki.gnome.org/Projects/Seed")
     (license license:gpl3+)))
 
+(define-public seed
+  (package
+    (name "seed")
+    (version "3.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0cmcxaggcdcy13j27gy8id2qsf2p2sl4bz2mwb9zhv3gzavlvjw0"))
+       (patches
+        (search-patches "seed-webkit.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-xorg-module"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html")
+        "--with-webkit=4.0")
+       #:phases
+       (modify-phases %standard-phases
+         ;; The seed-webkit.patch patches configure.ac.
+         ;; So the source files need to be re-bootstrapped.
+         (add-after 'unpack 'trigger-bootstrap
+           (lambda _
+             (for-each delete-file
+                       (list
+                        "configure"
+                        "Makefile.in"))
+             #t))
+         (add-before 'build 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc"
+               (substitute* '("reference/seed-docs.sgml" "modules/book.xml")
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("docbook-xml" ,docbook-xml-4.1.2)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("gnome-js-common" ,gnome-js-common)
+       ("gtk+" ,gtk+)
+       ("gtk+-2" ,gtk+-2)
+       ("libffi" ,libffi)
+       ("libxml2" ,libxml2)
+       ("mpfr" ,mpfr)
+       ("readline" ,readline)
+       ("sqlite" ,sqlite)
+       ("xscrnsaver" ,libxscrnsaver)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("webkit" ,webkitgtk)))
+    (synopsis "GObject JavaScriptCore bridge")
+    (description "Seed is a library and interpreter, dynamically bridging
+(through GObjectIntrospection) the WebKit JavaScriptCore engine, with the
+GNOME platform.  It serves as something which enables you to write standalone
+applications in JavaScript, or easily enable your application to be extensible
+in JavaScript.")
+    (home-page "https://wiki.gnome.org/Projects/Seed")
+    (license license:lgpl2.0+)))
+
 (define-public libdmapsharing
   (package
     (name "libdmapsharing")
