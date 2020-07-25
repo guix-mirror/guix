@@ -27637,6 +27637,9 @@ This is a list of strings or objects appended to the
 This is a list of strings or objects appended to the configuration file.
 It is used to pass extra text to be added verbatim to the configuration
 file.
+
+@item @code{extra-options} (default: @code{'()})
+Extra command line options for @code{nix-service-type}.
 @end table
 @end deftp
 

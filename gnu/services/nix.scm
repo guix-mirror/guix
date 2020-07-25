@@ -56,6 +56,8 @@
   (build-sandbox-items nix-configuration-build-sandbox-items ;list of strings
                        (default '()))
   (extra-config        nix-configuration-extra-config ;list of strings
+                       (default '()))
+  (extra-options       nix-configuration-extra-options ;list of strings
                        (default '())))
 
 ;; Copied from gnu/services/base.scm
@@ -116,19 +118,21 @@ GID."
                                            '#$(map references-file
                                                    (list package)))
                                '#$build-sandbox-items))
-               (for-each (cut display <>) '#$extra-config))))))))
+               (for-each (cut display <>) '#$extra-config)
+               (newline))))))))
 
 (define nix-shepherd-service
   ;; Return a <shepherd-service> for Nix.
   (match-lambda
-    (($ <nix-configuration> package _ ...)
+    (($ <nix-configuration> package _ _ _ extra-options)
      (list
       (shepherd-service
        (provision '(nix-daemon))
        (documentation "Run nix-daemon.")
        (requirement '())
        (start #~(make-forkexec-constructor
-                 (list (string-append #$package "/bin/nix-daemon"))))
+                 (list (string-append #$package "/bin/nix-daemon")
+                       #$@extra-options)))
        (respawn? #f)
        (stop #~(make-kill-destructor)))))))
 
