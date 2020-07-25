@@ -3507,7 +3507,16 @@ and RDP protocols.")
        ("vala" ,vala)))
     (arguments
      `(#:glib-or-gtk? #t
-       #:configure-flags '("-Denable-gtk-doc=true")))
+       #:configure-flags '("-Denable-gtk-doc=true")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'increase-test-timeout
+                    (lambda _
+                      ;; On big-memory systems, the engine test may take
+                      ;; much longer than the default of 30 seconds.
+                      (substitute* "tests/meson.build"
+                        (("test\\(unit_test\\[0\\], exe" all)
+                         (string-append all ", timeout : 90")))
+                      #t)))))
     (home-page "https://developer.gnome.org/dconf/")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
