@@ -3726,3 +3726,36 @@ data-compression library.  The bindings are written in pure Scheme by using
 Guile's foreign function interface.")
     (home-page "https://notabug.org/guile-zlib/guile-zlib")
     (license license:gpl3+)))
+
+(define-public guile-lzlib
+  (package
+    (name "guile-lzlib")
+    (version "0.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://notabug.org/guile-lzlib/guile-lzlib.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ny4pbig5x1lv83b63c2613gwv98myk3rm44l88ic7lrff6cd2hr"))
+              (modules '((guix build utils)))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("lzlib" ,lzlib)))
+    (synopsis "Guile bindings to lzlib")
+    (description
+     "This package provides Guile bindings for lzlib, a C library for
+in-memory LZMA compression and decompression.  The bindings are written in
+pure Scheme by using Guile's foreign function interface.")
+    (home-page "https://notabug.org/guile-lzlib/guile-lzlib")
+    (license license:gpl3+)))
