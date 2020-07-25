@@ -6570,46 +6570,32 @@ cursor to any point on the screen with a few key strokes.  It also simulates
 mouse click.  You can do everything mouse can do with a keyboard.")
     (license license:bsd-3)))
 
-(define-public transset-df
+(define-public transset
   (package
-    (name "transset-df")
-    (version "6")
+    (name "transset")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://forchheimer.se/" name "/" name "-" version
-                                  ".tar.gz"))
+              (uri (string-append "https://www.x.org/releases/individual/app/"
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vnykwwrv75miigbhmcwxniw8xnhsdyzhqydip2m9crxi2lwhqs5"))))
+                "0rya202y87dwl35jnmq8hs3arzdrv5z4vf1xmi0py4rnmhdpszaw"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'setenv
-           (lambda _
-             (setenv "CC" (which "gcc"))
-             #t))
-         (delete 'configure)
-         (delete 'check)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (install-file "transset-df" bin)
-               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs `(("libxcomposite" ,libxcomposite)
-              ("libxdamager" ,libxdamage)
+              ("libxdamage" ,libxdamage)
               ("libxrender" ,libxrender)))
     (synopsis "Set the transparency of X11 windows")
-    (description "The @command{transset-df} command allows you to set the
-opacity of X11 windows.  This patched version of X.Org's @command{transset}
-adds functionality, including: selecting window by clicking (as transset),
-selecting windows by pointing select actual focused X11 window, selecting by
-window name or id, forcing toggle, increase or decrease opacity.")
-    (home-page "https://forchheimer.se/transset-df/")
+    (description "@command{transset} is a simple program for X servers
+supporting the XFIXES, DAMAGE, and COMPOSITE extensions.  It lets the
+user set the transparency on a window.")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/transset")
     (license license:x11)))
+
+(define-public transset-df
+  (deprecated-package "transset-df" transset))
 
 (define-public bdfresize
   (package
