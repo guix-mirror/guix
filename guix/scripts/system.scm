@@ -565,16 +565,14 @@ any, are available.  Raise an error if they're not."
   (define fail? #f)
 
   (define (file-system-location* fs)
-    (location->string
-     (source-properties->location
-      (file-system-location fs))))
+    (and=> (file-system-location fs)
+           source-properties->location))
 
   (let-syntax ((error (syntax-rules ()
                         ((_ args ...)
                          (begin
                            (set! fail? #t)
-                           (format (current-error-port)
-                                   args ...))))))
+                           (report-error args ...))))))
     (for-each (lambda (fs)
                 (catch 'system-error
                   (lambda ()
@@ -582,9 +580,9 @@ any, are available.  Raise an error if they're not."
                   (lambda args
                     (let ((errno  (system-error-errno args))
                           (device (file-system-device fs)))
-                      (error (G_ "~a: error: device '~a' not found: ~a~%")
-                             (file-system-location* fs) device
-                             (strerror errno))
+                      (error (file-system-location* fs)
+                             (G_ "device '~a' not found: ~a~%")
+                             device (strerror errno))
                       (unless (string-prefix? "/" device)
                         (display-hint (format #f (G_ "If '~a' is a file system
 label, write @code{(file-system-label ~s)} in your @code{device} field.")
@@ -594,13 +592,14 @@ label, write @code{(file-system-label ~s)} in your @code{device} field.")
                 (let ((label (file-system-label->string
                               (file-system-device fs))))
                   (unless (find-partition-by-label label)
-                    (error (G_ "~a: error: file system with label '~a' not found~%")
-                           (file-system-location* fs) label))))
+                    (error (file-system-location* fs)
+                           (G_ "file system with label '~a' not found~%")
+                           label))))
               labeled)
     (for-each (lambda (fs)
                 (unless (find-partition-by-uuid (file-system-device fs))
-                  (error (G_ "~a: error: file system with UUID '~a' not found~%")
-                         (file-system-location* fs)
+                  (error (file-system-location* fs)
+                         (G_ "file system with UUID '~a' not found~%")
                          (uuid->string (file-system-device fs)))))
               uuid)
 
