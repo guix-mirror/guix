@@ -8,6 +8,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aspell)
@@ -91,7 +93,7 @@
          '(begin
             (delete-file "data/scripts/inxi")
             #t))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
       ;; The three binaries are not mutually exlusive, and are all built
       ;; by default.
@@ -121,6 +123,7 @@
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
        ("qtscript" ,qtscript)
+       ("qtsvg" ,qtsvg)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))
     (home-page "https://quassel-irc.org/")
