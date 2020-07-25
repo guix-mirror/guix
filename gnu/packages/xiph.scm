@@ -201,7 +201,7 @@ work from the @code{speex} codec.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://git.xiph.org/libao.git")
+                    (url "https://gitlab.xiph.org/xiph/libao")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
