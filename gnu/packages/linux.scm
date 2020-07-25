@@ -1971,14 +1971,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1wz460by17rmxrcydn583rd4lhj6wlvqs6x1j5pdzxn5g3app024"))))
+               "1ai1z4kf91b1m3qrpwqkc1af5vm2fkdkknqv95xdwf19q94aw6gz"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
