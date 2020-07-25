@@ -6420,12 +6420,16 @@ the MTP device as a file system.")
       (base32 "1ilrsw1rc85w29mkbkmm5n5w427gapv43yrjzvkb4kc9xhscgdjn"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--disable-silent-rules")))
-   (native-inputs `(("groff" ,groff) ; for tests
-                    ("pkg-config" ,pkg-config)))
-   (inputs `(("check" ,check)
-             ("expat" ,expat)
-             ("libcap" ,libcap)
-             ("libselinux" ,libselinux)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+
+      ;; For tests.
+      ("check" ,check)
+      ("groff" ,groff)))
+   (inputs
+    `(("expat" ,expat)
+      ("libcap" ,libcap)
+      ("libselinux" ,libselinux)))
    (synopsis "Utility to show process environment")
    (description "Procenv is a command-line tool that displays as much detail about
 itself and its environment as possible.  It can be used as a test
