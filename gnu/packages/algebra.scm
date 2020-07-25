@@ -440,14 +440,14 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.6.0")
+   (version "2.6.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://flintlib.org/flint-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "0h08a71kn8347zsqjamqnmrxjpsnnzpmhvxb6d2xmfrcs6nyv2ch"))))
+                     "16dzmymaavlnc966g58yn154vb532j50byihkdy1s32f4vrw578d"))))
    (build-system gnu-build-system)
    (inputs
     `(("ntl" ,ntl)))
@@ -455,7 +455,7 @@ or text interfaces) or as a C++ library.")
     `(("gmp" ,gmp)
       ("mpfr" ,mpfr))) ; header files from both are included by flint/arith.h
    (arguments
-    `(#:parallel-tests? #f ; seems to be necessary on arm
+    `(#:parallel-tests? #f              ; seems to be necessary on arm
       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'newer-c++
@@ -469,8 +469,8 @@ or text interfaces) or as a C++ library.")
                    (gmp (assoc-ref inputs "gmp"))
                    (mpfr (assoc-ref inputs "mpfr"))
                    (ntl (assoc-ref inputs "ntl")))
-               ;; do not pass "--enable-fast-install", which makes the
-               ;; homebrew configure process fail
+               ;; Do not pass "--enable-fast-install", which makes the
+               ;; homebrew configure process fail.
                (invoke "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--with-gmp=" gmp)
