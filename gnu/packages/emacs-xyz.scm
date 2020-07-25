@@ -3918,6 +3918,38 @@ the speedbar window.")
      "This package provides commands to quickly switch between shell buffers.")
     (license license:gpl3+)))
 
+(define-public emacs-shx
+  (package
+    (name "emacs-shx")
+    (version "1.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/riscy/shx-for-emacs")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0p9b621rgy34r1hl9xfzxh4xpx9gpsr3n330ypfxhlr0s5754j73"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; A docstring provides examples of mapping hosts to programs in /bin.
+         ;; These examples are valid as-is.
+         (delete 'patch-el-files))
+       #:tests? #t
+       #:test-command
+       '("emacs" "--batch" "--quiet"
+         "--script" "test/script.el")))
+    (home-page "https://github.com/riscy/shx-for-emacs")
+    (synopsis "Extras for the comint-mode shell")
+    (description
+     "This package extends @code{comint-mode}: it parses markup in the output
+stream, enabling plots and graphics to be embedded, and adds command-line
+functions which plug into Emacs (e.g. use @code{:e <filename>} to edit a
+file).")
+    (license license:gpl3+)))
+
 (define-public emacs-names
   (let ((commit "d8baba5360e5253938a25d3e005455b6d2d86971")
         (version "20151201.0")
