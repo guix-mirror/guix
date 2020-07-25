@@ -55,7 +55,7 @@
                        (default #t))
   (build-sandbox-items nix-configuration-build-sandbox-items ;list of strings
                        (default '()))
-  (extra-config        nix-configuration-extra-options ;list of strings
+  (extra-config        nix-configuration-extra-config ;list of strings
                        (default '())))
 
 ;; Copied from gnu/services/base.scm
