@@ -264,6 +264,34 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public gnome-js-common
+  (package
+    (name "gnome-js-common")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zv5b9bcbclzj64xd9kgql4ndmbwvvi6cl937ykw8fp21xgh8z7y"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static")))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Common JS Modules")
+    (description "GNOME-JS-Common provides common modules for GNOME JavaScript
+bindings.")
+    (home-page "https://wiki.gnome.org/Projects/Seed")
+    (license license:gpl3+)))
+
 (define-public libdmapsharing
   (package
     (name "libdmapsharing")
