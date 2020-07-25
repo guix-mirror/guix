@@ -18594,6 +18594,36 @@ common set-up and tear-down code, and allows the programmer to \"spy\" on
 functions to ensure they are called with the right arguments during testing.")
     (license license:gpl3+)))
 
+(define-public emacs-cort
+  ;; Choosing a recent commit to fix some bugs.
+  ;; https://github.com/conao3/cort.el/issues/106
+  (let ((commit "495c3972b92b57a0cb5dd65ce5de9d3c6b8b6509")
+        (revision "1"))
+    (package
+      (name "emacs-cort")
+      (version (git-version "3.0.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/conao3/cort.el")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0f4irq1arh9c7lf9a5bla25am0jy5r6lj8ayb8k9k7lrirzhyk99"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ansi" ,emacs-ansi)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch" "--quick"
+                          "--directory=." "--load=cort-tests.el"
+                          "--funcall=cort-test-run")))
+      (home-page "https://github.com/conao3/cort.el")
+      (synopsis "Unit test framework for the Emacs Lisp")
+      (description "@code{cort} is a lightweight Emacs Lisp unit test library.")
+      (license license:gpl3+))))
+
 (define-public emacs-wordnut
   (let ((commit "feac531404041855312c1a046bde7ea18c674915")
         (revision "0"))
