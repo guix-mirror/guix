@@ -19,6 +19,7 @@
 (define-module (guix diagnostics)
   #:use-module (guix colors)
   #:use-module (guix i18n)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-35)
@@ -42,6 +43,11 @@
             &error-location
             error-location?
             error-location
+
+            formatted-message
+            formatted-message?
+            formatted-message-string
+            formatted-message-arguments
 
             &fix-hint
             fix-hint?
@@ -254,6 +260,65 @@ a location object."
 (define-condition-type &fix-hint &condition
   fix-hint?
   (hint condition-fix-hint))                      ;string
+
+(define-condition-type &formatted-message &error
+  formatted-message?
+  (format    formatted-message-string)
+  (arguments formatted-message-arguments))
+
+(define (check-format-string location format args)
+  "Check that FORMAT, a format string, contains valid escapes, and that the
+number of arguments in ARGS matches the escapes in FORMAT."
+  (define actual-count
+    (length args))
+
+  (define allowed-chars                           ;for 'simple-format'
+    '(#\A #\S #\a #\s #\~ #\%))
+
+  (define (format-chars fmt)
+    (let loop ((chars  (string->list fmt))
+               (result '()))
+      (match chars
+        (()
+         (reverse result))
+        ((#\~ opt rest ...)
+         (loop rest (cons opt result)))
+        ((chr rest ...)
+         (and (memv chr allowed-chars)
+              (loop rest result))))))
+
+  (match (format-chars format)
+    (#f
+     ;; XXX: In this case it could be that FMT contains invalid escapes, or it
+     ;; could be that it contains escapes beyond ALLOWED-CHARS, for (ice-9
+     ;; format).  Instead of implementing '-Wformat', do nothing.
+     #f)
+    (chars
+     (let ((count (fold (lambda (chr count)
+                          (case chr
+                            ((#\~ #\%) count)
+                            (else (+ count 1))))
+                        0
+                        chars)))
+       (unless (= count actual-count)
+         (warning location (G_ "format string got ~a arguments, expected ~a~%")
+                  actual-count count))))))
+
+(define-syntax formatted-message
+  (lambda (s)
+    "Return a '&formatted-message' error condition."
+    (syntax-case s (G_)
+      ((_ (G_ str) args ...)
+       (string? (syntax->datum #'str))
+       (let ((str (syntax->datum #'str)))
+         ;; Implement a subset of '-Wformat'.
+         (check-format-string (source-properties->location
+                               (syntax-source s))
+                              str #'(args ...))
+         (with-syntax ((str (string-append str "\n")))
+           #'(condition
+              (&formatted-message (format str)
+                                  (arguments (list args ...))))))))))
 
 
 (define guix-warning-port
