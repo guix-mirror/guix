@@ -85,11 +85,10 @@ such as ones for networking and GUI programming.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.squeakvm.org/unix/release/"
+       (uri (string-append "http://squeakvm.org/unix/release/"
                            "Squeak-" version "-src.tar.gz"))
        (sha256
-        (base32
-         "0bpwbnpy2sb4gylchfx50sha70z36bwgdxraym4vrr93l8pd3dix"))
+        (base32 "0bpwbnpy2sb4gylchfx50sha70z36bwgdxraym4vrr93l8pd3dix"))
        (modules '((guix build utils)))
        (snippet
         ;; Make builds bit-reproducible.
@@ -149,5 +148,5 @@ the original Smalltalk-80 system.  Squeak has very powerful 2- and 3-D
 graphics, sound, video, MIDI, animation and other multimedia capabilities.  It
 also includes a customisable framework for creating dynamic HTTP servers and
 interactively extensible Web sites.")
-    (home-page "http://www.squeakvm.org")
+    (home-page "http://squeakvm.org/")
     (license license:x11)))
