@@ -3023,7 +3023,19 @@ websites such as Libre.fm.")
              #t))
          (replace 'check
            (lambda _
-             (invoke "nosetests" "-v"))))))
+             (invoke "nosetests" "-v")))
+         ;; Wrap the executable, so it can find python-gi (aka pygobject) and
+         ;; gstreamer plugins.
+         (add-after 'wrap 'wrap-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/beet"))
+                   (plugins (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                   (types (getenv "GI_TYPELIB_PATH")))
+               (wrap-program prog
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,plugins))
+                 `("GI_TYPELIB_PATH" ":" prefix (,types)))
+               #t))))))
     (native-inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-flask" ,python-flask)
@@ -3044,7 +3056,13 @@ websites such as Libre.fm.")
        ("python-mutagen" ,python-mutagen)
        ("python-pyacoustid" ,python-pyacoustid)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-unidecode" ,python-unidecode)))
+       ("python-unidecode" ,python-unidecode)
+       ;; For plugin replaygain.
+       ("python-pygobject" ,python-pygobject)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gstreamer" ,gstreamer)))
     (home-page "https://beets.io")
     (synopsis "Music organizer")
     (description "The purpose of beets is to get your music collection right
