@@ -528,6 +528,30 @@ or via the @code{facter} Ruby library.")
 application (for console or X terminals) and requires ncurses.")
     (license license:gpl2)))
 
+(define-public bashtop
+  (package
+    (name "bashtop")
+    (version "0.9.25")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aristocratos/bashtop")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07nlr6vmyb7yihaxj1fp424lmhwkdjl6mls92v90f6gsvikpa13v"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f      ; bats test fails with loading load.bash
+       #:phases (modify-phases %standard-phases (delete 'configure))))
+    (home-page "https://github.com/aristocratos/bashtop")
+    (synopsis "Linux/OSX/FreeBSD resource monitor")
+    (description "Resource monitor that shows usage and stats for processor,
+memory, disks, network and processes.")
+    (license license:asl2.0)))
+
 (define-public pies
   (package
     (name "pies")
