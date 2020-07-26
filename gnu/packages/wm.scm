@@ -1924,3 +1924,40 @@ wasting your precious memory.")
       (description "@code{xclickroot} runs a command every time a given mouse
 button is pressed on the root window.")
       (license license:public-domain))))
+
+(define-public xmenu
+  (package
+    (name "xmenu")
+    (version "3.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/phillbush/xmenu")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1sw9l87fh03jp03a2v7rhgpyx29yg2x9blzfzp40jwad2whs7m7n"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("freetype" ,freetype)
+       ("imlib2" ,imlib2)))
+    (arguments
+     `(#:tests? #f ;no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output)
+             (string-append "CFLAGS="
+                            "-I" (assoc-ref %build-inputs "freetype")
+                            "/include/freetype2"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/phillbush/xmenu")
+    (synopsis "Menu utility for X")
+    (description "@code{xmenu} receives a menu specification in stdin, shows
+a menu for the user to select one of the options, and outputs the option
+selected to stdout.  It can be controlled both via mouse and via keyboard.")
+    (license license:public-domain)))
