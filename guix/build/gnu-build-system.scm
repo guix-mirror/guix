@@ -425,7 +425,7 @@ makefiles."
                 (objcopy-command (if target
                                      (string-append target "-objcopy")
                                      "objcopy"))
-                (strip-flags '("--strip-debug"
+                (strip-flags '("--strip-unneeded"
                                "--enable-deterministic-archives"))
                 (strip-directories '("lib" "lib64" "libexec"
                                      "bin" "sbin"))
