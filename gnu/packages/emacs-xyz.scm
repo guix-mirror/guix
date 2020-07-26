@@ -3792,6 +3792,30 @@ particular, the minor mode works quite well with Org or Markdown modes, or
 other markup language major modes.")
       (license license:gpl3+))))
 
+(define-public emacs-standard-dirs
+  (package
+    (name "emacs-standard-dirs")
+    (version "2.0.0")
+    (home-page "https://github.com/lafrenierejm/standard-dirs.el")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0r814qcrhvx4qlx4sdzwdmrhiryslqclx0bnpp0qcrbx6g8qfl25"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)))
+    (synopsis "Platform-specific paths for config, cache, and other data")
+    (description
+     "This package provides platform-specific paths for reading and writing
+configuration, cache, and other data.")
+    (license license:gpl3+)))
+
 (define-public emacs-string-inflection
   (package
     (name "emacs-string-inflection")
