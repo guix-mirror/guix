@@ -2035,21 +2035,43 @@ Lock key.")
 (define-public emacs-chronometrist
   (package
     (name "emacs-chronometrist")
-    (version "0.4.3")
+    (version "0.5.3")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://framagit.org/contrapunctus/chronometrist.git")
+             (url "https://github.com/contrapunctus-1/chronometrist.git")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ljjqzghcap4admv0hvw6asm148b80mfgjgxjjcw6qc95fkjjjlr"))))
+        (base32 "0jz35972m372kx9x8mgf42zhzdw2w9wv2ri52chfb2fin4bh1biy"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-elisp
+           ;; Elisp directory is not in root of the source.
+           (lambda _
+             (chdir "elisp")
+             #t))
+         (add-after 'install 'install-doc
+           ;; Documentation consists of several Markdown files.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out
+                                        "/share/doc/emacs-chronometrist-"
+                                        ,version)))
+               (with-directory-excursion "../doc"
+                 (for-each (lambda (f) (install-file f doc))
+                           (cons* "../UNLICENSE"
+                                  "../WTFPL"
+                                  (find-files "." "\\.md$")))))
+             #t)))))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
-       ("emacs-s" ,emacs-s)))
-    (home-page "https://framagit.org/contrapunctus/chronometrist")
+       ("emacs-s" ,emacs-s)
+       ("emacs-ts" ,emacs-ts)))
+    (home-page "https://github.com/contrapunctus-1/chronometrist")
     (synopsis "Time tracker for Emacs")
     (description "Chronometrist is a time tracker in Emacs, largely modelled
 after the Android application, @emph{A Time Tracker}.
