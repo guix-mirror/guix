@@ -227,6 +227,7 @@
     "third_party/swiftshader/third_party/marl" ;ASL2.0
     "third_party/swiftshader/third_party/subzero" ;NCSA
     "third_party/swiftshader/third_party/SPIRV-Headers" ;X11-style
+    "third_party/tcmalloc/chromium" ;BSD-3
     "third_party/usb_ids" ;BSD-3
     "third_party/usrsctp" ;BSD-2
     "third_party/vulkan_memory_allocator" ;Expat
@@ -490,7 +491,6 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
              "goma_dir=\"\""
              "enable_nacl=false"
              "enable_nacl_nonsfi=false"
-             "use_allocator=\"none\""
              "use_unofficial_version_number=false"
              "treat_warnings_as_errors=false"
              "use_official_google_api_keys=false"
