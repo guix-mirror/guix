@@ -36,14 +36,14 @@
 (define-public perl-compress-bzip2
   (package
     (name "perl-compress-bzip2")
-    (version "2.26")
+    (version "2.28")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Compress-Bzip2-" version ".tar.gz"))
        (sha256
-        (base32 "032gbhpjch4yc7r32b0glhi5qn6f1sm35lrnxrvlv9bpyg2z0cji"))))
+        (base32 "0vhi6nqayvg6wz55bynccv5xd6gzhbigk9mjv088i6aw7xf877w5"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
