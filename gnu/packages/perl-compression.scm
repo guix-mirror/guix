@@ -69,14 +69,14 @@ is available in this module.")
 (define-public perl-compress-raw-bzip2
   (package
     (name "perl-compress-raw-bzip2")
-    (version "2.091")
+    (version "2.095")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "Compress-Raw-Bzip2-" version ".tar.gz"))
        (sha256
-        (base32 "0c5lwaynkcprjd18d3c82m8cniyq3c8mc4jk42gb32lp7cyyzmr7"))))
+        (base32 "1n72lr35axc9hhxxf9ss6b576s1fn8vab6dcsmbbb7h234j5hzg5"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
     (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
