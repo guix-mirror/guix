@@ -19660,7 +19660,8 @@ processes for Emacs")
      `(,@(package-propagated-inputs emacs-treemacs)
        ("emacs-evil" ,emacs-evil)
        ("emacs-magit" ,emacs-magit)
-       ("emacs-projectile" ,emacs-projectile)))
+       ("emacs-projectile" ,emacs-projectile)
+       ("emacs-persp-mode" ,emacs-persp-mode)))
     (arguments
      (substitute-keyword-arguments
          (package-arguments emacs-treemacs)
