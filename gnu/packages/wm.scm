@@ -1892,3 +1892,35 @@ bar entirely based on XCB.  Provides full UTF-8 support, basic
 formatting, RandR and Xinerama support and EWMH compliance without
 wasting your precious memory.")
       (license license:x11))))
+
+(define-public xclickroot
+  (let ((commit "309fd17174dba4149b5ea66654c6fd02cfcf7c9a")
+        (revision "1"))
+    (package
+      (name "xclickroot")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/phillbush/xclickroot")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0fjqkg3wnyks0my1vrzhxfjicsfy8xwnijaazmpz6mhilcqkpvnd"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("libx11" ,libx11)))
+      (arguments
+       `(#:tests? #f ;no test suite
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target))
+               (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (home-page "https://github.com/phillbush/xclickroot")
+      (synopsis "Run a command when a mouse button is pressed on the root window")
+      (description "@code{xclickroot} runs a command every time a given mouse
+button is pressed on the root window.")
+      (license license:public-domain))))
