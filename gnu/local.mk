@@ -1016,14 +1016,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/glib-tests-timer.patch			\
-  %D%/packages/patches/glibc-CVE-2015-5180.patch		\
-  %D%/packages/patches/glibc-CVE-2015-7547.patch		\
-  %D%/packages/patches/glibc-CVE-2016-3075.patch		\
-  %D%/packages/patches/glibc-CVE-2016-3706.patch		\
-  %D%/packages/patches/glibc-CVE-2016-4429.patch		\
-  %D%/packages/patches/glibc-CVE-2017-1000366-pt1.patch		\
-  %D%/packages/patches/glibc-CVE-2017-1000366-pt2.patch		\
-  %D%/packages/patches/glibc-CVE-2017-1000366-pt3.patch		\
   %D%/packages/patches/glibc-CVE-2018-11236.patch		\
   %D%/packages/patches/glibc-CVE-2018-11237.patch		\
   %D%/packages/patches/glibc-CVE-2019-7309.patch		\
@@ -1045,9 +1037,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
   %D%/packages/patches/glibc-locales.patch			\
   %D%/packages/patches/glibc-locales-2.28.patch			\
-  %D%/packages/patches/glibc-o-largefile.patch			\
   %D%/packages/patches/glibc-reinstate-prlimit64-fallback.patch	\
-  %D%/packages/patches/glibc-vectorized-strcspn-guards.patch	\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
   %D%/packages/patches/glibc-2.27-git-fixes.patch		\
   %D%/packages/patches/glibc-2.28-git-fixes.patch		\
