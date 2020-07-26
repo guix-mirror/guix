@@ -6205,7 +6205,7 @@ for Ivy and Company that make use of the library.")
 (define-public emacs-selectrum
   (package
     (name "emacs-selectrum")
-    (version "1.0")
+    (version "2.0")
     (source
      (origin
        (method git-fetch)
@@ -6214,7 +6214,7 @@ for Ivy and Company that make use of the library.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "105zl102dwbzvk50xh6b824nq6p24kxhky18ghdnk5yi5sv620lm"))))
+        (base32 "08wm4ybidn8g7sy5a009lnsm0f1p7a3jfzpzxnzylvnyrmyhi3y4"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/raxod502/selectrum/")
     (synopsis "Incremental narrowing in Emacs")
