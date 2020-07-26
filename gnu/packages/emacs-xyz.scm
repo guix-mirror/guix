@@ -1717,7 +1717,7 @@ than @code{electric-indent-mode}.")
 (define-public emacs-ctrlf
   (package
     (name "emacs-ctrlf")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method git-fetch)
@@ -1726,7 +1726,7 @@ than @code{electric-indent-mode}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10gnhafas54zj3z9173h1g7b519ac4i26afclmw3w1pk6qyyb03z"))))
+        (base32 "1ffcjf0ff0748gqipkklz6jmcj4f3blgzdcax93ql9ws8bmvlsdc"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/raxod502/ctrlf/")
     (synopsis "Single-buffer text search in Emacs")
