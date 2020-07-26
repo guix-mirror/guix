@@ -320,6 +320,7 @@ selected keymap."
                        e2fsprogs ;mkfs.ext4
                        btrfs-progs
                        jfsutils ;jfs_mkfs
+                       ntfs-3g ;mkfs.ntfs
                        kbd ;chvt
                        guix ;guix system init call
                        util-linux ;mkwap
