@@ -235,4 +235,7 @@ List the current Guix sessions and their processes."))
     (for-each (lambda (session)
                 (daemon-session->recutils session port)
                 (newline port))
-              (daemon-sessions))))
+              (daemon-sessions))
+
+    ;; Pass 'R' (instead of 'r') so 'less' correctly estimates line length.
+    #:less-options "FRX"))

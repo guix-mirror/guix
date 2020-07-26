@@ -1607,13 +1607,18 @@ score, the more relevant OBJ is to REGEXPS."
 zero means that PACKAGE does not match any of REGEXPS."
   (relevance package regexps %package-metrics))
 
-(define (call-with-paginated-output-port proc)
+(define* (call-with-paginated-output-port proc
+                                          #:key (less-options "FrX"))
   (if (isatty?* (current-output-port))
       ;; Set 'LESS' so that 'less' exits if everything fits on the screen (F),
       ;; lets ANSI escapes through (r), does not send the termcap
       ;; initialization string (X).  Set it unconditionally because some
       ;; distros set it to something that doesn't work here.
-      (let ((pager (with-environment-variables `(("LESS" "FrX"))
+      ;;
+      ;; For things that produce long lines, such as 'guix processes', use 'R'
+      ;; instead of 'r': this strips hyperlinks but allows 'less' to make a
+      ;; good estimate of the line length.
+      (let ((pager (with-environment-variables `(("LESS" ,less-options))
                      (open-pipe* OPEN_WRITE
                                  (or (getenv "GUIX_PAGER") (getenv "PAGER")
                                      "less")))))
@@ -1623,10 +1628,15 @@ zero means that PACKAGE does not match any of REGEXPS."
           (lambda () (close-pipe pager))))
       (proc (current-output-port))))
 
-(define-syntax-rule (with-paginated-output-port port exp ...)
-  "Evaluate EXP... with PORT bound to a port that talks to the pager if
+(define-syntax with-paginated-output-port
+  (syntax-rules ()
+    "Evaluate EXP... with PORT bound to a port that talks to the pager if
 standard output is a tty, or with PORT set to the current output port."
-  (call-with-paginated-output-port (lambda (port) exp ...)))
+    ((_ port exp ... #:less-options opts)
+     (call-with-paginated-output-port (lambda (port) exp ...)
+                                      #:less-options opts))
+    ((_ port exp ...)
+     (call-with-paginated-output-port (lambda (port) exp ...)))))
 
 (define* (display-search-results matches port
                                  #:key
