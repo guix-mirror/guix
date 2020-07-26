@@ -487,6 +487,31 @@ jar struct to manage the cookies added to the cookie jar.")
       (home-page "https://github.com/aki237/nscjar")
       (license license:expat))))
 
+(define-public go-github-com-leodido-go-urn
+  (package
+    (name "go-github-com-leodido-go-urn")
+    (version "1.2.0")
+    (home-page "https://github.com/leodido/go-urn")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1d4g1vkhc1180l1n7q48vl84b27c7cziywml78cyijbcdz2f8vim"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/leodido/go-urn"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (synopsis "Parser for uniform resource names as seen on RFC 2141")
+    (description
+     "This package implements a parser for uniform resource names (URN) as
+specified by @uref{https://tools.ietf.org/html/rfc2141, IETF RFC 2141}.")
+    (license license:expat)))
+
 (define-public go-github.com-jessevdk-go-flags
   (package
     (name "go-github.com-jessevdk-go-flags")
