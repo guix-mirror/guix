@@ -369,7 +369,7 @@ SOURCE, an <upstream-source>."
      (let*-values (((archive-type)
                     (match (and=> (package-source package) origin-uri)
                       ((? string? uri)
-                       (let ((type (file-extension (basename uri))))
+                       (let ((type (or (file-extension (basename uri)) "")))
                          ;; Sometimes we have URLs such as
                          ;; "https://github.com/…/tarball/v0.1", in which case
                          ;; we must not consider "1" as the extension.
