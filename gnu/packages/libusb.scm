@@ -441,21 +441,22 @@ music and video to the device.")
 (define-public ifuse
   (package
     (name "ifuse")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.libimobiledevice.org/downloads/"
-                                  "ifuse-" version ".tar.bz2"))
+              (uri (string-append "https://github.com/libimobiledevice"
+                                  "/ifuse/releases/download/" version
+                                  "/ifuse-" version ".tar.bz2"))
               (sha256
                (base32
-                "1p9a4n36jb194cnp6v57cz2bggwbywaz8pbpb95ch83pzdkdx257"))))
+                "11wdv44qwia77sh38n36809ysaib52rwd4fvqwb5ybsbz4p70l1m"))))
     (inputs
      `(("fuse" ,fuse)
        ("libimobiledevice" ,libimobiledevice)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (build-system gnu-build-system)
-    (home-page "https://www.libimobiledevice.org/")
+    (home-page "https://libimobiledevice.org/")
     (synopsis "Mount iOS devices")
     (description "This package provides @command{ifuse}, a command to mount
 iOS devices and access their contents.")
