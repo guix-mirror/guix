@@ -8748,6 +8748,50 @@ specification.")
 (define-public python2-idna
   (package-with-python2 python-idna))
 
+(define-public python-libsass
+  (package
+    (name "python-libsass")
+    (version "0.20.0")
+    (source
+     (origin
+       ;; PyPI tarball is missing some test files.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sass/libsass-python")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0h9rj4k9izkfdvli8ip72bbvh6a7bvrv5pxz6zay2bq235gpfgfc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Use Guix package of libsass instead of compiling from a checkout.
+         (add-before 'build 'set-libsass
+           (lambda _
+             (setenv "SYSTEM_SASS" (assoc-ref %build-inputs "libsass"))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "sasstests.py" "-k"
+                     ;; See https://github.com/sass/libsass/issues/3092.
+                     ;; This test may work in a future release of libsass.
+                     "not test_stack_trace_formatting"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-werkzeug" ,python-werkzeug)))
+    (inputs
+     `(("libsass" ,libsass)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://sass.github.io/libsass-python/")
+    (synopsis "Straightforward binding of libsass for Python")
+    (description
+     "This package provides a simple Python extension module @code{sass} which
+is binding LibSass.")
+    (license license:expat)))
+
 (define-public python-idna-ssl
   (package
     (name "python-idna-ssl")
