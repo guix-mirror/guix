@@ -632,6 +632,55 @@ professionally translated
 @end itemize")
     (license license:expat)))
 
+(define-public go-gopkg-in-go-playground-validator-v9
+  (package
+    (name "go-gopkg-in-go-playground-validator-v9")
+    (version "9.31.0")
+    (home-page "https://gopkg.in/go-playground/validator.v9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/go-playground/validator")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f8c77s8kx9rip2jarv27x5s4xkcmanh4ndyhbcwvrhncs5rq061"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/go-playground/validator.v9"))
+    (native-inputs
+     `(("go-gopkg-in-go-playground-assert-v1"
+        ,go-gopkg-in-go-playground-assert-v1)))
+    (propagated-inputs
+     `(("go-github-com-go-playground-universal-translator"
+        ,go-github-com-go-playground-universal-translator)
+       ("go-github-com-leodido-go-urn" ,go-github-com-leodido-go-urn)))
+    (synopsis "Validator for structs and individual fields based on tags")
+    (description
+     "This package implements value validations for structs and individual
+fields based on tags.  It has the following unique features:
+
+@itemize
+@item Cross Field and Cross Struct validations by using validation tags or
+custom validators
+@item Slice, Array and Map diving, which allows any or all levels of a
+multidimensional field to be validated
+@item Ability to dive into both map keys and values for validation
+@item Handles type interface by determining it's underlying type prior to validation
+@item Handles custom field types such as sql driver
+@uref{https://golang.org/src/database/sql/driver/types.go?s=1210:1293#L29,
+Valuer}
+@item Alias validation tags, which allows for mapping of several validations
+to a single tag for easier defining of validations on structs
+@item Extraction of custom defined Field Name e.g. can specify to extract the
+JSON name while validating and have it available in the resulting FieldError
+@item Customizable i18n aware error messages.
+@item Default validator for the @uref{https://github.com/gin-gonic/gin, gin}
+web framework
+@end itemize")
+    (license license:expat)))
+
 (define-public go-github-com-aws-sdk
   (package
     (name "go-github-com-aws-sdk")
