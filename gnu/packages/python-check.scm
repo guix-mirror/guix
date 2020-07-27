@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -818,3 +819,23 @@ it, the declaration of a name's public export semantics are not separated from
 the implementation of that name.")
     (license (list license:asl2.0
                    license:lgpl3))))    ; only for setup_helpers.py
+
+(define-public python-mypy-extensions
+  (package
+    (name "python-mypy-extensions")
+    (version "0.4.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mypy_extensions" version))
+        (sha256
+         (base32
+          "1a04qsk8hd1lqns8w1j7cr0vmvbhg450di5k1i16kqxkbf7q30id"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)); no tests
+    (home-page "https://github.com/python/mypy_extensions")
+    (synopsis "Experimental extensions for MyPy")
+    (description "The @code{python-mypy-extensions} module defines
+experimental extensions to the standard @code{typing} module that are
+supported by the MyPy typechecker.")
+    (license license:expat)))
