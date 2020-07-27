@@ -781,16 +781,15 @@ manipulate repositories of the Git version control system.")
   (package
     (name "guile-zlib")
     (version "0.0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://notabug.org/guile-zlib/guile-zlib.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "139ixlg0663azwpcj24sw27kmzxr5am0j6hn62ffjchi9w1qb3k0"))
-              (modules '((guix build utils)))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://notabug.org/guile-zlib/guile-zlib/archive/"
+                       version ".tar.gz"))
+       (sha256
+        (base32
+         "1caz6cbl6sg5567nk68z88rshp0m26zmb0a9ry1jkc1ivpk0n47i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
