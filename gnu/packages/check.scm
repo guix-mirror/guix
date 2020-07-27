@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1823,6 +1824,18 @@ seamlessly into your existing Python unit testing work flow.")
     (home-page "https://github.com/HypothesisWorks/hypothesis-python")
     (license license:mpl2.0)
     (properties `((python2-variant . ,(delay python2-hypothesis))))))
+
+(define-public python-hypothesis-5.23
+  (package
+    (inherit python-hypothesis)
+    (version "5.23.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "hypothesis" version))
+              (sha256
+               (base32
+                "0sy1v6nyxg4rjcf3rlr8nalb7wqd9nccpb2lzkchbj5an13ysf1h"))))
+    (home-page "https://github.com/HypothesisWorks/hypothesis")))
 
 ;; This is the last version of Hypothesis that supports Python 2.
 (define-public python2-hypothesis
