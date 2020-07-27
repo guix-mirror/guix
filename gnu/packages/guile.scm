@@ -783,6 +783,9 @@ manipulate repositories of the Git version control system.")
     (version "0.0.1")
     (source
      (origin
+       ;; XXX: Do not use "git-fetch" method here that would create and
+       ;; endless inclusion loop, because this package is used as an extension
+       ;; in the same method.
        (method url-fetch)
        (uri
         (string-append "https://notabug.org/guile-zlib/guile-zlib/archive/"
