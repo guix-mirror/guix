@@ -251,8 +251,7 @@ usable on embedded products.")
            (origin-patches (package-source gcc-7))
            (search-patches "gcc-7-cross-environment-variables.patch")))))
       (native-inputs
-       `(("gcc@5" ,gcc-5)
-         ("flex" ,flex)
+       `(("flex" ,flex)
          ("isl" ,isl-0.18)
          ,@(alist-delete "isl" (package-native-inputs xgcc))))
       (arguments
