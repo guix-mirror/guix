@@ -113,13 +113,13 @@ It is aimed at use in, for example, cryptography and computational algebra.")
 (define-public mpfr
   (package
    (name "mpfr")
-   (version "4.0.2")
+   (version "4.1.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
-                     "12m3amcavhpqygc499s3fzqlb8f2j2rr7fkqsm10xbjfc04fffqx"))))
+                     "0zwaanakrqjf84lfr5hfsdr7hncwv9wj0mchlr7cmxigfgqs760c"))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
