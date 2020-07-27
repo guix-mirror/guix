@@ -4136,7 +4136,7 @@ repetitions for example).")
 (define-public emacs-flycheck-guile
   (package
     (name "emacs-flycheck-guile")
-    (version "0.1.1")
+    (version "0.2")
     (source
      (origin
        (method git-fetch)
@@ -4146,7 +4146,7 @@ repetitions for example).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "163pnsh6r6bral1jg0vqri54g6hygws21vis0zci4114yb3fhkm1"))))
+        (base32 "0cs5r0ik6a3bl1k3imjl0r8y1i69kx9x9m9cgxj470qk34brwyj5"))))
     (propagated-inputs
      `(("emacs-flycheck" ,emacs-flycheck)
        ("emacs-geiser" ,emacs-geiser)))
