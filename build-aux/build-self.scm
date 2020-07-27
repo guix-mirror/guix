@@ -71,7 +71,7 @@
                                       (variables rest ...))))))
     (variables %localstatedir %storedir %sysconfdir %system)))
 
-(define* (make-config.scm #:key zlib gzip xz bzip2
+(define* (make-config.scm #:key gzip xz bzip2
                           (package-name "GNU Guix")
                           (package-version "0")
                           (bug-report-address "bug-guix@gnu.org")
@@ -133,11 +133,7 @@
                      (define %bzip2
                        #+(and bzip2 (file-append bzip2 "/bin/bzip2")))
                      (define %xz
-                       #+(and xz (file-append xz "/bin/xz")))
-
-                     (define %libz
-                       #+(and zlib
-                              (file-append zlib "/lib/libz")))))))
+                       #+(and xz (file-append xz "/bin/xz")))))))
 
 
 ;;;

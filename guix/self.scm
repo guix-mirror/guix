@@ -53,10 +53,10 @@
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
       ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
+      ("guile-zlib" (ref '(gnu packages guile) 'guile-zlib))
+      ("guile-lzlib" (ref '(gnu packages guile) 'guile-lzlib))
       ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile-gcrypt))
       ("gnutls"     (ref '(gnu packages tls) 'guile3.0-gnutls))
-      ("zlib"       (ref '(gnu packages compression) 'zlib))
-      ("lzlib"      (ref '(gnu packages compression) 'lzlib))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
@@ -727,8 +727,6 @@ Info manual."
                         (name (string-append "guix-" version))
                         (guile-version (effective-version))
                         (guile-for-build (default-guile))
-                        (zlib (specification->package "zlib"))
-                        (lzlib (specification->package "lzlib"))
                         (gzip (specification->package "gzip"))
                         (bzip2 (specification->package "bzip2"))
                         (xz (specification->package "xz"))
@@ -746,6 +744,12 @@ Info manual."
   (define guile-sqlite3
     (specification->package "guile-sqlite3"))
 
+  (define guile-zlib
+    (specification->package "guile-zlib"))
+
+  (define guile-lzlib
+    (specification->package "guile-lzlib"))
+
   (define guile-gcrypt
     (specification->package "guile-gcrypt"))
 
@@ -757,7 +761,7 @@ Info manual."
                          (cons (list "x" package)
                                (package-transitive-propagated-inputs package)))
                        (list guile-gcrypt gnutls guile-git guile-json
-                             guile-ssh guile-sqlite3))
+                             guile-ssh guile-sqlite3 guile-zlib guile-lzlib))
       (((labels packages _ ...) ...)
        packages)))
 
@@ -884,9 +888,7 @@ Info manual."
                  '()
                  #:extra-modules
                  `(((guix config)
-                    => ,(make-config.scm #:zlib zlib
-                                         #:lzlib lzlib
-                                         #:gzip gzip
+                    => ,(make-config.scm #:gzip gzip
                                          #:bzip2 bzip2
                                          #:xz xz
                                          #:package-name
@@ -983,7 +985,7 @@ Info manual."
                                       (variables rest ...))))))
     (variables %localstatedir %storedir %sysconfdir)))
 
-(define* (make-config.scm #:key zlib lzlib gzip xz bzip2
+(define* (make-config.scm #:key gzip xz bzip2
                           (package-name "GNU Guix")
                           (package-version "0")
                           (bug-report-address "bug-guix@gnu.org")
@@ -1004,8 +1006,6 @@ Info manual."
                                %state-directory
                                %store-database-directory
                                %config-directory
-                               %libz
-                               %liblz
                                %gzip
                                %bzip2
                                %xz))
@@ -1048,15 +1048,7 @@ Info manual."
                    (define %bzip2
                      #+(and bzip2 (file-append bzip2 "/bin/bzip2")))
                    (define %xz
-                     #+(and xz (file-append xz "/bin/xz")))
-
-                   (define %libz
-                     #+(and zlib
-                            (file-append zlib "/lib/libz")))
-
-                   (define %liblz
-                     #+(and lzlib
-                            (file-append lzlib "/lib/liblz"))))
+                     #+(and xz (file-append xz "/bin/xz"))))
 
                ;; Guile 2.0 *requires* the 'define-module' to be at the
                ;; top-level or the 'toplevel-ref' in the resulting .go file are

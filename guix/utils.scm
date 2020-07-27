@@ -208,13 +208,8 @@ buffered data is lost."
 (define (lzip-port proc port . args)
   "Return the lzip port produced by calling PROC (a symbol) on PORT and ARGS.
 Raise an error if lzlib support is missing."
-  (let* ((lzlib       (false-if-exception (resolve-interface '(guix lzlib))))
-         (supported?  (and lzlib
-                           ((module-ref lzlib 'lzlib-available?)))))
-    (if supported?
-        (let ((make-port (module-ref lzlib proc)))
-          (values (make-port port) '()))
-        (error "lzip compression not supported" lzlib))))
+  (let ((make-port (module-ref (resolve-interface '(lzlib)) proc)))
+    (values (make-port port) '())))
 
 (define (decompressed-port compression input)
   "Return an input port where INPUT is decompressed according to COMPRESSION,

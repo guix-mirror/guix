@@ -1412,27 +1412,18 @@ the entries in MANIFEST."
     (module-ref (resolve-interface '(gnu packages guile))
                 'guile-gdbm-ffi))
 
-  (define zlib
-    (module-ref (resolve-interface '(gnu packages compression)) 'zlib))
-
-  (define config.scm
-    (scheme-file "config.scm"
-                 #~(begin
-                     (define-module #$'(guix config) ;placate Geiser
-                       #:export (%libz))
-
-                     (define %libz
-                       #+(file-append zlib "/lib/libz")))))
+  (define guile-zlib
+    (module-ref (resolve-interface '(gnu packages guile)) 'guile-zlib))
 
   (define modules
-    (cons `((guix config) => ,config.scm)
-          (delete '(guix config)
-                  (source-module-closure `((guix build utils)
-                                           (guix man-db))))))
+    (delete '(guix config)
+            (source-module-closure `((guix build utils)
+                                     (guix man-db)))))
 
   (define build
     (with-imported-modules modules
-      (with-extensions (list gdbm-ffi)            ;for (guix man-db)
+      (with-extensions (list gdbm-ffi           ;for (guix man-db)
+                             guile-zlib)
         #~(begin
             (use-modules (guix man-db)
                          (guix build utils)

@@ -279,6 +279,8 @@ $(prefix)/etc/init.d\n")))
                                (gcrypt (assoc-ref inputs "guile-gcrypt"))
                                (json   (assoc-ref inputs "guile-json"))
                                (sqlite (assoc-ref inputs "guile-sqlite3"))
+                               (zlib   (assoc-ref inputs "guile-zlib"))
+                               (lzlib  (assoc-ref inputs "guile-lzlib"))
                                (git    (assoc-ref inputs "guile-git"))
                                (bs     (assoc-ref inputs
                                                   "guile-bytestructures"))
@@ -286,7 +288,7 @@ $(prefix)/etc/init.d\n")))
                                (gnutls (assoc-ref inputs "gnutls"))
                                (locales (assoc-ref inputs "glibc-utf8-locales"))
                                (deps   (list gcrypt json sqlite gnutls
-                                             git bs ssh))
+                                             git bs ssh zlib lzlib))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
@@ -326,6 +328,8 @@ $(prefix)/etc/init.d\n")))
                        ("guile-gcrypt" ,guile-gcrypt)
                        ("guile-json" ,guile-json-4)
                        ("guile-sqlite3" ,guile-sqlite3)
+                       ("guile-zlib" ,guile-zlib)
+                       ("guile-lzlib" ,guile-lzlib)
                        ("guile-ssh" ,guile-ssh)
                        ("guile-git" ,guile-git)
 
@@ -342,9 +346,6 @@ $(prefix)/etc/init.d\n")))
       (inputs
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
-         ("zlib" ,zlib)              ;for 'guix publish'
-         ("lzlib" ,lzlib)            ;for 'guix publish' and 'guix substitute'
-
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
 
@@ -378,7 +379,9 @@ $(prefix)/etc/init.d\n")))
          ("guile-json" ,guile-json-4)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-ssh" ,guile-ssh)
-         ("guile-git" ,guile-git)))
+         ("guile-git" ,guile-git)
+         ("guile-zlib" ,guile-zlib)
+         ("guile-lzlib" ,guile-lzlib)))
 
       (home-page "https://www.gnu.org/software/guix/")
       (synopsis "Functional package manager for installed software packages and versions")

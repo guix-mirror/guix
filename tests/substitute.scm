@@ -29,7 +29,6 @@
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module ((guix ui) #:select (guix-warning-port))
   #:use-module ((guix utils) #:select (call-with-compressed-output-port))
-  #:use-module ((guix lzlib) #:select (lzlib-available?))
   #:use-module ((guix build utils)
                 #:select (mkdir-p delete-file-recursively dump-port))
   #:use-module (guix tests http)
@@ -508,8 +507,7 @@ System: mips64el-linux\n")))
           (let ((nar (string-append %main-substitute-directory
                                     "/example.nar")))
             (compress nar (string-append nar ".gz") 'gzip)
-            (when (lzlib-available?)
-              (compress nar (string-append nar ".lz") 'lzip)))
+            (compress nar (string-append nar ".lz") 'lzip))
 
           (parameterize ((substitute-urls
                           (list (string-append "file://"

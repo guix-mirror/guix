@@ -109,8 +109,6 @@ MODULES =					\
   guix/cache.scm				\
   guix/cve.scm					\
   guix/workers.scm				\
-  guix/zlib.scm					\
-  guix/lzlib.scm				\
   guix/build-system.scm				\
   guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
@@ -431,7 +429,6 @@ SCM_TESTS =					\
   tests/import-utils.scm			\
   tests/inferior.scm				\
   tests/lint.scm				\
-  tests/lzlib.scm				\
   tests/modules.scm				\
   tests/monads.scm				\
   tests/nar.scm				\
@@ -470,8 +467,7 @@ SCM_TESTS =					\
   tests/upstream.scm				\
   tests/utils.scm				\
   tests/uuid.scm				\
-  tests/workers.scm				\
-  tests/zlib.scm
+  tests/workers.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\
