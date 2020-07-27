@@ -14272,15 +14272,16 @@ iterating over input files.")
 (define-public python2-ttystatus
   (package
     (name "python2-ttystatus")
-    (version "0.36")
+    (version "0.38")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "http://git.liw.fi/ttystatus")
-             (commit (string-append "ttystatus-" version))))
+             ;; There are no tags after ttystatus-0.36.
+             (commit "e9fc573326c5d1348f5fe56263b4f7a8c32f58c9")))
        (sha256
-        (base32 "1vwr086yi5wky1zc7jqq49fl8yvzqnp9a7rrg67arc55j4awsn5l"))
+        (base32 "0v49q839nrwdm19c83wfmj6n2kw80xslwq9k0n5509r2h7wzjiqj"))
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (native-inputs
