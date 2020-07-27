@@ -14275,13 +14275,13 @@ iterating over input files.")
     (version "0.36")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://git.liw.fi/cgi-bin/cgit/cgit.cgi/ttystatus/snapshot/ttystatus-"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://git.liw.fi/ttystatus")
+             (commit (string-append "ttystatus-" version))))
        (sha256
-        (base32
-         "06mdk4d19zw2j3is54gndhzl396g3xc8k52m7i86z69s9hcz71by"))))
+        (base32 "1vwr086yi5wky1zc7jqq49fl8yvzqnp9a7rrg67arc55j4awsn5l"))
+       (file-name (git-file-name name version))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
