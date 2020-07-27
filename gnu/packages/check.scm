@@ -1853,6 +1853,29 @@ seamlessly into your existing Python unit testing work flow.")
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs hypothesis))))))
 
+(define-public python-hypothesmith
+  (package
+    (name "python-hypothesmith")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hypothesmith" version))
+       (sha256
+        (base32
+         "09331sspknv459xcyn1k0lx5flqlc6gmnwp9370pfvg4kg1zmss6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-hypothesis" ,python-hypothesis-5.23)
+       ("python-lark-parser" ,python-lark-parser)
+       ("python-libcst" ,python-libcst)))
+    (home-page "https://github.com/Zac-HD/hypothesmith")
+    (synopsis "Strategies for generating Python programs")
+    (description
+     "This package contains hypothesis strategies for generating Python
+programs, something like CSmith, a random generator of C programs.")
+    (license license:mpl2.0)))
+
 (define-public python-lit
   (package
     (name "python-lit")
