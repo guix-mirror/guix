@@ -29033,6 +29033,16 @@ When @code{host-key} is @code{#f}, the server is authenticated against
 the @file{~/.ssh/known_hosts} file, just like the OpenSSH @command{ssh}
 client does.
 
+@item @code{allow-downgrades?} (default: @code{#f})
+Whether to allow potential downgrades.
+
+Like @command{guix system reconfigure}, @command{guix deploy} compares
+the channel commits currently deployed on the remote host (as returned
+by @command{guix system describe}) to those currently in use (as
+returned by @command{guix describe}) to determine whether commits
+currently in use are descendants of those deployed.  When this is not
+the case and @code{allow-downgrades?} is false, it raises an error.
+This ensures you do not accidentally downgrade remote machines.
 @end table
 @end deftp
 

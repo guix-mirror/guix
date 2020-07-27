@@ -24,6 +24,7 @@
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system uuid)
+  #:use-module ((gnu services) #:select (sexp->system-provenance))
   #:use-module (guix diagnostics)
   #:use-module (guix gexp)
   #:use-module (guix i18n)
@@ -55,6 +56,7 @@
             machine-ssh-configuration-host-name
             machine-ssh-configuration-build-locally?
             machine-ssh-configuration-authorize?
+            machine-ssh-configuration-allow-downgrades?
             machine-ssh-configuration-port
             machine-ssh-configuration-user
             machine-ssh-configuration-host-key
@@ -83,6 +85,8 @@
                   (default #t))
   (authorize?     machine-ssh-configuration-authorize?     ; boolean
                   (default #t))
+  (allow-downgrades? machine-ssh-configuration-allow-downgrades? ; boolean
+                     (default #f))
   (port           machine-ssh-configuration-port           ; integer
                   (default 22))
   (user           machine-ssh-configuration-user           ; string
@@ -271,6 +275,27 @@ not available in the initrd."
 
   (map missing-modules file-systems))
 
+(define* (machine-check-forward-update machine)
+  "Check whether we are making a forward update for MACHINE.  Depending on its
+'allow-upgrades?' field, raise an error or display a warning if we are
+potentially downgrading it."
+  (define config
+    (machine-configuration machine))
+
+  (define validate-reconfigure
+    (if (machine-ssh-configuration-allow-downgrades? config)
+        warn-about-backward-reconfigure
+        ensure-forward-reconfigure))
+
+  (remote-let ((provenance #~(call-with-input-file
+                                 "/run/current-system/provenance"
+                               read)))
+    (define channels
+      (sexp->system-provenance provenance))
+
+    (check-forward-update validate-reconfigure
+                          #:current-channels channels)))
+
 (define (machine-check-building-for-appropriate-system machine)
   "Raise a '&message' error condition if MACHINE is configured to be built
 locally and the 'system' field does not match the '%current-system' reported
@@ -289,7 +314,8 @@ by MACHINE."
 'system' declaration would fail."
   (define assertions
     (append (machine-check-file-system-availability machine)
-            (machine-check-initrd-modules machine)))
+            (machine-check-initrd-modules machine)
+            (list (machine-check-forward-update machine))))
 
   (define aggregate-exp
     ;; Gather all the expressions so that a single round-trip is enough to
@@ -491,3 +517,7 @@ connection to the host.")))
 for environment of type '~a'")
                                 config
                                 environment)))))
+
+;; Local Variables:
+;; eval: (put 'remote-let 'scheme-indent-function 1)
+;; End:

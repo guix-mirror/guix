@@ -339,24 +339,25 @@ to commits of channels in NEW."
               old))
 
 (define* (check-forward-update #:optional
-                               (validate-reconfigure ensure-forward-reconfigure))
+                               (validate-reconfigure
+                                ensure-forward-reconfigure)
+                               #:key
+                               (current-channels
+                                (system-provenance "/run/current-system")))
   "Call VALIDATE-RECONFIGURE passing it, for each channel, the channel, the
-currently-deployed commit (as returned by 'guix system describe') and the
-target commit (as returned by 'guix describe')."
-  ;; TODO: Make that functionality available to 'guix deploy'.
+currently-deployed commit (from CURRENT-CHANNELS, which is as returned by
+'guix system describe' by default) and the target commit (as returned by 'guix
+describe')."
   (define new
     (or (and=> (current-profile) profile-channels)
         '()))
 
-  (define old
-    (system-provenance "/run/current-system"))
-
-  (when (null? old)
-    (warning (G_ "cannot determine provenance for /run/current-system~%")))
+  (when (null? current-channels)
+    (warning (G_ "cannot determine provenance for current system~%")))
   (when (and (null? new) (not (getenv "GUIX_UNINSTALLED")))
     (warning (G_ "cannot determine provenance of ~a~%") %guix-package-name))
 
   (for-each (match-lambda
               ((channel old new relation)
                (validate-reconfigure channel old new relation)))
-            (channel-relations old new)))
+            (channel-relations current-channels new)))

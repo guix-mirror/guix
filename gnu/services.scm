@@ -89,6 +89,7 @@
 
             system-service-type
             provenance-service-type
+            sexp->system-provenance
             system-provenance
             boot-service-type
             cleanup-service-type
@@ -488,6 +489,19 @@ channels in use and CONFIG-FILE, if it is true."
 itself: the channels used when building the system, and its configuration
 file, when available.")))
 
+(define (sexp->system-provenance sexp)
+  "Parse SEXP, an s-expression read from /run/current-system/provenance or
+similar, and return two values: the list of channels listed therein, and the
+OS configuration file or #f."
+  (match sexp
+    (('provenance ('version 0)
+                  ('channels channels ...)
+                  ('configuration-file config-file))
+     (values (map sexp->channel channels)
+             config-file))
+    (_
+     (values '() #f))))
+
 (define (system-provenance system)
   "Given SYSTEM, the file name of a system generation, return two values: the
 list of channels SYSTEM is built from, and its configuration file.  If that
@@ -495,15 +509,9 @@ information is missing, return the empty list (for channels) and possibly
 #false (for the configuration file)."
   (catch 'system-error
     (lambda ()
-      (match (call-with-input-file (string-append system "/provenance")
-               read)
-        (('provenance ('version 0)
-                      ('channels channels ...)
-                      ('configuration-file config-file))
-         (values (map sexp->channel channels)
-                 config-file))
-        (_
-         (values '() #f))))
+      (sexp->system-provenance
+       (call-with-input-file (string-append system "/provenance")
+         read)))
     (lambda _
       (values '() #f))))
 
