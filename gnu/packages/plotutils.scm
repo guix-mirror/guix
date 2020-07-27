@@ -73,7 +73,12 @@
                  (substitute* "libplot/z_write.c"
                    (("png_ptr->jmpbuf")
                     "png_jmpbuf (png_ptr)"))
-                 #t))))
+                 #t))
+             (patches
+              ;; The test suite fails on some architectures such as i686 (see:
+              ;; https://lists.gnu.org/archive/html/bug-plotutils/2016-04/msg00002.html).
+              ;; The following Debian patch works around it.
+              (search-patches "plotutils-spline-test.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-libplotter")))
