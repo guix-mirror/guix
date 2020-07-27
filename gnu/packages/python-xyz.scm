@@ -12607,27 +12607,17 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.17.0")
+    (version "0.17.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
-       (patches (search-patches "python-jedi-sort-project-test.patch"))
        (sha256
-        (base32
-         "0c1h9x3a9klvk2g288wl328x8xgzw7136k6vs9hkd56b85vcjh6z"))))
+        (base32 "080xyf97ifabdz7jp8clg00b8zv5g33fva1fb2xf80q6fndpvvc6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'adjust-test-for-python-3.8
-           (lambda _
-             ;; Mimic upstream commit e7feeef64 to allow for extra output lines
-             ;; in TestSetupReadline on Python 3.8.  Remove for jedi > 0.17.0.
-             (substitute* "test/test_utils.py"
-               (("assert len\\(difference\\) < 20")
-                "assert len(difference) < 22"))
-             #t))
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
