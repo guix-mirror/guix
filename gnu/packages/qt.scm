@@ -1548,6 +1548,36 @@ the end-user is driving and cannot attend the incoming messages on the phone.
 In such a scenario, the messaging application can read out the incoming
 message.")))
 
+(define-public qtspell
+  (package
+    (name "qtspell")
+    (version "0.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/manisandro/qtspell.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1081makirjxixz44ghwz362vgnk5wcks6ni6w01pl667x8wggsd2"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no test
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("enchant" ,enchant)
+       ("qtbase" ,qtbase)))
+    (home-page "https://github.com/manisandro/qtspell")
+    (synopsis "Spell checking for Qt text widgets")
+    (description
+     "QtSpell adds spell-checking functionality to Qt's text widgets,
+using the Enchant spell-checking library.")
+    ;; COPYING file specify GPL3, but source code files all refer to GPL2+.
+    (license license:gpl2+)))
+
 (define-public qtwebengine
   (package
     (inherit qtsvg)
