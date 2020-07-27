@@ -1796,7 +1796,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1410")
+    (version "0.4.1456")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1805,7 +1805,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v4lfldcijgngg0s4q5w4ixa0k8k75dwmkhf57pgb31bqlrr8h0s"))))
+                "0n6h5qkhjwsxy8rf6n4i8hd8dah38hbvchh9272c53gydgp9lp29"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
