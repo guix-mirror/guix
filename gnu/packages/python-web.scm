@@ -3522,15 +3522,13 @@ Python.")
 (define-public python-slugify
   (package
     (name "python-slugify")
-    (version "3.0.4")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-slugify" version))
        (sha256
-        (base32 "0dv97yi5fq074q5qyqbin09pmi8ixg36caf5nkpw2bqkd8jh6pap"))
-       (patches
-        (search-patches "python-slugify-depend-on-unidecode.patch"))))
+        (base32 "0w22fapghmzk3xdasc4dn7h8sl58l08d1h5zbf72dh80drv1g9b9"))))
     (native-inputs
      `(("python-wheel" ,python-wheel)))
     (propagated-inputs
