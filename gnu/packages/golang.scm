@@ -6484,6 +6484,43 @@ systems can import this package to enable running programs as services without
 modifying them.")
     (license license:zlib)))
 
+(define-public go-github-com-goccy-yaml
+  (package
+    (name "go-github-com-goccy-yaml")
+    (version "1.8.0")
+    (home-page "https://github.com/goccy/go-yaml")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1nps58dwkd915mx35h5f0dc05b880b4fdl6dcjxpfmmbzyinvg38"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/goccy/go-yaml"))
+    (propagated-inputs
+     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-golang-org-x-xerrors" ,go-golang-org-x-xerrors)))
+    (native-inputs
+     `(("go-gopkg-in-go-playground-validator-v9"
+        ,go-gopkg-in-go-playground-validator-v9)))
+    (synopsis "YAML support for the Go language")
+    (description
+     "This package provides features beyond the
+@uref{https://github.com/go-yaml/yaml, defacto YAML library} including:
+
+@itemize
+@item Pretty format for error notifications
+@item Support Scanner or Lexer or Parser as public API
+@item Support Anchor and Alias to Marshaler
+@item Allow referencing elements declared in another file via anchors
+@item Extract value or AST by YAMLPath (YAMLPath is like a JSONPath)
+@end itemize")
+    (license license:expat)))
+
 (define-public go-github.com-ulikunitz-xz
   (package
     (name "go-github.com-ulikunitz-xz")
