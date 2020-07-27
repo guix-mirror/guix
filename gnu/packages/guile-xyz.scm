@@ -1883,17 +1883,17 @@ understand, extend, and port to host languages other than Scheme.")
 (define-public guile-reader
   (package
     (name "guile-reader")
-    (version "0.6.2")
+    (version "0.6.3")
     (source  (origin
                (method url-fetch)
                (uri (string-append "mirror://savannah/guile-reader/guile-reader-"
                                    version ".tar.gz"))
                (sha256
                 (base32
-                 "0592s2s8ampqmqwilc4fvcild6rb9gy79di6vxv5kcdmv23abkgx"))))
+                 "1fyjckmygkhq22lq8nqc86yl5zzbqd7a944dnz5c1f6vx92b9hiq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkgconfig" ,pkg-config)
-                     ("gperf" ,gperf-3.0)))
+                     ("gperf" ,gperf)))
     (inputs `(("guile" ,guile-2.2)))
     (synopsis "Framework for building readers for GNU Guile")
     (description
