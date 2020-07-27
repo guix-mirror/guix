@@ -7989,6 +7989,36 @@ plugins that intend to support Flake8 2.x and 3.x simultaneously.")
 (define-public python2-flake8-polyfill
   (package-with-python2 python-flake8-polyfill))
 
+(define-public python-flake8-pyi
+  (package
+    (name "python-flake8-pyi")
+    (version "20.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8-pyi" version))
+       (sha256
+        (base32
+         "1zpq4s9kp8w95pccmhhyyx1ff2zhnidcf1zb3xs46lzcx9plvnzk"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-flake8" ,python-flake8)
+       ("python-pyflakes" ,python-pyflakes)))
+    (home-page "https://github.com/ambv/flake8-pyi")
+    (synopsis
+      "Flake8 plugin that provides specializations for type hinting stub files")
+    (description
+     "This package contains a plugin that provides specializations for
+type hinting stub files, especially interesting for linting typeshed.  It
+adds the @file{.pyi} extension to the default value of the @code{--filename}
+command-line argument to Flake8.  This means stubs are linted by default with
+this plugin enabled, without needing to explicitly list every file.  It
+modifies PyFlakes runs for @file{.pyi} files to defer checking type annotation
+expressions after the entire file has been read.  This enables support for
+first-class forward references that stub files use.")
+    (license license:expat)))
+
 (define-public python-mistune
   (package
     (name "python-mistune")
