@@ -4393,3 +4393,37 @@ Agent is a web crawler.  It uses the list of registered robots from
      "This module provides an interface that queries the Apache Solr server
 using a pure Python implementation.")
     (license license:bsd-3)))
+
+(define-public python-http-ece
+  (package
+    (name "python-http-ece")
+    (version "1.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/web-push-libs/encrypted-content-encoding")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0bp4cc0xc123i72h80ax3qz3ixfwx3j7pw343kc7i6kdvfi8klx7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _ (chdir "python") #t)))))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/web-push-libs/encrypted-content-encoding")
+    (synopsis "Encrypted Content Encoding for HTTP")
+    (description
+     "This package provices a simple implementation of Encrypted Content
+Encoding for HTTP.")
+    (license license:expat)))
