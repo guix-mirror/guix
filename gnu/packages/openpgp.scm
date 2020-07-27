@@ -19,11 +19,19 @@
 (define-module (gnu packages openpgp)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages multiprecision))
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages web))
 
 (define-public libtmcg
   (package
@@ -92,3 +100,87 @@ implementation is in experimental state and should NOT be used in production
 environments.")
     (home-page "https://www.nongnu.org/dkgpg/")
     (license license:gpl2+)))
+
+(define-public rnp
+  ;; Packaging the currently released version requires a large number of
+  ;; patches.  For now, we package a snapshot instead.
+  (let ((commit "203224f0b1505dba17837c03da603e5b98ab125a")
+        (revision "0")
+        (last-version "0.13.1")
+        (day-of-release "2020-07-21"))
+    (package
+      (name "rnp")
+      (version (git-version last-version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rnpgp/rnp")
+                      (commit commit)))
+                (file-name
+                 (string-append name "-" (string-take commit 7) "-checkout"))
+                (sha256
+                 (base32
+                  "1rnwhc9ys4v4mv584hmmrl0ycnqmsaigpffzm31qq337hz24zqya"))
+                (patches
+                 (search-patches "rnp-unbundle-googletest.patch"
+                                 "rnp-disable-ruby-rnp-tests.patch"
+                                 "rnp-add-version.cmake.patch"))))
+      (build-system cmake-build-system)
+      (arguments `(#:configure-flags
+                   '("-DBUILD_SHARED_LIBS=on"
+                     "-DBUILD_TESTING=on")
+                   #:phases
+                   (modify-phases %standard-phases
+                     (add-after 'unpack 'fixes
+                       (lambda* (#:key inputs #:allow-other-keys)
+                         (copy-recursively (assoc-ref inputs "googletest-source")
+                                           "src/tests/googletest-src")
+                         (substitute* "src/tests/support.cpp"
+                           (("\"cp\"") (string-append "\"" (which "cp") "\"")))
+                         ;; Produce a version stamp in the format the upstream
+                         ;; project uses for unreleased revisions.
+                         (with-output-to-file "version.txt"
+                           (lambda _
+                             (display
+                              (string-append ,last-version
+                                             "-" ,revision
+                                             "-g" ,(string-take commit 7)))))
+                         #t))
+                     (replace 'check
+                       (lambda _
+                         ;; Some OpenPGP certificates used by the tests expire.
+                         ;; To work around that, set the time to roughly the
+                         ;; release date.
+                         (invoke "faketime" ,day-of-release "make" "test"))))))
+      (native-inputs
+       `(("gnupg" ,gnupg) ; for tests
+         ("googletest-source" ,(package-source googletest)) ; for tests
+         ("libfaketime" ,libfaketime) ; for tests
+         ("pkg-config" ,pkg-config)
+         ("python" ,python)
+         ("python2" ,python-2.7)))
+      (inputs `(("botan" ,botan)
+                ("bzip2" ,bzip2)
+                ("json-c" ,json-c)
+                ("zlib" ,zlib)))
+      (synopsis
+       "RFC4880-compliant OpenPGP library written in C++")
+      (description
+       "Set of OpenPGP (RFC4880) tools that works on Linux, *BSD and macOS as a
+replacement of GnuPG.  It is maintained by Ribose after being forked from
+NetPGP, itself originally written for NetBSD.
+
+librnp is the library used by rnp for all OpenPGP functions, useful for
+developers to build against.  It is a “real” library, not a wrapper like GPGME
+of GnuPG.")
+      (home-page "https://www.rnpgp.com/")
+      (license
+       ;; RNP contains code written by Ribose and code derived from netpgp.
+       (list
+        ;; Ribose's BSD 2-Clause License and NetBSD's BSD 2-Clause License
+        ;; (netpgp).
+        license:bsd-2
+        ;; Nominet UK's Apache 2.0 Licence (netpgp).
+        license:asl2.0
+        ;; Nominet UK's BSD 3-Clause License (netpgp).
+        license:bsd-3)))))
