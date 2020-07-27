@@ -6996,14 +6996,14 @@ parsing (browser/HTTP) user agent strings.")
 (define-public python-dbus
   (package
     (name "python-dbus")
-    (version "1.2.14")
+    (version "1.2.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dbus.freedesktop.org/releases/dbus-python/"
                            "dbus-python-" version ".tar.gz"))
        (sha256
-        (base32 "0cdchkgnivlka4lf8q4qfk0yxq483i3r3aqickjf8hfn7nx0c0mi"))))
+        (base32 "196m5rk3qzw5nkmgzjl7wmq0v7vpwfhh8bz2sapdi5f9hqfqy8qi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
