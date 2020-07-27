@@ -537,6 +537,29 @@ way of specifying command line options.")
     (home-page "https://github.com/jessevdk/go-flags")
     (license license:bsd-3)))
 
+(define-public go-gopkg-in-go-playground-assert-v1
+  (package
+    (name "go-gopkg-in-go-playground-assert-v1")
+    (version "1.2.1")
+    (home-page "https://github.com/go-playground/assert")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h4amgykpa0djwi619llr3g55p75ia0mi184h9s5zdl8l4rhn9pm"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/go-playground/assert.v1"))
+    (synopsis "Basic assertion library used alongside native Go testing")
+    (description
+     "This package provides bassic assertions along with building blocks for
+custom assertions to be used alongside native Go testing.")
+    (license license:expat)))
+
 (define-public go-github-com-go-playground-locales
   (package
     (name "go-github-com-go-playground-locales")
