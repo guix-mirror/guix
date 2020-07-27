@@ -7121,7 +7121,7 @@ of Linux application development.")
   (package
     (inherit pipewire)
     (name "pipewire")
-    (version "0.3.6")
+    (version "0.3.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7130,7 +7130,7 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g149vyaigf4gzm764fcgxxci9niw19z0af9afs4diwq5xzr1qd3"))))
+                "04l66p0wj553gp2zf3vwwh6jbr1vkf6wrq4za9zlm9dn144am4j2"))))
     (arguments
      '(#:configure-flags '("-Dsystemd=false")
        #:phases
