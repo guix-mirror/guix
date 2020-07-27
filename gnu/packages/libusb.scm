@@ -403,61 +403,32 @@ connections from and to iOS devices by connecting to a socket provided by a
 @code{usbmuxd} daemon.")
     (license license:lgpl2.1+)))
 
-;; These patches are needed to build with Python 3.8.
-(define %libimobiledevice-patches
-  (list (origin
-          (method url-fetch)
-          (uri (string-append "https://github.com/libimobiledevice/libimobiledevice"
-                              "/commit/1ff3448d2e27f1bac8d2f0af8b8e952854860278.patch"))
-          (file-name "libimobiledevice-python-config.patch")
-          (sha256
-           (base32
-            "1mkwhp8vvhajij29jk3w4rkgcfh8d8waf908drh3076k70hb6i8y")))
-        (origin
-          (method url-fetch)
-          (uri (string-append "https://github.com/libimobiledevice/libimobiledevice"
-                              "/commit/eea4f1be9107c8ab621fd71460e47d0d38e55d71.patch"))
-          (file-name "libimobiledevice-python-3.8-compat.patch")
-          (sha256
-           (base32
-            "1zz8v7kgwyq5ck1qp03l29pcmljygnjwls9d6q28nv5pkwa6848w")))))
-
 (define-public libimobiledevice
   (package
     (name "libimobiledevice")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.libimobiledevice.org/downloads/"
-                                  "libimobiledevice-" version ".tar.bz2"))
-              ;; Note: Remove the 'force-bootstrap' phase and the autoconf
-              ;; inputs below when removing these patches.
-              (patches %libimobiledevice-patches)
+              (uri (string-append "https://github.com/libimobiledevice"
+                                  "/libimobiledevice/releases/download/"
+                                  version "/libimobiledevice-" version
+                                  ".tar.bz2"))
               (sha256
                (base32
-                "0dqhy4qwj30mw8pwckvjmgnj1qqrh6p8c6jknmhvylshhzh0ssvq"))))
+                "1xmhfnypg6j7shl73wfkrrn4mj9dh8qzaj3258q9zkb5cc669wjk"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'bootstrap 'force-bootstrap
-                    (lambda _
-                      (delete-file "configure")
-                      #t)))))
+     '(#:configure-flags '("PYTHON_VERSION=3")))
     (propagated-inputs
-     `(("openssl" ,openssl-1.0)
+     `(("openssl" ,openssl)
        ("libplist" ,libplist)
        ("libusbmuxd" ,libusbmuxd)))
     (inputs
      `(("python" ,python)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-cython" ,python-cython)
-
-       ;; These are required because we patch and bootstrap the build system.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (home-page "https://www.libimobiledevice.org/")
+       ("python-cython" ,python-cython)))
+    (home-page "https://libimobiledevice.org/")
     (synopsis "Protocol library and tools to communicate with Apple devices")
     (description "libimobiledevice is a software library that talks the
 protocols to support Apple devices.  It allows other software to easily access
