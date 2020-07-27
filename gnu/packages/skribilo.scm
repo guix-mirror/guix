@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,8 +71,8 @@
 
     ;; The 'skribilo' command needs them, and for people using Skribilo as a
     ;; library, these inputs are needed as well.
-    (propagated-inputs `(("guile-reader" ,guile-reader)
-                         ("guile-lib" ,guile-lib)))
+    (propagated-inputs `(("guile-reader" ,guile2.2-reader)
+                         ("guile-lib" ,guile2.2-lib)))
 
     (home-page "https://www.nongnu.org/skribilo/")
     (synopsis "Document production tool written in Guile Scheme")

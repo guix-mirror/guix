@@ -1894,7 +1894,7 @@ understand, extend, and port to host languages other than Scheme.")
     (build-system gnu-build-system)
     (native-inputs `(("pkgconfig" ,pkg-config)
                      ("gperf" ,gperf)))
-    (inputs `(("guile" ,guile-2.2)))
+    (inputs `(("guile" ,guile-3.0)))
     (synopsis "Framework for building readers for GNU Guile")
     (description
      "Guile-Reader is a simple framework for building readers for GNU Guile.
@@ -1910,6 +1910,12 @@ hopefully more powerful and flexible (for instance, one may instantiate as
 many readers as needed).")
     (home-page "https://www.nongnu.org/guile-reader/")
     (license license:gpl3+)))
+
+(define-public guile2.2-reader
+  (package
+    (inherit guile-reader)
+    (name "guile2.2-reader")
+    (inputs `(("guile" ,guile-2.2)))))
 
 (define-public guile-ncurses
   (package
@@ -2215,8 +2221,7 @@ inspired by the SCSH regular expression system.")
     (inputs
      `(("guile" ,guile-3.0)))
     (propagated-inputs
-     ;; XXX: Guile-Reader is currently unavailable for Guile 2.2 so strip it.
-     `(;;("guile-reader" ,guile-reader)
+     `(("guile-reader" ,guile-reader)
        ("guile-commonmark" ,guile-commonmark)))
     (synopsis "Functional static site generator")
     (description "Haunt is a static site generator written in Guile
@@ -2231,7 +2236,7 @@ interface for reading articles in any format.")
     (name "guile2.2-haunt")
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-reader" ,guile-reader)
+     `(("guile-reader" ,guile2.2-reader)
        ("guile-commonmark" ,guile2.2-commonmark)))))
 
 (define-public guile2.0-haunt
