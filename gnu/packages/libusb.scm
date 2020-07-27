@@ -383,19 +383,20 @@ Apple Property List files in binary or XML.")
 (define-public libusbmuxd
   (package
     (name "libusbmuxd")
-    (version "1.0.10")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.libimobiledevice.org/downloads/"
-                                  "libusbmuxd-" version ".tar.bz2"))
+              (uri (string-append "https://github.com/libimobiledevice"
+                                  "/libusbmuxd/releases/download/" version
+                                  "/libusbmuxd-" version ".tar.bz2"))
               (sha256
                (base32
-                "1wn9zq2224786mdr12c5hxad643d29wg4z6b7jn888jx4s8i78hs"))))
+                "084vg570g1qb506jd7axg6c080mfsmbf52v3lngzlknsaf2q0snc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libplist" ,libplist)))
-    (home-page "https://www.libimobiledevice.org/")
+    (home-page "https://libimobiledevice.org/")
     (synopsis "Library to multiplex connections from and to iOS devices")
     (description "This package provides a client library to multiplex
 connections from and to iOS devices by connecting to a socket provided by a
