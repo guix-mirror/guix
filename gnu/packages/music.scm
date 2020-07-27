@@ -4922,7 +4922,7 @@ and reverb.")
 (define-public lsp-plugins
   (package
     (name "lsp-plugins")
-    (version "1.1.22")
+    (version "1.1.24")
     (source
       (origin
         (method git-fetch)
@@ -4931,7 +4931,7 @@ and reverb.")
                (commit (string-append "lsp-plugins-" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0s0i0kf5nqxxywckg03fds1w7696ly60rnlljzqvp7qfgzps1r6c"))))
+         (base32 "0rzgzkg6wvhjcf664i16nz4v30drgv80s34bhdflcjzx2x7ix5zk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
