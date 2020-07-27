@@ -4527,31 +4527,15 @@ build jobs.")
 (define-public emacs-company
   (package
     (name "emacs-company")
-    (version "0.9.12")
+    (version "0.9.13")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/company-mode/company-mode")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "company-" version ".tar"))
        (sha256
-        (base32 "0c31amc6gyfkmb1ii6mm56c75za1yxkj2iyhrjc45nn2mrh7yj7a"))))
+        (base32 "1c9x9wlzzsn7vrsm57l2l44nqx455saa6wrm853szzg09qn8dlnw"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'fix-bin-dir
-           (lambda _
-             ;; The company-files-candidates-normal-root test looks
-             ;; for the /bin directory, but the build environment has
-             ;; no /bin directory. Modify the test to look for the
-             ;; /tmp directory.
-             (substitute* "test/files-tests.el"
-               (("/bin/") "/tmp/"))
-             #t)))
-       #:tests? #t
-       #:test-command '("make" "test-batch")))
     (home-page "https://company-mode.github.io/")
     (synopsis "Modular text completion framework")
     (description
