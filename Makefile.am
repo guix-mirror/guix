@@ -649,11 +649,10 @@ commit_v1_0_0 = 6298c3ffd9654d3231a6f25390b056483e8f407c
 channel_intro_commit = 9edb3f66fd807b096b48283debdcddccfea34bad
 channel_intro_signer = BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA
 
-# Authenticate the current Git checkout by checking signatures on every commit
-# starting from $(commit_v1_0_0).
-authenticate: guix/openpgp.go guix/git-authenticate.go guix/git.go
+# Authenticate the current Git checkout by checking signatures on every commit.
+authenticate:
 	$(AM_V_at)echo "Authenticating Git checkout..." ;	\
-	"$(top_builddir)/pre-inst-env" guix git authenticate	\
+	guix git authenticate					\
 	    --cache-key=channels/guix --stats			\
 	    "$(channel_intro_commit)" "$(channel_intro_signer)"
 
