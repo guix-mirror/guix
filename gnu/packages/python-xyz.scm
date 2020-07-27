@@ -12341,6 +12341,63 @@ in Python.  It allows you to declare the libraries your project depends on and
 it will manage (install/update) them for you.")
     (license license:expat)))
 
+(define-public python-libcst
+  (package
+    (name "python-libcst")
+    (version "0.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "libcst" version))
+              (sha256
+               (base32
+                "05zsc61gsd2pyb6wiyh58zczndxi6rm4d2jl94rpf5cv1fzw6ks8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-failing-tests
+           (lambda _
+             ;; Reported upstream: <https://github.com/Instagram/LibCST/issues/346>.
+             (delete-file "libcst/tests/test_fuzz.py")
+             ;; Reported upstream: <https://github.com/Instagram/LibCST/issues/347>.
+             (delete-file "libcst/tests/test_pyre_integration.py")
+             (delete-file "libcst/codemod/tests/test_codemod_cli.py")
+             (delete-file "libcst/metadata/tests/test_full_repo_manager.py")
+             (delete-file "libcst/metadata/tests/test_type_inference_provider.py")
+             #t))
+         (add-before 'check 'generate-test-data
+           (lambda _
+             (setenv "PYTHONPATH" (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+             (invoke "python" "-m" "libcst.codegen.generate" "visitors")
+             (invoke "python" "-m" "libcst.codegen.generate" "return_types")))
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "unittest")
+             #t)))))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-isort" ,python-isort)))
+    (propagated-inputs
+     `(("python-typing-extensions" ,python-typing-extensions)
+       ("python-typing-inspect" ,python-typing-inspect)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/Instagram/LibCST")
+    (synopsis "Concrete Syntax Tree (CST) parser and serializer library for Python")
+    (description
+     "LibCST parses Python source code as a CST tree that keeps all
+formatting details (comments, whitespaces, parentheses, etc).  It's useful
+for building automated refactoring (codemod) applications and linters.
+LibCST creates a compromise between an Abstract Syntax Tree (AST) and
+a traditional Concrete Syntax Tree (CST).  By carefully reorganizing and
+naming node types and fields, LibCST creates a lossless CST that looks and
+feels like an AST.")
+    (license (list license:expat
+                   ;; Some files unde libcst/_parser/ are under Python Software
+                   ;; Foundation license (see LICENSE file for details)
+                   license:psfl
+                   ;; libcst/_add_slots.py
+                   license:asl2.0))))
+
 (define-public python-typing-inspect
   (package
     (name "python-typing-inspect")
