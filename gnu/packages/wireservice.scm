@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -215,7 +216,8 @@ for xls and xlsx files support to all @code{agate.Table} instances.")))
      `(("python-agate-dbf" ,python-agate-dbf)
        ("python-agate-excel" ,python-agate-excel)
        ("python-agate-sql" ,python-agate-sql)
-       ("python-six" ,python-six)))
+       ("python-six" ,python-six)
+       ("python-text-unidecode" ,python-text-unidecode)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
