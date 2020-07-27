@@ -31,6 +31,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -839,3 +840,52 @@ the implementation of that name.")
 experimental extensions to the standard @code{typing} module that are
 supported by the MyPy typechecker.")
     (license license:expat)))
+
+(define-public python-mypy
+  (package
+    (name "python-mypy")
+    (version "0.782")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mypy" version))
+        (sha256
+         (base32
+          "030kn709515452n6gy2i1d9fg6fyrkmdz228lfpmbslybsld9xzg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./runtests.py")
+             #t)))))
+    (native-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-flake8" ,python-flake8)
+       ("python-flake8-bugbear" ,python-flake8-bugbear)
+       ("python-flake8-pyi" ,python-flake8-pyi)
+       ("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-lxml" ,python-lxml)
+       ("python-psutil" ,python-psutil)
+       ("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-forked" ,python-pytest-forked)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-virtualenv" ,python-virtualenv)))
+    (propagated-inputs
+     `(("python-mypy-extensions" ,python-mypy-extensions)
+       ("python-typing-extensions" ,python-typing-extensions)
+       ("python-typed-ast" ,python-typed-ast)))
+    (home-page "http://www.mypy-lang.org/")
+    (synopsis "Static type checker for Python")
+    (description "Mypy is an optional static type checker for Python that aims
+to combine the benefits of dynamic (or 'duck') typing and static typing.  Mypy combines
+the expressive power and convenience of Python with a powerful type system and
+compile-time type checking.  Mypy type checks standard Python programs; run them using
+any Python VM with basically no runtime overhead.")
+    ;; Most of the code is under MIT license; Some files are under Python Software
+    ;; Foundation License version 2: stdlib-samples/*, mypyc/lib-rt/pythonsupport.h and
+    ;; mypyc/lib-rt/getargs.c
+    (license (list license:expat license:psfl))))
