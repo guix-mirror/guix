@@ -813,16 +813,15 @@ Guile's foreign function interface.")
   (package
     (name "guile-lzlib")
     (version "0.0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://notabug.org/guile-lzlib/guile-lzlib.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0ny4pbig5x1lv83b63c2613gwv98myk3rm44l88ic7lrff6cd2hr"))
-              (modules '((guix build utils)))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://notabug.org/guile-lzlib/guile-lzlib/archive/"
+                       version ".tar.gz"))
+       (sha256
+        (base32
+         "0rdmszn1qix085ci2mddwq5cypipc004fk7arrrkgn9bv39hazza"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
