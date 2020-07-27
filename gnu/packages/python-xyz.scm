@@ -12341,6 +12341,26 @@ in Python.  It allows you to declare the libraries your project depends on and
 it will manage (install/update) them for you.")
     (license license:expat)))
 
+(define-public python-lark-parser
+  (package
+    (name "python-lark-parser")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "lark-parser" version))
+              (sha256
+               (base32
+                "1kd61asrb3h9spgsj4bslfbgp8q4271sw3hblk6f2vbbblv8jxcy"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/lark-parser/lark")
+    (synopsis "Multi-language parser for Python")
+    (description
+     "Lark is a parser built with a focus on ergonomics, performance and
+resilience.  Lark can parse all context-free languages.  That means it is
+capable of parsing almost any programming language out there, and to
+some degree most natural languages too.")
+    (license license:expat)))
+
 (define-public python-libcst
   (package
     (name "python-libcst")
