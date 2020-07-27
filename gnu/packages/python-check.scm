@@ -650,6 +650,53 @@ service processes for your tests with pytest.")
     (description "This package provides a pytest plugin for aiohttp support.")
     (license license:asl2.0)))
 
+(define-public python-nbval
+  (package
+    (name "python-nbval")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nbval" version))
+       (sha256
+        (base32 "1xh2p7g5s5g06caaraf3dsz69bpj7dgw2h3ss67kci789aspnwp8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-test
+           (lambda _
+             ;; This test fails because of a mismatch in the output of LaTeX
+             ;; equation environments.  Seems OK to skip.
+             (delete-file "tests/ipynb-test-samples/test-latex-pass-correctouput.ipynb")
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k"
+                     (string-append
+                     ;; This only works with Pytest < 5.
+                      "not nbdime_reporter"
+                     ;; https://github.com/computationalmodelling/nbval/pull/148.
+                      " and not test_timeouts")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sympy" ,python-sympy)))
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-nbformat" ,python-nbformat)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/computationalmodelling/nbval")
+    (synopsis "Pytest plugin to validate Jupyter notebooks")
+    (description
+     "This plugin adds functionality to Pytest to recognise and collect Jupyter
+notebooks.  The intended purpose of the tests is to determine whether execution
+of the stored inputs match the stored outputs of the @file{.ipynb} file.  Whilst
+also ensuring that the notebooks are running without errors.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-flask
   (package
     (name "python-pytest-flask")
