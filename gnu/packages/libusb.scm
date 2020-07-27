@@ -351,16 +351,15 @@ I2C and SPI devices attached to the USB Hub.")
 (define-public libplist
   (package
     (name "libplist")
-    (version "2.1.0")
+    (version "2.2.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/libimobiledevice/libplist")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/libimobiledevice"
+                           "/libplist/releases/download/" version
+                           "/libplist-" version ".tar.bz2"))
        (sha256
-        (base32 "02vraf4j46bp746s0gz7vga2gv2dy3zd1v1bsy9x8algg9fpcb7n"))))
+        (base32 "16mxdwaw01x9a3adf0yj3bqjc7afpf2vm1n5hkgj3i3y6zjifmaa"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Tests fail randomly when run in parallel because several of them write
@@ -375,7 +374,7 @@ I2C and SPI devices attached to the USB Hub.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython))) ; to build Python bindings
-    (home-page "https://www.libimobiledevice.org/")
+    (home-page "https://libimobiledevice.org/")
     (synopsis "C library to handle Apple Property List files")
     (description "This package provides a small portable C library to handle
 Apple Property List files in binary or XML.")
