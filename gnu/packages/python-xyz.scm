@@ -10656,14 +10656,14 @@ designed to work across multiple versions of Python.")
 (define-public python-cookiecutter
   (package
     (name "python-cookiecutter")
-    (version "1.6.0")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cookiecutter" version))
        (sha256
         (base32
-         "0glsvaz8igi2wy1hsnhm9fkn6560vdvdixzvkq6dn20z3hpaa5hk"))))
+         "1b2xa5dypk1vf8aq599fd8zw4y0pwvq3hgl7ia8aiv8gg3ab5dpg"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
@@ -10679,8 +10679,10 @@ designed to work across multiple versions of Python.")
        ("python-jinja2-time" ,python-jinja2-time)
        ("python-poyo" ,python-poyo)
        ("python-requests" ,python-requests)
+       ("python-slugify" ,python-slugify)
+       ("python-text-unidecode" ,python-text-unidecode)
        ("python-whichcraft" ,python-whichcraft)))
-    (home-page "https://github.com/audreyr/cookiecutter")
+    (home-page "https://github.com/cookiecutter/cookiecutter")
     (synopsis
      "Command-line utility that creates projects from project templates")
     (description
