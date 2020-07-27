@@ -9950,6 +9950,7 @@ annotations.")
     (arguments
      `(#:build-target "jarall"
        #:test-target "junit-tests-all"
+       #:make-flags (list "-DDATE" "(no date for reproducibility)")
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'fix-pom
