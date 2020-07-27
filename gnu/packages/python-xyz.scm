@@ -12341,6 +12341,27 @@ in Python.  It allows you to declare the libraries your project depends on and
 it will manage (install/update) them for you.")
     (license license:expat)))
 
+(define-public python-typing-inspect
+  (package
+    (name "python-typing-inspect")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "typing_inspect" version))
+              (sha256
+               (base32
+                "1dzs9a1pr23dhbvmnvms2jv7l7jk26023g5ysf0zvnq8b791s6wg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mypy-extensions" ,python-mypy-extensions)
+       ("python-typing-extensions" ,python-typing-extensions)))
+    (home-page "https://github.com/ilevkivskyi/typing_inspect")
+    (synopsis "API for inspection of types in the Python @code{typing} module")
+    (description
+     "The @code{typing_inspect} module defines experimental API for runtime
+inspection of types defined in the Python standard typing module.")
+    (license license:expat)))
+
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
