@@ -6542,3 +6542,29 @@ modifying them.")
 compressed streams in Go.")
     (home-page "https://github.com/ulikunitz/xz")
     (license license:bsd-3)))
+
+(define-public go-github-com-songmu-gitconfig
+  (package
+    (name "go-github-com-songmu-gitconfig")
+    (version "0.1.0")
+    (home-page "https://github.com/songmu/gitconfig")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y01h496a7pfj1g2bclls5b0nl3vnj7nz610jj1dzq9kxrwxk7fk"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/Songmu/gitconfig"
+       ;; Package's tests appear to be hardcoded to the author's gitconfig
+       ;; and require network access.
+       #:tests? #f))
+    (propagated-inputs
+     `(("go-github-com-goccy-yaml" ,go-github-com-goccy-yaml)))
+    (synopsis "Go library to get configuration values from gitconfig")
+    (description "@{gitconfig} is a package to get configuration values from gitconfig.")
+    (license license:expat)))
