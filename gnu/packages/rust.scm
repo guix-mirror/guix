@@ -1143,14 +1143,13 @@ move around."
                    (setenv "CARGO_HOME" cargo-home)
                    #t))))))))))
 
-;; TODO(rebuild-rust): Switch to LLVM 9 in 1.38 instead of 1.40.
 (define-public rust-1.38
   (let ((base-rust
          (rust-bootstrapped-package rust-1.37 "1.38.0"
            "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4")))
     (package
       (inherit base-rust)
-      #;(inputs
+      (inputs
         (alist-replace "llvm" (list llvm-9)
                        (package-inputs base-rust)))
       (arguments
@@ -1193,9 +1192,6 @@ move around."
            "1ba9llwhqm49w7sz3z0gqscj039m53ky9wxzhaj11z6yg1ah15yx")))
     (package
       (inherit base-rust)
-      (inputs
-        (alist-replace "llvm" (list llvm-9)
-                       (package-inputs base-rust)))
       (source
         (origin
           (inherit (package-source base-rust))
