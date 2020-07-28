@@ -44,6 +44,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5772,7 +5773,7 @@ used to start services with both privileged and non-privileged port numbers.")
 (define-public tidy-html
   (package
     (name "tidy-html")
-    (version "5.6.0")
+    (version "5.7.28")
     (source
      (origin
        (method git-fetch)
@@ -5782,7 +5783,7 @@ used to start services with both privileged and non-privileged port numbers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0w175c5d1babq0w1zzdzw9gl6iqbgyq58v8587s7srp05y3hwy9k"))))
+         "01k5sqwgcsr26i8031v1yr2r8qcy9a5w7sj800660haszgfbjz2f"))))
     (build-system cmake-build-system)
     (outputs '("out"
                "static"))               ; 1.3MiB of .a files
