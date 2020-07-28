@@ -12292,17 +12292,19 @@ more, possibly remote, memcached servers.")
 (define-public python-clikit
   (package
     (name "python-clikit")
-    (version "0.4.2")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "clikit" version))
        (sha256
         (base32
-         "1jnnr21hvzx4i29nbph1z96ympv0njiwyvngjq48w1q05133cwzn"))))
+         "0ngdkmb73gkp5y00q7r9k1cdlfn0wyzws2wrqlshc4hlkbdyabj4"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; no test in the PyPI tarball
     (propagated-inputs
-     `(("python-pastel" ,python-pastel)
+     `(("python-crashtest" ,python-crashtest)
+       ("python-pastel" ,python-pastel)
        ("python-pylev" ,python-pylev)))
     (home-page "https://github.com/sdispater/clikit")
     (synopsis "Group of utilities to build command line interfaces")
