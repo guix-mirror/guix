@@ -9436,15 +9436,15 @@ win.")
 (define-public freeorion
   (package
     (name "freeorion")
-    (version "0.4.9")
+    (version "0.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/freeorion/freeorion/releases/"
                            "download/v" version "/FreeOrion_v" version
-                           "_2020-02-02.db53471_Source.tar.gz"))
+                           "_2020-07-10.f3d403e_Source.tar.gz"))
        (sha256
-        (base32 "1qfnqkysagh8dw26plk229qh17mv4prjxs6qhfyczrmrrakb72an"))
+        (base32 "12xspixrkx6mmmsdqjha0hg02r4y73pk229l0wjq9s0yp8nb8ap7"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -9466,7 +9466,7 @@ win.")
                   (string-append "\"" roboto-dir "Roboto-" type ".ttf\");")))
                #t))))))
     (inputs
-     `(("boost" ,boost-with-python2)
+     `(("boost" ,boost)
        ("boost_signals" ,boost-signals2)
        ("font-dejavu" ,font-dejavu)
        ("font-roboto" ,font-google-roboto)
@@ -9477,7 +9477,7 @@ win.")
        ("libpng" ,libpng)
        ("libvorbis" ,libvorbis)
        ("openal" ,openal)
-       ("python2" ,python-2.7)
+       ("python" ,python)
        ("sdl2" ,sdl2)
        ("zlib" ,zlib)))
     (home-page "https://www.freeorion.org/index.php/Main_Page")
