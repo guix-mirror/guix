@@ -6330,7 +6330,7 @@ regexp that matches all known keywords.")
 (define-public emacs-perspective
   (package
     (name "emacs-perspective")
-    (version "2.8")
+    (version "2.9")
     (source
      (origin
        (method git-fetch)
@@ -6340,7 +6340,7 @@ regexp that matches all known keywords.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1gdacw1gkng1dhm12lhfssmac0fijsh3wpbvcmsv2jz3gpnjin1g"))))
+         "1hmbczw3b7k2xdqcy5p3xnf2781gjw6bqqcwc5r9myg6b8p3pr7m"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/nex3/perspective-el")
     (synopsis "Switch between named \"perspectives\"")
