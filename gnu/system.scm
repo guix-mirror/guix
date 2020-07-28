@@ -651,7 +651,20 @@ bookkeeping."
                                     gc-root-service-type roots)
                     (operating-system-user-services os)))))
 
-(define* (operating-system-with-provenance os #:optional config-file)
+(define (operating-system-configuration-file os)
+  "Return the configuration file of OS, based on its 'location' field, or #f
+if it could not be determined."
+  (let ((file (and=> (operating-system-location os)
+                     location-file)))
+    (and file
+         (or (and (string-prefix? "/" file) file)
+             (search-path %load-path file)))))
+
+(define* (operating-system-with-provenance os
+                                           #:optional
+                                           (config-file
+                                            (operating-system-configuration-file
+                                             os)))
   "Return a variant of OS that stores its own provenance information,
 including CONFIG-FILE, if available.  This is achieved by adding an instance
 of PROVENANCE-SERVICE-TYPE to its services."
