@@ -10007,7 +10007,7 @@ type an abbreviation and automatically expand it into function templates.")
 (define-public emacs-yasnippet-snippets
   (package
     (name "emacs-yasnippet-snippets")
-    (version "0.20")
+    (version "0.23")
     (source
      (origin
        (method git-fetch)
@@ -10016,7 +10016,7 @@ type an abbreviation and automatically expand it into function templates.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "095w7cdmfwmmr6426mbq15n0a5izgbmv9408m9yh1pqz5x3v3vsx"))))
+        (base32 "18pcnjnqvcky6i49p38vy3ms5xiisn27vy47pc3vsgr3r2n87mqb"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
