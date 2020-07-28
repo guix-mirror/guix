@@ -744,11 +744,13 @@ last resort for relocation."
     (with-imported-modules (source-module-closure
                             '((guix build utils)
                               (guix build union)
+                              (guix build gremlin)
                               (guix elf)))
       #~(begin
           (use-modules (guix build utils)
                        ((guix build union) #:select (relative-file-name))
                        (guix elf)
+                       (guix build gremlin)
                        (ice-9 binary-ports)
                        (ice-9 ftw)
                        (ice-9 match)
@@ -786,6 +788,14 @@ last resort for relocation."
                                    bv 0 (bytevector-length bv))
                  (utf8->string bv)))))
 
+          (define (runpath file)
+            ;; Return the RUNPATH of FILE as a list of directories.
+            (let* ((bv      (call-with-input-file file get-bytevector-all))
+                   (elf     (parse-elf bv))
+                   (dyninfo (elf-dynamic-info elf)))
+              (or (and=> dyninfo elf-dynamic-info-runpath)
+                  '())))
+
           (define (elf-loader-compile-flags program)
             ;; Return the cpp flags defining macros for the ld.so/fakechroot
             ;; wrapper of PROGRAM.
@@ -807,6 +817,13 @@ last resort for relocation."
 
                             (string-append "-DLOADER_AUDIT_MODULE=\""
                                            #$(audit-module) "\"")
+                            (string-append "-DLOADER_AUDIT_RUNPATH={ "
+                                           (string-join
+                                            (map object->string
+                                                 (runpath
+                                                  #$(audit-module)))
+                                            ", " 'suffix)
+                                           "NULL }")
                             (if gconv
                                 (string-append "-DGCONV_DIRECTORY=\""
                                                gconv "\"")

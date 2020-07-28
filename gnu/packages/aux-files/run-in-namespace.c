@@ -371,24 +371,64 @@ exec_with_proot (const char *store, int argc, char *argv[])
 
 #if HAVE_EXEC_WITH_LOADER
 
+/* Traverse PATH, a NULL-terminated string array, and return a colon-separated
+   search path where each item of PATH has been relocated to STORE.  The
+   result is malloc'd.  */
+static char *
+relocated_search_path (const char *path[], const char *store)
+{
+  char *new_path;
+  size_t size = 0;
+
+  for (size_t i = 0; path[i] != NULL; i++)
+    size += strlen (store) + strlen (path[i]) + 1;  /* upper bound */
+
+  new_path = xmalloc (size + 1);
+  new_path[0] = '\0';
+
+  for (size_t i = 0; path[i] != NULL; i++)
+    {
+      if (strncmp (path[i], original_store,
+		   sizeof original_store - 1) == 0)
+	{
+	  strcat (new_path, store);
+	  strcat (new_path, path[i] + sizeof original_store - 1);
+	}
+      else
+	strcat (new_path, path[i]);	  /* possibly $ORIGIN */
+
+      strcat (new_path, ":");
+    }
+
+  new_path[strlen (new_path) - 1] = '\0'; /* Remove trailing colon.  */
+
+  return new_path;
+}
+
 /* Execute the wrapped program by invoking the loader (ld.so) directly,
    passing it the audit module and preloading libfakechroot.so.  */
 static void
 exec_with_loader (const char *store, int argc, char *argv[])
 {
+  static const char *audit_library_path[] = LOADER_AUDIT_RUNPATH;
   char *loader = concat (store,
 			 PROGRAM_INTERPRETER + sizeof original_store);
-  size_t loader_specific_argc = 6;
+  size_t loader_specific_argc = 8;
   size_t loader_argc = argc + loader_specific_argc;
   char *loader_argv[loader_argc + 1];
   loader_argv[0] = argv[0];
   loader_argv[1] = "--audit";
   loader_argv[2] = concat (store,
 			   LOADER_AUDIT_MODULE + sizeof original_store);
-  loader_argv[3] = "--preload";
-  loader_argv[4] = concat (store,
+
+  /* The audit module depends on libc.so and libgcc_s.so.  */
+  loader_argv[3] = "--library-path";
+  loader_argv[4] = relocated_search_path (audit_library_path, store);
+
+  loader_argv[5] = "--preload";
+  loader_argv[6] = concat (store,
 			   FAKECHROOT_LIBRARY + sizeof original_store);
-  loader_argv[5] = concat (store,
+  loader_argv[7] = concat (store,
 			   "@WRAPPED_PROGRAM@" + sizeof original_store);
 
   for (size_t i = 0; i < argc; i++)

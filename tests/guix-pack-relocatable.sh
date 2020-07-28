@@ -38,51 +38,52 @@ then
     exit 77
 fi
 
-STORE_PARENT="`dirname $NIX_STORE_DIR`"
-export STORE_PARENT
-if test "$STORE_PARENT" = "/"; then exit 77; fi
-
-if unshare -mrf sh -c 'mount -t tmpfs none "$STORE_PARENT"'
-then
-    # Test the wrapper that relies on user namespaces.
-    relocatable_option="-R"
-else
-    case "`uname -m`" in
-	x86_64|i?86)
-	    # Test the wrapper that falls back to PRoot.
-	    relocatable_option="-RR";;
-	*)
-	    # XXX: Our 'proot' package currently fails tests on non-Intel
-	    # architectures, so skip this by default.
-	    exit 77;;
-    esac
-fi
+# Attempt to run the given command in a namespace where the store is
+# invisible.  This makes sure the presence of the store does not hide
+# problems.
+run_without_store ()
+{
+    if unshare -r true		# Are user namespaces supported?
+    then
+	# Run that relocatable executable in a user namespace where we "erase"
+	# the store by mounting an empty file system on top of it.  That way,
+	# we exercise the wrapper code that creates the user namespace and
+	# bind-mounts the store.
+	unshare -mrf sh -c 'mount -t tmpfs -o ro none "$NIX_STORE_DIR"; '"$*"
+    else
+	# Run the relocatable program in the current namespaces.  This is a
+	# weak test because we're going to access store items from the host
+	# store.
+	$*
+    fi
+}
 
 test_directory="`mktemp -d`"
 export test_directory
 trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
 
-export relocatable_option
-tarball="`guix pack $relocatable_option -S /Bin=bin sed`"
-(cd "$test_directory"; tar xvf "$tarball")
-
-if unshare -r true		# Are user namespaces supported?
+if unshare -r true
 then
-    # Run that relocatable 'sed' in a user namespace where we "erase" the store by
-    # mounting an empty file system on top of it.  That way, we exercise the
-    # wrapper code that creates the user namespace and bind-mounts the store.
-    unshare -mrf sh -c 'mount -t tmpfs none "$STORE_PARENT"; echo "$STORE_PARENT"/*; "$test_directory/Bin/sed" --version > "$test_directory/output"'
+    # Test the 'userns' execution engine.
+    tarball="`guix pack -R -S /Bin=bin sed`"
+    (cd "$test_directory"; tar xvf "$tarball")
+
+    run_without_store "$test_directory/Bin/sed" --version > "$test_directory/output"
+    grep 'GNU sed' "$test_directory/output"
+
+    # Same with an explicit engine.
+    run_without_store GUIX_EXECUTION_ENGINE="userns" \
+		      "$test_directory/Bin/sed" --version > "$test_directory/output"
+    grep 'GNU sed' "$test_directory/output"
 
     # Check whether the exit code is preserved.
-    if unshare -mrf sh -c 'mount -t tmpfs none "$STORE_PARENT"; echo "$STORE_PARENT"/*; "$test_directory/Bin/sed" --does-not-exist';
+    if run_without_store "$test_directory/Bin/sed" --does-not-exist;
     then false; else true; fi
+
+    chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 else
-    # Run the relocatable 'sed' in the current namespaces.  This is a weak
-    # test because we're going to access store items from the host store.
-    "$test_directory/Bin/sed" --version > "$test_directory/output"
+    echo "'userns' execution tests skipped" >&2
 fi
-grep 'GNU sed' "$test_directory/output"
-chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 
 case "`uname -m`" in
     x86_64|i?86)
@@ -90,20 +91,19 @@ case "`uname -m`" in
 	tarball="`guix pack -RR -S /Bin=bin sed`"
 	tar tvf "$tarball" | grep /bin/proot
 	(cd "$test_directory"; tar xvf "$tarball")
-	GUIX_EXECUTION_ENGINE="proot"
-	export GUIX_EXECUTION_ENGINE
+	run_without_store GUIX_EXECUTION_ENGINE="proot" \
 	"$test_directory/Bin/sed" --version > "$test_directory/output"
 	grep 'GNU sed' "$test_directory/output"
 
 	# Now with fakechroot.
-	GUIX_EXECUTION_ENGINE="fakechroot"
+	run_without_store GUIX_EXECUTION_ENGINE="fakechroot" \
 	"$test_directory/Bin/sed" --version > "$test_directory/output"
 	grep 'GNU sed' "$test_directory/output"
 
 	chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 	;;
     *)
-	echo "skipping PRoot test" >&2
+	echo "skipping PRoot and Fakechroot tests" >&2
 	;;
 esac
 
