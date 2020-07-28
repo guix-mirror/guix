@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016, 2018, 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -18327,6 +18327,24 @@ with a handful of easy tweaks.
 scratch, and you think the Spacemacs theme looks good.
 @end itemize")
     (license license:gpl3+)))
+
+(define-public emacs-spaceline-next
+  (let ((commit "1b26af2c1a701481ac5d90928fe0200e389756c3")
+        (last-release-version "2.0.1")
+        (revision "0"))
+    (package
+      (inherit emacs-spaceline)
+      (name "emacs-spaceline-next")
+      (version (git-version last-release-version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/TheBB/spaceline.git")
+               (commit commit)))
+         (sha256
+          (base32 "11lwckqcgzsahrkkm5wk1ph4kc7d4yz05r7251g8c9f0q6vdj9dp"))
+         (file-name (git-file-name name version)))))))
 
 (define-public emacs-column-marker
   (package
