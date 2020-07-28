@@ -423,14 +423,14 @@ optimizer; and it can produce photorealistic and design review images.")
 (define-public pcb-rnd
   (package (inherit pcb)
     (name "pcb-rnd")
-    (version "1.1.3")
+    (version "2.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://repo.hu/projects/pcb-rnd/releases/"
                                   "pcb-rnd-" version ".tar.gz"))
               (sha256
                (base32
-                "0pycynla60b96jkb6fh6f4sx663pqbzjwnixhw5ym8sym2absm09"))))
+                "0j650498d87b4xsggzc0xlk73k0hhj43wfy45qz2lcn0xc3bks1m"))))
     (arguments
      `(#:tests? #f ; no check target
        #:phases
