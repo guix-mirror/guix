@@ -915,7 +915,7 @@ multiple processors and multiple cores when compressing data.")
 (define-public pixz
   (package
     (name "pixz")
-    (version "1.0.6")
+    (version "1.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -923,7 +923,7 @@ multiple processors and multiple cores when compressing data.")
                     "/pixz-" version ".tar.xz"))
               (sha256
                (base32
-                "1s3j7zw6j5zi3fhdxg287ndr3wf6swac7z21mqd1pyiln530gi82"))))
+                "1ifxr18f2h75gkcrkx8033kwmwmrcgxshpaawyc2n4dzn1p2rqz5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
