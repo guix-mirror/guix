@@ -38,6 +38,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -532,4 +533,56 @@ however they are only reduced in volume when voice is present.
 
 The plugin is made to work with 1 or 2 channels (ladspa plugin),
 16 bit, 48000 Hz audio input.")
+    (license l:gpl3)))
+
+(define-public noisetorch
+  (package
+    (name "noisetorch")
+    (version "0.6.1-beta")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lawl/NoiseTorch")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jmh7204mhlabdn0azfjrm3kb944j24n0w0cwibqrs9lfgdn8k52"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/lawl/NoiseTorch"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'symlink-rnnoise
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src/github.com/lawl/NoiseTorch"
+               (let ((dir "librnnoise_ladspa/bin/ladspa")
+                     (rnnoise (assoc-ref inputs "rnnoise")))
+                 (mkdir-p dir)
+                 (symlink (string-append rnnoise "/lib/ladspa/librnnoise_ladspa.so")
+                          (string-append dir "/librnnoise_ladspa.so"))))
+             #t))
+         (add-after 'unpack 'gen-version.go
+           (lambda _
+             (with-directory-excursion "src/github.com/lawl/NoiseTorch"
+               (substitute* "main.go"
+                 (("//go:generate go run scripts/embedversion\\.go") ""))
+               (with-output-to-file "version.go"
+                 (lambda ()
+                   (format #t "package main~%~%var version=~s~&" ,version))))
+             #t))
+         (add-before 'build 'go-generate
+           (lambda _
+             (with-directory-excursion "src/github.com/lawl/NoiseTorch"
+               (invoke "go" "generate")))))))
+    (inputs
+     `(("rnnoise" ,rnnoise)))
+    (home-page "https://github.com/lawl/NoiseTorch")
+    (synopsis "Real-time microphone noise suppression")
+    (description "NoiseTorch creates a virtual PulseAudio microphone that
+suppresses noise, in any application.  Use whichever conferencing or VOIP
+application you like and simply select the NoiseTorch Virtual Microphone as
+input to torch the sound of your mechanical keyboard, computer fans, trains
+and the likes.")
     (license l:gpl3)))
