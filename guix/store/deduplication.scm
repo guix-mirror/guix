@@ -164,8 +164,10 @@ under STORE."
                     ((file . properties)
                      (unless (member file '("." ".."))
                        (let* ((file (string-append path "/" file))
-                              (type (or (assq-ref properties 'type)
-                                        (stat:type (lstat file)))))
+                              (type (match (assoc-ref properties 'type)
+                                      ((or 'unknown #f)
+                                       (stat:type (lstat file)))
+                                      (type type))))
                          (loop file type
                                (and (not (eq? 'directory type))
                                     (nar-sha256 file)))))))
