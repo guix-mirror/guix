@@ -515,14 +515,14 @@ address of one of the participants.")
 (define-public mumble
   (package
     (name "mumble")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://mumble.info/snapshot/"
+              (uri (string-append "https://mumble.info/snapshot/stable/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03dqg5yf6d7ilc1wydpshnv1ndssppcbadqcq20jm5j4fdaf53cs"))
+                "1q91vp3bp7xn67g9kgp1pfgxjj1hks3w60vdxcfm3373wy5db5lz"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -537,9 +537,6 @@ address of one of the participants.")
                       "3rdparty/minhook-src"
                       "3rdparty/opus-build" ; in opus
                       "3rdparty/opus-src"
-                      "3rdparty/sbcelt-helper-build" ; not enabled
-                      "3rdparty/sbcelt-lib-build"
-                      "3rdparty/sbcelt-src"
                       "3rdparty/speex-build" ; in speex
                       "3rdparty/speex-src"
                       "3rdparty/speexdsp-src" ; in speexdsp
