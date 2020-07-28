@@ -758,6 +758,13 @@ adjust the level of difficulty.")
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-update-check
+           ;; Don't ‘phone home’ unasked to check for updates.
+           (lambda _
+             (substitute* "aqt/update.py"
+               (("requests\\.post")
+                "throw.an.exception.instead"))
+             #t))
          (delete 'configure)            ;no configure script
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
