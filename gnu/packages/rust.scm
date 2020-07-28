@@ -800,7 +800,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("fn finds_author_git") "#[ignore]\nfn finds_author_git")
                    (("fn finds_local_author_git") "#[ignore]\nfn finds_local_author_git"))
                  #t))
-             ;; TODO(rebuild-rust): Remove this phase in rust-1.28 when rebuilding.
              (add-after 'patch-cargo-tests 'disable-cargo-test-for-nightly-channel
                (lambda* _
                  ;; This test failed to work on "nightly" channel builds
@@ -880,6 +879,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "src/test/run-pass/issue-44056.rs"
                    (("only-x86_64") "ignore-test"))
                  #t))
+             ;; This is no longer needed as of 1.28
+             (delete 'disable-cargo-test-for-nightly-channel)
              ;; The thinlto test should pass with llvm 6.
              (delete 'disable-thinlto-test))))))))
 
@@ -1249,8 +1250,6 @@ move around."
                  ,(patch-command-exec-tests-phase
                     '(match (find-files "src/test" "command-exec\\.rs")
                        ((file) file))))
-               ;; TODO(rebuild-rust): The test in question got fixed long ago.
-               (delete 'disable-cargo-test-for-nightly-channel)
                ;; The test got removed in commit 000fe63b6fc57b09828930cacbab20c2ee6e6d15
                ;; "Remove painful test that is not pulling its weight"
                (delete 'remove-unsupported-tests)))))))))
