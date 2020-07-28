@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix l:)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -498,3 +500,36 @@ dialog for the PulseAudio sound server.  Note that this program can
 only configure local servers, and requires that a special module
 module-gsettings is loaded in the sound server.")
     (license l:gpl2)))
+
+(define-public rnnoise
+  (package
+    (name "rnnoise")
+    (version "0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/werman/noise-suppression-for-voice")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18bq5b50xw3d4r1ildinafpg3isb9y216430h4mm9wr3ir7h76a7"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (inputs
+     `(;; TODO: Package VST to build the corresponding plugin.
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "https://github.com/werman/noise-suppression-for-voice")
+    (synopsis "Real-time Noise suppression plugin based on Xiph's RNNoise")
+    (description "The plugin is meant to suppress a wide range of noise
+origins: computer fans, office, crowd, airplane, car, train, construction.
+
+Mild background noise is always suppressed, loud sounds, like
+clicking of mechanical keyboard, are suppressed while there is no voice
+however they are only reduced in volume when voice is present.
+
+The plugin is made to work with 1 or 2 channels (ladspa plugin),
+16 bit, 48000 Hz audio input.")
+    (license l:gpl3)))
