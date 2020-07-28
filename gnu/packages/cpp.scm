@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -246,7 +247,7 @@ as ordering relation.")
 (define-public json-modern-cxx
   (package
     (name "json-modern-cxx")
-    (version "3.7.3")
+    (version "3.9.0")
     (home-page "https://github.com/nlohmann/json")
     (source
      (origin
@@ -255,7 +256,7 @@ as ordering relation.")
                            (commit (string-append "v" version))))
        (sha256
         (base32
-         "04rry1xzis71z5gj1ylcj8b4li5q18zxhcwaviwvi3hx0frzxl9w"))
+         "06wmbnwbisbq3rqdbmi297hidvq6q8vs6j4z0a9qpr4sm721lwa6"))
        (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
@@ -278,12 +279,51 @@ as ordering relation.")
                   (string-append
                    "#include <fifo_map/" fifo-map-hpp ">")))))
            #t))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "-DJSON_TestDataDirectory="
+                            (assoc-ref %build-inputs "json_test_data")))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-pkg-config-install
+                    (lambda _
+                      ;; This phase can be removed for versions >= 3.9.1.
+                      (substitute* "CMakeLists.txt"
+                        ;; Look for the generated .pc in the right place ...
+                        (("\\$\\{CMAKE_BINARY_DIR\\}/\\$\\{PROJECT_NAME\\}\\.pc")
+                        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc")
+                        ;; ... and install it to the libdir.
+                        (("DESTINATION lib/pkgconfig")
+                         "DESTINATION \"${CMAKE_INSTALL_LIBDIR}/pkgconfig\""))
+                      #t))
+                  ;; XXX: When tests are enabled, the install phase will cause
+                  ;; a needless rebuild without the given configure flags,
+                  ;; ultimately creating both $out/lib and $out/lib64.  Move
+                  ;; the check phase after install to work around it.
+                  (delete 'check)
+                  (add-after 'install 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          ;; Some tests need git and a full checkout, skip those.
+                          (invoke "ctest" "-LE" "git_required")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (native-inputs
      `(("amalgamate" ,amalgamate)
-       ("doctest" ,doctest)))
+       ("doctest" ,doctest)
+       ("json_test_data"
+        ,(let ((version "3.0.0"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/nlohmann/json_test_data")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name "json_test_data" version))
+             (sha256
+              (base32
+               "0nzsjzlvk14dazwh7k2jb1dinb0pv9jbx5jsyn264wvva0y7daiv")))))))
     (inputs
      `(("fifo-map" ,fifo-map)))
-    (build-system cmake-build-system)
     (synopsis "JSON parser and printer library for C++")
     (description "JSON for Modern C++ is a C++ JSON library that provides
 intuitive syntax and trivial integration.")
