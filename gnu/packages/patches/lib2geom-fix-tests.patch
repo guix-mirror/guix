@@ -1,10 +1,10 @@
-From 488edbf84e918e0353e7a8f438abbf6eeca3767e Mon Sep 17 00:00:00 2001
+From 3e858cc87f2f8b7dc514a8ad7709c1f47f1f4cde Mon Sep 17 00:00:00 2001
 From: Maxim Cournoyer <maxim.cournoyer@gmail.com>
 Date: Wed, 17 Jun 2020 23:20:53 -0400
 Subject: [PATCH] tests: Fix tests on non-x86_64 platforms.
 
 On platform other than x86_64 such as aarch64-linux or i686-linux,
-some double comparison would fail.
+some double comparisons would fail.
 
 See <http://issues.guix.gnu.org/41827>.
 
@@ -14,6 +14,7 @@ EXPECT_near.
 (Portion): Replace EXPECT_EQ by EXPECT_near.
 * tests/ellipse-test.cpp (BezierIntersection): Lower error tolerance
 from 6e-13 to 6e-12.
+(LineIntersection): Replace EXPECT_DOUBLE_EQ by EXPECT_NEAR.
 * tests/line-test.cpp (Reflection): Replace EXPECT_FLOAT_EQ BY
 EXPECT_near.
 (Coefficients): Skip test.
@@ -21,13 +22,13 @@ EXPECT_near.
 EXPECT_DOUBLE_EQ.
 ---
  tests/bezier-test.cpp        | 31 +++++++++++++++++--------------
- tests/ellipse-test.cpp       |  2 +-
+ tests/ellipse-test.cpp       | 11 ++++++-----
  tests/line-test.cpp          | 11 +++++++----
  tests/parallelogram-test.cpp |  8 ++++----
- 4 files changed, 29 insertions(+), 23 deletions(-)
+ 4 files changed, 34 insertions(+), 27 deletions(-)
 
 diff --git a/tests/bezier-test.cpp b/tests/bezier-test.cpp
-index 4054a65..46209f4 100644
+index 4054a654..46209f40 100644
 --- a/tests/bezier-test.cpp
 +++ b/tests/bezier-test.cpp
 @@ -152,11 +152,13 @@ TEST_F(BezierTest, Casteljau) {
@@ -104,10 +105,29 @@ index 4054a65..46209f4 100644
      }
  }
 diff --git a/tests/ellipse-test.cpp b/tests/ellipse-test.cpp
-index 561c285..d6e65d8 100644
+index 561c285a..8e4de12c 100644
 --- a/tests/ellipse-test.cpp
 +++ b/tests/ellipse-test.cpp
-@@ -199,7 +199,7 @@ TEST(EllipseTest, BezierIntersection) {
+@@ -158,13 +158,14 @@ TEST(EllipseTest, LineIntersection) {
+     std::vector<ShapeIntersection> xs = e.intersect(l);
+ 
+     ASSERT_EQ(xs.size(), 2ul);
+-    EXPECT_FLOAT_EQ(xs[0].point()[X], 0);
+-    EXPECT_FLOAT_EQ(xs[0].point()[Y], -2);
+-    EXPECT_FLOAT_EQ(xs[1].point()[X], 9./5);
+-    EXPECT_FLOAT_EQ(xs[1].point()[Y], 8./5);
+ 
+     // due to numeric imprecision when evaluating Ellipse,
+     // the points may deviate by around 2e-16
++    EXPECT_NEAR(xs[0].point()[X], 0, 1e-15);
++    EXPECT_NEAR(xs[0].point()[Y], -2, 1e-15);
++    EXPECT_NEAR(xs[1].point()[X], 9./5, 1e-15);
++    EXPECT_NEAR(xs[1].point()[Y], 8./5, 1e-15);
++
+     EXPECT_intersections_valid(e, l, xs, 1e-15);
+ }
+ 
+@@ -199,7 +200,7 @@ TEST(EllipseTest, BezierIntersection) {
      std::vector<ShapeIntersection> xs = e.intersect(b);
  
      EXPECT_EQ(xs.size(), 2ul);
@@ -117,7 +137,7 @@ index 561c285..d6e65d8 100644
  
  TEST(EllipseTest, Coefficients) {
 diff --git a/tests/line-test.cpp b/tests/line-test.cpp
-index 99546dd..2399130 100644
+index 99546ddc..23991300 100644
 --- a/tests/line-test.cpp
 +++ b/tests/line-test.cpp
 @@ -91,10 +91,12 @@ TEST(LineTest, Reflection) {
@@ -146,7 +166,7 @@ index 99546dd..2399130 100644
      lines.push_back(Line(Point(1e9,1e9), Point(1,1)));
      //the case below will never work without normalizing the line
 diff --git a/tests/parallelogram-test.cpp b/tests/parallelogram-test.cpp
-index 8109ead..70ccea1 100644
+index 8109eadd..70ccea13 100644
 --- a/tests/parallelogram-test.cpp
 +++ b/tests/parallelogram-test.cpp
 @@ -106,13 +106,13 @@ TEST(ParallelogramTest, area)
@@ -168,5 +188,5 @@ index 8109ead..70ccea1 100644
  
  class ParallelogramTest
 -- 
-2.26.2
+2.27.0
 

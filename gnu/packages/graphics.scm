@@ -389,8 +389,8 @@ exception-handling library.")
 
 (define-public lib2geom
   ;; Use the latest master commit, as the 1.0 release suffer build problems.
-  (let ((revision "1")
-        (commit "42e119d94934a9514c61571cfb6b4af503ece082"))
+  (let ((revision "2")
+        (commit "f98256d2a923955af74b8cff3d456f0df1ee4b59"))
     (package
       (name "lib2geom")
       (version (git-version "1.0" revision commit))
@@ -402,7 +402,7 @@ exception-handling library.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "195rs0kdbs8w62irha1nwy83bccz04wglmk578qrj1mky7fc4rjv"))
+                  "0w6ijaai8i80d0f35c0shgdspqlsdhw3cvz106k1gm7bmnz1wzpq"))
                 (patches
                  ;; Patches submitted to upstream (see:
                  ;; https://gitlab.com/inkscape/lib2geom/merge_requests/17,
