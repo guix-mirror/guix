@@ -267,14 +267,14 @@ utilities.")
   (package
     (inherit geda-gaf)
     (name "lepton-eda")
-    (version "1.9.9-20191003")
+    (version "1.9.11-20200604")
     (home-page "https://github.com/lepton-eda/lepton-eda")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (sha256
                (base32
-                "08cc3zfk84qq9mrkc9pp4r9jlavvm01wwy0yd9frql68w2zw6mip"))
+                "091y8h7wcr9smwhb1wf12sj27n5jrannbj3y6qq3q2gwiifiz8sd"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("autoconf" ,autoconf)
