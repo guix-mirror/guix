@@ -441,10 +441,23 @@ exec_with_loader (const char *store, int argc, char *argv[])
   char *new_root = mkdtemp (strdup ("/tmp/guix-exec-XXXXXX"));
   mirror_directory ("/", new_root, make_symlink);
 
+  /* 'mirror_directory' created a symlink for the ancestor of ORIGINAL_STORE,
+     typically "/gnu".  Remove that entry so we can create NEW_STORE
+     below.  */
+  const char *slash = strchr (original_store + 1, '/');
+  const char *top = slash != NULL
+    ? strndupa (original_store, slash - original_store)
+    : original_store;
+  char *new_store_top = concat (new_root, top);
+  unlink (new_store_top);
+
+  /* Now create the store under NEW_ROOT.  */
   char *new_store = concat (new_root, original_store);
   char *new_store_parent = dirname (strdup (new_store));
   mkdir_p (new_store_parent);
-  symlink (store, new_store);
+  err = symlink (store, new_store);
+  if (err < 0)
+    assert_perror (errno);
 
 #ifdef GCONV_DIRECTORY
   /* Tell libc where to find its gconv modules.  This is necessary because

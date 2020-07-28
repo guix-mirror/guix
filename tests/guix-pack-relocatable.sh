@@ -90,7 +90,7 @@ case "`uname -m`" in
 	# Try '-RR' and PRoot.
 	tarball="`guix pack -RR -S /Bin=bin sed`"
 	tar tvf "$tarball" | grep /bin/proot
-	(cd "$test_directory"; tar xvf "$tarball")
+	(cd "$test_directory"; tar xf "$tarball")
 	run_without_store GUIX_EXECUTION_ENGINE="proot" \
 	"$test_directory/Bin/sed" --version > "$test_directory/output"
 	grep 'GNU sed' "$test_directory/output"
@@ -101,6 +101,29 @@ case "`uname -m`" in
 	grep 'GNU sed' "$test_directory/output"
 
 	chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
+
+	if unshare -r true
+	then
+	    # Check whether the store contains everything it should.  Check
+	    # once when erasing $STORE_PARENT ("/gnu") and once when erasing
+	    # $NIX_STORE_DIR ("/gnu/store").
+	    tarball="`guix pack -RR -S /bin=bin bash-minimal`"
+	    (cd "$test_directory"; tar xf "$tarball")
+
+	    STORE_PARENT="`dirname $NIX_STORE_DIR`"
+	    export STORE_PARENT
+
+	    for engine in userns proot fakechroot
+	    do
+		for i in $(guix gc -R $(guix build bash-minimal | grep -v -e '-doc$'))
+		do
+		    unshare -mrf sh -c "mount -t tmpfs none \"$NIX_STORE_DIR\"; GUIX_EXECUTION_ENGINE=$engine $test_directory/bin/sh -c 'echo $NIX_STORE_DIR/*'" | grep $(basename $i)
+		    unshare -mrf sh -c "mount -t tmpfs none \"$STORE_PARENT\";  GUIX_EXECUTION_ENGINE=$engine $test_directory/bin/sh -c 'echo $NIX_STORE_DIR/*'" | grep $(basename $i)
+		done
+	    done
+
+	    chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
+	fi
 	;;
     *)
 	echo "skipping PRoot and Fakechroot tests" >&2
@@ -109,7 +132,7 @@ esac
 
 # Ensure '-R' works with outputs other than "out".
 tarball="`guix pack -R -S /share=share groff:doc`"
-(cd "$test_directory"; tar xvf "$tarball")
+(cd "$test_directory"; tar xf "$tarball")
 test -d "$test_directory/share/doc/groff/html"
 
 # Ensure '-R' applies to propagated inputs.  Failing to do that, it would fail
