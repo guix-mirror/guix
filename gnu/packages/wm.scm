@@ -340,7 +340,7 @@ many programming languages.")
 (define-public i3-gaps
   (package (inherit i3-wm)
            (name "i3-gaps")
-           (version "4.18.1")
+           (version "4.18.2")
            (source (origin
                      (method url-fetch)
                      (uri (string-append
@@ -348,7 +348,7 @@ many programming languages.")
                            version "/i3-" version ".tar.bz2"))
                      (sha256
                       (base32
-                       "1cxwsrdzp18r5hj0ymg9fbzp1mhkj4m9h6i0b9cdg79cjbacba9k"))))
+                       "0lz08wf4b0yprzqsmymn94kiyg885dcwmh0p64v2rnf52s165g2g"))))
            (home-page "https://github.com/Airblader/i3")
            (synopsis "Tiling window manager with gaps")
            (description "i3-gaps is a fork of i3wm, a tiling window manager
