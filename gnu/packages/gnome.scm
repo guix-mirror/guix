@@ -10091,6 +10091,8 @@ integrate seamlessly with the GNOME desktop.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libarchive" ,libarchive)
+       ("glib-networking" ,glib-networking) ;for TLS support
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk" ,gtk+)
        ("gtk-vnc" ,gtk-vnc)
        ("libosinfo" ,libosinfo)
@@ -10109,7 +10111,10 @@ integrate seamlessly with the GNOME desktop.")
     (home-page "https://wiki.gnome.org/Apps/Boxes")
     (synopsis "View, access, and manage remote and virtual systems")
     (description "GNOME Boxes is a simple application to view, access, and
-manage remote and virtual systems.")
+manage remote and virtual systems.  Note that this application requires the
+@code{libvirt} and @code{virtlog} daemons to run.  Use the command
+@command{info '(guix) Virtualization Services'} to learn how to configure
+these services on the Guix System.")
     (license (list
               ;; For data/icons/empty-boxes.png.
               license:cc-by2.0
