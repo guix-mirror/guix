@@ -5335,7 +5335,7 @@ for compilation, debugging, documentation lookup, and so on.")
 (define-public emacs-popup
   (package
     (name "emacs-popup")
-    (version "0.5.3")
+    (version "0.5.8")
     (source
      (origin
        (method git-fetch)
@@ -5344,7 +5344,7 @@ for compilation, debugging, documentation lookup, and so on.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y538siabcf1n00wr4iz5gbxfndw661kx2mn9w1g4lg7yi4n0h0h"))))
+        (base32 "0qrsz4z9q2bfq9xv4n94mvyslm232v2ql9r1fjycx7rnmpqggiwl"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/auto-complete/popup-el")
     (synopsis "Visual Popup User Interface for Emacs")
