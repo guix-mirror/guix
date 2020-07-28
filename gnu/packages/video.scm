@@ -577,15 +577,15 @@ H.264 (MPEG-4 AVC) video streams.")
                 (format #f "'~a/bin/xdg-open'"
                         (assoc-ref inputs "xdg-utils"))))
              #t))
-         (add-after 'install 'install-desktop
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (sharedir (string-append out "/share")))
-               (install-file "share/gtk-straw-viewer.desktop"
-                             (string-append sharedir "/applications"))
-               (install-file "share/icons/gtk-straw-viewer.png"
-                             (string-append sharedir "/pixmaps"))
-               #t)))
+         ;; (add-after 'install 'install-desktop
+         ;;   (lambda* (#:key outputs #:allow-other-keys)
+         ;;     (let* ((out (assoc-ref outputs "out"))
+         ;;            (sharedir (string-append out "/share")))
+         ;;       (install-file "share/gtk-straw-viewer.desktop"
+         ;;                     (string-append sharedir "/applications"))
+         ;;       (install-file "share/icons/gtk-straw-viewer.png"
+         ;;                     (string-append sharedir "/pixmaps"))
+         ;;       #t)))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
