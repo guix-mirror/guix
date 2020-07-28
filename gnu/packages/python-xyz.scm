@@ -8173,6 +8173,24 @@ output.")
 (define-public python2-cram
   (package-with-python2 python-cram))
 
+(define-public python-crashtest
+  (package
+    (name "python-crashtest")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "crashtest" version))
+        (sha256
+          (base32
+            "056zzbznl3xfnbblfci8lvcam3h7k7va68vi6asrm4q0ck4nrh79"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/sdispater/crashtest")
+    (synopsis "Manage Python errors with ease")
+    (description
+     "Python library that makes exceptions handling and inspection easier.")
+    (license license:expat)))
+
 (define-public python-straight-plugin
   (package
     (name "python-straight-plugin")
