@@ -289,7 +289,7 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %ungoogled-revision "df199c04ff367da59ce52a23a3f3b305dd3b00c3")
+(define %ungoogled-revision "cc3e311f33519a5ba961ad1f1dc19507ce98b0d2")
 (define %debian-revision "debian/83.0.4103.116-3")
 (define %gentoo-revision "f3f649046d31ebdbc8c4a302b2384504eff78027")
 
@@ -331,7 +331,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "1bqvcq3dj6615198j7cz3ylyyic5zpis06capvl6ybl1na3ainb0"))))
+      "168mmpgmp4m24lcwbnwa5y8z2qrrr7bjcdrb1vvx64zswksb25hd"))))
 
 ;; This is a source 'snippet' that does the following:
 ;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
@@ -450,7 +450,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
-    (version (string-append "84.0.4147.89-0."
+    (version (string-append "84.0.4147.105-0."
                             (string-take %ungoogled-revision 7)))
     (synopsis "Graphical web browser")
     (source (origin
@@ -460,7 +460,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
                                   (car (string-split version #\-)) ".tar.xz"))
               (sha256
                (base32
-                "0yf6j0459qzr677zsa2apmfz0x0ndlscvwj1a5v40nqjijchv5qp"))
+                "1b6cqnwx76pp4y5hvz3qm8lm1ayaxr5578k76164acr35bmypx6a"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
