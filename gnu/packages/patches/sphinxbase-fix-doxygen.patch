@@ -1,0 +1,24 @@
+https://github.com/cmusphinx/sphinxbase/commit/6989c52a3fb9473fd61326e548440fff887525c2
+
+commit 6989c52a3fb9473fd61326e548440fff887525c2
+Author: Michel Zou <xantares09@hotmail.com>
+Date:   Thu Feb 6 07:02:06 2020 +0100
+
+    Fix doxy2swig.py IndexError: list index out of range
+
+diff --git a/doc/doxy2swig.py b/doc/doxy2swig.py
+index 5589b0d..a01c4b1 100644
+--- a/doc/doxy2swig.py
++++ b/doc/doxy2swig.py
+@@ -299,7 +299,10 @@ class Doxy2SWIG:
+             name = first['name'].firstChild.data
+ 
+             for n in node.getElementsByTagName('param'):
+-              arg_type = n.getElementsByTagName('type')[0]
++              elts = n.getElementsByTagName('type')
++              if len(elts) == 0:
++                  continue
++              arg_type = elts[0]
+               ref = self.get_specific_nodes(arg_type, ('ref'))
+               if 'ref' in ref:
+                 type_name = ref['ref'].firstChild.data

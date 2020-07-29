@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -497,7 +498,8 @@ control.")
                            "sphinxbase/" version "/"
                            "sphinxbase-" version ".tar.gz"))
        (sha256
-        (base32 "0vr4k8pv5a8nvq9yja7kl13b5lh0f9vha8fc8znqnm8bwmcxnazp"))))
+        (base32 "0vr4k8pv5a8nvq9yja7kl13b5lh0f9vha8fc8znqnm8bwmcxnazp"))
+       (patches (search-patches "sphinxbase-fix-doxygen.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f))           ;tests fail otherwise
