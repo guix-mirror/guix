@@ -1081,25 +1081,36 @@ use on a given system.")
     (version "2.7.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://alioth.debian.org/frs/download.php/"
-                           "file/4215/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://salsa.debian.org/minicom-team/minicom.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32
-         "1wa1l36fa4npd21xa9nz60yrqwkk5cq713fa3p5v0zk7g9mq6bsk"))))
+        (base32 "0f36wv015zpz1x895qv0z6marlynzyh0d5mfkyd7lfyy2xd1i2w0"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-lock-dir=/var/lock")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-lock-check
+         (replace 'bootstrap
+           ;; autogen.sh needlessly hard-codes aclocal-1.14.
+           (lambda _
+             (invoke "autoreconf" "-vif")
+             #t))
+         (add-before 'configure 'patch-lock-check
            (lambda _
              (substitute* "configure"
                (("test -d [$]UUCPLOCK") "true"))
              #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("ncurses" ,ncurses)))
-    (home-page "https://alioth.debian.org/projects/minicom/")
+    (home-page "https://salsa.debian.org/minicom-team/minicom")
     (synopsis "Serial terminal emulator")
     (description "@code{minicom} is a serial terminal emulator.")
     (license license:gpl2+)))
