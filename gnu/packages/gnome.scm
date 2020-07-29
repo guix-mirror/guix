@@ -3374,28 +3374,7 @@ editors, IDEs, etc.")
 GTK+, this fork provides additional functions exposed for keyboard text
 selection and URL hints.")))
 
-;; provides vte 2.90, required for some terminal emulators
-;; tilda bug: https://github.com/lanoxx/tilda/issues/94
-;; pantheon-terminal bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=788021
-;; roxterm bug: http://sourceforge.net/p/roxterm/bugs/107/
-;; pantheon-terminal, roxterm are not currently packaged
-(define-public vte-0.36
-  (package (inherit vte)
-    (name "vte")
-    (version "0.36.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1psfnqsmxx4qzc55qwvb8jai824ix4pqcdqhgxk0g2zh82bcxhn2"))))
-    (propagated-inputs
-     `(("gtk" ,gtk+)
-       ("ncurses" ,ncurses)))))
-
-;; stable version for gtk2, required by xfce4-terminal.
+;; Stable version for gtk2, required by gnurobots and lxterminal as of 2020-07.
 (define-public vte/gtk+-2
   (package (inherit vte)
     (name "vte")
