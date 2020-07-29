@@ -13572,6 +13572,45 @@ has no concept of @code{TEXT} values; it's all just Lisp objects.  The Lisp
 object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
     (license license:gpl3+)))
 
+(define-public emacs-emacsql-sqlite3
+  (package
+    (name "emacs-emacsql-sqlite3")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cireu/emacsql-sqlite3")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1yy9y27rckm776jnl2rh1fz3bh09690xwzq7102vlw7xkb9s7jhj"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("ert-runner" ,emacs-ert-runner)))
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (propagated-inputs
+     `(("emacs-emacsql" ,emacs-emacsql)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "-Q" "--batch" "-L" "."
+                        "--load" "emacsql-sqlite3-test.el"
+                        "-f" "ert-run-tests-batch-and-exit")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'embed-path-to-sqlite3
+           (lambda _
+             (substitute* "emacsql-sqlite3.el"
+               (("\\(executable-find \"sqlite3\"\\)")
+                (string-append "\"" (which "sqlite3") "\"")))
+             #t)))))
+    (home-page "https://github.com/cireu/emacsql-sqlite3")
+    (synopsis "EmacSQL backend for SQLite")
+    (description "This is yet another EmacSQL backend for SQLite which uses
+official @command{sqlite3} executable to access SQL database.")
+    (license license:gpl3+)))
+
 (define-public emacs-closql
   ;; Take a commit newer than 1.0.0 release because of Emacs upgrade to 26.3.
   (let ((commit "70b98dbae53611d10a461d9b4a6f71086910dcef"))
