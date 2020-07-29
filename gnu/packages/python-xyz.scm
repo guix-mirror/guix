@@ -15952,18 +15952,19 @@ created by running @code{python setup.py develop}).")
 (define-public python-twine
   (package
     (name "python-twine")
-    (version "1.9.1")
+    (version "1.15.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "twine" version))
         (sha256
-          (base32
-            "1ay1b6kdq6k4bfbjsvf6ymj41wrgpvinhxndb09355pwhxwmp96a"))))
+         (base32 "11rpd653zcgzkq3sgwkzs3mpxl3r5rij59745ni84ikv8smjmlm3"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-tqdm" ,python-tqdm)
+       ("python-packaging" ,python-packaging)
        ("python-pkginfo" ,python-pkginfo)
+       ("python-readme-renderer" ,python-readme-renderer)
        ("python-requests" ,python-requests)
        ("python-requests-toolbelt" ,python-requests-toolbelt)))
     (home-page "https://github.com/pypa/twine")
