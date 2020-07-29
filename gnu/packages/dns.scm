@@ -38,6 +38,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages certs)
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
@@ -62,6 +63,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
@@ -76,6 +78,91 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial))
+
+(define-public ldns
+  (package
+    (name "ldns")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.nlnetlabs.nl/downloads/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ac242n7996fswq1a3nlh1bbbhrsdwsq4mx7xq8ffq6aplb4rj4a"))
+       (patches
+        (search-patches
+         ;; To create make-flag vairables,
+         ;; for splitting installation of drill and examples.
+         "ldns-drill-examples.patch"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "drill" "examples" "pyldns"))
+    (arguments
+     `( ;; Tests require Tpkg.
+       ;; https://tpkg.github.io/
+       #:tests? #f
+       #:configure-flags
+       (list
+        "--disable-static"
+        "--enable-gost-anyway"
+        "--enable-rrtype-ninfo"
+        "--enable-rrtype-rkey"
+        "--enable-rrtype-ta"
+        "--enable-rrtype-avc"
+        "--enable-rrtype-doa"
+        "--enable-rrtype-amtrelay"
+        "--with-drill"
+        "--with-examples"
+        "--with-pyldns"
+        ;; Perl module DNS::LDNS not available.
+        ;; https://github.com/erikoest/DNS-LDNS.git
+        ;; "--with-p5-dns-ldns"
+        (string-append "--with-ssl="
+                       (assoc-ref %build-inputs "openssl"))
+        (string-append "--with-ca-path="
+                       (assoc-ref %build-inputs "nss-certs")
+                       "/etc/ssl/certs"))
+       #:make-flags
+       (list
+        (string-append "drillbindir="
+                       (assoc-ref %outputs "drill")
+                       "/bin")
+        (string-append "drillmandir="
+                       (assoc-ref %outputs "drill")
+                       "/share/man")
+        (string-append "examplesbindir="
+                       (assoc-ref %outputs "examples")
+                       "/bin")
+        (string-append "examplesmandir="
+                       (assoc-ref %outputs "examples")
+                       "/share/man")
+        (string-append "python_site="
+                       (assoc-ref %outputs "pyldns")
+                       "/lib/python"
+                       ,(version-major+minor
+                         (package-version python))
+                       "/site-packages"))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("ksh" ,oksh)
+       ("perl" ,perl)
+       ("perl-devel-checklib" ,perl-devel-checklib)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("swig" ,swig)))
+    (inputs
+     `(("libpcap" ,libpcap)
+       ("nss-certs" ,nss-certs)
+       ("openssl" ,openssl)))
+    (synopsis "DNS library that facilitates DNS tool programming")
+    (description "LDNS aims to simplify DNS programming, it supports recent
+RFCs like the DNSSEC documents, and allows developers to easily create
+software conforming to current RFCs, and experimental software for current
+Internet Drafts.  A secondary benefit of using ldns is speed; ldns is written in
+C it should be a lot faster than Perl.")
+    (home-page "https://nlnetlabs.nl/projects/ldns/about/")
+    (license license:bsd-3)))
 
 (define-public dnsmasq
   (package
