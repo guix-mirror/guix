@@ -3314,7 +3314,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.60.2")
+    (version "0.60.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vte/"
@@ -3322,7 +3322,7 @@ libraries written in C.")
                                   "vte-" version ".tar.xz"))
               (sha256
                (base32
-                "19ccbw0yca78h5qcnm8claj4fg1pj68nj1fsjqqfpzhj7w72i81m"))))
+                "0al2v6fn061v4j1wwvppim1q283y2a6s0iyl29hxhmx3h48nxdzy"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
