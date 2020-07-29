@@ -386,14 +386,14 @@ services.")
 (define-public gnunet-gtk
   (package (inherit gnunet)
     (name "gnunet-gtk")
-    (version "0.12.0")
+    (version "0.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gnunet/gnunet-gtk-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "08a43ayv1rhajdklfcv78w2h76jfaz64kgp5krqgj1w1sq8xm6fb"))))
+                "1zdzgq16h77w6ybwg3lqjsjr965np6iqvncqvkbj07glqd4wss0j"))))
     (arguments
      `(#:configure-flags
        (list "--with-libunique"
