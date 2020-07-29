@@ -758,6 +758,9 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
           (patches (search-patches
                      "rust-coresimd-doctest.patch"
                      "rust-1.25-accept-more-detailed-gdb-lines.patch"))))
+      (inputs
+       (alist-replace "openssl" (list openssl)
+                      (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
