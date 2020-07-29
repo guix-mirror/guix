@@ -14179,7 +14179,7 @@ arXiv, Google Scholar, Library of Congress, etc.
 
 (define-public emacs-erc-image
   (let ((commit "82fb3871f02e24b1e880770b9a3d187aab43d0f0")
-        (revision "1"))
+        (revision "3"))
     (package
       (name "emacs-erc-image")
       (version (git-version "0" revision commit))
@@ -14194,6 +14194,13 @@ arXiv, Google Scholar, Library of Congress, etc.
           (base32
            "1q8mkf612fb4fjp8h4kbr107wn083iqfdgv8f80pcmil8y33dw9i"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    ;; The package autoloader fails to provide
+                    ;; the image module when handled by Guix.
+                    ;; Disable this phase, and let the package
+                    ;; handle the `eval-after-load' procedure.
+                    (delete 'make-autoloads))))
       (home-page "https://github.com/kidd/erc-image.el")
       (synopsis "Show inlined images (png/jpg/gif/svg) in ERC buffers")
       (description "This plugin subscribes to hooks @code{erc-insert-modify-hook}
