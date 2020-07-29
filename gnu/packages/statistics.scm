@@ -106,7 +106,7 @@
        ("pango" ,pango)
        ("readline" ,readline)
        ("gtk" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
+       ("gtksourceview" ,gtksourceview-3)
        ("spread-sheet-widget" ,spread-sheet-widget)
        ("zlib" ,zlib)))
     (native-inputs
