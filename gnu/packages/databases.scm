@@ -613,14 +613,14 @@ RDBMS systems (which are deep in functionality).")
 (define-public mycli
   (package
     (name "mycli")
-    (version "1.21.1")
+    (version "1.22.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mycli" version))
         (sha256
           (base32
-            "1q9p0yik9cpvpxjs048anvhicfcna84mpl7axv9bwgr48w40lqwg"))))
+            "18qxxrpdksg3s73va7nkbkwi34kg9m1pls7w4fh5f4jk4p434zsf"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; tests expect a running MySQL
