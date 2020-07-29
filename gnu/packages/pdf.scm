@@ -1311,8 +1311,7 @@ presentation.  The input files processed by pdfpc are PDF documents.")
     (synopsis "Pango to PostScript converter")
     (description
      "Paps reads a UTF-8 encoded file and generates a PostScript language
-rendering of the file.  The rendering is done by creating outline curves
-through the Pango @code{ft2} backend.")
+rendering of the file through the Pango Cairo back end.")
     (license license:lgpl2.0+)))
 
 (define-public stapler
