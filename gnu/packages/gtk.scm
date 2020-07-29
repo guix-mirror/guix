@@ -1792,14 +1792,14 @@ input.")
 (define-public spread-sheet-widget
   (package
     (name "spread-sheet-widget")
-    (version "0.3")
+    (version "0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://alpha.gnu.org/gnu/ssw/"
                            "spread-sheet-widget-" version ".tar.gz"))
        (sha256
-        (base32 "1h93yyh2by6yrmkwqg38nd5knids05k5nqzcihc1hdwgzg3c4b8y"))))
+        (base32 "0vxqv229vp6l278hz11ayrfirn4gj736clh4wlmn0h21bh5b8pfc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
