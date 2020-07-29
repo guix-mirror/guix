@@ -46,10 +46,12 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
@@ -75,6 +77,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial))
@@ -162,6 +165,109 @@ software conforming to current RFCs, and experimental software for current
 Internet Drafts.  A secondary benefit of using ldns is speed; ldns is written in
 C it should be a lot faster than Perl.")
     (home-page "https://nlnetlabs.nl/projects/ldns/about/")
+    (license license:bsd-3)))
+
+(define-public dnssec-trigger
+  (package
+    (name "dnssec-trigger")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.nlnetlabs.nl/downloads/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10928q406x9r66a090xl5kznzgyxpja88w4srwcv454hd351j9f0"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "gui" "nm"))
+    (arguments
+     `(#:test-target "test"
+       #:configure-flags
+       (list
+        (string-append "--with-ssl="
+                       (assoc-ref %build-inputs "openssl"))
+        "--with-hooks=networkmanager"
+        (string-append "--with-networkmanager-dispatch="
+                       (assoc-ref %outputs "nm")
+                       "/etc/NetworkManager/dispatcher.d")
+        (string-append "--with-xdg-autostart="
+                       (assoc-ref %outputs "gui")
+                       "/etc/xdg/autostart")
+        (string-append "--with-uidir="
+                       (assoc-ref %outputs "gui")
+                       "/share/dnssec-trigger")
+        (string-append "--with-python="
+                       (assoc-ref %build-inputs "python")
+                       "/bin/python")
+        (string-append "--with-unbound-control="
+                       (assoc-ref %build-inputs "unbound")
+                       "/sbin/unbound-control")
+        "--with-forward-zones-support")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configure
+           (lambda _
+             (substitute* "configure"
+               (("appindicator-0.1")
+                "appindicator3-0.1"))
+             #t))
+         (add-before 'configure 'patch-makefile
+           (lambda _
+             (substitute* "Makefile.in"
+               (("/usr")
+                "$(prefix)")
+               (("/etc")
+                "$(prefix)/etc")
+               ((".*gtk-update-icon-cache.*")
+                ""))
+             #t))
+         (add-after 'install 'remove-systemd
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (delete-file-recursively
+                (string-append out "/lib/systemd"))
+               #t)))
+         (add-after 'remove-systemd 'move-gui
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (gui (assoc-ref outputs "gui")))
+               (mkdir-p (string-append gui "/bin"))
+               (mkdir-p (string-append gui "/share"))
+               (rename-file
+                (string-append out "/bin")
+                (string-append gui "/bin"))
+               (rename-file
+                (string-append out "/share/icons")
+                (string-append gui "/share/icons"))
+               #t)))
+         (add-after 'move-gui 'move-nm
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (nm (assoc-ref outputs "nm")))
+               (mkdir-p (string-append nm "/libexec"))
+               (rename-file
+                (string-append out "/libexec")
+                (string-append nm "/libexec"))
+               #t))))))
+    (native-inputs
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("ldns" ,ldns)
+       ("libappindicator" ,libappindicator)
+       ("openssl" ,openssl)
+       ("unbound" ,unbound)))
+    (synopsis "DNSSEC protection for the DNS traffic")
+    (description "DNSSEC-Trigger enables your computer to use DNSSEC protection
+for the DNS traffic.  It relies on the Unbound DNS resolver running locally on
+your system, which performs DNSSEC validation.  It reconfigures Unbound in such
+a way that it will signal it to to use the DHCP obtained forwarders if possible,
+fallback to doing its own AUTH queries if that fails, and if that fails it will
+prompt the user with the option to go with insecure DNS only.")
+    (home-page "https://www.nlnetlabs.nl/projects/dnssec-trigger/about/")
     (license license:bsd-3)))
 
 (define-public dnsmasq
