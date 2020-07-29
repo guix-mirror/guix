@@ -1306,14 +1306,14 @@ with several different talk daemons at the same time.")
 (define-public gloox
   (package
     (name "gloox")
-    (version "1.0.23")
+    (version "1.0.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://camaya.net/download/gloox-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "12jz8glg9zmyk0iyv1ywf5i0hq93dfq8lvn6lyjgy8730w66mjwp"))))
+        (base32 "1jgrd07qr9jvbb5hcmhrqz4w4lvwc51m30jls1fgxf1f5az6455f"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
