@@ -15291,13 +15291,13 @@ applying JSON Patches according to RFC 6902.")
 (define-public python-rfc3986
   (package
     (name "python-rfc3986")
-    (version "1.1.0")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "rfc3986" version))
               (sha256
                (base32
-                "06wlmysw83f75ff84zr1yr6n0shvc2xn1n1sb4iwzqap9hf5fn44"))))
+                "17dvx15m3r49bmif5zlli8kzjd6bys6psixzbp14sd5367d9h8qi"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
