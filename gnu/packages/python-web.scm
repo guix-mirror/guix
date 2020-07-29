@@ -3529,8 +3529,6 @@ Python.")
        (uri (pypi-uri "python-slugify" version))
        (sha256
         (base32 "0w22fapghmzk3xdasc4dn7h8sl58l08d1h5zbf72dh80drv1g9b9"))))
-    (native-inputs
-     `(("python-wheel" ,python-wheel)))
     (propagated-inputs
      `(("python-unidecode" ,python-unidecode)))
     (arguments
