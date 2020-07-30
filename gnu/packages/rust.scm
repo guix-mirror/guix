@@ -1282,8 +1282,8 @@ move around."
 
 (define-public rust-1.45
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.44 "1.45.0"
-           "0z6dh0yd3fcm3qh960wi4s6fa6pxz9mh77psycsqfkkx5kqra15s")))
+         (rust-bootstrapped-package rust-1.44 "1.45.1"
+           "16r1fjyiv3kvk9vml34jxh4vb56mqmr0x83pdmnfa7rx9r1fclza")))
     (package
       (inherit base-rust)
       (source
