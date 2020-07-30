@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
 (define-module (gnu packages datastructures)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -283,4 +285,42 @@ simple and an efficient C API to construct a suffix array and a
 Burrows-Wheeler transformed string from a given string over a constant-size
 alphabet.  The algorithm runs in O(n log n) worst-case time using only 5n+O(1)
 bytes of memory space, where n is the length of the string.")
+    (license license:expat)))
+
+(define-public robin-map
+  (package
+    (name "robin-map")
+    (version "0.6.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Tessil/robin-map")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1li70vwsksva9c4yly90hjafgqfixi1g6d52qq9p6r60vqc4pkjj"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("boost" ,boost)))  ; needed for tests
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (mkdir "tests")
+             (with-directory-excursion "tests"
+               (invoke "cmake" "../../source/tests")
+               (invoke "cmake" "--build" ".")
+               (invoke "./tsl_robin_map_tests")))))))
+    (home-page "https://github.com/Tessil/robin-map")
+    (synopsis "C++ implementation of a fast hash map and hash set")
+    (description "The robin-map library is a C++ implementation of a fast hash
+map and hash set using open-addressing and linear robin hood hashing with
+backward shift deletion to resolve collisions.
+
+Four classes are provided: tsl::robin_map, tsl::robin_set, tsl::robin_pg_map
+and tsl::robin_pg_set. The first two are faster and use a power of two growth
+policy, the last two use a prime growth policy instead and are able to cope
+better with a poor hash function.")
     (license license:expat)))
