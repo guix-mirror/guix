@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13328,3 +13329,38 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
          ("trivial-gray-streams" ,cl-trivial-gray-streams)
          ("swank" ,cl-slime-swank)
          ("zpb-ttf" ,cl-zpb-ttf))))))
+
+(define-public sbcl-cl-inflector
+  (let ((commit "f1ab16919ccce3bd82a0042677d9616dde2034fe")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-inflector")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/cl-inflector")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xwwlhik1la4fp984qnx2dqq24v012qv4x0y49sngfpwg7n0ya7y"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lisp-unit2" ,sbcl-lisp-unit2)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (home-page "https://github.com/AccelerationNet/cl-inflector")
+      (synopsis "Library to pluralize/singularize English and Portuguese words")
+      (description
+       "This is a common lisp library to easily pluralize and singularize
+English and Portuguese words.  This is a port of the ruby ActiveSupport
+Inflector module.")
+      (license license:expat))))
+
+(define-public cl-inflector
+  (sbcl-package->cl-source-package sbcl-cl-inflector))
+
+(define-public ecl-cl-inflector
+  (sbcl-package->ecl-package sbcl-cl-inflector))
