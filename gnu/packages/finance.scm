@@ -96,7 +96,6 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gnuzilla))
@@ -573,7 +572,6 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
-       ("git" ,git)
        ("graphviz" ,graphviz)
        ("pkg-config" ,pkg-config)
        ("protobuf" ,protobuf)
