@@ -999,3 +999,28 @@ any Python VM with basically no runtime overhead.")
     ;; Foundation License version 2: stdlib-samples/*, mypyc/lib-rt/pythonsupport.h and
     ;; mypyc/lib-rt/getargs.c
     (license (list license:expat license:psfl))))
+
+(define-public python-robber
+  (package
+    (name "python-robber")
+    (version "1.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "robber" version))
+              (sha256
+               (base32
+                "0xp5csgv2g9q38hscml6bc5i1nm4xy5lzqqiimm2drxsf0hw2nq5"))))
+    (build-system python-build-system)
+    ;; There are no tests in the tarball downloaded from PyPI.
+    ;; The last version tagged in Github (0.1.0) is older than the one on PyPI.
+    ;; Reported upstream: <https://github.com/vesln/robber.py/issues/20>.
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-mock" ,python-mock)
+       ("python-termcolor" ,python-termcolor)))
+    ;; URL of the fork used to generate the package available on PyPI.
+    (home-page "https://github.com/EastAgile/robber.py")
+    (synopsis "Test-driven development (TDD) assertion library for Python")
+    (description "Robber is a Python assertion library for test-driven and
+behavior-driven development (TDD and BDD).")
+    (license license:expat)))
