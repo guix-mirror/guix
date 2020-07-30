@@ -432,7 +432,6 @@ environment.")
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
-       ("git" ,git-minimal)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
        ("python-mako" ,python-mako)
