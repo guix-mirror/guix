@@ -162,7 +162,6 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages time)
   #:use-module (gnu packages upnp)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
@@ -1240,7 +1239,6 @@ videoformats depend on the configuration flags of ffmpeg.")
      `(("flex" ,flex)
        ("bison" ,bison)
        ("gettext" ,gettext-minimal)
-       ("git" ,git)                     ; needed for a test
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add optional inputs once available.
     (inputs
