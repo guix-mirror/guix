@@ -43,6 +43,43 @@
   #:use-module (guix git-download)
   #:use-module (guix utils))
 
+(define-public libstemmer
+  (package
+    (name "libstemmer")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://snowballstem.org/dist/libstemmer_c.tgz")
+       (sha256
+        (base32 "1z2xvrjsaaypc04lwz7dg8mjm5cq1gzmn0l544pn6y2ll3r7ckh5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist
+       #:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target))
+        "CFLAGS=-fPIC")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-bin (string-append out "/bin"))
+                    (out-include (string-append out "/include"))
+                    (out-lib (string-append out "/lib")))
+               (install-file "stemwords" out-bin)
+               (install-file "include/libstemmer.h" out-include)
+               (rename-file "libstemmer.o" "libstemmer.a")
+               (install-file "libstemmer.a" out-lib)
+               #t))))))
+    (synopsis "Stemming Library")
+    (description "LibStemmer provides stemming library, supporting several
+languages.")
+    (home-page "https://snowballstem.org/")
+    (license bsd-3)))
+
 (define-public perl-lingua-en-findnumber
   (package
     (name "perl-lingua-en-findnumber")
