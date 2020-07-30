@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -248,7 +249,7 @@ sound server.")
 (define-public pavucontrol
   (package
     (name "pavucontrol")
-    (version "3.0")
+    (version "4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -257,7 +258,7 @@ sound server.")
                    ".tar.xz"))
              (sha256
               (base32
-               "14486c6lmmirkhscbfygz114f6yzf97h35n3h3pdr27w4mdfmlmk"))))
+               "1qhlkl3g8d7h72xjskii3g1l7la2cavwp69909pzmbi2jyn5pi4g"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)          ;hard-coded theme
