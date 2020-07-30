@@ -8054,14 +8054,14 @@ of its name.")
 (define-public emacs-rainbow-mode
   (package
     (name "emacs-rainbow-mode")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "rainbow-mode-" version ".el"))
        (sha256
-        (base32 "0rp76gix1ph1wrmdax6y2m3i9y1dmgv7ikjz8xsl5lizkygsy9cg"))))
+        (base32 "159fps843k5pap9k04a7ll1k3gw6d9c6w08lq4bbc3lqg78aa2l9"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/rainbow-mode.html")
     (synopsis "Colorize color names in buffers")
