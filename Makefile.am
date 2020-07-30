@@ -80,6 +80,7 @@ MODULES =					\
   guix/modules.scm				\
   guix/download.scm				\
   guix/discovery.scm				\
+  guix/android-repo-download.scm		\
   guix/bzr-download.scm            		\
   guix/git-download.scm				\
   guix/hg-download.scm				\
@@ -170,6 +171,7 @@ MODULES =					\
   guix/build/minify-build-system.scm		\
   guix/build/font-build-system.scm		\
   guix/build/go-build-system.scm		\
+  guix/build/android-repo.scm			\
   guix/build/asdf-build-system.scm		\
   guix/build/bzr.scm				\
   guix/build/copy-build-system.scm		\
