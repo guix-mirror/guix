@@ -215,7 +215,7 @@ use `--strip-all' as the arguments to `strip'."
     (arguments
      (let ((a (default-keyword-arguments (package-arguments p)
                 '(#:configure-flags '()
-                  #:strip-flags '("--strip-debug")))))
+                  #:strip-flags '("--strip-unneeded")))))
        (substitute-keyword-arguments a
          ((#:configure-flags flags)
           `(cons* "--disable-shared" "LDFLAGS=-static" ,flags))
@@ -337,7 +337,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (parallel-tests? #t)
                     (patch-shebangs? #t)
                     (strip-binaries? #t)
-                    (strip-flags ''("--strip-debug"
+                    (strip-flags ''("--strip-unneeded"
                                     "--enable-deterministic-archives"))
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
@@ -492,7 +492,7 @@ is one of `host' or `target'."
                           (parallel-build? #t) (parallel-tests? #t)
                           (patch-shebangs? #t)
                           (strip-binaries? #t)
-                          (strip-flags ''("--strip-debug"
+                          (strip-flags ''("--strip-unneeded"
                                           "--enable-deterministic-archives"))
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
