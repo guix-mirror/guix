@@ -11862,6 +11862,9 @@ straight away.  Its main features are:
               (snippet
                '(begin
                   (for-each delete-file (find-files "." "\\.exe$"))
+                  ;; Some files in the original tarball have restrictive
+                  ;; permissions, which makes repackaging fail
+                  (for-each (lambda (file) (chmod file #o644)) (find-files "."))
                   #t))))
     (build-system gnu-build-system)
     (arguments
