@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,19 +33,26 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages python)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public asciidoc
   (package
@@ -259,3 +267,34 @@ sort, and search the document catalog.  It will also be able to communicate
 with catalog servers on the Net to search for documents which are not on the
 local system.")
     (license lgpl2.1+)))
+
+(define-public zeal
+  (package
+    (name "zeal")
+    (version "0.6.1")
+    (home-page "https://github.com/zealdocs/zeal")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05qcjpibakv4ibhxgl5ajbkby3w7bkxsv3nfv2a0kppi1z0f8n8v"))))
+    (build-system qt-build-system)
+    (arguments `(#:tests? #f))          ; no tests
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libarchive" ,libarchive)
+       ("sqlite" ,sqlite)
+       ("qtbase" ,qtbase)
+       ("qtwebkit" ,qtwebkit)
+       ("qtx11extras" ,qtx11extras)
+       ("xcb-util-keyms" ,xcb-util-keysyms)))
+    (synopsis "Offline documentation browser inspired by Dash")
+    (description "Zeal is a simple offline documentation browser
+inspired by Dash.")
+    (license gpl3+)))
