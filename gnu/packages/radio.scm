@@ -296,7 +296,6 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
-       ("git" ,git-minimal)
        ("ghostscript" ,ghostscript)
        ("orc" ,orc)
        ("pkg-config" ,pkg-config)
