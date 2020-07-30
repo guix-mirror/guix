@@ -794,6 +794,9 @@ descriptions maintained upstream."
            (#t
             ;; We found a working URL, so stop right away.
             '())
+           (#f
+            ;; Unsupported URL or other error, skip.
+            (loop rest warnings))
            ((? lint-warning? warning)
             (loop rest (cons warning warnings))))))))
 
