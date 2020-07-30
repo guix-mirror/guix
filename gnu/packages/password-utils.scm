@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1076,7 +1077,7 @@ your online accounts makes it necessary.")
 (define-public hashcat
   (package
     (name "hashcat")
-    (version "5.1.0")
+    (version "6.1.1")
     (source
      (origin
        (method url-fetch)
@@ -1084,7 +1085,7 @@ your online accounts makes it necessary.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0f73y4cg8c7a6q7x34qvpfi4g3lw6j9bnn0a13g43aqyiskflfr8"))))
+         "104z63m7lqbb0sdrxhf9yi15l4a9zwf9m6zs9dbb3gf0nfxl1h9r"))))
     (native-inputs
      `(("opencl-headers" ,opencl-headers)))
     (build-system gnu-build-system)
