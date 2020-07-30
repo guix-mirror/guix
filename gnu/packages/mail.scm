@@ -3347,13 +3347,13 @@ related tools to process winmail.dat files.")
                  (find-files (string-append out "/bin"))))
               #t)))))
      (native-inputs
-      `(("git" ,git)
-        ("xapian" ,xapian)
+      `(("xapian" ,xapian)
         ;; For testing.
         ("lsof" ,lsof)
         ("openssl" ,openssl)))
      (inputs
-      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
+      `(("git" ,git)
+        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
         ("perl-dbi" ,perl-dbi)
         ("perl-email-address-xs" ,perl-email-address-xs)
         ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
