@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2019, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
@@ -49,6 +49,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
@@ -624,7 +625,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
 (define-public openimageio
   (package
     (name "openimageio")
-    (version "1.8.17")
+    (version "2.0.13")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -633,7 +634,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zq34szprgkrrayg5sl3whrsx2l6lr8nw4hdrnwv2qhn70jbi2w2"))))
+                "0czcls82v71wkw1syib16ncg7463hx0py0xclycsiv4w6i3wlkzz"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
@@ -650,7 +651,9 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
        ("giflib" ,giflib)
        ("openexr" ,openexr)
        ("ilmbase" ,ilmbase)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
+       ("pybind11" ,pybind11)
+       ("robin-map" ,robin-map)
        ("zlib" ,zlib)))
     (synopsis "C++ library for reading and writing images")
     (description
