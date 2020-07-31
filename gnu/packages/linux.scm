@@ -7396,3 +7396,48 @@ extended BPF (Berkeley Packet Filters), formally known as eBPF, a new feature
 that was first added to Linux 3.15.  Much of what BCC uses requires Linux 4.1
 and above.")
     (license license:asl2.0)))
+
+(define-public bpftrace
+  (package
+    (name "bpftrace")
+    (version "0.10.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/iovisor/bpftrace")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "023ardywbw5w8815j2ny9rrp2xlpxndqaa7v2njjm8109p7ilsdn"))
+       (patches (search-patches "bpftrace-disable-bfd-disasm.patch"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("bcc" ,bcc)
+       ("clang-toolchain" ,clang-toolchain)
+       ("elfutils" ,elfutils)
+       ("libbpf" ,libbpf)
+       ("linux-libre-headers" ,linux-libre-headers)))
+    (arguments
+     `(#:tests? #f ;Tests require googletest sources.
+       #:configure-flags
+       '("-DBUILD_TESTING=OFF"
+         ;; FIXME: libbfd misses some link dependencies, when fixed, remove
+         ;; the associated patch.
+         "-DHAVE_BFD_DISASM=OFF")))
+    (home-page "https://github.com/iovisor/bpftrace")
+    (synopsis "High-level tracing language for Linux eBPF")
+    (description
+     "bpftrace is a high-level tracing language for Linux enhanced Berkeley
+Packet Filter (eBPF) available in recent Linux kernels (4.x).  bpftrace uses
+LLVM as a backend to compile scripts to BPF-bytecode and makes use of BCC for
+interacting with the Linux BPF system, as well as existing Linux tracing
+capabilities: kernel dynamic tracing (kprobes), user-level dynamic
+tracing (uprobes), and tracepoints.  The bpftrace language is inspired by awk
+and C, and predecessor tracers such as DTrace and SystemTap.  bpftrace was
+created by Alastair Robertson.")
+    (license license:asl2.0)))
