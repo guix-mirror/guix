@@ -40,7 +40,7 @@ Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
 Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
-Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
+Copyright @copyright{} 2017, 2018, 2020 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
@@ -2568,8 +2568,7 @@ The installation image described above was built using the @command{guix
 system} command, specifically:
 
 @example
-guix system disk-image --file-system-type=iso9660 \
-  gnu/system/install.scm
+guix system disk-image -t iso9660 gnu/system/install.scm
 @end example
 
 Have a look at @file{gnu/system/install.scm} in the source tree,
@@ -29375,23 +29374,27 @@ a value.  Docker images are built to contain exactly what they need, so
 the @option{--image-size} option is ignored in the case of
 @code{docker-image}.
 
-You can specify the root file system type by using the
-@option{--file-system-type} option.  It defaults to @code{ext4}.  When its
-value is @code{iso9660}, the @option{--label} option can be used to specify
-a volume ID with @code{disk-image}.
+The @code{disk-image} command can produce various image types.  The
+image type can be selected using the @command{--image-type} option.  It
+defaults to @code{raw}. When its value is @code{iso9660}, the
+@option{--label} option can be used to specify a volume ID with
+@code{disk-image}.
 
-When using @code{vm-image}, the returned image is in qcow2 format, which
-the QEMU emulator can efficiently use. @xref{Running Guix in a VM},
-for more information on how to run the image in a virtual machine.
-
-When using @code{disk-image}, a raw disk image is produced; it can be
-copied as is to a USB stick, for instance.  Assuming @code{/dev/sdc} is
-the device corresponding to a USB stick, one can copy the image to it
-using the following command:
+When using the @code{raw} image type, a raw disk image is produced; it
+can be copied as is to a USB stick, for instance.  Assuming
+@code{/dev/sdc} is the device corresponding to a USB stick, one can copy
+the image to it using the following command:
 
 @example
 # dd if=$(guix system disk-image my-os.scm) of=/dev/sdc status=progress
 @end example
+
+The @code{--list-image-types} command lists all the available image
+types.
+
+When using @code{vm-image}, the returned image is in qcow2 format, which
+the QEMU emulator can efficiently use. @xref{Running Guix in a VM},
+for more information on how to run the image in a virtual machine.
 
 When using @code{docker-image}, a Docker image is produced.  Guix builds
 the image from scratch, not from a pre-existing Docker base image.  As a
@@ -29494,17 +29497,17 @@ information, one can rebuild the image to make sure it really contains
 what it pretends to contain; or they could use that to derive a variant
 of the image.
 
-@item --file-system-type=@var{type}
+@item --image-type=@var{type}
 @itemx -t @var{type}
-For the @code{disk-image} action, create a file system of the given
-@var{type} on the image.
+For the @code{disk-image} action, create an image with given @var{type}.
 
-When this option is omitted, @command{guix system} uses @code{ext4}.
+When this option is omitted, @command{guix system} uses the @code{raw}
+image type.
 
 @cindex ISO-9660 format
 @cindex CD image format
 @cindex DVD image format
-@option{--file-system-type=iso9660} produces an ISO-9660 image, suitable
+@option{--image-type=iso9660} produces an ISO-9660 image, suitable
 for burning on CDs and DVDs.
 
 @item --image-size=@var{size}

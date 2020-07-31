@@ -833,9 +833,8 @@ release: dist-with-updated-version
 	      -v1 --no-grafts --fallback
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
-	    guix system disk-image							\
-	    --file-system-type=iso9660							\
-	    --label="GUIX_$${system}_$(VERSION)"						\
+	    guix system disk-image -t iso9660                                           \
+	    --label="GUIX_$${system}_$(VERSION)"					\
             --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
