@@ -2566,46 +2566,45 @@ type, for example: packages, buffers, files, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-guix
-  (package
-    (name "emacs-guix")
-    (version "0.5.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://emacs-guix.gitlab.io/website/"
-                                  "releases/emacs-guix-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0yz64c0z4ygi2k4af18k4r1ncgys18jb8icywkp2g5pgmpn5l7ps"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Add support for Guile 3.0.  Remove for versions > 0.5.2.
-                  (substitute* "configure"
-                    (("\"2\\.2 2\\.0\"")
-                     "\"3.0 2.2 2.0\""))
-                  #t))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("emacs" ,emacs-minimal)))
-    (inputs
-     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
-       ("guix" ,guix)))
-    (propagated-inputs
-     `(("geiser" ,emacs-geiser)
-       ("guile-gcrypt" ,guile-gcrypt)
-       ("dash" ,emacs-dash)
-       ("bui" ,emacs-bui)
-       ("edit-indirect" ,emacs-edit-indirect)
-       ("magit-popup" ,emacs-magit-popup)))
-    (home-page "https://emacs-guix.gitlab.io/website/")
-    (synopsis "Emacs interface for GNU Guix")
-    (description
-     "Emacs-Guix provides a visual interface, tools and features for the GNU
+  (let ((commit "df1fc5d8885959fd2bb83a443137d21c6850dd74")
+        (revision "1"))
+    (package
+      (name "emacs-guix")
+      (version (git-version "0.5.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/emacs-guix/emacs-guix")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "14rn02ay1b8zl0pg54pkqpyzh948c4qiqlvl35627shx7zw5acqh"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)
+         ("emacs" ,emacs-minimal)))
+      (inputs
+       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+         ("guix" ,guix)))
+      (propagated-inputs
+       `(("geiser" ,emacs-geiser)
+         ("guile-gcrypt" ,guile-gcrypt)
+         ("dash" ,emacs-dash)
+         ("bui" ,emacs-bui)
+         ("edit-indirect" ,emacs-edit-indirect)
+         ("magit-popup" ,emacs-magit-popup)))
+      (home-page "https://emacs-guix.gitlab.io/website/")
+      (synopsis "Emacs interface for GNU Guix")
+      (description
+       "Emacs-Guix provides a visual interface, tools and features for the GNU
 Guix package manager.  Particularly, it allows you to do various package
 management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
 @code{M-x guix-help} command.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-build-farm
   (package
