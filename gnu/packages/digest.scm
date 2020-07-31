@@ -27,7 +27,7 @@
 (define-public xxhash
   (package
     (name "xxhash")
-    (version "0.7.4")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
@@ -36,7 +36,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08j7wxshhzpyrnyilfnvhyv5ycm0yv5m7jf6q4kxcd7j4dcbhmpb"))))
+        (base32 "0hpbzdd6kfki5f61g103vp7pfczqkdj0js63avl0ss552jfb8h96"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
