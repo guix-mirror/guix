@@ -12430,7 +12430,12 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
              (substitute* "setup.py"
                ;; poetry won't update version as 21.0.0 relies on python > 3.6
                (("keyring>=20.0.1,<21.0.0") "keyring>=21.0.0,<22.0.0")
-               (("pyrsistent>=0.14.2,<0.15.0") "pyrsistent>=0.14.2,<0.17.0"))
+               (("pyrsistent>=0.14.2,<0.15.0") "pyrsistent>=0.14.2,<0.17.0")
+               ;; Reported upstream:
+               ;; <https://github.com/python-poetry/poetry/issues/2752>.
+               (("tomlkit>=0.5.11,<0.6.0") "tomlkit>=0.5.11,<0.7.0")
+               (("cleo>=0.7.6,<0.8.0") "cleo>=0.7.6,<0.9.0")
+               (("clikit>=0.4.2,<0.5.0") "clikit>=0.4.2,<0.7.0"))
              #t)))))
     (propagated-inputs
      `(("python-cachecontrol" ,python-cachecontrol)
