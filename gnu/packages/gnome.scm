@@ -54,6 +54,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1988,6 +1989,7 @@ database is translated at Transifex.")
        ("gobject-introspection" ,gobject-introspection)
        ("python" ,python)
        ("cups" ,cups)
+       ("gtk+" ,gtk+)
        ("python-dbus" ,python-dbus)
        ("python-pygobject" ,python-pygobject)
        ("python-pycups" ,python-pycups)
