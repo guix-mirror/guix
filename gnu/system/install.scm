@@ -497,6 +497,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
             ;; elogind's cgroup file systems.
             (list %pseudo-terminal-file-system
                   %shared-memory-file-system
+                  %efivars-file-system
                   %immutable-store)))
 
     (users (list (user-account

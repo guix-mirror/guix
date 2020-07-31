@@ -70,6 +70,7 @@
             %fuse-control-file-system
             %binary-format-file-system
             %debug-file-system
+            %efivars-file-system
             %shared-memory-file-system
             %pseudo-terminal-file-system
             %tty-gid
@@ -382,6 +383,16 @@ TARGET in the other system."
     (check? #f)
     (create-mount-point? #t)))
 
+(define %efivars-file-system
+  ;; Support for EFI variables file system.
+  (file-system
+    (device "efivarfs")
+    (mount-point "/sys/firmware/efi/efivars")
+    (type "efivarfs")
+    (mount-may-fail? #t)
+    (needed-for-boot? #f)
+    (check? #f)))
+
 (define %tty-gid
   ;; ID of the 'tty' group.  Allocate it statically to make it easy to refer
   ;; to it from here and from the 'tty' group definitions.
@@ -483,6 +494,7 @@ TARGET in the other system."
   (list %pseudo-terminal-file-system
         %debug-file-system
         %shared-memory-file-system
+        %efivars-file-system
         %immutable-store))
 
 ;; File systems for Linux containers differ from %base-file-systems in that
