@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 TomZ <tomz@freedommail.ch>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -712,6 +713,16 @@ HostData=lib/qt5
               '(begin
                  (delete-file-recursively "src/3rdparty")
                  #t))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-build
+             (lambda _
+               (substitute* "src/plugins/imageformats/jp2/qjp2handler.cpp"
+                 (("^#include <jasper/jasper.h>")
+                  "#include <jasper/jasper.h>\n#include <QtCore/qmath.h>"))
+               #t))))))
     (native-inputs `())
     (inputs
      `(("jasper" ,jasper)
