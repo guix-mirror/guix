@@ -3383,7 +3383,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "20.04.0")
+    (version "20.06.6")
     (source
      (origin
        (method git-fetch)
@@ -3392,7 +3392,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vrjxzfgmjdzm1rgl0crz4b4badl14jwh032y3xkcdvjl5j67lp3"))))
+        (base32 "054f7n5kx75ng5j20rd5q27n9xxk03mrd7sbxyym1lsswzimqh4w"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -3410,6 +3410,14 @@ point numbers.")
      `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-doc-path
+           (lambda _
+             ;; Don't look in share/doc/wxmaxima-xx.xx.x for the
+             ;; documentation.  Only licensing information is placed there by
+             ;; Guix.
+             (substitute* "src/Dirstructure.cpp"
+               (("/doc/wxmaxima-\\%s") "/doc/wxmaxima"))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
