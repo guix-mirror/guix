@@ -5052,7 +5052,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
 (define-public thinkfan
   (package
     (name "thinkfan")
-    (version "1.2")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -5061,7 +5061,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vmkpj575a1w52zx1jn6kdrk8rc9vp0f1bldi1bajicpgbs6rjd3"))))
+        (base32 "18vgm5w5pjnpipa34j4x87q10695w2jnqwvc2f027afy7mnzw7kz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
