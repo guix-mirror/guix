@@ -18,6 +18,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system image)
+  #:use-module (guix diagnostics)
+  #:use-module (guix discovery)
   #:use-module (guix gexp)
   #:use-module (guix modules)
   #:use-module (guix monads)
@@ -64,9 +66,16 @@
             efi-disk-image
             iso9660-image
 
-            find-image
+            image-with-os
+            raw-image-type
+            iso-image-type
+            uncompressed-iso-image-type
+
+            image-with-label
             system-image
-            image-with-label))
+
+            %image-types
+            lookup-image-type-by-name))
 
 
 ;;;
@@ -112,6 +121,37 @@
            (size 'guess)
            (label "GUIX_IMAGE")
            (flags '(boot)))))))
+
+
+;;;
+;;; Images types.
+;;;
+
+(define-syntax-rule (image-with-os base-image os)
+  "Return an image inheriting from BASE-IMAGE, with the operating-system field
+set to the given OS."
+  (image
+   (inherit base-image)
+   (operating-system os)))
+
+(define raw-image-type
+  (image-type
+   (name 'raw)
+   (constructor (cut image-with-os efi-disk-image <>))))
+
+(define iso-image-type
+  (image-type
+   (name 'iso9660)
+   (constructor (cut image-with-os iso9660-image <>))))
+
+(define uncompressed-iso-image-type
+  (image-type
+   (name 'uncompressed-iso9660)
+   (constructor (cut image-with-os
+                 (image
+                  (inherit iso9660-image)
+                  (compression? #f))
+                 <>))))
 
 
 ;;
@@ -442,7 +482,7 @@ returns an image record where the first partition's label is set to <label>."
       image-size)
      (else root-size))))
 
-(define* (image-with-os base-image os)
+(define* (image-with-os* base-image os)
   "Return an image based on BASE-IMAGE but with the operating-system field set
 to OS.  Also set the UUID and the size of the root partition."
   (define root-file-system
@@ -523,7 +563,7 @@ image, depending on IMAGE format."
 
   (with-parameters ((%current-target-system target))
     (let* ((os (operating-system-for-image image))
-           (image* (image-with-os image os))
+           (image* (image-with-os* image os))
            (image-format (image-format image))
            (register-closures? (has-guix-service-type? os))
            (bootcfg (operating-system-bootcfg os))
@@ -556,18 +596,34 @@ image, depending on IMAGE format."
           #:grub-mkrescue-environment
           '(("MKRESCUE_SED_MODE" . "mbr_only"))))))))
 
-(define (find-image file-system-type target)
-  "Find and return an image built that could match the given FILE-SYSTEM-TYPE,
-built for TARGET.  This is useful to adapt to interfaces written before the
-addition of the <image> record."
-  (match file-system-type
-    ("iso9660" iso9660-image)
-    (_ (cond
-        ((and target
-              (hurd-triplet? target))
-         (module-ref (resolve-interface '(gnu system images hurd))
-                     'hurd-disk-image))
-        (else
-         efi-disk-image)))))
+
+;;
+;; Image detection.
+;;
+
+(define (image-modules)
+  "Return the list of image modules."
+  (cons (resolve-interface '(gnu system image))
+        (all-modules (map (lambda (entry)
+                            `(,entry . "gnu/system/images/"))
+                          %load-path)
+                     #:warn warn-about-load-error)))
+
+(define %image-types
+  ;; The list of publically-known image types.
+  (delay (fold-module-public-variables (lambda (obj result)
+                                         (if (image-type? obj)
+                                             (cons obj result)
+                                             result))
+                                       '()
+                                       (image-modules))))
+
+(define (lookup-image-type-by-name name)
+  "Return the image type called NAME."
+  (or (srfi-1:find (lambda (image-type)
+                     (eq? name (image-type-name image-type)))
+                   (force %image-types))
+      (raise
+       (formatted-message (G_ "~a: no such image type~%") name))))
 
 ;;; image.scm ends here

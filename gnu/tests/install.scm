@@ -218,7 +218,7 @@ reboot\n")
                            #:imported-modules '((gnu services herd)
                                                 (gnu installer tests)
                                                 (guix combinators))))
-                      (installation-disk-image-file-system-type "ext4")
+                      (installation-image-type 'raw)
                       (install-size 'guess)
                       (target-size (* 2200 MiB)))
   "Run SCRIPT (a shell script following the system installation procedure) in
@@ -228,10 +228,6 @@ packages defined in installation-os."
 
   (mlet* %store-monad ((_      (set-grafting #f))
                        (system (current-system))
-                       (target (current-target-system))
-                       (base-image -> (find-image
-                                       installation-disk-image-file-system-type
-                                       target))
 
                        ;; Since the installation system has no network access,
                        ;; we cheat a little bit by adding TARGET to its GC
@@ -239,18 +235,20 @@ packages defined in installation-os."
                        ;; succeed.  Also add guile-final, which is pulled in
                        ;; through provenance.drv and may not always be present.
                        (target (operating-system-derivation target-os))
+                       (base-image ->
+                                   (os->image
+                                    (operating-system-with-gc-roots
+                                     os (list target guile-final))
+                                    #:type (lookup-image-type-by-name
+                                            installation-image-type)))
                        (image ->
-                        (system-image
-                         (image
-                          (inherit base-image)
-                          (size install-size)
-                          (operating-system
-                            (operating-system-with-gc-roots
-                             os (list target guile-final)))
-                          ;; Do not compress to speed-up the tests.
-                          (compression? #f)
-                          ;; Don't provide substitutes; too big.
-                          (substitutable? #f)))))
+                              (system-image
+                               (image
+                                (inherit base-image)
+                                (size install-size)
+
+                                ;; Don't provide substitutes; too big.
+                                (substitutable? #f)))))
     (define install
       (with-imported-modules '((guix build utils)
                                (gnu build marionette))
@@ -270,16 +268,16 @@ packages defined in installation-os."
                  "-no-reboot"
                  "-m" "1200"
                  #$@(cond
-                     ((string=? "ext4" installation-disk-image-file-system-type)
+                     ((eq? 'raw installation-image-type)
                       #~("-drive"
                          ,(string-append "file=" #$image
                                          ",if=virtio,readonly")))
-                     ((string=? "iso9660" installation-disk-image-file-system-type)
+                     ((eq? 'uncompressed-iso9660 installation-image-type)
                       #~("-cdrom" #$image))
                      (else
                       (error
-                       "unsupported installation-disk-image-file-system-type:"
-                       installation-disk-image-file-system-type)))
+                       "unsupported installation-image-type:"
+                       installation-image-type)))
                  "-drive"
                  ,(string-append "file=" #$output ",if=virtio")
                  ,@(if (file-exists? "/dev/kvm")
@@ -443,8 +441,8 @@ reboot\n")
                                    %minimal-os-on-vda-source
                                    #:script
                                    %simple-installation-script-for-/dev/vda
-                                   #:installation-disk-image-file-system-type
-                                   "iso9660"))
+                                   #:installation-image-type
+                                   'uncompressed-iso9660))
                          (command (qemu-command/writable-image image)))
       (run-basic-test %minimal-os-on-vda command name)))))
 
@@ -1309,8 +1307,8 @@ build (current-guix) and then store a couple of full system images.")
                                #:os installation-os-for-gui-tests
                                #:install-size install-size
                                #:target-size target-size
-                               #:installation-disk-image-file-system-type
-                               "iso9660"
+                               #:installation-image-type
+                               'uncompressed-iso9660
                                #:gui-test
                                (lambda (marionette)
                                  (gui-test-program
