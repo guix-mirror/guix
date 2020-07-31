@@ -68,6 +68,7 @@
             %pseudo-file-system-types
             %fuse-control-file-system
             %binary-format-file-system
+            %debug-file-system
             %shared-memory-file-system
             %pseudo-terminal-file-system
             %tty-gid
@@ -368,6 +369,14 @@ TARGET in the other system."
     (type "binfmt_misc")
     (check? #f)))
 
+(define %debug-file-system
+  (file-system
+    (type "debugfs")
+    (device "none")
+    (mount-point "/sys/kernel/debug")
+    (check? #f)
+    (create-mount-point? #t)))
+
 (define %tty-gid
   ;; ID of the 'tty' group.  Allocate it statically to make it easy to refer
   ;; to it from here and from the 'tty' group definitions.
@@ -467,6 +476,7 @@ TARGET in the other system."
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are
   ;; currently mounted by the initrd.
   (list %pseudo-terminal-file-system
+        %debug-file-system
         %shared-memory-file-system
         %immutable-store))
 
