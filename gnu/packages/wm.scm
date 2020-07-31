@@ -973,6 +973,9 @@ experience.")
        (modify-phases %standard-phases
          (add-before 'configure 'set-paths
            (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/awful/completion.lua"
+               (("/usr/bin/env")
+                ""))
              ;; The build process needs to load Cairo dynamically.
              (let* ((cairo (string-append (assoc-ref inputs "cairo") "/lib"))
                     (lua-version ,(version-major+minor (package-version lua)))
@@ -1021,9 +1024,9 @@ experience.")
                     (lua-version ,(version-major+minor (package-version lua)))
                     (lua-lgi (assoc-ref inputs "lua-lgi")))
                (wrap-program (string-append awesome "/bin/awesome")
-                 `("LUA_PATH" suffix
+                 `("LUA_PATH" ";" suffix
                    (,(format #f "~a/share/lua/~a/?.lua" lua-lgi lua-version)))
-                 `("LUA_CPATH" suffix
+                 `("LUA_CPATH" ";" suffix
                    (,(format #f "~a/lib/lua/~a/?.so" lua-lgi lua-version)))
                  `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))
                  `("LD_LIBRARY_PATH" suffix (,cairo)))
