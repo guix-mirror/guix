@@ -12214,13 +12214,13 @@ Wikipedia code samples at
 (define-public python-cleo
   (package
     (name "python-cleo")
-    (version "0.7.6")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cleo" version))
               (sha256
                (base32
-                "02dlc0rn43zgvw0s5v4j80bca9n1jfpwy3r78gn9qjgk0qj39kwr"))))
+                "17q6wi3q280kxmxzb2iwnnqih2xbljn18v0bjx2ip18p079j43ix"))))
     (build-system python-build-system)
     (native-inputs
      `( ;; For testing
