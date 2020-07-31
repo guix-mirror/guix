@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;; Copyright © 2020 Rafael Luque Leiva <rafael.luque@osoco.es>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system r)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -69,6 +71,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
@@ -830,8 +833,35 @@ into a pipeline of data manipulation and visualisation.")
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "066rprqvz9qln6xd85x1yh1wbbmzd157xjl8zq1zbgr8l6347inm"))))
+                "066rprqvz9qln6xd85x1yh1wbbmzd157xjl8zq1zbgr8l6347inm"))
+              ;; Unvendor bundled libraries. As of 1.5.4 the vendored libuv
+              ;; only contains fixes for building on Solaris.
+              (patches (search-patches "r-httpuv-1.5.4-unvendor-libuv.patch"))
+              (modules '((guix build utils)
+                         (ice-9 ftw)
+                         (srfi srfi-1)))
+              (snippet
+               `(begin
+                  (delete-file-recursively "src/libuv")
+                  ;; Cannot unbundle http-parser, because it contains local
+                  ;; modifications.
+                  #t))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-libuv
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (find-files "src" "\\.cpp$|\\.h$")
+               (("\"libuv/include/uv\\.h\"")
+                "<uv.h>"))
+             ;; Fix https://github.com/rstudio/httpuv/issues/282
+             (substitute* "src/http.cpp"
+               (("uv_pipe_init\\(pLoop, &pSocket->handle\\.pipe, true\\);")
+                "uv_pipe_init(pLoop, &pSocket->handle.pipe, 0);"))
+             #t)))))
+    (inputs
+     `(("libuv" ,libuv)))
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-later" ,r-later)
