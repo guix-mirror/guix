@@ -128,6 +128,40 @@ detect the absence of a cassette file and once again record all HTTP
 interactions, which will update them to correspond to the new API.")
     (license license:expat)))
 
+(define-public python-pytest-ordering
+  (package
+    (name "python-pytest-ordering")
+    (version "0.6")
+    (source
+     (origin
+       ;; No tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ftobia/pytest-ordering")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14msj5gyqza0gk3x7h1ivmjrwza82v84cj7jx3ks0fw9lpin7pjq"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k"
+                     ;; This test fails because of a type mismatch of an
+                     ;; argument passed to @code{pytest.main}.
+                     "not test_run_marker_registered"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/ftobia/pytest-ordering")
+    (synopsis "Pytest plugin to run your tests in a specific order")
+    (description
+     "This plugin defines Pytest markers to ensure that some tests, or groups
+of tests run in a specific order.")
+    (license license:expat)))
+
 (define-public python-pytest-arraydiff
   (package
     (name "python-pytest-arraydiff")
