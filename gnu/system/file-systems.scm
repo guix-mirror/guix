@@ -48,6 +48,7 @@
             alist->file-system-options
 
             file-system-mount?
+            file-system-mount-may-fail?
             file-system-check?
             file-system-create-mount-point?
             file-system-dependencies
@@ -114,6 +115,8 @@
                     (default #f))
   (mount?           file-system-mount?            ; Boolean
                     (default #t))
+  (mount-may-fail?  file-system-mount-may-fail?   ; Boolean
+                    (default #f))
   (needed-for-boot? %file-system-needed-for-boot? ; Boolean
                     (default #f))
   (check?           file-system-check?            ; Boolean
@@ -301,18 +304,19 @@ store--e.g., if FS is the root file system."
   "Return a list corresponding to file-system FS that can be passed to the
 initrd code."
   (match fs
-    (($ <file-system> device mount-point type flags options _ _ check?)
+    (($ <file-system> device mount-point type flags options mount?
+                      mount-may-fail? needed-for-boot? check?)
      (list (cond ((uuid? device)
                   `(uuid ,(uuid-type device) ,(uuid-bytevector device)))
                  ((file-system-label? device)
                   `(file-system-label ,(file-system-label->string device)))
                  (else device))
-           mount-point type flags options check?))))
+           mount-point type flags options mount-may-fail? check?))))
 
 (define (spec->file-system sexp)
   "Deserialize SEXP, a list, to the corresponding <file-system> object."
   (match sexp
-    ((device mount-point type flags options check?)
+    ((device mount-point type flags options mount-may-fail? check?)
      (file-system
        (device (match device
                  (('uuid (? symbol? type) (? bytevector? bv))
@@ -323,6 +327,7 @@ initrd code."
                   device)))
        (mount-point mount-point) (type type)
        (flags flags) (options options)
+       (mount-may-fail? mount-may-fail?)
        (check? check?)))))
 
 (define (specification->file-system-mapping spec writable?)

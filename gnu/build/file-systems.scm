@@ -814,26 +814,33 @@ corresponds to the symbols listed in FLAGS."
     (when (file-system-check? fs)
       (check-file-system source type))
 
-    ;; Create the mount point.  Most of the time this is a directory, but
-    ;; in the case of a bind mount, a regular file or socket may be needed.
-    (if (and (= MS_BIND (logand flags MS_BIND))
-             (not (file-is-directory? source)))
-        (unless (file-exists? mount-point)
-          (mkdir-p (dirname mount-point))
-          (call-with-output-file mount-point (const #t)))
-        (mkdir-p mount-point))
+    (catch 'system-error
+      (lambda ()
+        ;; Create the mount point.  Most of the time this is a directory, but
+        ;; in the case of a bind mount, a regular file or socket may be
+        ;; needed.
+        (if (and (= MS_BIND (logand flags MS_BIND))
+                 (not (file-is-directory? source)))
+            (unless (file-exists? mount-point)
+              (mkdir-p (dirname mount-point))
+              (call-with-output-file mount-point (const #t)))
+            (mkdir-p mount-point))
 
-    (cond
-     ((string-prefix? "nfs" type)
-      (mount-nfs source mount-point type flags options))
-     (else
-      (mount source mount-point type flags options)))
+        (cond
+         ((string-prefix? "nfs" type)
+          (mount-nfs source mount-point type flags options))
+         (else
+          (mount source mount-point type flags options)))
 
-    ;; For read-only bind mounts, an extra remount is needed, as per
-    ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.
-    (when (and (= MS_BIND (logand flags MS_BIND))
-               (= MS_RDONLY (logand flags MS_RDONLY)))
-      (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
-        (mount source mount-point type flags #f)))))
+        ;; For read-only bind mounts, an extra remount is needed, as per
+        ;; <http://lwn.net/Articles/281157/>, which still applies to Linux
+        ;; 4.0.
+        (when (and (= MS_BIND (logand flags MS_BIND))
+                   (= MS_RDONLY (logand flags MS_RDONLY)))
+          (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
+            (mount source mount-point type flags #f))))
+      (lambda args
+        (or (file-system-mount-may-fail? fs)
+            (apply throw args))))))
 
 ;;; file-systems.scm ends here
