@@ -229,7 +229,7 @@ in Main, System, Radio and Events sub-logs.")
 various Android core host applications.")
     (license license:asl2.0)))
 
-(define android-libcutils
+(define-public android-libcutils
   (package
     (name "android-libcutils")
     (version (android-platform-version))
