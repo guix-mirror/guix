@@ -2,7 +2,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2019, 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +63,7 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
-(define %jami-version "20200710.1.6bd18d2")
+(define %jami-version "20210326.1.cfba013")
 
 (define* (jami-source #:key keep-contrib-patches?)
   "Return an origin object of the tarball release sources archive of Jami.
@@ -78,7 +78,7 @@ of Jami."
     (modules '((guix build utils)))
     (snippet
      `(begin
-        ;; Delete over 200 MiB of bundled tarballs.  The contrib directory
+        ;; Delete multiple MiBs of bundled tarballs.  The contrib directory
         ;; contains the custom patches for pjproject and other libraries used
         ;; by Savoir-faire Linux.
         (if ,keep-contrib-patches?
@@ -86,21 +86,21 @@ of Jami."
             (delete-file-recursively "daemon/contrib"))
         ;; Remove code from unused Jami clients.
         (for-each delete-file-recursively '("client-android"
+                                            "client-electron"
+                                            "client-ios"
                                             "client-macosx"
-                                            "client-uwp"
-                                            "client-windows"))
-        #t))
+                                            "client-uwp"))))
     (sha256
      (base32
-      "0lg61jv39x7kc9lq30by246xb6gcgp1rzj49ak7ff8nqpfzyfvva"))))
+      "1h0avma8bdzyznkz39crjyv2888bii4f49md15jg7970dyp5pdyz"))))
 
 (define %sfl-patches (jami-source #:keep-contrib-patches? #t))
 
 (define %jami-sources (jami-source))
 
-;; Savoir-faire Linux modifies many libraries to add features
-;; to Jami. This procedure makes applying patches to a given
-;; package easy.
+;; Savoir-faire Linux maintains a set of patches for some key dependencies
+;; (currently pjproject and ffmpeg) of Jami that haven't yet been integrated
+;; upstream.  This procedure simplifies the process of applying these patches.x
 (define jami-apply-dependency-patches
   '(lambda* (#:key inputs dep-name patches)
      (let ((patches-directory "sfl-patches"))
@@ -112,15 +112,30 @@ of Jami."
                               dep-name))
        (for-each
         (lambda (file)
-          (invoke "patch" "--force" "-p1" "-i"
+          (invoke "patch" "--force" "--ignore-whitespace" "-p1" "-i"
                   (string-append patches-directory "/"
                                  file ".patch")))
         patches))))
 
+;;; Jami maintains pjproject patches that add the ability to do ICE over TCP,
+;;; among other things.  The patches are currently based on pjproject 2.10.
 (define-public pjproject-jami
   (package
     (inherit pjproject)
     (name "pjproject-jami")
+    (version "2.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pjsip/pjproject")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1aklicpgwc88578k03i5d5cm5h8mfm7hmx8vfprchbmaa2p8f4z0"))
+              (patches (search-patches
+                        "pjproject-correct-the-cflags-field.patch"
+                        "pjproject-fix-pkg-config-ldflags.patch"))))
     (native-inputs
      `(("sfl-patches" ,%sfl-patches)
        ,@(package-native-inputs pjproject)))
@@ -140,14 +155,19 @@ of Jami."
                   "0004-multiple_listeners"
                   "0005-fix_ebusy_turn"
                   "0006-ignore_ipv6_on_transport_check"
-                  "0007-pj_ice_sess"
+                  "0007-upnp-srflx-nat-assisted-cand"
                   "0008-fix_ioqueue_ipv6_sendto"
                   "0009-add-config-site"
-                  ;; Note: The base pjproject is already patched with
-                  ;; "0010-fix-pkgconfig".
+                  ;; Already taken care of via the origin patches.
+                  ;;"0010-fix-pkgconfig"
                   "0011-fix-tcp-death-detection"
-                  "0012-fix-turn-shutdown-crash"))
-               #t))))))))
+                  "0012-fix-turn-shutdown-crash"
+                  "0013-Assign-unique-local-preferences-for-candidates-with-"
+                  "0014-Add-new-compile-time-setting-PJ_ICE_ST_USE_TURN_PERM"
+                  "0015-update-local-preference-for-peer-reflexive-candidate"
+                  "0016-use-addrinfo-instead-CFHOST"
+                  "0017-CVE-2020-15260"
+                  "0018-CVE-2021-21375"))))))))))
 
 ;; The following variables are configure flags used by ffmpeg-jami.  They're
 ;; from the ring-project/daemon/contrib/src/ffmpeg/rules.mak file. We try to
