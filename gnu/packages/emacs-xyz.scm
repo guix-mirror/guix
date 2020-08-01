@@ -24029,3 +24029,25 @@ easily.  Four pre-set options are: @samp{shell}, @samp{terminal},
 @samp{ansi-term}, and @samp{eshell}.  You can also set your custom shell if
 you use some other configuration.")
       (license license:gpl3+))))
+
+(define-public emacs-extmap
+  (package
+    (name "emacs-extmap")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/doublep/extmap")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "09kia3mr4si8kn46kyiza9nl669b22vmgc70ng3mqz742lph5siw"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/doublep/extmap")
+    (synopsis "Externally-stored constant mapping for Emacs Lisp")
+    (description "A very simple package that lets you build a
+read-only, constant database that maps Emacs Lisp symbols to
+arbitrary Emacs Lisp objects.")
+    (license license:gpl3+)))
