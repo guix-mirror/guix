@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
@@ -70,6 +72,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -575,6 +578,46 @@ combines multiple data representations, algorithm classes, and general purpose
 tools.  This enables both rapid prototyping of data pipelines and extensibility
 in terms of new algorithms.")
     (license license:gpl3+)))
+
+(define-public python-onnx
+  (package
+    (name "python-onnx")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "onnx" version))
+       ;; ONNX will build googletest from a git checkout.  Patch CMake
+       ;; to use googletest from Guix and enable tests by default.
+       (patches (search-patches "python-onnx-use-system-googletest.patch"))
+       (sha256
+        (base32 "0j6rgfbhsw3a8id8pyg18y93k68lbjbj1kq6qia36h69f6pvlyjy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("googletest" ,googletest)
+       ("pybind11" ,pybind11)
+       ("python-coverage" ,python-coverage)
+       ("python-nbval" ,python-nbval)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (inputs
+     `(("protobuf" ,protobuf)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-protobuf" ,python-protobuf)
+       ("python-six" ,python-six)
+       ("python-tabulate" ,python-tabulate)
+       ("python-typing-extensions"
+        ,python-typing-extensions)))
+    (home-page "https://onnx.ai/")
+    (synopsis "Open Neural Network Exchange")
+    (description
+     "Open Neural Network Exchange (ONNX) provides an open source format for
+AI models, both deep learning and traditional ML.  It defines an extensible
+computation graph model, as well as definitions of built-in operators and
+standard data types.")
+    (license license:expat)))
 
 (define-public rxcpp
   (package
