@@ -16985,7 +16985,7 @@ the GIF result.")
 (define-public emacs-google-translate
   (package
     (name "emacs-google-translate")
-    (version "0.11.18")
+    (version "0.12.0")
     (source
      (origin
        (method git-fetch)
@@ -16995,7 +16995,7 @@ the GIF result.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1kbiqisqyk31l94gxsirhnrdkj51ylgcb16fk2wf7zigmf13jqzp"))))
+         "0rwpij2bm8d4jq2w5snkp88mfryplw8166dsrjm407n2p6xr48zx"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/atykhonov/google-translate")
     (synopsis "Emacs interface to Google Translate")
