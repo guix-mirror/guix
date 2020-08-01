@@ -745,12 +745,13 @@ your calls and messages.")
              (("third_party/build") ""))
            #t))))
     (build-system gnu-build-system)
-    (outputs '("out" "debug"))
+    (outputs '("out" "debug" "static"))
     (arguments
      `(#:tests? #t
        #:test-target "selftest"
        #:configure-flags
-       (list "--with-external-speex"
+       (list "--enable-shared"
+             "--with-external-speex"
              "--with-external-gsm"
              "--with-external-srtp"
              "--with-external-pa"
@@ -769,7 +770,11 @@ your calls and messages.")
              ;; -DNDEBUG is set to prevent pjproject from raising
              ;; assertions that aren't critical, crashing
              ;; applications as the result.
-             "CFLAGS=-DNDEBUG")
+             "CFLAGS=-DNDEBUG"
+             ;; Specify a runpath reference to itself, which is missing and
+             ;; causes the validate-runpath phase to fail.
+             (string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out")
+                            "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-source-files-writable
@@ -780,6 +785,21 @@ your calls and messages.")
              #t))
          (add-before 'build 'build-dep
            (lambda _ (invoke "make" "dep")))
+         ;; The check phases is moved after the install phase so to
+         ;; use the installed shared libraries for the tests.
+         (delete 'check)
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (s (string-append (assoc-ref outputs "static") "/lib")))
+               (mkdir-p s)
+               (with-directory-excursion out
+                 (for-each (lambda (f)
+                             (rename-file f (string-append s "/" (basename f))))
+                           (find-files "." "\\.a$")))
+               #t)))
+         (add-after 'install 'check
+           (assoc-ref %standard-phases 'check))
          (add-before 'patch-source-shebangs 'autoconf
            (lambda _
              (invoke "autoconf" "-v" "-f" "-i" "-o"
