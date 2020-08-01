@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2019, 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,6 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
@@ -108,57 +108,12 @@
      `(("sfl-patches" ,(jami-source))
        ,@(package-native-inputs pjproject)))
     (arguments
-     `(#:tests? #f
-       ;; See ring-project/daemon/contrib/src/pjproject/rules.mak.
-       #:configure-flags
-       (list "--disable-oss"
-             "--disable-sound"
-             "--disable-video"
-             ;; The following flag is Linux specific.
-             ,@(if (hurd-triplet? (or (%current-system)
-                                      (%current-target-system)))
-                   '()
-                   '("--enable-epoll"))
-             "--enable-ext-sound"
-             "--disable-speex-aec"
-             "--disable-g711-codec"
-             "--disable-l16-codec"
-             "--disable-gsm-codec"
-             "--disable-g722-codec"
-             "--disable-g7221-codec"
-             "--disable-speex-codec"
-             "--disable-ilbc-codec"
-             "--disable-opencore-amr"
-             "--disable-silk"
-             "--disable-sdl"
-             "--disable-ffmpeg"
-             "--disable-v4l2"
-             "--disable-openh264"
-             "--disable-resample"
-             "--disable-libwebrtc"
-             "--with-gnutls"
-             "--with-external-srtp"
-             ;; We need -fPIC or else we get the following error when linking
-             ;; against pjproject-jami:
-             ;;   relocation R_X86_64_32S against `.rodata' can not be used when
-             ;;   making a shared object;
-             ;; -DNDEBUG is needed to prevent assertion from happening and
-             ;; stopping the daemon.
-             "CFLAGS=-fPIC -DNDEBUG"
-             "CXXFLAGS=-fPIC -DNDEBUG")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'make-git-checkout-writable
-           (lambda _
-             (for-each make-file-writable (find-files "."))
-             #t))
-         (add-after 'unpack 'apply-patches
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((jami-apply-dependency-patches ,jami-apply-dependency-patches))
-               ;; Comes from
-               ;; "ring-project/daemon/contrib/src/pjproject/rules.mak".
-               ;; WARNING: These amount for huge changes in pjproject.
-               (jami-apply-dependency-patches
+     (substitute-keyword-arguments (package-arguments pjproject)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'make-source-files-writable 'apply-patches
+             (lambda* (#:key inputs #:allow-other-keys)
+               (,jami-apply-dependency-patches
                 #:inputs inputs
                 #:dep-name "pjproject"
                 #:patches
@@ -175,24 +130,7 @@
                   ;; "0010-fix-pkgconfig".
                   "0011-fix-tcp-death-detection"
                   "0012-fix-turn-shutdown-crash"))
-               #t)))
-         ;; TODO: We could use substitute-keyword-arguments instead of
-         ;; repeating the phases from pjproject, but somehow it does
-         ;; not work.
-         (add-before 'build 'build-dep
-           (lambda _ (invoke "make" "dep")))
-         (add-before 'patch-source-shebangs 'autoconf
-           (lambda _
-             (invoke "autoconf" "-v" "-f" "-i" "-o"
-                     "aconfigure" "aconfigure.ac")))
-         (add-before 'autoconf 'disable-some-tests
-           ;; Three of the six test programs fail due to missing network
-           ;; access.
-           (lambda _
-             (substitute* "Makefile"
-               (("selftest: pjlib-test pjlib-util-test pjnath-test pjmedia-test pjsip-test pjsua-test")
-                "selftest: pjlib-test pjlib-util-test pjmedia-test"))
-             #t)))))))
+               #t))))))))
 
 ;; The following variables are configure flags used by ffmpeg-jami.  They're
 ;; from the ring-project/daemon/contrib/src/ffmpeg/rules.mak file. We try to
