@@ -333,6 +333,10 @@ dist_noinst_DATA =				\
 AUX_FILES =						\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
+  gnu/packages/aux-files/linux-libre/5.7-arm.conf	\
+  gnu/packages/aux-files/linux-libre/5.7-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/5.7-i686.conf	\
+  gnu/packages/aux-files/linux-libre/5.7-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.4-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.4-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.4-i686.conf	\

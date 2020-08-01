@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -830,16 +830,22 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
+(define-public linux-libre-5.7
+  (make-linux-libre* linux-libre-5.7-version
+                     linux-libre-5.7-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
+
+(define-public linux-libre-version         linux-libre-5.7-version)
+(define-public linux-libre-pristine-source linux-libre-5.7-pristine-source)
+(define-public linux-libre-source          linux-libre-5.7-source)
+(define-public linux-libre                 linux-libre-5.7)
+
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
                      linux-libre-5.4-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.4-version)
-(define-public linux-libre-pristine-source linux-libre-5.4-pristine-source)
-(define-public linux-libre-source          linux-libre-5.4-source)
-(define-public linux-libre                 linux-libre-5.4)
 
 (define-public linux-libre-4.19
   (make-linux-libre* linux-libre-4.19-version
