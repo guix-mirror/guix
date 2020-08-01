@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 André <eu@euandre.org>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
-;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
@@ -55,6 +55,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages apr)
@@ -630,6 +631,26 @@ figure out what to do next.
 Gitless is implemented on top of Git and its commits and repositories are
 indistinguishable from Git's.  You (or other contributors) can always fall back
 on @command{git}, and use any regular Git hosting service.")
+    (license license:expat)))
+
+(define-public git-cal
+  (package
+    (name "git-cal")
+    (version "0.9.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/k4rthik/git-cal")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08s9sif3qlk5n2dqpzq5yjczggnqlnxldljspjdqgpfydb2dqg3z"))))
+    (build-system perl-build-system)
+    (home-page "https://github.com/k4rthik/git-cal/")
+    (synopsis "GitHub like contributions calendar for terminal")
+    (description "@code{git-cal} is a script to view commits calendar similar
+to GitHub contributions calendar.")
     (license license:expat)))
 
 (define-public libgit2
