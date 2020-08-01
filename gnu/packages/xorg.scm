@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -5492,6 +5492,7 @@ draggable titlebars and borders.")
   (package
     (name "libx11")
     (version "1.6.9")
+    (replacement libx11/fixed)
     (source
       (origin
         (method url-fetch)
@@ -5528,6 +5529,19 @@ draggable titlebars and borders.")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
+
+(define libx11/fixed  ; Fixes CVE-2020-14344
+  (package
+    (inherit libx11)
+    (version "1.6.A")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/lib/libX11-1.6.10.tar.bz2"))
+        (sha256
+          (base32
+            "09k2pqmqbn2m1bpgl7jfxyqxaaxsnzbnp2bp8ycmqldqi5ln4j5g"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 
