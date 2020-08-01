@@ -315,7 +315,7 @@ sinks.")
 (define-public pulsemixer
   (package
     (name "pulsemixer")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -324,7 +324,7 @@ sinks.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "162nfpyqn4gp45x332a73n07c118vispz3jicin4p67x3f8f0g3j"))))
+                "1jagx9zmz5pfsld8y2rj2kqg6ww9f6vqiawfy3vhqc49x3xx92p4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
