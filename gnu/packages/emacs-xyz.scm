@@ -14424,7 +14424,7 @@ navigate and display hierarchy structures.")
 (define-public emacs-datetime
   (package
     (name "emacs-datetime")
-    (version "0.3")
+    (version "0.6.6")
     (source
      (origin
        (method git-fetch)
@@ -14433,8 +14433,11 @@ navigate and display hierarchy structures.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fdswqi53qx924lib7nd9dazn0916xf1ybrh3bcn3f8cn6b8ikg5"))))
+        (base32
+         "0a3q667pybpmsjkbgf6287jwgpnx8brp5314wb8zbczw6ncygnbi"))))
     (build-system emacs-build-system)
+    (inputs
+     `(("emacs-extmap" ,emacs-extmap)))
     (home-page "https://github.com/doublep/datetime/")
     (synopsis "Library to work with dates in Emacs")
     (description "Parsing, formatting, matching and recoding
