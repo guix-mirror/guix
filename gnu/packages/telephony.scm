@@ -733,55 +733,37 @@ your calls and messages.")
        (modules '((guix build utils)))
        (snippet
         '(begin
-           (let ((third-party-directories
-                  ;; Things we don't need:
-                  ;; BaseClasses - contains libraries from Windows SDK
-                  ;; we don't need it, at least not now.
-                  (list "BaseClasses" "g7221" "ilbc" "milenage"
-                        "speex" "threademulation" "yuv" "bdsound"
-                        "gsm" "mp3" "resample" "srtp" "webrtc"
-                        ;; Keep only resample, build and README.txt.
-                        "build/baseclasses" "build/g7221" "build/gsm"
-                        "build/ilbc" "build/milenage" "build/resample"
-                        "build/samplerate" "build/speex" "build/srtp"
-                        "build/webrtc" "build/yuv")))
-             ;; Keep only Makefiles related to resample.
-             (for-each (lambda (directory)
-                         (delete-file-recursively
-                          (string-append "third_party/" directory)))
-                       third-party-directories)
-             #t)
-           (let ((third-party-dirs
-                  (list "gsm" "ilbc" "speex" "g7221" "srtp"
-                        "portaudio" "resample")))
-             (for-each
-              (lambda (dirs)
-                (substitute* "third_party/build/os-linux.mak"
-                  (((string-append "DIRS += " dirs)) "")))
-              third-party-dirs))))))
+           ;; Remove bundled libraries.
+           (delete-file-recursively "third_party")
+           (substitute* "aconfigure.ac"
+             (("third_party/build/os-auto.mak") ""))
+           (substitute* "Makefile"
+             (("third_party/build") ""))
+           #t))))
     (build-system gnu-build-system)
-    (inputs
-     `(("portaudio" ,portaudio)))
-    (propagated-inputs
-     ;; These packages are referenced in the Libs field of the pkg-config
-     ;; file that will be installed by pjproject.
-     `(("speex" ,speex)
-       ("libsrtp" ,libsrtp)
-       ("gnutls" ,gnutls)
-       ("resample", resample)
-       ("util-linux" ,util-linux "lib")))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)))
+    (outputs '("out" "debug"))
     (arguments
-     `(;; FIXME make: No rule to make target
-       ;; 'pjlib-test-unknown-[something]-gnu'.
-       #:tests? #f
-       ;; #:test-target "selftest"
+     `(#:tests? #t
+       #:test-target "selftest"
+      configure-flags '("--with-external-speex"
+                           "--with-external-gsm"
+                           "--with-external-srtp"
+                           "--with-external-pa"
+                           "--with-gnutls"         ;disable OpenSSL checks
+                           "--disable-libyuv"      ;TODO: add missing package
+                           "--disable-silk"        ;TODO: add missing package
+                           "--disable-libwebrtc"   ;TODO: add missing package
+                           "--disable-ilbc-codec"  ;cannot be unbundled
+                           "--disable-g7221-codec" ;TODO: add missing package
+                           "--enable-libsamplerate")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-source-files-writable
+           ;; Make all the files writable to prevent the following error:
+           ;; "autom4te: cannot open aconfigure: Permission denied".
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'build 'build-dep
            (lambda _ (invoke "make" "dep")))
          (add-before 'patch-source-shebangs 'autoconf
@@ -789,13 +771,58 @@ your calls and messages.")
              (invoke "autoconf" "-v" "-f" "-i" "-o"
                      "aconfigure" "aconfigure.ac")))
          (add-before 'autoconf 'disable-some-tests
-           ;; Three of the six test programs fail due to missing network
-           ;; access.
            (lambda _
+             (substitute* "pjlib/src/pjlib-test/test.h"
+               ;; Disable network tests which are slow and/or require an
+               ;; actual network.
+               (("#define GROUP_NETWORK.*")
+                "#define GROUP_NETWORK 0\n"))
+             (substitute* "self-test.mak"
+               ;; Fails with: pjlib-util-test-x86_64-unknown-linux-gnu:
+               ;; ../src/pjlib-util-test/resolver_test.c:1501: action2_1:
+               ;; Assertio n `pj_strcmp2(&pkt->q[0].name, "_sip._udp."
+               ;; "domain2.com")==0' failed.
+               ((" pjlib_util_test ") ""))
+             (substitute* "pjsip/src/test/test.h"
+               ;; Fails with: Error: unable to acquire TCP transport:
+               ;; [pj_status_t=120101] Network is unreachable.
+               (("#define INCLUDE_TCP_TEST.*")
+                "#define INCLUDE_TCP_TEST 0\n")
+               ;; The TSX tests takes a very long time to run; skip them.
+               (("#define INCLUDE_TSX_GROUP.*")
+                "#define INCLUDE_TSX_GROUP 0\n"))
+             (substitute* "pjsip/src/test/dns_test.c"
+               ;; The round_robin_test fails non-deterministically (depending
+               ;; on load); skip it (see:
+               ;; https://github.com/pjsip/pjproject/issues/2500).
+               (("round_robin_test(pool)") 0))
+             (substitute* "pjmedia/src/test/test.h"
+               ;; The following tests require a sound card.
+               (("#define HAS_MIPS_TEST.*")
+                "#define HAS_MIPS_TEST 0\n")
+               (("#define HAS_JBUF_TEST.*")
+                "#define HAS_JBUF_TEST 0\n"))
              (substitute* "Makefile"
-               (("selftest: pjlib-test pjlib-util-test pjnath-test pjmedia-test pjsip-test pjsua-test")
-                "selftest: pjlib-test pjlib-util-test pjmedia-test"))
+               ;; Disable the pjnath and pjsua tests, which require an actual
+               ;; network and an actual sound card, respectively.
+               (("pjnath-test pjmedia-test pjsip-test pjsua-test")
+                "pjmedia-test pjsip-test"))
              #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bcg729" ,bcg729)
+       ("gnutls" ,gnutls)
+       ("gsm" ,gsm)
+       ("libsamplerate" ,libsamplerate)
+       ("libsrtp" ,libsrtp)
+       ("opus" ,opus)
+       ("portaudio" ,portaudio)
+       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)))
     (home-page "https://www.pjsip.org")
     (synopsis "Session Initiation Protocol (SIP) stack")
     (description "PJProject provides an implementation of the Session
