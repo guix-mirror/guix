@@ -2582,9 +2582,12 @@ aimed at audio/musical applications.")
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
        ("libtool" ,libtool)))
-    (synopsis "Real-time library for sampling rate conversion")
-    (description "The @command{resample} software package contains free
-sampling-rate conversion and filter design utilities.")
+    (synopsis "Sampling rate conversion and filter design utilities")
+    (description "This package contains the @command{resample} and
+@command{windowfilter} command line utilities.  The @command{resample} command
+allows changing the sampling rate of a sound file, while the
+@command{windowfilter} command allows to design Finite Impulse Response (FIR)
+filters using the so-called @emph{window method}.")
     (home-page "https://ccrma.stanford.edu/~jos/resample/Free_Resampling_Software.html")
     (license license:lgpl2.1+)))
 
