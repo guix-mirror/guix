@@ -749,17 +749,27 @@ your calls and messages.")
     (arguments
      `(#:tests? #t
        #:test-target "selftest"
-      configure-flags '("--with-external-speex"
-                           "--with-external-gsm"
-                           "--with-external-srtp"
-                           "--with-external-pa"
-                           "--with-gnutls"         ;disable OpenSSL checks
-                           "--disable-libyuv"      ;TODO: add missing package
-                           "--disable-silk"        ;TODO: add missing package
-                           "--disable-libwebrtc"   ;TODO: add missing package
-                           "--disable-ilbc-codec"  ;cannot be unbundled
-                           "--disable-g7221-codec" ;TODO: add missing package
-                           "--enable-libsamplerate")
+       #:configure-flags
+       (list "--with-external-speex"
+             "--with-external-gsm"
+             "--with-external-srtp"
+             "--with-external-pa"
+             ;; The following flag is Linux specific.
+             ,@(if (string-contains (or (%current-system)
+                                        (%current-target-system)) "linux")
+                   '("--enable-epoll")
+                   '())
+             "--with-gnutls"            ;disable OpenSSL checks
+             "--disable-libyuv"         ;TODO: add missing package
+             "--disable-silk"           ;TODO: add missing package
+             "--disable-libwebrtc"      ;TODO: add missing package
+             "--disable-ilbc-codec"     ;cannot be unbundled
+             "--disable-g7221-codec"    ;TODO: add missing package
+             "--enable-libsamplerate"
+             ;; -DNDEBUG is set to prevent pjproject from raising
+             ;; assertions that aren't critical, crashing
+             ;; applications as the result.
+             "CFLAGS=-DNDEBUG")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-source-files-writable
