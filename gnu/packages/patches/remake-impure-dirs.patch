@@ -1,0 +1,30 @@
+Purity: don't look for library dependencies (of the form `-lfoo') in
+/lib and /usr/lib.  Likewise, when searching for included Makefiles,
+don't look in /usr/include and friends.
+
+Borrowed from similar patch for GNU Make and adjusted for Remake.
+
+--- remake-4.3+dbg-1.5/src/read.c.orig	2020-03-14 17:06:16.000000000 -0500
++++ remake-4.3+dbg-1.5/src/read.c	2020-07-31 22:34:03.862383862 -0500
+@@ -104,7 +104,7 @@
+ # define INCLUDEDIR "."
+ #endif
+     INCLUDEDIR,
+-#ifndef _AMIGA
++#if 0
+     "/usr/gnu/include",
+     "/usr/local/include",
+     "/usr/include",
+--- remake-4.3+dbg-1.5/src/remake.c.orig	2020-03-14 17:06:16.000000000 -0500
++++ remake-4.3+dbg-1.5/src/remake.c	2020-07-31 22:34:26.798330508 -0500
+@@ -1665,8 +1665,10 @@
+ {
+   static const char *dirs[] =
+     {
++#if 0
+       "/lib",
+       "/usr/lib",
++#endif
+ #if defined(WINDOWS32) && !defined(LIBDIR)
+ /*
+  * This is completely up to the user at product install time. Just define
