@@ -22176,7 +22176,7 @@ and it should work well with 256 color terminals.")
 (define-public emacs-dimmer
   (package
     (name "emacs-dimmer")
-    (version "0.3.0")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
@@ -22185,7 +22185,8 @@ and it should work well with 256 color terminals.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jv9rrv15nb5hpwcaqlpjj932gyisrkwbv11czkg3v0bn7qn6yif"))))
+        (base32
+         "0dw0qh5hm1x76s5cqxvylvmjgy0jwy11xm258g6kmx6w1k6r1d2l"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/gonewest818/dimmer.el")
     (synopsis "Visually highlights the selected buffer in Emacs")
