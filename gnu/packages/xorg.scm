@@ -5327,6 +5327,7 @@ over Xlib, including:
   (package
     (name "xorg-server")
     (version "1.20.8")
+    (replacement xorg-server/fixed)
     (source
       (origin
         (method url-fetch)
@@ -5450,6 +5451,16 @@ communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
 
+(define xorg-server/fixed  ; Fixes CVE-2020-14347
+  (package
+    (inherit xorg-server)
+    (source
+     (origin
+       (inherit (package-source xorg-server))
+       (patches
+        (append (origin-patches (package-source xorg-server))
+                (search-patches "xorg-server-CVE-2020-14347.patch")))))))
+
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
 ;; packages with the same name and version.
@@ -5468,8 +5479,7 @@ draggable titlebars and borders.")
                  "18bfl04ihw1jr3h0fs522nnxxq5ixjay77y9dcymnkzk23q8cndx")))))))
 
 (define-public xorg-server-xwayland
-  (package
-    (inherit xorg-server)
+  (package/inherit xorg-server
     (name "xorg-server-xwayland")
     (inputs
      `(("wayland" ,wayland)
