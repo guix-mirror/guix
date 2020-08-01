@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -597,7 +598,7 @@ mixed.")
 (define-public chibi-scheme
   (package
     (name "chibi-scheme")
-    (version "0.8")
+    (version "0.9")
     (home-page "https://github.com/ashinn/chibi-scheme")
     (source
      (origin
@@ -606,7 +607,7 @@ mixed.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0269d5fhaz7nqjb41vh7yz63mp5s4z08fn4sspwc06z32xksigw9"))))
+         "1lnap41gl9vg82h557f4rlr69jgmd2gh0iqs6cxm77d39kv1scb8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
