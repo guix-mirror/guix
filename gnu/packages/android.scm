@@ -185,7 +185,7 @@ use their packages mostly unmodified in our Android NDK build system.")
      (base32
       checksum))))
 
-(define android-liblog
+(define-public android-liblog
   (package
     (name "android-liblog")
     (version (android-platform-version))
