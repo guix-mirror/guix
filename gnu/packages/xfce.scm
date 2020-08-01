@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1033,7 +1034,7 @@ several different time zones.")
 (define-public xfce4-notifyd
   (package
     (name "xfce4-notifyd")
-    (version "0.4.4")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1041,7 +1042,7 @@ several different time zones.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0m8vlbwdxiw9nmimaj5np9l5qm784gxpkdvc881k0hjcz6n72189"))))
+                "1d49l2vdz4hb2c14ai5p81wz7vikh9g3ffz0gmm2kgw9kjcp8llv"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
