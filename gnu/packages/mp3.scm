@@ -106,6 +106,27 @@ This package contains the library.")
              (base32
               "0lb1w883dc46dajbdvnia5870brl5lvnlk7g7y58y9wpg5p4znk3"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'install-pkg-config
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (pkg-config-dir (string-append out "/lib/pkgconfig")))
+              (mkdir-p pkg-config-dir)
+              (with-output-to-file (string-append pkg-config-dir "/id3tag.pc")
+                (lambda _
+                  (format #t
+                          "prefix=~@*~a~@
+                           libdir=${prefix}/lib~@
+                           includedir=${prefix}/include~@
+
+                           Name: libid3tag~@
+                           Description:~@
+                           Version: ~a~@
+                           Libs: -L${libdir} -lid3tag -lz~@
+                           Cflags: -I${includedir}~%"
+                          out ,version)))))))))
    (inputs `(("zlib" ,zlib)))
    (synopsis "Library for reading ID3 tags")
    (description
