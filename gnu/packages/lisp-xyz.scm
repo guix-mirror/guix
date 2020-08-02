@@ -13364,3 +13364,34 @@ Inflector module.")
 
 (define-public ecl-cl-inflector
   (sbcl-package->ecl-package sbcl-cl-inflector))
+
+(define-public sbcl-qbase64
+  (package
+    (name "sbcl-qbase64")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chaitanyagupta/qbase64")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dir0s70ca3hagxv9x15zq4p4ajgl7jrcgqsza2n2y7iqbxh0dwi"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("metabang-bind" ,sbcl-metabang-bind)
+       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (home-page "https://github.com/chaitanyagupta/qbase64")
+    (synopsis "Base64 encoder and decoder for Common Lisp")
+    (description "@code{qbase64} provides a fast and flexible base64 encoder
+and decoder for Common Lisp.")
+    (license license:bsd-3)))
+
+(define-public cl-qbase64
+  (sbcl-package->cl-source-package sbcl-qbase64))
+
+(define-public ecl-qbase64
+  (sbcl-package->ecl-package sbcl-qbase64))
