@@ -941,6 +941,8 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                (base32
                 "0zdk4afdrrr1539f2q15zja19j4wwfmpswzws2ffgflcnhywlxhr"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list "--disable-static")))
     (native-inputs
      `(("pkgconfig" ,pkg-config)))
     (inputs
