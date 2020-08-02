@@ -81,7 +81,25 @@
           (lambda _
             ;; remove option that is not supported by gcc any more
             (substitute* "configure" ((" -fforce-mem") ""))
-            #t)))))
+            #t))
+        (add-after 'install 'install-pkg-config
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (pkg-config-dir (string-append out "/lib/pkgconfig")))
+              (mkdir-p pkg-config-dir)
+              (with-output-to-file (string-append pkg-config-dir "/mad.pc")
+                (lambda _
+                  (format #t
+                          "prefix=~@*~a~@
+                           libdir=${prefix}/lib~@
+                           includedir=${prefix}/include~@
+
+                           Name: libmad~@
+                           Description:~@
+                           Version: ~a~@
+                           Libs: -L${libdir} -lmad~@
+                           Cflags: -I${includedir}~%"
+                          out ,version)))))))))
    (synopsis "MPEG audio decoder")
    (description
     "MAD (MPEG Audio Decoder) supports MPEG-1 and the MPEG-2 extension to
