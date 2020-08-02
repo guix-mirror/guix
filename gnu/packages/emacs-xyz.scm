@@ -12783,6 +12783,30 @@ Groovy source files, REPL integration with run-groovy and Grails project
 navigation with the grails mode.")
     (license license:gpl3+)))
 
+(define-public emacs-jenkinsfile-mode
+  (let ((commit "00d259ff9b870d234540e00e1d7c83cccdb063b8")
+        (revision "1"))
+    (package
+      (name "emacs-jenkinsfile-mode")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/john2x/jenkinsfile-mode")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0srf6xdjnrd4v4ks9pal7i48wmkcl4q5ry7d0yzfx1c9pz2qg9zx"))))
+      (propagated-inputs
+       `(("emacs-groovy-modes" ,emacs-groovy-modes)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/john2x/jenkinsfile-mode/")
+      (synopsis "Emacs major-mode for editing Jenkinsfile")
+      (description "This package provides a @code{jenkinsfile-mode} derived
+from @code{groovy-mode} for editing Jenkins declarative pipeline files.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-tree-slide
   (let ((commit "036a36eec1cf712d3db155572aed325daa372eb5")
         (revision "2"))
