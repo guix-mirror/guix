@@ -26,7 +26,7 @@
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
@@ -2926,20 +2926,20 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
     ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
     (build-system cmake-build-system)
     (inputs
-     `(("gnutls" ,gnutls)
+     `(("argon2" ,argon2)
        ("nettle" ,nettle)
        ("readline" ,readline)
        ("jsoncpp" ,jsoncpp)
-       ("openssl" ,openssl)
+       ("openssl" ,openssl)             ;required for the DHT proxy
        ("fmt" ,fmt)))
     (propagated-inputs
-     `(("argon2" ,argon2)  ; TODO: Needed for the pkg-config .pc file to work?
+     `(("gnutls" ,gnutls)               ;included in opendht/crypto.h
        ("msgpack" ,msgpack)))           ;included in several installed headers
     (native-inputs
      `(("autoconf" ,autoconf)
-       ("pkg-config" ,pkg-config)
-       ("restinio" ,restinio)
        ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("restinio" ,restinio)           ;headers only library
        ("libtool" ,libtool)
        ("cppunit" ,cppunit)))
     (arguments
