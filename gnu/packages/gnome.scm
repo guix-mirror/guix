@@ -329,6 +329,12 @@ bindings.")
                         "configure"
                         "Makefile.in"))
              #t))
+         (add-after 'unpack 'patch-tests
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (find-files "." "\\.js$")
+              (("#!/usr/bin/env seed")
+               (string-append "#!" (getcwd) "/src/seed")))
+             #t))
          (add-before 'build 'patch-docbook-xml
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "doc"
