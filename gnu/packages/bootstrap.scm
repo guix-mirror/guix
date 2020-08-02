@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;; Copyright © 2019 Léo Le Bouter <lle-bout@zaclys.net>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -740,8 +741,11 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                            "1m5miqkyng45l745n0sfafdpjkqv9225xf44jqkygwsipj2cv9ks")))))))))
     (native-search-paths
      (list (search-path-specification
-            (variable "CPATH")
+            (variable "C_INCLUDE_PATH")
             (files '("include")))
+           (search-path-specification
+            (variable "CPLUS_INCLUDE_PATH")
+            (files '("include/c++" "include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
