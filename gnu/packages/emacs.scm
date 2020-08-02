@@ -85,6 +85,7 @@
                 "119ldpk7sgn9jlpyngv5y4z3i7bb8q3xp4p0qqi7i5nq39syd42d"))
               (patches (search-patches "emacs-exec-path.patch"
                                        "emacs-fix-scheme-indent-function.patch"
+                                       "emacs-ignore-empty-xim-styles.patch"
                                        "emacs-source-date-epoch.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -261,6 +262,7 @@ languages.")
          (file-name (git-file-name name version))
          (patches (search-patches "emacs27-exec-path.patch"
                                   "emacs-fix-scheme-indent-function.patch"
+                                  "emacs-ignore-empty-xim-styles.patch"
                                   "emacs-source-date-epoch.patch"))
          (modules (origin-modules (package-source emacs)))
          ;; TODO: once the snippet for `emacs' is changed to not fail when
