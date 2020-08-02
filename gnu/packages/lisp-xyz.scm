@@ -1388,10 +1388,11 @@ several blockable channels.)")
   (sbcl-package->ecl-package sbcl-jpl-queues))
 
 (define-public sbcl-eos
-  (let ((commit "b0faca83781ead9a588661e37bd47f90362ccd94"))
+  (let ((commit "b4413bccc4d142cbe1bf49516c3a0a22c9d99243")
+        (revision "2"))
     (package
       (name "sbcl-eos")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -1399,8 +1400,7 @@ several blockable channels.)")
                (url "https://github.com/adlai/Eos")
                (commit commit)))
          (sha256
-          (base32
-           "1bq8cfg087iyxmxi1mwgx5cfgy3b8ydrf81xljcis8qbgb2vszph"))
+          (base32 "1afllvmlnx97yzz404gycl3pa3kwx427k3hrbf37rpmjlv47knhk"))
          (file-name (git-file-name "eos" version))))
       (build-system asdf-build-system/sbcl)
       (synopsis "Unit Testing for Common Lisp")
