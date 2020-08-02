@@ -1740,8 +1740,8 @@ web browsers, but follows the flow and keybindings of Isearch.")
 (define-public emacs-dhall-mode
   ;; There is no proper release.  The base version is extracted from the
   ;; "Version" keyword in the main file.
-  (let ((revision "0")
-        (commit  "ef4d33debe224c6ba37e51a29b9dc8b74f20f1c2"))
+  (let ((revision "1")
+        (commit  "484bcf8f78f1183ef45c3b04a362bb73690c6b9b"))
     (package
       (name "emacs-dhall-mode")
       (version (git-version "0.1.3" revision commit))
@@ -1754,7 +1754,7 @@ web browsers, but follows the flow and keybindings of Isearch.")
            (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1232y2k4l3bsz90pgis78zxmrw7jv09dfaip21yc1w4vpxfyr384"))))
+          (base32 "1wggg8jlzg9rph4jhxp6yiri178rnasbv38838i973kjgqjxrl76"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-reformatter" ,emacs-reformatter)))
