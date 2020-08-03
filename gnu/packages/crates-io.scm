@@ -7878,7 +7878,7 @@ pseudorandom number generator")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-mac" ,rust-mac-0.1)
-        ("rust-new-debug-unreachable" ,rust-new-debug-unreachable-1.0))))
+        ("rust-new-debug-unreachable" ,rust-new-debug-unreachable-1))))
     (home-page "https://github.com/servo/futf")
     (synopsis "Handling fragments of UTF-8")
     (description "Handling fragments of UTF-8.")
@@ -14448,7 +14448,7 @@ cryptographic library.")
     (license ;; licensed under either of these, at your option
      (list license:lgpl3 license:gpl2 license:gpl3))))
 
-(define-public rust-new-debug-unreachable-1.0
+(define-public rust-new-debug-unreachable-1
   (package
     (name "rust-new-debug-unreachable")
     (version "1.0.3")
@@ -14468,7 +14468,7 @@ cryptographic library.")
     (synopsis
      "Panic in debug, @code{intrinsics::unreachable()} in release")
     (description
-     "Panic in debug, @code{intrinsics::unreachable() }in
+     "Panic in debug, @code{intrinsics::unreachable()} in
 release (fork of debug_unreachable)")
     (license license:expat)))
 
@@ -24610,7 +24610,7 @@ configurable byte storage.")
     (arguments
      `(#:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-new-debug-unreachable" ,rust-new-debug-unreachable-1.0)
+        ("rust-new-debug-unreachable" ,rust-new-debug-unreachable-1)
         ("rust-phf-shared" ,rust-phf-shared-0.8)
         ("rust-precomputed-hash" ,rust-precomputed-hash-0.1)
         ("rust-serde" ,rust-serde-1))))
@@ -24639,7 +24639,7 @@ developed as part of the Servo project.")
      `(#:cargo-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-new-debug-unreachable"
-         ,rust-new-debug-unreachable-1.0)
+         ,rust-new-debug-unreachable-1)
         ("rust-phf-shared" ,rust-phf-shared-0.7)
         ("rust-precomputed-hash" ,rust-precomputed-hash-0.1)
         ("rust-serde" ,rust-serde-1)
