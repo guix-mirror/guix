@@ -11383,8 +11383,41 @@ or numerical index.  A corresponding hash set type is also provided.")
     (description "This package provides DEFLATE decoding.")
     (license license:expat)))
 
+(define-public rust-inotify-0.7
+  (package
+    (name "rust-inotify")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "inotify" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0byhq4x4b2rlbkmfrab5dni39wiq2ls1hv1nhggp7rla5inwc5j8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-inotify-sys" ,rust-inotify-sys-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/inotify-rs/inotify")
+    (synopsis "Idiomatic wrapper for inotify")
+    (description "This package provides an idiomatic wrapper for inotify written
+in Rust.")
+    (license license:isc)))
+
 (define-public rust-inotify-0.6
   (package
+    (inherit rust-inotify-0.7)
     (name "rust-inotify")
     (version "0.6.1")
     (source
@@ -11396,7 +11429,6 @@ or numerical index.  A corresponding hash set type is also provided.")
        (sha256
         (base32
          "0627k5aq44knjlrc09hl017nxap3svpl79przf26y3ciycwlbda0"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -11407,12 +11439,7 @@ or numerical index.  A corresponding hash set type is also provided.")
         ("rust-tokio-io" ,rust-tokio-io-0.1)
         ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
        #:cargo-development-inputs
-       (("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://github.com/inotify-rs/inotify")
-    (synopsis "Idiomatic wrapper for inotify")
-    (description "This package provides an idiomatic wrapper for inotify written
-in Rust.")
-    (license license:isc)))
+       (("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-inotify-sys-0.1
   (package
