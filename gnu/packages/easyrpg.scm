@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,7 +76,7 @@ It can read and write LCF and XML files.")
 (define-public easyrpg-player
   (package
     (name "easyrpg-player")
-    (version "0.6.1")
+    (version "0.6.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -83,7 +84,7 @@ It can read and write LCF and XML files.")
                     "/easyrpg-player-" version ".tar.gz"))
               (sha256
                (base32
-                "1x81d1952w6vb939155bvs5p3shgsncxy305770izpp4pva1a8z0"))))
+                "1bai0mxjw1qvl2vcwgssycbyn0crk0b5l69ld9rawcs2nczb44s5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
