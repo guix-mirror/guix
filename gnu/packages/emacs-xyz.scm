@@ -6306,7 +6306,7 @@ between symbols.")
 (define-public emacs-hl-todo
   (package
     (name "emacs-hl-todo")
-    (version "3.0.0")
+    (version "3.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6315,7 +6315,7 @@ between symbols.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07xcc04ivpl5sbgb55qz84mz6wa500h0awzw1zq1ba5mfjjq8hls"))))
+                "1i5mdmkbrxqx75grwl01pywbgl8pasr00mq6fidspp0aligsbg6w"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/hl-todo")
     (synopsis "Emacs mode to highlight TODO and similar keywords")
