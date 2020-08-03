@@ -14484,7 +14484,16 @@ release (fork of debug_unreachable)")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0aa2l7wg9pzx24ks4p97gdy09a4hhs1sr9drxnm75v906d7hnbiv"))))
+         "0aa2l7wg9pzx24ks4p97gdy09a4hhs1sr9drxnm75v906d7hnbiv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Unpin the dependency on tempfile, as it was withheld for MSRV
+           ;; concerns, which don't matter for Guix:
+           ;; https://github.com/nix-rust/nix/commit/98531c8f04bc23fb632c08e06dc4e56284b9c027
+           (substitute* "Cargo.toml"
+             (("version = \">= 3.0.5, < 3.0.9\"") "version = \"3.0.5\""))
+           #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; test suite hangs
