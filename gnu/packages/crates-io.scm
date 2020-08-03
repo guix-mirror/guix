@@ -7362,7 +7362,6 @@ streams.")
          (base32
           "1ww56bi1r5b8id3ns9j3qxbi7w5h005rzhiryy0zi9h97raqbb9g"))))
     (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/servo/rust-fnv")
     (synopsis "Implementation of the Fowler-Noll-Vo hash function")
     (description "The @code{fnv} hash function is a custom @code{Hasher}
