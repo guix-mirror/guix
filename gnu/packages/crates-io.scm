@@ -3383,7 +3383,7 @@ for computer graphics.")
 (define-public rust-clap-2
   (package
     (name "rust-clap")
-    (version "2.33.0")
+    (version "2.33.1")
     (source
       (origin
         (method url-fetch)
@@ -3391,7 +3391,7 @@ for computer graphics.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1nf6ld3bims1n5vfzhkvcb55pdzh04bbhzf8nil5vvw05nxzarsh"))))
+          "0a91g4m6rcqpf6gzxh43cj6mnj9g8ahpr634baim6kcmgza81ymx"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
