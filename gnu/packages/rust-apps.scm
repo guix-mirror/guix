@@ -279,7 +279,7 @@ gitignore rules.")
      `(#:cargo-inputs
        (("clap" ,rust-clap-2)
         ("log" ,rust-log-0.4)
-        ("proc-macro2" ,rust-proc-macro2-1.0)
+        ("proc-macro2" ,rust-proc-macro2-1)
         ("quote" ,rust-quote-1.0)
         ("serde" ,rust-serde-1)
         ("serde-json" ,rust-serde-json-1)
