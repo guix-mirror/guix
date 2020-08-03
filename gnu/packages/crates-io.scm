@@ -14492,7 +14492,7 @@ release (fork of debug_unreachable)")
         ("rust-cc" ,rust-cc-1)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-void" ,rust-void-1.0))
+        ("rust-void" ,rust-void-1))
        #:cargo-development-inputs
        (("rust-bytes" ,rust-bytes-0.4)
         ("rust-caps" ,rust-caps-0.3)
@@ -18020,7 +18020,7 @@ both WASM and native applications")
      `(#:cargo-inputs
        (("rust-typemap" ,rust-typemap-0.3))
        #:cargo-development-inputs
-       (("rust-void" ,rust-void-1.0))))
+       (("rust-void" ,rust-void-1))))
     (home-page "https://github.com/reem/rust-plugin")
     (synopsis "Lazily evaluated, order-independent plugins for extensible types")
     (description
@@ -27783,7 +27783,7 @@ whitespace from a string.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-void" ,rust-void-1.0))))
+       (("rust-void" ,rust-void-1))))
     (home-page "https://github.com/reem/rust-unreachable")
     (synopsis "Unreachable code optimization hint in rust")
     (description
@@ -28342,7 +28342,7 @@ If that fails, no determination is made, and calls return None.")
 updated when the crate version changes.")
     (license license:expat)))
 
-(define-public rust-void-1.0
+(define-public rust-void-1
   (package
     (name "rust-void")
     (version "1.0.2")
