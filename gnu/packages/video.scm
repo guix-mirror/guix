@@ -4029,7 +4029,7 @@ result in several formats:
         ("rust-thiserror" ,rust-thiserror-1.0)
         ("rust-toml" ,rust-toml-0.5)
         ("rust-y4m" ,rust-y4m-0.5)
-        ("rust-cc" ,rust-cc-1.0)
+        ("rust-cc" ,rust-cc-1)
         ("rust-nasm-rs" ,rust-nasm-rs-0.1)
         ("rust-rustc-version" ,rust-rustc-version-0.2)
         ("rust-vergen" ,rust-vergen-3.1))
