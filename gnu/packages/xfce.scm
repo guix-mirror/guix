@@ -98,9 +98,9 @@
     (version "4.14.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
-                                  (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  "libxfce4util/" (version-major+minor version)
+                                  "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "093338faqqsrlc8dkmzr7qv411ysxczg1wlg7s3gvhrfk6vpkb9j"))))
