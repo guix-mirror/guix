@@ -1867,7 +1867,7 @@ swap space and the system uptime in the Xfce4 panel.")
 (define-public xfce4-time-out-plugin
   (package
    (name "xfce4-time-out-plugin")
-   (version "1.1.0")
+   (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1876,7 +1876,7 @@ swap space and the system uptime in the Xfce4 panel.")
                                   "/xfce4-time-out-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "068a8ck08g4g1msbr7hd5zzp6lsq2a1ry1r472x0rmbna2im2jpf"))))
+                "07d3vddzrl6p6kg3qs4rd8qk57ghf33sk9sh73gsx2hxfnwbwk8r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
