@@ -368,6 +368,70 @@ show number of files, total lines within those files and code, comments, and
 blanks grouped by language.")
     (license (list license:expat license:asl2.0))))
 
+(define-public watchexec
+  (package
+    (name "watchexec")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "watchexec" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bwgqb5fvyqbf2lf0005fxzpbpbwbszc7144g3kg2cmzy5cbrf0w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-completions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (zsh (string-append out "/share/zsh/site-functions/_watchexec"))
+                    (doc (string-append out "/share/doc/watchexec-" ,version)))
+               (mkdir-p (dirname zsh))
+               (copy-file "completions/zsh" zsh)
+               (install-file "README.md" doc)
+               #t))))
+       #:cargo-inputs
+       (("rust-clap" ,rust-clap-2)
+        ("rust-derive-builder" ,rust-derive-builder-0.9)
+        ("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-globset" ,rust-globset-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-nix" ,rust-nix-0.17)
+        ("rust-notify" ,rust-notify-4)
+        ("rust-walkdir" ,rust-walkdir-2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/watchexec/watchexec")
+    (synopsis "Executes commands in response to file modifications")
+    (description
+     "@command{watchexec} is a simple, standalone tool that watches a path and runs
+a command whenever it detects modifications.
+
+Example use cases:
+@itemize @bullet
+@item Automatically run unit tests
+@item Run linters/syntax checkers
+@end itemize
+
+Features:
+@itemize @bullet
+@item Coalesces multiple filesystem events into one, for editors that
+use swap/backup files during saving
+@item By default, uses @code{.gitignore} and @code{.ignore} to determine which
+files to ignore notifications for
+@item Supports watching files with a specific extension
+@item Supports filtering/ignoring events based on glob patterns
+@item Launches child processes in a new process group
+@item Sets environment variables that allow the executed program to learn
+the details of how it was triggered.
+@end itemize")
+    (license license:asl2.0)))
+
 (define-public rust-cargo-c
   (package
     (name "rust-cargo-c")
