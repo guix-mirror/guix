@@ -14543,22 +14543,7 @@ release (fork of debug_unreachable)")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1kmxdlmvnmq8cfpmr3g6wk37rwi2ybdvp1z6z3831m1p23p2nwkc"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-cc" ,rust-cc-1.0)
-        ("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-void" ,rust-void-1.0))
-       #:cargo-development-inputs
-       (("rust-bytes" ,rust-bytes-0.4)
-        ("rust-caps" ,rust-caps-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-rand" ,rust-rand-0.6)
-        ("rust-sysctl" ,rust-sysctl-0.1)
-        ("rust-tempfile" ,rust-tempfile-3))))))
+         "1kmxdlmvnmq8cfpmr3g6wk37rwi2ybdvp1z6z3831m1p23p2nwkc"))))))
 
 (define-public rust-no-panic-0.1
   (package
