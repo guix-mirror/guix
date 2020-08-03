@@ -307,6 +307,7 @@ initrd code."
   (match fs
     (($ <file-system> device mount-point type flags options mount?
                       mount-may-fail? needed-for-boot? check?)
+     ;; Note: Add new fields towards the end for compatibility.
      (list (cond ((uuid? device)
                   `(uuid ,(uuid-type device) ,(uuid-bytevector device)))
                  ((file-system-label? device)
@@ -317,7 +318,8 @@ initrd code."
 (define (spec->file-system sexp)
   "Deserialize SEXP, a list, to the corresponding <file-system> object."
   (match sexp
-    ((device mount-point type flags options mount-may-fail? check?)
+    ((device mount-point type flags options mount-may-fail? check?
+             _ ...)                               ;placeholder for new fields
      (file-system
        (device (match device
                  (('uuid (? symbol? type) (? bytevector? bv))
