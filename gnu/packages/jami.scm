@@ -171,7 +171,8 @@
                   "0007-pj_ice_sess"
                   "0008-fix_ioqueue_ipv6_sendto"
                   "0009-add-config-site"
-                  "0010-fix-pkgconfig"
+                  ;; Note: The base pjproject is already patched with
+                  ;; "0010-fix-pkgconfig".
                   "0011-fix-tcp-death-detection"
                   "0012-fix-turn-shutdown-crash"))
                #t)))

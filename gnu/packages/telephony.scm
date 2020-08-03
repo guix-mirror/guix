@@ -731,6 +731,10 @@ your calls and messages.")
         (base32
          "1aklicpgwc88578k03i5d5cm5h8mfm7hmx8vfprchbmaa2p8f4z0"))
        (modules '((guix build utils)))
+       ;; The patches upstream status can be tracked at:
+       ;; https://github.com/pjsip/pjproject/pull/2501.
+       (patches (search-patches "pjproject-correct-the-cflags-field.patch"
+                                "pjproject-fix-pkg-config-ldflags.patch"))
        (snippet
         '(begin
            ;; Remove bundled libraries.

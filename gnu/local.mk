@@ -1410,6 +1410,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/pingus-boost-headers.patch		\
   %D%/packages/patches/pingus-sdl-libs-config.patch		\
   %D%/packages/patches/pixman-CVE-2016-5296.patch		\
+  %D%/packages/patches/pjproject-correct-the-cflags-field.patch \
+  %D%/packages/patches/pjproject-fix-pkg-config-ldflags.patch	\
   %D%/packages/patches/plink-1.07-unclobber-i.patch		\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plib-CVE-2011-4620.patch		\
