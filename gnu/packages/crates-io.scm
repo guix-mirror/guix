@@ -7349,7 +7349,7 @@ streams.")
      "This package provides a total ordering for floating-point numbers.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-fnv-1.0
+(define-public rust-fnv-1
   (package
     (name "rust-fnv")
     (version "1.0.6")
@@ -8417,7 +8417,7 @@ library.")
        #:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3))
        #:cargo-development-inputs
-       (("rust-fnv" ,rust-fnv-1.0)
+       (("rust-fnv" ,rust-fnv-1)
         ("rust-seahash" ,rust-seahash-3.0))))
     (home-page "https://github.com/cbreeden/fxhash")
     (synopsis "Hashing algorithm from hasher used in FireFox and Rustc")
@@ -9440,7 +9440,7 @@ reading and writing git repositories.")
     (arguments
      `(#:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
-        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-fnv" ,rust-fnv-1)
         ("rust-glutin" ,rust-glutin-0.21)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-smallvec" ,rust-smallvec-0.6)
@@ -9518,7 +9518,7 @@ shell style patterns.")
      `(#:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.7)
         ("rust-bstr" ,rust-bstr-0.2)
-        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-fnv" ,rust-fnv-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-regex" ,rust-regex-1)
         ("rust-serde" ,rust-serde-1))
@@ -10131,7 +10131,7 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
        #:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-bytes" ,rust-bytes-0.4)
-        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-fnv" ,rust-fnv-1)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-http" ,rust-http-0.1)
         ("rust-indexmap" ,rust-indexmap-1)
@@ -10677,7 +10677,7 @@ Hash-based Message Authentication Code}.")
      `(#:skip-build? #t ;; FIXME requires Rust >= 1.39 for building
        #:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
-        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-fnv" ,rust-fnv-1)
         ("rust-itoa" ,rust-itoa-0.4))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
@@ -10710,7 +10710,7 @@ requests and responses.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.4)
-        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-fnv" ,rust-fnv-1)
         ("rust-itoa" ,rust-itoa-0.4))
        #:cargo-development-inputs
        (("rust-indexmap" ,rust-indexmap-1)
@@ -11188,7 +11188,7 @@ for the most common image formats.")
         ("rust-serde" ,rust-serde-1)
         ("rust-rayon" ,rust-rayon-1))
        #:cargo-development-inputs
-       (("rust-fnv" ,rust-fnv-1.0)
+       (("rust-fnv" ,rust-fnv-1)
         ("rust-itertools" ,rust-itertools-0.8)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
@@ -15981,7 +15981,7 @@ PartialOrd types, like floats.")
        #:cargo-inputs
        (("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
-       (("rust-fnv" ,rust-fnv-1.0)
+       (("rust-fnv" ,rust-fnv-1)
         ("rust-itertools" ,rust-itertools-0.8)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-quickcheck" ,rust-quickcheck-0.8)
@@ -17756,7 +17756,7 @@ nicely with Piston libraries.")
         ("rust-piston-viewport" ,rust-piston-viewport-1.0)
         ("rust-read-color" ,rust-read-color-1.0)
         ("rust-vecmath" ,rust-vecmath-1.0)
-        ("rust-fnv" ,rust-fnv-1.0))))
+        ("rust-fnv" ,rust-fnv-1))))
     (home-page "https://github.com/pistondevelopers/graphics")
     (synopsis "Library for 2D graphics that works with multiple back-ends")
     (description "This package provides a library for 2D graphics that works
@@ -21920,7 +21920,7 @@ rustc compiler version.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-fnv" ,rust-fnv-1.0)
+       (("rust-fnv" ,rust-fnv-1)
         ("rust-quick-error" ,rust-quick-error-1.2)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))))
@@ -25235,7 +25235,7 @@ cryptographic implementations.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-flate2" ,rust-flate2-1.0)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-fnv" ,rust-fnv-1)
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-lazycell" ,rust-lazycell-1.2)
         ("rust-bincode" ,rust-bincode-1)
@@ -25856,7 +25856,7 @@ writing colored text to a terminal.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-fnv" ,rust-fnv-1.0)
+       (("rust-fnv" ,rust-fnv-1)
         ("rust-nom" ,rust-nom-4.2)
         ("rust-phf" ,rust-phf-0.7)
         ("rust-phf-codegen" ,rust-phf-codegen-0.7))))
@@ -26341,7 +26341,7 @@ in Rust.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
-        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-fnv" ,rust-fnv-1)
         ("rust-futures-core" ,rust-futures-core-0.3)
         ("rust-iovec" ,rust-iovec-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1)
@@ -26925,7 +26925,7 @@ futures.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-fnv" ,rust-fnv-1.0)
+       (("rust-fnv" ,rust-fnv-1)
         ("rust-futures" ,rust-futures-0.1))
        #:cargo-development-inputs
        (("rust-env-logger" ,rust-env-logger-0.6)
