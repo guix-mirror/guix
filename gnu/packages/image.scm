@@ -398,16 +398,6 @@ lossless JPEG manipulations such as rotation, scaling or cropping:
    (license license:ijg)
    (home-page "https://www.ijg.org/")))
 
-(define-public ijg-libjpeg-8
-  (package (inherit ijg-libjpeg)
-   (version "8d")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "https://www.ijg.org/files/jpegsrc.v"
-                   version ".tar.gz"))
-            (sha256 (base32
-                     "1cz0dy05mgxqdgjf52p54yxpyy95rgl30cnazdrfmw7hfca9n0h0"))))))
-
 (define-public libjxr
   (package
     (name "libjxr")
