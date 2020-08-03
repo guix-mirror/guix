@@ -14472,8 +14472,43 @@ cryptographic library.")
 release (fork of debug_unreachable)")
     (license license:expat)))
 
+(define-public rust-nix-0.17
+  (package
+    (name "rust-nix")
+    (version "0.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nix" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qvk09kib3jpvpbaps0682nav20ibql61pf1s2h8jx9v5igpir2h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; test suite hangs
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-void" ,rust-void-1.0))
+       #:cargo-development-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-caps" ,rust-caps-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-sysctl" ,rust-sysctl-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://github.com/nix-rust/nix")
+    (synopsis "Rust friendly bindings to *nix APIs")
+    (description "Rust friendly bindings to *nix APIs.")
+    (license license:expat)))
+
 (define-public rust-nix-0.15
   (package
+    (inherit rust-nix-0.17)
     (name "rust-nix")
     (version "0.15.0")
     (source
@@ -14493,28 +14528,7 @@ release (fork of debug_unreachable)")
            ;; https://github.com/nix-rust/nix/commit/98531c8f04bc23fb632c08e06dc4e56284b9c027
            (substitute* "Cargo.toml"
              (("version = \">= 3.0.5, < 3.0.9\"") "version = \"3.0.5\""))
-           #t))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:tests? #f      ; test suite hangs
-       #:cargo-inputs
-       (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-cc" ,rust-cc-1.0)
-        ("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-void" ,rust-void-1.0))
-       #:cargo-development-inputs
-       (("rust-bytes" ,rust-bytes-0.4)
-        ("rust-caps" ,rust-caps-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-rand" ,rust-rand-0.6)
-        ("rust-sysctl" ,rust-sysctl-0.1)
-        ("rust-tempfile" ,rust-tempfile-3))))
-    (home-page "https://github.com/nix-rust/nix")
-    (synopsis "Rust friendly bindings to *nix APIs")
-    (description
-     "Rust friendly bindings to *nix APIs.")
-    (license license:expat)))
+           #t))))))
 
 (define-public rust-nix-0.14
   (package
