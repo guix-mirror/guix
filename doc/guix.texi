@@ -12165,6 +12165,12 @@ errors before being mounted.
 @item @code{create-mount-point?} (default: @code{#f})
 When true, the mount point is created if it does not exist yet.
 
+@item @code{mount-may-fail?} (default: @code{#f})
+When true, this indicates that mounting this file system can fail but
+that should not be considered an error.  This is useful in unusual
+cases; an example of this is @code{efivarfs}, a file system that can
+only be mounted on EFI/UEFI systems.
+
 @item @code{dependencies} (default: @code{'()})
 This is a list of @code{<file-system>} or @code{<mapped-device>} objects
 representing file systems that must be mounted or mapped devices that
