@@ -10945,6 +10945,26 @@ SystemTime}}.")
     (description "Default TLS implementation for use with hyper")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ident-case-1
+  (package
+    (name "rust-ident-case")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ident_case" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fac21q6pwns8gh1hz3nbq15j8fi441ncl6w4vlnd1cmc55kiq5r"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/TedDriggs/ident_case")
+    (synopsis "Utility for applying case rules to Rust identifiers")
+    (description
+     "Utility for applying case rules to Rust identifiers.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-idna-0.2
   (package
     (name "rust-idna")
