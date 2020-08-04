@@ -27127,8 +27127,7 @@ futures.")
         (base32 "0v81p2n853b1kzyla3dbfmnazirn6s3n8p3z8k20bmdn370lj07d"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t ;; FIXME requires Rust >= 1.39 for building
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
         ("rust-futures-core" ,rust-futures-core-0.3)
         ("rust-tokio" ,rust-tokio-0.2))
