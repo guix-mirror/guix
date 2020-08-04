@@ -36,6 +36,7 @@
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -469,3 +470,31 @@ volume levels of the sinks (get, set, decrease, increase, toggle mute, etc).")
 PulseAudio server settings from the X11 system tray.  See the project
 README.md for a detailed list of features.")
     (license l:lgpl2.1+)))
+
+(define-public paprefs
+  (package
+    (name "paprefs")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.freedesktop.org/software/pulseaudio/"
+                           name "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "189z5p20hk0xv9vwvym293503j4pwl03xqk9hl7cl6dwgv0l7wkf"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtkmm" ,gtkmm)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "https://freedesktop.org/software/pulseaudio/paprefs/")
+    (synopsis "Simple GTK based configuration dialog for the PulseAudio sound
+server")
+    (description "@command{paprefs} is a simple GTK based configuration
+dialog for the PulseAudio sound server.  Note that this program can
+only configure local servers, and requires that a special module
+module-gsettings is loaded in the sound server.")
+    (license l:gpl2)))
