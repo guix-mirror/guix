@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
-;;; Copyright © 2018, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
@@ -4698,7 +4698,7 @@ reduction.")
 (define-public mcrl2
   (package
     (name "mcrl2")
-    (version "201908.0")
+    (version "202006.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4706,7 +4706,7 @@ reduction.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1i4xgl2d5fgiz1mwi50cyfkrrcpm8nxfayfjgmhq7chs58wlhfsz"))))
+                "167ryrzk1a2j53c2j198jlxa98amcaym070gkcj730619gymv5zl"))))
     (inputs
      `(("boost" ,boost)
        ("glu" ,glu)
