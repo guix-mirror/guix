@@ -11707,3 +11707,35 @@ computer opponents or against real players online.")
      "Pilot your ship inside a planet to find and rescue the colonists trapped
 inside the Zenith Colony.")
     (license license:gpl3+)))
+
+(define-public paperview
+  (let ((commit "9f8538eb6734c76877b878b8f1e52587f2ae19e6")
+        (revision "1"))
+    (package
+      (name "paperview")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/glouw/paperview")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09sb9sg44fvkgfdyycrm1ndpx7cnkrglxhci41y8f3gpagnvi7jk"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("sdl2" ,sdl2)))
+      (arguments
+       '(#:tests? #f ;no tests
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (home-page "https://github.com/glouw/paperview/")
+      (synopsis "High performance X11 animated wallpaper setter")
+      (description "High performance animated desktop background setter for
+X11 that won't set your CPU on fire, drain your laptop battery, or lower video
+game FPS.")
+      (license license:unlicense))))
