@@ -1317,31 +1317,28 @@ rendering of the file through the Pango Cairo back end.")
 (define-public stapler
   (package
     (name "stapler")
-    (version "0.3.2")
+    (version "1.0.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/hellerbarde/stapler")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "stapler" version))
        (sha256
         (base32
-         "06w7xanzr7cicqik62g7zqs57j4y6fc7hflrc1rlmphxx40hkg6r"))))
+         "0b2lbm3f79cdxcsagwhzihbzwahjabxqmbws0c8ki25gpdnygdd7"))))
     (build-system python-build-system)
-    (inputs
-     `(("python2-pypdf2" ,python2-pypdf2)))
     (arguments
-     `(#:python ,python-2
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-pypdf-version-requirement
-           ;; A PyPDF2 version requirement of 1.25.1 is hard-coded in
-           ;; setup.py. Relax it to work with any version of PyPDF2.
+         (add-after 'unpack 'fix-more-itertools-version-requirement
            (lambda _
+             ;; Tests require an version of the more-itertools module older
+             ;; than the one we have packaged.
              (substitute* "setup.py"
-               (("PyPDF2==1.25.1") "PyPDF2"))
+               (("more-itertools>=2\\.2,<6\\.0\\.0") "more-itertools>=2.2"))
              #t)))))
+    (propagated-inputs
+     `(("python-more-itertools" ,python-more-itertools)
+       ("python-pypdf2" ,python-pypdf2)))
     (home-page "https://github.com/hellerbarde/stapler")
     (synopsis "PDF manipulation tool")
     (description "Stapler is a pure Python alternative to PDFtk, a tool for
