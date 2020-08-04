@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -57,14 +59,18 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages lxqt)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages textutils)
@@ -505,3 +511,77 @@ interface for those who are accustomed to the ircII way of doing things.")
                    ;; "Redistribution is permitted" clause of the license if you
                    ;; distribute binaries.
                    (license:non-copyleft "http://epicsol.org/copyright")))))
+
+(define-public inspircd
+  (package
+    (name "inspircd")
+    (version "3.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/inspircd/inspircd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1npzp23c3ac7m1grkm39i1asj04rs4i0jwf5w0c0j0hmnwslnz7a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (map (lambda (module)
+                                (string-append "--enable-extras=" module))
+                              '("m_geo_maxmind.cpp"
+                                "m_ldap.cpp"
+                                "m_mysql.cpp"
+                                "m_pgsql.cpp"
+                                "m_regex_pcre.cpp"
+                                "m_regex_posix.cpp"
+                                "m_regex_stdlib.cpp"
+                                "m_regex_re2.cpp"
+                                "m_regex_tre.cpp"
+                                "m_sqlite3.cpp"
+                                "m_ssl_gnutls.cpp"
+                                "m_ssl_openssl.cpp"
+                                "m_ssl_mbedtls.cpp"
+                                "m_sslrehashsignal.cpp"))
+       #:tests? #f ; Figure out later.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'module-configure
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (apply invoke "./configure"
+                    configure-flags)
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-lib (string-append out "/lib/"))
+                    (out-bin (string-append out "/bin/"))
+                    (out-etc (string-append out "/etc/"))
+                    (name "inspircd"))
+               (invoke "./configure"
+                       (string-append "--prefix=" out-lib name)
+                       (string-append "--binary-dir=" out-bin)
+                       (string-append "--module-dir=" out-lib name "/modules/")
+                       (string-append "--config-dir=" out-etc name)))
+             #t)))))
+    (native-inputs
+     `(("gnutls" ,gnutls)
+       ("libgcrypt" ,libgcrypt)
+       ("libmaxminddb" ,libmaxminddb)
+       ("mysql" ,mysql)
+       ("mbedtls-apache" ,mbedtls-apache)
+       ("openldap" ,openldap)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre "bin")
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("postgresql" ,postgresql)
+       ("re2" ,re2)
+       ("sqlite" ,sqlite)
+       ("tre" ,tre)))
+    (synopsis "Modular IRC server written in C++")
+    (description "InspIRCd is a modular Internet Relay Chat
+server written in C++ for Unix-like operating systems.")
+    (home-page "https://www.inspircd.org/")
+    (license license:gpl2)))
