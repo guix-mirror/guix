@@ -17,6 +17,7 @@
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
 ;;; Copyright © 2020 Todor Kondić <tk.code@protonmail.com>
 ;;; Copyright © 2020 Danjela Lura <danielaluraa@gmail.com>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
@@ -15793,6 +15794,45 @@ every variable to a final prediction.  The Break Down Plot presents variable
 contributions in a concise graphical way.  This package works for
 classification and regression models.")
     (license license:gpl3)))
+
+(define-public r-dae
+  (package
+    (name "r-dae")
+    (version "3.0-32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dae" version))
+       (sha256
+        (base32
+         "0syv6kjnicb0x7sxbaavxhiv9mcqvc2zzbf4wyar933q3hzrxnrd"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)))
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
+    (home-page "http://chris.brien.name")
+    (synopsis "Functions useful in the design and ANOVA of experiments")
+    (description
+     "This package provides functions useful in the design and ANOVA of
+experiments.  The content falls into the following groupings:
+
+@enumerate
+@item data,
+@item factor manipulation functions,
+@item design functions,
+@item ANOVA functions,
+@item matrix functions,
+@item projector and canonical efficiency functions, and
+@item miscellaneous functions.
+@end enumerate
+
+There is a vignette called @code{DesignNotes} describing how to use the design
+functions for randomizing and assessing designs.  The ANOVA functions
+facilitate the extraction of information when the @code{Error} function has
+been used in the call to @code{aov}.")
+    (license license:gpl2)))
 
 (define-public r-dalex
   (package
