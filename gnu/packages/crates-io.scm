@@ -2393,8 +2393,7 @@ little-endian.")
         (base32 "1q9r7si1l8vndg4n2ny2nv833ghp5vyqzk5indb9rmhd5ibaq2hk"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t ;; FIXME requires Raus >= 1.39
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-loom" ,rust-loom-0.2)
@@ -2419,8 +2418,7 @@ little-endian.")
          "0768a55q2fsqdjsvcv98ndg9dq7w2g44dvq1avhwpxrdzbydyvr0"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-either" ,rust-either-1.5)
         ("rust-iovec" ,rust-iovec-0.1)
