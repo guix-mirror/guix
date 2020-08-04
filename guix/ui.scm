@@ -795,14 +795,6 @@ directories:~{ ~a~}~%")
                      (invoke-error-stop-signal c)
                      (cons (invoke-error-program c)
                            (invoke-error-arguments c))))
-             ((message-condition? c)
-              ;; Normally '&message' error conditions have an i18n'd message.
-              (report-error (and (error-location? c) (error-location c))
-                            (G_ "~a~%")
-                            (gettext (condition-message c) %gettext-domain))
-              (when (fix-hint? c)
-                (display-hint (condition-fix-hint c)))
-              (exit 1))
 
              ((formatted-message? c)
               (apply report-error
@@ -825,7 +817,16 @@ directories:~{ ~a~}~%")
                 (guile-3
                  ((exception-predicate &exception-with-kind-and-args) c))
                 (else #f))
-              (raise c)))
+              (raise c))
+
+             ((message-condition? c)
+              ;; Normally '&message' error conditions have an i18n'd message.
+              (report-error (and (error-location? c) (error-location c))
+                            (G_ "~a~%")
+                            (gettext (condition-message c) %gettext-domain))
+              (when (fix-hint? c)
+                (display-hint (condition-fix-hint c)))
+              (exit 1)))
       ;; Catch EPIPE and the likes.
       (catch 'system-error
         thunk
