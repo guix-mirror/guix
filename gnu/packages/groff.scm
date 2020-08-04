@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,8 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages web))
 
 (define-public groff
   (package
@@ -169,11 +171,11 @@ is usually the formatter of \"man\" documentation pages.")
 
 ;; There are no releases, so we take the latest commit.
 (define-public roffit
-  (let ((commit "e5228388e3faf2b7f1ae5bd048ad46ed565304c6")
+  (let ((commit "b59e6c855ebea03daf76e996b5c0f8343f11be3d")
         (revision "1"))
     (package
       (name "roffit")
-      (version (string-append "0.11-" revision "." (string-take commit 9)))
+      (version (string-append "0.12-" revision "." (string-take commit 9)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -182,7 +184,7 @@ is usually the formatter of \"man\" documentation pages.")
                 (file-name (string-append "roffit-" commit "-checkout"))
                 (sha256
                  (base32
-                  "1y7ndbqciy7h0khlpi1bv4v1614vhybnmm4jysj6fwxkw9cwv1nc"))))
+                  "0z4cs92yqh22sykfgbjlyxfaifdvsd47cf1yhr0f2rgcc6l0fj1r"))))
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
@@ -197,6 +199,7 @@ is usually the formatter of \"man\" documentation pages.")
                (mkdir-p (string-append (assoc-ref outputs "out")
                                        "/bin"))
                #t)))))
+      (native-inputs `(("html-tree" ,perl-html-tree))) ; for test
       (inputs
        `(("perl" ,perl)))
       (home-page "https://daniel.haxx.se/projects/roffit/")
