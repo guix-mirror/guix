@@ -1194,6 +1194,39 @@ be used alone or in concert with Non Mixer and Non Sequencer to form a
 complete studio.")
     (license license:gpl2+)))
 
+(define-public tascam-gtk
+  ;; This commit represents the latest version at the time of this writing.
+  (let ((commit "17b8575ff88dfd2ede0f7ef9c5c5597ab8a00702")
+        (revision "0"))
+    (package
+      (name "tascam-gtk")
+      (version (git-version "0.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/onkelDead/tascam-gtk.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "07k7rccqqg7lnygkh97a200l1i6s1rl92n01v0q6n4257sinir6f"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("liblo" ,liblo)
+         ("gtkmm" ,gtkmm)
+         ("alsa-lib" ,alsa-lib)
+         ("libxmlplusplus" ,libxmlplusplus-2.6)))
+      (native-inputs
+       `(("glib:bin" ,glib "bin")
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/onkelDead/tascam-gtk")
+      (synopsis "GTK+ based application to control Tascam US-16x08 DSP mixer")
+      (description "This is a mixer application to control the Tascam US-16x08
+audio interface.  This device contains about 280 control elements and this
+mixer application aims to provide comfortable access to the DSP effects the
+device supports.")
+      (license license:expat))))
+
 (define-public bsequencer
   (package
     (name "bsequencer")
