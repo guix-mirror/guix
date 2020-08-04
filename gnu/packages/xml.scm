@@ -230,6 +230,23 @@ project (but it is usable outside of the Gnome platform).")
 It uses libxml2 to access the XML files.")
     (license license:lgpl2.1+)))
 
+;; This is the last release providing the 2.6 API, hence the name.
+;; This is needed by tascam-gtk
+(define-public libxmlplusplus-2.6
+  (package
+    (inherit libxmlplusplus)
+    (name "libxmlplusplus")
+    (version "2.40.1")
+    (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/libxmlplusplus/libxmlplusplus.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0gbfi4l88w828gmyc9br11l003ylyi4vigp5d1kfgsn0k4cig3y9"))))))
+
 (define-public python-libxml2
   (package/inherit libxml2
     (name "python-libxml2")
