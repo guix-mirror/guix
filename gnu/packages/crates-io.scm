@@ -26857,8 +26857,7 @@ futures efficiently")
         (base32 "1283aq0l7rnh79zzqk4r34dgimvwcymrzmg1yah9ai2nmb3arhzh"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f ;; FIXME tests use bytes-0.5, require Rust >= 1.39
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))
