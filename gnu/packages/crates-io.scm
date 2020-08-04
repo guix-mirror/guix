@@ -10865,8 +10865,7 @@ requests and responses.")
         (base32 "06qi0ni45lb92w3ml260c0bxbq5zd4snjmz0a9k69xq6021zzm8k"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t ;; FIXME requires Rust >= 1.39 for building
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
         ("rust-http" ,rust-http-0.2))))
     (home-page "https://github.com/hyperium/http-body")
