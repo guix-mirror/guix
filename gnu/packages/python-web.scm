@@ -527,6 +527,39 @@ into HTTP/2 frames.")
 for use in Python programs that implement HTTP/2.")
     (license license:expat)))
 
+(define-public python-h2
+  (package
+    (name "python-h2")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "h2" version))
+       (sha256
+        (base32 "051gg30aca26rdxsmr9svwqm06pdz9bv21ch4n0lgi7jsvml2pw7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-hpack" ,python-hpack)
+       ("python-hyperframe" ,python-hyperframe)))
+    (home-page "https://github.com/python-hyper/hyper-h2")
+    (synopsis "HTTP/2 State-Machine based protocol implementation")
+    (description
+     "This module contains a pure-Python implementation of a HTTP/2 protocol
+stack.  It does not provide a parsing layer, a network layer, or any rules
+about concurrency.  Instead, it's a purely in-memory solution, defined in
+terms of data actions and HTTP/2 frames.  This is one building block of a full
+Python HTTP implementation.")
+    (license license:expat)))
+
 (define-public python-sockjs-tornado
   (package
     (name "python-sockjs-tornado")
