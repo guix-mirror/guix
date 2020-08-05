@@ -493,6 +493,40 @@ It provides a pure-Python codebase that is capable of decoding a binary stream
 into HTTP/2 frames.")
     (license license:expat)))
 
+(define-public python-hpack
+  (package
+    (name "python-hpack")
+    (version "3.0.0")
+    (source
+     (origin
+       ;; PyPI tarball is missing some files necessary for the tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python-hyper/hpack")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0w8hkz50a6lzkmgi41ryicm0mh9ca9cx29pm3s0xlpn0vs29xrmd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test" "-k"
+                     ;; This test will be fixed in the next version. See:
+                     ;; https://github.com/python-hyper/hpack/issues/168.
+                     "not test_get_by_index_out_of_range"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://hyper.rtfd.org")
+    (synopsis "Pure-Python HPACK header compression")
+    (description
+     "This module contains a pure-Python HTTP/2 header encoding (HPACK) logic
+for use in Python programs that implement HTTP/2.")
+    (license license:expat)))
+
 (define-public python-sockjs-tornado
   (package
     (name "python-sockjs-tornado")
