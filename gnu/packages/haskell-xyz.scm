@@ -47,7 +47,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages emacs)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
@@ -1379,8 +1378,7 @@ streaming compression and decompression.")
      `(("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-hunit" ,ghc-hunit)
-       ("ghc-shelly" ,ghc-shelly)
-       ("gcc" ,gcc)))
+       ("ghc-shelly" ,ghc-shelly)))
     (arguments
      `(;; XXX: Test failures are induced by a parse error in <bits/floatn.h>
        ;; of glibc 2.28.
