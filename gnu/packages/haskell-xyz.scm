@@ -1380,11 +1380,7 @@ streaming compression and decompression.")
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-shelly" ,ghc-shelly)))
     (arguments
-     `(;; XXX: Test failures are induced by a parse error in <bits/floatn.h>
-       ;; of glibc 2.28.
-       #:tests? #f
-
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-cc
            ;; add a cc executable in the path, needed for some tests to pass
