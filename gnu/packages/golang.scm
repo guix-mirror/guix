@@ -201,7 +201,7 @@
     (inputs
      `(("tzdata" ,tzdata)
        ("pcre" ,pcre)
-       ("gcc:lib" ,gcc "lib")))
+       ("gcc:lib" ,(canonical-package gcc) "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)
