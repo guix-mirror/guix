@@ -3844,7 +3844,8 @@ in a digital read-out.")
 
        ;; There are build scripts written in these languages.
        ("perl" ,perl)
-       ("python" ,python-2)))
+       ("python2" ,python-2)
+       ("python3" ,python-3)))
     (inputs
      `(("slang" ,slang)                        ;for the interactive TUI
        ;; ("newt" ,newt)
