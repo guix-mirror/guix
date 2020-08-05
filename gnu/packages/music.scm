@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -503,7 +504,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "1.0.0-rc1")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -512,7 +513,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ibbdzyk30nj83jrq7py78hwpjgy0lq7ji6gi2pdp1pqzz1mqp0v"))))
+        (base32 "1kwlqfah0yk135i0rzmbbgnqdzxrzg9yslii5asl4ip9x4dc1w3r"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "tests"
