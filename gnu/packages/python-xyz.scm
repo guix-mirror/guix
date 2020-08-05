@@ -8551,6 +8551,25 @@ Unicode-aware.  It is not intended as an end-user tool.")
 (define-public python2-xlrd
   (package-with-python2 python-xlrd))
 
+(define-public python-immutables
+  (package
+    (name "python-immutables")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "immutables" version))
+       (sha256
+        (base32 "0y0aqw29g525frdnmv9paljzacpp4s21sadfbca5b137iciwr8d0"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/MagicStack/immutables")
+    (synopsis "High-performance immutable mapping type for Python")
+    (description
+     "An immutable mapping type for Python.  The underlying datastructure is a
+Hash Array Mapped Trie (HAMT) used in Clojure, Scala, Haskell, and other
+functional languages.")
+    (license license:asl2.0)))
+
 (define-public python-prettytable
   (package
     (name "python-prettytable")
