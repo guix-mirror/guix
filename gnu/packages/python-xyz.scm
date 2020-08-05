@@ -8696,6 +8696,35 @@ designed to efficiently cope with extremely large amounts of data.")
 (define-public python2-tables
   (package-with-python2 python-tables))
 
+(define-public python-sniffio
+  (package
+    (name "python-sniffio")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sniffio" version))
+       (sha256
+        (base32 "08bsp2pp2dxzn9yzcafwzw8jlm0jf50as0ix8vfhxzk91w810f4f"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-curio" ,python-curio)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/python-trio/sniffio")
+    (synopsis "Detect which async library a program is running under")
+    (description "This package detects which async library a program is
+running under.  It supports multiple async I/O packages, like Trio, and
+asyncio.")
+    ;; Either license applies.
+    (license (list license:expat license:asl2.0))))
+
 (define-public python-pytest-black
   (package
     (name "python-pytest-black")
