@@ -37,6 +37,7 @@
 ;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
 ;;; Copyright © 2020 Noisytoot <noisytoot@gmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -463,6 +464,34 @@ follow links and submit forms.  It doesn’t do JavaScript.")
 
 (define-public python2-mechanicalsoup
   (package-with-python2 python-mechanicalsoup))
+
+(define-public python-hyperframe
+  (package
+    (name "python-hyperframe")
+    (version "5.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hyperframe" version))
+       (sha256
+        (base32 "07xlf44l1cw0ghxx46sbmkgzil8vqv8kxwy42ywikiy35izw3xd9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python-hyper/hyperframe")
+    (synopsis "HTTP/2 framing layer for Python")
+    (description
+     "This library contains the HTTP/2 framing code used in the hyper project.
+It provides a pure-Python codebase that is capable of decoding a binary stream
+into HTTP/2 frames.")
+    (license license:expat)))
 
 (define-public python-sockjs-tornado
   (package
