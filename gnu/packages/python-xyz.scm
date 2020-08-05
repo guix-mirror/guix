@@ -8594,6 +8594,36 @@ printing of sub-tables by specifying a row range.")
 (define-public python2-prettytable
   (package-with-python2 python-prettytable))
 
+(define-public python-curio
+  (package
+    (name "python-curio")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "curio" version))
+       (sha256
+        (base32 "16wkww6kh511b9bzsfhpvrv0766cc6ssgbzz4lgpjnrzzgx21wwh"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k"
+                     ;; Tries to open an outgoing connection.
+                     "not test_ssl_outgoing"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/dabeaz/curio")
+    (synopsis "Coroutine-based library for concurrent Python")
+    (description
+     "Curio is a coroutine-based library for concurrent Python systems
+programming.  It provides standard programming abstractions such as as
+tasks, sockets, files, locks, and queues.")
+    (license license:bsd-3)))
+
 (define-public python-tables
   (package
     (name "python-tables")
