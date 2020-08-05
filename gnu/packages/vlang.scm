@@ -17,8 +17,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages vlang)
-  #:use-module (gnu packages c)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (guix build-system gnu)
   #:use-module (guix git-download)
@@ -89,8 +87,7 @@
               (copy-file "v.mod" vmod))
             #t)))))
    (inputs
-    `(("glib" ,glib)
-      ("gcc" ,gcc)))
+    `(("glib" ,glib)))
    (native-inputs
     `(("vc"
        ,(let ((vc-version "0884d7092f4c2a4f8ca16da6f1792efa235247be"))
