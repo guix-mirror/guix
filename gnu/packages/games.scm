@@ -53,6 +53,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3130,6 +3131,30 @@ in different ways.")
      "Game data for the Minetest infinite-world block sandbox game.")
     (home-page "https://www.minetest.net/")
     (license license:lgpl2.1+)))
+
+(define-public minetest-mineclone
+  (package
+    (name "minetest-mineclone")
+    (version "0.66.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.minetest.land/Wuzzy/MineClone2")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0miszzlzplpvaj0j1yii9867ydr42wsaqa9g6grxdrci75p05g00"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       '(("." "share/minetest/games/mineclone"))))
+    (synopsis "Minecraft clone based on Minetest engine")
+    (description
+     "MineClone is a Minetest subgame, that aims to recreate Minecraft as
+closely as the engine allows.")
+    (home-page "https://content.minetest.net/packages/Wuzzy/mineclone2/")
+    (license license:gpl3+)))
 
 (define glkterm
   (package
