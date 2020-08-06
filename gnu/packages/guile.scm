@@ -513,7 +513,7 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
 (define-public guile-json-1
   (package
     (name "guile-json")
-    (version "1.2.0")
+    (version "1.3.2")
     (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
@@ -521,8 +521,10 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15gnb84d7hpazqhskkf3g9z4r6knw54wfj4ch5270kakz1lp70c9"))))
+                "0m6yzb169r6iz56k3nkncjaiijwi4p0x9ijn1p5ax3s77jklxy9k"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")))   ;to prevent guild warnings
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("guile" ,guile-2.2)))
     (inputs `(("guile" ,guile-2.2)))
