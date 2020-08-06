@@ -65,7 +65,11 @@
 
 (define %jami-version "20200710.1.6bd18d2")
 
-(define* (jami-source #:key without-daemon)
+(define* (jami-source #:key keep-contrib-patches?)
+  "Return an origin object of the tarball release sources archive of Jami.
+When KEEP-CONTRIB-PATCHES? is #t, do not completely remove the contrib
+subdirectory, which contains patches to be applied to some of the dependencies
+of Jami."
   (origin
     (method url-fetch)
     (uri (string-append "https://dl.jami.net/release/tarballs/jami_"
@@ -73,15 +77,28 @@
                         ".tar.gz"))
     (modules '((guix build utils)))
     (snippet
-     (if without-daemon
-         '(begin
+     `(begin
+        ;; Delete over 200 MiB of bundled tarballs.  The contrib directory
+        ;; contains the custom patches for pjproject and other libraries used
+        ;; by Savoir-faire Linux.
+        (if ,keep-contrib-patches?
+            (delete-file-recursively "daemon/contrib/tarballs")
             (delete-file-recursively "daemon/contrib"))
-         #f))
+        ;; Remove code from unused Jami clients.
+        (for-each delete-file-recursively '("client-android"
+                                            "client-macosx"
+                                            "client-uwp"
+                                            "client-windows"))
+        #t))
     (sha256
      (base32
       "0lg61jv39x7kc9lq30by246xb6gcgp1rzj49ak7ff8nqpfzyfvva"))))
 
-;; Savoir-Faire Linux modifies many libraries to add features
+(define %sfl-patches (jami-source #:keep-contrib-patches? #t))
+
+(define %jami-sources (jami-source))
+
+;; Savoir-faire Linux modifies many libraries to add features
 ;; to Jami. This procedure makes applying patches to a given
 ;; package easy.
 (define jami-apply-dependency-patches
@@ -105,7 +122,7 @@
     (inherit pjproject)
     (name "pjproject-jami")
     (native-inputs
-     `(("sfl-patches" ,(jami-source))
+     `(("sfl-patches" ,%sfl-patches)
        ,@(package-native-inputs pjproject)))
     (arguments
      (substitute-keyword-arguments (package-arguments pjproject)
@@ -352,7 +369,7 @@
     (inherit ffmpeg)
     (name "ffmpeg-jami")
     (native-inputs
-     `(("sfl-patches" ,(jami-source))
+     `(("sfl-patches" ,%sfl-patches)
        ("libiconv" ,libiconv)
        ,@(package-native-inputs ffmpeg)))
     (supported-systems '("x86_64-linux" "i686-linux"
@@ -387,7 +404,7 @@
   (package
     (name "libring")
     (version %jami-version)
-    (source (jami-source #:without-daemon #t))
+    (source %jami-sources)
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
