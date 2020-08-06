@@ -599,7 +599,7 @@ included.")
      (native-inputs
      `(("bc" ,bc)))
      (inputs
-     `(("gcc:lib" ,gcc "lib")))))
+     `(("gcc:lib" ,(canonical-package gcc) "lib")))))
 
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
