@@ -10,6 +10,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -879,3 +881,62 @@ pipeline, along with supporting a manual segmentation toolbox.  ITK-SNAP has a
 full-featured UI aimed at clinical researchers.")
     ;; This includes the submodules greedy and c3d.
     (license license:gpl3+)))
+
+(define-public metapixel
+  ;; Follow stable branch.
+  (let ((commit "98ee9daa093b6c334941242e63f90b1c2876eb4f"))
+    (package
+      (name "metapixel")
+      (version (git-version "1.0.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/schani/metapixel")
+               (commit commit)
+               ;; TODO: Package rwimg and lispreader?
+               (recursive? #t)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r7n3a6bvcxkbpda4mwmrpicii09iql5z69nkjqygkwxw7ny3309"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("giflib" ,giflib)
+         ("libjpeg" ,libjpeg-turbo)
+         ("libpng" ,libpng)
+         ("perl" ,perl)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("docbook-xml" ,docbook-xml)
+         ("docbook-xsl" ,docbook-xsl)
+         ("xsltproc" ,libxslt)))
+      (arguments
+       `(#:tests? #f                    ; No tests.
+         #:make-flags (list
+                       (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                       (string-append "MANPAGE_XSL="
+                                      (assoc-ref %build-inputs "docbook-xsl")
+                                      "/xml/xsl/docbook-xsl-*/manpages/docbook.xsl"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'install 'make-local-docbook-xml
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "metapixel.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/docbookx.dtd")))
+               #t))
+           (add-before 'install 'fix-directory-creation
+             (lambda* (#:key outputs #:allow-other-keys)
+               (mkdir-p (string-append (assoc-ref outputs "out") "/share/man/man1"))
+               #t)))))
+      (home-page "https://www.complang.tuwien.ac.at/schani/metapixel/")
+      (synopsis "Photomosaics generator")
+      (description "Metapixel is a program for generating photomosaics.  It can
+generate classical photomosaics, in which the source image is viewed as a
+matrix of equally sized rectangles for each of which a matching image is
+substitued, as well as collage-style photomosaics, in which rectangular parts
+of the source image at arbitrary positions (i.e. not aligned to a matrix) are
+substituted by matching images.")
+      (license license:gpl2))))
