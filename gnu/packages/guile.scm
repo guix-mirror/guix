@@ -792,6 +792,7 @@ manipulate repositories of the Git version control system.")
        (uri
         (string-append "https://notabug.org/guile-zlib/guile-zlib/archive/"
                        version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1caz6cbl6sg5567nk68z88rshp0m26zmb0a9ry1jkc1ivpk0n47i"))))
