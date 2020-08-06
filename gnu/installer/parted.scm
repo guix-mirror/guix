@@ -330,6 +330,11 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
   (device-sync device)
   (device-close device))
 
+(define (remove-logical-devices)
+  "Remove all active logical devices."
+  (with-null-output-ports
+   (invoke "dmsetup" "remove_all")))
+
 (define (non-install-devices)
   "Return all the available devices, except the busy one, allegedly the
 install device. DEVICE-IS-BUSY? is a parted call, checking if the device is
@@ -1340,6 +1345,9 @@ USER-PARTITIONS, or return nothing."
 (define (init-parted)
   "Initialize libparted support."
   (probe-all-devices!)
+  ;; Remove all logical devices, otherwise "device-is-busy?" will report true
+  ;; on all devices containaing active logical volumes.
+  (remove-logical-devices)
   (exception-set-handler (lambda (exception)
                            EXCEPTION-OPTION-UNHANDLED)))
 

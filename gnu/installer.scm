@@ -318,6 +318,7 @@ selected keymap."
                        cryptsetup
                        dosfstools ;mkfs.fat
                        e2fsprogs ;mkfs.ext4
+                       lvm2-static ;dmsetup
                        btrfs-progs
                        jfsutils ;jfs_mkfs
                        ntfs-3g ;mkfs.ntfs
