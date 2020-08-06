@@ -824,6 +824,7 @@ Guile's foreign function interface.")
        (uri
         (string-append "https://notabug.org/guile-lzlib/guile-lzlib/archive/"
                        version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "0rdmszn1qix085ci2mddwq5cypipc004fk7arrrkgn9bv39hazza"))))
