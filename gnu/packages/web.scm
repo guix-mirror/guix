@@ -770,6 +770,7 @@ data.")
 
 (define-public json-c
   (package
+    (replacement json-c/fixed)
     (name "json-c")
     (version "0.14")
     (source (origin
@@ -790,6 +791,15 @@ parse JSON-formatted strings back into the C representation of JSON objects.
 It aims to conform to RFC 7159.")
     (license license:x11)))
 
+(define json-c/fixed
+  (package
+    (inherit json-c)
+    (name "json-c")
+    (version "0.14")
+    (source (origin
+              (inherit (package-source json-c))
+              (patches (search-patches "json-c-CVE-2020-12762.patch"))))))
+
 ;; TODO: Remove these old versions when all dependents have been updated.
 (define-public json-c-0.13
   (package
@@ -802,6 +812,7 @@ It aims to conform to RFC 7159.")
                    version ".tar.gz"))
              (sha256
               (base32 "0ws8dz9nk8q2c0gbf66kg2r6mrkl7kamd3gpdv9zsyrz9n6n0zmq"))
+              (patches (search-patches "json-c-0.13-CVE-2020-12762.patch"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -824,6 +835,7 @@ It aims to conform to RFC 7159.")
                    version ".tar.gz"))
              (sha256
               (base32 "08qibrq29a5v7g23wi5icy6l4fbfw90h9ccps6vq0bcklx8n84ra"))
+              (patches (search-patches "json-c-0.12-CVE-2020-12762.patch"))
              (modules '((guix build utils)))
              (snippet
               '(begin
