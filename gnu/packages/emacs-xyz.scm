@@ -1484,9 +1484,9 @@ incrementally confined in Isearch manner.")
 ;;; Multimedia.
 ;;;
 
-(define-public emacs-emms
+(define emacs-emms-print-metadata
   (package
-    (name "emacs-emms")
+    (name "emacs-emms-print-metadata")
     (version "5.42")
     (source
      (origin
@@ -1495,6 +1495,37 @@ incrementally confined in Isearch manner.")
                            "emms-" version ".tar"))
        (sha256
         (base32 "1khx1fvllrs6w9kxk12mp1hj309c90mc7lkq1vvlqlr7vd6zmnpj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("emms-print-metadata")
+       #:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (install-file "src/emms-print-metadata"
+                             (string-append out "/bin"))
+               (install-file "emms-print-metadata.1"
+                             (string-append out "/share/man/man1"))
+               #t))))))
+    (inputs
+     `(("taglib" ,taglib)))
+    (home-page "https://www.gnu.org/software/emms/")
+    (synopsis "The Emacs Multimedia System")
+    (description
+     "EMMS is the Emacs Multimedia System.  It is a small front-end which
+can control one of the supported external players.  Thus, it supports
+whatever formats are supported by your music player.  It also
+supports tagging and playlist management, all behind a clean and
+light user interface.")
+    (license license:gpl3+)))
+
+(define-public emacs-emms
+  (package
+    (inherit emacs-emms-print-metadata)
+    (name "emacs-emms")
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -1504,6 +1535,7 @@ incrementally confined in Isearch manner.")
            ;; so that everything works out-of-the-box.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out     (assoc-ref outputs "out"))
+                   (emms-print-metadata (assoc-ref inputs "emms-print-metadata"))
                    (flac    (assoc-ref inputs "flac"))
                    (vorbis  (assoc-ref inputs "vorbis-tools"))
                    (alsa    (assoc-ref inputs "alsa-utils"))
@@ -1528,7 +1560,7 @@ incrementally confined in Isearch manner.")
                   (string-append opus "/bin/opusinfo")))
                (emacs-substitute-variables "emms-info-libtag.el"
                  ("emms-info-libtag-program-name"
-                  (string-append out "/bin/emms-print-metadata")))
+                  (string-append emms-print-metadata "/bin/emms-print-metadata")))
                (emacs-substitute-variables "emms-info-mp3info.el"
                  ("emms-info-mp3info-program-name"
                   (string-append mp3info "/bin/mp3info")))
@@ -1545,23 +1577,14 @@ incrementally confined in Isearch manner.")
                   (string-append "\"" mutagen "/bin/mid3v2\"")))
                #t))))))
     (inputs
-     `(("alsa-utils" ,alsa-utils)
+     `(("emms-print-metadata" ,emacs-emms-print-metadata)
+       ("alsa-utils" ,alsa-utils)
        ("flac" ,flac)                   ;for metaflac
        ("vorbis-tools" ,vorbis-tools)
        ("mpg321" ,mpg321)
-       ("taglib" ,taglib)
        ("mp3info" ,mp3info)
        ("mutagen" ,python-mutagen)
-       ("opus-tools" ,opus-tools)))
-    (home-page "https://www.gnu.org/software/emms/")
-    (synopsis "The Emacs Multimedia System")
-    (description
-     "EMMS is the Emacs Multimedia System.  It is a small front-end which
-can control one of the supported external players.  Thus, it supports
-whatever formats are supported by your music player.  It also
-supports tagging and playlist management, all behind a clean and
-light user interface.")
-    (license license:gpl3+)))
+       ("opus-tools" ,opus-tools)))))
 
 (define-public emacs-emms-mode-line-cycle
   (package
