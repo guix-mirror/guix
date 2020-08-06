@@ -20,7 +20,7 @@
   #:use-module (guix build download)
   #:use-module (guix build utils)
   #:use-module ((guix serialization) #:hide (dump-port*))
-  #:use-module (guix zlib)
+  #:autoload   (zlib) (call-with-gzip-input-port)
   #:use-module (guix progress)
   #:use-module (web uri)
   #:use-module (srfi srfi-11)
