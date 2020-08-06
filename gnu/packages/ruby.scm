@@ -1578,48 +1578,44 @@ to save time in the following ways:
     (license license:expat)))
 
 (define-public ruby-chunky-png
-  ;; There hasn't been a release since 2018/11/21 and there are test failures
-  ;; in that release, so use the latest commit.
-  (let ((revision "1")
-        (commit "143b9cd1412e49edd4f8b661c7cd9b22941f43c0"))
-    (package
-      (name "ruby-chunky-png")
-      (version (git-version "1.3.11" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/wvanbergen/chunky_png.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0wbcgfzymbpmmxsb04arc49a2icki6f2fc6d6sqgg8369mc67g9z"))))
-      (build-system ruby-build-system)
-      (arguments
-       `(#:test-target "spec"
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'disable-bundler
-             (lambda _
-               (substitute* (find-files "." "\\.rb$")
-                 (("require.*bundler/setup.*") ""))
-               #t))
-           (replace 'replace-git-ls-files
-             (lambda _
-               ;; TODO: Remove after the fix of using 'cut' to better mimic the
-               ;; git ls-files output is merged in ruby-build-system.
-               (substitute* "chunky_png.gemspec"
-                 (("`git ls-files`")
-                  "`find . -type f -not -regex '.*\\.gem$' |sort |cut -c3-`"))
-               #t)))))
-      (native-inputs
-       `(("bundler" ,bundler)
-         ("ruby-rspec" ,ruby-rspec)
-         ("ruby-standard" ,ruby-standard)
-         ("ruby-yard" ,ruby-yard)))
-      (synopsis "Ruby library to handle PNG images")
-      (description "ChunkyPNG is a pure Ruby library that can read and write
+  (package
+    (name "ruby-chunky-png")
+    (version "1.3.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wvanbergen/chunky_png.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0hn8ap7iib47qkqdp0awmxgma11z0lmk1ca3lp7c97ykhv7ij1zs"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-bundler
+           (lambda _
+             (substitute* (find-files "." "\\.rb$")
+               (("require.*bundler/setup.*") ""))
+             #t))
+         (replace 'replace-git-ls-files
+           (lambda _
+             ;; TODO: Remove after the fix of using 'cut' to better mimic the
+             ;; git ls-files output is merged in ruby-build-system.
+             (substitute* "chunky_png.gemspec"
+               (("`git ls-files`")
+                "`find . -type f -not -regex '.*\\.gem$' |sort |cut -c3-`"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-standard" ,ruby-standard)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Ruby library to handle PNG images")
+    (description "ChunkyPNG is a pure Ruby library that can read and write
 Portable Network Graphics (PNG) images without depending on an external image
 library.  It tries to be memory efficient and reasonably fast.  It has
 features such as:
@@ -1642,8 +1638,8 @@ Performance: ChunkyPNG is reasonably fast for Ruby standards, by only using
 integer math and a highly optimized saving routine.
 @item Interoperability with RMagick.
 @end itemize")
-      (home-page "https://github.com/wvanbergen/chunky_png/wiki")
-      (license license:expat))))
+    (home-page "https://github.com/wvanbergen/chunky_png/wiki")
+    (license license:expat)))
 
 (define-public ruby-text-hyphen
   (package
