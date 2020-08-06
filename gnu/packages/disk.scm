@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Pkill -9 <pkill9@runbox.com>
@@ -1004,4 +1004,43 @@ since they are better handled by external tools.")
 the popular but discontinued, X Win Commander.  It aims to be the file manager
 of choice for all light thinking Unix addicts!")
     (home-page "http://roland65.free.fr/xfe/")
+    (license license:gpl2+)))
+
+(define-public hddtemp
+  (package
+    (name "hddtemp")
+    (version "0.3-beta15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/hddtemp/hddtemp-"
+                                  version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0nzgg4nl8zm9023wp4dg007z6x3ir60rwbcapr9ks2al81c431b1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append
+                                "--with-db-path="
+                                (assoc-ref %outputs "out")
+                                "/share/hddtemp/hddtemp.db"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-db
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/share/hddtemp/hddtemp.db")))
+               (mkdir-p (dirname target))
+               (copy-file (assoc-ref inputs "db") target)))))))
+    (inputs
+     `(("db" ,(origin
+                (method url-fetch)
+                (uri "mirror://savannah/hddtemp/hddtemp.db")
+                (sha256
+                 (base32 "1fr6qgns6qv7cr40lic5yqwkkc7yjmmgx8j0z6d93csg3smzhhya"))))))
+    (home-page "https://savannah.nongnu.org/projects/hddtemp/")
+    (synopsis "Report the temperature of hard drives from S.M.A.R.T. information")
+    (description "@command{hddtemp} is a small utility that gives you the
+temperature of your hard drive by reading S.M.A.R.T. informations (for drives
+that support this feature).")
     (license license:gpl2+)))
