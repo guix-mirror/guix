@@ -2149,7 +2149,7 @@ databases.")
 (define-public clipper
   (package
     (name "clipper")
-    (version "1.2.1")
+    (version "2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2158,40 +2158,34 @@ databases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fja1rj84wp9vpj8rxpj3n8zqzcqq454m904yp9as1w4phccirjb"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; remove unnecessary setup dependency
-                  (substitute* "setup.py"
-                    (("setup_requires = .*") ""))
-                  #t))))
+                "1bcag4lb5bkzsj2vg7lrq24aw6yfgq275ifrbhd82l7kqgbbjbkv"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only Python 2 is supported
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         ;; This is fixed in upstream commit
-         ;; f6c2990198f906bf97730d95695b4bd5a6d01ddb.
-         (add-after 'unpack 'fix-typo
-           (lambda _
-             (substitute* "clipper/src/readsToWiggle.pyx"
-               (("^sc.*") ""))
-             #t)))))
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure .gz files are writable so that the
+             ;; 'reset-gzip-timestamps' phase can do its work.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each make-file-writable
+                         (find-files out "\\.gz$"))
+               #t))))))
     (inputs
-     `(("htseq" ,python2-htseq)
-       ("python-pybedtools" ,python2-pybedtools)
-       ("python-cython" ,python2-cython)
-       ("python-scikit-learn" ,python2-scikit-learn)
-       ("python-matplotlib" ,python2-matplotlib)
-       ("python-pandas" ,python2-pandas)
-       ("python-pysam" ,python2-pysam)
-       ("python-numpy" ,python2-numpy)
-       ("python-scipy" ,python2-scipy)))
+     `(("htseq" ,htseq)
+       ("python-pybedtools" ,python-pybedtools)
+       ("python-cython" ,python-cython)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pandas" ,python-pandas)
+       ("python-pysam" ,python-pysam)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
     (native-inputs
-     `(("python-mock" ,python2-mock)   ; for tests
-       ("python-nose" ,python2-nose)   ; for tests
-       ("python-pytz" ,python2-pytz))) ; for tests
+     `(("python-setuptools-git" ,python-setuptools-git)
+       ("python-mock" ,python-mock)   ; for tests
+       ("python-nose" ,python-nose)   ; for tests
+       ("python-pytz" ,python-pytz))) ; for tests
     (home-page "https://github.com/YeoLab/clipper")
     (synopsis "CLIP peak enrichment recognition")
     (description
