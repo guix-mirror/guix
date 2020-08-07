@@ -283,6 +283,11 @@ can be written."
   ;; consumed.
   (define import
     `(begin
+       (eval-when (load expand eval)
+         (unless (resolve-module '(guix) #:ensure #f)
+           (write `(module-error))
+           (exit 7)))
+
        (use-modules (guix) (srfi srfi-34)
                     (rnrs io ports) (rnrs bytevectors))
 
@@ -305,6 +310,9 @@ can be written."
                        (consume-input (current-input-port))
                        (list 'protocol-error (nix-protocol-error-message c))))
               (with-store store
+                (write '(importing))              ;we're ready
+                (force-output)
+
                 (setvbuf (current-input-port) 'none)
                 (import-paths store (current-input-port))
                 '(success))))
@@ -401,24 +409,11 @@ to the system ACL file if it has not yet been authorized."
   "Send the subset of FILES from LOCAL (a local store) that's missing to
 REMOTE, a remote store.  When RECURSIVE? is true, send the closure of FILES.
 Return the list of store items actually sent."
-  (define (inferior-remote-eval* exp session)
-    (guard (c ((inferior-exception? c)
-               (match (inferior-exception-arguments c)
-                 (('quit 7)
-                  (report-module-error (remote-store-host remote)))
-                 (_
-                  (report-inferior-exception c (remote-store-host remote))))))
-      (inferior-remote-eval exp session)))
-
   ;; Compute the subset of FILES missing on SESSION and send them.
   (let* ((files   (if recursive? (requisites local files) files))
          (session (channel-get-session (store-connection-socket remote)))
-         (missing (inferior-remote-eval*
+         (missing (inferior-remote-eval
                    `(begin
-                      (eval-when (load expand eval)
-                        (unless (resolve-module '(guix) #:ensure #f)
-                          (exit 7)))
-
                       (use-modules (guix)
                                    (srfi srfi-1) (srfi srfi-26))
 
@@ -431,6 +426,13 @@ Return the list of store items actually sent."
                          (path-info-nar-size (query-path-info local item)))
                        missing))
          (port    (store-import-channel session)))
+    ;; Make sure everything alright on the remote side.
+    (match (read port)
+      (('importing)
+       #t)
+      (sexp
+       (handle-import/export-channel-error sexp remote)))
+
     (format log-port (N_ "sending ~a store item (~h MiB) to '~a'...~%"
                          "sending ~a store items (~h MiB) to '~a'...~%" count)
             count
@@ -505,6 +507,29 @@ to the length of FILES.)"
              (&message
               (message (format #f fmt args ...))))))))
 
+(define (handle-import/export-channel-error sexp remote)
+  "Report an error corresponding to SEXP, the EOF object or an sexp read from
+REMOTE."
+  (match sexp
+    ((? eof-object?)
+     (report-guile-error (remote-store-host remote)))
+    (('module-error . _)
+     (report-module-error (remote-store-host remote)))
+    (('connection-error file code . _)
+     (raise-error (G_ "failed to connect to '~A' on remote host '~A': ~a")
+                  file (remote-store-host remote) (strerror code)))
+    (('invalid-items items . _)
+     (raise-error (N_ "no such item on remote host '~A':~{ ~a~}"
+                      "no such items on remote host '~A':~{ ~a~}"
+                      (length items))
+                  (remote-store-host remote) items))
+    (('protocol-error status message . _)
+     (raise-error (G_ "protocol error on remote host '~A': ~a")
+                  (remote-store-host remote) message))
+    (_
+     (raise-error (G_ "failed to retrieve store items from '~a'")
+                  (remote-store-host remote)))))
+
 (define* (retrieve-files* files remote
                           #:key recursive? (log-port (current-error-port))
                           (import (const #f)))
@@ -525,24 +550,8 @@ from REMOTE.  When RECURSIVE? is true, retrieve the closure of FILES."
            (import port))
          (lambda ()
            (close-port port))))
-      ((? eof-object?)
-       (report-guile-error (remote-store-host remote)))
-      (('module-error . _)
-       (report-module-error (remote-store-host remote)))
-      (('connection-error file code . _)
-       (raise-error (G_ "failed to connect to '~A' on remote host '~A': ~a")
-                    file (remote-store-host remote) (strerror code)))
-      (('invalid-items items . _)
-       (raise-error (N_ "no such item on remote host '~A':~{ ~a~}"
-                        "no such items on remote host '~A':~{ ~a~}"
-                        (length items))
-                    (remote-store-host remote) items))
-      (('protocol-error status message . _)
-       (raise-error (G_ "protocol error on remote host '~A': ~a")
-                    (remote-store-host remote) message))
-      (_
-       (raise-error (G_ "failed to retrieve store items from '~a'")
-                    (remote-store-host remote))))))
+      (sexp
+       (handle-import/export-channel-error sexp remote)))))
 
 (define* (retrieve-files local files remote
                          #:key recursive? (log-port (current-error-port)))
