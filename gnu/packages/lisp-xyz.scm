@@ -13459,3 +13459,53 @@ package that includes a number of renames and shadows. ")
 
 (define-public ecl-hu.dwim.common
   (sbcl-package->ecl-package sbcl-hu.dwim.common))
+
+(define-public sbcl-hu.dwim.defclass-star
+  (package
+    (name "sbcl-hu.dwim.defclass-star")
+    (version "2015-07-09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://beta.quicklisp.org/archive/hu.dwim.defclass-star/"
+             version "/hu.dwim.defclass-star-"
+             (string-replace-substring version "-" "")
+             "-darcs.tgz"))
+       (sha256
+        (base32 "032982lyp0hm0ssxlyh572whi2hr4j1nqkyqlllaj373v0dbs3vs"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(;; These 2 inputs are only needed tests which are disabled, see below.
+       ;; ("hu.dwim.common" ,sbcl-hu.dwim.common)
+       ;; Need cl- package for the :hu.dwim.stefil+hu.dwim.def+swank system.
+       ;; ("hu.dwim.stefil" ,cl-hu.dwim.stefil)
+       ("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+    (arguments
+     `(#:test-asd-file "hu.dwim.defclass-star.test.asd"
+       ;; Tests require a circular dependency: hu.dwim.stefil -> hu.dwim.def
+       ;; -> hu.dwim.util -> hu.dwim.defclass-star.
+       #:tests? #f))
+    (home-page "http://dwim.hu/?_x=dfxn&_f=mRIMfonK")
+    (synopsis "Simplify definitions with defclass* and friends in Common Lisp")
+    (description "@code{defclass-star} provides defclass* and defcondition* to
+simplify class and condition declarations.  Features include:
+
+@itemize
+@item Automatically export all or select slots at compile time.
+@item Define the @code{:initarg} and @code{:accesor} automatically.
+@item Specify a name transformer for both the @code{:initarg} and
+@code{:accessor}, etc.
+@item Specify the @code{:initform} as second slot value.
+@end itemize
+
+See
+@url{https://common-lisp.net/project/defclass-star/configuration.lisp.html}
+for an example.")
+    (license license:public-domain)))
+
+(define-public cl-hu.dwim.defclass-star
+  (sbcl-package->cl-source-package sbcl-hu.dwim.defclass-star))
+
+(define-public ecl-hu.dwim.defclass-star
+  (sbcl-package->ecl-package sbcl-hu.dwim.defclass-star))
