@@ -22,14 +22,18 @@
 
 (define-module (gnu packages language)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
@@ -38,10 +42,68 @@
   #:use-module (guix build-system python)
   #:use-module ((guix licenses)
                 #:select
-                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 perl-license zpl2.1))
+                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ perl-license zpl2.1))
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils))
+
+(define-public liblouis
+  (package
+    (name "liblouis")
+    (version "3.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/liblouis/liblouis.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0v6w8b9r994mkkbm2gqgd7k5yfmdhgbabh0j1gmn375nyvhy4qqh"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "bin" "doc" "python"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-ucs4")
+       #:phases
+       (modify-phases %standard-phases
+         ;; To install the sub-package "python".
+         (add-after 'install 'install-python-extension
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "python"
+               (invoke "python" "setup.py" "install"
+                       (string-append "--prefix="
+                                      (assoc-ref outputs "python"))
+                       "--root=/")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("clang-format" ,clang)
+       ("help2man" ,help2man)
+       ("libtool" ,libtool)
+       ("libyaml" ,libyaml)
+       ("makeinfo" ,texinfo)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (synopsis "Braille translator and back-translator")
+    (description "Liblouis is a braille translator and back-translator named in
+honor of Louis Braille.  It features support for computer and literary braille,
+supports contracted and uncontracted translation for many languages and has
+support for hyphenation.  New languages can easily be added through tables that
+support a rule- or dictionary based approach.  Tools for testing and debugging
+tables are also included.  Liblouis also supports math braille, Nemeth and
+Marburg.")
+    (home-page "http://liblouis.org/")
+    (license
+     (list
+      ;; Library
+      lgpl2.1+
+      ;; Tools
+      gpl3+))))
 
 (define-public libstemmer
   (package
