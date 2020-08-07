@@ -1193,8 +1193,8 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
     (license license:gpl3+)))
 
 (define-public emacs-ample-regexps
-  (let ((commit "cbe91e148cac1ee8e223874dc956ed4cf607f046")
-        (revision "1"))
+  (let ((commit "153969ce547afe410b8986f01c9ed4087c9cd20b")
+        (revision "2"))
     (package
       (name "emacs-ample-regexps")
       (version (git-version "0.1" revision commit))
@@ -1207,7 +1207,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1mm4icrwx4mscp7kbbmlc34995r164dhrfczn5ybkyxjzzf76jn1"))))
+           "0dkp7bcd7h2ds40wyszy11nmh7c2jxrwy04ayz7pbxh53ir7s2k0"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("ert-runner" ,emacs-ert-runner)))
