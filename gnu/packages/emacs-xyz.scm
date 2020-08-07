@@ -5848,6 +5848,29 @@ to their corresponding tangled blocks.")
        "This package provides completion for JavaScript files utilizing Flow.")
       (license license:gpl3+))))
 
+(define-public emacs-habitica
+  (let ((commit "c45c602ddf9d6cbb0e3baf5cb3e1b7ef90f2759d")
+        (revision "1"))
+    (package
+      (name "emacs-habitica")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/abrochard/emacs-habitica")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0wgnzn3z98bl28jgqi7xklw9fwx2wwgihj3mq0jb8ah4vn70d0j3"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/abrochard/emacs-habitica")
+      (synopsis "Emacs interface for Habitica")
+      (description "Emacs extension for @uref{https://habitica.com/, Habitica},
+a RPG style habit tracker and todo list.")
+      (license license:gpl3+))))
+
 (define-public emacs-atom-one-dark-theme
   (let ((commit "1f1185bf667a38d3d0d180ce85fd4c131818aae2")
         (revision "0"))
