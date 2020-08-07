@@ -25,6 +25,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ocr)
@@ -35,6 +36,7 @@
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
@@ -42,7 +44,7 @@
   #:use-module (guix build-system python)
   #:use-module ((guix licenses)
                 #:select
-                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ perl-license zpl2.1))
+                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ perl-license zpl2.1))
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils))
@@ -102,6 +104,54 @@ Marburg.")
      (list
       ;; Library
       lgpl2.1+
+      ;; Tools
+      gpl3+))))
+
+(define-public liblouisutdml
+  (package
+    (name "liblouisutdml")
+    (version "2.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/liblouis/liblouisutdml.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11xxky3crjm8bidfljzpqaz1m1i1m1yskmdpavf9b4jpf87nzjj2"))
+       (patches
+        (search-patches "liblouisutdml-fix-tests.patch"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "bin" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("help2man" ,help2man)
+       ("jdk" ,icedtea "jdk")
+       ("libtool" ,libtool)
+       ("makeinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("liblouis" ,liblouis)
+       ("liblouis:bin" ,liblouis "bin")))
+    (synopsis "Braille transcription services")
+    (description "Liblouisutdml is a library providing complete braille
+transcription services for xml, html and text documents.  It translates into
+appropriate braille codes and formats according to its style sheet and the
+specifications in the document.")
+    (home-page "http://liblouis.org/")
+    (license
+     (list
+      ;; Library
+      lgpl3+
       ;; Tools
       gpl3+))))
 
