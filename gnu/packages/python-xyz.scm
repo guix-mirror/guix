@@ -18990,6 +18990,39 @@ easy-to-extend subclass system, and lots of primitive constructs to
 make your work easier.")
     (license license:expat)))
 
+(define-public python-outcome
+  (package
+    (name "python-outcome")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "outcome" version))
+       (sha256
+        (base32 "0vxn04vspmlkkyijjkjnsc46f93ki8g62hr7ag10zpd7ic324y7w"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+    (propagated-inputs
+     `(("python-async-generator" ,python-async-generator)
+       ("python-attrs" ,python-attrs)))
+    (home-page "https://github.com/python-trio/outcome")
+    (synopsis "Capture the outcome of Python function calls")
+    (description
+     "Capture the outcome of Python function calls.  Extracted from the Trio
+project.")
+    ;; Either license applies.
+    (license (list license:expat license:asl2.0))))
+
 (define-public python-humanize
   (package
     (name "python-humanize")
