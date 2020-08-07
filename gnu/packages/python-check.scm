@@ -436,6 +436,39 @@ in Pytest.")
 of the project to ensure it renders properly.")
     (license license:expat)))
 
+(define-public python-pytest-trio
+  (package
+    (name "python-pytest-trio")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-trio" version))
+       (sha256
+        (base32 "1zm8didm9h5jkqhghl9bvqs7kr7sjci282c7grhk6yhpzn8a9w4v"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-W" "error" "-ra" "-v" "--pyargs"
+                     "pytest_trio" "--verbose" "--cov"))))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (propagated-inputs
+     `(("python-trio" ,python-trio)))
+    (home-page "https://github.com/python-trio/pytest-trio")
+    (synopsis "Pytest plugin for trio")
+    (description
+     "This is a pytest plugin to help you test projects that use Trio, a
+friendly library for concurrency and async I/O in Python.")
+    ;; Either license applies.
+    (license (list license:expat license:asl2.0))))
+
 (define-public python-pytest-flake8
   (package
     (name "python-pytest-flake8")
