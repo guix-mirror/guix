@@ -128,7 +128,7 @@ use their packages mostly unmodified in our Android NDK build system.")
 ;; The version tag is consistent between all repositories.
 (define-public (android-platform-version) "7.1.2_r36")
 
-(define (android-platform-system-core version)
+(define-public (android-platform-system-core version)
   (origin
     (method git-fetch)
     (uri (git-reference
