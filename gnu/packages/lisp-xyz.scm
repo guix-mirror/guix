@@ -13395,3 +13395,32 @@ and decoder for Common Lisp.")
 
 (define-public ecl-qbase64
   (sbcl-package->ecl-package sbcl-qbase64))
+
+(define-public sbcl-hu.dwim.common-lisp
+  (package
+    (name "sbcl-hu.dwim.common-lisp")
+    (version "2015-07-09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://beta.quicklisp.org/archive/hu.dwim.common-lisp/"
+             version "/hu.dwim.common-lisp-"
+             (string-replace-substring version "-" "")
+             "-darcs.tgz"))
+       (sha256
+        (base32 "13cxrvh55rw080mvfir7s7k735l9rcfh3khxp97qfwd5rz0gadb9"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+    (home-page "http://dwim.hu/")
+    (synopsis "Redefine some standard Common Lisp names")
+    (description "This library is a redefinition of the standard Common Lisp
+package that includes a number of renames and shadows. ")
+    (license license:public-domain)))
+
+(define-public cl-hu.dwim.common-lisp
+  (sbcl-package->cl-source-package sbcl-hu.dwim.common-lisp))
+
+(define-public ecl-hu.dwim.common-lisp
+  (sbcl-package->ecl-package sbcl-hu.dwim.common-lisp))
