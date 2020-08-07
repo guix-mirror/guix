@@ -14721,13 +14721,20 @@ clone, while other processes access the original tree.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astroid" version))
        (sha256
-        (base32 "1h99jal7ax07xna1djw5z7hpgb8vjrl3hrrg49p1phljwniww5sc"))))
+        (base32 "00xp5gqxidxvgg1bwd91myqzdf2fpb9cjwbdl3p7gwqvlk17hh1g"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Check to see if the version pinning has been removed.
+           (substitute* "astroid/__pkginfo__.py"
+             (("==1\\.4\\.\\*") ">=1.4.0"))
+           #t))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
