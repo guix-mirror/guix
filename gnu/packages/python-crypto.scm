@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages swig)
@@ -1348,6 +1350,42 @@ of the functions provided by Secret Service, including creating and deleting
 items and collections, editing items, locking and unlocking collections
 (asynchronous unlocking is also supported).")
     (license license:bsd-3)))
+
+(define-public python-trustme
+  (package
+    (name "python-trustme")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trustme" version))
+       (sha256
+        (base32 "0v3vr5z6apnfmklf07m45kv5kaqvm6hxrkaqywch57bjd2siiywx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-more-itertools" ,python-more-itertools)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-service-identity" ,python-service-identity)
+       ("python-zipp" ,python-zipp)))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)))
+    (home-page "https://github.com/python-trio/trustme")
+    (synopsis "Fake a certificate authority for tests")
+    (description
+     "@code{trustme} is a tiny Python package that does one thing: it gives you
+a fake certificate authority (CA) that you can use to generate fake TLS certs to
+use in your tests.")
+    ;; Either license applies.
+    (license (list license:expat license:asl2.0))))
 
 (define-public python-jeepney
   (package
