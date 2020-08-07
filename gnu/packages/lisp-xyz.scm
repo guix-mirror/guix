@@ -13424,3 +13424,38 @@ package that includes a number of renames and shadows. ")
 
 (define-public ecl-hu.dwim.common-lisp
   (sbcl-package->ecl-package sbcl-hu.dwim.common-lisp))
+
+(define-public sbcl-hu.dwim.common
+  (package
+    (name "sbcl-hu.dwim.common")
+    (version "2015-07-09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://beta.quicklisp.org/archive/hu.dwim.common/"
+             version "/hu.dwim.common-"
+             (string-replace-substring version "-" "")
+             "-darcs.tgz"))
+       (sha256
+        (base32 "12l1rr6w9m99w0b5gc6hv58ainjfhbc588kz6vwshn4gqsxyzbhp"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("anaphora" ,sbcl-anaphora)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("hu.dwim.common-lisp" ,sbcl-hu.dwim.common-lisp)
+       ("iterate" ,sbcl-iterate)
+       ("metabang-bind" ,sbcl-metabang-bind)))
+    (home-page "http://dwim.hu/")
+    (synopsis "Common Lisp library shared by other hu.dwim systems")
+    (description "")
+    (license license:public-domain)))
+
+(define-public cl-hu.dwim.common
+  (sbcl-package->cl-source-package sbcl-hu.dwim.common))
+
+(define-public ecl-hu.dwim.common
+  (sbcl-package->ecl-package sbcl-hu.dwim.common))
