@@ -8387,7 +8387,7 @@ as well as features for editing search results.")
 (define-public emacs-helm-swoop
   (package
     (name "emacs-helm-swoop")
-    (version "2.0.0")
+    (version "3.0.0")
     (source
      (origin
        (method git-fetch)
@@ -8396,7 +8396,7 @@ as well as features for editing search results.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k0ns92g45x8dbymqpl6ylk5mj3wiw2h03f48q5cy1z8in0c4rjd"))))
+        (base32 "1qjay0fvryxa8n1ws6r1by512p2fylb2nj7ycm1497fcalb0d706"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
