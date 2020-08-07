@@ -19023,6 +19023,68 @@ project.")
     ;; Either license applies.
     (license (list license:expat license:asl2.0))))
 
+(define-public python-trio
+  (package
+    (name "python-trio")
+    (version "0.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trio" version))
+       (sha256
+        (base32 "0g6gkwz6i05rm9ym4l4imxakzld7qcgxhb21kprilchcav87s1nz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'change-home
+           (lambda _
+             ;; Tests require a writable home.
+             (setenv "HOME" "/tmp")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv" "-k"
+                     (string-append
+                     ;; This test times out.
+                     "not test_ki_protection_works"
+                     ;; Assertion errors.
+                     " and not test_guest_mode_ki"
+                     " and not test_run_in_trio_thread_ki"
+                     ;; These try to raise KeyboardInterrupt which does not work
+                     ;; in the build environment.
+                     " and not test_ki_self"
+                     " and not test_ki_wakes_us_up"
+                     ;; Failure in name resolution.
+                     " and not test_getnameinfo"
+                     " and not test_SocketType_resolve"
+                     ;; OSError: protocol not found.
+                     " and not test_getprotobyname")))))))
+    (native-inputs
+     `(("python-astor" ,python-astor)
+       ("python-ipython" ,python-ipython)
+       ("python-jedi" ,python-jedi)
+       ("python-pylint" ,python-pylint)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-trustme" ,python-trustme)))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-idna" ,python-idna)
+       ("python-outcome" ,python-outcome)
+       ("python-sniffio" ,python-sniffio)
+       ("python-sortedcontainers"
+        ,python-sortedcontainers)))
+    (home-page "https://github.com/python-trio/trio")
+    (synopsis "Friendly Python library for async concurrency and I/O")
+    (description
+     "Trio strives to be a production-quality, async/await-native I/O library
+for Python.  Like all async libraries, its main purpose is to help you write
+programs that do multiple things at the same time with parallelized I/O.")
+    ;; Either license applies.
+    (license (list license:expat license:asl2.0))))
+
 (define-public python-humanize
   (package
     (name "python-humanize")
