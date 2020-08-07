@@ -22143,14 +22143,14 @@ Emacs that integrate with major modes like Org-mode.")
 (define-public emacs-modus-operandi-theme
   (package
     (name "emacs-modus-operandi-theme")
-    (version "0.10.0")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "modus-operandi-theme-" version ".el"))
        (sha256
-        (base32 "1r6dkfdd967zw1nw58nlw7y1r9x8lcbr5gvjfbcbrw0agh87wb40"))))
+        (base32 "11sq105vpp8rmyayfb7h8gz099kfdr7nb8n4pg81iby4fllj1kgd"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.com/protesilaos/modus-themes")
     (synopsis "Accessible light theme (WCAG AAA)")
