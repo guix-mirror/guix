@@ -6113,7 +6113,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "353")
+    (version "358")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -6123,7 +6123,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                                    "xterm-" version ".tgz")))
               (sha256
                (base32
-                "0s5pkfn4r8iy09s1q1y78zhnr9f3sm6wgbqir7azaqggkppd68g5"))))
+                "0yxzdwchfvkq784qadxalnbnxr4k2hdgli9w1dq9j2lic9li1nvw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -6141,6 +6141,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
        ("libICE" ,libice)
        ("libSM" ,libsm)
        ("libX11" ,libx11)
+       ("libXcursor" ,libxcursor)
        ("libXext" ,libxext)
        ("libXt" ,libxt)
        ("xorgproto" ,xorgproto)
