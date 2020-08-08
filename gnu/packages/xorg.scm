@@ -16,7 +16,7 @@
 ;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
@@ -6791,3 +6791,33 @@ that Make knows which object files must be recompiled when a dependency has
 changed.")
     (home-page "https://gitlab.freedesktop.org/xorg/util/gccmakedep")
     (license license:x11)))
+
+(define-public xdialog
+  (package
+    (name "xdialog")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://xdialog.free.fr/Xdialog-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "16jqparb33lfq4cvd9l3jgd7fq86fk9gv2ixc8vgqibid6cnhi0x"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gettext" ,gettext-minimal)
+       ("gtk" ,gtk+-2)))
+    (arguments
+     `(#:configure-flags '("--with-gtk2")))
+    (build-system gnu-build-system)
+    (home-page "http://xdialog.free.fr/")
+    (synopsis "Convert a terminal program into a program with an X interface")
+    (description "X11 replacement for the text util dialog Xdialog is designed
+to be a drop-in replacement for the dialog and cdialog programs.  It converts
+any terminal-based program into a program with an X interface.  The dialogs
+are easier to see and use, and Xdialog adds more functionality such as a help
+button and box, a treeview, an editbox, file and directory selectors, a range
+box, and a calendar.  It uses GTK+, and will match your desktop theme.")
+    (license license:gpl2+)))
