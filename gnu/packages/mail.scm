@@ -3294,90 +3294,88 @@ related tools to process winmail.dat files.")
     (license license:gpl2+)))
 
 (define-public public-inbox
-  (let ((commit "05a06f3262a2ddbf46adb85169e13ce9127e4524")
-        (revision "0"))
-    (package
-     (name "public-inbox")
-     (version (git-version "1.2.0" revision commit))
-     (source
-      (origin (method git-fetch)
-              (uri (git-reference
-                    (url "https://public-inbox.org")
-                    (commit commit)))
-              (sha256
-               (base32
-                "06cclxg46gsls3x19l9s8s9x8gkjghm6gd4jb1v9ng6fds6xi2fg"))
-              (file-name (git-file-name name version))))
-     (build-system perl-build-system)
-     (arguments
-      '(#:phases
-        (modify-phases %standard-phases
-          (add-before 'configure 'qualify-paths
-            (lambda _
-              ;; Use absolute paths for 'xapian-compact'.
-              (let ((xapian-compact (which "xapian-compact")))
-                (substitute* "script/public-inbox-compact"
-                  (("xapian-compact") xapian-compact)))
-              #t))
-          (add-before 'check 'pre-check
-            (lambda _
-              (substitute* "t/spawn.t"
-                (("\\['env'\\]") (string-append "['" (which "env") "']")))
-              (substitute* "t/ds-leak.t"
-                (("/bin/sh") (which "sh")))
-              (invoke "./certs/create-certs.perl")
-              ;; XXX: This test fails due to zombie process is not reaped by
-              ;; the builder.
-              (substitute* "t/httpd-unix.t"
-                (("^SKIP: \\{") "SKIP: { skip('Guix');"))
-              #t))
-          (add-after 'install 'wrap-programs
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                (for-each
-                 (lambda (prog)
-                   (wrap-program prog
-                     ;; Let those scripts find their perl modules.
-                     `("PERL5LIB" ":" prefix
-                       (,(string-append out "/lib/perl5/site_perl")
-                        ,(getenv "PERL5LIB")))
-                     ;; 'git' is invoked in various files of the PublicInbox
-                     ;; perl module.
-                     `("PATH" ":" prefix
-                       (,(string-append (assoc-ref inputs "git") "/bin")))))
-                 (find-files (string-append out "/bin"))))
-              #t)))))
-     (native-inputs
-      `(("xapian" ,xapian)
-        ;; For testing.
-        ("lsof" ,lsof)
-        ("openssl" ,openssl)))
-     (inputs
-      `(("git" ,git)
-        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
-        ("perl-dbi" ,perl-dbi)
-        ("perl-email-address-xs" ,perl-email-address-xs)
-        ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
-        ("perl-email-mime" ,perl-email-mime)
-        ("perl-email-simple" ,perl-email-simple)
-        ("perl-net-server" ,perl-net-server)
-        ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
-        ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
-        ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)
-        ("perl-plack" ,perl-plack)
-        ("perl-search-xapian" ,perl-search-xapian)
-        ("perl-timedate" ,perl-timedate)
-        ("perl-uri-escape" ,perl-uri-escape)
-        ;; For testing.
-        ("perl-ipc-run" ,perl-ipc-run)
-        ("perl-xml-feed" ,perl-xml-feed)))
-     (home-page "https://public-inbox.org/README.html")
-     (synopsis "Archive mailing lists in git repositories")
-     (description
-      "public-inbox implements the sharing of an email inbox via git to
+  (package
+    (name "public-inbox")
+    (version "1.5.0")
+    (source
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://public-inbox.org")
+                   (commit (string-append "v" version))))
+             (sha256
+              (base32
+               "03zj7shdl3vibs7k5lr673bwcf8j1xx8is3mjz34ca4cdh6p5j2k"))
+             (file-name (git-file-name name version))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'qualify-paths
+           (lambda _
+             ;; Use absolute paths for 'xapian-compact'.
+             (let ((xapian-compact (which "xapian-compact")))
+               (substitute* "script/public-inbox-compact"
+                 (("xapian-compact") xapian-compact)))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (substitute* "t/spawn.t"
+               (("\\['env'\\]") (string-append "['" (which "env") "']")))
+             (substitute* "t/ds-leak.t"
+               (("/bin/sh") (which "sh")))
+             (invoke "./certs/create-certs.perl")
+             ;; XXX: This test fails due to zombie process is not reaped by
+             ;; the builder.
+             (substitute* "t/httpd-unix.t"
+               (("^SKIP: \\{") "SKIP: { skip('Guix');"))
+             #t))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (prog)
+                  (wrap-program prog
+                    ;; Let those scripts find their perl modules.
+                    `("PERL5LIB" ":" prefix
+                      (,(string-append out "/lib/perl5/site_perl")
+                       ,(getenv "PERL5LIB")))
+                    ;; 'git' is invoked in various files of the PublicInbox
+                    ;; perl module.
+                    `("PATH" ":" prefix
+                      (,(string-append (assoc-ref inputs "git") "/bin")))))
+                (find-files (string-append out "/bin"))))
+             #t)))))
+    (native-inputs
+     `(("xapian" ,xapian)
+       ;; For testing.
+       ("lsof" ,lsof)
+       ("openssl" ,openssl)))
+    (inputs
+     `(("git" ,git)
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-dbi" ,perl-dbi)
+       ("perl-email-address-xs" ,perl-email-address-xs)
+       ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
+       ("perl-email-mime" ,perl-email-mime)
+       ("perl-email-simple" ,perl-email-simple)
+       ("perl-net-server" ,perl-net-server)
+       ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
+       ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
+       ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)
+       ("perl-plack" ,perl-plack)
+       ("perl-search-xapian" ,perl-search-xapian)
+       ("perl-timedate" ,perl-timedate)
+       ("perl-uri-escape" ,perl-uri-escape)
+       ;; For testing.
+       ("perl-ipc-run" ,perl-ipc-run)
+       ("perl-xml-feed" ,perl-xml-feed)))
+    (home-page "https://public-inbox.org/README.html")
+    (synopsis "Archive mailing lists in git repositories")
+    (description
+     "public-inbox implements the sharing of an email inbox via git to
 complement or replace traditional mailing lists.  Readers may read via NNTP,
 Atom feeds or HTML archives.")
-     (license license:agpl3+))))
+    (license license:agpl3+)))
 
 (define-public sylpheed
   (package
