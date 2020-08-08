@@ -3807,6 +3807,28 @@ are semantically equal in Go (for writing tests).")
     (home-page "https://godoc.org/github.com/google/go-cmp/cmp")
     (license license:asl2.0)))
 
+(define-public go-github-com-google-uuid
+  (package
+    (name "go-github-com-google-uuid")
+    (version "1.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/uuid")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0hfxcf9frkb57k6q0rdkrmnfs78ms21r1qfk9fhlqga2yh5xg8zb"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/google/uuid"))
+    (home-page "https://github.com/google/uuid/")
+    (synopsis "Generate and inspect UUIDs based on RFC 4122 and DCE 1.1")
+    (description "The uuid package generates and inspects UUIDs based on RFC
+4122 and DCE 1.1: Authentication and Security Services.")
+    (license license:bsd-3)))
+
 (define-public go-golang.org-x-sync-errgroup
   (let ((commit "cd5d95a43a6e21273425c7ae415d3df9ea832eeb")
         (revision "0"))
