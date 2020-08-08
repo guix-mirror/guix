@@ -204,7 +204,7 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.7
   (linux-libre-deblob-scripts
-   "5.7.13"
+   "5.7.14"
    (base32 "1gharhw104wxp9dxjkzzvsqc2xn44mc9yvacc3v7jh7b6bb0a64a")
    (base32 "1n198gx18rxc7xflgiwya43inkwayc91pgb129kngfza8sm6v8ks")))
 
@@ -379,10 +379,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.7-version "5.7.13")
+(define-public linux-libre-5.7-version "5.7.14")
 (define-public linux-libre-5.7-pristine-source
   (let ((version linux-libre-5.7-version)
-        (hash (base32 "0qljqj5kv1yhyagkjw79xpgwpkwm1dgz0v22aw3nq3ar51lwl33j")))
+        (hash (base32 "0irgfw50fvlbgvn33as75chn2qilmpalbmhi9k8a9ckh6rwdz6hq")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.7)))
