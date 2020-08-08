@@ -5021,3 +5021,25 @@ escape sequences and color conversions.")
 templates on ANSI compatible terminals.  You can create your own stylesheet or
 use one of our glamourous default themes.")
     (license license:expat)))
+
+(define-public go-github-com-coreos-go-semver
+  (package
+    (name "go-github-com-coreos-go-semver")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/coreos/go-semver")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0770h1mpig2j5sbiha3abnwaw8p6dg9i87r8pc7cf6m4kwml3sc9"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/coreos/go-semver"))
+    (home-page "https://github.com/coreos/go-semver/")
+    (synopsis "Semantic versioning library")
+    (description "@code{go-semver} is a semantic versioning library for Go.
+It lets you parse and compare two semantic version strings.")
+    (license license:asl2.0)))
