@@ -1147,6 +1147,28 @@ containers.")
 values for the purpose of fuzz testing.")
       (license license:asl2.0))))
 
+(define-public go-github-com-gorilla-css
+  (package
+    (name "go-github-com-gorilla-css")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gorilla/css")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "116fhy3n7bsq3psyn4pa0i4x9zy916kh1zxslmbbp0p9l4i7ysrj"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/gorilla/css/scanner"
+       #:unpack-path "github.com/gorilla/css"))
+    (home-page "https://github.com/gorilla/css/")
+    (synopsis "CSS3 tokenizer")
+    (description "This package provides a CSS3 tokenizer.")
+    (license license:bsd-3)))
+
 (define-public go-github-com-gorilla-context
   (let ((commit "08b5f424b9271eedf6f9f0ce86cb9396ed337a42")
         (revision "0"))
