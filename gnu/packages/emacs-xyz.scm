@@ -24145,7 +24145,7 @@ arbitrary Emacs Lisp objects.")
     (synopsis "Emacs major mode for coding in CSound")
     (description "Provides both a basic major mode for editing
 CSound files, as well as a REPL for fast feedback when composing
-and sonud-designing.")
+and sound-designing.")
     (license license:gpl3+)))
 
 (define-public emacs-multi
