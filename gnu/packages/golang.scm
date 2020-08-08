@@ -4634,3 +4634,32 @@ synchronizing plain text:
 @item aborts tests on first assertion failure
 @end itemize\n")
       (license license:expat))))
+
+(define-public go-github-com-alecthomas-chroma
+  (package
+    (name "go-github-com-alecthomas-chroma")
+    (version "0.8.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alecthomas/chroma")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "066a6rdmf670d3v5sc7chbn7db09ldgxjympb03pcqwk644dixb1"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/alecthomas/chroma"))
+    (native-inputs
+     `(("go-github-com-dlclark-regexp2" ,go-github-com-dlclark-regexp2)
+       ("go-github-com-alecthomas-assert" ,go-github-com-alecthomas-assert)
+       ("go-github-com-alecthomas-colour" ,go-github-com-alecthomas-colour)
+       ("go-github-com-alecthomas-repr" ,go-github-com-alecthomas-repr)
+       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+       ("go-github-com-sergi-go-diff" ,go-github-com-sergi-go-diff)))
+    (home-page "https://github.com/alecthomas/chroma/")
+    (synopsis "General purpose syntax highlighter in pure Go")
+    (description "Chroma takes source code and other structured text and
+converts it into syntax highlighted HTML, ANSI-coloured text, etc.")
+    (license license:expat)))
