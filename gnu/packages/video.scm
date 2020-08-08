@@ -137,6 +137,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
@@ -2365,7 +2366,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.20.0")
+    (version "6.22.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2374,7 +2375,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14kayzas2wisyw0z27qkcm4qnxbdb7bqa0hg7gaj5kbm3nvsnafk"))))
+                "0jxv848ykw0csbnayrd710ylw46m0picfv7rpzsxz1vh4jzs395k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -2403,6 +2404,9 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
+       ("libexif" ,libexif)
+       ("libvorbis" ,libvorbis)
+       ("rubberband" ,rubberband)
        ("libsamplerate" ,libsamplerate)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
