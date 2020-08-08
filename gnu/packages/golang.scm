@@ -4474,3 +4474,25 @@ maps (because they are not addressable using Go reflection).")
     (description "Sprig is a library that provides more than 100 commonly used
 template functions.")
     (license license:expat)))
+
+(define-public go-github-com-bmatcuk-doublestar
+  (package
+    (name "go-github-com-bmatcuk-doublestar")
+    (version "1.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bmatcuk/doublestar")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0bk5bixl6rqa8znxghyp6zndbccx9kdyrymjahgyp6qsrp7rk144"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/bmatcuk/doublestar"))
+    (home-page "https://github.com/bmatcuk/doublestar/")
+    (synopsis "Path pattern matching and globbing supporting doublestar")
+    (description "@code{doublestar} is a Go implementation of path pattern
+matching and globbing with support for \"doublestar\" patterns.")
+    (license license:expat)))
