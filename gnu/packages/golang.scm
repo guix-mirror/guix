@@ -4853,3 +4853,11 @@ io.Writers helping you to transform blocks of text.")
     (arguments
      `(#:import-path "github.com/muesli/reflow/indent"
        #:unpack-path "github.com/muesli/reflow"))))
+
+(define-public go-github-com-muesli-reflow-padding
+  (package
+    (inherit go-github-com-muesli-reflow-wordwrap)
+    (name "go-github-com-muesli-reflow-padding")
+    (arguments
+     `(#:import-path "github.com/muesli/reflow/padding"
+       #:unpack-path "github.com/muesli/reflow"))))
