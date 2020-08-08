@@ -54,6 +54,50 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public latex2html
+  (package
+    (name "latex2html")
+    (version "2020.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/latex2html/latex2html.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1icyl6kl60wh7cavprgbd8q6lpjwr7wn24m34kpiif7ahknhcbcm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "configure"
+               (("/usr/local")
+                (assoc-ref outputs "out"))
+               (("\\$\\{CONFIG_SHELL-/bin/sh\\}")
+                (which "bash")))
+             #t))
+         (replace 'configure
+           (lambda _
+             (invoke "./configure")
+             #t))
+         (add-after 'configure 'patch-cfgcache
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "cfgcache.pm"
+               (("/usr/local")
+                (assoc-ref outputs "out")))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)))
+    (synopsis "LaTeX documents to HTML")
+    (description "LaTeX2HTML is a utility that converts LaTeX documents to web
+pages in HTML.")
+    (home-page "https://www.latex2html.org/")
+    (license gpl2+)))
+
 (define-public asciidoc
   (package
     (name "asciidoc")
