@@ -4845,3 +4845,11 @@ io.Writers helping you to transform blocks of text.")
     (arguments
      `(#:import-path "github.com/muesli/reflow/ansi"
        #:unpack-path "github.com/muesli/reflow"))))
+
+(define-public go-github-com-muesli-reflow-indent
+  (package
+    (inherit go-github-com-muesli-reflow-wordwrap)
+    (name "go-github-com-muesli-reflow-indent")
+    (arguments
+     `(#:import-path "github.com/muesli/reflow/indent"
+       #:unpack-path "github.com/muesli/reflow"))))
