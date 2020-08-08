@@ -4601,3 +4601,36 @@ synchronizing plain text:
 @item apply patches onto text
 @end itemize\n")
     (license license:expat)))
+
+(define-public go-github-com-alecthomas-assert
+  (let ((commit "405dbfeb8e38effee6e723317226e93fff912d06")
+        (revision "1"))
+    (package
+      (name "go-github-com-alecthomas-assert")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alecthomas/assert")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1l567pi17k593nrd1qlbmiq8z9jy3qs60px2a16fdpzjsizwqx8l"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/alecthomas/assert"))
+      (native-inputs
+       `(("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+         ("go-github-com-alecthomas-colour" ,go-github-com-alecthomas-colour)
+         ("go-github-com-alecthomas-repr" ,go-github-com-alecthomas-repr)
+         ("go-github-com-sergi-go-diff" ,go-github-com-sergi-go-diff)))
+      (home-page "https://github.com/alecthomas/assert/")
+      (synopsis "Go assertion library")
+      (description "Assertion library that:
+@itemize
+@item makes spotting differences in equality much easier
+@item uses repr and diffmatchpatch to display structural differences in colour
+@item aborts tests on first assertion failure
+@end itemize\n")
+      (license license:expat))))
