@@ -440,6 +440,8 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
+   ;; When updating this package, change its licence to lgpl2.1+.
+   ;; https://github.com/wbhart/flint2/issues/812
    (version "2.6.2")
    (source
     (origin
