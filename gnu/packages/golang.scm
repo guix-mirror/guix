@@ -2777,6 +2777,36 @@ using reflection, in the same way a directory tree can be \"walked\" on the
 filesystem.  Walking a complex structure can allow you to do manipulations on
 unknown structures such as those decoded from JSON.")
     (license license:expat)))
+
+(define-public go-github-com-mitchellh-copystructure
+  (package
+    (name "go-github-com-mitchellh-copystructure")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mitchellh/copystructure")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "05njg92w1088v4yl0js0zdrpfq6k37i9j14mxkr3p90p5yd9rrrr"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/mitchellh/copystructure"))
+    (native-inputs
+     `(("go-github-com-mitchellh-reflectwalk" ,go-github-com-mitchellh-reflectwalk)))
+    (home-page "https://github.com/mitchellh/copystructure")
+    (synopsis "Go library for decoding deep copying values")
+    (description "@code{copystructure} is a Go library for deep copying values
+in Go.
+
+This allows you to copy Go values that may contain reference values such as
+maps, slices, or pointers, and copy their data as well instead of just their
+references.")
+    (license license:expat)))
+
 (define-public go-github-com-multiformats-go-multiaddr
   (let ((commit "fe1c46f8be5af4aff4db286e08839295bd922efb")
         (revision "0"))
