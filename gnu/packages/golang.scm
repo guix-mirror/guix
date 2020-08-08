@@ -3904,6 +3904,32 @@ are semantically equal in Go (for writing tests).")
 4122 and DCE 1.1: Authentication and Security Services.")
     (license license:bsd-3)))
 
+(define-public go-github-com-google-goterm
+  (let ((commit "fc88cf888a3fa99ecc23d1efc1a44284268457d3")
+        (revision "1"))
+    (package
+      (name "go-github-com-google-goterm")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/google/goterm")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0809sf02dhg2bjhsz43pmlb5d7nbsnwxls3lw01zw5p7ri9bqwfb"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/google/goterm/term"
+         #:unpack-path "github.com/google/goterm"))
+      (home-page "https://github.com/google/goterm/")
+      (synopsis "PTY creation and termios get/set attributes")
+      (description "The term package implements PTY creation and termios get/set
+attributes.  It also contains some convenience functions for colors, SSH to
+and from termios translations, readCh, reading passwords, etc.")
+      (license license:bsd-3))))
+
 (define-public go-golang.org-x-sync-errgroup
   (let ((commit "cd5d95a43a6e21273425c7ae415d3df9ea832eeb")
         (revision "0"))
