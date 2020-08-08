@@ -4813,3 +4813,27 @@ to jQuery to the Go language.")
     (synopsis "HTML sanitizer")
     (description "@code{bluemonday} is a HTML sanitizer implemented in Go.")
     (license license:bsd-3)))
+
+(define-public go-github-com-muesli-reflow-wordwrap
+  (package
+    (name "go-github-com-muesli-reflow-wordwrap")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/muesli/reflow")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1vhynm2n1az13fn03lp0gi28p9mznq1mblglh8f2rb9y1vkd2dqr"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/muesli/reflow/wordwrap"
+       #:unpack-path "github.com/muesli/reflow"))
+    (native-inputs
+     `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)))
+    (home-page "https://github.com/muesli/reflow/")
+    (synopsis "Collection of methods helping to transform blocks of text")
+    (description "This package provides a collection of ANSI-aware methods and
+io.Writers helping you to transform blocks of text.")
+    (license license:expat)))
