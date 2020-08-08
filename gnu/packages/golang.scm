@@ -4687,3 +4687,28 @@ converts it into syntax highlighted HTML, ANSI-coloured text, etc.")
     (description "The Cascadia package implements CSS selectors for use with
 the parse trees produced by the html package.")
     (license license:bsd-2)))
+
+(define-public go-github-com-puerkitobio-goquery
+  (package
+    (name "go-github-com-puerkitobio-goquery")
+    (version "1.5.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PuerkitoBio/goquery")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08nf88cg663slzqr51k2jxlm1krnh86nrzwbk6v41ccq5jkfm7fx"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/PuerkitoBio/goquery"))
+    (native-inputs
+     `(("go-github-com-andybalholm-cascadia" ,go-github-com-andybalholm-cascadia)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)))
+    (home-page "https://github.com/PuerkitoBio/goquery")
+    (synopsis "Features similar to jQuery to the Go language")
+    (description "@code{goquery} brings a syntax and a set of features similar
+to jQuery to the Go language.")
+    (license license:bsd-3)))
