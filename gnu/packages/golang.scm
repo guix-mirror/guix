@@ -4496,3 +4496,24 @@ template functions.")
     (description "@code{doublestar} is a Go implementation of path pattern
 matching and globbing with support for \"doublestar\" patterns.")
     (license license:expat)))
+
+(define-public go-github-com-dlclark-regexp2
+  (package
+    (name "go-github-com-dlclark-regexp2")
+    (version "1.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dlclark/regexp2")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "011l1prsywvhhi0yc7qmpsca1cwavmawyyld5kjzi0ff9ghvj4ng"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/dlclark/regexp2"))
+    (home-page "https://github.com/dlclark/regexp2/")
+    (synopsis "Full featured regular expressions for Go")
+    (description "Regexp2 is a feature-rich RegExp engine for Go.")
+    (license license:expat)))
