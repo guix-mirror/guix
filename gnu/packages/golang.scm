@@ -4734,3 +4734,29 @@ the parse trees produced by the html package.")
     (description "@code{goquery} brings a syntax and a set of features similar
 to jQuery to the Go language.")
     (license license:bsd-3)))
+
+(define-public go-github-com-aymerick-douceur
+  (package
+    (name "go-github-com-aymerick-douceur")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aymerick/douceur/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hfysznib0fqbp8vqxpk0xiggpp0ayk2bsddi36vbg6f8zq5f81n"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/aymerick/douceur"))
+    (native-inputs
+     `(("go-github-com-puerkitobio-goquery" ,go-github-com-puerkitobio-goquery)
+       ("go-github-com-andybalholm-cascadia" ,go-github-com-andybalholm-cascadia)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-github-com-gorilla-css" ,go-github-com-gorilla-css)))
+    (home-page "https://github.com/aymerick/douceur/")
+    (synopsis "CSS parser and inliner")
+    (description "This package provides a CSS parser and inliner.")
+    (license license:expat)))
