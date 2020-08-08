@@ -23187,7 +23187,7 @@ pattern guessed from thing under current cursor position.
 (define-public emacs-helm-selector
   (package
     (name "emacs-helm-selector")
-    (version "0.2")
+    (version "0.3")
     (home-page "https://github.com/emacs-helm/helm-selector")
     (source
      (origin
@@ -23198,7 +23198,7 @@ pattern guessed from thing under current cursor position.
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1c7xhrq1mivldyq3rglpmfypbz44dcm7zrgyha6x09cfixlyfbcp"))))
+         "134rxm4zicn565k3q5q15iiqcvcyiq6lsvmsqr53ifjjbq8pd9y6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
