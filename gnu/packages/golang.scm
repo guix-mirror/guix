@@ -4760,3 +4760,30 @@ to jQuery to the Go language.")
     (synopsis "CSS parser and inliner")
     (description "This package provides a CSS parser and inliner.")
     (license license:expat)))
+
+(define-public go-github-com-chris-ramon-douceur
+  (package
+    (name "go-github-com-chris-ramon-douceur")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/chris-ramon/douceur")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hfysznib0fqbp8vqxpk0xiggpp0ayk2bsddi36vbg6f8zq5f81n"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/chris-ramon/douceur"))
+    (native-inputs
+     `(("go-github-com-aymerick-douceur" ,go-github-com-aymerick-douceur)
+       ("go-github-com-puerkitobio-goquery" ,go-github-com-puerkitobio-goquery)
+       ("go-github-com-andybalholm-cascadia" ,go-github-com-andybalholm-cascadia)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-github-com-gorilla-css" ,go-github-com-gorilla-css)))
+    (home-page "https://github.com/chris-ramon/douceur/")
+    (synopsis "CSS parser and inliner")
+    (description "This package provides a CSS parser and inliner.")
+    (license license:expat)))
