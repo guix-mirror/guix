@@ -4545,3 +4545,29 @@ The package level functions can be used to write to stdout (or strings or
 other files).  If stdout is not a terminal, colour formatting will be
 stripped.")
     (license license:expat)))
+
+(define-public go-github-com-alecthomas-repr
+  (let ((commit "4184120f674c8860a5b48142509a2411a0a1766f")
+        (revision "1"))
+    (package
+      (name "go-github-com-alecthomas-repr")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alecthomas/repr")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1z0gdkjryxg1ps5fh4ybzip27g9lzdldz4hxqp5j7s2frbzaa9s7"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/alecthomas/repr"))
+      (native-inputs
+       `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+      (home-page "https://github.com/alecthomas/repr/")
+      (synopsis "Represent Go values in an almost direct form")
+      (description "This package attempts to represent Go values in a form that
+can be used almost directly in Go source code.")
+      (license license:expat))))
