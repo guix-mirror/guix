@@ -7757,6 +7757,55 @@ PEP 8.")
 (define-public python2-pep8
   (package-with-python2 python-pep8))
 
+(define-public python-pep517
+  (package
+    (name "python-pep517")
+    (version "0.8.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pep517" version))
+        (sha256
+         (base32
+          "17m2bcabx3sr5wjalgzppfx5xahqrwm12zq58h68mm482b7rjqcf"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (delete-file "pytest.ini")
+             ;; This test tries to connect to the internet
+             (delete-file "tests/test_meta.py")
+             (if tests?
+               (invoke "pytest")
+               #t))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-testpath" ,python-testpath)))
+    (propagated-inputs
+     `(("python-toml" ,python-toml)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/pypa/pep517")
+    (synopsis "Wrappers to build Python packages using PEP 517 hooks")
+    (description
+     "Wrappers to build Python packages using PEP 517 hooks.")
+    (properties `((python2-variant . ,(delay python2-pep517))))
+    (license license:expat)))
+
+;; Skip the tests so we don't create a cyclical dependency with pytest.
+(define-public python2-pep517
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pep517))))
+    (package
+      (inherit base)
+      (name "python2-pep517")
+      (arguments
+       `(#:tests? #f
+         ,@(package-arguments base)))
+    (native-inputs `()))))
+
 (define-public python-pyflakes
   (package
     (name "python-pyflakes")
