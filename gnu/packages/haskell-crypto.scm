@@ -343,6 +343,8 @@ generators, and more.")
         (base32
          "04gy2zp8yzvv7j9bdfvmfzcz3sqyqa6rwslqcn4vyair2vmif5v4"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("zlib")))
     (inputs
      `(("zlib" ,zlib)))
     (home-page
@@ -790,6 +792,8 @@ extensions.")
         (base32
          "0qivl9clmybfglwxqp2sq308rv4ia4rhwshcsc8b029bvpp0mpsi"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("openssl")))
     (inputs
      `(("ghc-network" ,ghc-network)
        ("openssl" ,openssl)))

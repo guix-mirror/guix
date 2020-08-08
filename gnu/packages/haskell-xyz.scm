@@ -327,6 +327,8 @@ tool lex or flex for C/C++.")
         (base32
          "1avh4a419h9d2zsslg6j8hm87ppgsgqafz8ll037rk2yy1g4jl7b"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("alsa-lib")))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("alsa-lib" ,alsa-lib)))
@@ -5636,6 +5638,8 @@ accessed or modified.")
        (sha256
         (base32 "1sqy1aci5zfagkb34mz3xdil7cl96z4b4cx28cha54vc5sx1lhpg"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("lapack")))
     (inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-split" ,ghc-split)
@@ -5667,6 +5671,8 @@ numerical computations based on BLAS and LAPACK.")
        (sha256
         (base32 "0v6dla426x4ywaq59jm89ql1i42n39iw6z0j378xwb676v9kfxhm"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("gsl")))
     (inputs
      `(("ghc-hmatrix" ,ghc-hmatrix)
        ("ghc-vector" ,ghc-vector)
@@ -5884,7 +5890,8 @@ handler built in.")
                 "183bgl5jcx5y2r94lviqfw0a5w9089nxjd1z40k8vx9y2h60pm6j"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags '("-fsystem-lua")))
+     `(#:configure-flags '("-fsystem-lua")
+       #:extra-directories ("lua")))
     (inputs
      `(("lua" ,lua)
        ("ghc-exceptions" ,ghc-exceptions)
@@ -6494,6 +6501,8 @@ instances for conversion to and from JSON .ipynb files.")
        (sha256
         (base32 "0khmfwql4vwj55idsxmhjhrbqzfir3g9wm5lmpvnf77mm95cfpdz"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("wireless-tools")))
     (inputs
      `(("wireless-tools" ,wireless-tools)))
     (home-page "https://github.com/jaor/iwlib")
@@ -6876,7 +6885,8 @@ compiler versions.")
            #t))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags `("--flags=system-libyaml")))
+     `(#:configure-flags `("--flags=system-libyaml")
+       #:extra-directories ("libyaml")))
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
        ("ghc-resourcet" ,ghc-resourcet)
@@ -8090,7 +8100,8 @@ between 2 and 3 times faster than the Mersenne Twister.")
           "0gsyyaqyh5r9zc0rhwpj5spyd6i4w2vj61h4nihgmmh0yyqvf3z5"))))
     (build-system haskell-build-system)
     (arguments
-     '(#:phases
+     '(#:extra-directories ("ncurses")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-includes
            (lambda _
@@ -8458,6 +8469,8 @@ version 1.3).")
         (base32
          "0zgllb4bcash2i2cispa3j565aw3dpxs41ghmhpvyvi4a6xmyldx"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("glu")))
     (inputs
      `(("ghc-half" ,ghc-half)
        ("ghc-fixed" ,ghc-fixed)
@@ -14292,6 +14305,9 @@ modernized interface.")
        (sha256
         (base32 "0gg6852mrlgl8zng1j84fismz7k81jr5fk92glgkscf8q6ryg0bm"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories
+       ("libx11" "libxrandr" "libxinerama" "libxscrnsaver")))
     (inputs
      `(("libx11" ,libx11)
        ("libxrandr" ,libxrandr)
@@ -14316,6 +14332,8 @@ bindings are a direct translation of the C bindings.")
                            "X11-xft-" version ".tar.gz"))
        (sha256
         (base32 "1lgqb0s2qfwwgbvwxhjbi23rbwamzdi0l0slfr20c3jpcbp3zfjf"))))
+    (arguments
+     `(#:extra-directories ("libx11" "libxft" "xorgproto")))
     (inputs
      `(("ghc-x11" ,ghc-x11)
        ("ghc-utf8-string" ,ghc-utf8-string)
@@ -14516,7 +14534,8 @@ modifying, and extracting files from zip archives in Haskell.")
          "1l11jraslcrp9d4wnhwfyhwk4fsiq1aq8i6vj81vcq1m2zzi1y7h"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:phases
+     `(#:extra-directories ("zlib")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'strip-test-framework-constraints
            (lambda _

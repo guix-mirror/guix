@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%haskell-build-system-modules
             haskell-build
@@ -100,7 +102,18 @@ version REVISION."
                     (("out") (cons "static" outputs))
                     (_ outputs)))
          (build haskell-build)
-         (arguments (strip-keyword-arguments private-keywords arguments)))))
+         (arguments
+          (substitute-keyword-arguments
+              (strip-keyword-arguments private-keywords arguments)
+            ((#:extra-directories extra-directories)
+             `(list ,@(append-map
+                       (lambda (name)
+                         (match (assoc name inputs)
+                           ((_ pkg)
+                            (match (package-transitive-propagated-inputs pkg)
+                              (((propagated-names . _) ...)
+                               (cons name propagated-names))))))
+                       extra-directories))))))))
 
 (define* (haskell-build store name inputs
                         #:key source
@@ -110,6 +123,7 @@ version REVISION."
                         (test-target "test")
                         (parallel-build? #t)
                         (configure-flags ''())
+                        (extra-directories ''())
                         (phases '(@ (guix build haskell-build-system)
                                     %standard-phases))
                         (outputs '("out" "static"))
@@ -138,6 +152,7 @@ provides a 'Setup.hs' file as its build system."
                                            (derivation->output-path revision))
                                           (revision revision))
                       #:configure-flags ,configure-flags
+                      #:extra-directories ,extra-directories
                       #:haddock-flags ,haddock-flags
                       #:system ,system
                       #:test-target ,test-target

@@ -73,17 +73,14 @@ and parameters ~s~%"
         (error "no Setup.hs nor Setup.lhs found"))))
 
 (define* (configure #:key outputs inputs tests? (configure-flags '())
-                    #:allow-other-keys)
+                    (extra-directories '()) #:allow-other-keys)
   "Configure a given Haskell package."
   (let* ((out (assoc-ref outputs "out"))
          (doc (assoc-ref outputs "doc"))
          (lib (assoc-ref outputs "lib"))
          (bin (assoc-ref outputs "bin"))
          (name-version (strip-store-file-name out))
-         (input-dirs (match inputs
-                       (((_ . dir) ...)
-                        dir)
-                       (_ '())))
+         (extra-dirs (filter-map (cut assoc-ref inputs <>) extra-directories))
          (ghc-path (getenv "GHC_PACKAGE_PATH"))
          (params `(,(string-append "--prefix=" out)
                    ,(string-append "--libdir=" (or lib out) "/lib")
@@ -94,9 +91,9 @@ and parameters ~s~%"
                    ,(string-append "--package-db=" %tmp-db-dir)
                    "--global"
                    ,@(map (cut string-append "--extra-include-dirs=" <>)
-                          (search-path-as-list '("include") input-dirs))
+                          (search-path-as-list '("include") extra-dirs))
                    ,@(map (cut string-append "--extra-lib-dirs=" <>)
-                          (search-path-as-list '("lib") input-dirs))
+                          (search-path-as-list '("lib") extra-dirs))
                    ,@(if tests?
                          '("--enable-tests")
                          '())
