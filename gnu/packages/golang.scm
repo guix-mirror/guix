@@ -2754,6 +2754,29 @@ cross-compilation.")
     (description "Go library for decoding generic map values")
     (license license:expat)))
 
+(define-public go-github-com-mitchellh-reflectwalk
+  (package
+    (name "go-github-com-mitchellh-reflectwalk")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mitchellh/reflectwalk")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pa6a3nhzwv5s5yqcmsmsfhdp5ggxsg2wa86f3akawxrhrkjarnx"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/mitchellh/reflectwalk"))
+    (home-page "https://github.com/mitchellh/reflectwalk/")
+    (synopsis "Walk a value in Go using reflection")
+    (description "reflectwalk is a Go library for \"walking\" a value in Go
+using reflection, in the same way a directory tree can be \"walked\" on the
+filesystem.  Walking a complex structure can allow you to do manipulations on
+unknown structures such as those decoded from JSON.")
+    (license license:expat)))
 (define-public go-github-com-multiformats-go-multiaddr
   (let ((commit "fe1c46f8be5af4aff4db286e08839295bd922efb")
         (revision "0"))
