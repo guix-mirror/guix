@@ -24141,6 +24141,31 @@ read-only, constant database that maps Emacs Lisp symbols to
 arbitrary Emacs Lisp objects.")
     (license license:gpl3+)))
 
+
+(define-public emacs-multi
+  (package
+    (name "emacs-multi")
+    (version "2.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kurisuwhyte/emacs-multi")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11zabs7qpdhri6n90ck7pgwcbz46d813nyl73h5m1i8jvz1wzx7v"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/kurisuwhyte/emacs-multi")
+    (synopsis "Clojure-style multi-methods for Emacs Lisp")
+    (description "Provides Emacs Lisp with a form of polymorphism
+by way of predicate dispatching.  Methods consist of a dispatch
+function, and a series of branches.  The dispatch function is
+applied to the arguments, and the result value is checked against
+the expectations of each branch to define which one to invoke.")
+    (license license:expat)))
+
 (define-public emacs-highlight
   (let ((commit "9258a2b8362d737115cbd87618f947eadb140411")
         (revision "1"))
