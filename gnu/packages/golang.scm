@@ -4517,3 +4517,31 @@ matching and globbing with support for \"doublestar\" patterns.")
     (synopsis "Full featured regular expressions for Go")
     (description "Regexp2 is a feature-rich RegExp engine for Go.")
     (license license:expat)))
+
+(define-public go-github-com-alecthomas-colour
+  (package
+    (name "go-github-com-alecthomas-colour")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alecthomas/colour")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10zbm12j40ppia4b5ql2blmsps5jhh5d7ffphxx843qk7wlbqnjb"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/alecthomas/colour"))
+    (native-inputs
+     `(("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)))
+    (home-page "https://github.com/alecthomas/colour/")
+    (synopsis "Colour terminal text for Go")
+    (description "Package colour provides Quake-style colour formatting for
+Unix terminals.
+
+The package level functions can be used to write to stdout (or strings or
+other files).  If stdout is not a terminal, colour formatting will be
+stripped.")
+    (license license:expat)))
