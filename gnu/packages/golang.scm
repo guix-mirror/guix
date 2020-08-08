@@ -4787,3 +4787,29 @@ to jQuery to the Go language.")
     (synopsis "CSS parser and inliner")
     (description "This package provides a CSS parser and inliner.")
     (license license:expat)))
+
+(define-public go-github-com-microcosm-cc-bluemonday
+  (package
+    (name "go-github-com-microcosm-cc-bluemonday")
+    (version "1.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/microcosm-cc/bluemonday")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "071ph097c1iwbcc33x6kblj9rxb1r4mp3qfkrj4qw5mg7qcqxydk"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/microcosm-cc/bluemonday"))
+    (native-inputs
+     `(("go-github-com-chris-ramon-douceur" ,go-github-com-chris-ramon-douceur)
+       ("go-github-com-aymerick-douceur" ,go-github-com-aymerick-douceur)
+       ("go-github-com-gorilla-css" ,go-github-com-gorilla-css)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)))
+    (home-page "https://github.com/microcosm-cc/bluemonday/")
+    (synopsis "HTML sanitizer")
+    (description "@code{bluemonday} is a HTML sanitizer implemented in Go.")
+    (license license:bsd-3)))
