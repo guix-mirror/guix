@@ -4978,3 +4978,46 @@ escape sequences and color conversions.")
     (synopsis "Markdown parser")
     (description "This package provides a markdown parser.")
     (license license:expat)))
+
+(define-public go-github-com-charmbracelet-glamour
+  (package
+    (name "go-github-com-charmbracelet-glamour")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/charmbracelet/glamour")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1idq8d13rp1hx2a1xak31fwl9fmi09p2x4ymvzl7aj850saw5w0z"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/charmbracelet/glamour"))
+    (native-inputs
+     `(("go-github-com-alecthomas-chroma" ,go-github-com-alecthomas-chroma)
+       ("go-github-com-danwakefield-fnmatch" ,go-github-com-danwakefield-fnmatch)
+       ("go-github-com-dlclark-regexp2" ,go-github-com-dlclark-regexp2)
+       ("go-github-com-microcosm-cc-bluemonday" ,go-github-com-microcosm-cc-bluemonday)
+       ("go-github-com-chris-ramon-douceur" ,go-github-com-chris-ramon-douceur)
+       ("go-github-com-aymerick-douceur" ,go-github-com-aymerick-douceur)
+       ("go-github-com-gorilla-css" ,go-github-com-gorilla-css)
+       ("go-github-com-muesli-reflow-ansi" ,go-github-com-muesli-reflow-ansi)
+       ("go-github-com-muesli-reflow-wordwrap" ,go-github-com-muesli-reflow-wordwrap)
+       ("go-github-com-muesli-reflow-indent" ,go-github-com-muesli-reflow-indent)
+       ("go-github-com-muesli-reflow-padding" ,go-github-com-muesli-reflow-padding)
+       ("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+       ("go-github-com-muesli-termenv" ,go-github-com-muesli-termenv)
+       ("go-github-com-google-goterm" ,go-github-com-google-goterm)
+       ("go-golang-org-colorful" ,go-golang-org-colorful)
+       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+       ("go-github-com-olekukonko-tablewriter" ,go-github-com-olekukonko-tablewriter)
+       ("go-github-com-yuin-goldmark" ,go-github-com-yuin-goldmark)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)))
+    (home-page "https://github.com/charmbracelet/glamour/")
+    (synopsis "Write handsome command-line tools with glamour")
+    (description "@code{glamour} lets you render markdown documents and
+templates on ANSI compatible terminals.  You can create your own stylesheet or
+use one of our glamourous default themes.")
+    (license license:expat)))
