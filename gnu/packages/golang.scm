@@ -4957,3 +4957,24 @@ escape sequences and color conversions.")
 @item optional reflowing of paragrpahs in multi-line cells
 @end itemize\n")
     (license license:expat)))
+
+(define-public go-github-com-yuin-goldmark
+  (package
+    (name "go-github-com-yuin-goldmark")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/yuin/goldmark")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12rsnsf65drcp0jfw2jl9w589vsn3pxdk1zh3v9q908iigngrcmy"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/yuin/goldmark"))
+    (home-page "https://github.com/yuin/goldmark/")
+    (synopsis "Markdown parser")
+    (description "This package provides a markdown parser.")
+    (license license:expat)))
