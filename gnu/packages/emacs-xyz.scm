@@ -22496,11 +22496,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
                              (guix build emacs-utils))
          #:test-target "test"
          ;; TODO: Currently tgVOIP is not functional, thus we have disabled it
-         ;; temporarily. This functionality when enabled causes an erroneous
-         ;; linkage with libtgvoip.so and libopus.so (FFMPEG) against the
-         ;; system libraries on "foreign" distros. When tgVOIP becomes functional
-         ;; this needs to be investigated to prevent a linkage issue.
-         ;; Re-add libtgvoip to native-inputs at that time.
+         ;; temporarily.
          ;; #:make-flags (list "WITH_VOIP=t")
          #:phases
          (modify-phases %standard-phases
