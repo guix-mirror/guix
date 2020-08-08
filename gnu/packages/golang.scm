@@ -4887,3 +4887,33 @@ io.Writers helping you to transform blocks of text.")
     (arguments
      `(#:import-path "github.com/muesli/reflow/padding"
        #:unpack-path "github.com/muesli/reflow"))))
+
+(define-public go-github-com-muesli-termenv
+  (package
+    (name "go-github-com-muesli-termenv")
+    (version "0.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/muesli/termenv")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "09fwrdhy7c9qlf70h97f5inh6xvkfq1vi8fwx9q7bwmjjbiykk8m"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/muesli/termenv"))
+    (native-inputs
+     `(("go-github-com-google-goterm" ,go-github-com-google-goterm)
+       ("go-golang-org-colorful" ,go-golang-org-colorful)
+       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+       ("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)))
+    (home-page "https://github.com/muesli/termenv/")
+    (synopsis "Advanced styling options on the terminal")
+    (description "termenv lets you safely use advanced styling options on the
+terminal.  It gathers information about the terminal environment in terms of
+its ANSI and color support and offers you convenient methods to colorize and
+style your output, without you having to deal with all kinds of weird ANSI
+escape sequences and color conversions.")
+    (license license:expat)))
