@@ -1961,3 +1961,55 @@ button is pressed on the root window.")
 a menu for the user to select one of the options, and outputs the option
 selected to stdout.  It can be controlled both via mouse and via keyboard.")
     (license license:public-domain)))
+
+(define-public idesk
+  (package
+    (name "idesk")
+    (version "0.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/idesk/idesk/idesk-" version
+             "/idesk-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1lxk2yvgysxwl514zc82lwr1dwc8cd62slgr5lzdhjbdrxfymdyl"))
+       (modules '((guix build utils)
+                  (ice-9 format)))
+       (snippet
+        '(let* ((file     "src/DesktopConfig.cpp")
+                (template (string-append file ".XXXXXX"))
+                (out      (mkstemp! template))
+                (st       (stat file))
+                (mode     (stat:mode st)))
+           (call-with-ascii-input-file file
+             (lambda (p)
+               (format out "~{~a~%~}" '("#include <unistd.h>"
+                                        "#include <sys/stat.h>"
+                                        "#include <sys/types.h>"))
+               (dump-port p out)
+               (close out)
+               (chmod template mode)
+               (rename-file template file)
+               #t))))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("libxpm" ,libxpm)
+       ("libpng" ,libpng)
+       ("freetype" ,freetype)
+       ("imlib2" ,imlib2)
+       ("sed" ,sed)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:tests? #f)) ;no test suite
+    (home-page "https://sourceforge.net/projects/idesk/")
+    (synopsis "Add icons on X desktop and set background image for wallpaper")
+    (description "Idesk is program that draws desktop icons.  Each icon will
+execute a shell command on a configurable action.  The icons can be moved on
+the desktop by dragging them, and the icons will remember their positions on
+start-up.")
+    (license license:bsd-3)))
