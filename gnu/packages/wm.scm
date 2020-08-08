@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Boris A. Dekshteyn <harlequin78@gmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
+;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -741,6 +742,29 @@ tiled on several screens.")
 Haskell.  It was originally designed to be used together with Xmonad, but it
 is also usable with any other window manager.  While xmobar is written in
 Haskell, no knowledge of the language is required to install and use it.")
+    (license license:bsd-3)))
+
+(define-public yeganesh
+  (package
+    (name "yeganesh")
+    (version "2.4")
+    (source
+     (origin
+
+       (method url-fetch)
+       (uri (string-append "http://dmwit.com/yeganesh/yeganesh-" version ".tar.gz"))
+       (sha256
+        (base32 "04djfyjab3c5y9z9x8zd0xcx0jyy35zq7cl9ddr4ppf6k5ky6iky"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-strict" ,ghc-strict)
+       ("ghc-xdg-basedir" ,ghc-xdg-basedir)))
+    (home-page "http://dmwit.com/yeganesh/")
+    (synopsis "Small wrapper around dmenu")
+    (description "@code{yeganesh} is a small wrapper around demnu.  Like
+dmenu, it accepts input on stdin and writes the chosen result on stdout.
+Unlike dmenu, it mangles the input before it presents its choices.  In
+particular, it displays commonly-chosen options before uncommon ones.")
     (license license:bsd-3)))
 
 (define-public ghc-xmonad-contrib
