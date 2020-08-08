@@ -37,7 +37,7 @@
    (eval . (put 'with-file-lock 'scheme-indent-function 1))
    (eval . (put 'with-file-lock/no-wait 'scheme-indent-function 1))
    (eval . (put 'with-profile-lock 'scheme-indent-function 1))
-   (eval . (put 'with-writable-file 'scheme-indent-function 1))
+   (eval . (put 'with-writable-file 'scheme-indent-function 2))
 
    (eval . (put 'package 'scheme-indent-function 0))
    (eval . (put 'package/inherit 'scheme-indent-function 1))
