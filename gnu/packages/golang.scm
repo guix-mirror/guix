@@ -4263,3 +4263,27 @@ used by other processes.")
 Porter2 stemmer}.  It is written completely using finite state machines to do
 suffix comparison, rather than the string-based or tree-based approaches.")
       (license license:asl2.0))))
+
+(define-public go-github-com-masterminds-goutils
+  (package
+    (name "go-github-com-masterminds-goutils")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Masterminds/goutils")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "180px47gj936qyk5bkv5mbbgiil9abdjq6kwkf7sq70vyi9mcfiq"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/Masterminds/goutils"))
+    (home-page "https://github.com/Masterminds/goutils/")
+    (synopsis "Utility functions to manipulate strings")
+    (description "GoUtils provides utility functions to manipulate strings in
+various ways.  It is a Go implementation of some string manipulation libraries
+of Java Apache Commons.")
+    (license license:asl2.0)))
+    (license license:expat)))
