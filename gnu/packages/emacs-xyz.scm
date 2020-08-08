@@ -24140,3 +24140,28 @@ you use some other configuration.")
 read-only, constant database that maps Emacs Lisp symbols to
 arbitrary Emacs Lisp objects.")
     (license license:gpl3+)))
+
+(define-public emacs-highlight
+  (let ((commit "9258a2b8362d737115cbd87618f947eadb140411")
+        (revision "1"))
+    (package
+      (name "emacs-highlight")
+      (version "0.0.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/highlight/")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32
+           "0pbqzgbfkm8smi23j94hirxh2r1yc0ipyjbbv1y906br6bx5c1a8"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/emacsmirror/highlight")
+      (synopsis "Highlighting commands for GNU Emacs")
+      (description "This library adds the possibility for ad-hoc
+applying highlighting to any face in GNU Emacs.  The functionality
+of this library depends on overlays, which by default are not
+picked up when copy-pasting text from buffer to buffer.")
+      (license license:gpl2+))))
