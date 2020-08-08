@@ -4917,3 +4917,43 @@ its ANSI and color support and offers you convenient methods to colorize and
 style your output, without you having to deal with all kinds of weird ANSI
 escape sequences and color conversions.")
     (license license:expat)))
+
+(define-public go-github-com-olekukonko-tablewriter
+  (package
+    (name "go-github-com-olekukonko-tablewriter")
+    (version "0.0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/olekukonko/tablewriter")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "02r0n2b9yh3x8xyf48k17dxlwj234hlgjycylbjxi6qg08hfmz2x"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/olekukonko/tablewriter"))
+    (native-inputs
+     `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)))
+    (home-page "https://github.com/olekukonko/tablewriter/")
+    (synopsis "Generate ASCII table")
+    (description "This package allows to generate ASCII table.  Features:
+@itemize
+@item automatic Padding
+@item support Multiple Lines
+@item supports Alignment
+@item support Custom Separators
+@item automatic Alignment of numbers and percentage
+@item write directly to http , file etc via @code{io.Writer}
+@item read directly from CSV file
+@item optional row line via @code{SetRowLine}
+@item normalise table header
+@item make CSV Headers optional
+@item enable or disable table border
+@item set custom footer support
+@item optional identical cells merging
+@item set custom caption
+@item optional reflowing of paragrpahs in multi-line cells
+@end itemize\n")
+    (license license:expat)))
