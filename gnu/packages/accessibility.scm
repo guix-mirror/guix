@@ -21,12 +21,19 @@
 
 (define-module (gnu packages accessibility)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages swig)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages java)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gstreamer)
@@ -36,6 +43,41 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libusb))
+
+(define-public libbraille
+  (package
+    (name "libbraille")
+    (version "0.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/" name "/files/" name "/"
+                       name "-" version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05g8r0ypazqn10i7k48iibs8bzc3scdfcnhcykab8j16lhzd27d0"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "bin"))
+    (arguments
+     `(#:tests? #f                      ; Tests require drivers
+       #:configure-flags
+       (list
+        "--disable-static"
+        "--enable-fake")))
+    (native-inputs
+     `(("latex2html" ,latex2html)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("swig" ,swig)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("libusb" ,libusb-compat)))
+    (synopsis "Portable Braille Library")
+    (description "Libbraille is a library to easily access Braille displays and
+terminals.")
+    (home-page "https://libbraille.org")
+    (license license:lgpl2.1+)))
 
 (define-public florence
   (package
