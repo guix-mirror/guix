@@ -4663,3 +4663,27 @@ synchronizing plain text:
     (description "Chroma takes source code and other structured text and
 converts it into syntax highlighted HTML, ANSI-coloured text, etc.")
     (license license:expat)))
+
+(define-public go-github-com-andybalholm-cascadia
+  (package
+    (name "go-github-com-andybalholm-cascadia")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/andybalholm/cascadia")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "09j8cavbhqqdxjqrkwbc40g8p0i49zf3184rpjm5p2rjbprcghcc"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/andybalholm/cascadia"))
+    (native-inputs
+     `(("go-golang-org-x-net" ,go-golang-org-x-net)))
+    (home-page "https://github.com/andybalholm/cascadia/")
+    (synopsis "CSS selectors for HTML")
+    (description "The Cascadia package implements CSS selectors for use with
+the parse trees produced by the html package.")
+    (license license:bsd-2)))
