@@ -22075,8 +22075,8 @@ contrast and few colors.")
       (license license:gpl3+))))
 
 (define-public emacs-doom-themes
-  (let ((commit "54039c5171e3f8c9cef1f82122549b66cd8c8f7b")
-        (revision "4")
+  (let ((commit "e803fc4ac8cf7118e2d1544d8241b848b5e79e9f")
+        (revision "5")
         (version "2.1.6"))
     (package
       (name "emacs-doom-themes")
@@ -22088,7 +22088,7 @@ contrast and few colors.")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-                 (base32 "1iwdjq4q2gkhi6jwas3ywgmdz5dg14sfb3fzhqd7wih6j3i2l3cr"))))
+                 (base32 "128hdmf0jkzr12fv2r6z349qiwba6q97hsb6b1n2qlhi0v5v3mfh"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("emacs-ert-runner" ,emacs-ert-runner)))
@@ -22108,31 +22108,6 @@ contrast and few colors.")
                (for-each (lambda (f)
                            (rename-file f (basename f)))
                          (find-files "./themes" ".*\\.el$"))
-               #t))
-           ;; There is a byte-code overflow issue in the latest checkout
-           ;; which affects byte-compilation for several (read `most') theme
-           ;; files. In order to cope with this issue, we disable
-           ;; byte-compilation until this issue is resolved.
-           ;; <https://github.com/hlissner/emacs-doom-themes/issues/314>
-           ;;
-           ;; NOTE: Byte-comp has been disabled in/after commit 9cd6872.
-           ;; However our method of selective disabling is preferential to
-           ;; just widely disabling byte-compilation.
-           (add-after 'move-themes 'disable-breaking-compilation
-             (lambda _
-               (for-each (lambda (file)
-                           (chmod file #o600) ; needed to write changes.
-                           (emacs-batch-disable-compilation file))
-                         (cons "doom-themes-ext-neotree.el"
-                               ;; NOTE: When updating this package, determine
-                               ;; whether changed theme files can byte-compile.
-                               ;; If they can successfully byte-compile, add them
-                               ;; to this list of exceptions.
-                               (lset-difference string-contains
-                                                (find-files "." ".*-theme.el")
-                                                '("material"
-                                                  "snazzy"
-                                                  "tomorrow-day"))))
                #t)))))
       (synopsis "Wide collection of color themes for Emacs")
       (description "Emacs-doom-themes contains numerous popular color themes for
