@@ -9,6 +9,7 @@
 ;;; Copyright © 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
@@ -132,7 +134,7 @@ This package contains GUI widgets for baloo.")
      (list license:lgpl2.1+ license:fdl1.2+))))
 
 (define-public kdenlive
-  (let ((version "18.08.1"))
+  (let ((version "20.04.1"))
     (package
       (name "kdenlive")
       (version version)
@@ -140,24 +142,25 @@ This package contains GUI widgets for baloo.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "git://anongit.kde.org/kdenlive.git")
+               (url "https://anongit.kde.org/kdenlive.git")
                (commit (string-append "v" version))))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0ifnaclsz7w08mc485i3j1kkcpd1m8q5qamckrfwc375ac13xf4g"))))
+           "0n0x34xmcn0k87rqnz0mk462b3al4gq56kn4m00rr428hafscdz7"))))
       (build-system cmake-build-system)
       (native-inputs
        `(("extra-cmake-modules" ,extra-cmake-modules)
          ("qttools" ,qttools)))
-      (propagated-inputs
-       `(("mlt" ,mlt)))
       (inputs
        `(("shared-mime-info" ,shared-mime-info)
          ("frei0r-plugins" ,frei0r-plugins)
+         ("rttr" ,rttr)
+         ("mlt" ,mlt)
          ("qtbase" ,qtbase)
          ("qtscript" ,qtscript)
          ("qtsvg" ,qtsvg)
+         ("qtmultimedia" ,qtmultimedia)
          ("kparts" ,kparts)
          ("knotifications" ,knotifications)
          ("karchive" ,karchive)
@@ -171,16 +174,19 @@ This package contains GUI widgets for baloo.")
          ("kdeclarative" ,kdeclarative)
          ("qtdeclarative" ,qtdeclarative)
          ("qtquickcontrols" ,qtquickcontrols)
+         ("qtquickcontrols2" ,qtquickcontrols2)
          ("kiconthemes" ,kiconthemes)
          ("qtgraphicaleffects" ,qtgraphicaleffects)
          ("kplotting" ,kplotting)))
       (arguments
-       `(#:phases
+       `(#:tests? #f                    ;TODO needs X
+         #:phases
          (modify-phases %standard-phases
            (add-after 'install 'wrap-executable
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
+                      (qtquickcontrols2 (assoc-ref inputs "qtquickcontrols2"))
                       (qtbase (assoc-ref inputs "qtbase"))
                       (qtdeclarative (assoc-ref inputs "qtdeclarative"))
                       (frei0r (assoc-ref inputs "frei0r-plugins"))
@@ -197,7 +203,10 @@ This package contains GUI widgets for baloo.")
                      (,(string-append qtbase "/lib/qt5/plugins/platforms")))
                    `("QML2_IMPORT_PATH" ":" prefix
                      (,(string-append qtquickcontrols qml)
-                      ,(string-append qtdeclarative qml)))))
+                      ,(string-append qtquickcontrols2 qml)
+                      ,(string-append qtdeclarative qml)))
+                   `("MLT_PREFIX" ":" =
+                     (,(assoc-ref inputs "mlt")))))
                #t)))))
       (home-page "https://kdenlive.org")
       (synopsis "Non-linear video editor")
