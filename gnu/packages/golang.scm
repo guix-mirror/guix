@@ -4336,4 +4336,26 @@ semantic versions.  Specifically it provides the ability to:
 @item Optionally work with a @code{v} prefix
 @end itemize\n")
     (license license:expat)))
+
+(define-public go-github-com-huandu-xstrings
+  (package
+    (name "go-github-com-huandu-xstrings")
+    (version "1.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/huandu/xstrings")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pwar6rc0fqb6pll38a44s81g5kb65vbg71jg5lx8caphjnikq5r"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/huandu/xstrings"))
+    (home-page "https://github.com/huandu/xstrings/")
+    (synopsis "Collection of string functions")
+    (description "Go package xstrings is a collection of string functions,
+which are widely used in other languages but absent in Go package strings.")
+    (license license:expat)))
     (license license:expat)))
