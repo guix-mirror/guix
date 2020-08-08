@@ -4837,3 +4837,11 @@ to jQuery to the Go language.")
     (description "This package provides a collection of ANSI-aware methods and
 io.Writers helping you to transform blocks of text.")
     (license license:expat)))
+
+(define-public go-github-com-muesli-reflow-ansi
+  (package
+    (inherit go-github-com-muesli-reflow-wordwrap)
+    (name "go-github-com-muesli-reflow-ansi")
+    (arguments
+     `(#:import-path "github.com/muesli/reflow/ansi"
+       #:unpack-path "github.com/muesli/reflow"))))
