@@ -5215,3 +5215,42 @@ provides both a client and a server.  The client can talk to a standard
 ssh-agent that uses UNIX sockets, and one could implement an alternative
 ssh-agent process using the sample server. ")
     (license license:asl2.0)))
+
+(define-public go-github-com-alcortesm-tgz
+  (let ((commit "9c5fe88206d7765837fed3732a42ef88fc51f1a1")
+        (revision "1"))
+    (package
+      (name "go-github-com-alcortesm-tgz")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alcortesm/tgz")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "04dcwnz2c2i4wbq2vx3g2wrdgqpncr2r1h6p1k08rdwk4bq1h8c5"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    (substitute* "tgz_test.go"
+                      ;; Fix format error
+                      (("t.Fatalf\\(\"%s: unexpected error extracting: %s\", err\\)")
+                       "t.Fatalf(\"%s: unexpected error extracting: %s\", com, err)"))
+                    #t))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/alcortesm/tgz"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'make-git-checkout-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each make-file-writable (find-files "."))
+               (for-each make-file-writable (find-files (assoc-ref outputs "out")))
+               #t)))))
+      (home-page "https://github.com/alcortesm/tgz/")
+      (synopsis "Go library to extract tgz files to temporal directories")
+      (description "This package provides a Go library to extract tgz files to
+temporal directories.")
+      (license license:expat))))
