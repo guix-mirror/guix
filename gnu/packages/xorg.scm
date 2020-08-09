@@ -528,10 +528,10 @@ Resources file.")
 (define-public font-alias
   (package
     (name "font-alias")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (xorg-font-origin
              name version
-             "16ic8wfwwr3jicaml7b5a0sk6plcgc1kg84w02881yhwmqm3nicb"))
+             "0xjjjindczv3g7m1597l0x19zz75xy70wh5garghz61fpzl1l4gk"))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
