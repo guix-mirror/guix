@@ -5209,3 +5209,29 @@ extensions.")
 Importantly, this parser attempts to preserve comments in a given file, so you
 can manipulate a @file{ssh_config} file from a program.")
     (license license:expat)))
+
+(define-public go-github-com-xanzy-ssh-agent
+  (package
+    (name "go-github-com-xanzy-ssh-agent")
+    (version "0.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/xanzy/ssh-agent")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1chjlnv5d6svpymxgsr62d992m2xi6jb5lybjc5zn1h3hv1m01av"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/xanzy/ssh-agent"))
+    (native-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+    (home-page "https://github.com/xanzy/ssh-agent/")
+    (synopsis "Control ssh-agent from Go")
+    (description "Package agent implements the ssh-agent protocol, and
+provides both a client and a server.  The client can talk to a standard
+ssh-agent that uses UNIX sockets, and one could implement an alternative
+ssh-agent process using the sample server. ")
+    (license license:asl2.0)))
