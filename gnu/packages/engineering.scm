@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,6 +96,8 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages parallel)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1073,6 +1076,35 @@ the 'showing the effect of'-style of operation.")
 with machine-specific optimizations for mathematical functions.  It also
 provides a machine-independent interface to select the best such procedures to
 use on a given system.")
+    (license license:gpl3+)))
+
+(define-public libredwg
+  (package
+    (name "libredwg")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/libredwg/libredwg-"
+             version ".tar.xz"))
+       (sha256
+        (base32 "1vd7ii32k5447z7k4w9s005hv1ffpj6dyf1w40x6c53qksrblny2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-bindings")))
+    (native-inputs
+     `(("libxml2" ,libxml2)
+       ("parallel" ,parallel)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-libxml2" ,python-libxml2)))
+    (inputs
+     `(("pcre2" ,pcre2)))
+    (home-page "https://www.gnu.org/software/libredwg/")
+    (synopsis "C library to handle DWG (CAD-related) files")
+    (description
+     "GNU LibreDWG is a C library to handle DWG files.  It aims to be a free
+replacement for the OpenDWG libraries.")
     (license license:gpl3+)))
 
 (define-public minicom
