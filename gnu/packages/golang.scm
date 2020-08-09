@@ -3930,6 +3930,31 @@ attributes.  It also contains some convenience functions for colors, SSH to
 and from termios translations, readCh, reading passwords, etc.")
       (license license:bsd-3))))
 
+(define-public go-github-com-google-go-querystring
+  (let ((commit "992e8021cf787c100d55520d5c906e01536c0a19") ;fix format in tests
+        (revision "1"))
+    (package
+      (name "go-github-com-google-go-querystring")
+      (version "1.0.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/google/go-querystring")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0mbx4jvf7nz4sk2fgqfq1llz4xb3vc4625b4x398mspr3a5077rs"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/google/go-querystring/query"
+         #:unpack-path "github.com/google/go-querystring"))
+      (home-page "https://github.com/google/go-querystring/")
+      (synopsis "Library for encoding structs into URL query parameters")
+      (description "@code{go-querystring} is Go library for encoding structs
+into URL query parameters.")
+      (license license:bsd-3))))
+
 (define-public go-golang.org-x-sync-errgroup
   (let ((commit "cd5d95a43a6e21273425c7ae415d3df9ea832eeb")
         (revision "0"))
