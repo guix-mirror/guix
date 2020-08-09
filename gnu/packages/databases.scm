@@ -2703,15 +2703,13 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
-       (patches (search-patches "python-alembic-exceptions-cause.patch"))
        (sha256
-        (base32
-         "0a4hzn76csgbf1px4f5vfm256byvjrqkgi9869nkcjrwjn35c6kr"))))
+        (base32 "1gsdrzx9h7wfva200qvvsc9sn4w79mk2vs0bbnzjhxi1jw2b0nh3"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
