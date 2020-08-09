@@ -1347,8 +1347,8 @@ files.  It is designed to be fast and to handle large input files.")
     (version "1.0.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.gaia-gis.it/gaia-sins/"
-                                  name  "-" version ".tar.gz"))
+              (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
+                                  "freexl-" version ".tar.gz"))
               (sha256
                (base32
                 "03bmwq6hngmzwpqpb7c2amqlspz4q69iv96nlf0f5c0qs98b3j9x"))))
