@@ -5186,3 +5186,26 @@ filesystem operations.")
       (description "This package provides @code{jbenet's} context
 extensions.")
       (license license:expat))))
+
+(define-public go-github-com-kevinburke-ssh-config
+  (package
+    (name "go-github-com-kevinburke-ssh-config")
+    (version "1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kevinburke/ssh_config")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05jvz5r58a057zxvic9dyr9v2wilha8l6366npwkqgxmnmk9sh5f"))))
+    (arguments
+     `(#:import-path "github.com/kevinburke/ssh_config"))
+    (build-system go-build-system)
+    (home-page "https://github.com/kevinburke/ssh_config/")
+    (synopsis "Parser for @file{ssh_config} files")
+    (description "This is a Go parser for @file{ssh_config} files.
+Importantly, this parser attempts to preserve comments in a given file, so you
+can manipulate a @file{ssh_config} file from a program.")
+    (license license:expat)))
