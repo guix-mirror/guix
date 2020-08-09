@@ -5162,3 +5162,27 @@ library, allowing to develop applications without dependency on the underlying
 storage.  Makes it virtually free to implement mocks and testing over
 filesystem operations.")
     (license license:asl2.0)))
+
+(define-public go-github-com-jbenet-go-context-io
+  (let ((commit "d14ea06fba99483203c19d92cfcd13ebe73135f4")
+        (revision "1"))
+    (package
+      (name "go-github-com-jbenet-go-context-io")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jbenet/go-context")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0q91f5549n81w3z5927n4a1mdh220bdmgl42zi3h992dcc4ls0sl"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/jbenet/go-context/io"))
+      (home-page "https://github.com/jbenet/go-context/")
+      (synopsis "@code{jbenet's} context extensions")
+      (description "This package provides @code{jbenet's} context
+extensions.")
+      (license license:expat))))
