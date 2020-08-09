@@ -5254,3 +5254,32 @@ ssh-agent process using the sample server. ")
       (description "This package provides a Go library to extract tgz files to
 temporal directories.")
       (license license:expat))))
+
+(define-public go-github-com-go-git-go-git-fixtures
+  (package
+    (name "go-github-com-go-git-go-git-fixtures")
+    (version "4.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/go-git/go-git-fixtures")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "002yb1s2mxq2xijkl39ip1iyc3l52k23ikyi9ijfl4bgqxy79ljg"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/go-git/go-git-fixtures/v4"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'reset-gzip-timestamps))))
+    (native-inputs
+     `(("go-github-com-alcortesm-tgz" ,go-github-com-alcortesm-tgz)
+       ("go-github-com-go-git-go-billy" ,go-github-com-go-git-go-billy)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
+    (home-page "https://github.com/go-git/go-git-fixtures/")
+    (synopsis "Fixtures used by @code{go-git}")
+    (description "This package provides fixtures used by @code{go-git}.")
+    (license license:asl2.0)))
