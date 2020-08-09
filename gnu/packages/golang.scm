@@ -5558,3 +5558,47 @@ deleting secrets from the system keyring.")
     (synopsis "Low-level key/value store in Go")
     (description "This package implements a low-level key/value store in Go.")
     (license license:expat)))
+
+(define-public go-github-com-rogpeppe-go-internal
+  (package
+    (name "go-github-com-rogpeppe-go-internal")
+    (version "1.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rogpeppe/go-internal")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00j2vpp1bsggdvw1winkz23mg0q6drjiir5q0k49pmqx1sh7106l"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/rogpeppe/go-internal"
+       ; Source-only package
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
+    (home-page "https://github.com/rogpeppe/go-internal/")
+    (synopsis "Internal packages from the Go standard library")
+    (description "This repository factors out an opinionated selection of
+internal packages and functionality from the Go standard library.  Currently
+this consists mostly of packages and testing code from within the Go tool
+implementation.
+
+Included are the following:
+@itemize
+@item dirhash: calculate hashes over directory trees the same way that the Go tool does.
+@item goproxytest: a GOPROXY implementation designed for test use.
+@item gotooltest: Use the Go tool inside test scripts (see testscript below)
+@item imports: list of known architectures and OSs, and support for reading import import statements.
+@item modfile: read and write go.mod files while preserving formatting and comments.
+@item module: module paths and versions.
+@item par: do work in parallel.
+@item semver: semantic version parsing.
+@item testenv: information on the current testing environment.
+@item testscript: script-based testing based on txtar files
+@item txtar: simple text-based file archives for testing.
+@end itemize\n")
+    (license license:bsd-3)))
