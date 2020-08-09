@@ -5143,11 +5143,11 @@ storage.  Makes it virtually free to implement mocks and testing over
 filesystem operations.")
     (license license:asl2.0)))
 
-(define-public go-github-com-jbenet-go-context-io
+(define-public go-github-com-jbenet-go-context
   (let ((commit "d14ea06fba99483203c19d92cfcd13ebe73135f4")
         (revision "1"))
     (package
-      (name "go-github-com-jbenet-go-context-io")
+      (name "go-github-com-jbenet-go-context")
       (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
@@ -5160,7 +5160,12 @@ filesystem operations.")
                   "0q91f5549n81w3z5927n4a1mdh220bdmgl42zi3h992dcc4ls0sl"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/jbenet/go-context/io"))
+       `(#:import-path "github.com/jbenet/go-context"
+         ; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
       (home-page "https://github.com/jbenet/go-context/")
       (synopsis "@code{jbenet's} context extensions")
       (description "This package provides @code{jbenet's} context
