@@ -20980,7 +20980,7 @@ through Dash docsets.")
 (define-public emacs-calibredb
   (package
     (name "emacs-calibredb")
-    (version "2.4.0")
+    (version "2.5.0")
     (source
      (origin
        (method git-fetch)
@@ -20989,7 +20989,7 @@ through Dash docsets.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0c6y3n51djajhfj4k6g0r58brls0fhyw6d7c6h4zi5jl1hw64vj6"))))
+        (base32 "11m9d015fnjf89qg6wpy0vs1vhvak5q753m4dzqrdw3jgm9zsnmv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
