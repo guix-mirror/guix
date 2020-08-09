@@ -270,7 +270,7 @@ performance and other characteristics.")
 (define-public exfatprogs
   (package
     (name "exfatprogs")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method git-fetch)
@@ -279,8 +279,7 @@ performance and other characteristics.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1s47qvhr702z5c19wfqz8cwl9ammmincs7a8vjc6p974wnnjg77y"))))
+        (base32 "1braffz1wc4ki3nb42q85l5zg2dl2hwjr64rk27nc85wcsrbavnl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
