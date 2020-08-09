@@ -19210,8 +19210,8 @@ stored playlists.")
 
 (define-public emacs-vterm
   (let ((version "0")
-        (revision "1")
-        (commit "e63bd65eece7c5de3a534b7e2fdbe58256ec2da0"))
+        (revision "2")
+        (commit "f41849c2c9c1899f22d1c3d4f871ec47c82627ce"))
     (package
       (name "emacs-vterm")
       (version (git-version version revision commit))
@@ -19223,7 +19223,7 @@ stored playlists.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0iq857w54qmazxh23fipz85fb9i6dav3f63g0ghpmi6mybfp6i5v"))))
+                  "1b5s1101n7a2lnpkbadm1h4k6z295fpijx0rdpmd05dkhyarax6n"))))
       (build-system emacs-build-system)
       (arguments
        `(#:modules ((guix build emacs-build-system)
