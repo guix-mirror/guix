@@ -5112,3 +5112,27 @@ structures and algorithms in Go.")
     (description "Package warnings implements error handling with non-fatal
 errors (warnings).")
     (license license:bsd-2)))
+
+(define-public go-github-com-go-git-gcfg
+  (package
+    (name "go-github-com-go-git-gcfg")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/go-git/gcfg")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1lb14z4j35pwz2b2rbykkpsq515spwbndb00gwn2xlrzn949xb83"))))
+    (arguments
+     `(#:import-path "github.com/go-git/gcfg"))
+    (native-inputs
+     `(("go-gopkg-in-warnings" ,go-gopkg-in-warnings)
+       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)))
+    (build-system go-build-system)
+    (home-page "https://github.com/go-git/gcfg/")
+    (synopsis "Gcfg reads INI-style configuration files into Go structs")
+    (description "Gcfg reads INI-style configuration files into Go structs.")
+    (license license:bsd-3)))
