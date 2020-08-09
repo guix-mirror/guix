@@ -11962,8 +11962,15 @@ A string denoting the contents of the @file{/etc/issue} file, which is
 displayed when users log in on a text console.
 
 @item @code{packages} (default: @code{%base-packages})
-The set of packages installed in the global profile, which is accessible
-at @file{/run/current-system/profile}.
+A list of packages to be installed in the global profile, which is accessible
+at @file{/run/current-system/profile}.  Each element is either a package
+variable or a package/output tuple.  Here's a simple example of both:
+
+@lisp
+(cons* git                               ; only the default "out" output
+       (git "send-email")                ; another output of the git package
+       %base-packages)                   ; the default set
+@end lisp
 
 The default set includes core utilities and it is good practice to
 install non-core utilities in user profiles (@pxref{Invoking guix
