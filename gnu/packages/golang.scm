@@ -5388,3 +5388,25 @@ temporal directories.")
       (description
        "This package provides a Go library to create and print diffs.")
       (license license:bsd-3))))
+
+(define-public go-github-com-twpayne-go-shell
+  (package
+    (name "go-github-com-twpayne-go-shell")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/twpayne/go-shell")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hv0ggy3935iddjnmpp9vl0kqjknxpnbmm9w7xr3gds7fpbxz6yp"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/twpayne/go-shell"))
+    (home-page "https://github.com/twpayne/go-shell/")
+    (synopsis "Shell across multiple platforms")
+    (description
+     "Package @code{shell} returns a user's shell across multiple platforms.")
+    (license license:expat)))
