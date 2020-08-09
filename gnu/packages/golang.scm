@@ -46,6 +46,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -5485,3 +5486,28 @@ and @code{ioutil} packages that is easy to test.")
     (description "Package @code{xdg} provides functions related to
 @uref{freedesktop.org}.")
     (license license:expat)))
+
+(define-public go-github-com-godbus-dbus
+  (package
+    (name "go-github-com-godbus-dbus")
+    (version "5.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/godbus/dbus")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1bkc904073k807yxg6mvqaxrr6ammmhginr9p54jfb55mz3hfw3s"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:tests? #f ;no /var/run/dbus/system_bus_socket
+       #:import-path "github.com/godbus/dbus"))
+    (native-inputs
+     `(("dbus" ,dbus))) ;dbus-launch
+    (home-page "https://github.com/godbus/dbus/")
+    (synopsis "Native Go client bindings for the D-Bus")
+    (description "@code{dbus} is a library that implements native Go client
+bindings for the D-Bus message bus system.")
+    (license license:bsd-2)))
