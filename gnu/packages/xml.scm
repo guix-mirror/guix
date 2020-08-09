@@ -1237,7 +1237,7 @@ XSLT and EXSLT.")
 (define-public html-xml-utils
  (package
    (name "html-xml-utils")
-   (version "7.8")
+   (version "7.9")
    (source
     (origin
       (method url-fetch)
@@ -1245,7 +1245,7 @@ XSLT and EXSLT.")
             "https://www.w3.org/Tools/HTML-XML-utils/html-xml-utils-"
             version ".tar.gz"))
       (sha256
-       (base32 "0p8df3c6mw879vdi8l63kbdqylkf1is10b067mh9kipgfy91rd4s"))))
+       (base32 "0gs3xvdbzhk5k12i95p5d4fgkkaldnlv45sch7pnncb0lrpcjsnq"))))
    (build-system gnu-build-system)
    (home-page "https://www.w3.org/Tools/HTML-XML-utils/")
    (synopsis "Command line utilities to manipulate HTML and XML files")
