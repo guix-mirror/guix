@@ -5602,3 +5602,31 @@ Included are the following:
 @item txtar: simple text-based file archives for testing.
 @end itemize\n")
     (license license:bsd-3)))
+
+(define-public gopkg-in-errgo-fmt-errors
+  (package
+    (name "gopkg-in-errgo-fmt-errors")
+    (version "2.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/go-errgo/errgo")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "065mbihiy7q67wnql0bzl9y1kkvck5ivra68254zbih52jxwrgr2"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "gopkg.in/errgo.v2/fmt/errors"
+       #:tests? #f
+       ;; Source-only package
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
+    (home-page "https://godoc.org/gopkg.in/errgo.v2")
+    (synopsis "Functions that use the fmt package to format error messages")
+    (description "This package is the same as @code{gopkg.in/errgo.v2/errors}
+except that it adds convenience functions that use the fmt package to format
+error messages.")
+    (license license:bsd-3)))
