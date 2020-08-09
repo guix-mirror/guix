@@ -3982,6 +3982,28 @@ into URL query parameters.")
 GitHub API v3.")
     (license license:bsd-3)))
 
+(define-public go-github-com-google-renameio
+  (package
+    (name "go-github-com-google-renameio")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/renameio")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ki2x5a9nrj17sn092d6n4zr29lfg5ydv4xz5cp58z6cw8ip43jx"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/google/renameio"))
+    (home-page "https://github.com/google/renameio/")
+    (synopsis "Atomically create or replace a file or symbolic link")
+    (description "@code{renameio} Go package provides a way to atomically
+create or replace a file or symbolic link.")
+    (license license:asl2.0)))
+
 (define-public go-golang.org-x-sync-errgroup
   (let ((commit "cd5d95a43a6e21273425c7ae415d3df9ea832eeb")
         (revision "0"))
