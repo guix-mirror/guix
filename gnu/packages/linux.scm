@@ -202,6 +202,12 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
                               "deblob-check"))
           (sha256 deblob-check-hash))))
 
+(define deblob-scripts-5.8
+  (linux-libre-deblob-scripts
+   "5.8"
+   (base32 "07z7sglyrfh0706icqqf3shadf638pvyid9386r661ds5lbsa2mw")
+   (base32 "1nzf1wzva52bm41j2ba0m1vr0cpfwnybdwv5ff6km49l0gziaqx7")))
+
 (define deblob-scripts-5.7
   (linux-libre-deblob-scripts
    "5.7.14"
@@ -379,6 +385,14 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
+(define-public linux-libre-5.8-version "5.8")
+(define-public linux-libre-5.8-pristine-source
+  (let ((version linux-libre-5.8-version)
+        (hash (base32 "1xgibkwb1yfl6qdlbxyagai0qc1pk5ark7giz1512hh6ma353xz7")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.8)))
+
 (define-public linux-libre-5.7-version "5.7.14")
 (define-public linux-libre-5.7-pristine-source
   (let ((version linux-libre-5.7-version)
@@ -454,6 +468,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (inherit source)
     (patches (append (origin-patches source)
                      patches))))
+
+(define-public linux-libre-5.8-source
+  (source-with-patches linux-libre-5.8-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-5.7-source
   (source-with-patches linux-libre-5.7-pristine-source
@@ -558,6 +577,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.8
+  (make-linux-libre-headers* linux-libre-5.8-version
+                             linux-libre-5.8-source))
 
 (define-public linux-libre-headers-5.7
   (make-linux-libre-headers* linux-libre-5.7-version
