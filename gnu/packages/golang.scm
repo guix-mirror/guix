@@ -5511,3 +5511,29 @@ and @code{ioutil} packages that is easy to test.")
     (description "@code{dbus} is a library that implements native Go client
 bindings for the D-Bus message bus system.")
     (license license:bsd-2)))
+
+(define-public go-github-com-zalando-go-keyring
+  (package
+    (name "go-github-com-zalando-go-keyring")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/zalando/go-keyring")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0kj54nkiyccy6m9iy9a53f6412a54xk96j88jaiq35yzdgfa4z3p"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:tests? #f ;XXX: Fix dbus tests
+       #:import-path "github.com/zalando/go-keyring"))
+    (native-inputs
+     `(("go-github-com-godbus-dbus" ,go-github-com-godbus-dbus)
+       ("dbus" ,dbus)))
+    (home-page "https://github.com/zalando/go-keyring/")
+    (synopsis "Library for working with system keyring")
+    (description "@code{go-keyring} is a library for setting, getting and
+deleting secrets from the system keyring.")
+    (license license:expat)))
