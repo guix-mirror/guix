@@ -74,6 +74,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
@@ -2651,3 +2652,57 @@ package is provided for users who need to recover @code{tla} repositories and
 for historians.")
     (home-page "https://www.gnu.org/software/gnu-arch/")
     (license license:gpl2)))                      ;version 2 only
+
+(define-public go-github-go-git
+  (package
+    (name "go-github-go-git")
+    (version "5.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/go-git/go-git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vkcmhh2qq8c38sjbnzf0wvg2rzr19wssaq177bsvrjwj1xz1qbs"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:tests? #f ;requires network connection
+       #:import-path "github.com/go-git/go-git/v5"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'setup
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((git (assoc-ref inputs "git"))
+                    (git-bin (string-append (assoc-ref inputs "git") "/bin"))
+                    (git-exe (string-append git-bin "/git")))
+               (setenv "GIT_DIST_PATH=" git)
+               (setenv "GIT_EXEC_PATH=" git-bin)
+               (setenv "HOME" (getcwd))
+               (invoke git-exe "config" "--global" "user.email" "gha@example.com")
+               (invoke git-exe "config" "--global" "user.name" "GitHub Actions")
+               #t)
+             #t)))))
+    (native-inputs
+     `(("go-github-com-emirpasic-gods" ,go-github-com-emirpasic-gods)
+       ("go-github-com-go-git-gcfg" ,go-github-com-go-git-gcfg)
+       ("go-github-com-go-git-go-billy" ,go-github-com-go-git-go-billy)
+       ("go-github-com-imdario-mergo" ,go-github-com-imdario-mergo)
+       ("go-github-com-jbenet-go-context" ,go-github-com-jbenet-go-context)
+       ("go-github-com-kevinburke-ssh-config" ,go-github-com-kevinburke-ssh-config)
+       ("go-github-com-mitchellh-go-homedir" ,go-github-com-mitchellh-go-homedir)
+       ("go-github-com-sergi-go-diff" ,go-github-com-sergi-go-diff)
+       ("go-github-com-xanzy-ssh-agentf" ,go-github-com-xanzy-ssh-agent)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-gopkg-in-warnings" ,go-gopkg-in-warnings)
+       ("go-github-com-go-git-go-git-fixtures" ,go-github-com-go-git-go-git-fixtures)
+       ("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)
+       ("go-github-com-alcortesm-tgz" ,go-github-com-alcortesm-tgz)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)
+       ("git" ,git)))
+    (home-page "https://github.com/go-git/")
+    (synopsis "Git implementation library")
+    (description "This package provides a Git implementation library.")
+    (license license:asl2.0)))
