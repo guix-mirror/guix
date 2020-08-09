@@ -443,16 +443,16 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.26")
+    (version "4.0.33")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/puppetlabs/facter-ng")
+                    (url "https://github.com/puppetlabs/facter")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bab3by926gavbhkvp0in82vim575ybj8z6av3b12jdvla1s9rmz"))))
+                "0r9fi15cib4324ii4pniayjf27g51dka2skv9isiaj8y4wyhcq0v"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -470,7 +470,7 @@ graphs and can export its output to different formats.")
          (add-after 'unpack 'embed-absolute-references
            ;; Refer to absolute executable file names to avoid propagation.
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* (find-files "lib/resolvers" "\\.rb$")
+             (substitute* (find-files "lib/facter/resolvers" "\\.rb$")
                (("execute\\('(which |)([^ ']+)" _ _ name)
                 (string-append "execute('" (or (which name)
                                                name))))
