@@ -5410,3 +5410,27 @@ temporal directories.")
     (description
      "Package @code{shell} returns a user's shell across multiple platforms.")
     (license license:expat)))
+
+(define-public go-github-com-twpayne-go-vfs
+  (package
+    (name "go-github-com-twpayne-go-vfs")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/twpayne/go-vfs")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "19dm3gi45znwaqbzxhwcgkiz8059bwa3ank80hc6qhdl579bpjnz"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/twpayne/go-vfs"))
+    (native-inputs
+     `(("go-github-com-bmatcuk-doublestar" ,go-github-com-bmatcuk-doublestar)))
+    (home-page "https://github.com/twpayne/go-vfs/")
+    (synopsis "Abstraction of the @code{os} and @code{ioutil} Go packages")
+    (description "Package @code{vfs} provides an abstraction of the @code{os}
+and @code{ioutil} packages that is easy to test.")
+    (license license:expat)))
