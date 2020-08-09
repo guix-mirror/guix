@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -691,7 +691,7 @@ file system.")
 (define-public android-udev-rules
   (package
     (name "android-udev-rules")
-    (version "20191103")
+    (version "20200613")
     (source
      (origin
        (method git-fetch)
@@ -700,7 +700,7 @@ file system.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x2f2sv0x0ry7kccp47s0hlxps3hbpg37dj3xjjgpdm5hmn2cjq3"))))
+        (base32 "0cf5br8x6iwxc1cifv0i1klw7skgs8hghdx6qlqby68kyqg81bb2"))))
     (build-system trivial-build-system)
     (native-inputs `(("source" ,source)))
     (arguments
