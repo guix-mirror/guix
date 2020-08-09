@@ -701,10 +701,10 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
 (define-public font-misc-ethiopic
   (package
     (name "font-misc-ethiopic")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (xorg-font-origin
              name version
-             "19cq7iq0pfad0nc2v28n681fdq3fcw1l1hzaq0wpkgpx7bc1zjsk"))
+             "1q2azkdwc4x3kh53xclwpf9q654k70lhiyns1cjq594wvxnhz339"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
