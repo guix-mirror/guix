@@ -5044,9 +5044,9 @@ use one of our glamourous default themes.")
 It lets you parse and compare two semantic version strings.")
     (license license:asl2.0)))
 
-(define-public go-github-com-emirpasic-gods-trees-binaryheap
+(define-public go-github-com-emirpasic-gods
   (package
-    (name "go-github-com-emirpasic-gods-trees-binaryheap")
+    (name "go-github-com-emirpasic-gods")
     (version "1.12.0")
     (source (origin
               (method git-fetch)
@@ -5059,37 +5059,17 @@ It lets you parse and compare two semantic version strings.")
                 "0i5qqq7ajvw3mikr95zl9rsnfsjanzwpqqs6kzzplsfgsifybar1"))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "github.com/emirpasic/gods/trees/binaryheap"
-       #:unpack-path "github.com/emirpasic/gods"))
+     `(#:import-path "github.com/emirpasic/gods"
+       ; Source-only package
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
     (home-page "https://github.com/emirpasic/gods/")
     (synopsis "Implementation of various data structures and algorithms in Go")
     (description "This package provides implementation of various data
 structures and algorithms in Go.")
     (license license:bsd-2)))
-
-(define-public go-github-com-emirpasic-gods-containers
-  (package
-    (inherit go-github-com-emirpasic-gods-trees-binaryheap)
-    (name "go-github-com-emirpasic-gods-containers")
-    (arguments
-     `(#:import-path "github.com/emirpasic/gods/containers"
-       #:unpack-path "github.com/emirpasic/gods"))))
-
-(define-public go-github-com-emirpasic-gods-lists-arraylist
-  (package
-    (inherit go-github-com-emirpasic-gods-trees-binaryheap)
-    (name "go-github-com-emirpasic-gods-lists-arraylist")
-    (arguments
-     `(#:import-path "github.com/emirpasic/gods/lists/arraylist"
-       #:unpack-path "github.com/emirpasic/gods"))))
-
-(define-public go-github-com-emirpasic-gods-utils
-  (package
-    (inherit go-github-com-emirpasic-gods-trees-binaryheap)
-    (name "go-github-com-emirpasic-gods-utils")
-    (arguments
-     `(#:import-path "github.com/emirpasic/gods/utils"
-       #:unpack-path "github.com/emirpasic/gods"))))
 
 (define-public go-gopkg-in-warnings
   (package
