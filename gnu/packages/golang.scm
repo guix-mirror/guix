@@ -5537,3 +5537,24 @@ bindings for the D-Bus message bus system.")
     (description "@code{go-keyring} is a library for setting, getting and
 deleting secrets from the system keyring.")
     (license license:expat)))
+
+(define-public go-etcd-io-bbolt
+  (package
+    (name "go-etcd-io-bbolt")
+    (version "1.3.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/etcd-io/bbolt")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1h64gipvcg7060byv5wjlf524kqwj12p3v08kfh4ygv46vpm8p2r"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "go.etcd.io/bbolt"))
+    (home-page "https://pkg.go.dev/go.etcd.io/bbolt/")
+    (synopsis "Low-level key/value store in Go")
+    (description "This package implements a low-level key/value store in Go.")
+    (license license:expat)))
