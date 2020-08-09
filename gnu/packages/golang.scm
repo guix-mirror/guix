@@ -5074,3 +5074,11 @@ structures and algorithms in Go.")
     (arguments
      `(#:import-path "github.com/emirpasic/gods/containers"
        #:unpack-path "github.com/emirpasic/gods"))))
+
+(define-public go-github-com-emirpasic-gods-lists-arraylist
+  (package
+    (inherit go-github-com-emirpasic-gods-trees-binaryheap)
+    (name "go-github-com-emirpasic-gods-lists-arraylist")
+    (arguments
+     `(#:import-path "github.com/emirpasic/gods/lists/arraylist"
+       #:unpack-path "github.com/emirpasic/gods"))))
