@@ -5136,3 +5136,29 @@ errors (warnings).")
     (synopsis "Gcfg reads INI-style configuration files into Go structs")
     (description "Gcfg reads INI-style configuration files into Go structs.")
     (license license:bsd-3)))
+
+(define-public go-github-com-go-git-go-billy
+  (package
+    (name "go-github-com-go-git-go-billy")
+    (version "5.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/go-git/go-billy")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wdzczfk1n50dl2zpgf46m69b0sm8qkan5xyv82pk9x53zm1dmdx"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/go-git/go-billy/v5"))
+    (native-inputs
+     `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
+    (home-page "https://github.com/go-git/go-billy/")
+    (synopsis "Filesystem abstraction for Go")
+    (description "Billy implements an interface based on the os standard
+library, allowing to develop applications without dependency on the underlying
+storage.  Makes it virtually free to implement mocks and testing over
+filesystem operations.")
+    (license license:asl2.0)))
