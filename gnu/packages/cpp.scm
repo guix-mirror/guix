@@ -247,7 +247,7 @@ as ordering relation.")
 (define-public json-modern-cxx
   (package
     (name "json-modern-cxx")
-    (version "3.9.0")
+    (version "3.9.1")
     (home-page "https://github.com/nlohmann/json")
     (source
      (origin
@@ -255,8 +255,7 @@ as ordering relation.")
        (uri (git-reference (url home-page)
                            (commit (string-append "v" version))))
        (sha256
-        (base32
-         "06wmbnwbisbq3rqdbmi297hidvq6q8vs6j4z0a9qpr4sm721lwa6"))
+        (base32 "0ar4mzp53lskxw3vdzw07f47njcshl3lwid9jfq6l7yx6ds2nyjc"))
        (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
@@ -285,17 +284,6 @@ as ordering relation.")
        (list (string-append "-DJSON_TestDataDirectory="
                             (assoc-ref %build-inputs "json_test_data")))
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'fix-pkg-config-install
-                    (lambda _
-                      ;; This phase can be removed for versions >= 3.9.1.
-                      (substitute* "CMakeLists.txt"
-                        ;; Look for the generated .pc in the right place ...
-                        (("\\$\\{CMAKE_BINARY_DIR\\}/\\$\\{PROJECT_NAME\\}\\.pc")
-                        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc")
-                        ;; ... and install it to the libdir.
-                        (("DESTINATION lib/pkgconfig")
-                         "DESTINATION \"${CMAKE_INSTALL_LIBDIR}/pkgconfig\""))
-                      #t))
                   ;; XXX: When tests are enabled, the install phase will cause
                   ;; a needless rebuild without the given configure flags,
                   ;; ultimately creating both $out/lib and $out/lib64.  Move
