@@ -3955,6 +3955,33 @@ and from termios translations, readCh, reading passwords, etc.")
 into URL query parameters.")
       (license license:bsd-3))))
 
+(define-public go-github-com-google-go-github
+  (package
+    (name "go-github-com-google-go-github")
+    (version "26.1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/go-github")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0x0zz1vcmllp6r6l2qin9b2llm5cxbf6n84rf99h8wrmhvzs2ipi"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:tests? #f ;application/octet-stream instead of text/plain
+       #:import-path "github.com/google/go-github/v26/github"
+       #:unpack-path "github.com/google/go-github/v26"))
+    (native-inputs
+     `(("go-github-com-google-go-querystring" ,go-github-com-google-go-querystring)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+    (home-page "https://github.com/google/go-github/")
+    (synopsis "Client library for accessing the GitHub API v3")
+    (description "@code{go-github} is a Go client library for accessing the
+GitHub API v3.")
+    (license license:bsd-3)))
+
 (define-public go-golang.org-x-sync-errgroup
   (let ((commit "cd5d95a43a6e21273425c7ae415d3df9ea832eeb")
         (revision "0"))
