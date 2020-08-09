@@ -1387,6 +1387,30 @@ use in your tests.")
     ;; Either license applies.
     (license (list license:expat license:asl2.0))))
 
+(define-public python-certipy
+  (package
+    (name "python-certipy")
+    (version "0.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "certipy" version))
+        (sha256
+         (base32
+          "0n980gqpzh0fm58h3i4mi2i10wgj606lscm1r5sk60vbf6vh8mv9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyopenssl" ,python-pyopenssl)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/LLNL/certipy")
+    (synopsis "Utility to create and sign CAs and certificates")
+    (description
+     "Certipy was made to simplify the certificate creation process.  To that
+end, certipy exposes methods for creating and managing certificate authorities,
+certificates, signing and building trust bundles.")
+    (license license:bsd-3)))
+
 (define-public python-jeepney
   (package
     (name "python-jeepney")
