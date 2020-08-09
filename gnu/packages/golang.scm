@@ -5090,3 +5090,25 @@ structures and algorithms in Go.")
     (arguments
      `(#:import-path "github.com/emirpasic/gods/utils"
        #:unpack-path "github.com/emirpasic/gods"))))
+
+(define-public go-gopkg-in-warnings
+  (package
+    (name "go-gopkg-in-warnings")
+    (version "0.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/go-warnings/warnings")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1kzj50jn708cingn7a13c2wdlzs6qv89dr2h4zj8d09647vlnd81"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "gopkg.in/warnings.v0"))
+    (home-page "https://gopkg.in/warnings.v0")
+    (synopsis "Error handling with non-fatal errors")
+    (description "Package warnings implements error handling with non-fatal
+errors (warnings).")
+    (license license:bsd-2)))
