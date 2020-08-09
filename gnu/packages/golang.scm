@@ -5460,3 +5460,28 @@ and @code{ioutil} packages that is easy to test.")
      "Package @code{vfsafero} provides a compatibility later between
 @code{go-github-com-twpayne-go-vfs} and @code{go-github-com-spf13-afero}.")
     (license license:expat)))
+
+(define-public go-github-com-twpayne-go-xdg
+  (package
+    (name "go-github-com-twpayne-go-xdg")
+    (version "3.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/twpayne/go-xdg")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0j8q7yzixs6jlaad0lpa8hs6b240gm2cmy0yxgnprrbpa0y2r7ln"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/twpayne/go-xdg/v3"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+       ("go-github-com-twpayne-go-vfs" ,go-github-com-twpayne-go-vfs)))
+    (home-page "https://github.com/twpayne/go-xdg/")
+    (synopsis "Functions related to freedesktop.org")
+    (description "Package @code{xdg} provides functions related to
+@uref{freedesktop.org}.")
+    (license license:expat)))
