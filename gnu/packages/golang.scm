@@ -5362,3 +5362,29 @@ temporal directories.")
     (synopsis "Fixtures used by @code{go-git}")
     (description "This package provides fixtures used by @code{go-git}.")
     (license license:asl2.0)))
+
+(define-public go-github-com-pkg-diff
+  (let ((commit "531926345625d489a6b56f860a569e68245ace36")
+        (revision "1"))
+    (package
+      (name "go-github-com-pkg-diff")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pkg/diff")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1770m7qhww6lm0wj1v3mhv6hwa2v92p4w2fqxj1xyrg5dd58d944"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/pkg/diff"))
+      (native-inputs
+       `(("go-github-com-sergi-go-diff" ,go-github-com-sergi-go-diff)))
+      (home-page "https://github.com/pkg/diff/")
+      (synopsis "Create and print diffs")
+      (description
+       "This package provides a Go library to create and print diffs.")
+      (license license:bsd-3))))
