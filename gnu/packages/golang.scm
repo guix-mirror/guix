@@ -5043,3 +5043,26 @@ use one of our glamourous default themes.")
     (description "@code{go-semver} is a semantic versioning library for Go.
 It lets you parse and compare two semantic version strings.")
     (license license:asl2.0)))
+
+(define-public go-github-com-emirpasic-gods-trees-binaryheap
+  (package
+    (name "go-github-com-emirpasic-gods-trees-binaryheap")
+    (version "1.12.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emirpasic/gods")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0i5qqq7ajvw3mikr95zl9rsnfsjanzwpqqs6kzzplsfgsifybar1"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/emirpasic/gods/trees/binaryheap"
+       #:unpack-path "github.com/emirpasic/gods"))
+    (home-page "https://github.com/emirpasic/gods/")
+    (synopsis "Implementation of various data structures and algorithms in Go")
+    (description "This package provides implementation of various data
+structures and algorithms in Go.")
+    (license license:bsd-2)))
