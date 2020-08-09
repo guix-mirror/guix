@@ -1344,14 +1344,14 @@ files.  It is designed to be fast and to handle large input files.")
 (define-public freexl
   (package
     (name "freexl")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                                   "freexl-" version ".tar.gz"))
               (sha256
                (base32
-                "03bmwq6hngmzwpqpb7c2amqlspz4q69iv96nlf0f5c0qs98b3j9x"))))
+                "08pwj17l0lgp6zms9nmpawdxpvhzrslklbd53s4b430k7mxbbs1x"))))
     (build-system gnu-build-system)
     (home-page "https://www.gaia-gis.it/fossil/freexl/index")
     (synopsis "Read Excel files")
