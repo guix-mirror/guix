@@ -1934,13 +1934,13 @@ failures.")
 (define-public python-pytest-flakes
   (package
     (name "python-pytest-flakes")
-    (version "4.0.0")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest-flakes" version))
               (sha256
                (base32
-                "0hyind0gb950v9kfy0v97x66fb33slbqmxhrjvgbvsv0ayzn869l"))))
+                "0045h3hnrkn2jwr42jgy2j98npx4amwr6wxzi9j0nppaqz33l49p"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
