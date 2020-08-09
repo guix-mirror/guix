@@ -5066,3 +5066,11 @@ It lets you parse and compare two semantic version strings.")
     (description "This package provides implementation of various data
 structures and algorithms in Go.")
     (license license:bsd-2)))
+
+(define-public go-github-com-emirpasic-gods-containers
+  (package
+    (inherit go-github-com-emirpasic-gods-trees-binaryheap)
+    (name "go-github-com-emirpasic-gods-containers")
+    (arguments
+     `(#:import-path "github.com/emirpasic/gods/containers"
+       #:unpack-path "github.com/emirpasic/gods"))))
