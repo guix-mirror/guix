@@ -1236,21 +1236,29 @@ made by suckless.")
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
                     (share (string-append out "/share"))
                     (icons (string-append share "/icons/hicolor/scalable/apps"))
                     (tic   (string-append (assoc-ref inputs "ncurses") "/bin/tic"))
                     (man   (string-append share "/man/man1"))
                     (alacritty-bin "target/release/alacritty"))
 
-               ;; Install binary
-               (install-file alacritty-bin (string-append out "/bin"))
+               ;; Install and wrap the binary.
+               (install-file alacritty-bin bin)
+               (wrap-program (string-append bin "/alacritty")
+                 ;; Both libraries are dlopen()d by cargo dependencies above
+                 ;; when running Alacritty on pure Wayland.
+                 ;; XXX Find out how to patch these at the source.
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "libxkbcommon") "/lib:"
+                                    (assoc-ref inputs "wayland") "/lib"))))
 
-               ;; Install man pages
+               ;; Install man pages.
                (mkdir-p man)
                (copy-file "extra/alacritty.man"
                           (string-append man "/alacritty.1"))
 
-               ;; Install desktop file
+               ;; Install desktop file.
                (install-file "extra/linux/alacritty.desktop"
                              (string-append share "/applications"))
 
@@ -1259,7 +1267,7 @@ made by suckless.")
                (copy-file "extra/logo/alacritty-term.svg"
                           (string-append icons "/Alacritty.svg"))
 
-               ;; Install terminfo
+               ;; Install terminfo.
                (mkdir-p (string-append share "/terminfo"))
                ;; We don't compile alacritty-common entry because
                ;; it's being used only for inheritance.
@@ -1267,7 +1275,7 @@ made by suckless.")
                        "-o" (string-append share "/terminfo/")
                        "extra/alacritty.info")
 
-               ;; Install completions
+               ;; Install completions.
                (install-file
                  "extra/completions/alacritty.bash"
                  (string-append out "/etc/bash_completion.d"))
