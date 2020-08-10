@@ -2499,6 +2499,30 @@ networks using zeromq.  It has these key characteristics:
     (home-page "https://github.com/zeromq/zyre")
     (license license:mpl2.0)))
 
+(define-public libsocketcan
+  (package
+    (name "libsocketcan")
+    (version "0.0.11")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.pengutronix.de/cgit/tools/libsocketcan")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17z2y2r9xkixhr9bxr50m77fh710afl30s7jdhbxrvf56vmal2jr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://git.pengutronix.de/cgit/tools/libsocketcan")
+    (synopsis "SocketCAN user-space library")
+    (description "This library allows controlling basic functions in SocketCAN
+from user-space.  It requires a kernel built with SocketCAN support.")
+    (license license:lgpl2.1+)))
+
 (define-public can-utils
   (package
     (name "can-utils")
