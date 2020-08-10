@@ -917,18 +917,6 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_RTC_DRV_RK808" . #t))
                       %default-extra-linux-options)))
 
-(define-public linux-libre-arm-generic-5.7
-  (make-linux-libre* linux-libre-5.7-version
-                     linux-libre-5.7-source
-                     '("armhf-linux")
-                     #:defconfig "multi_v7_defconfig"
-                     #:extra-version "arm-generic"
-                     #:extra-options
-                     (append
-                      `(;; needed to fix the RTC on rockchip platforms
-                        ("CONFIG_RTC_DRV_RK808" . #t))
-                      %default-extra-linux-options)))
-
 (define-public linux-libre-arm-veyron
   (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
 
@@ -974,18 +962,6 @@ It has been modified to remove all non-free binary blobs.")
                      #:defconfig "defconfig"
                      #:extra-version "arm64-generic"
 		     #:extra-options
-                     (append
-                      `(;; needed to fix the RTC on rockchip platforms
-                        ("CONFIG_RTC_DRV_RK808" . #t))
-                      %default-extra-linux-options)))
-
-(define-public linux-libre-arm64-generic-5.7
-  (make-linux-libre* linux-libre-5.7-version
-                     linux-libre-5.7-source
-                     '("aarch64-linux")
-                     #:defconfig "defconfig"
-                     #:extra-version "arm64-generic"
-                     #:extra-options
                      (append
                       `(;; needed to fix the RTC on rockchip platforms
                         ("CONFIG_RTC_DRV_RK808" . #t))
