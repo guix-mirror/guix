@@ -96,6 +96,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -107,6 +108,57 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public eglexternalplatform
+  (package
+    (name "eglexternalplatform")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/NVIDIA/eglexternalplatform.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "0lr5s2xa1zn220ghmbsiwgmx77l156wk54c7hybia0xpr9yr2nhb"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-pkgconfig
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "eglexternalplatform.pc"
+               (("/usr")
+                (assoc-ref outputs "out")))
+             #t))
+         (add-after 'install 'revise
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/include/EGL"))
+               (rename-file
+                (string-append out "/interface")
+                (string-append out "/include/EGL"))
+               (mkdir-p (string-append out "/share/pkgconfig"))
+               (rename-file
+                (string-append out "/eglexternalplatform.pc")
+                (string-append out "/share/pkgconfig/eglexternalplatform.pc"))
+               (for-each delete-file-recursively
+                         (list
+                          (string-append out "/samples")
+                          (string-append out "/COPYING")
+                          (string-append out "/README.md"))))
+             #t)))))
+    (synopsis "EGL External Platform interface")
+    (description "EGLExternalPlatform is an specification of the EGL External
+Platform interface for writing EGL platforms and their interactions with modern
+window systems on top of existing low-level EGL platform implementations.  This
+keeps window system implementation specifics out of EGL drivers by using
+application-facing EGL functions.")
+    (home-page "https://github.com/NVIDIA/eglexternalplatform")
+    (license license:expat)))
 
 (define-public mmm
   (package
