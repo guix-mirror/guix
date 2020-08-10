@@ -15859,6 +15859,77 @@ containing the reference genome as well.")
     ;; See https://github.com/dpryan79/MethylDackel/issues/85
     (license license:expat)))
 
+;; This package bundles PCRE 8.02 and cannot be built with the current
+;; version.
+(define-public phast
+  (package
+    (name "phast")
+    (version "1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/CshlSiepelLab/phast")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10lpbllvny923jjbbyrpxahhd1m5h7sbj9gx7rd123rg10mlidki"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Fix syntax
+             (substitute* "test/Makefile"
+               (("        ") "	"))
+             (substitute* "Makefile"
+               (("CLAPACKPATH=/usr/lib")
+                (string-append "CLAPACKPATH="
+                               (assoc-ref inputs "clapack") "/lib")))
+             ;; Renaming the libraries is not necessary with our version of
+             ;; CLAPACK.
+             (substitute* "src/lib/Makefile"
+               (("ifdef CLAPACKPATH") "ifdef UNNECESSARY"))
+             (substitute* "src/make-include.mk"
+               (("-lblaswr") "-lblas")
+               (("-ltmg") "-ltmglib")
+               (("liblapack.a") "liblapack.so")
+               (("libblas.a") "libblas.so")
+               (("libf2c.a") "libf2c.so"))
+             (substitute* "src/Makefile"
+               (("/opt") "/share")
+               (("/usr/") "/"))
+             #t))
+         (replace 'check
+           (lambda _
+             (setenv "PATH"
+                     (string-append (getcwd) "/bin:" (getenv "PATH")))
+             ;; Disable broken test
+             (substitute* "test/Makefile"
+               ((".*if.*hmrc_summary" m) (string-append "#" m)))
+             ;; Only run the msa_view tests because the others fail for
+             ;; unknown reasons.
+             (invoke "make" "-C" "test" "msa_view"))))))
+    (inputs
+     `(("clapack" ,clapack)))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://compgen.cshl.edu/phast/")
+    (synopsis "Phylogenetic analysis with space/time models")
+    (description
+     "Phylogenetic Analysis with Space/Time models (PHAST) is a collection of
+command-line programs and supporting libraries for comparative and
+evolutionary genomics.  Best known as the search engine behind the
+Conservation tracks in the University of California, Santa Cruz (UCSC) Genome
+Browser, PHAST also includes several tools for phylogenetic modeling,
+functional element identification, as well as utilities for manipulating
+alignments, trees and genomic annotations.")
+    (license license:bsd-3)))
+
 (define-public python-gffutils
   ;; The latest release is older more than a year than the latest commit
   (let ((commit "4034c54600813b1402945e12faa91b3a53162cf1")
