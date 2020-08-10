@@ -599,7 +599,8 @@ of other programs.")
     (propagated-inputs
      ;; Propagating KWINDOWSYSTEM so that the list of opened applications
      ;; shows up in lxqt-panel's taskbar plugin.
-     `(("kwindowsystem" ,kwindowsystem)))
+     `(("kwindowsystem" ,kwindowsystem)
+       ("lxmenu-data" ,lxmenu-data)))
     (arguments
      '(#:tests? #f                      ; no tests
        #:phases
