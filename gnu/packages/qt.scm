@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 TomZ <tomz@freedommail.ch>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages pciutils)
@@ -1077,8 +1079,22 @@ interacting with serial ports from within Qt.")))
              (sha256
               (base32
                "14bahg82jciciqkl74q9hvf3a8kp3pk5v731vp2416k4b8bn4xqb"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtsvg)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'patch-libsocketcan-reference
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((libcansocket (assoc-ref inputs "libsocketcan"))
+                      (libcansocket.so (string-append libcansocket
+                                                      "/lib/libsocketcan.so")))
+                 (substitute* "src/plugins/canbus/socketcan/libsocketcan.cpp"
+                   (("QStringLiteral\\(\"socketcan\"\\)")
+                    (format #f "QStringLiteral(~s)" libcansocket.so)))
+                 #t)))))))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("libsocketcan" ,libsocketcan)
+       ("qtbase" ,qtbase)
        ("qtserialport" ,qtserialport)))
     (synopsis "Qt Serial Bus module")
     (description "The Qt Serial Bus API provides classes and functions to
