@@ -21569,3 +21569,35 @@ and have a maximum lifetime built-in.")
      "This package contains a small collection of test tool plugins for
 @code{nose2} and @code{flake8}.")
     (license license:asl2.0)))
+
+(define-public python-devtools
+  (package
+    (name "python-devtools")
+    (version "0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/samuelcolvin/python-devtools")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15zczdcm90wl54c68f1qjb05nkd5bjsc9xjl3lk4frs7k7wkmrvp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (propagated-inputs
+     `(("python-pygments" ,python-pygments)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest")
+                      #t)))))
+    (home-page "https://github.com/samuelcolvin/python-devtools")
+    (synopsis "Debug command and development tools")
+    (description
+     "This package provides a debug print command and other development tools.
+It adds a simple and readable way to print stuff during development.")
+    (license license:expat)))
