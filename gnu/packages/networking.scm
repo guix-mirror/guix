@@ -2502,7 +2502,7 @@ networks using zeromq.  It has these key characteristics:
 (define-public can-utils
   (package
     (name "can-utils")
-    (version "2018.02.0")
+    (version "2020.02.04")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2511,7 +2511,7 @@ networks using zeromq.  It has these key characteristics:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r0zkm67bdcmbfypjr7z041d4zp0xzb379dyl8cvhmflh12fd2jb"))))
+                "1a3j1mmnb7pvgc8r7zzp6sdp7903in2hna6bmpraxln7cwlzn4l6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
