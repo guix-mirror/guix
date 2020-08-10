@@ -3820,6 +3820,43 @@ Language (TOML) configuration files.")
      "This package provides a JSON RPC 2.0 server library for Python.")
     (license license:expat)))
 
+(define-public python-pydantic
+  (package
+    (name "python-pydantic")
+    (version "1.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/samuelcolvin/pydantic")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1380s9k77g6q15by9fkxndczjk89q6xpz09jdrqip535xws2z3j8"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Reported upstream:
+         ;; <https://github.com/samuelcolvin/pydantic/issues/1580>.
+         ;; Disable the faulty test as the fix is unclear.
+         (add-before 'check 'disable-test
+           (lambda _
+             (substitute* "tests/test_validators.py"
+               (("test_assert_raises_validation_error")
+                "_test_assert_raises_validation_error"))
+             #t))
+         (replace 'check
+           (lambda _ (invoke "pytest" "-vv" "tests"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/samuelcolvin/pydantic")
+    (synopsis "Python data validation and settings management")
+    (description
+     "Pydantic enforces type hints at runtime, and provides user friendly
+errors when data is invalid.")
+    (license license:expat)))
+
 (define-public python-pydocstyle
   (package
     (name "python-pydocstyle")
