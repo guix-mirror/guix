@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,42 @@
 strings, configuration, bit streams, threading, translation, and cross-platform
 operating system functions.")
     (license license:zlib)))
+
+(define-public rttr
+  (package
+    (name "rttr")
+    (version "0.9.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rttrorg/rttr/")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1yxad8sj40wi75hny8w6imrsx8wjasjmsipnlq559n4b6kl84ijp"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(;; No check target. Setting test-target to "unit_test" runs it twice.
+       #:tests? #f
+       #:configure-flags
+       '("-DBUILD_DOCUMENTATION=OFF" "-DBUILD_EXAMPLES=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         ;; library_test fails in chroot.
+         (add-after 'unpack 'skip-library-test
+           (lambda _
+             (substitute* "src/unit_tests/unit_tests.cmake"
+               (("misc/library_test.cpp") ""))
+             #t)))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/rttrorg/rttr/")
+    (synopsis "C++ Reflection Library")
+    (description
+     "RTTR stands for Run Time Type Reflection.  It describes the ability of a
+computer program to introspect and modify an object at runtime.  It is also
+the name of the library itself, which is written in C++.")
+    (license license:expat)))
 
 (define-public rct
   (let* ((commit "b3e6f41d9844ef64420e628e0c65ed98278a843a")
