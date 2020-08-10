@@ -160,6 +160,36 @@ application-facing EGL functions.")
     (home-page "https://github.com/NVIDIA/eglexternalplatform")
     (license license:expat)))
 
+(define-public egl-wayland
+  (package
+    (name "egl-wayland")
+    (version "1.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/NVIDIA/egl-wayland.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "09r6a69z75j3hb9751g3ap4gm1xn71aw3j7z0c7jns292cnaa76n"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("wayland" ,wayland)))
+    (propagated-inputs
+     `(("eglexternalplatform" ,eglexternalplatform)))
+    (synopsis "EGLStream-based Wayland external platform")
+    (description "EGL-Wayland is an implementation of a EGL External Platform
+library to add client-side Wayland support to EGL on top of EGLDevice and
+EGLStream families of extensions.")
+    (home-page "https://github.com/NVIDIA/egl-wayland")
+    (license license:expat)))
+
 (define-public mmm
   (package
     (name "mmm")
