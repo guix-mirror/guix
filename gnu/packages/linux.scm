@@ -967,6 +967,18 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_RTC_DRV_RK808" . #t))
                       %default-extra-linux-options)))
 
+(define-public linux-libre-arm64-generic-5.8
+  (make-linux-libre* linux-libre-5.8-version
+                     linux-libre-5.8-source
+                     '("aarch64-linux")
+                     #:defconfig "defconfig"
+                     #:extra-version "arm64-generic"
+                     #:extra-options
+                     (append
+                      `(;; needed to fix the RTC on rockchip platforms
+                        ("CONFIG_RTC_DRV_RK808" . #t))
+                      %default-extra-linux-options)))
+
 (define-public linux-libre-riscv64-generic
   (make-linux-libre* linux-libre-version
                      linux-libre-source
