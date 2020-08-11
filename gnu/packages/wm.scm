@@ -77,6 +77,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
@@ -1488,7 +1489,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.9.1")
+    (version "0.9.3")
     (source
      (origin
        (method git-fetch)
@@ -1497,7 +1498,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0drlv8im5phz39jxp3gxkc40b6f85bb3piff2v3hmnfzh7ib915s"))))
+        (base32 "0ks719khhg2zwpyiwa2079i6962qcxpapm28hmr4ckpsp2n659ck"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -1514,9 +1515,11 @@ modules for building a Wayland compositor.")
               ("pulseaudio" ,pulseaudio)
               ("spdlog" ,spdlog)
               ("wayland" ,wayland)))
-    (native-inputs `(("glib:bin" ,glib "bin")
-                     ("pkg-config" ,pkg-config)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (native-inputs
+     `(("gcc" ,gcc-8)                   ; for #include <filesystem>
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/Alexays/Waybar")
     (synopsis "Wayland bar for Sway and Wlroots based compositors")
     (description "Waybar is a highly customisable Wayland bar for Sway and
