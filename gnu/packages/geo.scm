@@ -1348,7 +1348,7 @@ ways, and relations) and their metadata tags.")
 (define-public libmaxminddb
   (package
     (name "libmaxminddb")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
@@ -1356,7 +1356,7 @@ ways, and relations) and their metadata tags.")
                            "/releases/download/" version "/"
                            "/libmaxminddb-" version ".tar.gz"))
        (sha256
-        (base32 "0mnimbaxnnarlw7g1rh8lpxsyf7xnmzwcczcc3lxw8xyf6ljln6x"))))
+        (base32 "0fd4a4sxiiwzbd5h74wl1ijnb7xybjyybb7q41vdq3w8nk3zdzd5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
