@@ -1535,14 +1535,14 @@ QLandkarte GT application.")
 (define-public readosm
   (package
     (name "readosm")
-    (version "1.1.0")
+    (version "1.1.0a")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                            "readosm-" version ".tar.gz"))
        (sha256
-        (base32 "1v20pnda67imjd70fn0zw30aar525xicy3d3v49md5cvqklws265"))))
+        (base32 "0zv6p352pqjcv70nvcaf2x3011z35jqa24dcdm27a4ns1wha3cjc"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
