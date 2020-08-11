@@ -4699,7 +4699,7 @@ you'd expect.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://tecnocode.co.uk/downloads/uhttpmock/"
+       (uri (string-append "https://tecnocode.co.uk/downloads/uhttpmock/"
                            "uhttpmock-" version ".tar.xz"))
        (sha256
         (base32 "0glyx07kxc3s3cx5vp30kfgscl9q6bghcq1zysfyxm24r0h6j58p"))))
