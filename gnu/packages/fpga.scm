@@ -276,12 +276,12 @@ Includes the actual FTDI connector.")
            (base32
             "1fmxsywgs45g88ra7ips5s2niiiwrkyxdcy742ws18dfk2y4vi9c"))))
       (inputs
-       `(("qtbase" ,qtbase)
-         ("boost" ,boost-with-python3)
-         ("yosys" ,yosys)
+       `(("boost" ,boost)
          ("eigen" ,eigen)
+         ("icestorm" ,icestorm)
          ("python" ,python)
-         ("icestorm" ,icestorm)))
+         ("qtbase" ,qtbase)
+         ("yosys" ,yosys)))
       (build-system cmake-build-system)
       (arguments
        `(#:configure-flags `("-DARCH=ice40"
