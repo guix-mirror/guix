@@ -781,6 +781,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
                   llvm-3.5
                   "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"
                   '("clang-runtime-asan-build-fixes.patch"
+                    "clang-runtime-3.5-libsanitizer-mode-field.patch"
                     "clang-3.5-libsanitizer-ustat-fix.patch"))))
     (package
       (inherit runtime)
