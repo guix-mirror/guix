@@ -4196,7 +4196,7 @@ are only two levels to play with, but they are very addictive.")
     (version "15.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://downloads.sourceforge.net/pio/"
+              (uri (string-append "https://downloads.sourceforge.net/pio/"
                                   "pioneers-" version ".tar.gz"))
               (sha256
                (base32
