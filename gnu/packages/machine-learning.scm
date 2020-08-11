@@ -415,14 +415,14 @@ sample proximities between pairs of cases.")
 (define-public openfst
   (package
     (name "openfst")
-    (version "1.7.2")
+    (version "1.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.openfst.org/twiki/pub/FST/"
                                   "FstDownload/openfst-" version ".tar.gz"))
               (sha256
                (base32
-                "0fqgk8195kz21is09gwzwnrg7fr9526bi9mh4apyskapz27pbhr1"))))
+                "1pmx1yhn2gknj0an0zwqmzgwjaycapi896244np50a8y3nrsw6ck"))))
     (build-system gnu-build-system)
     (home-page "http://www.openfst.org")
     (synopsis "Library for weighted finite-state transducers")
