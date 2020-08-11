@@ -668,14 +668,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.7")
+    (version "5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "0f9w0pqkvwn540rasmj6c8897g9gj2hmjnbkhpi9yf1s7jyvhkkj"))))
+                "0ikmz36bdfwxscsfcgjmyzg70hwr8i3wpdhcp1vmk3q4ip858frg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
