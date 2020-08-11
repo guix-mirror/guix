@@ -920,6 +920,18 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-arm-veyron
   (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
 
+(define-public linux-libre-arm-generic-5.4
+  (make-linux-libre* linux-libre-5.4-version
+                     linux-libre-5.4-source
+                     '("armhf-linux")
+                     #:defconfig "multi_v7_defconfig"
+                     #:extra-version "arm-generic"
+                     #:extra-options
+                     (append
+                      `(;; needed to fix the RTC on rockchip platforms
+                        ("CONFIG_RTC_DRV_RK808" . #t))
+                      %default-extra-linux-options)))
+
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre* linux-libre-4.19-version
                      linux-libre-4.19-source
