@@ -1533,7 +1533,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.15")
+    (version "0.9.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -1541,7 +1541,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "108jk8p1sbm99plipf98ssij6dxaip1lmznibg8y2c4x0v2la6ab"))))
+                "1r55575w9r0ifysw9mgxjvv0fszvx8ykjgim3zczf3mb5s9ngavv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
