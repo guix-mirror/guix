@@ -1807,20 +1807,18 @@ single-member files which can't be decompressed in parallel.")
 (define-public innoextract
   (package
    (name "innoextract")
-   (version "1.8")
+   (version "1.9")
    (source
     (origin
      (method url-fetch)
-     (uri (string-append "https://github.com/dscharrer/innoextract/releases"
-                         "/download/" version
+     (uri (string-append "https://constexpr.org/innoextract/files/"
+                         "innoextract-" version "/"
                          "/innoextract-" version ".tar.gz"))
      (sha256
-      (base32
-       "0saj50n8ds85shygy4mq1h6s99510r9wgjjdll4dmvhra4lzcy2y"))))
+      (base32 "09l1z1nbl6ijqqwszdwch9mqr54qb7df0wp2sd77v17dq6gsci33"))))
    (build-system cmake-build-system)
    (arguments
-    `(#:tests? #f
-      #:configure-flags '("-DBoost_NO_BOOST_CMAKE=ON")))
+    `(#:tests? #f))
    (inputs `(("boost" ,boost)
              ("libiconv" ,libiconv)
              ("xz" ,xz)))
