@@ -1236,7 +1236,7 @@ Trezor wallet.")
 (define-public bitcoin-abc
   (package
     (name "bitcoin-abc")
-    (version "0.21.10")
+    (version "0.21.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.bitcoinabc.org/"
@@ -1244,7 +1244,7 @@ Trezor wallet.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cgr416cp7p14mlnfryxfjfcxys5hksfjhi0i4amxl4fbnpgjwk0"))))
+                "1amzwy3gpl8ai90dsy7g0z51qq8vxfzbf642wn4bfynb8jmw3kx5"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
