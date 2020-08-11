@@ -201,7 +201,16 @@ use their packages mostly unmodified in our Android NDK build system.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (symlink "liblog.so.0" (string-append out "/lib/liblog.so"))
-               #t))))))
+               #t)))
+         (add-after 'install 'install-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively
+                 "../include/log" (string-append out "/include/log"))
+               ;; For android/log.h, the only header in the android directory.
+               (copy-recursively
+                 "../include/android" (string-append out "/include/android")))
+             #t)))))
     (home-page "https://developer.android.com/")
     (synopsis "Logging library from the Android platform.")
     (description "@code{liblog} represents an interface to the volatile Android
