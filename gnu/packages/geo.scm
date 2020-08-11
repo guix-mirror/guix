@@ -1359,11 +1359,8 @@ ways, and relations) and their metadata tags.")
         (base32 "0fd4a4sxiiwzbd5h74wl1ijnb7xybjyybb7q41vdq3w8nk3zdzd5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'set-cc-to-gcc
-           (lambda _
-             (setenv "CC" "gcc"))))))
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "https://maxmind.github.io/libmaxminddb/")
