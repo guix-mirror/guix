@@ -4193,14 +4193,14 @@ are only two levels to play with, but they are very addictive.")
 (define-public pioneers
   (package
     (name "pioneers")
-    (version "15.5")
+    (version "15.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/pio/"
                                   "pioneers-" version ".tar.gz"))
               (sha256
                (base32
-                "037gdiiw690jw3wd1s9lxmkqx0caxyk0b4drpm7i9p28gig43q9y"))))
+                "07b3xdd81n8ybsb4fzc5lx0813y9crzp1hj69khncf4faj48sdcs"))))
     (build-system gnu-build-system)
     (inputs `(("avahi" ,avahi)
               ("gtk+" ,gtk+)
