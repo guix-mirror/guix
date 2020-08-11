@@ -684,7 +684,7 @@ Alternatively the menu can be bound globally, for example:
 (define-public emacs-treepy
   (package
     (name "emacs-treepy")
-    (version "0.1.1")
+    (version "0.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -693,7 +693,7 @@ Alternatively the menu can be bound globally, for example:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04zwm6gx9pxfvgfkizx6pvb1ql8pqxjyzqp8flz0432x0gq5nlxk"))))
+                "0pmrpij80m5kgcr8bw36r8wllgppasw08vn3ghwvis9srpaq75cn"))))
     (build-system emacs-build-system)
     (home-page
      "https://github.com/volrath/treepy.el")
