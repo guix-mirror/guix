@@ -8116,3 +8116,36 @@ dimensional mass cytometry data.")
 Tool) analysis automatic by constructing a HTTP POST request according to
 user's input and automatically retrieving results from GREAT web server.")
     (license license:expat)))
+
+(define-public r-m3c
+  (package
+    (name "r-m3c")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "M3C" version))
+       (sha256
+        (base32
+         "0zq8lm4280p8h65i7myscwa4srs5ajh944xv6zni2f5sjyp7ij2y"))))
+    (properties `((upstream-name . "M3C")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-corpcor" ,r-corpcor)
+       ("r-doparallel" ,r-doparallel)
+       ("r-dosnow" ,r-dosnow)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixcalc" ,r-matrixcalc)
+       ("r-rtsne" ,r-rtsne)
+       ("r-umap" ,r-umap)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/M3C")
+    (synopsis "Monte Carlo reference-based consensus clustering")
+    (description
+     "M3C is a consensus clustering algorithm that uses a Monte Carlo
+simulation to eliminate overestimation of @code{K} and can reject the null
+hypothesis @code{K=1}.")
+    (license license:agpl3+)))
