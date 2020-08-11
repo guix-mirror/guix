@@ -4738,7 +4738,7 @@ discard bad quality ones.
 (define-public fmit
   (package
     (name "fmit")
-    (version "1.2.13")
+    (version "1.2.14")
     (source (origin
 	      (method git-fetch)
 	      (uri (git-reference
@@ -4747,7 +4747,7 @@ discard bad quality ones.
               (file-name (git-file-name name version))
 	      (sha256
                (base32
-                "1qyskam053pvlap1av80rgp12pzhr92rs88vqs6s0ia3ypnixcc6"))))
+                "1q062pfwz2vr9hbfn29fv54ip3jqfd9r99nhpr8w7mn1csy38azx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
