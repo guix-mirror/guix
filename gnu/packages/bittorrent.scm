@@ -402,9 +402,9 @@ and will take advantage of multiple processor cores where possible.")
     (native-inputs `(("python" ,python-wrapper)
                      ("pkg-config" ,pkg-config)))
     (home-page "https://www.libtorrent.org/")
-    (synopsis "Feature complete BitTorrent implementation")
+    (synopsis "Feature-complete BitTorrent implementation")
     (description
-     "libtorrent-rasterbar is a feature complete C++ BitTorrent implementation
+     "libtorrent-rasterbar is a feature-complete C++ BitTorrent implementation
 focusing on efficiency and scalability.  It runs on embedded devices as well as
 desktops.")
     (license l:bsd-2)))
