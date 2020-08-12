@@ -11429,14 +11429,14 @@ who want to include run-time testing features in their own packages.")
 (define-public r-assertive-reflection
   (package
     (name "r-assertive-reflection")
-    (version "0.0-4")
+    (version "0.0-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "assertive.reflection" version))
        (sha256
         (base32
-         "19zmsbn00crfqm0kwd9ys5gv87xs3gi6wmlikrz9xiwzm7hp4dhj"))))
+         "1g9lpwzy6r2xmyi2mlbcccnfgyzhzbmx5bsicf3vkffxrlkrpjn2"))))
     (properties
      `((upstream-name . "assertive.reflection")))
     (build-system r-build-system)
