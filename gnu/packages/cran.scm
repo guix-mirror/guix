@@ -2341,14 +2341,14 @@ any subsequent lookup as it keeps the hash table in memory.")
 (define-public r-ff
   (package
     (name "r-ff")
-    (version "2.2-14.2")
+    (version "4.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ff" version))
        (sha256
         (base32
-         "1r1pbrf5s4rdm3msxxr8fy1f2xjihqciclsnvxf59qzz6g1nmh7q"))))
+         "1qbfmhk4v76q145yalqaiaffklvkfs615b5m0imxyjyjcvx1nbn0"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-bit" ,r-bit)))
     (home-page "http://ff.r-forge.r-project.org/")
