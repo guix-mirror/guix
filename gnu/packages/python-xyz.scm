@@ -14392,16 +14392,18 @@ through a Python API.")
 (define-public python-pycosat
   (package
     (name "python-pycosat")
-    (version "0.6.1")
+    (version "0.6.3")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "pycosat" version))
+       (uri (pypi-uri "pycosat" version ".zip"))
        (sha256
         (base32
-         "1kl3wh1f47rc712n4bmwplbx3fqz3x9i1b587jrbpmvdva4c8f6l"))))
+         "1vg0f2fwcybpdqv92z0hwdl603n2safh3fqvjjxkksd78r4qg6ac"))))
     ;; TODO: Unundle picosat. http://fmv.jku.at/picosat/
     (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
     (home-page "https://github.com/ContinuumIO/pycosat")
     (synopsis "Bindings to picosat (a SAT solver)")
     (description
