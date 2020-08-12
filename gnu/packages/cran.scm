@@ -22818,3 +22818,42 @@ which may also be useful for other purposes.")
      "This package contains all the datasets for the @code{spatstat}
 package.")
     (license license:gpl2+)))
+
+(define-public r-spatstat
+  (package
+    (name "r-spatstat")
+    (version "1.64-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spatstat" version))
+       (sha256
+        (base32
+         "06jmxfs9kz9qqi3ichfgn8dglwb87kq2nl578p83za5psv8cfgya"))))
+    (properties `((upstream-name . "spatstat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-deldir" ,r-deldir)
+       ("r-goftest" ,r-goftest)
+       ("r-matrix" ,r-matrix)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nlme" ,r-nlme)
+       ("r-polyclip" ,r-polyclip)
+       ("r-rpart" ,r-rpart)
+       ("r-spatstat-data" ,r-spatstat-data)
+       ("r-spatstat-utils" ,r-spatstat-utils)
+       ("r-tensor" ,r-tensor)))
+    (home-page "http://www.spatstat.org")
+    (synopsis "Spatial Point Pattern analysis, model-fitting, simulation, tests")
+    (description
+     "This package provides a comprehensive toolbox for analysing Spatial
+Point Patterns.  It is focused mainly on two-dimensional point patterns,
+including multitype/marked points, in any spatial region.  It also supports
+three-dimensional point patterns, space-time point patterns in any number of
+dimensions, point patterns on a linear network, and patterns of other
+geometrical objects.  It supports spatial covariate data such as pixel images
+and contains over 2000 functions for plotting spatial data, exploratory data
+analysis, model-fitting, simulation, spatial sampling, model diagnostics, and
+formal inference.")
+    (license license:gpl2+)))
