@@ -1926,13 +1926,13 @@ error stream.")
 (define-public r-pls
   (package
     (name "r-pls")
-    (version "2.7-2")
+    (version "2.7-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pls" version))
        (sha256
-        (base32 "121byimd6bg7jbrq5wz5fpi0vxq0vh8g724vkhnjzszbvcv1xsb7"))))
+        (base32 "0b3ls12w19wc4xkhnsgmb333y9lyzwq3syjc3k8zs1agnw59c7cg"))))
     (build-system r-build-system)
     (home-page "https://mevik.net/work/software/pls.html")
     (synopsis "Partial Least Squares and Principal Component Regression")
