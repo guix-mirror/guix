@@ -22857,3 +22857,31 @@ and contains over 2000 functions for plotting spatial data, exploratory data
 analysis, model-fitting, simulation, spatial sampling, model diagnostics, and
 formal inference.")
     (license license:gpl2+)))
+
+(define-public r-gaston
+  (package
+    (name "r-gaston")
+    (version "1.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gaston" version))
+       (sha256
+        (base32
+         "1bx6iqfjb9lf3vn0z7v8wjv9m7issvqsnymm4qsgl3622s6qz6rg"))))
+    (properties `((upstream-name . "gaston")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rcppparallel" ,r-rcppparallel)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/gaston/")
+    (synopsis "Genetic data handling (QC, GRM, LD, PCA) and linear mixed models")
+    (description
+     "This is a package for the manipulation of genetic data (SNPs).
+Computation of @dfn{genetic relationship matrix} (GRM) and dominance matrix,
+@dfn{linkage disequilibrium} (LD), and heritability with efficient algorithms
+for linear mixed models (AIREML).")
+    (license license:gpl3)))
