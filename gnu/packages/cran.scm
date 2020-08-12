@@ -18780,14 +18780,14 @@ actigraphy-measured activity counts data.")
 (define-public r-fda
   (package
     (name "r-fda")
-    (version "5.1.4")
+    (version "5.1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fda" version))
        (sha256
         (base32
-         "0js4ggl3aiwsqk6npwz72yhcznkb63smddds24ngf6a0p8yp5p2x"))))
+         "0zi001cw5536x6rgr4l0skva7fk53663zf6ggnsa8znml090sihm"))))
     (properties `((upstream-name . "fda")))
     (build-system r-build-system)
     (propagated-inputs
