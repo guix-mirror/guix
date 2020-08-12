@@ -748,15 +748,17 @@ curves, Cox models, and parametric accelerated failure time models.")
 (define-public r-bit
   (package
     (name "r-bit")
-    (version "1.1-15.2")
+    (version "4.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bit" version))
        (sha256
         (base32
-         "12xjkkkmflkz8s435by4r23b57cz7z67z84907f6qg99hn1yg0qb"))))
+         "0s7isadibxp2wr62r5cpbyh9z31sczzfz4j3rm7gxgjfpqgq8174"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://ff.r-forge.r-project.org")
     (synopsis "Class for vectors of 1-bit booleans")
     (description
