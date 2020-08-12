@@ -22795,3 +22795,26 @@ diagonals.  This package allows you to compute the tensor product of arrays.")
      "This package contains utility functions for the @code{spatstat} package
 which may also be useful for other purposes.")
     (license license:gpl2+)))
+
+(define-public r-spatstat-data
+  (package
+    (name "r-spatstat-data")
+    (version "1.4-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spatstat.data" version))
+       (sha256
+        (base32
+         "18lfj5vkwxgf5w9qz0g5al3zy8y2yi3bnd13w24hszfc82nbcmc9"))))
+    (properties `((upstream-name . "spatstat.data")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-spatstat-utils" ,r-spatstat-utils)))
+    (home-page "http://www.spatstat.org")
+    (synopsis "Datasets for spatstat")
+    (description
+     "This package contains all the datasets for the @code{spatstat}
+package.")
+    (license license:gpl2+)))
