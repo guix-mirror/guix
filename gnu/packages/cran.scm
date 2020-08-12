@@ -14316,19 +14316,22 @@ and a QP solver.")
 (define-public r-hierfstat
   (package
     (name "r-hierfstat")
-    (version "0.04-22")
+    (version "0.5-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hierfstat" version))
        (sha256
         (base32
-         "1fav2v2996v5kb1ffa6v5wxfm921syxg6as034vd3j4jfhdibyfx"))))
+         "0dp8k1z5a8gqnax99y1hwfvxilzf4n2i751zr0z6ihrzirsvb3m3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ade4" ,r-ade4)
        ("r-adegenet" ,r-adegenet)
+       ("r-gaston" ,r-gaston)
        ("r-gtools" ,r-gtools)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/hierfstat/")
     (synopsis "Estimation and tests of hierarchical F-statistics")
     (description
