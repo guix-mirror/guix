@@ -644,19 +644,21 @@ single step.")
 (define-public r-rvest
   (package
     (name "r-rvest")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rvest" version))
        (sha256
-        (base32 "0r0a5jic09xw5pk0x42pr99r3zab5m9s4x85ymx1sl769jz42zqf"))))
+        (base32 "1yh2p429a0zr8pqmlw5rzf6m797j20j5w6xwxlqq0wrdbnif6bka"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httr" ,r-httr)
        ("r-magrittr" ,r-magrittr)
        ("r-selectr" ,r-selectr)
        ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/rvest")
     (synopsis "Simple web scraping for R")
     (description
