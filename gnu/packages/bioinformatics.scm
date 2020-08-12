@@ -1683,6 +1683,17 @@ genome (2.9 GB for paired-end).")
      '(#:parallel-build? #f             ; not supported
        #:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'hide-default-gcc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               ;; Remove the default GCC from CPLUS_INCLUDE_PATH to prevent
+               ;; conflicts with the GCC 5 input.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                        ":"))
+               #t)))
          (add-after 'unpack 'use-system-samtools
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/Makefile.in"
@@ -1705,7 +1716,7 @@ genome (2.9 GB for paired-end).")
                (("#include <sam.h>") "#include <samtools/sam.h>"))
              #t)))))
     (native-inputs
-     `(("gcc" ,gcc-5))) ;; doesn't build with later versions
+     `(("gcc@5" ,gcc-5))) ;; doesn't build with later versions
     (inputs
      `(("boost" ,boost)
        ("bowtie" ,bowtie)
