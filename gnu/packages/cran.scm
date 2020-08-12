@@ -9244,18 +9244,17 @@ back to file after modifications.")
 (define-public r-fs
   (package
     (name "r-fs")
-    (version "1.4.2")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fs" version))
        (sha256
         (base32
-         "09rpazjba9jy448j6rq989fw3wv3xhng7fn8p8gr22gyx0n0y1zr"))))
+         "15rqc3ljmcmgfvadj1j1kq7kvibagxic8sgplhlcdqqxax9idprn"))))
     (build-system r-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("r-knitr" ,r-knitr)))
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://fs.r-lib.org")
     (synopsis "Cross-platform file system operations based on libuv")
     (description
