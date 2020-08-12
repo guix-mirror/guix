@@ -19731,14 +19731,14 @@ problems (food web problems, linear programming problems).")
 (define-public r-shinycssloaders
   (package
     (name "r-shinycssloaders")
-    (version "0.3")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shinycssloaders" version))
        (sha256
         (base32
-         "1gzq1lhcnhqd145ys3ixf0l13l560fiqr2sc3m2nrijwxlgcw54d"))))
+         "0r3xm273lhdhzbs2mkgw1m2kwb7z1dh1pzya8yxy5vacda1l2ikl"))))
     (properties
      `((upstream-name . "shinycssloaders")))
     (build-system r-build-system)
