@@ -4539,14 +4539,14 @@ terminals.")
 (define-public r-tinytex
   (package
     (name "r-tinytex")
-    (version "0.24")
+    (version "0.25")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tinytex" version))
        (sha256
         (base32
-         "0mc9i7r45s5kagcfig508dbyf6jir6q4ghq9cxqvnpxp6ymh4qpr"))))
+         "0zbhzxxjlkdj9byxyab477p7cnws5y87nyg989lkzarxdc7dglza"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-xfun" ,r-xfun)))
