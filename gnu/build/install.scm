@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu build install)
+  #:use-module (guix build syscalls)
   #:use-module (guix build utils)
   #:use-module (guix build store-copy)
   #:use-module (srfi srfi-26)
@@ -26,7 +27,9 @@
             evaluate-populate-directive
             populate-root-file-system
             install-database-and-gc-roots
-            populate-single-profile-directory))
+            populate-single-profile-directory
+            mount-cow-store
+            unmount-cow-store))
 
 ;;; Commentary:
 ;;;
@@ -228,5 +231,44 @@ This is used to create the self-contained tarballs with 'guix pack'."
                "/root/.config/guix/current"))
     (_
      #t)))
+
+(define (mount-cow-store target backing-directory)
+  "Make the store copy-on-write, using TARGET as the backing store.  This is
+useful when TARGET is on a hard disk, whereas the current store is on a RAM
+disk."
+  (define (set-store-permissions directory)
+    "Set the right perms on DIRECTORY to use it as the store."
+    (chown directory 0 30000)      ;use the fixed 'guixbuild' GID
+    (chmod directory #o1775))
+
+  (let ((tmpdir (string-append target "/tmp")))
+    (mkdir-p tmpdir)
+    (mount tmpdir "/tmp" "none" MS_BIND))
+
+  (let* ((rw-dir (string-append target backing-directory))
+         (work-dir (string-append rw-dir "/../.overlayfs-workdir")))
+    (mkdir-p rw-dir)
+    (mkdir-p work-dir)
+    (mkdir-p "/.rw-store")
+    (set-store-permissions rw-dir)
+    (set-store-permissions "/.rw-store")
+
+    ;; Mount the overlay, then atomically make it the store.
+    (mount "none" "/.rw-store" "overlay" 0
+           (string-append "lowerdir=" (%store-directory) ","
+                          "upperdir=" rw-dir ","
+                          "workdir=" work-dir))
+    (mount "/.rw-store" (%store-directory) "" MS_MOVE)
+    (rmdir "/.rw-store")))
+
+(define (unmount-cow-store target backing-directory)
+  "Unmount copy-on-write store."
+  (let ((tmp-dir "/remove"))
+    (mkdir-p tmp-dir)
+    (mount (%store-directory) tmp-dir "" MS_MOVE)
+    (umount tmp-dir)
+    (rmdir tmp-dir)
+    (delete-file-recursively
+     (string-append target backing-directory))))
 
 ;;; install.scm ends here
