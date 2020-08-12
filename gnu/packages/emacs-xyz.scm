@@ -2734,6 +2734,31 @@ Emacs native editing commmands and the work of other packages wherever
 possible.")
       (license license:expat))))
 
+(define-public emacs-kana
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "b239c3c3c6124b46ff720cca7b80ecbafd7fa489")
+        (revision "0"))
+    (package
+      (name "emacs-kana")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/chenyanming/kana")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0vrrl1kniq4h111jvnapvx3wybvsl3alfaygw634mmryr3h7pwi8"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/chenyanming/kana")
+      (synopsis "Learn Japanese Kana in Emacs")
+      (description
+       "This Emacs mode displays Hiragana and Katakana flashcards.  It can use
+functionality from Emacs Kanji mode if it is installed.")
+      (license license:gpl3+))))
+
 (define-public emacs-kanji
   ;; Package has no release.  Version is extracted from "Version:" keyword in
   ;; main file.
