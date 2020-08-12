@@ -22774,3 +22774,24 @@ algorithms.")
 arrays collapsed in specific extents by summing along the appropriate
 diagonals.  This package allows you to compute the tensor product of arrays.")
     (license license:gpl2+)))
+
+(define-public r-spatstat-utils
+  (package
+    (name "r-spatstat-utils")
+    (version "1.17-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spatstat.utils" version))
+       (sha256
+        (base32
+         "08h9kzkkxvlnngxnv5mdylfali5jj4yhgbr8kvf8l7glswz6ik9r"))))
+    (properties
+     `((upstream-name . "spatstat.utils")))
+    (build-system r-build-system)
+    (home-page "http://www.spatstat.org")
+    (synopsis "Utility functions for spatstat")
+    (description
+     "This package contains utility functions for the @code{spatstat} package
+which may also be useful for other purposes.")
+    (license license:gpl2+)))
