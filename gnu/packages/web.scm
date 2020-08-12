@@ -2520,15 +2520,14 @@ stash data in JSON format.")
 (define-public perl-catalyst-view-tt
   (package
     (name "perl-catalyst-view-tt")
-    (version "0.44")
+    (version "0.45")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Catalyst-View-TT-" version ".tar.gz"))
      (sha256
-      (base32
-       "06d1zg4nbb6kcyjbnyxrkf8z4zlscxr8650d94f7187jygfl8rvh"))))
+      (base32 "0jzgpkgq5pwq82zlb0nykdyk40dfpsyn9ilz91d0wpixgi9i5pr8"))))
   (build-system perl-build-system)
   (propagated-inputs
    `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
