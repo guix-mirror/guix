@@ -2426,25 +2426,21 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "1l6w765q180bg5mmdq5k2ymf6apz7ldhnknzf6ynfp1kf70pbhsg"))))
+                "100mgighf6vqsfwv2qw5rlnd5sfvcji9l9jrmx9ii28r9fd2gyas"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
        ("r-cli" ,r-cli)
        ("r-covr" ,r-covr)
-       ("r-crayon" ,r-crayon)
        ("r-desc" ,r-desc)
-       ("r-digest" ,r-digest)
        ("r-dt" ,r-dt)
        ("r-ellipsis" ,r-ellipsis)
-       ("r-glue" ,r-glue)
-       ("r-git2r" ,r-git2r)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
        ("r-memoise" ,r-memoise)
