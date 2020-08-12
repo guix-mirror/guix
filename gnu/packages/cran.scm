@@ -9347,15 +9347,17 @@ more information about packages, and where they were installed from.")
 (define-public r-remotes
   (package
     (name "r-remotes")
-    (version "2.1.1")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "remotes" version))
        (sha256
         (base32
-         "12qinl7jv54f2524ri13gcrv6d523rg1harpi500j676zi30fnaf"))))
+         "1f1kdw9j1wald3fs8b3n68x1kljy07j60g3aw1aarx26ikyk9whj"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-lib/remotes#readme")
     (synopsis "R package installation from remote repositories")
     (description
