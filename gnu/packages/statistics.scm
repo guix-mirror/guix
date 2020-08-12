@@ -3712,17 +3712,18 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "0vqj5dakb35axv4l0yrihpa16vnz2b5bhaaqg7l0gsqbb04qcb00"))))
+         "05bv4086axk21gsszx9rvzlz6jq4bcqm462nys8g91gqw003zljh"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-dplyr" ,r-dplyr)
+     `(("r-cpp11" ,r-cpp11)
+       ("r-dplyr" ,r-dplyr)
        ("r-ellipsis" ,r-ellipsis)
        ("r-magrittr" ,r-magrittr)
        ("r-glue" ,r-glue)
@@ -3730,8 +3731,6 @@ selection.")
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-tidyselect" ,r-tidyselect)
-       ("r-rcpp" ,r-rcpp)
-       ("r-stringi" ,r-stringi)
        ("r-tibble" ,r-tibble)
        ("r-vctrs" ,r-vctrs)))
     (native-inputs
