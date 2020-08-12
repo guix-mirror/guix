@@ -5841,14 +5841,14 @@ misclassification probabilities of different models.")
 (define-public r-zip
   (package
     (name "r-zip")
-    (version "2.0.4")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "zip" version))
        (sha256
         (base32
-         "1c02amk3pl6xir5jnbfiwiv2wvpkpbkkb1w71y6lf2yk7g3d0pdb"))))
+         "1dfsagb7bx35x4zx6f5xk2sk057fbyhskkpw3w72b805cjw920da"))))
     (build-system r-build-system)
     (home-page "https://github.com/gaborcsardi/zip")
     (synopsis "Cross-platform Zip compression")
