@@ -22885,3 +22885,26 @@ Computation of @dfn{genetic relationship matrix} (GRM) and dominance matrix,
 @dfn{linkage disequilibrium} (LD), and heritability with efficient algorithms
 for linear mixed models (AIREML).")
     (license license:gpl3)))
+
+(define-public r-cpp11
+  (package
+    (name "r-cpp11")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cpp11" version))
+       (sha256
+        (base32
+         "1113y61lj4cg1d2yjavdx9zih5rzb4pnxmj5v3sr4bhzlxz2scda"))))
+    (properties `((upstream-name . "cpp11")))
+    (build-system r-build-system)
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/r-lib/cpp11")
+    (synopsis "C++11 Interface for R's C Interface")
+    (description
+     "This package provides a header only, C++11 interface to R's C interface.
+Compared to other approaches @code{cpp11} strives to be safe against long
+jumps from the C API as well as C++ exceptions, conform to normal R function
+semantics and supports interaction with @code{ALTREP} vectors.")
+    (license license:expat)))
