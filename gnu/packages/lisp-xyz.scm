@@ -13509,3 +13509,33 @@ for an example.")
 
 (define-public ecl-hu.dwim.defclass-star
   (sbcl-package->ecl-package sbcl-hu.dwim.defclass-star))
+
+(define-public sbcl-livesupport
+  (let ((commit "71e6e412df9f3759ad8378fabb203913d82e228a")
+	(revision "1"))
+    (package
+      (name "sbcl-livesupport")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cbaggers/livesupport")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1rvnl0mncylbx63608pz5llss7y92j7z3ydambk9mcnjg2mjaapg"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/cbaggers/livesupport")
+      (synopsis "Some helpers that make livecoding a little easier")
+      (description "This package provides a macro commonly used in livecoding to
+enable continuing when errors are raised.  Simply wrap around a chunk of code
+and it provides a restart called @code{continue} which ignores the error and
+carrys on from the end of the body.")
+      (license license:bsd-2))))
+
+(define-public cl-livesupport
+  (sbcl-package->cl-source-package sbcl-livesupport))
+
+(define-public ecl-livesupport
+  (sbcl-package->ecl-package sbcl-livesupport))
