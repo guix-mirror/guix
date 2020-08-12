@@ -22753,3 +22753,24 @@ and predictions of any machine learning model.  Implemented methods are:
 goodness-of-fit for continuous univariate distributions, using efficient
 algorithms.")
     (license license:gpl2+)))
+
+(define-public r-tensor
+  (package
+    (name "r-tensor")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tensor" version))
+       (sha256
+        (base32
+         "19mfsgr6vz4lgwidm80i4yw0y1dr3n8i6qz7g4n2xa0k74zc5pp1"))))
+    (properties `((upstream-name . "tensor")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/tensor/")
+    (synopsis "Tensor product of arrays")
+    (description
+     "The tensor product of two arrays is notionally an outer product of the
+arrays collapsed in specific extents by summing along the appropriate
+diagonals.  This package allows you to compute the tensor product of arrays.")
+    (license license:gpl2+)))
