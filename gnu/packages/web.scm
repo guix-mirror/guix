@@ -362,9 +362,9 @@ documentation.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.19.0")
-        (revision 2549)
-        (changeset "c13a55aae487"))
+  (let ((version "1.19.2")
+        (revision 2581)
+        (changeset "324ca14c3003"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -376,7 +376,7 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "0vwwvk6wf8f6c6n6yffmya9a287s6dbx1p739hdl3hwxfyh2ygc5"))))
+                 "15bdbi6cjqhx8lqsyr3hnwagq2r80bsyh2im80ajmbfv7y47djqi"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
