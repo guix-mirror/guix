@@ -5228,13 +5228,13 @@ Companion to Applied Regression, Third Edition, Sage.")
 (define-public r-car
   (package
     (name "r-car")
-    (version "3.0-8")
+    (version "3.0-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "car" version))
        (sha256
-        (base32 "0ig1691kxbzkrsq8xi5a6fq2f0vq22j1dn54jxdkldqr5vri1m57"))))
+        (base32 "1clh8c7mj87i4hz27l16w76dpw7k4mlnjbgm9mbrhrfkv0lpb63c"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
