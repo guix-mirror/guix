@@ -3311,6 +3311,39 @@ keep pressing the key until it selects what you want.  There's also
 @code{er/contract-region} if you expand too far.")
     (license license:gpl3+)))
 
+(define-public emacs-explain-pause-mode
+  (let ((commit "2356c8c3639cbeeb9751744dbe737267849b4b51")
+        (revision "0"))
+    (package
+      (name "emacs-explain-pause-mode")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/lastquestion/explain-pause-mode")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0frnfwqal9mrnrz6q4v7vcai26ahaw81894arff1yjw372pfgv7v"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs" ,emacs-buttercup)))
+      (arguments
+       '(#:tests? #t
+         ;; Don't run case-tests as they will fail to create sockets because
+         ;; the path is too long
+         #:test-command '("make" "byte-compile" "unit-tests")
+         ;; Parallel testing will cause the tests to run before
+         ;; byte-compilation is finished
+         #:parallel-tests? #f))
+      (home-page "https://github.com/lastquestion/explain-pause-mode")
+      (synopsis "Provides a top like interface to determine why Emacs paused")
+      (description "Monitors Emacs function calls and records their execution
+time.  This information can be reviewed to determine what is causing the user
+interface to pause.")
+      (license license:gpl3+))))
+
 (define-public emacs-fill-column-indicator
   (package
     (name "emacs-fill-column-indicator")
