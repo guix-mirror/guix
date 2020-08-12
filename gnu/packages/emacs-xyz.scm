@@ -2734,6 +2734,33 @@ Emacs native editing commmands and the work of other packages wherever
 possible.")
       (license license:expat))))
 
+(define-public emacs-kanji
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "5e9d5b72468ece11cfb81b729be6babf63ede425")
+        (revision "0"))
+    (package
+      (name "emacs-kanji")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wsgac/kanji-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1zh7klqaza840q5f44zzh1wrnd6sqa2k93z3dgx3yhhsxfd1dxvy"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/wsgac/kanji-mode")
+      (synopsis "Emacs minor mode for displaying Japanese Kanji stroke order")
+      (description
+       "This minor mode displays the stroke order of the Kanji sign under
+cursor in a transient buffer.  It has a built-in collection of SVG images
+depicting stroke orders for all Kanji.  The collection is a slightly modified
+and limited version of the images provided by the KanjiVG project.")
+      (license license:gpl3+))))
+
 (define-public emacs-keyfreq
   (package
     (name "emacs-keyfreq")
