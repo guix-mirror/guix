@@ -4848,14 +4848,14 @@ estimation and robust multivariate analysis with high breakdown point.")
 (define-public r-fit-models
   (package
     (name "r-fit-models")
-    (version "0.63")
+    (version "0.64")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fit.models" version))
        (sha256
         (base32
-         "0wrrfsgngsfrqnm247f0h6g01807i7lbf5chpyx7hkfdfmm4xbxn"))))
+         "1nk4x2q8cv79zcls61saf627ac0fci6jcrd6lmzk61asm2zhc27p"))))
     (properties `((upstream-name . "fit.models")))
     (build-system r-build-system)
     (propagated-inputs
