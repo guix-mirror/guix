@@ -1826,18 +1826,19 @@ times.")
 (define-public r-data-table
   (package
     (name "r-data-table")
-    (version "1.12.8")
+    (version "1.13.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "data.table" version))
               (sha256
                (base32
-                "1p7rf4v3ysflpgcmy9krkwmcy7z22wb08xm443649waz6lx5z9yk"))))
+                "0wihpg1syjxzsij2fmhwh30vvf2cghw2b2qi79w36qwil2s8w2gn"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://github.com/Rdatatable/data.table/wiki")
     (synopsis "Enhanced version of data.frame R object")
     (description
