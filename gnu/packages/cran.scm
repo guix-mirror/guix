@@ -11532,14 +11532,14 @@ who want to include run-time testing features in their own packages.")
 (define-public r-assertive-datetimes
   (package
     (name "r-assertive-datetimes")
-    (version "0.0-2")
+    (version "0.0-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "assertive.datetimes" version))
        (sha256
         (base32
-         "00a98fx8p3pr3ckayh8wmxmm4rz01s67wah9697m92yci6pv3m78"))))
+         "151d05z8n6dpl44pqsa1jfi0ijbigr3zfc43xlw53nd8ymi22kh1"))))
     (properties
      `((upstream-name . "assertive.datetimes")))
     (build-system r-build-system)
