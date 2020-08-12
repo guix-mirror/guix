@@ -15812,14 +15812,14 @@ feature effects.  Key functions are:
 (define-public r-ibreakdown
   (package
     (name "r-ibreakdown")
-    (version "1.2.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "iBreakDown" version))
        (sha256
         (base32
-         "0y4zjpyn8j76jrs5phjzs5lfq3lqjspmrwcksqv9wq0rbdgh14vk"))))
+         "1bfl5bh0x6z5a0cmdmx68sap9zdxa3kwdnyk57csxapc362yz108"))))
     (properties `((upstream-name . "iBreakDown")))
     (build-system r-build-system)
     (propagated-inputs `(("r-ggplot2" ,r-ggplot2)))
