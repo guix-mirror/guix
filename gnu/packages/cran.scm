@@ -19523,14 +19523,14 @@ statistical shape analysis and archetypal analysis.")
 (define-public r-adamethods
   (package
     (name "r-adamethods")
-    (version "1.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "adamethods" version))
        (sha256
         (base32
-         "0mp73zh5x6h18gv29v981kb9n632kb58lvlcxwr6vcvrx393nrxh"))))
+         "150awbd3skb1mqca18bqjykhyycqw8crviw66s6qrcnmcsbk77pj"))))
     (properties `((upstream-name . "adamethods")))
     (build-system r-build-system)
     (propagated-inputs
