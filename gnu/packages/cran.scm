@@ -22732,3 +22732,24 @@ and predictions of any machine learning model.  Implemented methods are:
 @end itemize
 ")
     (license license:expat)))
+
+(define-public r-goftest
+  (package
+    (name "r-goftest")
+    (version "1.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "goftest" version))
+       (sha256
+        (base32
+         "0ivnkqhv5xgiv05dm648nngacymd8x8g0fyppv3bc0mhcqk9k5z4"))))
+    (properties `((upstream-name . "goftest")))
+    (build-system r-build-system)
+    (home-page "https://github.com/baddstats/goftest")
+    (synopsis "Classical Goodness-of-Fit tests for univariate distributions")
+    (description
+     "This package provides Cramer-Von Mises and Anderson-Darling tests of
+goodness-of-fit for continuous univariate distributions, using efficient
+algorithms.")
+    (license license:gpl2+)))
