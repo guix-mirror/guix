@@ -798,14 +798,14 @@ closely reconstructs the mutational profile.")
 (define-public r-nmf
   (package
     (name "r-nmf")
-    (version "0.22.0")
+    (version "0.23.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "NMF" version))
        (sha256
         (base32
-         "0b2ls3x1nkrnam45hagpys624nzxj3v7kxnp0q216yakvx5h57cq"))))
+         "0ls7q9yc9l1z10jphq5a11wkfgcxc3gm3sfjj376zx3vnc0wl30g"))))
     (properties `((upstream-name . "NMF")))
     (build-system r-build-system)
     (propagated-inputs
@@ -826,6 +826,8 @@ closely reconstructs the mutational profile.")
        ("r-reshape2" ,r-reshape2)
        ("r-rngtools" ,r-rngtools)
        ("r-stringr" ,r-stringr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://renozao.github.io/NMF")
     (synopsis "Algorithms and framework for nonnegative matrix factorization")
     (description
