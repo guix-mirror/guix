@@ -15025,19 +15025,20 @@ graphics using Vega.")
 (define-public r-gbm
   (package
     (name "r-gbm")
-    (version "2.1.5")
+    (version "2.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gbm" version))
        (sha256
         (base32
-         "0vs6ljaqhwwpgr8wlbhmm4v147rd82kl16rpaijqiylxcc8dxyq6"))))
+         "1h9f4ww9yc3nsvghgr2q7jjrlz29ibabxjbax1sk5wmqh2wy6pbx"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-gridextra" ,r-gridextra)
-       ("r-lattice" ,r-lattice)
+     `(("r-lattice" ,r-lattice)
        ("r-survival" ,r-survival)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/gbm-developers/gbm")
     (synopsis "Generalized boosted regression models")
     (description
