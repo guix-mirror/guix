@@ -11662,14 +11662,14 @@ features in their own packages.")
 (define-public r-assertive
   (package
     (name "r-assertive")
-    (version "0.3-5")
+    (version "0.3-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "assertive" version))
        (sha256
         (base32
-         "0blbbhlxcb5ffdxqxi62xs33ljiawh6s22a0pyvbbh79jf46rzr3"))))
+         "02palil82idqhhshcdjsfsja9qkqnd0dczqzj5gbccy4hfg1c0y4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertive-base" ,r-assertive-base)
@@ -11688,6 +11688,8 @@ features in their own packages.")
        ("r-assertive-strings" ,r-assertive-strings)
        ("r-assertive-types" ,r-assertive-types)
        ("r-knitr" ,r-knitr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bitbucket.org/richierocks/assertive")
     (synopsis "Readable check functions to ensure code integrity")
     (description
