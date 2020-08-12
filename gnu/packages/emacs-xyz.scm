@@ -5723,7 +5723,7 @@ cards created in Org mode.")
 (define-public emacs-org-superstar
   (package
     (name "emacs-org-superstar")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -5732,7 +5732,7 @@ cards created in Org mode.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14w06v76xi4f6hpq6xzicrjjv0b802g5zc9as4mpimfy5gx2xpm0"))))
+        (base32 "17x32k3f21z9ldakgryd2wczhdj78kb8gsdxplyjqc3knajpnzgp"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-org" ,emacs-org)))
