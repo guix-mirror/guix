@@ -4000,20 +4000,19 @@ package instead.")
 (define-public r-hmisc
   (package
     (name "r-hmisc")
-    (version "4.4-0")
+    (version "4.4-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Hmisc" version))
        (sha256
-        (base32 "1ivfamwghd2z408fkhs7jy5zl3q0z1a2la16yi8js872br6cyvpi"))))
+        (base32 "0mm3r2kv0kgrhg7salk2hw0s37d4i2mghwk0l0qxaw2ny0w8w5z6"))))
     (properties `((upstream-name . "Hmisc")))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
     (propagated-inputs
-     `(("r-acepack" ,r-acepack)
-       ("r-base64enc" ,r-base64enc)
+     `(("r-base64enc" ,r-base64enc)
        ("r-cluster" ,r-cluster)
        ("r-data-table" ,r-data-table)
        ("r-foreign" ,r-foreign)
