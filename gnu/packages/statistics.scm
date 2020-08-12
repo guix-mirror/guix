@@ -2356,13 +2356,13 @@ integers.")
 (define-public r-httr
   (package
     (name "r-httr")
-    (version "1.4.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httr" version))
               (sha256
                (base32
-                "0mp1il13q6n49n2hv1p2p8x6avjan6dr5az19ql4hb78pc3pwp37"))))
+                "1y8y1g1dkgv9jafrk1kj6pzxpw95c0rr9lplblfq2byrs1pfsas6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
@@ -2370,6 +2370,8 @@ integers.")
        ("r-openssl" ,r-openssl)
        ("r-mime" ,r-mime)
        ("r-r6" ,r-r6)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/httr")
     (synopsis "Tools for working with URLs and HTTP")
     (description
