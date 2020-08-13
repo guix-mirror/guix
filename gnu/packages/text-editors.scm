@@ -122,7 +122,7 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2020.01.16")
+    (version "2020.08.04")
     (source
      (origin
        (method url-fetch)
@@ -130,7 +130,7 @@ based command language.")
                            "releases/download/v" version "/"
                            "kakoune-" version ".tar.bz2"))
        (sha256
-        (base32 "1bhd990gywdwdhxc5dn83wwj418c5cw1ndqycf7k0a02kxlg3550"))))
+        (base32 "08gikjxyvcr415br1g1llzh5pnq737q55yinalb92cgq3yn9yih2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -149,7 +149,7 @@ based command language.")
                                "\";\n        " line)))
              #t))
          (delete 'configure)            ; no configure script
-         ;; kakoune requires us to be in the src/ directory to build
+         ;; kakoune requires us to be in the src/ directory to build.
          (add-before 'build 'chdir
            (lambda _ (chdir "src") #t)))))
     (native-inputs
