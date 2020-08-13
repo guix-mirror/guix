@@ -30,6 +30,7 @@
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system linux-module)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -57,6 +58,8 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
@@ -858,3 +861,31 @@ directory onto a single drive and create FreeDesktop.org Trash specification
 compatible directories.")
       (home-page "https://github.com/trapexit/mergerfs-tools")
       (license license:isc))))
+
+(define-public python-dropbox
+  (package
+    (name "python-dropbox")
+    (version "10.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "dropbox" version))
+        (sha256
+         (base32
+          "137rn9fs1bg1p1khd5lcccfxh8jsx27dh2ix5wwd8cmddbrzdrbd"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; Tests require a network connection.
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-chardet" ,python-chardet)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://www.dropbox.com/developers")
+    (synopsis "Official Dropbox API Client")
+    (description "This package provides a Python SDK for integrating with the
+Dropbox API v2.")
+    (license license:expat)))
