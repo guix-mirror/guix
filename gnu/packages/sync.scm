@@ -118,6 +118,15 @@ distributions.")
         (base32
          "1nwbalc54iz6616liyxfalf5yafwx0iv6cmqgvg4kz9khqscmhcd"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-completions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "contrib/bash-completion/megatools"
+                           (string-append (assoc-ref outputs "out")
+                                          "/etc/bash_completion.d"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ;; For documentation
