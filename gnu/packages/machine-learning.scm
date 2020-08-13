@@ -773,7 +773,8 @@ than 8 bits, and at the end only some significant 8 bits are kept.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-asserts
            (lambda _
@@ -810,12 +811,7 @@ than 8 bits, and at the end only some significant 8 bits are kept.")
                (with-directory-excursion test-dir
                  (invoke "make" "-j" (number->string (parallel-job-count)))
                  (invoke "./dtest" "--runall"))
-               #t)))
-         (add-after 'install 'delete-static-library
-           (lambda* (#:key outputs #:allow-other-keys)
-             (delete-file (string-append (assoc-ref outputs "out")
-                                         "/lib/libdlib.a"))
-             #t)))))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ;; For tests.
