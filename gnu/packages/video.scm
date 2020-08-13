@@ -3125,7 +3125,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
 (define-public mediainfo
   (package
     (name "mediainfo")
-    (version "20.03")
+    (version "20.08")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
@@ -3136,7 +3136,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1f1shnycf0f1fwka9k9s250l228xjkg0k4k73h8bpld8msighgnw"))))
+                "1baf2dj5s3g1x4ssqli1b2r1203syk42m09zhp36qcinmfixv11l"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
