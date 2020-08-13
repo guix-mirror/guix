@@ -46,6 +46,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -1160,10 +1161,10 @@ This package provides Python bindings.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure))
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
        #:tests? #f))                    ; no test suite
