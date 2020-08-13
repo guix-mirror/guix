@@ -467,7 +467,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "3.0.2")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
@@ -475,7 +475,7 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "1yrnkw8c47kmy2x6m1xp69hwyk02xyc8pd9kvcmyj54lzrhzdfka"))))
+        (base32 "035rvqmw386hm0jpi14lf4dnpr5rjkalzjkyprqh42nwi3m86dkf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -484,6 +484,8 @@ photographic equipment.")
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
+             ;; Rawspeed fails to build with GCC due to OpenMP error:
+             ;; "undefined reference to `GOMP_loop_nonmonotonic_dynamic_next'"
              (setenv "CC" "clang") (setenv "CXX" "clang++")
              ;; Darktable looks for opencl-c.h in the LLVM dir. Guix installs
              ;; it to the Clang dir. We fix this by patching CMakeLists.txt.
@@ -525,36 +527,36 @@ photographic equipment.")
        ("po4a" ,po4a)))
     (inputs
      `(("cairo" ,cairo)
-       ("colord-gtk" ,colord-gtk)
-       ("cups" ,cups)
+       ("colord-gtk" ,colord-gtk) ;optional, for color profile support
+       ("cups" ,cups) ;optional, for printing support
        ("curl" ,curl)
        ("dbus-glib" ,dbus-glib)
        ("exiv2" ,exiv2)
        ("freeimage" ,freeimage)
-       ("gmic" ,gmic)
+       ("gmic" ,gmic) ;optional, for HaldcLUT support
        ("graphicsmagick" ,graphicsmagick)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
        ("ilmbase" ,ilmbase)
-       ("iso-codes" ,iso-codes)
+       ("iso-codes" ,iso-codes) ;optional, for language names in the preferences
        ("json-glib" ,json-glib)
        ("lcms" ,lcms)
-       ("lensfun" ,lensfun)
-       ("libgphoto2" ,libgphoto2)
+       ("lensfun" ,lensfun) ;optional, for the lens distortion plugin
+       ("libgphoto2" ,libgphoto2) ;optional, for camera tethering
        ("libjpeg" ,libjpeg-turbo)
        ("libomp" ,libomp)
        ("libpng" ,libpng)
        ("librsvg" ,librsvg)
-       ("libsecret" ,libsecret)
+       ("libsecret" ,libsecret) ;optional, for storing passwords
        ("libsoup" ,libsoup)
        ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)
+       ("libwebp" ,libwebp) ;optional, for WebP support
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("lua" ,lua) ;for plugins
-       ("openexr" ,openexr)
-       ("openjpeg" ,openjpeg)
-       ("osm-gps-map" ,osm-gps-map)
+       ("lua" ,lua) ;optional, for plugins
+       ("openexr" ,openexr) ;optional, for EXR import/export
+       ("openjpeg" ,openjpeg) ;optional, for JPEG2000 export
+       ("osm-gps-map" ,osm-gps-map) ;optional, for geotagging view
        ("pugixml" ,pugixml)
        ("python-jsonschema" ,python-jsonschema)
        ("sqlite" ,sqlite)))
