@@ -20,10 +20,12 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu build linux-container)
   #:use-module (guix build utils)
+  #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (make-forkexec-constructor/container))
+  #:export (make-forkexec-constructor/container
+            fork+exec-command/container))
 
 ;;; Commentary:
 ;;;
@@ -93,7 +95,8 @@
 ;; XXX: Lazy-bind the Shepherd to avoid a compile-time dependency.
 (module-autoload! (current-module)
                   '(shepherd service)
-                  '(read-pid-file exec-command %precious-signals))
+                  '(fork+exec-command read-pid-file exec-command
+                    %precious-signals))
 (module-autoload! (current-module)
                   '(shepherd system) '(unblock-signals))
 
@@ -187,6 +190,17 @@ namespace, in addition to essential bind-mounts such /proc."
                                        #:max-delay pid-file-timeout)
               (read-pid-file pid-file #:max-delay pid-file-timeout))
           pid))))
+
+(define* (fork+exec-command/container command
+                                      #:key pid
+                                      #:allow-other-keys
+                                      #:rest args)
+  "This is a variant of 'fork+exec-command' procedure, that joins the
+namespaces of process PID beforehand."
+  (container-excursion* pid
+    (lambda ()
+      (apply fork+exec-command command
+             (strip-keyword-arguments '(#:pid) args)))))
 
 ;; Local Variables:
 ;; eval: (put 'container-excursion* 'scheme-indent-function 1)

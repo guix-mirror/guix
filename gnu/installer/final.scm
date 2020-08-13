@@ -26,6 +26,8 @@
   #:use-module (guix build syscalls)
   #:use-module (guix build utils)
   #:use-module (gnu build accounts)
+  #:use-module (gnu build install)
+  #:use-module (gnu build linux-container)
   #:use-module ((gnu system shadow) #:prefix sys:)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
@@ -133,49 +135,18 @@ USERS."
                        (_ #f))))))
               pids)))
 
-(define (umount-cow-store)
-  "Remove the store overlay and the bind-mount on /tmp created by the
-cow-store service.  This procedure is very fragile and a better approach would
-be much appreciated."
-  (catch #t
-    (lambda ()
-      (let ((tmp-dir "/remove"))
-        (syslog "Unmounting cow-store.~%")
-
-        (mkdir-p tmp-dir)
-        (mount (%store-directory) tmp-dir "" MS_MOVE)
-
-        ;; The guix-daemon has possibly opened files from the cow-store,
-        ;; restart it.
-        (restart-service 'guix-daemon)
-
-        (syslog "Killing cow users.")
-
-        ;; Kill all processes started while the cow-store was active (logins
-        ;; on other TTYs for instance).
-        (kill-cow-users tmp-dir)
-
-        ;; Try to umount the store overlay. Some process such as udevd
-        ;; workers might still be active, so do some retries.
-        (let loop ((try 5))
-          (syslog "Umount try ~a~%" (- 5 try))
-          (sleep 1)
-          (let ((umounted? (false-if-exception (umount tmp-dir))))
-            (if (and (not umounted?) (> try 0))
-                (loop (- try 1))
-                (if umounted?
-                    (syslog "Umounted ~a successfully.~%" tmp-dir)
-                    (syslog "Failed to umount ~a.~%" tmp-dir)))))
-
-        (umount "/tmp")))
-    (lambda args
-      (syslog "~a~%" args))))
-
 (define* (install-system locale #:key (users '()))
   "Create /etc/shadow and /etc/passwd on the installation target for USERS.
 Start COW-STORE service on target directory and launch guix install command in
 a subshell.  LOCALE must be the locale name under which that command will run,
 or #f.  Return #t on success and #f on failure."
+  (define backing-directory
+    ;; Sub-directory used as the backing store for copy-on-write.
+    "/tmp/guix-inst")
+
+  (define (assert-exit x)
+    (primitive-exit (if x 0 1)))
+
   (let* ((options         (catch 'system-error
                             (lambda ()
                               ;; If this file exists, it can provide
@@ -188,7 +159,11 @@ or #f.  Return #t on success and #f on failure."
                                         "--fallback")
                                   options
                                   (list (%installer-configuration-file)
-                                        (%installer-target-dir)))))
+                                        (%installer-target-dir))))
+         (database-dir    "/var/guix/db")
+         (database-file   (string-append database-dir "/db.sqlite"))
+         (saved-database  (string-append database-dir "/db.save"))
+         (ret             #f))
     (mkdir-p (%installer-target-dir))
 
     ;; We want to initialize user passwords but we don't want to store them in
@@ -198,27 +173,50 @@ or #f.  Return #t on success and #f on failure."
     ;; passwords that we've put in there.
     (create-user-database users (%installer-target-dir))
 
-    (dynamic-wind
-      (lambda ()
-        (start-service 'cow-store (list (%installer-target-dir))))
-      (lambda ()
-        ;; If there are any connected clients, assume that we are running
-        ;; installation tests. In that case, dump the standard and error
-        ;; outputs to syslog.
-        (if (not (null? (current-clients)))
-            (with-output-to-file "/dev/console"
-              (lambda ()
-                (with-error-to-file "/dev/console"
-                  (lambda ()
-                    (setvbuf (current-output-port) 'none)
-                    (setvbuf (current-error-port) 'none)
-                    (run-command install-command #:locale locale)))))
-            (run-command install-command #:locale locale)))
-      (lambda ()
-        (stop-service 'cow-store)
-        ;; Remove the store overlay created at cow-store service start.
-        ;; Failing to do that will result in further umount calls to fail
-        ;; because the target device is seen as busy. See:
-        ;; https://lists.gnu.org/archive/html/guix-devel/2018-12/msg00161.html.
-        (umount-cow-store)
-        #f))))
+    ;; When the store overlay is mounted, other processes such as kmscon, udev
+    ;; and guix-daemon may open files from the store, preventing the
+    ;; underlying install support from being umounted. See:
+    ;; https://lists.gnu.org/archive/html/guix-devel/2018-12/msg00161.html.
+    ;;
+    ;; To avoid this situation, mount the store overlay inside a container,
+    ;; and run the installation from within that container.
+    (zero?
+     (call-with-container '()
+       (lambda ()
+         (dynamic-wind
+           (lambda ()
+             ;; Save the database, so that it can be restored once the
+             ;; cow-store is umounted.
+             (copy-file database-file saved-database)
+             (mount-cow-store (%installer-target-dir) backing-directory))
+           (lambda ()
+             ;; We need to drag the guix-daemon to the container MNT
+             ;; namespace, so that it can operate on the cow-store.
+             (stop-service 'guix-daemon)
+             (start-service 'guix-daemon (list (number->string (getpid))))
+
+             (setvbuf (current-output-port) 'none)
+             (setvbuf (current-error-port) 'none)
+
+             ;; If there are any connected clients, assume that we are running
+             ;; installation tests. In that case, dump the standard and error
+             ;; outputs to syslog.
+             (set! ret
+                   (if (not (null? (current-clients)))
+                       (with-output-to-file "/dev/console"
+                         (lambda ()
+                           (with-error-to-file "/dev/console"
+                             (lambda ()
+                               (run-command install-command
+                                            #:locale locale)))))
+                       (run-command install-command #:locale locale))))
+           (lambda ()
+             ;; Restart guix-daemon so that it does no keep the MNT namespace
+             ;; alive.
+             (restart-service 'guix-daemon)
+             (copy-file saved-database database-file)
+
+             ;; Finally umount the cow-store and exit the container.
+             (unmount-cow-store (%installer-target-dir) backing-directory)
+             (assert-exit ret))))
+       #:namespaces '(mnt)))))
