@@ -1148,7 +1148,7 @@ This package provides Python bindings.")
 (define-public aha
   (package
     (name "aha")
-    (version "0.5")
+    (version "0.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1156,8 +1156,7 @@ This package provides Python bindings.")
              (url "https://github.com/theZiz/aha")
              (commit version)))
        (sha256
-        (base32
-         "0byml4rmpiaalwx69jcixl3yvpvwmwiss1jzgsqwshilb2p4qnmz"))
+        (base32 "1gywad0rvvz3c5balz8cxsnx0562hj2ngzqyr8zsy2mb4pn0lpgv"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -1167,8 +1166,7 @@ This package provides Python bindings.")
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
-       ;; no check target
-       #:tests? #f))
+       #:tests? #f))                    ; no test suite
     (home-page "https://github.com/theZiz/aha")
     (synopsis "Converts terminal escape sequences to HTML")
     (description "@command{aha} (Ansi Html Adapter) converts ANSI escape sequences
