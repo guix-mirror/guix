@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,6 +83,7 @@
             version>?
             version>=?
             version-prefix
+            version-major+minor+point
             version-major+minor
             version-major
             guile-version>?
@@ -564,6 +566,15 @@ or '= when they denote equal versions."
 For example, (version-prefix \"2.1.47.4.23\" 3) returns \"2.1.47\""
   (string-join (take (string-split version-string #\.) num-parts) "."))
 
+(define (version-major+minor+point version-string)
+  "Return \"major>.<minor>.<point>\", where major, minor and point are the
+major, minor and point version numbers from the version-string.  For example,
+(version-major+minor+point \"6.4.5.2\") returns \"6.4.5\" or
+(version-major+minor+point \"1.19.2-2581-324ca14c3003\") returns \"1.19.2\"."
+  (let* ((3-dot (version-prefix version-string 3))
+         (index (string-index 3-dot #\-)))
+    (or (false-if-exception (substring 3-dot 0 index))
+        3-dot)))
 
 (define (version-major+minor version-string)
   "Return \"<major>.<minor>\", where major and minor are the major and
