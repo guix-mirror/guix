@@ -1177,14 +1177,13 @@ language.  It aims to be fast.")
 (define-public python-aenum
   (package
     (name "python-aenum")
-    (version "2.2.3")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aenum" version))
        (sha256
-        (base32
-         "1s3008rklv4n1kvmq6xdbdfyrpl0gf1rhqasmd27s5kwyjmlqcx4"))))
+        (base32 "0r1812bjm72x73pl7y4yhffr4zbdjgxa08avsy4b3di0pqgqv0l1"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
