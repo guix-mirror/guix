@@ -8289,14 +8289,13 @@ output.")
 (define-public python-crashtest
   (package
     (name "python-crashtest")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "crashtest" version))
         (sha256
-          (base32
-            "056zzbznl3xfnbblfci8lvcam3h7k7va68vi6asrm4q0ck4nrh79"))))
+          (base32 "1p9p7mn8x2j9psc4jxab98897v4i9s4fliyfw8rp8v4bx1n7pjj2"))))
     (build-system python-build-system)
     (home-page "https://github.com/sdispater/crashtest")
     (synopsis "Manage Python errors with ease")
