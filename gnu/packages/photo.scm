@@ -505,15 +505,19 @@ photographic equipment.")
                      (string-append (assoc-ref inputs "ilmbase")
                                     "/include/OpenEXR:" (or (getenv "CPATH") "")))
              #t))
-          (add-after 'install 'wrap-program
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (wrap-program (string-append (assoc-ref outputs "out")
-                                           "/bin/darktable")
-                ;; For GtkFileChooserDialog.
-                `("GSETTINGS_SCHEMA_DIR" =
-                  (,(string-append (assoc-ref inputs "gtk+")
-                                   "/share/glib-2.0/schemas"))))
-              #t)))))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/darktable")
+               ;; For GtkFileChooserDialog.
+               `("GSETTINGS_SCHEMA_DIR" =
+                 (,(string-append (assoc-ref inputs "gtk+")
+                                  "/share/glib-2.0/schemas")))
+               ;; For libOpenCL.so.
+               `("LD_LIBRARY_PATH" =
+                 (,(string-append (assoc-ref inputs "ocl-icd")
+                                  "/lib"))))
+             #t)))))
     (native-inputs
      `(("clang" ,clang-9)
        ("desktop-file-utils" ,desktop-file-utils)
@@ -543,6 +547,7 @@ photographic equipment.")
        ("lcms" ,lcms)
        ("lensfun" ,lensfun) ;optional, for the lens distortion plugin
        ("libgphoto2" ,libgphoto2) ;optional, for camera tethering
+       ("libavif" ,libavif) ;optional, for AVIF support
        ("libjpeg" ,libjpeg-turbo)
        ("libomp" ,libomp)
        ("libpng" ,libpng)
@@ -554,6 +559,7 @@ photographic equipment.")
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("lua" ,lua) ;optional, for plugins
+       ("ocl-icd" ,ocl-icd) ;optional, for OpenCL support
        ("openexr" ,openexr) ;optional, for EXR import/export
        ("openjpeg" ,openjpeg) ;optional, for JPEG2000 export
        ("osm-gps-map" ,osm-gps-map) ;optional, for geotagging view
@@ -567,7 +573,7 @@ developer.  It manages your digital negatives in a database, lets you view
 them through a zoomable lighttable and enables you to develop raw images
 and enhance them.")
     ;; See src/is_supported_platform.h for supported platforms.
-    (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
+    (supported-systems '("x86_64-linux" "aarch64-linux"))
     (license (list license:gpl3+ ;; Darktable itself.
                    license:lgpl2.1+)))) ;; Rawspeed library.
 
