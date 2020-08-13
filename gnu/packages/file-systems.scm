@@ -889,3 +889,33 @@ compatible directories.")
     (description "This package provides a Python SDK for integrating with the
 Dropbox API v2.")
     (license license:expat)))
+
+(define-public dbxfs
+  (package
+    (name "dbxfs")
+    (version "1.0.43")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "dbxfs" version))
+        (sha256
+         (base32
+          "1f9sy2ax215dxiwszrrcadffjdsmrlxm4kwrbiap9dhxvzm226ks"))
+        (patches (search-patches "dbxfs-remove-sentry-sdk.patch"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests requires safefs
+    (propagated-inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-block-tracing" ,python-block-tracing)
+       ("python-dropbox" ,python-dropbox)
+       ("python-keyring" ,python-keyring)
+       ("python-keyrings.alt" ,python-keyrings.alt)
+       ("python-privy" ,python-privy)
+       ("python-userspacefs" ,python-userspacefs)))
+  (home-page "https://github.com/rianhunter/dbxfs")
+  (synopsis "User-space file system for Dropbox")
+  (description
+   "@code{dbxfs} allows you to mount your Dropbox folder as if it were a
+local filesystem using FUSE.")
+  (license license:gpl3+)))
