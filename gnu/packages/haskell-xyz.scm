@@ -8762,6 +8762,17 @@ code.  It was designed for use in @code{Pandoc}.")
         (base32
          "0dpjrr40h54cljzhvixyym07z792a9izg6b9dmqpjlgcg4rj0xx8"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-library
+           (lambda _
+             (substitute* "test/Tests/Command.hs"
+               (("= dynlibEnv")
+                (format #f "= [(\"LD_LIBRARY_PATH\" , \"~a/dist/build\")]"
+                        (getcwd))))
+             #t)))))
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
        ("ghc-aeson-pretty" ,ghc-aeson-pretty)
