@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -4027,6 +4027,8 @@ thanks to the use of namespaces.")
                                 "libexec/bootstrap-scripts/functions"
                                 "libexec/bootstrap-scripts/post.sh"
                                 "libexec/functions")
+               (("\\| grep ")
+                (string-append "| " (which "grep") " "))
                (("egrep ")
                 (string-append (which "egrep") " ")))
              #t))
