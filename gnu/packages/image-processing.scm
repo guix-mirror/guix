@@ -358,14 +358,6 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                      "--strip-components=1"
                      "-C" "../opencv-contrib")))
 
-         (add-after 'unpack 'fix-jasper
-           (lambda _
-             ;; See <https://github.com/opencv/opencv/pull/17983>.
-             (substitute* "modules/imgcodecs/src/grfmt_jpeg2000.cpp"
-               (("&jas_matrix_get")
-                "jas_matrix_getref"))
-             #t))
-
          (add-after 'set-paths 'add-ilmbase-include-path
            (lambda* (#:key inputs #:allow-other-keys)
            ;; OpenEXR propagates ilmbase, but its include files do not appear
