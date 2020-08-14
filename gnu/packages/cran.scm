@@ -22954,3 +22954,29 @@ times starting with Leong et al (2005,
 aggregation for comparing different implementations in order to provide a
 'faster but good enough' alternative for use with R and C++ code.")
     (license license:gpl2+)))
+
+(define-public r-rfast
+  (package
+    (name "r-rfast")
+    (version "1.9.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rfast" version))
+       (sha256
+        (base32
+         "18m8xhg24kygwhq7avdp1hibilicb5wppi2wdmc36fkqljc274y0"))))
+    (properties `((upstream-name . "Rfast")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rcppziggurat" ,r-rcppziggurat)))
+    (home-page "https://github.com/RfastOfficial/Rfast")
+    (synopsis "Collection of efficient and fast R functions")
+    (description
+     "This package provides a collection of fast (utility) functions for data
+analysis.  Column- and row- wise means, medians, variances, minimums,
+maximums, many t, F and G-square tests, many regressions (normal, logistic,
+Poisson), are some of the many fast functions.")
+    (license license:gpl2+)))
