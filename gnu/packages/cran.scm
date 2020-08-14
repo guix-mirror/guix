@@ -22925,3 +22925,32 @@ Compared to other approaches @code{cpp11} strives to be safe against long
 jumps from the C API as well as C++ exceptions, conform to normal R function
 semantics and supports interaction with @code{ALTREP} vectors.")
     (license license:expat)))
+
+(define-public r-rcppziggurat
+  (package
+    (name "r-rcppziggurat")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppZiggurat" version))
+       (sha256
+        (base32
+         "0zmr3nvm5j0fpwxk3x9kxpwqbr66ldfvd10zy8xlgjbslz9myvfv"))))
+    (properties `((upstream-name . "RcppZiggurat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppgsl" ,r-rcppgsl)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/RcppZiggurat/")
+    (synopsis "Rcpp integration of different \"Ziggurat\" normal RNG implementations")
+    (description
+     "The Ziggurat generator for normally distributed random numbers,
+originally proposed by Marsaglia and Tsang (2000,
+@url{https://doi.org/10.18637/jss.v005.i08}) has been improved upon a few
+times starting with Leong et al (2005,
+@url{https://doi.org/10.18637/jss.v012.i07}).  This package provides an
+aggregation for comparing different implementations in order to provide a
+'faster but good enough' alternative for use with R and C++ code.")
+    (license license:gpl2+)))
