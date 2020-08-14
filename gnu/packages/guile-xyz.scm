@@ -2778,6 +2778,30 @@ pre-alpha code.")
 (define-public guile3.0-gi
   (deprecated-package "guile3.0-gi" guile-gi))
 
+(define-public guile-srfi-89
+  (package
+    (name "guile-srfi-89")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/mjbecze/guile-srfi-89.git")
+             (commit version)))
+       (sha256
+         (base32
+           "1981c0rrzxqx3md9jx8ir7j3m2mzg9m72b33p5jvw36zirbzpl20"))
+       (file-name (git-file-name name version))))
+    (build-system guile-build-system)
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://gitlab.com/mjbecze/guile-srfi-89")
+    (synopsis "Hygienic implementation of SRFI-89 for Guile")
+    (description
+     "This package provides SRFI-89 optional positional and named
+parameters, which  define* and lambda* special forms")
+    (license license:gpl3+)))
+
 (define-public guile-srfi-159
   (let ((commit "1bd98abda2ae4ef8f36761a167903e55c6bda7bb")
         (revision "0"))
