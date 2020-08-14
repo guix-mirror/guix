@@ -23026,3 +23026,36 @@ see
 @end enumerate
 ")
     (license license:gpl3)))
+
+(define-public r-spectrum
+  (package
+    (name "r-spectrum")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Spectrum" version))
+       (sha256
+        (base32
+         "0n38d360azkck6vvhr771zsh0gbvd9qsf9ygg5r18vhz0pb1xcfw"))))
+    (properties `((upstream-name . "Spectrum")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-clusterr" ,r-clusterr)
+       ("r-diptest" ,r-diptest)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-rfast" ,r-rfast)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/Spectrum/")
+    (synopsis "Fast adaptive spectral clustering for single and multi-view data")
+    (description
+     "This package provides a self-tuning spectral clustering method for
+single or multi-view data.  Spectrum uses a new type of adaptive density aware
+kernel that strengthens connections in the graph based on common nearest
+neighbours.  It uses a tensor product graph data integration and diffusion
+procedure to integrate different data sources and reduce noise.  Spectrum uses
+either the eigengap or multimodality gap heuristics to determine the number of
+clusters.  The method is sufficiently flexible so that a wide range of
+Gaussian and non-Gaussian structures can be clustered with automatic selection
+of K.")
+    (license license:agpl3+)))
