@@ -84,7 +84,7 @@ library.")
 (define-public sparsehash
   (package
     (name "sparsehash")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -93,7 +93,7 @@ library.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0m3f0cnpnpf6aak52wn8xbrrdw8p0yhq8csgc8nlvf9zp8c402na"))))
+                "1pf1cjvcjdmb9cd6gcazz64x0cd2ndpwh6ql2hqpypjv725xwxy7"))))
     (build-system gnu-build-system)
     (synopsis "Memory-efficient hashtable implementations")
     (description
