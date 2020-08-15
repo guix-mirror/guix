@@ -3224,8 +3224,8 @@ from the module-init-tools project.")
                             (string-append "PREFIX=" prefix)
                             (string-append "SYSCONFDIR=" prefix "/etc")))
        #:test-target "test"))
-    (native-inputs `(("go" ,go)               ;for the test suite
-                     ("pandoc" ,ghc-pandoc))) ;to generate the manpage
+    (native-inputs `(("go" ,go)           ;for the test suite
+                     ("pandoc" ,pandoc))) ;to generate the manpage
     (home-page "https://github.com/rfjakob/earlyoom")
     (synopsis "Simple out of memory (OOM) daemon for the Linux kernel")
     (description "Early OOM is a minimalist out of memory (OOM) daemon that
