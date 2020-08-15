@@ -1028,14 +1028,13 @@ agent.")
 (define-public python-stdnum
   (package
     (name "python-stdnum")
-    (version "1.13")
+    (version "1.14")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-stdnum" version))
        (sha256
-        (base32
-         "0q4128rjdgavywhzlm2gz2n5ybc9b9sxs81g50dvxf5q7z9q63qj"))))
+        (base32 "070vd9zgvq0jchs4xc4j1h4r1l1lg4wwb8xs3p25k8c2xjw94fpx"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1044,10 +1043,8 @@ agent.")
                       (invoke "nosetests"))))))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page
-     "https://arthurdejong.org/python-stdnum/")
-    (synopsis
-     "Python module to handle standardized number and code formats")
+    (home-page "https://arthurdejong.org/python-stdnum/")
+    (synopsis "Python module to handle standardized number and code formats")
     (description
      "This is a Python library that aims to provide functions to handle,
 parse and validate standard numbers.
