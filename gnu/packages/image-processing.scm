@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -251,6 +251,8 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
               (sha256
                (base32
                 "06bc61r8myym4s8im10brdjfg4wxkrvsbhhl7vr1msdan2xddzi3"))
+              (patches
+               (search-patches "opencv-fix-build-of-grfmt_jpeg2000.cpp.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin

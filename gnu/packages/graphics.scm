@@ -49,6 +49,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
@@ -59,12 +60,14 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnunet)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pdf)
@@ -81,12 +84,14 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
+  #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
@@ -1429,3 +1434,56 @@ and PC Engine formats")
 the graphics formats of the SNES, Game Boy Color and PC Engine game consoles.
 Automated palette selection is supported.")
     (license license:expat)))
+
+(define-public drawpile
+  (package
+    (name "drawpile")
+    (version "2.1.17")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/drawpile/Drawpile")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08w8vad8pw4a8kkshys1kd2kjvzpj62klxxxp904rx0qazw5hl80"))))
+    (build-system qt-build-system)
+    (arguments
+     '(#:configure-flags (list "-DTESTS=ON" "-DTOOLS=ON" "-DKIS_TABLET=ON")))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("giflib" ,giflib)
+       ("karchive" ,karchive)
+       ("kdnssd" ,kdnssd)
+       ("libmicrohttpd" ,libmicrohttpd)
+       ("libsodium" ,libsodium)
+       ("libvpx" ,libvpx)
+       ("libxi" ,libxi)
+       ;; ("miniupnpc" ,miniupnpc) ;segfaults for some reason
+       ("qtbase" ,qtbase)
+       ("qtkeychain" ,qtkeychain)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://drawpile.net")
+    (synopsis "Collaborative drawing program")
+    (description "Drawpile is a drawing program that allows share the canvas
+with other users in real time.
+
+Some feature highlights:
+@itemize
+@item Shared canvas using the built-in server or a dedicated server
+@item Record, play back and export drawing sessions
+@item Simple animation support
+@item Layers and blending modes
+@item Text layers
+@item Supports pressure sensitive Wacom tablets
+@item Built-in chat
+@item Supports OpenRaster file format
+@item Encrypted connections using SSL
+@item Automatic port forwarding with UPnP
+@end itemize\n")
+    (license license:gpl3+)))

@@ -2732,6 +2732,7 @@ interface or via an external visual interface such as GNU XBoard.")
               (method url-fetch)
               (uri (string-append "mirror://gnu/freedink/freedink-" version
                                   ".tar.gz"))
+              (patches (search-patches "freedink-engine-fix-sdl-hints.patch"))
               (sha256
                (base32
                 "00hhk1bjdrc1np2qz44sa5n1mb62qzwxbvsnws3vpms6iyn3a2sy"))))
@@ -2745,6 +2746,14 @@ interface or via an external visual interface such as GNU XBoard.")
              ;; These tests require a graphical interface.
              (substitute* "src/Makefile.am"
                (("test_gfx_fonts TestIOGfxDisplay") ""))
+             #t))
+         (add-before 'bootstrap 'autoreconf
+           (lambda _
+	     ;; automake is out of date in the source
+	     ;; autoreconf updates the automake scripts
+	     (invoke "autoreconf")
+	     ;; Build fails when autom4te.cache exists.
+	     (delete-file-recursively "autom4te.cache")
              #t)))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)

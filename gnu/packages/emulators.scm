@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2018 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
@@ -278,6 +278,64 @@ FileSystem/XMS/EMS, Tandy/Hercules/CGA/EGA/VGA/VESA graphics, a
 SoundBlaster/Gravis Ultra Sound card for excellent sound compatibility with
 older games.")
     (license license:gpl2+)))
+
+(define-public qtmips
+  (package
+    (name "qtmips")
+    (version "0.7.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cvut/QtMips")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1khvwgqz4h6q6mhbbq0yx43ajz8gx9wmwzs8784vmfrglndbxgax"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "qmake"
+                     (string-append "PREFIX=" (assoc-ref outputs "out"))
+                     "qtmips.pro")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (substitute* "tests/test.sh"
+               (("qtchooser.*") ""))
+             (substitute* '("tests/cpu_trap/test.sh"
+                            "tests/registers/test.sh")
+               (("sub-qtmips_cli") "qtmips_cli"))
+             (if tests?
+               (invoke "tests/run-all.sh")
+               #t)))
+         (replace 'install
+           ;; There is no install target.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (apps (string-append out "/share/applications"))
+                    (icons (string-append out "/share/icons/hicolor")))
+               (install-file "qtmips_gui/qtmips_gui" bin)
+               (install-file "qtmips_cli/qtmips_cli" bin)
+               (install-file "data/qtmips.desktop" apps)
+               (install-file "data/icons/qtmips_gui.svg"
+                             (string-append icons "/scalable/apps"))
+               (install-file "data/icons/qtmips_gui.png"
+                             (string-append icons "/48x48/apps"))
+               #t))))
+       #:tests? #f))    ; test suite wants mips toolchain
+    (inputs
+     `(("elfutils" ,elfutils)
+       ("qtbase" ,qtbase)))
+    (home-page "https://github.com/cvut/QtMips")
+    (synopsis "MIPS CPU emulator")
+    (description "This package contains a MIPS CPU emulator.  The simulator
+accepts ELF statically linked executables compiled for 32-bit big-endian
+MIPS target, targeting mips-linux-gnu or mips-elf.")
+    (license license:gpl2+)))   ; License file says GPL3
 
 (define-public emulation-station
   ;; No release for a long time, new commits fix build issues

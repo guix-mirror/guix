@@ -818,14 +818,14 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.6.0")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
                            "libmatroska/libmatroska-" version ".tar.xz"))
        (sha256
-        (base32 "0cs03ghf7h65yvv8yf915bx4a47i6d3w2mjbs5zpz000spmrrj7y"))))
+        (base32 "140r3q6n4a0n11zaf76lvyxd9gp435dgm8gn7mj0gar2hjm7ji5w"))))
     (build-system cmake-build-system)
     (inputs
      `(("libebml" ,libebml)))
@@ -3067,7 +3067,7 @@ practically any type of media.")
 (define-public libmediainfo
   (package
     (name "libmediainfo")
-    (version "20.03")
+    (version "20.08")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mediaarea.net/download/source/"
@@ -3075,7 +3075,7 @@ practically any type of media.")
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "0wkzj5s34m8dvy7hif4h8f90q8ncrzd930gij1zzw3h5nw732j38"))))
+                "19n8h9jq42b6r3dbag77fzwfksfywszmzpi636w87fvc1nqldlqj"))))
     ;; TODO add a Big Buck Bunny webm for tests.
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3125,7 +3125,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
 (define-public mediainfo
   (package
     (name "mediainfo")
-    (version "20.03")
+    (version "20.08")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
@@ -3136,7 +3136,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1f1shnycf0f1fwka9k9s250l228xjkg0k4k73h8bpld8msighgnw"))))
+                "1baf2dj5s3g1x4ssqli1b2r1203syk42m09zhp36qcinmfixv11l"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

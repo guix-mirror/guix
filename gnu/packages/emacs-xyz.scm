@@ -2734,6 +2734,58 @@ Emacs native editing commmands and the work of other packages wherever
 possible.")
       (license license:expat))))
 
+(define-public emacs-kana
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "b239c3c3c6124b46ff720cca7b80ecbafd7fa489")
+        (revision "0"))
+    (package
+      (name "emacs-kana")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/chenyanming/kana")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0vrrl1kniq4h111jvnapvx3wybvsl3alfaygw634mmryr3h7pwi8"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/chenyanming/kana")
+      (synopsis "Learn Japanese Kana in Emacs")
+      (description
+       "This Emacs mode displays Hiragana and Katakana flashcards.  It can use
+functionality from Emacs Kanji mode if it is installed.")
+      (license license:gpl3+))))
+
+(define-public emacs-kanji
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "5e9d5b72468ece11cfb81b729be6babf63ede425")
+        (revision "0"))
+    (package
+      (name "emacs-kanji")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wsgac/kanji-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1zh7klqaza840q5f44zzh1wrnd6sqa2k93z3dgx3yhhsxfd1dxvy"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/wsgac/kanji-mode")
+      (synopsis "Emacs minor mode for displaying Japanese Kanji stroke order")
+      (description
+       "This minor mode displays the stroke order of the Kanji sign under
+cursor in a transient buffer.  It has a built-in collection of SVG images
+depicting stroke orders for all Kanji.  The collection is a slightly modified
+and limited version of the images provided by the KanjiVG project.")
+      (license license:gpl3+))))
+
 (define-public emacs-keyfreq
   (package
     (name "emacs-keyfreq")
@@ -3258,6 +3310,39 @@ mode, which displays information about Elasticsearch clusters.")
 keep pressing the key until it selects what you want.  There's also
 @code{er/contract-region} if you expand too far.")
     (license license:gpl3+)))
+
+(define-public emacs-explain-pause-mode
+  (let ((commit "2356c8c3639cbeeb9751744dbe737267849b4b51")
+        (revision "0"))
+    (package
+      (name "emacs-explain-pause-mode")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/lastquestion/explain-pause-mode")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0frnfwqal9mrnrz6q4v7vcai26ahaw81894arff1yjw372pfgv7v"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs" ,emacs-buttercup)))
+      (arguments
+       '(#:tests? #t
+         ;; Don't run case-tests as they will fail to create sockets because
+         ;; the path is too long
+         #:test-command '("make" "byte-compile" "unit-tests")
+         ;; Parallel testing will cause the tests to run before
+         ;; byte-compilation is finished
+         #:parallel-tests? #f))
+      (home-page "https://github.com/lastquestion/explain-pause-mode")
+      (synopsis "Provides a top like interface to determine why Emacs paused")
+      (description "Monitors Emacs function calls and records their execution
+time.  This information can be reviewed to determine what is causing the user
+interface to pause.")
+      (license license:gpl3+))))
 
 (define-public emacs-fill-column-indicator
   (package
@@ -5671,7 +5756,7 @@ cards created in Org mode.")
 (define-public emacs-org-superstar
   (package
     (name "emacs-org-superstar")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -5680,7 +5765,7 @@ cards created in Org mode.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14w06v76xi4f6hpq6xzicrjjv0b802g5zc9as4mpimfy5gx2xpm0"))))
+        (base32 "17x32k3f21z9ldakgryd2wczhdj78kb8gsdxplyjqc3knajpnzgp"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-org" ,emacs-org)))
@@ -14802,29 +14887,36 @@ macro takes a first argument (whose value must be an alist) and a body.")
     (license license:gpl3+)))
 
 (define-public emacs-esup
-  (let ((commit "a589005a9a888537deef94d6fe38a9b8790c97c7")
-        (revision "1"))
-    (package
-      (name "emacs-esup")
-      (version (string-append "0.6" "-" revision "."
-                              (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/jschaf/esup")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "04lxmd0h7mfjjl0qghrycgff0vcv950j1wqv0dbkr61jxp64n5fv"))))
-      ;; TODO: Add tests
-      (build-system emacs-build-system)
-      (home-page "https://github.com/jschaf/esup")
-      (synopsis "Emacs start up profiler")
-      (description "Benchmark Emacs Startup time without ever leaving
+  (package
+    (name "emacs-esup")
+    (version "0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jschaf/esup")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "100w28n3qb3s5b18vvqpwmijdjnjazawn38i0pjbpxz5llhqgl1g"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-noflet" ,emacs-noflet)
+       ("emacs-el-mock" ,emacs-el-mock)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "emacs" "--batch" "-L" "."
+                     "-l" "test/esup-test.el"
+                     "-f" "ert-run-tests-batch-and-exit"))))))
+    (home-page "https://github.com/jschaf/esup")
+    (synopsis "Emacs start up profiler")
+    (description "Benchmark Emacs Startup time without ever leaving
 your Emacs.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public emacs-restart-emacs
   (let ((commit "9aa90d3df9e08bc420e1c9845ee3ff568e911bd9")

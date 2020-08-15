@@ -1,0 +1,33 @@
+From 85f8dda6de28ef86e58f26c8aa863a26524f6ce0 Mon Sep 17 00:00:00 2001
+From: Jesse Gibbons <jgibbons2357+freedink@gmail.com>
+Date: Sun, 9 Feb 2020 21:46:26 -0700
+Subject: [PATCH] Fix mouse/touch event hints for SDL 2.0.10.
+
+This fixes the bug reported at
+<https://lists.gnu.org/archive/html/bug-freedink/2019-08/msg00000.html>.
+
+It should remain backwards compatible with releases of SDL prior to 2.0.10.
+---
+ src/input.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/input.cpp b/src/input.cpp
+index b5ae21e..153d349 100644
+--- a/src/input.cpp
++++ b/src/input.cpp
+@@ -91,7 +91,12 @@ void input_init(void)
+ 
+   // TODO: don't attempt to simulate mouse events from touch events -
+   // fake mouse events often are de-centered
++#ifdef SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH
+   SDL_SetHint(SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH, "0");
++#elif defined SDL_HINT_MOUSE_TOUCH_EVENTS && defined SDL_HINT_TOUCH_MOUSE_EVENTS
++  SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
++  SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
++#endif
+ 
+   /* Touch devices */
+   {
+-- 
+2.25.0
+

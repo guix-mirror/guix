@@ -22925,3 +22925,137 @@ Compared to other approaches @code{cpp11} strives to be safe against long
 jumps from the C API as well as C++ exceptions, conform to normal R function
 semantics and supports interaction with @code{ALTREP} vectors.")
     (license license:expat)))
+
+(define-public r-rcppziggurat
+  (package
+    (name "r-rcppziggurat")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppZiggurat" version))
+       (sha256
+        (base32
+         "0zmr3nvm5j0fpwxk3x9kxpwqbr66ldfvd10zy8xlgjbslz9myvfv"))))
+    (properties `((upstream-name . "RcppZiggurat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcppgsl" ,r-rcppgsl)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/RcppZiggurat/")
+    (synopsis "Rcpp integration of different \"Ziggurat\" normal RNG implementations")
+    (description
+     "The Ziggurat generator for normally distributed random numbers,
+originally proposed by Marsaglia and Tsang (2000,
+@url{https://doi.org/10.18637/jss.v005.i08}) has been improved upon a few
+times starting with Leong et al (2005,
+@url{https://doi.org/10.18637/jss.v012.i07}).  This package provides an
+aggregation for comparing different implementations in order to provide a
+'faster but good enough' alternative for use with R and C++ code.")
+    (license license:gpl2+)))
+
+(define-public r-rfast
+  (package
+    (name "r-rfast")
+    (version "1.9.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rfast" version))
+       (sha256
+        (base32
+         "18m8xhg24kygwhq7avdp1hibilicb5wppi2wdmc36fkqljc274y0"))))
+    (properties `((upstream-name . "Rfast")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rcppziggurat" ,r-rcppziggurat)))
+    (home-page "https://github.com/RfastOfficial/Rfast")
+    (synopsis "Collection of efficient and fast R functions")
+    (description
+     "This package provides a collection of fast (utility) functions for data
+analysis.  Column- and row- wise means, medians, variances, minimums,
+maximums, many t, F and G-square tests, many regressions (normal, logistic,
+Poisson), are some of the many fast functions.")
+    (license license:gpl2+)))
+
+(define-public r-clusterr
+  (package
+    (name "r-clusterr")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ClusterR" version))
+       (sha256
+        (base32
+         "1ky172bk15a78hky77vl60j7c81nq2495sxjrv53is25nkac7sjm"))))
+    (properties `((upstream-name . "ClusterR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gmp" ,r-gmp)
+       ("r-gtools" ,r-gtools)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/mlampros/ClusterR")
+    (synopsis "Clustering")
+    (description
+     "This package provides Gaussian mixture models, k-means,
+mini-batch-kmeans, k-medoids and affinity propagation clustering with the
+option to plot, validate, predict (new data) and estimate the optimal number
+of clusters.  The package takes advantage of @code{RcppArmadillo} to speed up
+the computationally intensive parts of the functions.  For more information,
+see
+
+@enumerate
+@item \"Clustering in an Object-Oriented Environment\" by Anja Struyf, Mia
+  Hubert, Peter Rousseeuw (1997), Journal of Statistical Software,
+  @url{https://doi.org/10.18637/jss.v001.i04};
+@item \"Web-scale k-means clustering\" by D. Sculley (2010), ACM Digital
+  Library, @url{https://doi.org/10.1145/1772690.1772862};
+@item \"Armadillo: a template-based C++ library
+  for linear algebra\" by Sanderson et al (2016), The Journal of Open Source
+  Software, @url{https://doi.org/10.21105/joss.00026};
+@item \"Clustering by Passing Messages Between Data Points\" by Brendan
+  J. Frey and Delbert Dueck, Science 16 Feb 2007: Vol. 315, Issue 5814,
+  pp. 972-976, @url{https://doi.org/10.1126/science.1136800}.
+@end enumerate
+")
+    (license license:gpl3)))
+
+(define-public r-spectrum
+  (package
+    (name "r-spectrum")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Spectrum" version))
+       (sha256
+        (base32
+         "0n38d360azkck6vvhr771zsh0gbvd9qsf9ygg5r18vhz0pb1xcfw"))))
+    (properties `((upstream-name . "Spectrum")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-clusterr" ,r-clusterr)
+       ("r-diptest" ,r-diptest)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-rfast" ,r-rfast)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/Spectrum/")
+    (synopsis "Fast adaptive spectral clustering for single and multi-view data")
+    (description
+     "This package provides a self-tuning spectral clustering method for
+single or multi-view data.  Spectrum uses a new type of adaptive density aware
+kernel that strengthens connections in the graph based on common nearest
+neighbours.  It uses a tensor product graph data integration and diffusion
+procedure to integrate different data sources and reduce noise.  Spectrum uses
+either the eigengap or multimodality gap heuristics to determine the number of
+clusters.  The method is sufficiently flexible so that a wide range of
+Gaussian and non-Gaussian structures can be clustered with automatic selection
+of K.")
+    (license license:agpl3+)))
