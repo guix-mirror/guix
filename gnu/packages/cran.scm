@@ -20582,7 +20582,7 @@ perform @dfn{exploratory mediation} (XMed).")
          "1zyph2x47x9a5baj5d79a1lzj7gajirisajvkrcngrjvw8bq7810"))))
     (properties `((upstream-name . "StanHeaders")))
     (build-system r-build-system)
-    (inputs `(("pandoc" ,ghc-pandoc)))
+    (inputs `(("pandoc" ,pandoc)))
     (propagated-inputs
      `(("r-rcppeigen" ,r-rcppeigen)
        ("r-rcppparallel" ,r-rcppparallel)))
