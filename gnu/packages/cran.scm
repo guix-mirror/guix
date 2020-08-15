@@ -8915,8 +8915,8 @@ correlation, censored, ordered and multivariate problems.")
          "0aqy4bfjq1fmds0vpacsmqih528cp8wk4v4w0balzkph6zqzpwcl"))))
     (build-system r-build-system)
     (inputs
-     `(("pandoc" ,ghc-pandoc)
-       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+     `(("pandoc" ,pandoc)
+       ("pandoc-citeproc" ,pandoc-citeproc)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (propagated-inputs
