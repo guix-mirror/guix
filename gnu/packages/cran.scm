@@ -21236,7 +21236,7 @@ using the @code{rstan} and @code{rstanarm} packages).")
          "0b9x8rzj3dr4m7yjx476nn42z22xd1xnw85m9frfwxy5ivg1any9"))))
     (properties `((upstream-name . "rstantools")))
     (build-system r-build-system)
-    (inputs `(("pandoc" ,ghc-pandoc)))
+    (inputs `(("pandoc" ,pandoc)))
     (propagated-inputs
      `(("r-desc" ,r-desc)
        ("r-rcpp" ,r-rcpp)
