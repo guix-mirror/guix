@@ -8704,7 +8704,7 @@ paired-end data.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-s4vectors" ,r-s4vectors)
-       ("pandoc" ,ghc-pandoc)))
+       ("pandoc" ,pandoc)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (synopsis "RNA-centric annotation system")
