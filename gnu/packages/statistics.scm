@@ -2710,7 +2710,7 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-tinytex" ,r-tinytex)
        ("r-xfun" ,r-xfun)
        ("r-yaml" ,r-yaml)
-       ("ghc-pandoc" ,ghc-pandoc)))
+       ("pandoc" ,pandoc)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://rmarkdown.rstudio.com")
