@@ -8643,7 +8643,7 @@ compiled.")
 (define-public gfbgraph
   (package
     (name "gfbgraph")
-    (version "0.2.3")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8652,7 +8652,7 @@ compiled.")
                     "gfbgraph-" version ".tar.xz"))
               (sha256
                (base32
-                "1dp0v8ia35fxs9yhnqpxj3ir5lh018jlbiwifjfn8ayy7h47j4fs"))))
+                "0yck7dwvjk16a52nafjpi0a39rxwmg0w833brj45acz76lgkjrb0"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; tests appear to require the network
@@ -8662,7 +8662,13 @@ compiled.")
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+
+       ;; The 0.2.4 ‘release’ tarball isn't bootstrapped.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("which" ,which)))
     (inputs
      `(("json-glib" ,json-glib)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
