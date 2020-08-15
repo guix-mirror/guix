@@ -129,7 +129,8 @@ engine that uses Wayland for graphics output.")
               (sha256
                (base32
                 "0r4lkk21pny2g4mmsw0ds14m5hhjys1l47gvy59dfgihr7l546c2"))
-              (patches (search-patches "webkitgtk-share-store.patch"))))
+              (patches (search-patches "webkitgtk-share-store.patch"
+                                       "webkitgtk-bind-all-fonts.patch"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments
