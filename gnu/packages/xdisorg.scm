@@ -2020,7 +2020,7 @@ temperature of the screen.")
          "--with-xkb"
          "--with-default-authproto-module=/run/setuid-programs/authproto_pam")))
     (native-inputs
-     `(("pandoc" ,ghc-pandoc)
+     `(("pandoc" ,pandoc)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("fontconfig" ,fontconfig)
