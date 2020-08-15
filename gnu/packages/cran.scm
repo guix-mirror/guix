@@ -21313,7 +21313,7 @@ techniques to average Bayesian predictive distributions.")
              #t)))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
-       ("pandoc" ,ghc-pandoc)
+       ("pandoc" ,pandoc)
        ("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-bh" ,r-bh)
