@@ -21356,8 +21356,8 @@ need to derive the partial derivatives.")
     (properties `((upstream-name . "rstanarm")))
     (build-system r-build-system)
     (inputs
-     `(("pandoc" ,ghc-pandoc)
-       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+     `(("pandoc" ,pandoc)
+       ("pandoc-citeproc" ,pandoc-citeproc)))
     (propagated-inputs
      `(("r-bayesplot" ,r-bayesplot)
        ("r-bh" ,r-bh)
