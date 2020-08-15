@@ -3617,7 +3617,7 @@ particular, reads spanning multiple exons.")
     (native-inputs
      `(("unzip" ,unzip)                 ; needed for archive from ftp
        ("perl" ,perl)
-       ("pandoc" ,ghc-pandoc)))         ; for documentation
+       ("pandoc" ,pandoc)))             ; for documentation
     (home-page "https://ccb.jhu.edu/software/hisat2/index.shtml")
     (synopsis "Graph-based alignment of genomic sequencing reads")
     (description "HISAT2 is a fast and sensitive alignment program for mapping
