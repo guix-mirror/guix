@@ -5343,7 +5343,10 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   "gvfs-" version ".tar.xz"))
               (sha256
                (base32
-                "1cfnzamr4mvgpf6yhm28lh9cafy9z6842s8jpbqnfizfxybg8ylj"))))
+                "1cfnzamr4mvgpf6yhm28lh9cafy9z6842s8jpbqnfizfxybg8ylj"))
+              ;; This patch may be removed when upgrading to version 1.46.x.
+              (patches
+               (search-patches "gvfs-add-support-for-libplist-2.2.patch"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
