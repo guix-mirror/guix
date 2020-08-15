@@ -14223,7 +14223,7 @@ SELECT or UPDATE queries to an end-point.")
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-tinytex" ,r-tinytex)
        ("r-xfun" ,r-xfun)
-       ("pandoc" ,ghc-pandoc)))
+       ("pandoc" ,pandoc)))
     (home-page "https://github.com/rstudio/bookdown")
     (synopsis "Authoring books and technical documents with R markdown")
     (description "This package provides output formats and utilities for
