@@ -18030,7 +18030,7 @@ the align-and-count method.")
     (native-inputs
      `(("r-knitr" ,r-knitr)
        ("r-rmarkdown" ,r-rmarkdown)
-       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+       ("pandoc-citeproc" ,pandoc-citeproc)))
     (home-page "https://github.com/andreyshabalin/filematrix")
     (synopsis "File-backed matrix class with convenient read and write access")
     (description
