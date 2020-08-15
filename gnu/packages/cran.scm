@@ -21852,7 +21852,7 @@ subpopulation type designs.")
     (build-system r-build-system)
     (inputs
      `(("jupyter" ,python-nbconvert)
-       ("pandoc" ,ghc-pandoc)))
+       ("pandoc" ,pandoc)))
     (home-page "https://cran.r-project.org/web/packages/nbconvertR/")
     (synopsis "Vignette engine wrapping Jupyter notebooks")
     (description
