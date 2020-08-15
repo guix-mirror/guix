@@ -4924,6 +4924,7 @@ to jQuery to the Go language.")
               (uri (git-reference
                     (url "https://github.com/muesli/reflow")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name "go-github-com-muesli-reflow" version))
               (sha256
                (base32
                 "1vhynm2n1az13fn03lp0gi28p9mznq1mblglh8f2rb9y1vkd2dqr"))))
