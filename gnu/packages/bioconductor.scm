@@ -4089,7 +4089,7 @@ Affymetrix arrays.")
     (properties `((upstream-name . "abseqR")))
     (build-system r-build-system)
     (inputs
-     `(("pandoc" ,ghc-pandoc)))
+     `(("pandoc" ,pandoc)))
     (propagated-inputs
      `(("r-biocparallel" ,r-biocparallel)
        ("r-biocstyle" ,r-biocstyle)
