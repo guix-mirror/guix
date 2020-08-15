@@ -440,15 +440,13 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
-   ;; When updating this package, change its licence to lgpl2.1+.
-   ;; https://github.com/wbhart/flint2/issues/812
-   (version "2.6.2")
+   (version "2.6.3")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "http://flintlib.org/flint-" version ".tar.gz"))
       (sha256
-       (base32 "1np1p8dx4g3jnlfr1sxmi1jdk2pb57crskm0ch2w2l1v7h8lb6sz"))))
+       (base32 "1qrf6hzbbmg7mhkhbb0bab8z2xpdnba5cj4kmmf72lzs0457a6nf"))))
    (build-system gnu-build-system)
    (inputs
     `(("ntl" ,ntl)))
@@ -490,7 +488,7 @@ Operations that can be performed include conversions, arithmetic,
 GCDs, factoring, solving linear systems, and evaluating special
 functions.  In addition, FLINT provides various low-level routines for
 fast arithmetic.")
-   (license license:gpl2+)
+   (license license:lgpl2.1+)
    (home-page "http://flintlib.org/")))
 
 (define-public arb
