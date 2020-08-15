@@ -4089,7 +4089,8 @@ Affymetrix arrays.")
     (properties `((upstream-name . "abseqR")))
     (build-system r-build-system)
     (inputs
-     `(("pandoc" ,pandoc)))
+     `(("pandoc" ,pandoc)
+       ("pandoc-citeproc" ,pandoc-citeproc)))
     (propagated-inputs
      `(("r-biocparallel" ,r-biocparallel)
        ("r-biocstyle" ,r-biocstyle)
