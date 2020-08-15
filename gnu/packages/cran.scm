@@ -9897,7 +9897,7 @@ Bioconductor packages.")
        ("libpng" ,libpng)
        ("glu" ,glu)
        ("libx11" ,libx11)
-       ("ghc-pandoc" ,ghc-pandoc)
+       ("pandoc" ,pandoc)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-crosstalk" ,r-crosstalk)
