@@ -996,6 +996,37 @@ teams extension for python-openid.")
 (define-public python2-openid-teams
   (package-with-python2 python-openid-teams))
 
+(define-public python-wsproto
+  (package
+    (name "python-wsproto")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "wsproto" version))
+       (sha256
+        (base32 "17gsxlli4w8am1wwwl3k90hpdfa213ax40ycbbvb7hjx1v1rhiv1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-h11" ,python-h11)))
+    (home-page "https://github.com/python-hyper/wsproto/")
+    (synopsis "WebSockets state-machine based protocol implementation")
+    (description
+     "@code{wsproto} is a pure-Python implementation of a WebSocket protocol
+stack.  It's written from the ground up to be embeddable in whatever program you
+choose to use, ensuring that you can communicate via WebSockets, as defined in
+RFC6455, regardless of your programming paradigm.")
+    (license license:expat)))
+
 (define-public python-tornado
   (package
     (name "python-tornado")
