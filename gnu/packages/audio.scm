@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4400,6 +4401,38 @@ audio plugin UIs, where the dependencies often need to be kept to a
 minimum.")
     (home-page "https://git.zrythm.org/cgit/ztoolkit/")
     (license license:agpl3+)))
+
+(define-public libinstpatch
+  (package
+    (name "libinstpatch")
+    (version "1.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swami/libinstpatch")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0psx4hc5yksfd3k2xqsc7c8lbz2d4yybikyddyd9hlkhq979cmjb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ;there are no tests
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libsndfile" ,libsndfile)))
+    (home-page "http://www.swamiproject.org/")
+    (synopsis "Instrument file software library")
+    (description
+     "libInstPatch is a library for processing digital sample based MIDI
+instrument \"patch\" files.  The types of files libInstPatch supports are used
+for creating instrument sounds for wavetable synthesis.  libInstPatch provides
+an object framework (based on GObject) to load patch files, which can then be
+edited, converted, compressed and saved.")
+    (license license:lgpl2.1)))
 
 (define-public ztoolkit-rsvg
   (package
