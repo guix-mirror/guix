@@ -25,7 +25,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017, 2018 Feng Shu <tumashu@163.com>
-;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
@@ -2589,8 +2589,8 @@ type, for example: packages, buffers, files, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-guix
-  (let ((commit "df1fc5d8885959fd2bb83a443137d21c6850dd74")
-        (revision "1"))
+  (let ((commit "58a840d0671091e3064e36244790ef8839da87d6")
+        (revision "2"))
     (package
       (name "emacs-guix")
       (version (git-version "0.5.2" revision commit))
@@ -2602,7 +2602,7 @@ type, for example: packages, buffers, files, etc.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "14rn02ay1b8zl0pg54pkqpyzh948c4qiqlvl35627shx7zw5acqh"))))
+                  "1qnr5sixmvrhr9rinrhfy7sy20mikjvvwbdixwkbx30qpcdwgwj1"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
