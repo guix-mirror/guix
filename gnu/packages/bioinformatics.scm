@@ -13040,7 +13040,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.0.10")
+    (version "0.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -13048,10 +13048,13 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0l97wvkq4diq8lcarraj33bby1zzf0w804jwi8mlc5qddp8idwhy"))))
+                "0mpzlay2d5cjpmrcp7knff6rg1c2mqszd638n7lw0mc0cycbp9f8"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(;; TODO: tests currently require 12+GB of RAM.  See
+       ;; https://github.com/BIMSBbioinfo/pigx_bsseq/issues/164
+       #:tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-timezone
            ;; The readr package is picky about timezones.
@@ -13071,6 +13074,7 @@ in an easily configurable manner.")
        ("r-annotationhub" ,r-annotationhub)
        ("r-dt" ,r-dt)
        ("r-genomation" ,r-genomation)
+       ("r-ggrepel" ,r-ggrepel)
        ("r-methylkit" ,r-methylkit)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-rmarkdown" ,r-rmarkdown)
@@ -13083,10 +13087,14 @@ in an easily configurable manner.")
        ("python-pyyaml" ,python-pyyaml)
        ("snakemake" ,snakemake)
        ("bismark" ,bismark)
-       ("fastqc" ,fastqc)
        ("bowtie" ,bowtie)
+       ("bwa-meth" ,bwa-meth)
+       ("fastqc" ,fastqc)
+       ("methyldackel" ,methyldackel)
+       ("multiqc" ,multiqc)
        ("trim-galore" ,trim-galore)
        ("cutadapt" ,cutadapt)
+       ("samblaster" ,samblaster)
        ("samtools" ,samtools)))
     (home-page "https://bioinformatics.mdc-berlin.de/pigx/")
     (synopsis "Bisulfite sequencing pipeline from fastq to methylation reports")
