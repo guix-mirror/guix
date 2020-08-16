@@ -21266,8 +21266,8 @@ recommendations for developers.")
     (properties `((upstream-name . "loo")))
     (build-system r-build-system)
     (inputs
-     `(("pandoc" ,ghc-pandoc)
-       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+     `(("pandoc" ,pandoc)
+       ("pandoc-citeproc" ,pandoc-citeproc)))
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
        ("r-matrixstats" ,r-matrixstats)))
