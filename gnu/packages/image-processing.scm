@@ -69,6 +69,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -164,6 +165,78 @@ is built around a plug-in structure that makes it easy to add functionality
 without compromising the original code base and it makes use of a wide variety
 of external libraries that provide additional functionality.")
     (license license:gpl3+)))
+
+(define-public opencolorio
+  (package
+    (name "opencolorio")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AcademySoftwareFoundation/OpenColorIO")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "12srvxca51czpfjl0gabpidj9n84mw78ivxy5w75qhq2mmc798sb"))
+       (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           ;; Remove bundled tarballs, patches, and .jars(!).  XXX: Upstream
+           ;; claims to have fixed USE_EXTERNAL_YAML, but it still fails with:
+           ;; https://github.com/AcademySoftwareFoundation/OpenColorIO/issues/517
+           ;; When removing it, also remove it from the licence field comment.
+           (for-each delete-file-recursively
+                     (filter
+                      (lambda (full-name)
+                        (let ((file (basename full-name)))
+                          (not (or (string-prefix? "yaml-cpp-0.3" file)
+                                   (string=? "unittest.h" file)))))
+                      (find-files "ext" ".*")))
+
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCMAKE_CXX_FLAGS="
+                            "-Wno-error=deprecated-declarations "
+                            "-Wno-error=unused-function")
+             "-DOCIO_BUILD_STATIC=OFF"
+             ;; "-DUSE_EXTERNAL_YAML=ON"
+             "-DUSE_EXTERNAL_TINYXML=ON"
+             "-DUSE_EXTERNAL_LCMS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test-suite
+           (lambda _
+             (substitute* "src/core_tests/CMakeLists.txt"
+               (("/bin/sh") (which "bash")))
+             #t)))))
+    (native-inputs
+     `(("git" ,git)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     ;; XXX Adding freeglut, glew, ilmbase, mesa, and openimageio for
+     ;; ocioconvert fails: error: conflicting declaration ?typedef void
+     ;; (* PFNGLGETFRAGMENTMATERIALFVSGIXPROC)(GLenum, GLenum, GLfloat*)
+     `(("lcms" ,lcms)
+       ("openexr" ,openexr)
+       ("tinyxml" ,tinyxml)))
+    (home-page "https://opencolorio.org")
+    (synopsis "Color management for visual effects and animation")
+    (description
+     "OpenColorIO, or OCIO, is a complete color management solution geared
+towards motion picture production, with an emphasis on visual effects and
+computer animation.  It provides a straightforward and consistent user
+experience across all supporting applications while allowing for sophisticated
+back-end configuration options suitable for high-end production usage.
+
+OCIO is compatible with the @acronym{ACES, Academy Color Encoding
+Specification} and is @acronym{LUT, look-up table}-format agnostic, supporting
+many popular formats.")
+    (license (list license:expat        ; docs/ociotheme/static, ext/yaml-cpp-*
+                   license:zlib         ; src/core/md5
+                   license:bsd-3))))    ; the rest
 
 (define-public vtk
   (package
