@@ -27660,6 +27660,9 @@ Enable or disable the use of the Docker user-land networking proxy.
 @item @code{debug?} (default @code{#f})
 Enable or disable debug output.
 
+@item @code{enable-iptables?} (default @code{#t})
+Enable or disable the addition of iptables rules.
+
 @end table
 @end deftp
 

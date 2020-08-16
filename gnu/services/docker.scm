@@ -56,7 +56,10 @@ loop-back communications.")
    "Enable or disable the user-land proxy (enabled by default).")
   (debug?
    (boolean #f)
-   "Enable or disable debug output."))
+   "Enable or disable debug output.")
+  (enable-iptables?
+   (boolean #t)
+   "Enable addition of iptables rules (enabled by default)."))
 
 (define %docker-accounts
   (list (user-group (name "docker") (system? #t))))
@@ -91,6 +94,7 @@ loop-back communications.")
 (define (docker-shepherd-service config)
   (let* ((docker (docker-configuration-docker config))
          (enable-proxy? (docker-configuration-enable-proxy? config))
+         (enable-iptables? (docker-configuration-enable-iptables? config))
          (proxy (docker-configuration-proxy config))
          (debug? (docker-configuration-debug? config)))
     (shepherd-service
@@ -115,7 +119,10 @@ loop-back communications.")
                                   '())
                            (if #$enable-proxy? "--userland-proxy" "")
                            "--userland-proxy-path" (string-append #$proxy
-                                                                  "/bin/proxy"))
+                                                                  "/bin/proxy")
+                           (if #$enable-iptables?
+                               "--iptables"
+                               "--iptables=false"))
                      #:pid-file "/var/run/docker.pid"
                      #:log-file "/var/log/docker.log"))
            (stop #~(make-kill-destructor)))))
