@@ -527,6 +527,34 @@ into HTTP/2 frames.")
 for use in Python programs that implement HTTP/2.")
     (license license:expat)))
 
+(define-public python-h11
+  (package
+    (name "python-h11")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "h11" version))
+       (sha256
+        (base32 "1qfad70h59hya21vrzz8dqyyaiqhac0anl2dx3s3k80gpskvrm1k"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python-hyper/h11")
+    (synopsis "Pure-Python, bring-your-own-I/O implementation of HTTP/1.1")
+    (description
+     "This is a little HTTP/1.1 library written from scratch in Python, heavily
+inspired by hyper-h2.  It's a bring-your-own-I/O library; h11 contains no IO
+code whatsoever.  This means you can hook h11 up to your favorite network API,
+and that could be anything you want.")
+    (license license:expat)))
+
 (define-public python-h2
   (package
     (name "python-h2")
