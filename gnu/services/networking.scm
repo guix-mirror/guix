@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -1163,7 +1163,8 @@ wireless networking."))))
             (start #~(make-forkexec-constructor
                       (list (string-append #$connman
                                            "/sbin/connmand")
-                            "-n" "-r"
+                            "--nodaemon"
+                            "--nodnsproxy"
                             #$@(if disable-vpn? '("--noplugin=vpn") '()))
 
                       ;; As connman(8) notes, when passing '-n', connman
