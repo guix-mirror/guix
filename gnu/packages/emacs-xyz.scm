@@ -15461,6 +15461,28 @@ files.")
 duplicate hook and function names further into a single declarative call.")
     (license license:gpl3+)))
 
+(define-public emacs-fancy-battery
+  (package
+    (name "emacs-fancy-battery")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacsorphanage/fancy-battery")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05lwcwf412m717yhwpjrswqkm8c3i7391rmiwv2k8xc1vk6dpp4g"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacsorphanage/fancy-battery")
+    (synopsis "Display battery status in Emacs mode line")
+    (description "This package provides @code{fancy-battery-mode} which is
+like the built-in @code{display-battery-mode}, but more fancy.  It just the
+remaining time, uses colours to indicate the status of the battery, and is
+more customizable.")
+    (license license:gpl3)))
+
 (define-public emacs-fancy-narrow
   (package
     (name "emacs-fancy-narrow")
