@@ -1946,13 +1946,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.16.1")
+    (version "0.17.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0fg4qh5gzki5wg958wlpc8a2icnk74gzg33lqxjm755cfnjng7qd"))))
+                "062nv4xkfsjc11k9m52dh6xjn9z68a4a6x1s8z05wwv4jbp1lkhn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1968,7 +1968,6 @@ maintained.")
     (inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-configobj" ,python-configobj)
-       ("python-pyyaml" ,python-pyyaml)
        ("python-ruamel.yaml" ,python-ruamel.yaml)
        ("python-unidecode" ,python-unidecode)
        ("python-vobject" ,python-vobject)))
