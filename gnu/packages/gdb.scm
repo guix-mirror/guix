@@ -5,6 +5,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,6 +118,12 @@
         ("dejagnu" ,dejagnu)
         ("pkg-config" ,pkg-config)
         ,@(if (hurd-target?) `(("mig" ,mig)) '())))
+    ;; TODO: Add support for the GDB_DEBUG_FILE_DIRECTORY environment variable
+    ;; in GDB itself instead of relying on some glue code in the Guix-provided
+    ;; .gdbinit file.
+    (native-search-paths (list (search-path-specification
+                                (variable "GDB_DEBUG_FILE_DIRECTORY")
+                                (files '("lib/debug")))))
     (home-page "https://www.gnu.org/software/gdb/")
     (synopsis "The GNU debugger")
     (description

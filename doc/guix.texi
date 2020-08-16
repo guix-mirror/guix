@@ -29919,6 +29919,20 @@ GDB}):
 From there on, GDB will pick up debugging information from the
 @file{.debug} files under @file{~/.guix-profile/lib/debug}.
 
+Below is an alternative GDB script which is useful when working with
+other profiles.  It takes advantage of the optional Guile integration in
+GDB.  This snippet is included by default on Guix System in the
+@file{~/.gdbinit} file.
+
+@example
+guile
+(use-modules (gdb))
+(execute (string-append "set debug-file-directory "
+                        (or (getenv "GDB_DEBUG_FILE_DIRECTORY")
+                            "~/.guix-profile/lib/debug")))
+end
+@end example
+
 In addition, you will most likely want GDB to be able to show the source
 code being debugged.  To do that, you will have to unpack the source
 code of the package of interest (obtained with @code{guix build
