@@ -5377,7 +5377,7 @@ in @code{html-mode}.")
 (define-public emacs-slime
   (package
     (name "emacs-slime")
-    (version "2.25")
+    (version "2.26")
     (source
      (origin
        (method git-fetch)
@@ -5386,7 +5386,7 @@ in @code{html-mode}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rz54943cbs9lvpc8hnyw5ka60f3bi8x4xykk8pq0lpmv1zbij1x"))))
+        (base32 "0mxb1wnw19v0s72w2wkz5afdlzvpy5nn7pr4vav403qybac0sw5c"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
