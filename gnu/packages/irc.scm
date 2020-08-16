@@ -253,7 +253,7 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
 (define-public srain
   (package
     (name "srain")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method git-fetch)
@@ -262,7 +262,7 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ypaxdnag61smd8vy4rzl8sarwxa85543nzp0c9zfq02jqmz1gah"))))
+        (base32 "1jjs3lrlz67z9ghpc4c406a5r3naisn1famdh9rwwcg4y4y1vcws"))))
     (arguments
      `(#:tests? #f ;there are no tests
        #:phases
