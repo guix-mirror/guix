@@ -340,7 +340,7 @@ FOSS FPGA place and route tool.")
 (define-public gtkwave
   (package
     (name "gtkwave")
-    (version "3.3.104")
+    (version "3.3.106")
     (source
      (origin
        (method url-fetch)
@@ -350,7 +350,7 @@ FOSS FPGA place and route tool.")
                   (string-append "http://gtkwave.sourceforge.net/"
                                  "gtkwave-" version ".tar.gz")))
        (sha256
-        (base32 "0kw9a33gx60kn069yhx5pyk39x1z3pwaj8l1qqwq943v62lx23fj"))))
+        (base32 "1pyij6dlmapjyzrmn255fkf8gyhz8i4vaipd75a68i2bnq021nn8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gperf" ,gperf)
