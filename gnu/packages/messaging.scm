@@ -265,7 +265,7 @@ identi.ca and status.net).")
                      ("bitlbee" ,bitlbee) ; needs bitlbee headers
                      ("bash" ,bash)))
     (synopsis "Discord plugin for Bitlbee")
-    (description "Bitlbee-discord is a plugin for Bitlbee witch provides
+    (description "Bitlbee-discord is a plugin for Bitlbee which provides
 access to servers running the Discord protocol.")
     (home-page "https://github.com/sm00th/bitlbee-discord/")
     (license license:gpl2+)))
