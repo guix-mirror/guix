@@ -70,9 +70,7 @@
          ("libuuid" ,util-linux "lib")
          ("zlib" ,zlib)))
       (propagated-inputs
-       ;; Ola 0.10.5 only supports protobuf 2.x, and building it with 3.x breaks.
-       ;; XXX Remove protobuf-2 when it is no longer needed.
-       `(("protobuf" ,protobuf-2))) ;; for pkg-config --libs libola
+       `(("protobuf" ,protobuf)))       ; for pkg-config --libs libola
       (arguments
        `( ;; G++ >= 4.8 macro expansion tracking requires lots of memory, causing
          ;; build to fail on low memory systems.  We disable that with the

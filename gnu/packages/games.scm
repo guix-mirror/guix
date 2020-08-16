@@ -11659,7 +11659,7 @@ game.")  ;thanks to Debian for description
        ("gsasl" ,gsasl)
        ("libgcrypt" ,libgcrypt)
        ("libircclient" ,libircclient)
-       ("protobuf" ,protobuf-2)
+       ("protobuf" ,protobuf-2)         ; remove package when no longer needed
        ("qtbase" ,qtbase)
        ("sdl" ,(sdl-union (list sdl sdl-mixer)))
        ("sqlite" ,sqlite)
