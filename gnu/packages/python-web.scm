@@ -1059,6 +1059,48 @@ choose to use, ensuring that you can communicate via WebSockets, as defined in
 RFC6455, regardless of your programming paradigm.")
     (license license:expat)))
 
+(define-public python-hypercorn
+  (package
+    (name "python-hypercorn")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Hypercorn" version))
+       (sha256
+        (base32 "15dgy47a18w2ls3hwykra1cyf7yzxmfjqnsqml482p12cxr2xwqr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (propagated-inputs
+     `(("python-h11" ,python-h11)
+       ("python-h2" ,python-h2)
+       ("python-priority" ,python-priority)
+       ("python-toml" ,python-toml)
+       ("python-typing-extensions" ,python-typing-extensions)
+       ("python-wsproto" ,python-wsproto)))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-trio" ,python-pytest-trio)
+       ("python-trio" ,python-trio)))
+    (home-page "https://gitlab.com/pgjones/hypercorn/")
+    (synopsis "ASGI Server based on Hyper libraries")
+    (description
+     "Hypercorn is an ASGI web server based on the sans-io hyper, h11, h2, and
+wsproto libraries and inspired by Gunicorn.  It supports HTTP/1, HTTP/2,
+WebSockets (over HTTP/1 and HTTP/2), ASGI/2, and ASGI/3 specifications.  It can
+utilise asyncio, uvloop, or trio worker types.")
+    (license license:expat)))
+
 (define-public python-tornado
   (package
     (name "python-tornado")
