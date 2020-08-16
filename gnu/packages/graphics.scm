@@ -212,14 +212,14 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
 (define-public blender
   (package
     (name "blender")
-    (version "2.83.3")
+    (version "2.83.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "18m27abp4j3xv48dr6ddr2mqcvx2vkjffr487z90059yv9k0yh2p"))))
+                "1y4phkzrxy17kpjbg0jbz1236nw8w8p006x1crbqmvwz8wd3dm46"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
