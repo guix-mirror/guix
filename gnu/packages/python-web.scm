@@ -996,6 +996,38 @@ teams extension for python-openid.")
 (define-public python2-openid-teams
   (package-with-python2 python-openid-teams))
 
+(define-public python-priority
+  (package
+    (name "python-priority")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "priority" version))
+       (sha256
+        (base32 "1gpzn9k9zgks0iw5wdmad9b4dry8haiz2sbp6gycpjkzdld9dhbb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test" "-k"
+                     ;; This test exceeded the Hypothesis deadline.
+                     "not test_period_of_repetition"))))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-xdist" ,python-pytest-xdist)))
+    (home-page "https://python-hyper.org/projects/priority/en/latest/")
+    (synopsis "Pure-Python implementation of the HTTP/2 priority tree")
+    (description
+     "Priority is a pure-Python implementation of the priority logic for HTTP/2,
+set out in RFC 7540 Section 5.3 (Stream Priority).")
+    (license license:expat)))
+
 (define-public python-wsproto
   (package
     (name "python-wsproto")
