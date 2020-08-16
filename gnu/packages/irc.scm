@@ -185,14 +185,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1301lrb3xnm9dcw3av82rkqjzqxxwwhrq0p6i37h6fxdxnas4gjm"))))
+                "03psmp4hxsb9sz35i4cyz6dcbs3ab73amhyx0w0hv8f3hp1hdd7a"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -215,30 +215,14 @@ SILC and ICB protocols via plugins.")
        ("tcl" ,tcl)))
     (arguments
      `(#:configure-flags
-       (list "-DENABLE_JAVASCRIPT=OFF"
-             "-DENABLE_PHP=OFF"
+       (list "-DENABLE_PHP=OFF"
              "-DENABLE_RUBY=OFF"
              "-DENABLE_TESTS=ON")       ; ‘make test’ fails otherwise
-       ;; Tests hang indefinately on non-Intel platforms.
+       ;; Tests hang indefinitely on non-Intel platforms.
        #:tests? ,(if (any (cute string-prefix? <> (or (%current-target-system)
                                                       (%current-system)))
                           '("i686" "x86_64"))
-                   '#t '#f)
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-failing-tests
-           ;; For reasons best left to the imagination, CppUTest cannot skip
-           ;; more than one single test...  Resort to manual patching instead.
-           ;; See <https://cpputest.github.io/manual.html#command_line>.
-           (λ _
-             ;; Don't test plugin support for languages we don't enable.
-             (substitute* "tests/unit/test-plugins.cpp"
-               ((".*\\$\\{plugin.name\\} == (javascript|php|ruby)" all)
-                (string-append "// SKIP" all)))
-             (substitute* "tests/scripts/test-scripts.cpp"
-               ((".*\\{ \"(javascript|php|ruby)\", " all)
-                (string-append "// SKIP" all)))
-             #t)))))
+                   '#t '#f)))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
 @dfn{Internet Relay Chat} (IRC) client, which is designed to be light and fast.
