@@ -22719,7 +22719,7 @@ Telegram messaging platform.")
 (define-public emacs-doom-modeline
   (package
     (name "emacs-doom-modeline")
-    (version "2.8.2")
+    (version "3.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -22727,7 +22727,7 @@ Telegram messaging platform.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "11srz1mr821axggs2jcmdhihxx09a2dniqv3n039wbdfaimfaidz"))
+                "08m75rl5i812pa87zcsjvb4mm3jjhpwzgx9mf2m7sxj807airz5d"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (arguments
@@ -22735,6 +22735,7 @@ Telegram messaging platform.")
     (native-inputs `(("emacs-ert-runner" ,emacs-ert-runner)))
     (propagated-inputs
      `(("emacs-all-the-icons" ,emacs-all-the-icons)
+       ("emacs-dash" ,emacs-dash)
        ("emacs-shrink-path" ,emacs-shrink-path)))
     (synopsis "Fancy and fast mode-line inspired by minimalism design")
     (description "Doom modeline is a complete modeline for GNU Emacs inspired
