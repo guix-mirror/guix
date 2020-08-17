@@ -4,6 +4,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -291,6 +292,21 @@ gitignore rules.")
     (description
      "This package provides a tool for generating C/C++ bindings to Rust code.")
     (license license:mpl2.0)))
+
+(define-public rust-cbindgen-0.14
+  (package
+    (inherit rust-cbindgen)
+    (name "rust-cbindgen")
+    (version "0.14.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cbindgen" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1ppwqbzydxlg9a24lynzfk60xrvqw4k31mpz1wrk6lbf88zf8nxi"))))))
 
 (define-public rust-cbindgen-0.12
   (package
