@@ -70,7 +70,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.1145")
+    (version "8.2.1471")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -79,7 +79,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "01z5hgi7m8d63gl1fgfn4p9rsdaqbl5xn4vr247nbxjq5x5hrs7a"))))
+               "1rd2d8lil0liiyfzcqb2b96l4hn99pzfikpjy4w4z1jd4jkfcx17"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -92,6 +92,7 @@
                (("/usr/bin/nawk") (which "gawk")))
              (substitute* '("src/testdir/Makefile"
                             "src/testdir/test_normal.vim"
+                            "src/testdir/test_popupwin.vim"
                             "src/testdir/test_system.vim"
                             "src/testdir/test_terminal.vim"
                             "src/testdir/test_terminal2.vim")
@@ -120,20 +121,15 @@
              (substitute* "src/testdir/test_swap.vim"
                (("if !IsRoot\\(\\)") "if 0"))
 
-             ;; These tests fail on upstream's CI on FreeBSD because they are
-             ;; run as root.  They fail for us because PID 1 and the test suite
-             ;; are run by the same user.
-             (substitute* '("src/testdir/test_backup.vim"
-                            "src/testdir/test_writefile.vim")
-               (("CheckNotBSD") "throw 'Skipped: this test fails on Guix'")
-               (("'bsd'") "'unix'"))
-
-             ;; This test checks how the terminal looks after executing some
+             ;; These tests check how the terminal looks after executing some
              ;; actions.  The path of the bash binary is shown, which results in
              ;; a difference being detected.  Patching the expected result is
              ;; non-trivial due to the special format used, so skip the test.
              (substitute* "src/testdir/test_terminal.vim"
                ((".*Test_terminal_postponed_scrollback.*" line)
+                (string-append line "return\n")))
+             (substitute* "src/testdir/test_popupwin.vim"
+               ((".*Test_popup_drag_termwin.*" line)
                 (string-append line "return\n")))
              #t)))))
     (inputs
