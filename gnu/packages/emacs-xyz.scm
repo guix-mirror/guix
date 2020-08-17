@@ -11290,36 +11290,16 @@ and supports the use of a mouse.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/bruceravel/gnuplot-mode")
+             (url "https://github.com/emacsorphanage/gnuplot-mode")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0bwri3cvm2vr27kyqkrddm28fs08axnd4nm9amfgp54xp20bn4yn"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("emacs" ,emacs-minimal)))
-    (arguments
-     (let ((elisp-dir "/share/emacs/site-lisp"))
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-utils))
-         #:configure-flags
-         (list (string-append "EMACS=" (assoc-ref %build-inputs "emacs")
-                              "/bin/emacs")
-               (string-append "--with-lispdir=" %output ,elisp-dir))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'generate-autoloads
-             (lambda* (#:key outputs #:allow-other-keys)
-               (emacs-generate-autoloads
-                "gnuplot"
-                (string-append (assoc-ref outputs "out") ,elisp-dir))
-               #t))))))
-    (home-page "https://github.com/bruceravel/gnuplot-mode")
-    (synopsis "Emacs major mode for interacting with gnuplot")
-    (description "@code{emacs-gnuplot} is an emacs major mode for interacting
-with gnuplot.")
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacsorphanage/gnuplot-mode")
+    (synopsis "Emacs major mode for interacting with Gnuplot")
+    (description
+     "Emacs Gnuplot is an Emacs major mode for interacting with Gnuplot.")
     (license license:gpl2+)))
 
 (define-public emacs-transpose-frame
