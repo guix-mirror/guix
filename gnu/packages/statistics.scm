@@ -5743,7 +5743,7 @@ to any arbitrary string.  In this case, it is up to you to set valid values.")
       (native-inputs
        `(("zlib" ,zlib)
          ("python-pytest" ,python-pytest)))
-      (home-page "https://rpy2.bitbucket.io/")
+      (home-page "https://rpy2.github.io")
       (synopsis "Python interface to the R language")
       (description "rpy2 is a redesign and rewrite of rpy.  It is providing a
 low-level interface to R from Python, a proposed high-level interface,
