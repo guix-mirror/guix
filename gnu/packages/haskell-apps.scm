@@ -427,7 +427,17 @@ to @code{cabal repl}).")
                         (string-append bin "/git-annex-shell"))
                (symlink (string-append bin "/git-annex")
                         (string-append bin "/git-remote-tor-annex"))
-               #t))))))
+               #t)))
+         (add-after 'install 'touch-static-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The Haskell build system adds a "static" output by
+             ;; default, and there is no way to override this until
+             ;; <https://issues.guix.gnu.org/41569> is fixed.  Without
+             ;; this phase, the daemon complains because we do not
+             ;; create the "static" output.
+             (with-output-to-file (assoc-ref outputs "static")
+               (lambda ()
+                 (display "static output not used\n"))))))))
     (inputs
      `(("curl" ,curl)
        ("ghc-aeson" ,ghc-aeson)
