@@ -15162,7 +15162,7 @@ a positive integer, ports @var{n} and @var{n}+1 are used for
 monitoring the connection, such that port @var{n} is the base
 monitoring port and @code{n+1} is the echo port.  When set to
 @code{"@var{n}:@var{m}"} where @var{n} and @var{m} are positive
-integers, the ports @var{n} and @var{n}+1 are used for monitoring the
+integers, the ports @var{n} and @var{m} are used for monitoring the
 connection, such that port @var{n} is the base monitoring port and
 @var{m} is the echo port.
 
