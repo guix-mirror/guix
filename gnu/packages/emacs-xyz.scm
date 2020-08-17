@@ -7160,7 +7160,7 @@ allowing unprefixed keys to insert their respective characters as expected.")
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
-    (version "5.11.0")
+    (version "5.12.0")
     (source
      (origin
        (method git-fetch)
@@ -7169,11 +7169,12 @@ allowing unprefixed keys to insert their respective characters as expected.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x1yszp6waa778ki6sw66w1pzcz389wd01gkcldfxxnd7z89ad5d"))))
+        (base32 "14ipfy9ji39pnb9x7bzjp8lyqyxk168fx017m823j7a2g9i0sgp3"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("emacs-buttercup" ,emacs-buttercup)
        ("emacs-dash" ,emacs-dash)
+       ("emacs-paredit" ,emacs-paredit)
        ("emacs-s" ,emacs-s)))
     (arguments
      `(#:tests? #t
