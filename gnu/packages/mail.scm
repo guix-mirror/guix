@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Alexey Abramov <levenson@mmer.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1425,6 +1426,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
+    ;; Also update dovecot-pigeonhole when updating to a new minor version.
     (version "2.3.11.3")
     (source
      (origin
@@ -1489,6 +1491,83 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
     ;; Unicode, Inc. License Agreement for Data Files and Software.
     (license (list license:lgpl2.1 license:expat
                    (license:non-copyleft "file://COPYING")))))
+
+(define-public dovecot-pigeonhole
+  (let ((dovecot-version (version-major+minor (package-version dovecot))))
+    (package
+      (name "dovecot-pigeonhole")
+      (version "0.5.11")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://pigeonhole.dovecot.org/releases/" dovecot-version "/"
+               "dovecot-" dovecot-version "-pigeonhole-" version ".tar.gz"))
+         (sha256
+          (base32 "1w5mryv6izh1gv7davnl94rb0pvh5bxl2bydzbfla1b83x22m5qb"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; RFC licencing is ad-hoc and rarely free.  Remove them all.
+             (delete-file-recursively "doc/rfc")
+             (substitute* "configure"
+               (("doc/rfc/Makefile") ""))
+             (substitute* "doc/Makefile.in"
+               (("rfc ") ""))
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list "--disable-static"
+               "--with-dovecot-install-dirs=no"
+               (string-append "--with-dovecot="
+                              (assoc-ref %build-inputs "dovecot")
+                              "/lib/dovecot")
+               (string-append "--docdir="
+                              (assoc-ref %outputs "out")
+                              "/share/doc/" ,name "-" ,version)
+               (string-append "--with-moduledir="
+                              (assoc-ref %outputs "out")
+                              "/lib/dovecot"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-file-names
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (libexec (string-append out "/libexec/dovecot")))
+                 (substitute* "src/managesieve/managesieve-settings.c"
+                   (("\\.executable = \"managesieve\"")
+                    (string-append ".executable = \"" libexec
+                                   "/managesieve\"")))
+                 (substitute* "src/managesieve-login/managesieve-login-settings.c"
+                   (("\\.executable = \"managesieve-login\"")
+                    (string-append ".executable = \"" libexec
+                                   "/managesieve-login\"")))
+                 #t))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("dovecot" ,dovecot)))
+      (home-page "https://pigeonhole.dovecot.org")
+      (synopsis "Dovecot Sieve mail filtering plug-in and ManageSieve service")
+      (description
+       "Pigeonhole adds support for the Sieve language (RFC 5228) and the
+ManageSieve protocol (RFC 5804) to the Dovecot e-mail server.
+
+@dfn{Sieve} is a language for filtering incoming mail.  Messages can be
+forwarded or sorted into separate folders.  Unwanted messages can be rejected
+or discarded, and, when the user is not available, the Sieve interpreter can
+send an automated reply.
+
+Sieve is meant to be simple, extensible, and system-independent.  The
+intention is to make it impossible to write anything more complex (and
+dangerous) than simple mail filters.  Unlike most other mail filtering script
+languages, Sieve does not allow users to execute arbitrary programmes.
+
+Through the @dfn{ManageSieve} protocol, users can remotely manage their Sieve
+scripts without needing file system access.  The server accepts only valid
+scripts to prevent embarrassing errors later on.")
+      (license license:lgpl2.1))))
 
 (define-public dovecot-trees
   (package
