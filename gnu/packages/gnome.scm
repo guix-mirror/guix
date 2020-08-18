@@ -11224,15 +11224,15 @@ GObject introspection bindings.")
 (define-public sysprof
   (package
     (name "sysprof")
-    (version "3.34.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1l4kr1av7933vb4zql9c5lgzivlw64hyky4nr8xin1v5if6vnjw4"))))
+    (version "3.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/sysprof/"
+                           (version-major+minor version) "/"
+                           "sysprof-" version ".tar.xz"))
+       (sha256
+        (base32 "024i0gzqnm79rpr4gqxdvcj6gvf82xdlcp2p1k9ikcppmi6xnw46"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
