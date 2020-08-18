@@ -126,6 +126,7 @@
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
