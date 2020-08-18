@@ -11259,7 +11259,9 @@ GObject introspection bindings.")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
-    (home-page "http://www.sysprof.com/")
+    ;; This home page is so woefully out of date as to be essentially useless.
+    ;; (home-page "http://www.sysprof.com")
+    (home-page "https://wiki.gnome.org/Apps/Sysprof")
     (synopsis "System-wide performance profiler")
     (description "Sysprof is a sampling profiler that uses a kernel module
 to generate stacktraces which are then interpreted by the userspace program
