@@ -87,6 +87,7 @@
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages haskell-xyz)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
@@ -112,6 +113,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages search)
@@ -1422,6 +1424,8 @@ facilities for checking incoming mail.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("bzip2" ,bzip2)
+       ("clucene" ,clucene)
+       ("icu4c" ,icu4c)
        ("libsodium" ,libsodium)         ; extra password algorithms
        ;; FIXME: The 'test-backtrace' tests fail on arm when using glibc's
        ;; backtrace_symbol() function so fallback to using libunwind.
@@ -1437,7 +1441,8 @@ facilities for checking incoming mail.")
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var"
-                           "--with-sqlite") ; not auto-detected
+                           "--with-sqlite"  ; not auto-detected
+                           "--with-lucene")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
