@@ -688,30 +688,6 @@ television and DVD.  It is also known as AC-3.")
 shared library and encoder and decoder command-line executables.")
     (license license:bsd-2)))
 
-(define-public libde265
-  (package
-    (name "libde265")
-    (version "1.0.5")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/strukturag/libde265")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1qisj8ryzbknam3hk81rq70fsd9mcpxm898bqygvbsmbwyvmz3pg"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f)) ;there are no tests
-    (home-page "https://www.libde265.org/")
-    (synopsis "Open h.265 video codec implementation")
-    (description
-     "libde265 is an implementation of the h.265 video codec.  It is written
-from scratch and has a plain C API to enable a simple integration into other
-software.")
-    (license license:lgpl3+)))
-
 (define-public libmpeg2
   (package
     (name "libmpeg2")
