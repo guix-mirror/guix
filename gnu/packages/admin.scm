@@ -3984,21 +3984,22 @@ supplied by the user when logging in.")
 (define-public jc
   (package
     (name "jc")
-    (version "1.11.8")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/kellyjonbrazil/jc")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0rkckbgm04ql4r48wjgljfiqvsz36n99yqcpcyna8lvlm8h4nmwa"))))
+    (version "1.13.4")
+    (source
+     (origin
+       ;; The PyPI tarball lacks the test suite.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kellyjonbrazil/jc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rwvyyrdnw43pixp8h51rncq2inc9pbbj1j2191y5si00pjw34zr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ruamel.yaml" ,python-ruamel.yaml)
-       ("python-xmltodict" ,python-xmltodict)
-       ("python-pygments" ,python-pygments)))
+     `(("python-pygments" ,python-pygments)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-xmltodict" ,python-xmltodict)))
     (home-page "https://github.com/kellyjonbrazil/jc")
     (synopsis "Convert the output of command-line tools to JSON")
     (description "@code{jc} JSONifies the output of many CLI tools and
