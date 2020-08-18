@@ -90,14 +90,13 @@ more.")
 (define-public python-igraph
   (package (inherit igraph)
     (name "python-igraph")
-    (version "0.8.0")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-igraph" version))
        (sha256
-        (base32
-         "13mbrlmnbgbzw6y8ws7wj0a3ly3in8j4l1ngi6yxvgvxxi4bprj7"))))
+        (base32 "0wkxrs28qdvnrz7d4jzcf2bh6v2yqzx3wyfziihfgsi2gn6n60a6"))))
     (build-system python-build-system)
     (arguments
      '(#:configure-flags
