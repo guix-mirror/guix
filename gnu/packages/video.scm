@@ -435,6 +435,9 @@ applications by providing high-level classes for commonly required tasks.")
        (sha256
         (base32 "1qisj8ryzbknam3hk81rq70fsd9mcpxm898bqygvbsmbwyvmz3pg"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
