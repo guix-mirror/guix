@@ -2772,9 +2772,9 @@ pre-alpha code.")
   (package
     (inherit guile-gi)
     (name "guile2.2-gi")
-    (native-inputs
+    (inputs
      `(("guile" ,guile-2.2)
-       ,@(package-native-inputs guile-gi)))))
+       ,@(alist-delete "guile" (package-inputs guile-gi))))))
 
 (define-public guile3.0-gi
   (deprecated-package "guile3.0-gi" guile-gi))
