@@ -4,6 +4,7 @@
 ;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 
 ;; This file is part of GNU Guix.
 
@@ -93,7 +94,7 @@
      ;; Indent the definition of PACKAGE-NAME in FILE-NAME.
      (find-file file-name)
      (goto-char (point-min))
-     (if (re-search-forward (concat "^(define\\(-public\\) +"
+     (if (re-search-forward (concat "^(define\\(\\|-public\\) +"
                                     package-name)
                             nil t)
          (let ((indent-tabs-mode nil))
