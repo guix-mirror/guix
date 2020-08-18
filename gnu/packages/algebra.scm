@@ -74,7 +74,7 @@
 (define-public mpfrcx
   (package
    (name "mpfrcx")
-   (version "0.5")
+   (version "0.6")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -82,7 +82,7 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "1s968480ymv6w0rnvfp9mxvx98hvi29fkvw8nk4ggzc6azxgwybs"))))
+              "0gz5rma9al2jrifpknqkcnd9dkf8l05jcxy3s4ghwhd4y3h5dwia"))))
    (build-system gnu-build-system)
    (propagated-inputs
      `(("gmp" ,gmp)
