@@ -836,7 +836,8 @@ when they log out."
                  (list (service-extension activation-service-type
                                           (const %accountsservice-activation))
                        (service-extension dbus-root-service-type list)
-                       (service-extension polkit-service-type list)))))
+                       (service-extension polkit-service-type list)))
+                (default-value accountsservice)))
 
 (define* (accountsservice-service #:key (accountsservice accountsservice))
   "Return a service that runs AccountsService, a system service that
