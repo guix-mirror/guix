@@ -730,55 +730,6 @@ services.")
     (home-page "https://csorianognome.wordpress.com/2015/07/07/cloud-providers/")
     (license license:lgpl3+)))
 
-(define-public sysprof
-  (package
-    (name "sysprof")
-    (version "3.36.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "mirror://gnome/sources/" name "/"
-                       (version-major+minor version) "/"
-                       name "-" version ".tar.xz"))
-       (sha256
-        (base32 "024i0gzqnm79rpr4gqxdvcj6gvf82xdlcp2p1k9ikcppmi6xnw46"))))
-    (build-system meson-build-system)
-    (arguments
-     `(#:glib-or-gtk? #t    ; To wrap binaries and/or compile schemas.
-       #:configure-flags
-       (list
-        ;; SystemD not required.
-        "-Dsystemdunitdir=/tmp")))
-    (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils)
-       ("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk+:bin" ,gtk+ "bin")
-       ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)
-       ("xmllint" ,libxml2)))
-    (inputs
-     `(("libdazzle" ,libdazzle)
-       ("libunwind" ,libunwind)
-       ("pango" ,pango)
-       ("polkit" ,polkit)))
-    (propagated-inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)))
-    (synopsis "Kernel based performance profiler")
-    (description "Sysprof is a sampling profiler that uses a kernel module to
-generate stacktraces which are then interpreted by the userspace program
-sysprof.")
-    (home-page "https://wiki.gnome.org/Apps/Sysprof")
-    (license
-     (list
-      ;; For newer codes.
-      license:gpl3+
-      ;; For older codes.
-      license:gpl2+))))
-
 (define-public gnome-photos
   (package
     (name "gnome-photos")
