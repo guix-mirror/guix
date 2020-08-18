@@ -12,6 +12,7 @@
 ;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -794,13 +795,29 @@ of index files."
 		      #:user #$user #:group #$group))
             (stop #~(make-kill-destructor)))))))
 
+(define fcgiwrap-activation
+  (match-lambda
+    (($ <fcgiwrap-configuration> package socket user group)
+     #~(begin
+         ;; When listening on a unix socket, create a parent directory for the
+         ;; socket with the correct permissions.
+         (when (string-prefix? "unix:" #$socket)
+           (let ((run-directory
+                  (dirname (substring #$socket (string-length "unix:")))))
+             (mkdir-p run-directory)
+             (chown run-directory
+                    (passwd:uid (getpw #$user))
+                    (group:gid (getgr #$group)))))))))
+
 (define fcgiwrap-service-type
   (service-type (name 'fcgiwrap)
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           fcgiwrap-shepherd-service)
 		       (service-extension account-service-type
-                                          fcgiwrap-accounts)))
+                                          fcgiwrap-accounts)
+                       (service-extension activation-service-type
+                                          fcgiwrap-activation)))
                 (default-value (fcgiwrap-configuration))))
 
 (define-record-type* <php-fpm-configuration> php-fpm-configuration
