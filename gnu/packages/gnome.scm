@@ -11262,10 +11262,14 @@ GObject introspection bindings.")
     ;; This home page is so woefully out of date as to be essentially useless.
     ;; (home-page "http://www.sysprof.com")
     (home-page "https://wiki.gnome.org/Apps/Sysprof")
-    (synopsis "System-wide performance profiler")
-    (description "Sysprof is a sampling profiler that uses a kernel module
-to generate stacktraces which are then interpreted by the userspace program
-@command{sysprof}.")
+    (synopsis "System-wide performance profiler for GNU/Linux")
+    (description
+     "Sysprof performs detailed, accurate, and fast CPU profiling of an entire
+GNU/Linux system including the kernel and all user-space applications.  This
+helps find the function(s) in which a program spends most of its time.
+
+It uses the kernel's built-in @code{ptrace} feature and handles shared
+libraries.  Applications do not need to be recompiled--or even restarted.")
     (license license:gpl3+)))
 
 (define-public gnome-builder
