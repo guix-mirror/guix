@@ -5943,17 +5943,17 @@ running boot option, and more.")
 (define-public sysstat
   (package
     (name "sysstat")
-    (version "12.3.1")
+    (version "12.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
                                   "sysstat-" version ".tar.xz"))
               (sha256
                (base32
-                "1hf1sy7akribmgavadqccxpy49yv0zfb3m81d2bj6jf8pyzwcrbq"))))
+                "05idnvkhvzaynj9awx7q54x1v42jblzrxq0fn5zd1v4mjwrnqmbq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No test suite.
+     `(#:tests? #f                      ; no test suite.
        ;; Without this flag, it tries to install the man pages with group 'root'
        ;; and fails because /etc/passwd lacks an entry for the root user.
        #:configure-flags
