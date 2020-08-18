@@ -104,6 +104,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
   #:use-module (guix utils)
@@ -2706,10 +2707,10 @@ list of components.  This module takes care of that for you.")
               (sha256
                (base32
                 "05xbwrk50h4f9fh8la8fk2wsxbnm0jcyb9phnpkkjq4sqkhkxlbj"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
-       #:modules ((guix build gnu-build-system)
+       #:modules ((guix build glib-or-gtk-build-system)
                   (guix build utils)
                   (ice-9 popen)
                   (ice-9 rdelim))
@@ -2732,7 +2733,7 @@ list of components.  This module takes care of that for you.")
                             (format #f "~alibguile-gi"
                                     (if (getenv "GUILE_GI_UNINSTALLED")
                                         ""
-                                        ,(format #f "~a/lib/guile/~a/"
+                                        ,(format #f "~a/lib/guile/~a/extensions/"
                                                  (assoc-ref outputs "out")
                                                  effective)))
                             ,arg)))))
