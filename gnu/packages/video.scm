@@ -420,6 +420,44 @@ applications by providing high-level classes for commonly required tasks.")
     (home-page "https://dirk-farin.net/software/libvideogfx/index.html")
     (license license:lgpl2.1+)))
 
+(define-public libde265
+  (package
+    (name "libde265")
+    (version "1.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/strukturag/libde265.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qisj8ryzbknam3hk81rq70fsd9mcpxm898bqygvbsmbwyvmz3pg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(;; XXX: Build fails with libvideogfx.
+       ;; ("libvideogfx" ,libvideogfx)
+       ("qt" ,qtbase)
+       ("sdl" ,sdl)))
+    (synopsis "H.265 video codec implementation")
+    (description "Libde265 is an implementation of the h.265 video codec.  It is
+written from scratch and has a plain C API to enable a simple integration into
+other software.")
+    (home-page "https://www.libde265.org/")
+    (license
+     (list
+      ;; Applications.
+      license:expat
+      ;; Library.
+      license:lgpl3+))))
+
 (define-public tslib
   (package
     (name "tslib")
