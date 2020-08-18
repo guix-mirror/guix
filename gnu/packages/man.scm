@@ -25,7 +25,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages man)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix packages)
@@ -72,7 +72,7 @@
 to man pages in groff format or html.  It features the usual man page items such
 as description, options, see also, etc.")
     (home-page "http://xmltoman.sourceforge.net/")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public ronn
   (package
@@ -96,7 +96,7 @@ as description, options, see also, etc.")
     (description "Ronn builds manuals.  It converts simple, human readable
 textfiles to roff for terminal display, and also to HTML for the web.")
     (home-page "https://rtomayko.github.io/ronn/")
-    (license expat)))
+    (license license:expat)))
 
 (define-public libpipeline
   (package
@@ -116,7 +116,7 @@ textfiles to roff for terminal display, and also to HTML for the web.")
     (description
      "libpipeline is a C library for manipulating pipelines of subprocesses in
 a flexible and convenient way.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public man-db
   (package
@@ -218,7 +218,7 @@ a flexible and convenient way.")
      "Man-db is an implementation of the standard Unix documentation system
 accessed using the man command.  It uses a Berkeley DB database in place of
 the traditional flat-text whatis databases.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public man-pages
   (package
@@ -254,7 +254,7 @@ the traditional flat-text whatis databases.")
 Linux kernel and C library interfaces employed by user-space programs.")
 
     ;; Each man page has its own license; some are GPLv2+, some are MIT/X11.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public help2man
   (package
@@ -285,7 +285,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
      "GNU help2man is a program that converts the output of standard
 \"--help\" and \"--version\" command-line arguments into a manual page
 automatically.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public scdoc
   (package
@@ -312,7 +312,7 @@ automatically.")
    (description "scdoc is a simple man page generator written for POSIX systems
 in C99.")
    ;; MIT license, see /share/doc/scdoc-1.6.0/COPYING.
-   (license expat)))
+   (license license:expat)))
 
 (define-public txt2man
   (package
@@ -338,4 +338,4 @@ in C99.")
     (home-page "https://github.com/mvertes/txt2man")
     (synopsis "Convert text to man page")
     (description "Txt2man converts flat ASCII text to man page format.")
-    (license gpl2+)))
+    (license license:gpl2+)))
