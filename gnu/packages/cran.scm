@@ -23059,3 +23059,31 @@ clusters.  The method is sufficiently flexible so that a wide range of
 Gaussian and non-Gaussian structures can be clustered with automatic selection
 of K.")
     (license license:agpl3+)))
+
+(define-public r-nabor
+  (package
+    (name "r-nabor")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nabor" version))
+       (sha256
+        (base32
+         "1nj39cdfwrmhgsi3cq8imxv3n6xzc1v6dzdb2cf2hybjk368v4s7"))))
+    (properties `((upstream-name . "nabor")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (home-page "https://cran.r-project.org/web/packages/nabor/")
+    (synopsis "Wrapper for K nearest neighbour library for low dimensions")
+    (description
+     "This package provides an R wrapper for libnabo, an exact or approximate
+k nearest neighbour library which is optimised for low dimensional
+spaces (e.g. 3D).  @code{nabor} includes a @code{knn} function that is
+designed as a drop-in replacement for the RANN function @code{nn2}.  In
+addition, objects which include the k-d tree search structure can be returned
+to speed up repeated queries of the same set of target points.")
+    (license license:bsd-3)))
