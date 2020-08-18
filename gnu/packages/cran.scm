@@ -8858,14 +8858,13 @@ Cohen (1988).")
 (define-public r-libcoin
   (package
     (name "r-libcoin")
-    (version "1.0-5")
+    (version "1.0-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "libcoin" version))
        (sha256
-        (base32
-         "1cm9x1dlg9f7fh7n5nw3x4a7rl88c7ylrlc8x3rx4mq5w1j42x0a"))))
+        (base32 "0njfdbz4mkyasxm80p0fb0qibvzz7kdzddn8ybj2k6y8bx0w3bs8"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-mvtnorm" ,r-mvtnorm)))
     (home-page "https://cran.r-project.org/web/packages/libcoin")
