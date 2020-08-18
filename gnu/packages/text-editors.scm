@@ -247,7 +247,26 @@ bindings and many of the powerful features of GNU Emacs.")
                         (setenv "DISPLAY" display)
                         (system (string-append xorg-server "/bin/Xvfb "
                                                display " &")))
-                      #t)))))
+                      #t))
+                  (add-after 'install 'wrap
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; The package needs GTK+ and GtkSourceView on XDG_DATA_DIRS
+                      ;; for syntax highlighting to work.  shared-mime-info is
+                      ;; necessary for MIME handling.
+                      ;; XXX: Ideally we'd reuse glib-or-gtk-wrap here, but it
+                      ;; does not pick up $gtksourceview/share/gtksourceview-3.0.
+                      (let ((out (assoc-ref outputs "out"))
+                            (gtk+ (assoc-ref inputs "gtk+"))
+                            (gtksourceview (assoc-ref inputs "gtksourceview"))
+                            (shared-mime-info (assoc-ref inputs "shared-mime-info")))
+                        (wrap-program (string-append out "/bin/juci")
+                          `("XDG_DATA_DIRS" ":" prefix
+                            (,(string-join
+                               (map (lambda (pkg)
+                                      (string-append pkg "/share"))
+                                    (list out gtk+ gtksourceview shared-mime-info))
+                               ":"))))
+                        #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server-for-tests)))
