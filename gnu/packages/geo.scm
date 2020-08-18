@@ -787,14 +787,14 @@ utilities for data translation and processing.")
 (define-public postgis
   (package
     (name "postgis")
-    (version "3.0.0")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.osgeo.org/postgis/source/postgis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15557fbk0xkngihwhqsbdyz2ng49blisf5zydw81j0gabk6x4vy0"))))
+                "1jmji8i2wjabkrzqil683lypnmimigdmn64a10j3kj3kzlfn98d3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
