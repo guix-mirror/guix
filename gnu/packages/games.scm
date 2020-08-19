@@ -3541,7 +3541,8 @@ also available.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1n747p7h0qp48szgp262swg0xh8kxy1bw8ag1qczs4i26hyzs5x4"))))
+                "1n747p7h0qp48szgp262swg0xh8kxy1bw8ag1qczs4i26hyzs5x4"))
+              (patches (search-patches "unknown-horizons-python-3.8-distro.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -3564,6 +3565,14 @@ also available.")
                                  (assoc-ref outputs "out")
                                  "/share/unknown-horizons\")"))))
              #t))
+         (add-before 'check 'fix-tests-with-pytest>=4
+           (lambda _
+             (substitute* "tests/conftest.py"
+               (("pytest_namespace")
+                "pytest_configure")
+               (("get_marker")
+                "get_closest_marker"))
+             #t))
          ;; TODO: Run GUI tests as well
          (replace 'check
            (lambda _
@@ -3582,6 +3591,7 @@ also available.")
        ("python-pyyaml" ,python-pyyaml)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("python-distro" ,python-distro)
 
        ;; Required for tests
        ("python-greenlet" ,python-greenlet)

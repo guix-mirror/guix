@@ -1,0 +1,52 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Wed, 19 Aug 2020 22:58:32 +0200
+Subject: [PATCH] gnu: unknown-horizons: Replace ‘dist’ with ‘distro’.
+
+This fixes builds with Python >= 3.8.  Taken verbatim from upstream[0].
+
+[0]: https://github.com/unknown-horizons/unknown-horizons/commit/c40fb866f3f72ac1049d6fa7859b17d8a48fe9e1
+
+From c40fb866f3f72ac1049d6fa7859b17d8a48fe9e1 Mon Sep 17 00:00:00 2001
+From: MarkusHackspacher <hackspacher@gmx.de>
+Date: Thu, 18 Jul 2019 11:46:39 +0200
+Subject: [PATCH] replace deprecated to distro package
+
+---
+ requirements.txt | 1 +
+ setup.py         | 4 +++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/requirements.txt b/requirements.txt
+index a5edf794fb..b58179bfa8 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,6 +1,7 @@
+ coverage==4.4.1
+ coveralls==1.1
+ crayons==0.1.2
++distro
+ future==0.16.0
+ greenlet==0.4.15
+ isort==4.3.4
+diff --git a/setup.py b/setup.py
+index 6d63a5ce15..6a237a8749 100755
+--- a/setup.py
++++ b/setup.py
+@@ -32,6 +32,8 @@
+ from distutils.spawn import find_executable
+ from shutil import copytree, rmtree
+ 
++import distro
++
+ import horizons
+ from horizons.constants import VERSION
+ from horizons.ext import polib
+@@ -39,7 +41,7 @@
+ # Ensure we are in the correct directory
+ os.chdir(os.path.realpath(os.path.dirname(__file__)))
+ 
+-if platform.dist()[0].lower() in ('debian', 'ubuntu'):
++if distro.linux_distribution(full_distribution_name=False)[0] in ('debian', 'mint', 'ubuntu'):
+ 	executable_path = 'games'
+ else:
+ 	executable_path = 'bin'
