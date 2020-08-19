@@ -3517,20 +3517,23 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
 (define-public python-aiosmtpd
   (package
     (name "python-aiosmtpd")
-    (version "1.2")
+    (version "1.2.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "aiosmtpd" version))
-        (sha256
-         (base32
-          "1xdfk741pjmz1cm8dsi4n5vq4517i175rm94696m3f7kcgk7xsmp"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aio-libs/aiosmtpd")
+             (commit version)))
+       (sha256
+        (base32 "14c30dm6jzxiblnsah53fdv68vqhxwvb9x0aq9bc4vcdas747vr7"))
+       (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-failing-test
+         (add-after 'unpack 'delete-failing-tests
            (lambda _
+             ;; This test uses an expired certificate.
              (delete-file "aiosmtpd/tests/test_smtps.py")
              #t))
          (replace 'check
