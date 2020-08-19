@@ -10972,7 +10972,7 @@ card sheets that you’ll find at most office supply stores.")
 (define-public libratbag
   (package
     (name "libratbag")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method git-fetch)
@@ -10981,7 +10981,7 @@ card sheets that you’ll find at most office supply stores.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18y8mfr63d91278m1kcid0wvrxa1sgjs8na9af1ks2n28ssvciwq"))))
+        (base32 "1fpwp2sj8mf98bqasq2h8qwgprxi7k3iw33gcfid3d1lbyiacw0x"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
