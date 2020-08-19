@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
@@ -346,7 +346,8 @@ varieties, i.e. Jacobians of hyperelliptic curves.
 It can also be used to compute theta constants at arbitrary
 precision.")
    (license license:gpl3+)
-   (home-page "http://cmh.gforge.inria.fr/")))
+   (home-page
+     "https://gitlab.inria.fr/cmh/cmh#cmh-computation-of-genus-2-class-polynomials")))
 
 (define-public giac
   (package
