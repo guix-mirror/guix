@@ -2283,6 +2283,48 @@ with applications that support them (e.g. PulseAudio).")
 implementation of the Open Sound Control (@dfn{OSC}) protocol.")
     (license license:lgpl2.1+)))
 
+(define-public rtaudio
+  (package
+    (name "rtaudio")
+    (version "5.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/thestk/rtaudio")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "156c2dgh6jrsyfn1y89nslvaxm4yifmxridsb708yvkaym02w2l8"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("pulseaudio" ,pulseaudio)))
+    (synopsis "Common API for real-time audio I/O")
+    (description
+     "RtAudio is a set of C++ classes that provides a common API for real-time
+audio input/output.  It was designed with the following objectives:
+
+@itemize
+@item object-oriented C++ design
+@item simple, common API across all supported platforms
+@item only one source and one header file for easy inclusion in programming
+projects
+@item allow simultaneous multi-api support
+@item support dynamic connection of devices
+@item provide extensive audio device parameter control
+@item allow audio device capability probing
+@item automatic internal conversion for data format, channel number
+compensation, (de)interleaving, and byte-swapping
+@end itemize")
+    (home-page "https://www.music.mcgill.ca/~gary/rtaudio/")
+    ;; License is expat with a non-binding request to send modifications to
+    ;; original developer.
+    (license license:expat)))
+
 (define-public python-pyaudio
   (package
     (name "python-pyaudio")
