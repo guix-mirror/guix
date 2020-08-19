@@ -2927,8 +2927,7 @@ It supports a variety of Adreno graphics chipsets.")
        (uri (string-append "mirror://xorg/individual/driver/xf86-video-geode-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0r2dz0agg0k5wrqdbicji6mh6svzyl0xgqk76hpcfdlzn2zx15zl"))
-       (patches (search-patches "xf86-video-geode-glibc-2.20.patch"))))
+        (base32 "0r2dz0agg0k5wrqdbicji6mh6svzyl0xgqk76hpcfdlzn2zx15zl"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
