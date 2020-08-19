@@ -1543,6 +1543,7 @@ modules for building a Wayland compositor.")
      `(("gcc" ,gcc-8)                   ; for #include <filesystem>
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)
        ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/Alexays/Waybar")
     (synopsis "Wayland bar for Sway and Wlroots based compositors")
