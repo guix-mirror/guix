@@ -4930,7 +4930,7 @@ permission from user.")
 (define-public geocode-glib
   (package
     (name "geocode-glib")
-    (version "3.26.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/geocode-glib/"
@@ -4938,7 +4938,7 @@ permission from user.")
                                   "geocode-glib-" version ".tar.xz"))
               (sha256
                (base32
-                "076ydfpyc4n5c9dbqmf26i4pilfi5jpw6cjcgrbgrjbndavnmajv"))))
+                "1l8g0f13xgkrk335afr9w8k46mziwb2jnyhl07jccl5yl37q9zh1"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
