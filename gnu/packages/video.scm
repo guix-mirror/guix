@@ -565,7 +565,7 @@ other software.")
 (define-public tslib
   (package
     (name "tslib")
-    (version "1.21")
+    (version "1.22")
     (source
      (origin
        (method git-fetch)
@@ -575,13 +575,12 @@ other software.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ph51vpfp92rpa2vs6wkz1b1pcs3z334p1i33sprsi8mjlwvkbzc"))))
+        (base32 "197p6vy539wvfrv23agbvmay4rjya1jnisi46llm0nx4cvqh48by"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tests"
        #:configure-flags
-       (list
-        "--with-sdl2")))
+       (list "--with-sdl2")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
