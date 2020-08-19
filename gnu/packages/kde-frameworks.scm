@@ -1529,7 +1529,7 @@ uses a job-based interface to queue tasks and execute them in an efficient way."
               (sha256
                (base32
                 "1whsp0f87lrcn61s9rfhy0aj68hm6zgfa38mq6frlkcjksi0z1vn"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
