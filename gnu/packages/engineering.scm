@@ -766,12 +766,7 @@ fonts to gEDA.")
                 (sha256
                  (base32
                   "0ryv2hcbrwqc087w7rrs4a2irkcpmqync00g4dh8n7jn10w2jkim"))
-                (file-name (git-file-name name version))
-                (snippet
-                 ;; Remove bundled catch since we provide our own.
-                 '(begin
-                    (delete-file "libfive/test/catch.hpp")
-                    #t))))
+                (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
        `(#:test-target "libfive-test"
@@ -780,19 +775,11 @@ fonts to gEDA.")
            (add-after 'unpack 'remove-native-compilation
              (lambda _
                (substitute* "CMakeLists.txt" (("-march=native") ""))
-               #t))
-           (add-after 'unpack 'find-catch
-             (lambda* (#:key inputs #:allow-other-keys)
-               (setenv "CPLUS_INCLUDE_PATH"
-                       (string-append (assoc-ref inputs "catch")
-                                      "/include/catch2:"
-                                      (or (getenv "CPLUS_INCLUDE_PATH") "")))
                #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs
        `(("boost" ,boost)
-         ("catch" ,catch-framework2)
          ("libpng" ,libpng)
          ("qtbase" ,qtbase)
          ("eigen" ,eigen)
