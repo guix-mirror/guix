@@ -39,14 +39,15 @@
    (lambda (var-to-wrap) (not (null? (last var-to-wrap))))
    (map
     (lambda (var-spec)
-      `(,(first var-spec) = ,(collect-sub-dirs base-directories (last var-spec))))
+      (list (first var-spec) (second var-spec)
+            (collect-sub-dirs base-directories (third var-spec))))
     (list
      ;; these shall match the search-path-specification for Qt and KDE
      ;; libraries
-     '("XDG_DATA_DIRS" "/share")
-     '("XDG_CONFIG_DIRS" "/etc/xdg")
-     '("QT_PLUGIN_PATH" "/lib/qt5/plugins")
-     '("QML2_IMPORT_PATH" "/lib/qt5/qml")))))
+     '("XDG_DATA_DIRS" suffix "/share")
+     '("XDG_CONFIG_DIRS" suffix "/etc/xdg")
+     '("QT_PLUGIN_PATH" prefix "/lib/qt5/plugins")
+     '("QML2_IMPORT_PATH" prefix "/lib/qt5/qml")))))
 
 
 (define* (wrap-qt-program* program #:key inputs output-dir)
