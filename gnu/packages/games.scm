@@ -3548,7 +3548,8 @@ also available.")
        (modify-phases %standard-phases
          (add-before 'build 'set-HOME
            (lambda _
-             (setenv "HOME" "/tmp")))
+             (setenv "HOME" "/tmp")
+             #t))
          (add-after 'build 'build-extra
            (lambda _
              (invoke "python3" "./setup.py" "build_i18n")
