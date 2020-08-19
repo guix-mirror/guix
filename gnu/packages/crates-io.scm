@@ -20909,10 +20909,10 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-bytemuck" ,rust-bytemuck-1.2)
-        ("rust-serde", rust-serde-1.0))
+       (("rust-bytemuck" ,rust-bytemuck-1)
+        ("rust-serde", rust-serde-1))
        #:cargo-development-inputs
-       (("rust-serde-json" ,rust-serde-json-1.0))))
+       (("rust-serde-json" ,rust-serde-json-1))))
     (home-page "https://lib.rs/crates/rgb")
     (synopsis "Struct for sharing pixels between crates")
     (description
