@@ -3450,14 +3450,13 @@ current standard.  No backward compatibility issues have been noted.")
 (define-public python-dkimpy
   (package
     (name "python-dkimpy")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dkimpy" version))
         (sha256
-         (base32
-          "14idcs0wiyc0iyi5bz3xqimxf3x6dizcjfn92s2ka5zxp95xdyvd"))))
+         (base32 "088iz5cqjqh4c7141d94pvn13bh25aizqlrifwv6fs5g16zj094s"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
