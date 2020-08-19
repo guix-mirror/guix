@@ -16504,27 +16504,35 @@ scroll up to read the function name and then scroll down to original position.")
       (license license:gpl3+))))
 
 (define-public emacs-git-auto-commit-mode
-  (package
-    (name "emacs-git-auto-commit-mode")
-    (version "4.5.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/ryuslash/git-auto-commit-mode")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1w3v9pmlmdxl4pglsb6j0igp13lbzg5bhbr1rv2vll93m6zxmyma"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/ryuslash/git-auto-commit-mode")
-    (synopsis "Emacs Minor mode to automatically commit and push")
-    (description "@code{git-auto-commit-mode} is an Emacs minor mode that
+  (let ((commit "23abaff792c0459e51e596d3fecd5513617e8cb1")
+        (revision "1"))
+    (package
+      (name "emacs-git-auto-commit-mode")
+      (version (git-version "4.6.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ryuslash/git-auto-commit-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hqj34q8z4jg86zz2lwfvj6xk07b4g1222h9y1zqs83qgivwpk1l"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs-buttercup" ,emacs-buttercup)
+         ("git" ,git)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("buttercup" "-L" ".")))
+      (home-page "https://github.com/ryuslash/git-auto-commit-mode")
+      (synopsis "Emacs Minor mode to automatically commit and push")
+      (description "@code{git-auto-commit-mode} is an Emacs minor mode that
 tries to commit changes to a file after every save.
 
 When @code{gac-automatically-push-p} is non-nil, it also tries to push to
 the current upstream.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-scroll-on-drag
   (let ((commit "888abd04c34753b1fc4b2fe541bc004ebec5c996")
