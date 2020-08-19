@@ -340,15 +340,14 @@ configurations (profiles).")
 (define-public mate-session-manager
   (package
     (name "mate-session-manager")
-    (version "1.24.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://mate/" (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "mate-session-manager-" version ".tar.xz"))
        (sha256
-        (base32
-         "01scj5d1xlri9b2id8gm9kfni9nzhdjdf7rag7fvcxwqp7baz3h3"))))
+        (base32 "1zwq8symyp3ijs28pyrknsdi9byf4dpp9wp93ndwdhi0vaip5i51"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--with-elogind"
