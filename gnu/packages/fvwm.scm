@@ -86,5 +86,5 @@
     (description
      "FVWM is an extremely powerful ICCCM-compliant multiple virtual desktop
 window manager for the X Window system.")
-    (home-page "http://www.fvwm.org/")
+    (home-page "https://www.fvwm.org/")
     (license gpl2+)))
