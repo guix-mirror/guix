@@ -256,24 +256,14 @@ desktop and the mate-about program.")
 (define-public libmateweather
   (package
     (name "libmateweather")
-    (version "1.24.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://mate/" (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "libmateweather-" version ".tar.xz"))
        (sha256
-        (base32
-         "094mnlczxq9crjj8z7dzs1zmwscdkbp54l3qjaf4a4bhd8lihv8d"))
-       (modules '((guix build utils)))
-       ;; This is fixed by commit ea13e065 upstream. Remove this once 1.25.0
-       ;; is out.
-       (snippet
-        '(begin
-           (substitute* "data/Locations.xml.in"
-             (("Godthab")
-              "Nuuk"))
-           #t))))
+        (base32 "02d7c59pami1fzxg73mp6risa9hvsdpgs68f62wkg09nrppzsk4v"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
