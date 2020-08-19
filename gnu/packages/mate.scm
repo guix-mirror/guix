@@ -921,15 +921,14 @@ icons on the MATE desktop.  It works on local and remote file systems.")
 (define-public mate-control-center
   (package
     (name "mate-control-center")
-    (version "1.24.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://mate/" (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "mate-control-center-" version ".tar.xz"))
        (sha256
-        (base32
-         "192plsh83m2qz7jgakns2yvhqbj53v7i54iwb0z26i2awy0j9rcd"))))
+        (base32 "08bai47fsmbxlw2lhig9n6c8sxr24ixkd1spq3j0635yzcqighb0"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
