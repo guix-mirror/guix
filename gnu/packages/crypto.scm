@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Hendur Saga <hendursaga@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,8 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lsof)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
@@ -393,6 +396,49 @@ for valid names can be run with regular expressions and wordlists.  For the
 generation of wordlists the included tool @code{worgen} can be used.  There is
 no man page, refer to the home page for usage details.")
       (license (list license:isc license:expat)))))
+
+(define-public ssss
+  (package
+    (name "ssss")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://point-at-infinity.org/ssss/ssss-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15grn2fp1x8p92kxkwbmsx8rz16g93y9grl3hfqbh1jn21ama5jx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configuration to be done
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((outdir (assoc-ref outputs "out"))
+                    (bindir (string-append outdir "/bin"))
+                    (docdir (string-append outdir
+                                           "/share/doc/ssss-"
+                                           ,version)))
+               (install-file "ssss-combine" bindir)
+               (install-file "ssss-split" bindir)
+               (install-file "ssss.1" docdir)
+               (install-file "ssss.1.html" docdir)
+               #t))))))
+    (inputs
+     `(("gmp" ,gmp)))
+    (native-inputs
+     `(("xmltoman" ,xmltoman)))
+    (home-page "http://point-at-infinity.org/ssss/")
+    (synopsis "Shamir's secret sharing scheme implementation")
+    (description "@command{ssss-split} and @command{ssss-combine} are utilities that split
+and combine secrets securely using Shamir's secret sharing scheme.  This implementation
+allows for a threshold scheme where the minimum number of shares can be less than the
+total number of shares generated.")
+    (license license:gpl2+)))
 
 (define-public tomb
   (package
