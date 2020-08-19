@@ -3374,7 +3374,7 @@ devices that can inject events directly into the input subsystem.")
     (version "2.03.10")
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "ftp://sourceware.org/pub/lvm2/LVM2."
+              (uri (list (string-append "https://sourceware.org/ftp/lvm2/LVM2."
                                         version ".tgz")
                          (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
                                         version ".tgz")))
