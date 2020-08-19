@@ -528,15 +528,14 @@ assorted menu related utility programs.")
 (define-public mate-applets
   (package
     (name "mate-applets")
-    (version "1.24.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://mate/" (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "mate-applets-" version ".tar.xz"))
        (sha256
-        (base32
-         "0nm3amb3v458mxv1mbz9y8f4230gldmydmkkm7vqxsrxbccynkxq"))))
+        (base32 "0h70i4x3bk017pgv4zn280682wm58vwdjm7kni91ni8rmblnnvyp"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
