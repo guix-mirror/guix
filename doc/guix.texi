@@ -6028,11 +6028,6 @@ This produces a SquashFS image containing all the specified binaries and
 symlinks, as well as empty mount points for virtual file systems like
 procfs.
 
-@item deb
-This produces a Debian archive (a package with the @samp{.deb} file
-extension) containing all the specified binaries and symbolic links,
-that can be installed on top of any dpkg-based GNU/Linux distribution.
-
 @quotation Note
 Singularity @emph{requires} you to provide @file{/bin/sh} in the image.
 For that reason, @command{guix pack -f squashfs} always implies @code{-S
@@ -6047,6 +6042,27 @@ If you forget the @code{bash} (or similar) package, @command{singularity
 run} and @command{singularity exec} will fail with an unhelpful ``no
 such file or directory'' message.
 @end quotation
+
+@item deb
+This produces a Debian archive (a package with the @samp{.deb} file
+extension) containing all the specified binaries and symbolic links,
+that can be installed on top of any dpkg-based GNU(/Linux) distribution.
+
+@quotation Note
+Because archives produced with @command{guix pack} contain a collection
+of store items and because each @command{dpkg} package must not have
+conflicting files, in practice that means you likely won't be able to
+install more than one such archive on a given system.
+@end quotation
+
+@quotation Warning
+@command{dpkg} will assume ownership of any files contained in the pack
+that it does @emph{not} know about.  It is unwise to install
+Guix-produced @samp{.deb} files on a system where @file{/gnu/store} is
+shared by other software, such as a Guix installation or other, non-deb
+packs.
+@end quotation
+
 @end table
 
 @cindex relocatable binaries
