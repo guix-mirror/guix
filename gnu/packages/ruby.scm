@@ -21,6 +21,7 @@
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11143,6 +11144,29 @@ uniquely identify it.")
      "Sprockets is a Rack-based asset packaging system that concatenates and
 serves JavaScript, CoffeeScript, CSS, LESS, Sass, and SCSS.")
     (home-page "https://github.com/rails/sprockets")
+    (license license:expat)))
+
+(define-public ruby-mustache
+  (package
+    (name "ruby-mustache")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mustache" version))
+       (sha256
+        (base32 "1l0p4wx15mi3wnamfv92ipkia4nsx8qi132c6g51jfdma3fiz2ch"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-simplecov" ,ruby-simplecov)))
+    (synopsis "framework-agnostic way to render logic-free views")
+    (description
+     "Mustache is a framework-agnostic way to render logic-free views.
+Think of Mustache as a replacement for your views.  Instead of views
+consisting of ERB or HAML with random helpers and arbitrary logic,
+your views are broken into two parts: a Ruby class and an HTML
+template.")
+    (home-page "https://github.com/mustache/mustache")
     (license license:expat)))
 
 (define-public ruby-mustermann
