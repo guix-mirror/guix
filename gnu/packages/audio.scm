@@ -298,15 +298,15 @@ Linux kernel.")
 (define-public libopenmpt
   (package
     (name "libopenmpt")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://download.openmpt.org/archive/" name "/src/"
-                       name "-" version "+release.autotools.tar.gz"))
+        (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
+                       "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "0zl3djy9z7cpqk8g8pxrzmmikxsskb0y5qdabg6c683j7x5abjs3"))))
+        (base32 "1vpalfsrkbx4vyrh1qy564lr91jwdxlbjivv5gzf8zcywxasf0xa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
