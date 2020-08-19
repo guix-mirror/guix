@@ -2549,7 +2549,19 @@ implementation for Python.")
        ;; TODO: Removing the libsrc/zlib source directory breaks the build.
        ;; This indicates that the internal zlib code may still be used.
        #:configure-flags '("--without-internal-zlib"
-                           "--with-readline")))
+                           "--with-readline"
+                           "--enable-static=no")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Even with "--enable-static=no", "libvirtuoso-t.a" is left in
+         ;; the build output.  The following phase removes it.
+         (add-after 'install 'remove-static-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (for-each (lambda (file)
+                           (delete-file (string-append lib "/" file)))
+                         '("libvirtuoso-t.a"
+                           "libvirtuoso-t.la"))))))))
     (inputs
      `(("openssl" ,openssl-1.0)
        ("net-tools" ,net-tools)
