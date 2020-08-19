@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -43,7 +43,7 @@
 (define-public nuspell
   (package
     (name "nuspell")
-    (version "3.1.1")
+    (version "3.1.2")
     (source
      (origin
        (method git-fetch)
@@ -55,7 +55,7 @@
        (file-name
         (git-file-name name version))
        (sha256
-        (base32 "18zz3rdzlb3knzsd98vw8cfyb3iq0ilipnlz7rz10zgb5ail73s2"))))
+        (base32 "0wbb6dwmzlsyy224y0liis0azgzwbjdvcyzc31pw1aw6vbp36na6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("catch" ,catch-framework2)
