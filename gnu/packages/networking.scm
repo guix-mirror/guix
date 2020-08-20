@@ -2167,14 +2167,14 @@ that block port 22.")
 (define-public iperf
   (package
     (name "iperf")
-    (version "3.7")
+    (version "3.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.es.net/pub/iperf"
                                   "/iperf-" version ".tar.gz"))
               (sha256
                 (base32
-                 "033is7b5grfbiil98jxlz4ixp9shm44x6hy8flpsyz1i4h108inq"))))
+                 "0f601avdmzpwsa3lbi0ppjhkrdipm5wifhhxy5czf99370k3mdi4"))))
     (build-system gnu-build-system)
     (synopsis "TCP, UDP and SCTP bandwidth measurement tool")
     (description
