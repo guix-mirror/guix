@@ -86,6 +86,11 @@
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'fix-installman
+           (lambda _
+             (substitute* "src/installman.sh"
+               ((" /bin/sh") (which "sh")))
+             #t))
          (add-after 'configure 'patch-absolute-paths
            (lambda _
              (substitute* "runtime/tools/mve.awk"
