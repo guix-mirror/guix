@@ -76,14 +76,15 @@
   (package
     (name "vis")
     (version "0.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/martanne/vis/releases"
-                                  "/download/v" version
-                                  "/vis-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0za89vrs97hysgmzpydprgvzsp7yfbr6la1w1c9pad4mqpqs7d4s"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/martanne/vis")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1zjm89cn3rfq8fxpwp66khy53s6vqlmw6q103qyyvix8ydzxdmsh"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
