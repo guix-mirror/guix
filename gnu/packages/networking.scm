@@ -370,23 +370,21 @@ sockets, and also some helper utilities around SCTP.")
 (define-public nng
   (package
     (name "nng")
-    (version "1.3.0")
+    (version "1.3.2")
     (source
      (origin
        (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/nanomsg/nng.git")
-         (commit (string-append "v" version))))
+       (uri (git-reference
+             (url "https://github.com/nanomsg/nng.git")
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "042kmqzvdhv8fqmjr9kyi7rirm6akmpidfav6j14zhrab221n06j"))))
+        (base32 "0a4jg8alh2h0rw6fb4dqpvk4hgl2a7h76mq7g34fy89qh9sgg1a4"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       (list
-        "-DNNG_ENABLE_COVERAGE=ON"
-        "-DNNG_ENABLE_TLS=ON")
+       (list "-DNNG_ENABLE_COVERAGE=ON"
+             "-DNNG_ENABLE_TLS=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
