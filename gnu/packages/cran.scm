@@ -22381,13 +22381,13 @@ Try a demo of the LSD by running @code{demotour()}.")
 (define-public r-fourcseq
   (package
     (name "r-fourcseq")
-    (version "1.21.0")
+    (version "1.22.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "FourCSeq" version))
        (sha256
-        (base32 "0lhcjw2hmmdafq52c5fvpm1crnzynbslamzh7r6ygifmzaz2pa8x"))))
+        (base32 "14q1ijnqnbd9xs60sfvyqjfiypjrvhacpwp2v85yfhcxw870cx5b"))))
     (properties `((upstream-name . "FourCSeq")))
     (build-system r-build-system)
     (propagated-inputs
