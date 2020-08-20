@@ -203,7 +203,7 @@ the real span of the lattice.")
 (define-public python-fpylll
   (package
     (name "python-fpylll")
-    (version "0.4.1")
+    (version "0.5.2")
     (source
      (origin
        ;; Pypi contains and older release, so we use a tagged release from
@@ -215,7 +215,7 @@ the real span of the lattice.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "01x2sqdv0sbjj4g4waj0hj4rcn4bq7h17442xaqwbznym9azmn9w"))))
+         "1a25iibihph626jl4wbs4b77xc4a2c4nfc2ypscf9wpani3dnhjf"))))
     (build-system python-build-system)
     (inputs
      `(("fplll" ,fplll)
