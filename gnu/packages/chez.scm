@@ -240,7 +240,9 @@ and 32-bit PowerPC architectures.")
      `(("chez-scheme" ,chez-scheme)))
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "PREFIX=" out)))
+                      (list (string-append "PREFIX=" out)
+                            "CHEZ=chez-scheme --libdirs ./"
+                            (string-append "chezversion=" ,(package-version chez-scheme))))
        #:test-target "test"
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
