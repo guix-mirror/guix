@@ -404,8 +404,12 @@ dictionaries, including personal ones.")
                              (find-files "speller"
                                          ,(string-append language ".*\\.dic$"))))
 
-               (install-file ,(string-append "speller/" language ".aff")
-                             hunspell)
+               ;; Install affix files corresponding to installed dictionaries
+               (for-each (lambda (dic)
+                           (install-file (string-append
+                                           "speller/" (basename dic ".dic") ".aff")
+                                         hunspell))
+                         (find-files hunspell ".*\\.dic$"))
                (symlink hunspell (string-append myspell "/dicts"))
                (for-each (lambda (file)
                            (install-file file doc))
