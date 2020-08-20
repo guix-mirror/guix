@@ -10125,17 +10125,18 @@ microarrays or GRanges for sequencing data.")
 (define-public r-gage
   (package
     (name "r-gage")
-    (version "2.37.0")
+    (version "2.38.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gage" version))
        (sha256
         (base32
-         "1zfaas4x6g7wiml6cmxa7b4f43az9s0lrw80k6sf7c96hsh1jijr"))))
+         "1bqmvjiya1df0b3h491lp1jxahiyidvaf9n094z0sk84x5y3xh2p"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-go-db" ,r-go-db)
        ("r-graph" ,r-graph)
        ("r-keggrest" ,r-keggrest)))
     (home-page (string-append "https://bmcbioinformatics.biomedcentral.com/"
