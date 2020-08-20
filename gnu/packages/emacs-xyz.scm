@@ -16009,7 +16009,7 @@ fixed-pitch,everything else becomes variable-pitch.")
 (define-public emacs-visual-regexp
   (package
     (name "emacs-visual-regexp")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method git-fetch)
@@ -16018,7 +16018,7 @@ fixed-pitch,everything else becomes variable-pitch.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12zpmzwyp85dzsjpxd3279kpfi9yz3jwc1k9fnb3xv3pjiil5svg"))))
+        (base32 "12p3rlhdphwmx1kxsjzcl2wj3i6qgpvw8iwhg1whs6yqgaxivixd"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/benma/visual-regexp.el/")
     (synopsis "Regexp command with interactive visual feedback")
