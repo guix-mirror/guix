@@ -2194,16 +2194,15 @@ Catalyst.")
 (define-public perl-catalyst-plugin-configloader
   (package
     (name "perl-catalyst-plugin-configloader")
-    (version "0.34")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Catalyst-Plugin-ConfigLoader-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "19j7p4v7mbx6wrmpvmrnd974apx7hdl2s095ga3b9zcbdrl77h5q"))))
+        (base32 "0w8r3bbxqnlykvra6sx3sh3wh8ylkj914xg5ql6nw11ddy56jaly"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-path-class" ,perl-path-class)
