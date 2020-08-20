@@ -1,0 +1,22 @@
+--- mhash-0.9.9.9/src/hmac_test.c	2020-08-20 14:53:06.628995733 -0500
++++ mhash-0.9.9.9/src/hmac_test.c	2020-08-20 14:53:39.424885862 -0500
+@@ -72,8 +72,6 @@
+ 		return(MUTILS_INVALID_RESULT);
+ 	}
+ 
+-	mutils_free(tmp);
+-
+ 	/* Test No 2 */	
+ 	
+ 	mutils_memset(tmp, 0, sizeof(tmp));
+--- mhash-0.9.9.9/src/keygen_test.c	2020-08-20 14:53:12.940974589 -0500
++++ mhash-0.9.9.9/src/keygen_test.c	2020-08-20 14:53:59.736817812 -0500
+@@ -94,8 +94,6 @@
+ 		return(MUTILS_INVALID_RESULT);
+ 	}
+ 
+-	mutils_free(tmp);
+-
+ 	passlen = sizeof(PASSWORD2);
+ 	password = (mutils_word8 *) mutils_malloc(passlen + 1);
+ 	mutils_strncpy(password, (mutils_word8 *) PASSWORD2, passlen);
