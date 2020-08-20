@@ -1784,14 +1784,14 @@ component analysis (with robust methods, and parallelized functions).")
 (define-public r-ape
   (package
     (name "r-ape")
-    (version "5.4")
+    (version "5.4-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ape" version))
        (sha256
         (base32
-         "0f74x9vx9sxpns2hlq4w2x80cd2gw42isfgncvs9pqbjf4hiyqnr"))))
+         "1r7fwyz30ippcl1ibqiv1xryf44x5crcks5kx19h146ffj76qcgh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
