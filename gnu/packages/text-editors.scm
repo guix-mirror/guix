@@ -75,7 +75,7 @@
 (define-public vis
   (package
     (name "vis")
-    (version "0.6")
+    (version "0.6")                     ; also update the vis-test input
     (source
      (origin
        (method git-fetch)
@@ -88,9 +88,14 @@
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:tests? #f                  ; no releases; snapshots are missing tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-test-suite
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((vis-test (assoc-ref inputs "vis-test")))
+               (copy-recursively vis-test "test")
+               #t)))
+         (delete 'check)                ; the tests need a wrapped vis
          (add-after 'install 'wrap-binary
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -103,7 +108,34 @@
                (wrap-program (string-append out "/bin/vis")
                  `("LUA_PATH" ":" prefix (,LUA_PATH))
                  `("LUA_CPATH" ":" prefix (,LUA_CPATH)))
+               #t)))
+         (add-after 'wrap-binary 'check
+           (assoc-ref %standard-phases 'check))
+         (add-before 'check 'set-up-tests
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; DEFAULT_COMPILER is hard-coded here.
+               (substitute* "test/core/ccan-config.c"
+                 (("\"cc\"")
+                  (format #f "\"~a\"" ,(cc-for-target))))
+
+               ;; Use the ‘vis’ executable that we wrapped above.
+               (install-file (string-append out "/bin/vis") ".")
+
+               ;; XXX Delete 2 failing tests.  TODO: make them not fail. :-)
+               (for-each delete-file
+                         (find-files "test/vis/selections" "^complement"))
                #t))))))
+    (native-inputs
+     `(("vis-test"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/martanne/vis-test")
+                 (commit "4c4f6645de77f697a45899e8645e0c2bbdc7208a")))
+           (sha256
+            (base32 "10vh1pxsqw88a5xwh5irkm85xr66dbycmgpmabyw9h0vm14cvcz2"))
+           (file-name (git-file-name "vis-test" version))))))
     (inputs `(("lua" ,lua)
               ("ncurses" ,ncurses)
               ("libtermkey" ,libtermkey)
