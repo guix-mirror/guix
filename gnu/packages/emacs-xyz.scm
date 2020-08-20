@@ -12223,7 +12223,7 @@ the latest versions of Idris 1.")
 (define-public emacs-browse-at-remote
   (package
     (name "emacs-browse-at-remote")
-    (version "0.10.0")
+    (version "0.14.0")
     (source
      (origin
        (method git-fetch)
@@ -12232,7 +12232,7 @@ the latest versions of Idris 1.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vhia7xmszcb3lxrb8wh93a3knjfzj48h8nhj4fh8zj1pjz6args"))))
+        (base32 "0bx4ns0jb0sqrjk1nsspvl3mhz3n12925azf7brlwb1vcgnji09v"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-f" ,emacs-f)
