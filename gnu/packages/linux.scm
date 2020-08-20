@@ -857,16 +857,22 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
+(define-public linux-libre-5.8
+  (make-linux-libre* linux-libre-5.8-version
+                     linux-libre-5.8-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
+
+(define-public linux-libre-version         linux-libre-5.8-version)
+(define-public linux-libre-pristine-source linux-libre-5.8-pristine-source)
+(define-public linux-libre-source          linux-libre-5.8-source)
+(define-public linux-libre                 linux-libre-5.8)
+
 (define-public linux-libre-5.7
   (make-linux-libre* linux-libre-5.7-version
                      linux-libre-5.7-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.7-version)
-(define-public linux-libre-pristine-source linux-libre-5.7-pristine-source)
-(define-public linux-libre-source          linux-libre-5.7-source)
-(define-public linux-libre                 linux-libre-5.7)
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
