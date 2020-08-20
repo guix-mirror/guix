@@ -3812,14 +3812,14 @@ All the visualization methods are developed based on ggplot2 graphics.")
 (define-public r-clusterprofiler
   (package
     (name "r-clusterprofiler")
-    (version "3.16.0")
+    (version "3.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "clusterProfiler" version))
        (sha256
         (base32
-         "0m7919gzrd2fddb4kcznwpshhab1ha2yppnkxg11zmh40wcdawyi"))))
+         "11zsgb8wbdv8r4c04iczz4aala4yw4ai7rz8igdzz87c0940nxkb"))))
     (properties
      `((upstream-name . "clusterProfiler")))
     (build-system r-build-system)
@@ -3834,6 +3834,7 @@ All the visualization methods are developed based on ggplot2 graphics.")
        ("r-magrittr" ,r-magrittr)
        ("r-plyr" ,r-plyr)
        ("r-qvalue" ,r-qvalue)
+       ("r-rlang" ,r-rlang)
        ("r-rvcheck" ,r-rvcheck)
        ("r-tidyr" ,r-tidyr)))
     (native-inputs
