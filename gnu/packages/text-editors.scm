@@ -955,7 +955,7 @@ card.  It offers:
 (define-public ne
   (package
     (name "ne")
-    (version "3.2.1")
+    (version "3.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -964,7 +964,7 @@ card.  It offers:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h6d08cnwrk96ss83i9bragwwanph6x54sm3ak1z81146dsqsiif"))))
+                "01aglnsfljlvx0wvyvpjfn4y88jf450a06qnj9a8lgdqv1hdkq1a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
