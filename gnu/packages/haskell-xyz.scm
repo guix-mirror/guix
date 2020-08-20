@@ -9411,6 +9411,8 @@ rules.")
         (base32
          "0xcyi1fivwg7a92mch5bcqzmrfxzqj42rmb3m8kgs61x4qwpxj82"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("pcre")))
     (inputs
      `(("pcre" ,pcre)))
     (native-inputs
