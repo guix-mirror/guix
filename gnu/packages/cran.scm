@@ -14013,6 +14013,45 @@ generalized least squares for serially or spatially correlated observations,
 generalized linear models, and quantile regression.")
     (license license:gpl2+)))
 
+(define-public r-arsenal
+  (package
+    (name "r-arsenal")
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "arsenal" version))
+       (sha256
+        (base32
+         "0avi434wkk3w7axd89a4jwsbb11fi0239mkkla6zasnjwbqgjim0"))))
+    (properties `((upstream-name . "arsenal")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-knitr" ,r-knitr)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/mayoverse/arsenal")
+    (synopsis "Functions for large-scale statistical summaries")
+    (description
+     "This package provides an arsenal of R functions for large-scale
+statistical summaries, which are streamlined to work within the latest
+reporting tools in R and RStudio and which use formulas and versatile
+summary statistics for summary tables and models.  The primary functions
+include
+
+@enumerate
+@item @code{tableby}, a Table-1-like summary of multiple variable types by the
+  levels of one or more categorical variables;
+@item @code{paired}, a Table-1-like summary of multiple variable types paired
+  across two time points;
+@item @code{modelsum}, which performs simple model fits on one or more
+  endpoints for many variables (univariate or adjusted for covariates);
+@item @code{freqlist}, a powerful frequency table across many categorical
+  variables;
+@item @code{comparedf}, a function for comparing @code{data.frames}; and
+@item @code{write2}, a function to output tables to a document.
+@end enumerate
+")
+    (license license:gpl2+)))
+
 (define-public r-haplo-stats
   (package
     (name "r-haplo-stats")
