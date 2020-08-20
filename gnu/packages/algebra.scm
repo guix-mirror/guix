@@ -151,7 +151,12 @@ line applications.")
 (define-public fplll
   (package
     (name "fplll")
-    (version "5.2.1")
+    ;; The most recent version 5.3.3 fails in the configure phase:
+    ;; ./configure: line 12956: syntax error near unexpected token `LIBQD,'
+    ;; ./configure: line 12956: `  PKG_CHECK_MODULES(LIBQD, qd, have_libqd="yes",'
+    ;; The error disappears when adding qd as an input; but this is
+    ;; supposed to be an optional input.
+    (version "5.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -160,7 +165,7 @@ line applications.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "015qmrd7nfaysbv1hbwiprz9g6hnww1y1z1xw8f43ysb7k1b5nbg"))))
+                "00iyz218ywspizjiimrjdcqvdqmrsb2367zyy3vkmypnf9i9l680"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
