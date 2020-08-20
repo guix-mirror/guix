@@ -14046,18 +14046,19 @@ include
 (define-public r-haplo-stats
   (package
     (name "r-haplo-stats")
-    (version "1.7.9")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "haplo.stats" version))
        (sha256
         (base32
-         "19kxascqq5qz0zdxx0w837ji207y1z2ggxkl4vmlbay03k2dw2mx"))))
+         "13gc980jk1pas7mz9b4nmwqd64qhh2c0xhq1z06z67jgv7k8n7dc"))))
     (properties `((upstream-name . "haplo.stats")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rms" ,r-rms)))
+     `(("r-arsenal" ,r-arsenal)
+       ("r-rms" ,r-rms)))
     (native-inputs
      `(("r-r-rsp" ,r-r-rsp))) ; for vignettes
     (home-page "https://www.mayo.edu/research/labs/statistical-genetics-genetic-epidemiology/software")
