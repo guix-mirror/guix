@@ -201,6 +201,7 @@ module for the DMA capture of the video flow.")
     (inputs
      `(("ffmeg" ,ffmpeg-3.4)
        ("nanomsg" ,nanomsg)
+       ("leptonica" ,leptonica)
        ("ocr" ,tesseract-ocr)
        ("zlib" ,zlib)))
     (synopsis "Closed Caption Extractor")
