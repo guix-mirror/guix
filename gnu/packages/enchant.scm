@@ -94,8 +94,9 @@ dictionaries.")
                            ;; Tests require a relocatable build.
                            "--enable-relocatable")))
     (inputs
-     `(("aspell" ,aspell)))   ;; Currently, the only supported backend in Guix
-    (propagated-inputs        ;; is aspell. (This information might be old)
+     `(("aspell" ,aspell)
+       ("hunspell" ,hunspell)))
+    (propagated-inputs
      ;; Required by enchant.pc.
      `(("glib" ,glib)))
     (native-inputs
