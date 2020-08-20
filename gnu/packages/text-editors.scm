@@ -75,15 +75,15 @@
 (define-public vis
   (package
     (name "vis")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martanne/vis/releases"
                                   "/download/v" version
-                                  "/vis-v" version ".tar.gz"))
+                                  "/vis-" version ".tar.gz"))
               (sha256
                (base32
-                "0aw35n8xk7ir84ckvczc6yshj9ynishrlz0qlv4yc1afbra1gxmn"))))
+                "0za89vrs97hysgmzpydprgvzsp7yfbr6la1w1c9pad4mqpqs7d4s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
