@@ -10557,6 +10557,8 @@ this problem.")
                (base32
                 "1h16w994g9s62iwkdqa7bar2n9cfixmkzz2rm8svm960qr57valf"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("pcre")))
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)
        ("pcre" ,pcre)))
