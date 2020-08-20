@@ -10028,14 +10028,14 @@ Shiny-based display methods for Bioconductor objects.")
 (define-public r-annotationhub
   (package
     (name "r-annotationhub")
-    (version "2.20.0")
+    (version "2.20.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationHub" version))
        (sha256
         (base32
-         "0r4xzf93bm9cpys5cg70wg0b8hxli80hvqwgh4hzbd45yyf5c4wz"))))
+         "04bz91m2wx1zm61rvpr0syyklz232fw74wrl73d965wi3x8fyda5"))))
     (properties `((upstream-name . "AnnotationHub")))
     (build-system r-build-system)
     (propagated-inputs
