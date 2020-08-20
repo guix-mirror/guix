@@ -185,14 +185,14 @@ example, modify the message headers or body, or encrypt or sign the message.")
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.9")
+    (version "3.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1g1xf2lal04nsnf1iym9n9n0wxjpqbcr9nysxpm98v4pniinqwsz"))))
+               "17smrxjdgbbzbzakik30vj46q4iib85ksqhb82jr4vjp57akszh9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -230,6 +230,13 @@ example, modify the message headers or body, or encrypt or sign the message.")
              (substitute* "comsat/tests/Makefile.in"
                (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
                 (string-append "-" all)))
+
+             ;; XXX: The ‘moderator: program discard’ test does not specify
+             ;; an explicit From: but does expect an exact match.  But why are
+             ;; all other tests unaffected?
+             (substitute* "sieve/tests/testsuite"
+               (("gray@")
+                "nixbld@"))
 
              ;; 'frm' tests expect write access to $HOME.
              (setenv "HOME" (getcwd))
