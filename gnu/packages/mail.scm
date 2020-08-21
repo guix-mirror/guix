@@ -1432,7 +1432,8 @@ facilities for checking incoming mail.")
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var"
