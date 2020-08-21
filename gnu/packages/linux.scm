@@ -195,7 +195,7 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
           (method url-fetch)
           (uri (string-append "https://linux-libre.fsfla.org"
                               "/pub/linux-libre/releases/" version "-gnu/"
-                              "deblob-" (version-major+minor version)))
+                              "deblob-" version))
           (file-name (string-append "linux-libre-deblob-"
                                     (version-major+minor version)))
           (sha256 deblob-hash))
@@ -204,8 +204,7 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
           (uri (string-append "https://linux-libre.fsfla.org"
                               "/pub/linux-libre/releases/" version "-gnu/"
                               "deblob-check"))
-          (file-name (string-append "linux-libre-deblob-check-"
-                                    (version-major+minor version)))
+          (file-name (string-append "linux-libre-deblob-check-" version))
           (sha256 deblob-check-hash))))
 
 (define deblob-scripts-5.8
