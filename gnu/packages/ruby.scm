@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10986,7 +10987,8 @@ Pathname.")
          (add-before 'build 'fix-i18n
            (lambda _
              (substitute* ".gemspec"
-               (("~> 0.7") ">= 0.7"))
+               (("~> 0.7") ">= 0.7")
+               (("~> 1.14") ">= 1.14"))
              #t)))))
     (propagated-inputs
      `(("ruby-addressable" ,ruby-addressable)
