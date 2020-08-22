@@ -1161,14 +1161,14 @@ SPI, I2C, JTAG.")
 (define-public fc-host-tools
   (package
     (name "fc-host-tools")
-    (version "11")
+    (version "13")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.freecalypso.org/pub/GSM/"
                                   "FreeCalypso/fc-host-tools-r" version ".tar.bz2"))
               (sha256
                (base32
-                "0s87lp6gd8i8ivrdd7mnnalysr65035nambcm992rgla7sk76sj1"))))
+                "0bpxz4y0z3hmlirzvfwq0k45yzn9fzgqs9r1fpkrhn48gr2zrpa8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
@@ -1282,6 +1282,12 @@ and displaying decoded target responses.
 @item fcup-smsendmult: Send multiple short messages via SMS in one go
 @item fcup-smsendpdu: Send multiple short messages given in PDU format via SMS
 @item sms-pdu-decode: Decode PDU format messages
+@item fc-dspromdump: Dump DSP ROM.
+@item pcm-sms-decode: Decode /pcm/SMS binary files read out of FFS maintained
+by Pirelli DP-L10.  Display the SMS in human-readable form.
+@item srec-regions: Parse S-record (TI's *.m0), identify the set of
+discontiguous regions into which this SREC image deposits bits, and list
+these identified regions.
 @end enumerate")
     (home-page "https://www.freecalypso.org/")
     (license license:public-domain)))
