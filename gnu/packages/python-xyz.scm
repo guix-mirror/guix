@@ -83,6 +83,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
+;;; Copyright © 2020 Hendursaga <hendursaga@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1502,6 +1503,43 @@ editors to read the file format and adhere to defined styles.  EditorConfig
 files are easily readable and they work nicely with version control systems.")
     ;; "fnmatch.py" and "ini.py" are licensed under psfl, the rest is bsd-2.
     (license (list license:bsd-2 license:psfl))))
+
+(define-public dosage
+  (package
+    (name "dosage")
+    (version "2.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dosage" version))
+       (sha256
+        (base32
+         "0vmxgn9wd3j80hp4gr5iq06jrl4gryz5zgfdd2ah30d12sfcfig0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python2-backports-functools-lru-cache"
+        ,python2-backports-functools-lru-cache)
+       ("python2-backports-shutil-get-terminal-size"
+        ,python2-backports-shutil-get-terminal-size)
+       ("python-cached-property" ,python-cached-property)
+       ("python-colorama" ,python-colorama)
+       ("python-imagesize" ,python-imagesize)
+       ("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-lxml" ,python-lxml)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-responses" ,python-responses)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/webcomics/dosage")
+    (synopsis "Comic strip downloader and archiver")
+    (description "Dosage is designed to keep a local copy of specific webcomics and other
+picture-based content such as Picture of the Day sites.  With the @command{dosage}
+command-line script you can get the latest strip of a webcomic, catch-up to the last strip
+downloaded, or download a strip for a particular date or index, if possible.")
+    (license license:expat)))
 
 (define-public python-et-xmlfile
   (package
