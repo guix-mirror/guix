@@ -192,31 +192,21 @@ addresses.")
 (define-public python-proteus
   (package
     (name "python-proteus")
-    (version "4.6.0")
+    (version "5.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "proteus" version))
        (sha256
-        (base32
-         "0flkf1vxbhz51b7bq31dn7q9mlkli3pmpbzfhsxfqpf6laghbkqg"))))
+        (base32 "0kxac5pkps243wf0xbmbd1g5bml96xl94j88y6yyzm093vyli150"))))
     (build-system python-build-system)
+    ;; Tests require python-trytond-party which requires python-proteus.
+    (arguments
+     `(#:tests? #f))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-trytond-party" ,python-trytond-party)
-       ("python-trytond-country" ,python-trytond-country)
-       ("python-trytond" ,python-trytond)
-       ("python-stdnum" ,python-stdnum)
-       ("python-sql" ,python-sql)
-       ("python-wrapt" ,python-wrapt)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-polib" ,python-polib)
-       ("python-genshi" ,python-genshi)
-       ("python-relatorio" ,python-relatorio)
-       ("python-magic" ,python-magic)))
+     `(("python-dateutil" ,python-dateutil)))
     (home-page "http://www.tryton.org/")
-    (synopsis
-     "Library to access a Tryton server as a client")
+    (synopsis "Library to access a Tryton server as a client")
     (description
      "This package provides a library to access Tryton server as a client.")
     (license license:lgpl3+)))
