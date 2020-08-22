@@ -169,35 +169,47 @@ and security.")
 (define-public python-trytond-party
   (package
     (name "python-trytond-party")
-    (version "4.6.0")
+    (version "5.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond_party" version))
        (sha256
-        (base32
-         "0fbf4kxywiglcdsx9ppjg7nxw87915mb6bpn1jn652gk949rdww5"))))
+        (base32 "0wh7g1g67g4vwxm797ra6fkfvmd3w77vl7nxj76y856cy217gbzp"))))
     (build-system python-build-system)
-    ;; XXX The tests seem to require Proteus. But Proteus tests seem to
-    ;; require trytond-party.
     (arguments
-     '(#:tests? #f))
-    (propagated-inputs
-     `(("python-trytond" ,python-trytond)
-       ("python-trytond-country" ,python-trytond-country)
-       ("python-stdnum" ,python-stdnum)
-       ("python-sql" ,python-sql)
-       ("python-wrapt" ,python-wrapt)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-polib" ,python-polib)
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               ;; Doctest 'scenario_party_phone_number.rst' fails.
+               (invoke "python" runtest "-m" "party" "--no-doctest")))))))
+    (native-inputs
+     `(("python" ,python-minimal-wrapper)
        ("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
-       ("python-relatorio" ,python-relatorio)
+       ("python-lxml" ,python-lxml)
        ("python-magic" ,python-magic)
-       ("python-phonenumbers" ,python-phonenumbers)))
-    (home-page "http://www.tryton.org/")
-    (synopsis
-     "Tryton module for parties and addresses")
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-relatorio" ,python-relatorio)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-sql" ,python-sql)
+       ("python-stnum" ,python-stdnum)
+       ("python-trytond" ,python-trytond)
+       ("python-trytond-country" ,python-trytond-country)))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Tryton module for parties and addresses")
     (description
      "This package provides a Tryton module for (counter)parties and
 addresses.")
