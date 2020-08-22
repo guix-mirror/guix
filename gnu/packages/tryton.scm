@@ -34,6 +34,7 @@
   #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system python))
 
 (define-public python-trytond
@@ -120,37 +121,50 @@ and security.")
 
 (define-public python-trytond-country
   (package
-  (name "python-trytond-country")
-  (version "4.6.0")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (pypi-uri "trytond_country" version))
-      (sha256
-        (base32
-          "11c9mw2scbjn7c6yhlwh5ml266f0s31lh4jwj6gh7vl1shs3isr3"))))
-  (build-system python-build-system)
-  (arguments
-   `(#:phases
-     (modify-phases %standard-phases
-       (add-before 'check 'preparations
-         (lambda _
-           (setenv "DB_NAME" ":memory:")
-           #t)))))
-  (propagated-inputs
-   `(("python-trytond" ,python-trytond)
-     ("python-wrapt" ,python-wrapt)
-     ("python-werkzeug" ,python-werkzeug)
-     ("python-sql" ,python-sql)
-     ("python-polib" ,python-polib)
-     ("python-dateutil" ,python-dateutil)
-     ("python-genshi" ,python-genshi)
-     ("python-relatorio" ,python-relatorio)
-     ("python-magic" ,python-magic)))
-  (home-page "http://www.tryton.org/")
-  (synopsis "Tryton module with countries")
-  (description "This package provides a Tryton module with countries.")
-  (license license:gpl3+)))
+    (name "python-trytond-country")
+    (version "5.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_country" version))
+       (sha256
+        (base32 "0k1xw5r2pfd5mvvg3pn3vavwjwpgmm5i6nsc8x421znk4gvvns78"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               ;; Doctest contains one test that requires internet access.
+               (invoke "python" runtest "-m" "country" "--no-doctest")))))))
+    (native-inputs
+     `(("python" ,python)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-relatorio" ,python-relatorio)
+       ("python-sql" ,python-sql)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-pycountry" ,python-pycountry)
+       ("python-trytond" ,python-trytond)))
+    (home-page "http://www.tryton.org/")
+    (synopsis "Tryton module with countries")
+    (description
+     "This package provides a Tryton module with countries.")
+    (license license:gpl3+)))
 
 (define-public python-trytond-party
   (package
