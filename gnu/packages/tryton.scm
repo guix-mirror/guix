@@ -27,6 +27,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time)
@@ -38,25 +39,23 @@
 (define-public python-trytond
   (package
     (name "python-trytond")
-    (version "4.6.2")
+    (version "5.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trytond" version))
        (sha256
-        (base32
-         "0asc3pd37h8ky8j66iqxr0fv0k6mpjcwxwm0xgm5hrdi32l5cdda"))))
+        (base32 "1n76ccv2x5csz80p42dav8rhzg2m14wdi3bj1pizhw8x2hxxfwx3"))))
     (build-system python-build-system)
     (inputs
      `(("python-dateutil" ,python-dateutil)
        ("python-genshi" ,python-genshi)
-       ("python-polib" ,python-polib)
+       ("python-lxml" ,python-lxml)
        ("python-magic" ,python-magic)
-       ;; there's no python-mysql in Guix right now
-       ;; so python-psycopg2 (postgresql) only for now
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
        ("python-psycopg2" ,python-psycopg2)
        ("python-relatorio" ,python-relatorio)
-       ("python-lxml" ,python-lxml)
        ("python-sql" ,python-sql)
        ("python-werkzeug" ,python-werkzeug)
        ("python-wrapt" ,python-wrapt)))
@@ -68,6 +67,7 @@
          (add-before 'check 'preparations
            (lambda _
              (setenv "DB_NAME" ":memory:")
+             (setenv "HOME" "/tmp")
              #t)))))
     (home-page "https://www.tryton.org/")
     (synopsis "Server component of Tryton")
