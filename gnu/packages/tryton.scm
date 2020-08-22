@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages finance)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -77,24 +80,42 @@ and security.")
 (define-public tryton
   (package
     (name "tryton")
-    (version "4.6.2")
+    (version "5.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tryton" version))
        (sha256
-        (base32
-         "0bamr040np02gfjk8c734rw3mbgg75irfgpdcl2npgkdzyw1ksf9"))))
+        (base32 "1dghr6x5wga3sizjvj261xndpl38si5hwiz3llm2bhmg33nplfh7"))))
     (build-system python-build-system)
-    (inputs
-     `(("python2-chardet" ,python2-chardet)
-       ("python2-dateutil" ,python2-dateutil)
-       ("python2-pygtk" ,python2-pygtk)))
     (arguments
-     `(#:python ,python-2))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'change-home
+           (lambda _
+             ;; Change from /homeless-shelter to /tmp for write permission.
+             (setenv "HOME" "/tmp")))
+         (add-after 'install 'wrap-gi-python
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/tryton")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+             #t)))))
+    (native-inputs
+     `(("glib-compile-schemas" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("python-dateutil" ,python-dateutil)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)))
     (home-page "https://www.tryton.org/")
     (synopsis "Client component of Tryton")
-    (description "This package is the client component of Tryton.")
+    (description
+     "This package is the client component of Tryton.")
     (license license:gpl3+)))
 
 (define-public python-trytond-country
