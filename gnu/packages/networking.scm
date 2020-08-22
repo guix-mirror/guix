@@ -2945,14 +2945,14 @@ Features:
 (define-public net-snmp
   (package
     (name "net-snmp")
-    (version "5.8")
+    (version "5.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/net-snmp/net-snmp/"
                                   version "/net-snmp-" version ".tar.gz"))
               (sha256
                (base32
-                "1pvajzj9gmj56dmwix0ywmkmy2pglh6nny646hkm7ghfhh03bz5j"))
+                "0wb0vyafpspw3mcifkjjmf17r1r80kjvslycscb8nvaxz1k3lc04"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2999,12 +2999,15 @@ Features:
                                " -NET")))
              #t)))))
     (inputs
-     `(("perl" ,perl)
+     `(("libnl" ,libnl)
+       ("ncurses" ,ncurses)             ; for the ‘apps’
        ("openssl" ,openssl)
-       ("libnl" ,libnl)))
-    ;; These inputs are only needed for tests.
+       ("perl" ,perl)))
     (native-inputs
-     `(("net-tools" ,net-tools)
+     `(("pkg-config" ,pkg-config)
+
+       ;; For tests only.
+       ("net-tools" ,net-tools)
        ("coreutils" ,coreutils)
        ("grep" ,grep)))
     (home-page "http://www.net-snmp.org/")
