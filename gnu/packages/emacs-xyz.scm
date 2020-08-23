@@ -12545,16 +12545,16 @@ messaging service.")
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")
-   (version "2.1.0")
+   (version "3.1.0")
    (source
     (origin
       (method git-fetch)
       (uri (git-reference
             (url "https://github.com/szermatt/emacs-bash-completion")
-            (commit version)))
+            (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1a1wxcqzh0javjmxwi3lng5i99xiylm8lm04kv4q1lh9bli6vmv0"))))
+       (base32 "11j2k3irixp47r2iglxdmjphahqhgnxg98n2xwagwzyq99lsamj4"))))
    (inputs `(("bash" ,bash)))
    (build-system emacs-build-system)
    (arguments
