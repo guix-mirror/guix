@@ -15,6 +15,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1268,3 +1269,53 @@ applications")
    (description "Flatpak is a system for building, distributing, and running
 sandboxed desktop applications on GNU/Linux.")
    (license license:lgpl2.1+)))
+
+(define-public akku
+  (package
+    (name "akku")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/akkuscm/akku.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256 (base32 "1dm32ws3nshnnscd7k75zswxxs1pp25y2q4k8j5ms241hz47by3c"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'bootstrap
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (for-each patch-shebang
+                                '("bootstrap"
+                                  ".akku/env"))
+                      (let* ((home "/tmp")
+                             (datadir (string-append home "/.local/share/akku/")))
+                        (mkdir-p datadir)
+                        (invoke "touch" (string-append datadir "index.db"))
+                        (setenv "HOME" home))
+                      (invoke "./bootstrap")
+                      #t))
+                  (add-after 'install 'wrap-executables
+                    (lambda* (#:key outputs inputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (curl (assoc-ref inputs "curl")))
+                        (wrap-program (string-append out "/bin/akku")
+                          `("LD_LIBRARY_PATH" ":" prefix (,(string-append curl "/lib"))))
+                        #t))))))
+    (native-inputs
+     `(("which" ,which)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("curl" ,curl)))
+    (home-page "https://akkuscm.org/")
+    (synopsis "Language package manager for Scheme")
+    (description
+     "Akku.scm is a project-based language package manager for R6RS and R7RS Scheme.
+It is mainly meant for programmers who develop portable programs or libraries in Scheme,
+but could potentially work for end-users of those programs.  It also has a translator
+from R7RS, which allows most R7RS code to run on R6RS implementations.")
+    (license license:gpl3+)))
