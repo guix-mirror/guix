@@ -2803,6 +2803,30 @@ pre-alpha code.")
 parameters, which  define* and lambda* special forms")
     (license license:gpl3+)))
 
+(define-public guile-srfi-145
+  (package
+    (name "guile-srfi-145")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/mjbecze/guile-srfi-145.git")
+             (commit version)))
+       (sha256
+         (base32
+           "1gssa8cmcp8640fil9z8dpil8v5l279wlalqjcx3fls5jwv13q1b"))
+       (file-name (git-file-name name version))))
+    (build-system guile-build-system)
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://gitlab.com/mjbecze/guile-srfi-145")
+    (synopsis "SRFI-145 port for Guile")
+    (description
+     "This package provides SRFI-145.  This provides the means to
+denote the invalidity of certain code paths in a Scheme program.")
+    (license license:gpl3+)))
+
 (define-public guile-srfi-159
   (let ((commit "1bd98abda2ae4ef8f36761a167903e55c6bda7bb")
         (revision "0"))
