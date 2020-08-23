@@ -736,7 +736,7 @@ deliver data to mobile and web apps.")
 (define-public emacs-ghub
   (package
     (name "emacs-ghub")
-    (version "3.3.0")
+    (version "3.4.1")
     (source
      (origin
        (method git-fetch)
@@ -745,7 +745,7 @@ deliver data to mobile and web apps.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1229g0d9f4ywwjndx32x4z5jdr0kzyi44hjxmy0sifwfmg9nn251"))))
+        (base32 "07iy4203ppvzkh67sb0v968hnypnvy4dpfy0qpqrp8zmc455dxq5"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
