@@ -788,14 +788,14 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
              (substitute* "config.h"
                (("#define GETCWD_BROKEN 1") "#undef GETCWD_BROKEN"))
              (let ((config.h (open-file "config.h" "a")))
-               (display (string-append "
+               (display "
 // tcc: error: undefined symbol 'enable_hostname_completion'
 #define enable_hostname_completion(on_or_off) 0
 
-// /gnu/store/cq0cmv35s9dhilx14zaghlc08gpc0hwr-tcc-boot0-0.9.26-6.c004e9a/lib/libc.a: error: 'sigprocmask' defined twice
+// /gnu/store/…-tcc-boot0-0.9.26-6.c004e9a/lib/libc.a: error: 'sigprocmask' defined twice
 #define HAVE_POSIX_SIGNALS 1
 #define endpwent(x) 0
-")
+"
                         config.h)
                (close config.h))
              #t))
