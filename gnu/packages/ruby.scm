@@ -10719,6 +10719,28 @@ of Markdown.  It is completely written in Ruby, supports standard Markdown
 popular by the PHP @code{Markdown Extra} package and @code{Maruku}.")
     (license license:expat)))
 
+(define-public ruby-kramdown-parser-gfm
+  (package
+    (name "ruby-kramdown-parser-gfm")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "kramdown-parser-gfm" version))
+       (sha256
+        (base32 "0a8pb3v951f4x7h968rqfsa19c8arz21zw1vaj42jza22rap8fgv"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no rakefile
+    (propagated-inputs
+     `(("ruby-kramdown" ,ruby-kramdown)))
+    (synopsis "Kramdown parser for the GFM dialect of Markdown")
+    (description
+     "This is a parser for kramdown that converts Markdown documents in the
+GFM dialect to HTML.")
+    (home-page "https://github.com/kramdown/parser-gfm")
+    (license license:expat)))
+
 (define-public ruby-http-parser.rb
   (package
     (name "ruby-http-parser.rb")
