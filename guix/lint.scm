@@ -139,7 +139,7 @@
    message-text
    message-data
    (or location
-       (package-field-location package field)
+       (and field (package-field-location package field))
        (package-location package))))
 
 (define-syntax make-warning
