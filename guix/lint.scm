@@ -1355,12 +1355,20 @@ them for PACKAGE."
   "Check the formatting of the source code of PACKAGE."
   (let ((location (package-location package)))
     (if location
-        (and=> (search-path %load-path (location-file location))
-               (lambda (file)
-                 ;; Report issues starting from the line before the 'package'
-                 ;; form, which usually contains the 'define' form.
-                 (report-formatting-issues package file
-                                           (- (location-line location) 1))))
+        ;; Report issues starting from the line before the 'package'
+        ;; form, which usually contains the 'define' form.
+        (let ((line (- (location-line location) 1)))
+          (match (search-path %load-path (location-file location))
+            ((? string? file)
+             (report-formatting-issues package file line))
+            (#f
+             ;; It could be that LOCATION lists a "true" relative file
+             ;; name--i.e., not relative to an element of %LOAD-PATH.
+             (let ((file (location-file location)))
+               (if (file-exists? file)
+                   (report-formatting-issues package file line)
+                   (list (make-warning package
+                                       (G_ "source file not found"))))))))
         '())))
 
 

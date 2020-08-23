@@ -22,8 +22,11 @@
 
 guix lint --version
 
-module_dir="t-guix-lint-$$"
-mkdir "$module_dir"
+# Choose a module directory not below any %LOAD-PATH component.  This is
+# necessary when testing '-L' with a relative file name.
+module_dir="$(mktemp -d)"
+
+mkdir -p "$module_dir"
 trap "rm -rf $module_dir" EXIT
 
 
@@ -87,3 +90,9 @@ then false; else true; fi
 
 # Make sure specifying multiple packages works.
 guix lint -L $module_dir -c inputs-should-be-native dummy dummy@42 dummy
+
+# Test '-L' with a relative file name.  'guix lint' will see "t-xyz/foo.scm"
+# (instead of "foo.scm") and will thus fail to find it in %LOAD-PATH.  Check
+# that it does find it anyway.  See <https://bugs.gnu.org/42543>.
+(cd "$module_dir"/.. ; guix lint -c formatting -L "$(basename "$module_dir")" dummy@42) 2>&1 > "$module_dir/out"
+test -z "$(cat "$module_dir/out")"
