@@ -49,6 +49,7 @@
             unattended-upgrade-service-type
             unattended-upgrade-configuration
             unattended-upgrade-configuration?
+            unattended-upgrade-configuration-operating-system-file
             unattended-upgrade-configuration-channels
             unattended-upgrade-configuration-schedule
             unattended-upgrade-configuration-services-to-restart
@@ -198,6 +199,8 @@ Old log files are removed or compressed according to the configuration.")
 (define-record-type* <unattended-upgrade-configuration>
   unattended-upgrade-configuration make-unattended-upgrade-configuration
   unattended-upgrade-configuration?
+  (operating-system-file unattended-upgrade-operating-system-file
+                         (default "/run/current-system/configuration.scm"))
   (schedule             unattended-upgrade-configuration-schedule
                         (default "30 01 * * 0"))
   (channels             unattended-upgrade-configuration-channels
@@ -227,6 +230,9 @@ Old log files are removed or compressed according to the configuration.")
 
   (define expiration
     (unattended-upgrade-system-expiration config))
+
+  (define config-file
+    (unattended-upgrade-operating-system-file config))
 
   (define code
     (with-imported-modules (source-module-closure '((guix build utils)
@@ -271,8 +277,7 @@ Old log files are removed or compressed according to the configuration.")
                       (report-invoke-error c)))
              (invoke #$(file-append guix "/bin/guix")
                      "time-machine" "-C" #$channels
-                     "--" "system" "reconfigure"
-                     "/run/current-system/configuration.scm")
+                     "--" "system" "reconfigure" #$config-file)
 
              ;; 'guix system delete-generations' fails when there's no
              ;; matching generation.  Thus, catch 'invoke-error?'.

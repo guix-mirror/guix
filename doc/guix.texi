@@ -15393,6 +15393,29 @@ This gexp specifies the channels to use for the upgrade
 (@pxref{Channels}).  By default, the tip of the official @code{guix}
 channel is used.
 
+@item @code{operating-system-file} (default: @code{"/run/current-system/configuration.scm"})
+This field specifies the operating system configuration file to use.
+The default is to reuse the config file of the current configuration.
+
+There are cases, though, where referring to
+@file{/run/current-system/configuration.scm} is not enough, for instance
+because that file refers to extra files (SSH public keys, extra
+configuration files, etc.) @i{via} @code{local-file} and similar
+constructs.  For those cases, we recommend something along these lines:
+
+@lisp
+(unattended-upgrade-configuration
+  (operating-system-file
+    (file-append (local-file "." "config-dir" #:recursive? #t)
+                 "/config.scm")))
+@end lisp
+
+The effect here is to import all of the current directory into the
+store, and to refer to @file{config.scm} within that directory.
+Therefore, uses of @code{local-file} within @file{config.scm} will work
+as expected.  @xref{G-Expressions}, for information about
+@code{local-file} and @code{file-append}.
+
 @item @code{services-to-restart} (default: @code{'(mcron)})
 This field specifies the Shepherd services to restart when the upgrade
 completes.
