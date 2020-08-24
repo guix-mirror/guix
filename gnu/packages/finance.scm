@@ -517,11 +517,10 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            (guix build qt-utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-home
+         (add-after 'unpack 'create-output-directories
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "setup.py"
-               (("~/.local/share")
-                (string-append (assoc-ref outputs "out") "/local/share")))
+             ;; setup.py installs to ~/.local/share if this doesn't exist.
+             (mkdir-p (string-append (assoc-ref outputs "out") "/share"))
              #t))
          (add-after 'unpack 'use-libsecp256k1-input
            (lambda* (#:key inputs #:allow-other-keys)
