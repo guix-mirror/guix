@@ -8905,14 +8905,13 @@ extension plugins.")
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
-    (version "0.5.20180417")
+    (version "0.5.20190701")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "domain_name" version))
        (sha256
-        (base32
-         "0abdlwb64ns7ssmiqhdwgl27ly40x2l27l8hs8hn0z4kb3zd2x3v"))))
+        (base32 "0lcqjsmixjp52bnlgzh4lg9ppsk52x9hpwdjd53k8jnbah2602h0"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
