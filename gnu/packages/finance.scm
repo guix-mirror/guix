@@ -509,7 +509,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:modules ((guix build python-build-system)
                   (guix build qt-utils)
                   (guix build utils))
@@ -521,12 +521,14 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "setup.py"
                (("~/.local/share")
-                (string-append (assoc-ref outputs "out") "/local/share")))))
+                (string-append (assoc-ref outputs "out") "/local/share")))
+             #t))
          (add-after 'unpack 'use-libsecp256k1-input
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "lib/secp256k1.py"
                (("library_paths = .* 'libsecp256k1.so.0'.")
-                (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))))
+                (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))
+             #t))
          (add-after 'install 'wrap-qt
            (lambda* (#:key outputs #:allow-other-keys)
              (wrap-qt-program (assoc-ref outputs "out") "electron-cash")
