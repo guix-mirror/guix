@@ -39,6 +39,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system linux-module)
   #:use-module (guix build-system python)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
@@ -568,7 +569,7 @@ WireGuard was added to Linux 5.6.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              "--directory=src"
              "WITH_BASHCOMPLETION=yes"
              ;; Install the ‘simple and dirty’ helper script wg-quick(8).
