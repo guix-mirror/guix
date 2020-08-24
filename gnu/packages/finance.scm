@@ -458,12 +458,16 @@ do so.")
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'patch-home
+         (add-after 'unpack 'fix-prefix
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "setup.py"
-               (("~/.local/share")
-                (string-append (assoc-ref outputs "out") "/local/share")))
-             #t)))))
+             (let ((out (assoc-ref outputs "out")))
+               ;; setup.py installs to ~/.local/share if sys.prefix/share isn't
+               ;; writable.  sys.prefix points to Python's, not our, --prefix.
+               (mkdir-p (string-append out "/share"))
+               (substitute* "setup.py"
+                 (("sys\\.prefix")
+                  (format #f "\"~a\"" out)))
+               #t))))))
     (home-page "https://electrum.org/")
     (synopsis "Bitcoin wallet")
     (description
