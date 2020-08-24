@@ -89,6 +89,7 @@
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages language)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
@@ -1427,6 +1428,7 @@ facilities for checking incoming mail.")
        ("clucene" ,clucene)
        ("icu4c" ,icu4c)
        ("libsodium" ,libsodium)         ; extra password algorithms
+       ("libstemmer" ,libstemmer)
        ;; FIXME: The 'test-backtrace' tests fail on arm when using glibc's
        ;; backtrace_symbol() function so fallback to using libunwind.
        ,@(if (target-arm?)
@@ -1442,7 +1444,7 @@ facilities for checking incoming mail.")
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var"
                            "--with-sqlite"  ; not auto-detected
-                           "--with-lucene")
+                           "--with-lucene") ; not auto-detected
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
