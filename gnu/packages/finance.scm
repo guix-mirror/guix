@@ -455,14 +455,15 @@ do so.")
        ("python-dnspython" ,python-dnspython)
        ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
     (arguments
-     `(#:tests? #f ;; package doesn't have any tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-home
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "setup.py"
                (("~/.local/share")
-                (string-append (assoc-ref outputs "out") "/local/share"))))))))
+                (string-append (assoc-ref outputs "out") "/local/share")))
+             #t)))))
     (home-page "https://electrum.org/")
     (synopsis "Bitcoin wallet")
     (description
