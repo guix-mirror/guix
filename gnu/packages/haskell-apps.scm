@@ -738,6 +738,20 @@ is programmed in Haskell.")
          (base32
           "0apzrvf99rskj4dbmn57jjxrsf19j436s8a09m950df5aws3a0wj"))))
     (build-system haskell-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'touch-static-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The Haskell build system adds a "static" output by
+             ;; default, and there is no way to override this until
+             ;; <https://issues.guix.gnu.org/41569> is fixed.  Without
+             ;; this phase, the daemon complains because we do not
+             ;; create the "static" output.
+             (with-output-to-file (assoc-ref outputs "static")
+               (lambda ()
+                 (display "static output not used\n")))
+             #t)))))
     (inputs
      `(("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-data-default" ,ghc-data-default)
