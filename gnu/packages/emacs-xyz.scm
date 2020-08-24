@@ -7367,7 +7367,7 @@ ongoing operations.")
 (define-public emacs-sparql-mode
   (package
     (name "emacs-sparql-mode")
-    (version "2.0.1")
+    (version "4.0.2")
     (source
      (origin
        (method git-fetch)
@@ -7376,8 +7376,9 @@ ongoing operations.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ywhqk6n5k0l85zjwbnrivnvxjzqipqrggv06lify6yv18qmyl6s"))))
+        (base32 "0hqp8r24wvzrkl630wbm0lynrcrnawv2yn2a3xgwqwwhwgva35rn"))))
     (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-company" ,emacs-company)))
     (home-page "https://github.com/ljos/sparql-mode")
     (synopsis "SPARQL mode for Emacs")
     (description "This package provides a major mode for Emacs that provides
