@@ -312,6 +312,55 @@ currency and rate.")
 company and employee and extend the user model.")
     (license license:gpl3+)))
 
+(define-public python-trytond-product
+  (package
+    (name "python-trytond-product")
+    (version "5.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_product" version))
+       (sha256
+        (base32 "0k1sw1jfgsm9qhyhv4lzama31db6ccjx5f2a7xw96ypflfl9f1xz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" runtest "-m" "product")))))))
+    (native-inputs
+     `(("python" ,python-minimal-wrapper)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-relatorio" ,python-relatorio)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-sql" ,python-sql)
+       ("python-stdnum" ,python-stdnum)
+       ("python-trytond" ,python-trytond)
+       ("python-trytond-company"
+        ,python-trytond-company)))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Tryton module with products")
+    (description
+     "This package provides a Tryton module that defines two concepts: Product
+Template and Product.")
+    (license license:gpl3+)))
+
 (define-public python-proteus
   (package
     (name "python-proteus")
