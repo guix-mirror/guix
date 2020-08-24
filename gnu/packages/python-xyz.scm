@@ -9535,6 +9535,27 @@ Features:
 @end itemize")
     (license license:expat)))
 
+(define-public python-simpleeval
+  (package
+    (name "python-simpleeval")
+    (version "0.9.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "simpleeval" version))
+       (sha256
+        (base32 "1skvl467kj83rzkhk01i0wm8m5vmh6j5znrfdizn6r18ii45a839"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/danthedeckie/simpleeval")
+    (synopsis "Simple, safe single expression evaluator library")
+    (description
+     "This package provides a quick single file library for easily adding
+evaluatable expressions into python projects.  Say you want to allow a user
+to set an alarm volume, which could depend on the time of day, alarm level,
+how many previous alarms had gone off, and if there is music playing at the
+time.")
+    (license license:expat)))
+
 (define-public python-nbconvert
   (package
     (name "python-nbconvert")
