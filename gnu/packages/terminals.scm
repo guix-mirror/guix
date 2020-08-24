@@ -468,7 +468,7 @@ should be thread-safe.")
 (define-public libvterm
   (package
     (name "libvterm")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
@@ -476,7 +476,7 @@ should be thread-safe.")
                            "libvterm-" version ".tar.gz"))
        (sha256
         (base32
-         "0awfszvhc3cjsrqyx66fdmrc09k0wbm5mz78jpqf0n26d93285z4"))))
+         "1pfkhbbihd2kvaza707vl2nvk7bxaawmb37wf9v6d72mjng38w5w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
