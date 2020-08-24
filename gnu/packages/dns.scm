@@ -312,6 +312,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
+    ;; When updating, check whether isc-dhcp's bundled copy should be as well.
     (version "9.16.6")
     (source (origin
               (method url-fetch)
