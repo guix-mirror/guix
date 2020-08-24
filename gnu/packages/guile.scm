@@ -839,7 +839,10 @@ Guile's foreign function interface.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ,@(if (%current-target-system)
+             `(("guile" ,guile-3.0))   ;for 'guild compile' and 'guile-3.0.pc'
+             '())))
     (inputs
      `(("guile" ,guile-3.0)
        ("lzlib" ,lzlib)))
