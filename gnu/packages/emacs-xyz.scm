@@ -11708,6 +11708,26 @@ from within Emacs.  Restclient runs queries from a plan-text query sheet,
 displays results pretty-printed in XML or JSON with @code{restclient-mode}")
       (license license:public-domain))))
 
+(define-public emacs-jq-mode
+  (package
+    (name "emacs-jq-mode")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ljos/jq-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xk0if5i9cz4w06lx8v1vdm112pn1ybqgfw048sx15yyvfzgril1"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ljos/jq-mode")
+    (synopsis "Major mode for editing jq queries")
+    (description
+     "Jq mode is an Emacs major mode for editing jq-scripts.")
+    (license license:gpl3+)))
+
 (define-public emacs-whitespace-cleanup-mode
   (let ((commit "72427144b054b0238a86e1348c45d986b8830d9d")
         (revision "1"))
