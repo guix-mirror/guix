@@ -413,6 +413,61 @@ Template and Product.")
 most of accounting needs.")
     (license license:gpl3+)))
 
+(define-public python-trytond-stock
+  (package
+    (name "python-trytond-stock")
+    (version "5.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock" version))
+       (sha256
+        (base32 "13m57absscks2advpjz0mmmp6c0c4ksf9aln1brqyd0js38arw76"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" runtest "-m" "stock")))))))
+    (native-inputs
+     `(("python" ,python-minimal-wrapper)
+       ("python-genshi" ,python-genshi)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-relatorio" ,python-relatorio)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-simpleeval" ,python-simpleeval)
+       ("python-sql" ,python-sql)
+       ("python-trytond" ,python-trytond)
+       ("python-trytond-company"
+        ,python-trytond-company)
+       ("python-trytond-currency"
+        ,python-trytond-currency)
+       ("python-trytond-party" ,python-trytond-party)
+       ("python-trytond-product"
+        ,python-trytond-product)))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Tryton module for stock and inventory")
+    (description
+     "This package provides a Tryton module that defines the fundamentals for
+all stock management situations: Locations where products are stored, moves
+between these locations, shipments for product arrivals and departures and
+inventory to control and update stock levels.")
+    (license license:gpl3+)))
+
 (define-public python-proteus
   (package
     (name "python-proteus")
