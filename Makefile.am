@@ -433,6 +433,7 @@ SCM_TESTS =					\
   tests/monads.scm				\
   tests/nar.scm				\
   tests/networking.scm				\
+  tests/offload.scm				\
   tests/opam.scm				\
   tests/openpgp.scm				\
   tests/packages.scm				\

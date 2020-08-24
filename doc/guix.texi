@@ -1043,29 +1043,31 @@ When desired, the build daemon can @dfn{offload} derivation builds to
 other machines running Guix, using the @code{offload} @dfn{build
 hook}@footnote{This feature is available only when
 @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH} is
-present.}.  When that
-feature is enabled, a list of user-specified build machines is read from
-@file{/etc/guix/machines.scm}; every time a build is requested, for
-instance via @code{guix build}, the daemon attempts to offload it to one
-of the machines that satisfy the constraints of the derivation, in
-particular its system type---e.g., @file{x86_64-linux}.  Missing
-prerequisites for the build are copied over SSH to the target machine,
-which then proceeds with the build; upon success the output(s) of the
-build are copied back to the initial machine.
+present.}.  When that feature is enabled, a list of user-specified build
+machines is read from @file{/etc/guix/machines.scm}; every time a build
+is requested, for instance via @code{guix build}, the daemon attempts to
+offload it to one of the machines that satisfy the constraints of the
+derivation, in particular its system types---e.g., @code{x86_64-linux}.
+A single machine can have multiple system types, either because its
+architecture natively supports it, via emulation (@pxref{Transparent
+Emulation with QEMU}), or both.  Missing prerequisites for the build are
+copied over SSH to the target machine, which then proceeds with the
+build; upon success the output(s) of the build are copied back to the
+initial machine.
 
 The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @lisp
 (list (build-machine
         (name "eightysix.example.org")
-        (system "x86_64-linux")
+        (systems (list "x86_64-linux" "i686-linux"))
         (host-key "ssh-ed25519 AAAAC3Nza@dots{}")
         (user "bob")
         (speed 2.))     ;incredibly fast!
 
       (build-machine
         (name "armeight.example.org")
-        (system "aarch64-linux")
+        (systems (list "aarch64-linux"))
         (host-key "ssh-rsa AAAAB3Nza@dots{}")
         (user "alice")
         (private-key
@@ -1075,8 +1077,8 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @noindent
 In the example above we specify a list of two build machines, one for
-the @code{x86_64} architecture and one for the @code{aarch64}
-architecture.
+the @code{x86_64} and @code{i686} architectures and one for the
+@code{aarch64} architecture.
 
 In fact, this file is---not surprisingly!---a Scheme file that is
 evaluated when the @code{offload} hook is started.  Its return value
@@ -1096,8 +1098,9 @@ builds.  The important fields are:
 @item name
 The host name of the remote machine.
 
-@item system
-The system type of the remote machine---e.g., @code{"x86_64-linux"}.
+@item systems
+The system types the remote machine supports---e.g., @code{(list
+"x86_64-linux" "i686-linux")}.
 
 @item user
 The user account to use when connecting to the remote machine over SSH.
@@ -25025,7 +25028,7 @@ Maximum number of backup files to keep.
 Defaults to @samp{3}
 
 @end deftypevr
-
+@node Transparent Emulation with QEMU
 @subsubheading Transparent Emulation with QEMU
 
 @cindex emulation

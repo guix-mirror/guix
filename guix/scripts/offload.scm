@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,14 +67,16 @@
 ;;;
 ;;; Code:
 
-
 (define-record-type* <build-machine>
   build-machine make-build-machine
   build-machine?
   (name            build-machine-name)            ; string
   (port            build-machine-port             ; number
                    (default 22))
-  (system          build-machine-system)          ; string
+  (systems         %build-machine-systems         ; list of strings
+                   (default #f))                  ; drop default after system is removed
+  (system          %build-machine-system          ; deprecated
+                   (default #f))
   (user            build-machine-user)            ; string
   (private-key     build-machine-private-key      ; file name
                    (default (user-openssh-private-key)))
@@ -90,6 +93,19 @@
                    (default 1.0))
   (features        build-machine-features         ; list of strings
                    (default '())))
+
+;;; Deprecated.
+(define (build-machine-system machine)
+  (warning (G_ "The 'system' field is deprecated, \
+please use 'systems' instead.~%"))
+  (%build-machine-system machine))
+
+;;; TODO: Remove after the deprecated 'system' field is removed.
+(define (build-machine-systems machine)
+  (or (%build-machine-systems machine)
+      (list (build-machine-system machine))
+      (leave (G_ "The build-machine object lacks a value for its 'systems'
+field."))))
 
 (define-record-type* <build-requirements>
   build-requirements make-build-requirements
@@ -359,8 +375,8 @@ of free disk space on '~a'~%")
 
 (define (machine-matches? machine requirements)
   "Return #t if MACHINE matches REQUIREMENTS."
-  (and (string=? (build-requirements-system requirements)
-                 (build-machine-system machine))
+  (and (member (build-requirements-system requirements)
+               (build-machine-systems machine))
        (lset<= string=?
                (build-requirements-features requirements)
                (build-machine-features machine))))
