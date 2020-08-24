@@ -255,13 +255,6 @@ Old log files are removed or compressed according to the configuration.")
                     (timestamp))
             (exit 1))
 
-          (define-syntax-rule (with-logging exp ...)
-            (with-output-to-port log
-              (lambda ()
-                (with-error-to-port log
-                  (lambda ()
-                    exp ...)))))
-
           ;; 'guix time-machine' needs X.509 certificates to authenticate the
           ;; Git host.
           (setenv "SSL_CERT_DIR"
@@ -271,29 +264,32 @@ Old log files are removed or compressed according to the configuration.")
           (sigaction SIGALRM alarm-handler)
           (alarm #$(unattended-upgrade-maximum-duration config))
 
-          (with-logging
-           (format #t "~a starting upgrade...~%" (timestamp))
-           (guard (c ((invoke-error? c)
-                      (report-invoke-error c)))
-             (invoke #$(file-append guix "/bin/guix")
-                     "time-machine" "-C" #$channels
-                     "--" "system" "reconfigure" #$config-file)
+          ;; Redirect stdout/stderr to LOG to save the output of 'guix' below.
+          (redirect-port log (current-output-port))
+          (redirect-port log (current-error-port))
 
-             ;; 'guix system delete-generations' fails when there's no
-             ;; matching generation.  Thus, catch 'invoke-error?'.
-             (guard (c ((invoke-error? c)
-                        (report-invoke-error c)))
-               (invoke #$(file-append guix "/bin/guix")
-                       "system" "delete-generations"
-                       #$(string-append (number->string expiration)
-                                        "s")))
+          (format #t "~a starting upgrade...~%" (timestamp))
+          (guard (c ((invoke-error? c)
+                     (report-invoke-error c)))
+            (invoke #$(file-append guix "/bin/guix")
+                    "time-machine" "-C" #$channels
+                    "--" "system" "reconfigure" #$config-file)
 
-             (format #t "~a restarting services...~%" (timestamp))
-             (for-each restart-service '#$services)
+            ;; 'guix system delete-generations' fails when there's no
+            ;; matching generation.  Thus, catch 'invoke-error?'.
+            (guard (c ((invoke-error? c)
+                       (report-invoke-error c)))
+              (invoke #$(file-append guix "/bin/guix")
+                      "system" "delete-generations"
+                      #$(string-append (number->string expiration)
+                                       "s")))
 
-             ;; XXX: If 'mcron' has been restarted, perhaps this isn't
-             ;; reached.
-             (format #t "~a upgrade complete~%" (timestamp)))))))
+            (format #t "~a restarting services...~%" (timestamp))
+            (for-each restart-service '#$services)
+
+            ;; XXX: If 'mcron' has been restarted, perhaps this isn't
+            ;; reached.
+            (format #t "~a upgrade complete~%" (timestamp))))))
 
   (define upgrade
     (program-file "unattended-upgrade" code))
