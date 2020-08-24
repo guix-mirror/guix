@@ -1326,6 +1326,15 @@
                                                       result))
                                               '()))))))
 
+    (define (find-duplicates l)
+      (match l
+        (() '())
+        ((head . tail)
+         (if (member head tail)
+             (cons head (find-duplicates tail))
+             (find-duplicates tail)))))
+
+    (pk (find-duplicates from-cache))
     (and (equal? (delete-duplicates from-cache) from-cache)
          (lset= equal? no-cache from-cache))))
 
