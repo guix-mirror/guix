@@ -11033,13 +11033,13 @@ Pathname.")
 (define-public ruby-jekyll-paginate-v2
   (package
     (name "ruby-jekyll-paginate-v2")
-    (version "2.0.0")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll-paginate-v2" version))
               (sha256
                (base32
-                "154bfpyml6abxww9868hhyfvxasl8qhsc5zy2q30c7dxaj0igdib"))))
+                "1qzlqhpiqz28624fp0ak76hfy7908w6kpx62v7z43aiwjv0yc6q0"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("jekyll" ,jekyll)))
