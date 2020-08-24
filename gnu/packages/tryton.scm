@@ -468,6 +468,54 @@ between these locations, shipments for product arrivals and departures and
 inventory to control and update stock levels.")
     (license license:gpl3+)))
 
+(define-public python-trytond-stock-lot
+  (package
+    (name "python-trytond-stock-lot")
+    (version "5.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_lot" version))
+       (sha256
+        (base32 "0a0kc8dyx2zw244dhq6lm2jdp1kzpllhdhrmx7kkr9cjhp58rqip"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" runtest "-m" "stock_lot")))))))
+    (native-inputs
+     `(("python" ,python)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-relatorio" ,python-relatorio)
+       ("python-sql" ,python-sql)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-trytond" ,python-trytond)
+       ("python-trytond-product"
+        ,python-trytond-product)
+       ("python-trytond-stock" ,python-trytond-stock)))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Tryton module for lot of products")
+    (description
+     "This package provides a Tryton module that defines lot of products.")
+    (license license:gpl3+)))
+
 (define-public python-proteus
   (package
     (name "python-proteus")
