@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -572,18 +572,17 @@ directories.
 (define-public evisum
   (package
     (name "evisum")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://download.enlightenment.org/rel/apps/"
                             "evisum/evisum-" version ".tar.xz"))
         (sha256
-         (base32
-          "1s2d61hjlyh212d9d7rpdlcv90lxsb8br89806wakgnadqygh9gc"))))
+         (base32 "06ws75qfid0xizasw2aqpdhvxl4c31bn66fqa8aq4w0rykzs2r46"))))
     (build-system meson-build-system)
     (arguments
-     '(#:tests? #f))    ; no tests
+     '(#:tests? #f))                    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
