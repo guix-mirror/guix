@@ -215,6 +215,54 @@ and security.")
 addresses.")
     (license license:gpl3+)))
 
+(define-public python-trytond-currency
+  (package
+    (name "python-trytond-currency")
+    (version "5.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_currency" version))
+       (sha256
+        (base32 "1x6ynxpbafjpky5vfir9favijj6v5gl62szshladlx14ng6qgm68"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" runtest "-m" "currency")))))))
+    (native-inputs
+     `(("python" ,python-minimal-wrapper)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-forex-python" ,python-forex-python)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-pycountry" ,python-pycountry)
+       ("python-relatorio" ,python-relatorio)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-sql" ,python-sql)
+       ("python-trytond" ,python-trytond)))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Tryton module with currencies")
+    (description
+     "This package provides a Tryton module that defines the concepts of
+currency and rate.")
+    (license license:gpl3+)))
+
 (define-public python-proteus
   (package
     (name "python-proteus")
