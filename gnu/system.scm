@@ -747,6 +747,18 @@ This is the GNU system.  Welcome.\n")
   "Return the default /etc/hosts file."
   (plain-file "hosts" (local-host-aliases host-name)))
 
+(define (validated-sudoers-file file)
+  "Return a copy of FILE, a sudoers file, after checking that it is
+syntactically correct."
+  (computed-file "sudoers"
+                 (with-imported-modules '((guix build utils))
+                   #~(begin
+                       (use-modules (guix build utils))
+
+                       (invoke #+(file-append sudo "/sbin/visudo")
+                               "--check" "--file" #$file)
+                       (copy-file #$file #$output)))))
+
 (define* (operating-system-etc-service os)
   "Return a <service> that builds containing the static part of the /etc
 directory."
@@ -873,7 +885,9 @@ fi\n")))
        ("timezone" ,(plain-file "timezone" (operating-system-timezone os)))
        ("localtime" ,(file-append tzdata "/share/zoneinfo/"
                                   (operating-system-timezone os)))
-       ,@(if sudoers `(("sudoers" ,sudoers)) '())
+       ,@(if sudoers
+             `(("sudoers" ,(validated-sudoers-file sudoers)))
+             '())
        ,@(if hurd
              `(("login" ,(file-append hurd "/etc/login"))
                ("motd"  ,(file-append hurd "/etc/motd"))
