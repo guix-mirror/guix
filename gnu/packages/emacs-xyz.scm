@@ -11681,9 +11681,9 @@ JSON objects.")
     (license license:gpl3+)))
 
 (define-public emacs-restclient
-  (let ((commit "422ee8d8b077dffe65706a0f027ed700b84746bc")
+  (let ((commit "ac8aad6c6b9e9d918062fa3c89c22c2f4ec48bc3")
         (version "0")
-        (revision "2"))               ;Guix package revision,
+        (revision "3"))               ;Guix package revision,
                                         ;upstream doesn't have official releases
     (package
       (name "emacs-restclient")
@@ -11695,11 +11695,12 @@ JSON objects.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "067nin7vxkdpffxa0q61ybv7szihhvpdinivmci9qkbb86rs9kkz"))
+                  "1a2c7xzy7rsan1zcdskia6m7n6j29xacfkqjlfdhzk6rr1bpzkwk"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-jq-mode" ,emacs-jq-mode)))
       (home-page "https://github.com/pashky/restclient.el")
       (synopsis "Explore and test HTTP REST webservices")
       (description
