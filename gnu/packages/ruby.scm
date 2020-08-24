@@ -9897,13 +9897,13 @@ programs running in the background, in Ruby.")
 (define-public ruby-public-suffix
   (package
     (name "ruby-public-suffix")
-    (version "4.0.1")
+    (version "4.0.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "public_suffix" version))
               (sha256
                (base32
-                "0xnfv2j2bqgdpg2yq9i2rxby0w2sc9h5iyjkpaas2xknwrgmhdb0"))))
+                "0vywld400fzi17cszwrchrzcqys4qm6sshbv73wy5mwcixmrgg7g"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
