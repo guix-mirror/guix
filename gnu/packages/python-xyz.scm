@@ -9498,6 +9498,43 @@ functions to find and load entry points.")
 from elisp.")
     (license license:gpl3)))
 
+(define-public python-forex-python
+  (package
+    (name "python-forex-python")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "forex-python" version))
+       (sha256
+        (base32 "1ma8cl1i2dh8aa99pifnlilyy4d1gd1s07fj0yd17wcbpsh532cj"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests are not included in the PyPI tarball.  Also, the tests in the
+     ;; repository require online data.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-simplejson" ,python-simplejson)))
+    (home-page "https://github.com/MicroPyramid/forex-python")
+    (synopsis "Foreign exchange rates and currency conversion")
+    (description
+     "@code{python-forex-python} can be used to manipulate foreign
+exchange rates and to operate currency conversions.
+
+Features:
+@itemize
+@item List all currency rates.
+@item BitCoin price for all currencies.
+@item Converting amount to BitCoins.
+@item Get historical rates for any day since 1999.
+@item Conversion rate for one currency(ex; USD to INR).
+@item Convert amount from one currency to other.('USD 10$' to INR).
+@item Currency symbols.
+@item Currency names.
+@end itemize")
+    (license license:expat)))
+
 (define-public python-nbconvert
   (package
     (name "python-nbconvert")
