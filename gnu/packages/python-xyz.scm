@@ -4654,6 +4654,17 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python2-pyparsing
   (package-with-python2 python-pyparsing))
 
+(define-public python-pyparsing-2.4.7
+  (package
+    (inherit python-pyparsing)
+    (version "2.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyparsing" version))
+       (sha256
+        (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))))
+
 (define-public python-numpydoc
   (package
     (name "python-numpydoc")
