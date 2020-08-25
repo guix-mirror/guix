@@ -1181,23 +1181,23 @@ extremely large and complex data collections.")
               "https://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
 (define-public hdf5-1.10
-  (package (inherit hdf5-1.8)
+  (package/inherit hdf5-1.8
     (version "1.10.6")
     (source
      (origin
-      (method url-fetch)
-      (uri (list (string-append "https://support.hdfgroup.org/ftp/HDF5/releases/"
-                                "hdf5-" (version-major+minor version)
-                                "/hdf5-" version "/src/hdf5-"
-                                version ".tar.bz2")
-                 (string-append "https://support.hdfgroup.org/ftp/HDF5/"
-                                "current"
-                                (apply string-append
-                                       (take (string-split version #\.) 2))
-                                "/src/hdf5-" version ".tar.bz2")))
-      (sha256
-       (base32 "1gf38x51128hn00744358w27xgzjk0ff4wra4yxh2lk804ck1mh9"))
-      (patches (search-patches "hdf5-config-date.patch"))))))
+       (method url-fetch)
+       (uri (list (string-append "https://support.hdfgroup.org/ftp/HDF5/releases/"
+                                 "hdf5-" (version-major+minor version)
+                                 "/hdf5-" version "/src/hdf5-"
+                                 version ".tar.bz2")
+                  (string-append "https://support.hdfgroup.org/ftp/HDF5/"
+                                 "current"
+                                 (apply string-append
+                                        (take (string-split version #\.) 2))
+                                 "/src/hdf5-" version ".tar.bz2")))
+       (sha256
+        (base32 "1gf38x51128hn00744358w27xgzjk0ff4wra4yxh2lk804ck1mh9"))
+       (patches (search-patches "hdf5-config-date.patch"))))))
 
 (define-public hdf5
   ;; Default version of HDF5.
@@ -1411,7 +1411,7 @@ Swath).")
     (license (license:non-copyleft home-page))))
 
 (define-public hdf5-parallel-openmpi
-  (package (inherit hdf5)
+  (package/inherit hdf5
     (name "hdf5-parallel-openmpi")
     (inputs
      `(("mpi" ,openmpi)
