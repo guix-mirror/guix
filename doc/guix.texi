@@ -25628,7 +25628,7 @@ When true, the daemon performs additional logging for debugging purposes.
 @defvr {Scheme Variable} ganeti-luxid-service-type
 @command{ganeti-luxid} is a daemon used to answer queries related to the
 configuration and the current live state of a Ganeti cluster.  Additionally,
-it is the authorative daemon for the Ganeti job queue.   Jobs can be
+it is the authoritative daemon for the Ganeti job queue.   Jobs can be
 submitted via this daemon and it schedules and starts them.
 
 It takes a @code{ganeti-luxid-configuration} object.
