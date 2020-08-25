@@ -822,6 +822,17 @@ dist_patch_DATA =						\
   %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/bc-fix-cross-compilation.patch		\
+  %D%/packages/patches/bsd-games-2.17-64bit.patch		\
+  %D%/packages/patches/bsd-games-add-configure-config.patch	\
+  %D%/packages/patches/bsd-games-add-wrapper.patch		\
+  %D%/packages/patches/bsd-games-bad-ntohl-cast.patch		\
+  %D%/packages/patches/bsd-games-dont-install-empty-files.patch	\
+  %D%/packages/patches/bsd-games-gamescreen.h.patch		\
+  %D%/packages/patches/bsd-games-getline.patch			\
+  %D%/packages/patches/bsd-games-null-check.patch		\
+  %D%/packages/patches/bsd-games-number.c-and-test.patch	\
+  %D%/packages/patches/bsd-games-prevent-name-collisions.patch	\
+  %D%/packages/patches/bsd-games-stdio.h.patch			\
   %D%/packages/patches/beancount-disable-googleapis-fonts.patch	\
   %D%/packages/patches/beets-werkzeug-compat.patch		\
   %D%/packages/patches/behave-skip-a-couple-of-tests.patch	\

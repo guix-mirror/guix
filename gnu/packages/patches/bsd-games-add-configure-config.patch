@@ -1,0 +1,22 @@
+Remove a few 'setenv's from the definition.
+
+diff -Naur bsd-games-2.17/config.params bsd-games-patch/config.params
+--- bsd-games-2.17/config.params	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/config.params	2020-04-22 20:49:40.809695248 +0700
+@@ -0,0 +1,16 @@
++bsd_games_cfg_do_chown=n
++bsd_games_cfg_non_interactive=y
++
++# Fix some man-pages: cfscores, morse, ppt, rot13, snscore, teachgammon.
++bsd_games_cfg_use_dot_so=syml
++
++# Don't build some games:
++# Countmail require some BSD-package called `from`.
++# DM is a toy to restrict access to bsd-games.
++# Fortune seems to be already packaged (fortune-mod).
++# Wargames isn't convenient as a game launcher.
++bsd_games_cfg_no_build_dirs="countmail dm fortune wargames"
++
++# Those are substitute*'d with GNU miscfiles.
++bsd_games_cfg_hangman_wordsfile=WORD_LIST
++bsd_games_cfg_dictionary_src=WORD_LIST

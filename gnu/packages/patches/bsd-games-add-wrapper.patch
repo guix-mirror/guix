@@ -1,0 +1,251 @@
+As we cannot install outside the Store, and those games do not create the
+needed writable files on their own, we need a wrapper script.
+
+diff -Naur bsd-games-2.17/atc/Makefrag bsd-games-patch/atc/Makefrag
+--- bsd-games-2.17/atc/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/atc/Makefrag	2020-04-23 20:24:04.446176222 +0700
+@@ -47,7 +47,8 @@
+	mv atc/lex.yy.c $@
+
+ atc_install:	atc_all
+-	$(INSTALL_SCORE_GAME) atc/atc $(INSTALL_PREFIX)$(GAMESDIR)/atc
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/atc
++	$(INSTALL_SCORE_GAME) atc/atc $(INSTALL_PREFIX)$(GAMESDIR)/.atc-real
+	$(HIDE_GAME) atc
+	$(INSTALL_SCORE_FILE) $(ATC_SCOREFILE)
+	$(INSTALL_MANUAL) atc/atc.6
+diff -Naur bsd-games-2.17/battlestar/Makefrag bsd-games-patch/battlestar/Makefrag
+--- bsd-games-2.17/battlestar/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/battlestar/Makefrag	2020-04-23 20:24:04.482175771 +0700
+@@ -32,7 +32,8 @@
+ battlestar_all:	battlestar/battlestar battlestar/battlestar.6
+
+ battlestar_install:	battlestar_all
+-	$(INSTALL_SCORE_GAME) battlestar/battlestar $(INSTALL_PREFIX)$(GAMESDIR)/battlestar
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/battlestar
++	$(INSTALL_SCORE_GAME) battlestar/battlestar $(INSTALL_PREFIX)$(GAMESDIR)/.battlestar-real
+	$(HIDE_GAME) battlestar
+	$(INSTALL_MANUAL) battlestar/battlestar.6
+	$(INSTALL_SCORE_FILE) $(BATTLESTAR_SCOREFILE)
+diff -Naur bsd-games-2.17/canfield/canfield/Makefrag bsd-games-patch/canfield/canfield/Makefrag
+--- bsd-games-2.17/canfield/canfield/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/canfield/canfield/Makefrag	2020-04-23 20:24:04.522175270 +0700
+@@ -31,7 +31,8 @@
+ canfield_canfield_all:	canfield/canfield/canfield canfield/canfield/canfield.6
+
+ canfield_canfield_install: canfield_canfield_all
+-	$(INSTALL_SCORE_GAME) canfield/canfield/canfield $(INSTALL_PREFIX)$(GAMESDIR)/canfield
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/canfield
++	$(INSTALL_SCORE_GAME) canfield/canfield/canfield $(INSTALL_PREFIX)$(GAMESDIR)/.canfield-real
+	$(HIDE_GAME) canfield
+	$(INSTALL_MANUAL) canfield/canfield/canfield.6
+	$(INSTALL_SCORE_FILE) $(CANFIELD_SCOREFILE)
+diff -ur bsd-games-2.17.orig/canfield/cfscores/Makefrag bsd-games-2.17/canfield/cfscores/Makefrag
+--- bsd-games-2.17.orig/canfield/cfscores/Makefrag	1970-01-01 07:00:01.000000000 +0700
++++ bsd-games-2.17/canfield/cfscores/Makefrag	2020-08-06 12:20:10.592076477 +0700
+@@ -32,6 +32,7 @@
+ canfield_cfscores_all:	canfield/cfscores/cfscores
+
+ canfield_cfscores_install:	canfield_cfscores_all
+-	$(INSTALL_BINARY) canfield/cfscores/cfscores $(INSTALL_PREFIX)$(GAMESDIR)/cfscores
++	$(INSTALL_BINARY) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/cfscores
++	$(INSTALL_BINARY) canfield/cfscores/cfscores $(INSTALL_PREFIX)$(GAMESDIR)/.cfscores-real
+	$(HIDE_GAME) cfscores
+	$(INSTALL_MANUAL) canfield.6 cfscores.6
+diff -Naur bsd-games-2.17/cribbage/Makefrag bsd-games-patch/cribbage/Makefrag
+--- bsd-games-2.17/cribbage/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/cribbage/Makefrag	2020-04-23 20:24:04.534175120 +0700
+@@ -31,7 +31,8 @@
+ cribbage_all:	cribbage/cribbage cribbage/cribbage.n cribbage/cribbage.6
+
+ cribbage_install:	cribbage_all
+-	$(INSTALL_SCORE_GAME) cribbage/cribbage $(INSTALL_PREFIX)$(GAMESDIR)/cribbage
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/cribbage
++	$(INSTALL_SCORE_GAME) cribbage/cribbage $(INSTALL_PREFIX)$(GAMESDIR)/.cribbage-real
+	$(HIDE_GAME) cribbage
+	$(INSTALL_DATA) cribbage/cribbage.n $(INSTALL_PREFIX)$(CRIBBAGE_INSTRFILE)
+	$(INSTALL_SCORE_FILE) $(CRIBBAGE_SCOREFILE)
+diff -Naur bsd-games-2.17/hack/Makefrag bsd-games-patch/hack/Makefrag
+--- bsd-games-2.17/hack/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/hack/Makefrag	2020-04-23 20:24:04.590174419 +0700
+@@ -53,7 +53,8 @@
+ hack/hack.zap.d hack/rnd.d:	hack/hack.onames.h
+
+ hack_install:	hack_all
+-	$(INSTALL_SCORE_GAME) hack/hack $(INSTALL_PREFIX)$(GAMESDIR)/hack
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/hack
++	$(INSTALL_SCORE_GAME) hack/hack $(INSTALL_PREFIX)$(GAMESDIR)/.hack-real
+	$(HIDE_GAME) hack
+	$(INSTALL_HACK_DIR) $(INSTALL_PREFIX)$(HACK_DIR)
+	set -e; for f in data help hh rumors; do $(INSTALL_DATA) hack/$$f $(INSTALL_PREFIX)$(HACK_DIR)/$$f; done
+diff -Naur bsd-games-2.17/phantasia/Makefrag bsd-games-patch/phantasia/Makefrag
+--- bsd-games-2.17/phantasia/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/phantasia/Makefrag	2020-04-23 20:24:04.650173667 +0700
+@@ -38,7 +38,8 @@
+	touch phantasia/scorefiles.stamp
+
+ phantasia_install:	phantasia_all
+-	$(INSTALL_SCORE_GAME) phantasia/phantasia $(INSTALL_PREFIX)$(GAMESDIR)/phantasia
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/phantasia
++	$(INSTALL_SCORE_GAME) phantasia/phantasia $(INSTALL_PREFIX)$(GAMESDIR)/.phantasia-real
+	$(HIDE_GAME) phantasia
+	(set -e; for f in $(phantasia_VFILES1); do \
+	    cp phantasia/$$f $(INSTALL_PREFIX)$(PHANTASIA_DIR)/$$f; \
+diff -Naur bsd-games-2.17/robots/Makefrag bsd-games-patch/robots/Makefrag
+--- bsd-games-2.17/robots/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/robots/Makefrag	2020-04-23 20:24:04.702173016 +0700
+@@ -32,7 +32,8 @@
+ robots_all:	robots/robots robots/robots.6
+
+ robots_install:	robots_all
+-	$(INSTALL_SCORE_GAME) robots/robots $(INSTALL_PREFIX)$(GAMESDIR)/robots
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/robots
++	$(INSTALL_SCORE_GAME) robots/robots $(INSTALL_PREFIX)$(GAMESDIR)/.robots-real
+	$(HIDE_GAME) robots
+	$(INSTALL_SCORE_FILE) $(ROBOTS_SCOREFILE)
+	$(INSTALL_MANUAL) robots/robots.6
+diff -Naur bsd-games-2.17/sail/Makefrag bsd-games-patch/sail/Makefrag
+--- bsd-games-2.17/sail/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/sail/Makefrag	2020-04-23 20:24:04.710172917 +0700
+@@ -31,7 +31,8 @@
+ sail_all:	sail/sail sail/sail.6
+
+ sail_install:	sail_all
+-	$(INSTALL_SCORE_GAME) sail/sail $(INSTALL_PREFIX)$(GAMESDIR)/sail
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/sail
++	$(INSTALL_SCORE_GAME) sail/sail $(INSTALL_PREFIX)$(GAMESDIR)/.sail-real
+	$(HIDE_GAME) sail
+	$(INSTALL_SCORE_FILE) $(SAIL_SCOREFILE)
+	$(INSTALL_SAIL_DIR) $(INSTALL_PREFIX)$(SAIL_DIR)
+diff -Naur bsd-games-2.17/snake/snake/Makefrag bsd-games-patch/snake/snake/Makefrag
+--- bsd-games-2.17/snake/snake/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/snake/snake/Makefrag	2020-04-23 20:24:04.722172766 +0700
+@@ -31,7 +31,8 @@
+ snake_snake_all:	snake/snake/snake snake/snake/snake.6
+
+ snake_snake_install:	snake_snake_all
+-	$(INSTALL_SCORE_GAME) snake/snake/snake $(INSTALL_PREFIX)$(GAMESDIR)/snake
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/snake
++	$(INSTALL_SCORE_GAME) snake/snake/snake $(INSTALL_PREFIX)$(GAMESDIR)/.snake-real
+	$(HIDE_GAME) snake
+	$(INSTALL_SCORE_FILE) $(SNAKE_SCOREFILE)
+	$(INSTALL_SCORE_FILE) $(SNAKE_RAWSCOREFILE)
+--- bsd-games-2.17.orig/snake/snscore/Makefrag	1970-01-01 07:00:01.000000000 +0700
++++ bsd-games-2.17/snake/snscore/Makefrag	2020-08-06 12:33:09.636089394 +0700
+@@ -32,6 +32,7 @@
+ snake_snscore_all:	snake/snscore/snscore
+
+ snake_snscore_install:	snake_snscore_all
+-	$(INSTALL_BINARY) snake/snscore/snscore $(INSTALL_PREFIX)$(GAMESDIR)/snscore
++	$(INSTALL_BINARY) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/snscore
++	$(INSTALL_BINARY) snake/snscore/snscore $(INSTALL_PREFIX)$(GAMESDIR)/.snscore-real
+	$(HIDE_GAME) snscore
+	$(INSTALL_MANUAL) snake.6 snscore.6
+diff -Naur bsd-games-2.17/tetris/Makefrag bsd-games-patch/tetris/Makefrag
+--- bsd-games-2.17/tetris/Makefrag	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/tetris/Makefrag	2020-04-23 20:24:04.734172616 +0700
+@@ -32,7 +32,8 @@
+ tetris_all:	tetris/tetris tetris/tetris.6
+
+ tetris_install:	tetris_all
+-	$(INSTALL_SCORE_GAME) tetris/tetris $(INSTALL_PREFIX)$(GAMESDIR)/tetris-bsd
++	$(INSTALL_SCORE_GAME) wrapper $(INSTALL_PREFIX)$(GAMESDIR)/tetris-bsd
++	$(INSTALL_SCORE_GAME) tetris/tetris $(INSTALL_PREFIX)$(GAMESDIR)/.tetris-bsd-real
+	$(HIDE_GAME) tetris-bsd
+	$(INSTALL_SCORE_FILE) $(TETRIS_SCOREFILE)
+	ln -f tetris/tetris.6 tetris/tetris-bsd.6
+diff -Naur bsd-games-2.17/wrapper bsd-games-patch/wrapper
+--- bsd-games-2.17/wrapper	1970-01-01 07:00:00.000000000 +0700
++++ bsd-games-patch/wrapper	2020-04-23 20:24:37.153766719 +0700
+@@ -0,0 +1,91 @@
++#!/bin/sh
++# This file works around limitations of our read-only Store.
++
++set -e
++
++check_empty_files () {
++    # those start empty
++    for f in ${@}
++    do
++        if [[ ! -f ${f} ]]
++        then
++            touch      ${f}
++            echo "$(pwd)/${f} RESTORED"
++        fi
++    done
++}
++check_data_files () {
++    # those start with some initial data
++    for f in ${@}
++    do
++        if [[ ! -f ${f} ]]
++        then
++            cp STATIC_DATA/${game}/${f} ${f}
++            chmod u+w ${f}
++            echo "$(pwd)/${f} RESTORED"
++        fi
++    done
++}
++visit_dir () {
++    mkdir -p ${1}
++    cd ${1}
++}
++exit_with_variable_error () {
++    variables="${1}${2:+ or ${2}}"
++    echo "Guix: Please set up the ${variables} variable."
++    echo "Examples:"
++    echo "   export ${1}=/var/multiplayer"
++    echo "   export ${2:-${1}}=~/.local/share/bsd-games"
++    echo "You can place this in ~/.bashrc or a similar file for Your shell."
++    echo "For multiplayer this directory should be writable for all players."
++    exit 1
++}
++
++game=$(basename $0)
++if [[ ${game} == "hack" ]]
++then
++    if   [[ -n ${HACKDIR} ]];       then visit_dir "${HACKDIR}"
++    elif [[ -n ${BSD_GAMES_DIR} ]]; then visit_dir "${BSD_GAMES_DIR}/hack"
++    else exit_with_variable_error "HACKDIR" "BSD_GAMES_DIR"
++    fi
++else
++    if [[ -n ${BSD_GAMES_DIR} ]]; then visit_dir "${BSD_GAMES_DIR}"
++    else exit_with_variable_error "BSD_GAMES_DIR"
++    fi
++fi
++
++case ${game} in
++    ### Games with score-files
++    atc)
++        check_empty_files "atc_score";;
++    battlestar)
++        check_empty_files "battlestar.log";;
++    canfield)
++        check_empty_files "cfscores";;
++    cribbage)
++        check_empty_files "criblog";;
++    robots)
++        check_empty_files "robots_roll";;
++    snake)
++        check_empty_files "snakerawscores" "snake.log";;
++    tetris)
++        check_empty_files "tetris-bsd.scores";;
++    ### Games with saved state
++    hack)
++        check_empty_files "record" "perm"
++        check_data_files "data" "help" "hh" "rumors"
++        visit_dir "save"
++        cd ../../;;
++    phantasia)
++        visit_dir "phantasia"
++        check_empty_files "characs" "gold" "lastdead"\
++                          "mess" "motd" "scoreboard" "void"
++        check_data_files "monsters"
++        cd ../;;
++    sail)
++        visit_dir "sail"
++        check_empty_files "log" "syncfile"
++        cd ../;;
++esac
++
++exec .${game}-real ${@}
