@@ -10479,16 +10479,16 @@ advanced image management tool")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "0.0.12")
+    (version "0.90.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://source.puri.sm/Librem5/libhandy")
-             (commit (string-append "v" version))))
+             (url "https://gitlab.gnome.org/GNOME/libhandy")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09wlknarzsbk9hr5ws6s7x5kibkhx9ayrbhshfqib4zkhq2f76hw"))))
+        (base32 "1zpfbn2x27lp69w819afxf3ylkgfz9k44srfgmkbb2c33r14ajwy"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
