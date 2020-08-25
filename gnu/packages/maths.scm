@@ -1904,8 +1904,6 @@ script files.")
 (define-public octave
   (package (inherit octave-cli)
     (name "octave")
-    (source (origin
-              (inherit (package-source octave-cli))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
