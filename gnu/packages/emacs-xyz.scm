@@ -15428,7 +15428,7 @@ powerful Org contents.")
 (define-public emacs-org-re-reveal
   (package
     (name "emacs-org-re-reveal")
-    (version "3.1.0")
+    (version "3.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -15437,7 +15437,7 @@ powerful Org contents.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cmvqr97vx22lw510z0k2nsy5xfgnz2lvchmx5sdxrqz54pz1wfq"))))
+                "0an799lxy1j48zlg00982d1rhg46ls4fz4v7r7qdh6228icq5hij"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-htmlize" ,emacs-htmlize)
