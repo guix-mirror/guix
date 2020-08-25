@@ -12474,6 +12474,28 @@ needs to be refreshed, the code handles it automatically and stores the new
 value of the access token.")
     (license license:gpl3+)))
 
+(define-public emacs-auth-source-xoauth2
+  (package
+    (name "emacs-auth-source-xoauth2")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ccrusius/auth-source-xoauth2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0nl859csl8xcd6ybpjj15ph8l8fxwkwf45kbylss68alkyf1rl3v"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ccrusius/auth-source-xoauth2")
+    (synopsis "XOAuth2 authentication capabilities for Emacs auth-source")
+    (description
+     "This package adds XOAuth2 authentication capabilities to Emacs
+auth-source.  This integration requires some preliminary work on the users’
+part, which includes creating tokens.")
+    (license license:asl2.0)))
+
 (define-public emacs-circe
   (package
     (name "emacs-circe")
