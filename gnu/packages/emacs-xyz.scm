@@ -7378,13 +7378,14 @@ ongoing operations.")
        (sha256
         (base32 "0hqp8r24wvzrkl630wbm0lynrcrnawv2yn2a3xgwqwwhwgva35rn"))))
     (build-system emacs-build-system)
-    (propagated-inputs `(("emacs-company" ,emacs-company)))
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)))
     (home-page "https://github.com/ljos/sparql-mode")
     (synopsis "SPARQL mode for Emacs")
-    (description "This package provides a major mode for Emacs that provides
-syntax highlighting for SPARQL.  It also provides a way to execute queries
-against a SPARQL HTTP endpoint, such as is provided by Fuseki.  It is also
-possible to query other endpoints like DBPedia.")
+    (description
+     "This package is a major mode for Emacs that provides syntax highlighting
+for SPARQL.  It can also execute queries against a SPARQL HTTP endpoint, such
+as Fuseki or DBPedia.")
     (license license:gpl3+)))
 
 (define-public emacs-better-defaults
