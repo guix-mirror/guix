@@ -2003,6 +2003,20 @@ with python-requests.")
 (define-public python2-requests-toolbelt
   (package-with-python2 python-requests-toolbelt))
 
+(define-public python-requests-toolbelt-0.9.1
+  (package
+    (inherit python-requests-toolbelt)
+    (version "0.9.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "requests-toolbelt" version))
+             (sha256
+              (base32
+               "1h3gm88dcjbd7gm229a7x5qkkhnsqsjz0m0l2xyavm2ab3a8k04n"))))
+    (arguments
+     `(;; FIXME: Some tests require network access.
+       #:tests? #f))))
+
 (define-public python-oauthlib
   (package
     (name "python-oauthlib")
