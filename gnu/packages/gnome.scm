@@ -155,6 +155,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -11334,4 +11335,69 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
 environment (IDE) for writing GNOME-based software.  It features fuzzy search,
 auto-completion, a mini code map, documentation browsing, Git integration, an
 integrated profiler via Sysprof, debugging support, and more.")
+    (license license:gpl3+)))
+
+(define-public komikku
+  (package
+    (name "komikku")
+    (version "0.19.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/valos/Komikku/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16d7k500nd9klnjqqcgk3glhv2sy78yndkz3n0x7lynvblsy45kk"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             (substitute* "komikku/utils.py"
+               (("from komikku\\.servers import get_servers_list")
+                ;; code following that line should migrate old databases
+                ;; but the line itself results in an import error
+                "return data_dir_path"))))
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((prog (string-append (assoc-ref outputs "out")
+                                       "/bin/komikku")))
+              (wrap-program prog
+                `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+              #t))))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libhandy" ,libhandy)
+       ("libnotify" ,libnotify)
+       ("libsecret" ,libsecret)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-cloudscraper" ,python-cloudscraper)
+       ("python-dateparser" ,python-dateparser)
+       ("python-keyring" ,python-keyring)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-pillow" ,python-pillow)
+       ("python-pure-protobuf" ,python-pure-protobuf)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-unidecode" ,python-unidecode)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.com/valos/Komikku")
+    (synopsis "Manga reader for GNOME")
+    (description "Komikku is an online/offline manga reader for GNOME,
+developed with the aim of being used with the Librem 5 phone.")
     (license license:gpl3+)))
