@@ -40,6 +40,7 @@
    (eval . (put 'with-writable-file 'scheme-indent-function 1))
 
    (eval . (put 'package 'scheme-indent-function 0))
+   (eval . (put 'package/inherit 'scheme-indent-function 1))
    (eval . (put 'origin 'scheme-indent-function 0))
    (eval . (put 'build-system 'scheme-indent-function 0))
    (eval . (put 'bag 'scheme-indent-function 0))
