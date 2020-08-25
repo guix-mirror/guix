@@ -7799,7 +7799,7 @@ GameController.")
 (define-public quadrapassel
   (package
     (name "quadrapassel")
-    (version "3.36.02")
+    (version "3.36.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/quadrapassel/"
@@ -7807,7 +7807,7 @@ GameController.")
                                   "quadrapassel-" version ".tar.xz"))
               (sha256
                (base32
-                "0c80pzipxricyh4wydffsc94wj6ymnanqr9bg6wdx51hz1mmmilb"))))
+                "04abxmimh5npw8rhz1sfi6wxilgc6i1wka9mlnfwp8v1p1cb00cv"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
