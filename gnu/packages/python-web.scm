@@ -4666,3 +4666,39 @@ using a pure Python implementation.")
      "This package provices a simple implementation of Encrypted Content
 Encoding for HTTP.")
     (license license:expat)))
+
+(define-public python-cloudscraper
+  (package
+    (name "python-cloudscraper")
+    (version "1.2.46")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cloudscraper" version))
+       (sha256
+        (base32
+         "1br4p648yassywsd7whz1c7s10rwdysnd7wdqfjq9bksqfxrac3r"))
+       (modules '((guix build utils)))
+       (snippet
+        '(with-directory-excursion "cloudscraper"
+           (for-each delete-file
+                     '("captcha/2captcha.py"
+                       "captcha/9kw.py"
+                       "captcha/anticaptcha.py"
+                       "captcha/deathbycaptcha.py"
+                       "interpreters/js2py.py"
+                       "interpreters/v8.py"))
+           #t))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-requests-toolbelt" ,python-requests-toolbelt-0.9.1)
+       ("python-pyparsing" ,python-pyparsing-2.4.7)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/venomous/cloudscraper")
+    (synopsis "Cloudflare anti-bot bypass")
+    (description
+     "This module acts as a webbrowser solving Cloudflare's Javascript
+challenges.")
+    (license license:expat)))
