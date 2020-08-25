@@ -1053,7 +1053,7 @@ incompatible with HDF5.")
     (synopsis
      "HDF4 without netCDF API, can be combined with the regular netCDF library")))
 
-(define-public hdf5
+(define-public hdf5-1.8
   (package
     (name "hdf5")
     (version "1.8.21")
@@ -1181,7 +1181,7 @@ extremely large and complex data collections.")
               "https://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
 (define-public hdf5-1.10
-  (package (inherit hdf5)
+  (package (inherit hdf5-1.8)
     (version "1.10.6")
     (source
      (origin
@@ -1198,6 +1198,10 @@ extremely large and complex data collections.")
       (sha256
        (base32 "1gf38x51128hn00744358w27xgzjk0ff4wra4yxh2lk804ck1mh9"))
       (patches (search-patches "hdf5-config-date.patch"))))))
+
+(define-public hdf5
+  ;; Default version of HDF5.
+  hdf5-1.8)
 
 (define-public hdf-java
   (package
