@@ -766,7 +766,7 @@ engineers, musicians, soundtrack editors and composers.")
           ;; SSE instructions are available on Intel systems only.
           ,@(if (any (cute string-prefix? <> (or (%current-target-system)
                                                  (%current-system)))
-                    '("x64_64" "i686"))
+                    '("x86_64" "i686"))
               '()
               '("--enable-sse=no"))
           ;; portmidi, libid3tag and libmad provide no .pc files, so
