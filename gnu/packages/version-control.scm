@@ -2587,7 +2587,25 @@ interrupted, published, and collaborated on while in progress.")
                 "1nf40rbdz901vsahg5cm09pznpina6wimmxl0lmh8pn0mi51yzvc"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "github.com/git-lfs/git-lfs"))
+     `(#:import-path "github.com/git-lfs/git-lfs"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-man-pages
+           (lambda _
+             (with-directory-excursion "src/github.com/git-lfs/git-lfs"
+               (invoke "make" "man"))
+             #t))
+         (add-after 'install 'install-man-pages
+           (lambda _
+             (with-directory-excursion "src/github.com/git-lfs/git-lfs/man"
+               (let ((out (assoc-ref %outputs "out")))
+                 (for-each
+                   (lambda (manpage)
+                     (install-file manpage (string-append out "/share/man/man1")))
+                   (find-files "." "^git-lfs.*\\.1$"))))
+             #t)))))
+    ;; make `ronn` available during build for man page generation
+    (native-inputs `(("ronn-ng" ,ronn-ng)))
     (home-page "https://git-lfs.github.com/")
     (synopsis "Git extension for versioning large files")
     (description
