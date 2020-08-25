@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -54,7 +54,7 @@
              #t)))
        ,@(if (any (cute string-prefix? <> (or (%current-target-system)
                                               (%current-system)))
-                 '("x64_64" "i686"))
+                 '("x86_64" "i686"))
            ;; Transparent huge pages are only enabled by default on Intel processors
            '()
            '(#:configure-flags (list "--disable-thp")))))
