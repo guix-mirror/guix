@@ -50,7 +50,6 @@
                 #:select (coreutils glibc glibc-utf8-locales))
   #:use-module (gnu packages package-management)
   #:use-module ((gnu packages gnupg) #:select (guile-gcrypt))
-  #:use-module ((gnu packages guile) #:select (guile-zlib))
   #:use-module (gnu packages linux)
   #:use-module (gnu packages terminals)
   #:use-module ((gnu build file-systems)
@@ -837,38 +836,36 @@ the message of the day, among other things."
 to use as the tty.  This is primarily useful for headless systems."
   (with-imported-modules (source-module-closure
                           '((gnu build linux-boot))) ;for 'find-long-options'
-    (with-extensions (list guile-zlib)
-      #~(begin
-          ;; console=device,options
-          ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
-          ;; options: BBBBPNF. P n|o|e, N number of bits,
-          ;; F flow control (r RTS)
-          (let* ((not-comma (char-set-complement (char-set #\,)))
-                 (command (linux-command-line))
-                 (agetty-specs (find-long-options "agetty.tty" command))
-                 (console-specs
-                  (filter (lambda (spec)
-                            (and (string-prefix? "tty" spec)
-                                 (not (or
-                                       (string-prefix? "tty0" spec)
-                                       (string-prefix? "tty1" spec)
-                                       (string-prefix? "tty2" spec)
-                                       (string-prefix? "tty3" spec)
-                                       (string-prefix? "tty4" spec)
-                                       (string-prefix? "tty5" spec)
-                                       (string-prefix? "tty6" spec)
-                                       (string-prefix? "tty7" spec)
-                                       (string-prefix? "tty8" spec)
-                                       (string-prefix? "tty9" spec)))))
-                          (find-long-options "console" command)))
-                 (specs (append agetty-specs console-specs)))
-            (match specs
-              (() #f)
-              ((spec _ ...)
-               ;; Extract device name from first spec.
-               (match (string-tokenize spec not-comma)
-                 ((device-name _ ...)
-                  device-name)))))))))
+    #~(begin
+        ;; console=device,options
+        ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
+        ;; options: BBBBPNF. P n|o|e, N number of bits,
+        ;; F flow control (r RTS)
+        (let* ((not-comma (char-set-complement (char-set #\,)))
+               (command (linux-command-line))
+               (agetty-specs (find-long-options "agetty.tty" command))
+               (console-specs (filter (lambda (spec)
+                                        (and (string-prefix? "tty" spec)
+                                             (not (or
+                                                   (string-prefix? "tty0" spec)
+                                                   (string-prefix? "tty1" spec)
+                                                   (string-prefix? "tty2" spec)
+                                                   (string-prefix? "tty3" spec)
+                                                   (string-prefix? "tty4" spec)
+                                                   (string-prefix? "tty5" spec)
+                                                   (string-prefix? "tty6" spec)
+                                                   (string-prefix? "tty7" spec)
+                                                   (string-prefix? "tty8" spec)
+                                                   (string-prefix? "tty9" spec)))))
+                                      (find-long-options "console" command)))
+               (specs (append agetty-specs console-specs)))
+          (match specs
+            (() #f)
+            ((spec _ ...)
+             ;; Extract device name from first spec.
+             (match (string-tokenize spec not-comma)
+               ((device-name _ ...)
+                device-name))))))))
 
 (define agetty-shepherd-service
   (match-lambda
@@ -893,124 +890,122 @@ to use as the tty.  This is primarily useful for headless systems."
          (start
           (with-imported-modules  (source-module-closure
                                    '((gnu build linux-boot)))
-            (with-extensions (list guile-zlib)
-              #~(lambda args
-                  (let ((defaulted-tty #$(or tty (default-serial-port))))
-                    (apply
-                     (if defaulted-tty
-                         (make-forkexec-constructor
-                          (list #$(file-append util-linux "/sbin/agetty")
-                                #$@extra-options
-                                #$@(if eight-bits?
-                                       #~("--8bits")
-                                       #~())
-                                #$@(if no-reset?
-                                       #~("--noreset")
-                                       #~())
-                                #$@(if remote?
-                                       #~("--remote")
-                                       #~())
-                                #$@(if flow-control?
-                                       #~("--flow-control")
-                                       #~())
-                                #$@(if host
-                                       #~("--host" #$host)
-                                       #~())
-                                #$@(if no-issue?
-                                       #~("--noissue")
-                                       #~())
-                                #$@(if init-string
-                                       #~("--init-string" #$init-string)
-                                       #~())
-                                #$@(if no-clear?
-                                       #~("--noclear")
-                                       #~())
-;;; FIXME This doesn't work as expected. According to agetty(8), if this
-;;; option is not passed, then the default is 'auto'. However, in my tests,
-;;; when that option is selected, agetty never presents the login prompt, and
-;;; the term-ttyS0 service respawns every few seconds.
-                                #$@(if local-line
-                                       #~(#$(match local-line
-                                              ('auto "--local-line=auto")
-                                              ('always "--local-line=always")
-                                              ('never "-local-line=never")))
-                                       #~())
-                                #$@(if tty
-                                       #~()
-                                       #~("--keep-baud"))
-                                #$@(if extract-baud?
-                                       #~("--extract-baud")
-                                       #~())
-                                #$@(if skip-login?
-                                       #~("--skip-login")
-                                       #~())
-                                #$@(if no-newline?
-                                       #~("--nonewline")
-                                       #~())
-                                #$@(if login-options
-                                       #~("--login-options" #$login-options)
-                                       #~())
-                                #$@(if chroot
-                                       #~("--chroot" #$chroot)
-                                       #~())
-                                #$@(if hangup?
-                                       #~("--hangup")
-                                       #~())
-                                #$@(if keep-baud?
-                                       #~("--keep-baud")
-                                       #~())
-                                #$@(if timeout
-                                       #~("--timeout"
-                                          #$(number->string timeout))
-                                       #~())
-                                #$@(if detect-case?
-                                       #~("--detect-case")
-                                       #~())
-                                #$@(if wait-cr?
-                                       #~("--wait-cr")
-                                       #~())
-                                #$@(if no-hints?
-                                       #~("--nohints?")
-                                       #~())
-                                #$@(if no-hostname?
-                                       #~("--nohostname")
-                                       #~())
-                                #$@(if long-hostname?
-                                       #~("--long-hostname")
-                                       #~())
-                                #$@(if erase-characters
-                                       #~("--erase-chars" #$erase-characters)
-                                       #~())
-                                #$@(if kill-characters
-                                       #~("--kill-chars" #$kill-characters)
-                                       #~())
-                                #$@(if chdir
-                                       #~("--chdir" #$chdir)
-                                       #~())
-                                #$@(if delay
-                                       #~("--delay" #$(number->string delay))
-                                       #~())
-                                #$@(if nice
-                                       #~("--nice" #$(number->string nice))
-                                       #~())
-                                #$@(if auto-login
-                                       (list "--autologin" auto-login)
-                                       '())
-                                #$@(if login-program
-                                       #~("--login-program" #$login-program)
-                                       #~())
-                                #$@(if login-pause?
-                                       #~("--login-pause")
-                                       #~())
-                                defaulted-tty
-                                #$@(if baud-rate
-                                       #~(#$baud-rate)
-                                       #~())
-                                #$@(if term
-                                       #~(#$term)
-                                       #~())))
-                         (const #f))                 ; never start.
-                     args))))))
+            #~(lambda args
+                (let ((defaulted-tty #$(or tty (default-serial-port))))
+                  (apply
+                   (if defaulted-tty
+                       (make-forkexec-constructor
+                        (list #$(file-append util-linux "/sbin/agetty")
+                              #$@extra-options
+                              #$@(if eight-bits?
+                                     #~("--8bits")
+                                     #~())
+                              #$@(if no-reset?
+                                     #~("--noreset")
+                                     #~())
+                              #$@(if remote?
+                                     #~("--remote")
+                                     #~())
+                              #$@(if flow-control?
+                                     #~("--flow-control")
+                                     #~())
+                              #$@(if host
+                                     #~("--host" #$host)
+                                     #~())
+                              #$@(if no-issue?
+                                     #~("--noissue")
+                                     #~())
+                              #$@(if init-string
+                                     #~("--init-string" #$init-string)
+                                     #~())
+                              #$@(if no-clear?
+                                     #~("--noclear")
+                                     #~())
+;;; FIXME This doesn't work as expected. According to agetty(8), if this option
+;;; is not passed, then the default is 'auto'. However, in my tests, when that
+;;; option is selected, agetty never presents the login prompt, and the
+;;; term-ttyS0 service respawns every few seconds.
+                              #$@(if local-line
+                                     #~(#$(match local-line
+                                            ('auto "--local-line=auto")
+                                            ('always "--local-line=always")
+                                            ('never "-local-line=never")))
+                                     #~())
+                              #$@(if tty
+                                     #~()
+                                     #~("--keep-baud"))
+                              #$@(if extract-baud?
+                                     #~("--extract-baud")
+                                     #~())
+                              #$@(if skip-login?
+                                     #~("--skip-login")
+                                     #~())
+                              #$@(if no-newline?
+                                     #~("--nonewline")
+                                     #~())
+                              #$@(if login-options
+                                     #~("--login-options" #$login-options)
+                                     #~())
+                              #$@(if chroot
+                                     #~("--chroot" #$chroot)
+                                     #~())
+                              #$@(if hangup?
+                                     #~("--hangup")
+                                     #~())
+                              #$@(if keep-baud?
+                                     #~("--keep-baud")
+                                     #~())
+                              #$@(if timeout
+                                     #~("--timeout" #$(number->string timeout))
+                                     #~())
+                              #$@(if detect-case?
+                                     #~("--detect-case")
+                                     #~())
+                              #$@(if wait-cr?
+                                     #~("--wait-cr")
+                                     #~())
+                              #$@(if no-hints?
+                                     #~("--nohints?")
+                                     #~())
+                              #$@(if no-hostname?
+                                     #~("--nohostname")
+                                     #~())
+                              #$@(if long-hostname?
+                                     #~("--long-hostname")
+                                     #~())
+                              #$@(if erase-characters
+                                     #~("--erase-chars" #$erase-characters)
+                                     #~())
+                              #$@(if kill-characters
+                                     #~("--kill-chars" #$kill-characters)
+                                     #~())
+                              #$@(if chdir
+                                     #~("--chdir" #$chdir)
+                                     #~())
+                              #$@(if delay
+                                     #~("--delay" #$(number->string delay))
+                                     #~())
+                              #$@(if nice
+                                     #~("--nice" #$(number->string nice))
+                                     #~())
+                              #$@(if auto-login
+                                     (list "--autologin" auto-login)
+                                     '())
+                              #$@(if login-program
+                                     #~("--login-program" #$login-program)
+                                     #~())
+                              #$@(if login-pause?
+                                     #~("--login-pause")
+                                     #~())
+                              defaulted-tty
+                              #$@(if baud-rate
+                                     #~(#$baud-rate)
+                                     #~())
+                              #$@(if term
+                                     #~(#$term)
+                                     #~())))
+                       (const #f))                 ; never start.
+                   args)))))
          (stop #~(make-kill-destructor)))))))
 
 (define agetty-service-type
@@ -1944,73 +1939,70 @@ item of @var{packages}."
          (start
           (with-imported-modules (source-module-closure
                                   '((gnu build linux-boot)))
-            (with-extensions (list guile-zlib)
-              #~(lambda ()
-                  (define udevd
-                    ;; 'udevd' from eudev.
-                    #$(file-append udev "/sbin/udevd"))
+            #~(lambda ()
+                (define udevd
+                  ;; 'udevd' from eudev.
+                  #$(file-append udev "/sbin/udevd"))
 
-                  (define (wait-for-udevd)
-                    ;; Wait until someone's listening on udevd's control
-                    ;; socket.
-                    (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
-                      (let try ()
-                        (catch 'system-error
-                          (lambda ()
-                            (connect sock PF_UNIX "/run/udev/control")
-                            (close-port sock))
-                          (lambda args
-                            (format #t "waiting for udevd...~%")
-                            (usleep 500000)
-                            (try))))))
+                (define (wait-for-udevd)
+                  ;; Wait until someone's listening on udevd's control
+                  ;; socket.
+                  (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
+                    (let try ()
+                      (catch 'system-error
+                        (lambda ()
+                          (connect sock PF_UNIX "/run/udev/control")
+                          (close-port sock))
+                        (lambda args
+                          (format #t "waiting for udevd...~%")
+                          (usleep 500000)
+                          (try))))))
 
-                  ;; Allow udev to find the modules.
-                  (setenv "LINUX_MODULE_DIRECTORY"
-                          "/run/booted-system/kernel/lib/modules")
+                ;; Allow udev to find the modules.
+                (setenv "LINUX_MODULE_DIRECTORY"
+                        "/run/booted-system/kernel/lib/modules")
 
-                  (let* ((kernel-release
-                          (utsname:release (uname)))
-                         (linux-module-directory
-                          (getenv "LINUX_MODULE_DIRECTORY"))
-                         (directory
-                          (string-append linux-module-directory "/"
-                                         kernel-release))
-                         (old-umask (umask #o022)))
-                    ;; If we're in a container, DIRECTORY might not exist,
-                    ;; for instance because the host runs a different
-                    ;; kernel.  In that case, skip it; we'll just miss a few
-                    ;; nodes like /dev/fuse.
-                    (when (file-exists? directory)
-                      (make-static-device-nodes directory))
-                    (umask old-umask))
+                (let* ((kernel-release
+                        (utsname:release (uname)))
+                       (linux-module-directory
+                        (getenv "LINUX_MODULE_DIRECTORY"))
+                       (directory
+                        (string-append linux-module-directory "/"
+                                       kernel-release))
+                       (old-umask (umask #o022)))
+                  ;; If we're in a container, DIRECTORY might not exist,
+                  ;; for instance because the host runs a different
+                  ;; kernel.  In that case, skip it; we'll just miss a few
+                  ;; nodes like /dev/fuse.
+                  (when (file-exists? directory)
+                    (make-static-device-nodes directory))
+                  (umask old-umask))
 
-                  (let ((pid
-                         (fork+exec-command
-                          (list udevd)
-                          #:environment-variables
-                          (cons*
-                           ;; The first one is for udev, the second one for
-                           ;; eudev.
-                           (string-append "UDEV_CONFIG_FILE=" #$udev.conf)
-                           (string-append "EUDEV_RULES_DIRECTORY="
-                                          #$(file-append
-                                             rules "/lib/udev/rules.d"))
-                           (string-append "LINUX_MODULE_DIRECTORY="
-                                          (getenv "LINUX_MODULE_DIRECTORY"))
-                           (default-environment-variables)))))
-                    ;; Wait until udevd is up and running.  This appears to
-                    ;; be needed so that the events triggered below are
-                    ;; actually handled.
-                    (wait-for-udevd)
+                (let ((pid (fork+exec-command (list udevd)
+                            #:environment-variables
+                            (cons*
+                             ;; The first one is for udev, the second one for
+                             ;; eudev.
+                             (string-append "UDEV_CONFIG_FILE=" #$udev.conf)
+                             (string-append "EUDEV_RULES_DIRECTORY="
+                                            #$(file-append
+                                               rules "/lib/udev/rules.d"))
+                             (string-append "LINUX_MODULE_DIRECTORY="
+                                            (getenv "LINUX_MODULE_DIRECTORY"))
+                             (default-environment-variables)))))
+                  ;; Wait until udevd is up and running.  This appears to
+                  ;; be needed so that the events triggered below are
+                  ;; actually handled.
+                  (wait-for-udevd)
 
-                    ;; Trigger device node creation.
-                    (system* #$(file-append udev "/bin/udevadm")
-                             "trigger" "--action=add")
+                  ;; Trigger device node creation.
+                  (system* #$(file-append udev "/bin/udevadm")
+                           "trigger" "--action=add")
 
-                    ;; Wait for things to settle down.
-                    (system* #$(file-append udev "/bin/udevadm")
-                             "settle")
-                    pid)))))
+                  ;; Wait for things to settle down.
+                  (system* #$(file-append udev "/bin/udevadm")
+                           "settle")
+                  pid))))
          (stop #~(make-kill-destructor))
 
          ;; When halting the system, 'udev' is actually killed by
