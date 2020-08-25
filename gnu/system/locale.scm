@@ -147,8 +147,7 @@ data format changes between libc versions."
 
 (define %default-locale-libcs
   ;; The libcs for which we build locales by default.
-  ;; List the previous and current libc to ease transition.
-  (list glibc-2.29 glibc))
+  (list glibc))
 
 (define %default-locale-definitions
   ;; Arbitrary set of locales that are built by default.  They are here mostly
