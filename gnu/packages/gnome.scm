@@ -10737,7 +10737,7 @@ index files needed for Adwaita to be used outside of GNOME.")
 (define-public polari
   (package
     (name "polari")
-    (version "3.32.2")
+    (version "3.36.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/polari/"
@@ -10745,7 +10745,7 @@ index files needed for Adwaita to be used outside of GNOME.")
                                   "/polari-" version ".tar.xz"))
               (sha256
                (base32
-                "0h0w9j3y067l911gpj446b3a2w1i2vzr1w2a7cz7i5rhn6qkf2sp"))))
+                "0fpmrvhd40yay051bzn4x3gsrzdv42nav0pm5ps0np8wk1z689jg"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
