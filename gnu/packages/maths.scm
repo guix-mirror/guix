@@ -1607,7 +1607,11 @@ sharing of scientific data.")
                 "--enable-parallel-tests"
                 ;; Shared libraries not supported with parallel IO.
                 "--disable-shared" "--with-pic"
-                ,flags))))))
+                ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'build 'mpi-setup
+             ,%openmpi-setup)))))))
 
 (define-public netcdf-fortran
   (package
