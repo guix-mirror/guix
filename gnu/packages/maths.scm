@@ -1411,7 +1411,7 @@ Swath).")
     (license (license:non-copyleft home-page))))
 
 (define-public hdf5-parallel-openmpi
-  (package/inherit hdf5
+  (package/inherit hdf5-1.10                      ;use the latest
     (name "hdf5-parallel-openmpi")
     (inputs
      `(("mpi" ,openmpi)
@@ -1437,7 +1437,7 @@ Swath).")
                (substitute* "testpar/Makefile"
                  (("(^TEST_PROG_PARA.*)t_pflush1(.*)" front back)
                   (string-append front back "\n")))
-               (substitute* "tools/h5diff/testph5diff.sh"
+               (substitute* "tools/test/h5diff/testph5diff.sh"
                  (("/bin/sh") (which "sh")))
                #t))))))
     (synopsis "Management suite for data with parallel IO support")))
