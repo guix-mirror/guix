@@ -7942,7 +7942,7 @@ civilized than your own.")
              ;; SSE instructions are available on Intel systems only.
              ,@(if (any (cute string-prefix? <> (or (%current-target-system)
                                                     (%current-system)))
-                        '("x64_64" "i686"))
+                        '("x86_64" "i686"))
                    '()
                    '("-DWITH_SSE2=NO"))
              ;; Configuration cannot find GTK2 without the two following
