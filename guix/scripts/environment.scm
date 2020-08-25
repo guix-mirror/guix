@@ -477,6 +477,7 @@ WHILE-LIST."
                             (group-entry (gid 65534) ;the overflow GID
                                          (name "overflow"))))
             (home-dir (password-entry-directory passwd))
+            (logname  (password-entry-name passwd))
             (environ  (filter (match-lambda
                                 ((variable . value)
                                  (find (cut regexp-exec <> variable)
@@ -527,6 +528,10 @@ WHILE-LIST."
                         (setenv var "/tmp"))
                       ;; The same variables as in Nix's 'build.cc'.
                       '("TMPDIR" "TEMPDIR" "TMP" "TEMP"))
+
+            ;; Some programs expect USER and/or LOGNAME to be set.
+            (setenv "LOGNAME" logname)
+            (setenv "USER" logname)
 
             ;; Create a dummy home directory.
             (mkdir-p home-dir)
