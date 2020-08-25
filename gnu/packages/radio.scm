@@ -418,7 +418,7 @@ environment.")
 (define-public gnuradio-osmosdr
   (package
     (name "gnuradio-osmosdr")
-    (version "0.2.0")
+    (version "0.2.2")
     (source
      (origin
        (method git-fetch)
@@ -427,7 +427,7 @@ environment.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rdx7fa0xiq0qmgrrbby7z1bblmqhl9qh9jqpsznzxkx91f17ypd"))))
+        (base32 "1aqj5cylipmmjh1x1kb2j8262hxq6mi86dgb2zphj94wvsab2ghx"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
