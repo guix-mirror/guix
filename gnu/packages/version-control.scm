@@ -2588,6 +2588,7 @@ interrupted, published, and collaborated on while in progress.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/git-lfs/git-lfs"
+       #:install-source? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-man-pages
