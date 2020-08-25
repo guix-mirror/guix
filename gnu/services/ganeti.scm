@@ -550,7 +550,7 @@ The KVM daemon monitors, using @code{inotify}, KVM instances through their QMP
 sockets, which are provided by KVM.  Using the QMP sockets, the KVM daemon
 listens for particular shutdown, powerdown, and stop events which will determine
 if a given instance was shutdown by the user or Ganeti, and this result is
-communicated to Ganeti via a special file in the filesystem.")))
+communicated to Ganeti via a special file in the file system.")))
 
 (define-record-type* <ganeti-mond-configuration>
   ganeti-mond-configuration make-ganeti-mond-configuration
