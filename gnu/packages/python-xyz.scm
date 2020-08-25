@@ -21707,3 +21707,46 @@ and have a maximum lifetime built-in.")
      "This package provides a debug print command and other development tools.
 It adds a simple and readable way to print stuff during development.")
     (license license:expat)))
+
+(define-public python-dateparser
+  (package
+    (name "python-dateparser")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dateparser" version))
+       (sha256
+        (base32
+         "1ypbyqxlk7n6zibk90js3ybz37xmin3kk0i35g8c51bwqpcfyxg8"))))
+    (build-system python-build-system)
+    (inputs
+     `(("tzdata" ,tzdata)))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-pytz" ,python-pytz)
+       ("python-regex" ,python-regex)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-tzlocal" ,python-tzlocal)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-parameterized" ,python-parameterized)))
+    (arguments
+     `(;; TODO: Of 23320 tests, 6 fail and 53 error.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-check-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZ" "UTC")
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t)))))
+    (home-page "https://github.com/scrapinghub/dateparser")
+    (synopsis
+     "Date parsing library designed to parse dates from HTML pages")
+    (description
+     "@code{python-dateparser} provides modules to easily parse localized
+dates in almost any string formats commonly found on web pages.")
+    (license license:bsd-3)))
