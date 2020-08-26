@@ -734,6 +734,62 @@ lines and stock moves.  The unit price of the stock move is updated with the
 average price of the posted invoice lines that are linked to it.")
     (license license:gpl3+)))
 
+(define-public python-trytond-stock-supply
+  (package
+    (name "python-trytond-stock-supply")
+    (version "5.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_stock_supply" version))
+       (sha256
+        (base32 "0lw7qrg58k5pjpp3nz73rmlm8v086l49ri31ci75calm552zpfay"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" runtest "-m" "stock_supply")))))))
+    (native-inputs
+     `(("python" ,python-minimal-wrapper)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-relatorio" ,python-relatorio)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-sql" ,python-sql)
+       ("python-trytond" ,python-trytond)
+       ("python-trytond-account"
+        ,python-trytond-account)
+       ("python-trytond-party" ,python-trytond-party)
+       ("python-trytond-product"
+        ,python-trytond-product)
+       ("python-trytond-purchase"
+        ,python-trytond-purchase)
+       ("python-trytond-purchase-request"
+        ,python-trytond-purchase-request)
+       ("python-trytond-stock" ,python-trytond-stock)))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Tryton module for stock supply")
+    (description
+     "This package provides a Tryton module that adds automatic supply
+mechanisms and introduces the concepts of order point.")
+    (license license:gpl3+)))
+
 (define-public python-trytond-purchase
   (package
     (name "python-trytond-purchase")
