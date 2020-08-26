@@ -4455,8 +4455,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "d1c243f7fd8902f359ff06fb78dce663cf4297ce")
-        (revision "19"))
+  (let ((commit "ab68b0fdb3efe68f1962b7b9698ffc225abfeabb")
+        (revision "20"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4468,7 +4468,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ji8d4vwmv7j9h7z96hvzi3zvik594yngjrdal37w13fbxy2v6sw"))))
+                  "0imbkrm46ykjip81cbf14gc6hqlgi79fnwvsjxbhkd2wq3c1nrjg"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4482,7 +4482,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          (modify-phases %standard-phases
            (add-before 'build 'set-GUILE_AUTO_COMPILE
              (lambda _
-               ;; To avoid errors relating to guild
+               ;; To avoid warnings relating to 'guild'.
                (setenv "GUILE_AUTO_COMPILE" "0")
                #t))
            (add-after 'install 'wrap-executable
