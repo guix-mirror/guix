@@ -67,12 +67,21 @@
                      #~(begin
                          (use-modules (guix build utils))
 
+                         (call-with-output-file "prologue"
+                           (lambda (port)
+                             ;; This prologue allows 'mcron --schedule' to
+                             ;; proceed no matter what #:user option is passed
+                             ;; to 'job'.
+                             (write '(set! getpw
+                                       (const (getpwuid (getuid))))
+                                    port)))
+
                          (call-with-output-file "job"
                            (lambda (port)
                              (write '#$job port)))
 
                          (invoke #+(file-append mcron "/bin/mcron")
-                                 "--schedule=20" "job")
+                                 "--schedule=20" "prologue" "job")
                          (copy-file "job" #$output)))
                    #:options '(#:env-vars (("COLUMNS" . "150")))))
 
