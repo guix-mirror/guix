@@ -115,13 +115,23 @@
                         arch "-linux"
                         "/20131110/guile-2.0.9.tar.xz"))))
 
+;; NOTE: The commit IDs used here form a linked list threaded through the git
+;; history. In a phenomenon known as boot-stripping, not only the head of this
+;; list is used, but also a few older versions, when a guix from this package is
+;; used to build something also depending on guix.
+;;
+;; Therefore, if, by accident, you set this package to a non-existent commit ID,
+;; it is insufficient to simply correct it with the latest commit.
+;; Instead, please push one commit that rolls back Guix to before the mistake,
+;; and then another that points to the first one. That way, the faulty commit
+;; won't appear on the linked list.
 (define-public guix
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.1.0")
-        (commit "29d3569c9c712d70466d9175474c8fd1a3262234")
-        (revision 21))
+        (commit "4b5a6fbc9b754c0ca70d033dd99f17c4f028733a")
+        (revision 22))
     (package
       (name "guix")
 
