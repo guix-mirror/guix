@@ -266,7 +266,8 @@ used in the image."
                                        #$output
                                        image-root)))))
         (computed-file "partition.img" image-builder
-                       #:options `(#:references-graphs ,inputs))))
+                       #:options `(#:local-build? #t ;typically large file
+                                   #:references-graphs ,inputs))))
 
     (define (partition->config partition)
       ;; Return the genimage partition configuration for PARTITION.
@@ -324,7 +325,8 @@ image ~a {
                    #~(symlink
                       (string-append #$image-dir "/" #$genimage-name)
                       #$output)
-                   #:options `(#:substitutable? ,substitutable?))))
+                   #:options `(#:local-build? #t ;typically large file
+                               #:substitutable? ,substitutable?))))
 
 
 ;;
@@ -401,7 +403,8 @@ used in the image. "
                                  #:volume-id #$root-label
                                  #:volume-uuid #$root-uuid)))))
     (computed-file name builder
-                   #:options `(#:references-graphs ,inputs
+                   #:options `(#:local-build? #t ;typically large file
+                               #:references-graphs ,inputs
                                #:substitutable? ,substitutable?))))
 
 
