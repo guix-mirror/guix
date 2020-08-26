@@ -734,6 +734,67 @@ lines and stock moves.  The unit price of the stock move is updated with the
 average price of the posted invoice lines that are linked to it.")
     (license license:gpl3+)))
 
+(define-public python-trytond-purchase
+  (package
+    (name "python-trytond-purchase")
+    (version "5.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_purchase" version))
+       (sha256
+        (base32 "0znjxhhwqlz4sq96ah9g28mvw4w83rhp022h6vihnz64z2ad3p3z"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" runtest "-m" "purchase")))))))
+    (native-inputs
+     `(("python" ,python-minimal-wrapper)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-relatorio" ,python-relatorio)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-sql" ,python-sql)
+       ("python-trytond" ,python-trytond)
+       ("python-trytond-account"
+        ,python-trytond-account)
+       ("python-trytond-account-invoice"
+        ,python-trytond-account-invoice)
+       ("python-trytond-account-invoice-stock"
+        ,python-trytond-account-invoice-stock)
+       ("python-trytond-account-product"
+        ,python-trytond-account-product)
+       ("python-trytond-company"
+        ,python-trytond-company)
+       ("python-trytond-currency"
+        ,python-trytond-currency)
+       ("python-trytond-party" ,python-trytond-party)
+       ("python-trytond-product"
+        ,python-trytond-product)
+       ("python-trytond-stock" ,python-trytond-stock)))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Tryton module for purchase")
+    (description
+     "This package provides a Tryton module that defines the Purchase model.")
+    (license license:gpl3+)))
+
 (define-public python-proteus
   (package
     (name "python-proteus")
