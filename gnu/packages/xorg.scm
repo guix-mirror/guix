@@ -5447,15 +5447,18 @@ communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
 
-(define xorg-server/fixed  ; Fixes CVE-2020-14347
+(define xorg-server/fixed  ; security fixes
   (package
     (inherit xorg-server)
+    (version "1.20.9")
     (source
      (origin
        (inherit (package-source xorg-server))
-       (patches
-        (append (origin-patches (package-source xorg-server))
-                (search-patches "xorg-server-CVE-2020-14347.patch")))))))
+       (uri (string-append "mirror://xorg/individual/xserver/"
+                           "xorg-server-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2"))))))
 
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
