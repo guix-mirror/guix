@@ -466,6 +466,60 @@ most of accounting needs.")
 required to analyse accounting using multiple different axes.")
     (license license:gpl3+)))
 
+(define-public python-trytond-account-product
+  (package
+    (name "python-trytond-account-product")
+    (version "5.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trytond_account_product" version))
+       (sha256
+        (base32 "0iyk07adixf37jlvn7n27ac12hk23zx09w4s78dr9sfp0lsf8vv8"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" runtest "-m" "account_product")))))))
+    (native-inputs
+     `(("python" ,python-minimal-wrapper)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-relatorio" ,python-relatorio)
+       ("python-sql" ,python-sql)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-trytond" ,python-trytond)
+       ("python-trytond-account"
+        ,python-trytond-account)
+       ("python-trytond-analytic-account"
+        ,python-trytond-analytic-account)
+       ("python-trytond-company"
+        ,python-trytond-company)
+       ("python-trytond-product"
+        ,python-trytond-product)))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Tryton module to add accounting on product")
+    (description
+     "This package provides a Tryton module that adds accounting on product
+and category.")
+    (license license:gpl3+)))
+
 (define-public python-trytond-stock
   (package
     (name "python-trytond-stock")
