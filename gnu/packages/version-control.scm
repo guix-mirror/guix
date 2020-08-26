@@ -2591,6 +2591,12 @@ interrupted, published, and collaborated on while in progress.")
        #:install-source? #f
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'man-gen
+           ;; Without this, the binary generated in 'build
+           ;; phase won't have any embedded usage-text.
+           (lambda _
+             (with-directory-excursion "src/github.com/git-lfs/git-lfs"
+               (invoke "make" "mangen"))))
          (add-after 'build 'build-man-pages
            (lambda _
              (with-directory-excursion "src/github.com/git-lfs/git-lfs"
