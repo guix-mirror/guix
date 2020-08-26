@@ -680,6 +680,60 @@ inventory to control and update stock levels.")
      "This package provides a Tryton module that defines lot of products.")
     (license license:gpl3+)))
 
+(define-public python-trytond-account-invoice-stock
+  (package
+    (name "python-trytond-account-invoice-stock")
+    (version "5.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri
+             "trytond_account_invoice_stock"
+             version))
+       (sha256
+        (base32 "1ky39ab8ax7hla5d9qgmp0p4ra4q6n29xc3wba5qdw3ij8wkn96f"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (let ((runtest
+                  (string-append
+                   (assoc-ref %build-inputs "python-trytond")
+                   "/lib/python"
+                   ,(version-major+minor (package-version python))
+                   "/site-packages/trytond/tests/run-tests.py")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" runtest "-m" "account_invoice_stock")))))))
+    (native-inputs
+     `(("python" ,python-minimal-wrapper)
+       ("python-dateutil" ,python-dateutil)
+       ("python-genshi" ,python-genshi)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-passlib" ,python-passlib)
+       ("python-polib" ,python-polib)
+       ("python-proteus" ,python-proteus)
+       ("python-relatorio" ,python-relatorio)
+       ("python-sql" ,python-sql)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-wrapt" ,python-wrapt)))
+    (propagated-inputs
+     `(("python-trytond" ,python-trytond)
+       ("python-trytond-account-invoice"
+        ,python-trytond-account-invoice)
+       ("python-trytond-product"
+        ,python-trytond-product)
+       ("python-trytond-stock" ,python-trytond-stock)))
+    (home-page "https://www.tryton.org/")
+    (synopsis "Tryton module to link stock and invoice")
+    (description
+     "This package provides a Tryton module that adds link between invoice
+lines and stock moves.  The unit price of the stock move is updated with the
+average price of the posted invoice lines that are linked to it.")
+    (license license:gpl3+)))
+
 (define-public python-proteus
   (package
     (name "python-proteus")
