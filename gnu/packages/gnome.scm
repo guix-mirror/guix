@@ -5646,16 +5646,15 @@ as possible!")
 (define-public grilo
   (package
     (name "grilo")
-    (version "0.3.10")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/grilo/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "grilo-" version ".tar.xz"))
        (sha256
-        (base32
-         "1s7ilyywf18q26aj5c4709kfizqywjlnacp4jzmj9v9i9kkv4i3y"))))
+        (base32 "0w8sq5g6g1rg85h53vbll8va70fcp6082mlpmy98aa03444ddyyv"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums and glib-genmarshal
