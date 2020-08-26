@@ -10238,7 +10238,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
                 "1cfp078spid9z5g7xiswkpkjbkh4mkjvarz25wgwvdxzhxavwhcq"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Time-HiRes")
-    (synopsis "High resolution alarm, sleep, gettimeofday, interval timers")
+    (synopsis "High-resolution alarm, sleep, gettimeofday, and interval timers")
     (description "This package implements @code{usleep}, @code{ualarm}, and
 @code{gettimeofday} for Perl, as well as wrappers to implement @code{time},
 @code{sleep}, and @code{alarm} that know about non-integral seconds.")
