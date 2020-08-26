@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Joshua S. Grant <jgrant@parenthetical.io>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -20,7 +20,7 @@
 
 (define-module (gnu)
   #:use-module (guix i18n)
-  #:use-module (guix utils)
+  #:use-module (guix diagnostics)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
@@ -78,10 +78,8 @@
                   (raise
                    (apply
                     make-compound-condition
-                    (condition
-                     (&message
-                      (message (format #f (G_ "module ~a not found")
-                                       module))))
+                    (formatted-message (G_ "module ~a not found")
+                                       module)
                     (condition
                      (&error-location (location location)))
                     (or (and=> (make-hint module) list)

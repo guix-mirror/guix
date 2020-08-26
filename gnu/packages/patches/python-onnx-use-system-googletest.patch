@@ -1,0 +1,54 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0aa9fda2..a573170c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,7 +22,7 @@ option(BUILD_ONNX_PYTHON "Build Python binaries" OFF)
+ option(ONNX_GEN_PB_TYPE_STUBS "Generate protobuf python type stubs" ON)
+ option(ONNX_WERROR "Build with Werror" OFF)
+ option(ONNX_COVERAGE "Build with coverage instrumentation" OFF)
+-option(ONNX_BUILD_TESTS "Build ONNX C++ APIs Tests" OFF)
++option(ONNX_BUILD_TESTS "Build ONNX C++ APIs Tests" ON)
+ option(ONNX_USE_LITE_PROTO "Use lite protobuf instead of full." OFF)
+ option(ONNXIFI_ENABLE_EXT "Enable onnxifi extensions." OFF)
+ if(NOT DEFINED ONNX_ML)
+@@ -82,8 +82,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+ endif()
+
+ if(ONNX_BUILD_TESTS)
+-  list(APPEND CMAKE_MODULE_PATH ${ONNX_ROOT}/cmake/external)
+-  include(googletest)
++  find_package(GTest REQUIRED)
++  if(NOT GTest_FOUND)
++    message(FATAL_ERROR "cannot find googletest")
++  endif()
+ endif()
+
+ if((ONNX_USE_LITE_PROTO AND TARGET protobuf::libprotobuf-lite) OR ((NOT ONNX_USE_LITE_PROTO) AND TARGET protobuf::libprotobuf))
+diff --git a/cmake/unittest.cmake b/cmake/unittest.cmake
+index e29a93ff..ae146390 100644
+--- a/cmake/unittest.cmake
++++ b/cmake/unittest.cmake
+@@ -6,8 +6,8 @@ include(${ONNX_ROOT}/cmake/Utils.cmake)
+
+ find_package(Threads)
+
+-set(${UT_NAME}_libs ${googletest_STATIC_LIBRARIES})
+-set(${ONNXIFI_TEST_DRIVER}_libs ${googletest_STATIC_LIBRARIES})
++set(${UT_NAME}_libs ${GTEST_LIBRARIES})
++set(${ONNXIFI_TEST_DRIVER}_libs ${GTEST_LIBRARIES})
+
+ list(APPEND ${UT_NAME}_libs onnx)
+ list(APPEND ${UT_NAME}_libs onnx_proto)
+@@ -31,10 +31,10 @@ function(AddTest)
+   list(REMOVE_DUPLICATES _UT_SOURCES)
+
+   add_executable(${_UT_TARGET} ${_UT_SOURCES})
+-  add_dependencies(${_UT_TARGET} onnx onnx_proto googletest)
++  add_dependencies(${_UT_TARGET} onnx onnx_proto)
+
+   target_include_directories(${_UT_TARGET}
+-                             PUBLIC ${googletest_INCLUDE_DIRS}
++                             PUBLIC ${GTEST_INCLUDE_DIRS}
+                                     ${ONNX_INCLUDE_DIRS}
+                                     ${PROTOBUF_INCLUDE_DIRS}
+                                     ${ONNX_ROOT}

@@ -26,10 +26,13 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (guix utils)
+  #:use-module (guix i18n)
+  #:use-module (guix diagnostics)
   #:use-module ((guix download) #:prefix download:)
   #:use-module ((guix git-download) #:prefix download:)
   #:use-module (guix import utils)
   #:use-module (guix import json)
+  #:use-module (json)
   #:use-module (guix packages)
   #:use-module (guix upstream)
   #:use-module (guix http-client)
@@ -162,12 +165,20 @@ empty list."
             `((Authorization . ,(string-append "token " (%github-token))))
             '())))
 
-  (match (json-fetch release-url #:headers headers)
-    (#()
-     ;; We got the empty list, presumably because the user didn't use GitHub's
-     ;; "release" mechanism, but hopefully they did use Git tags.
-     (json-fetch tag-url #:headers headers))
-    (x x)))
+  (guard (c ((and (http-get-error? c)
+                  (= 404 (http-get-error-code c)))
+             (warning (G_ "~a is unreachable (~a)~%")
+                      release-url (http-get-error-code c))
+             '#()))                               ;return an empty release set
+    (let* ((port   (http-fetch release-url #:headers headers))
+           (result (json->scm port)))
+      (close-port port)
+      (match result
+        (#()
+         ;; We got the empty list, presumably because the user didn't use GitHub's
+         ;; "release" mechanism, but hopefully they did use Git tags.
+         (json-fetch tag-url #:headers headers))
+        (x x)))))
 
 (define (latest-released-version url package-name)
   "Return a string of the newest released version name given a string URL like

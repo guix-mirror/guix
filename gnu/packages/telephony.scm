@@ -515,14 +515,14 @@ address of one of the participants.")
 (define-public mumble
   (package
     (name "mumble")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://mumble.info/snapshot/"
+              (uri (string-append "https://mumble.info/snapshot/stable/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03dqg5yf6d7ilc1wydpshnv1ndssppcbadqcq20jm5j4fdaf53cs"))
+                "1q91vp3bp7xn67g9kgp1pfgxjj1hks3w60vdxcfm3373wy5db5lz"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -537,9 +537,6 @@ address of one of the participants.")
                       "3rdparty/minhook-src"
                       "3rdparty/opus-build" ; in opus
                       "3rdparty/opus-src"
-                      "3rdparty/sbcelt-helper-build" ; not enabled
-                      "3rdparty/sbcelt-lib-build"
-                      "3rdparty/sbcelt-src"
                       "3rdparty/speex-build" ; in speex
                       "3rdparty/speex-src"
                       "3rdparty/speexdsp-src" ; in speexdsp
@@ -734,71 +731,132 @@ your calls and messages.")
         (base32
          "1aklicpgwc88578k03i5d5cm5h8mfm7hmx8vfprchbmaa2p8f4z0"))
        (modules '((guix build utils)))
+       ;; The patches upstream status can be tracked at:
+       ;; https://github.com/pjsip/pjproject/pull/2501.
+       (patches (search-patches "pjproject-correct-the-cflags-field.patch"
+                                "pjproject-fix-pkg-config-ldflags.patch"))
        (snippet
         '(begin
-           (let ((third-party-directories
-                  ;; Things we don't need:
-                  ;; BaseClasses - contains libraries from Windows SDK
-                  ;; we don't need it, at least not now.
-                  (list "BaseClasses" "g7221" "ilbc" "milenage"
-                        "speex" "threademulation" "yuv" "bdsound"
-                        "gsm" "mp3" "resample" "srtp" "webrtc"
-                        ;; Keep only resample, build and README.txt.
-                        "build/baseclasses" "build/g7221" "build/gsm"
-                        "build/ilbc" "build/milenage" "build/resample"
-                        "build/samplerate" "build/speex" "build/srtp"
-                        "build/webrtc" "build/yuv")))
-             ;; Keep only Makefiles related to resample.
-             (for-each (lambda (directory)
-                         (delete-file-recursively
-                          (string-append "third_party/" directory)))
-                       third-party-directories)
-             #t)
-           (let ((third-party-dirs
-                  (list "gsm" "ilbc" "speex" "g7221" "srtp"
-                        "portaudio" "resample")))
-             (for-each
-              (lambda (dirs)
-                (substitute* "third_party/build/os-linux.mak"
-                  (((string-append "DIRS += " dirs)) "")))
-              third-party-dirs))))))
+           ;; Remove bundled libraries.
+           (delete-file-recursively "third_party")
+           (substitute* "aconfigure.ac"
+             (("third_party/build/os-auto.mak") ""))
+           (substitute* "Makefile"
+             (("third_party/build") ""))
+           #t))))
     (build-system gnu-build-system)
-    (inputs
-     `(("portaudio" ,portaudio)))
-    (propagated-inputs
-     ;; These packages are referenced in the Libs field of the pkg-config
-     ;; file that will be installed by pjproject.
-     `(("speex" ,speex)
-       ("libsrtp" ,libsrtp)
-       ("gnutls" ,gnutls)
-       ("resample", resample)
-       ("util-linux" ,util-linux "lib")))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)))
+    (outputs '("out" "debug" "static"))
     (arguments
-     `(;; FIXME make: No rule to make target
-       ;; 'pjlib-test-unknown-[something]-gnu'.
-       #:tests? #f
-       ;; #:test-target "selftest"
+     `(#:tests? #t
+       #:test-target "selftest"
+       #:configure-flags
+       (list "--enable-shared"
+             "--with-external-speex"
+             "--with-external-gsm"
+             "--with-external-srtp"
+             "--with-external-pa"
+             ;; The following flag is Linux specific.
+             ,@(if (string-contains (or (%current-system)
+                                        (%current-target-system)) "linux")
+                   '("--enable-epoll")
+                   '())
+             "--with-gnutls"            ;disable OpenSSL checks
+             "--disable-libyuv"         ;TODO: add missing package
+             "--disable-silk"           ;TODO: add missing package
+             "--disable-libwebrtc"      ;TODO: add missing package
+             "--disable-ilbc-codec"     ;cannot be unbundled
+             "--disable-g7221-codec"    ;TODO: add missing package
+             "--enable-libsamplerate"
+             ;; -DNDEBUG is set to prevent pjproject from raising
+             ;; assertions that aren't critical, crashing
+             ;; applications as the result.
+             "CFLAGS=-DNDEBUG"
+             ;; Specify a runpath reference to itself, which is missing and
+             ;; causes the validate-runpath phase to fail.
+             (string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out")
+                            "/lib"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-source-files-writable
+           ;; Make all the files writable to prevent the following error:
+           ;; "autom4te: cannot open aconfigure: Permission denied".
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'build 'build-dep
            (lambda _ (invoke "make" "dep")))
+         ;; The check phases is moved after the install phase so to
+         ;; use the installed shared libraries for the tests.
+         (delete 'check)
+         (add-after 'install 'move-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (s (string-append (assoc-ref outputs "static") "/lib")))
+               (mkdir-p s)
+               (with-directory-excursion out
+                 (for-each (lambda (f)
+                             (rename-file f (string-append s "/" (basename f))))
+                           (find-files "." "\\.a$")))
+               #t)))
+         (add-after 'install 'check
+           (assoc-ref %standard-phases 'check))
          (add-before 'patch-source-shebangs 'autoconf
            (lambda _
              (invoke "autoconf" "-v" "-f" "-i" "-o"
                      "aconfigure" "aconfigure.ac")))
          (add-before 'autoconf 'disable-some-tests
-           ;; Three of the six test programs fail due to missing network
-           ;; access.
            (lambda _
+             (substitute* "pjlib/src/pjlib-test/test.h"
+               ;; Disable network tests which are slow and/or require an
+               ;; actual network.
+               (("#define GROUP_NETWORK.*")
+                "#define GROUP_NETWORK 0\n"))
+             (substitute* "self-test.mak"
+               ;; Fails with: pjlib-util-test-x86_64-unknown-linux-gnu:
+               ;; ../src/pjlib-util-test/resolver_test.c:1501: action2_1:
+               ;; Assertio n `pj_strcmp2(&pkt->q[0].name, "_sip._udp."
+               ;; "domain2.com")==0' failed.
+               ((" pjlib_util_test ") ""))
+             (substitute* "pjsip/src/test/test.h"
+               ;; Fails with: Error: unable to acquire TCP transport:
+               ;; [pj_status_t=120101] Network is unreachable.
+               (("#define INCLUDE_TCP_TEST.*")
+                "#define INCLUDE_TCP_TEST 0\n")
+               ;; The TSX tests takes a very long time to run; skip them.
+               (("#define INCLUDE_TSX_GROUP.*")
+                "#define INCLUDE_TSX_GROUP 0\n"))
+             (substitute* "pjsip/src/test/dns_test.c"
+               ;; The round_robin_test fails non-deterministically (depending
+               ;; on load); skip it (see:
+               ;; https://github.com/pjsip/pjproject/issues/2500).
+               (("round_robin_test(pool)") 0))
+             (substitute* "pjmedia/src/test/test.h"
+               ;; The following tests require a sound card.
+               (("#define HAS_MIPS_TEST.*")
+                "#define HAS_MIPS_TEST 0\n")
+               (("#define HAS_JBUF_TEST.*")
+                "#define HAS_JBUF_TEST 0\n"))
              (substitute* "Makefile"
-               (("selftest: pjlib-test pjlib-util-test pjnath-test pjmedia-test pjsip-test pjsua-test")
-                "selftest: pjlib-test pjlib-util-test pjmedia-test"))
+               ;; Disable the pjnath and pjsua tests, which require an actual
+               ;; network and an actual sound card, respectively.
+               (("pjnath-test pjmedia-test pjsip-test pjsua-test")
+                "pjmedia-test pjsip-test"))
              #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bcg729" ,bcg729)
+       ("gnutls" ,gnutls)
+       ("gsm" ,gsm)
+       ("libsamplerate" ,libsamplerate)
+       ("libsrtp" ,libsrtp)
+       ("opus" ,opus)
+       ("portaudio" ,portaudio)
+       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)))
     (home-page "https://www.pjsip.org")
     (synopsis "Session Initiation Protocol (SIP) stack")
     (description "PJProject provides an implementation of the Session
@@ -831,6 +889,23 @@ Initiation Protocol (SIP) and a multimedia framework.")
        ("libopusenc" ,libopusenc)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; libtgvoip wants to dlopen libpulse and libasound, so tell it where
+         ;; they are.
+         (add-after 'unpack 'patch-dlopen
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "os/linux/AudioPulse.cpp"
+               (("libpulse\\.so")
+                (string-append (assoc-ref inputs "pulseaudio")
+                              "/lib/libpulse.so")))
+             (substitute* '("os/linux/AudioInputALSA.cpp"
+                            "os/linux/AudioOutputALSA.cpp")
+               (("libasound\\.so")
+                (string-append (assoc-ref inputs "alsa-lib")
+                               "/lib/libasound.so")))
+             #t)))))
     (synopsis "VoIP library for Telegram clients")
     (description "A collection of libraries and header files for implementing
 telephony functionality into custom Telegram clients.")

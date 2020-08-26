@@ -1,0 +1,26 @@
+Add fonts from all XDG_DATA_DIRS, not just XDG_DATA_HOME.
+
+See <http://bugs.gnu.org/41174>.
+Author: Leo Prikler <leo.prikler@student.tugraz.at>
+Index: webkitgtk-2.28.2/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
+===================================================================
+--- a/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
++++ b/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
+@@ -387,6 +387,7 @@ static void bindFonts(Vector<CString>& args)
+     const char* homeDir = g_get_home_dir();
+     const char* dataDir = g_get_user_data_dir();
+     const char* cacheDir = g_get_user_cache_dir();
++    const char* const * dataDirs = g_get_system_data_dirs();
+
+     // Configs can include custom dirs but then we have to parse them...
+     GUniquePtr<char> fontConfig(g_build_filename(configDir, "fontconfig", nullptr));
+@@ -403,6 +404,10 @@ static void bindFonts(Vector<CString>& args)
+     bindIfExists(args, fontHomeConfigDir.get());
+     bindIfExists(args, fontData.get());
+     bindIfExists(args, fontHomeData.get());
++    for (auto dataDir = dataDirs; dataDir != nullptr && *dataDir != nullptr; dataDir++) {
++        GUniquePtr<char> fontDataDir(g_build_filename(*dataDir, "fonts", nullptr));
++        bindIfExists(args, fontDataDir.get());
++    }
+     bindIfExists(args, "/var/cache/fontconfig"); // Used by Debian.
+ }

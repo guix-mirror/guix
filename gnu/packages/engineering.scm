@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,6 +96,8 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages parallel)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -267,14 +270,14 @@ utilities.")
   (package
     (inherit geda-gaf)
     (name "lepton-eda")
-    (version "1.9.9-20191003")
+    (version "1.9.11-20200604")
     (home-page "https://github.com/lepton-eda/lepton-eda")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (sha256
                (base32
-                "08cc3zfk84qq9mrkc9pp4r9jlavvm01wwy0yd9frql68w2zw6mip"))
+                "091y8h7wcr9smwhb1wf12sj27n5jrannbj3y6qq3q2gwiifiz8sd"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -423,14 +426,14 @@ optimizer; and it can produce photorealistic and design review images.")
 (define-public pcb-rnd
   (package (inherit pcb)
     (name "pcb-rnd")
-    (version "1.1.3")
+    (version "2.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://repo.hu/projects/pcb-rnd/releases/"
                                   "pcb-rnd-" version ".tar.gz"))
               (sha256
                (base32
-                "0pycynla60b96jkb6fh6f4sx663pqbzjwnixhw5ym8sym2absm09"))))
+                "0j650498d87b4xsggzc0xlk73k0hhj43wfy45qz2lcn0xc3bks1m"))))
     (arguments
      `(#:tests? #f ; no check target
        #:phases
@@ -763,12 +766,7 @@ fonts to gEDA.")
                 (sha256
                  (base32
                   "0ryv2hcbrwqc087w7rrs4a2irkcpmqync00g4dh8n7jn10w2jkim"))
-                (file-name (git-file-name name version))
-                (snippet
-                 ;; Remove bundled catch since we provide our own.
-                 '(begin
-                    (delete-file "libfive/test/catch.hpp")
-                    #t))))
+                (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
        `(#:test-target "libfive-test"
@@ -777,19 +775,11 @@ fonts to gEDA.")
            (add-after 'unpack 'remove-native-compilation
              (lambda _
                (substitute* "CMakeLists.txt" (("-march=native") ""))
-               #t))
-           (add-after 'unpack 'find-catch
-             (lambda* (#:key inputs #:allow-other-keys)
-               (setenv "CPLUS_INCLUDE_PATH"
-                       (string-append (assoc-ref inputs "catch")
-                                      "/include/catch:"
-                                      (or (getenv "CPLUS_INCLUDE_PATH") "")))
                #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs
        `(("boost" ,boost)
-         ("catch" ,catch-framework2)
          ("libpng" ,libpng)
          ("qtbase" ,qtbase)
          ("eigen" ,eigen)
@@ -1075,31 +1065,71 @@ provides a machine-independent interface to select the best such procedures to
 use on a given system.")
     (license license:gpl3+)))
 
+(define-public libredwg
+  (package
+    (name "libredwg")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/libredwg/libredwg-"
+             version ".tar.xz"))
+       (sha256
+        (base32 "1vd7ii32k5447z7k4w9s005hv1ffpj6dyf1w40x6c53qksrblny2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-bindings")))
+    (native-inputs
+     `(("libxml2" ,libxml2)
+       ("parallel" ,parallel)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-libxml2" ,python-libxml2)))
+    (inputs
+     `(("pcre2" ,pcre2)))
+    (home-page "https://www.gnu.org/software/libredwg/")
+    (synopsis "C library to handle DWG (CAD-related) files")
+    (description
+     "GNU LibreDWG is a C library to handle DWG files.  It aims to be a free
+replacement for the OpenDWG libraries.")
+    (license license:gpl3+)))
+
 (define-public minicom
   (package
     (name "minicom")
     (version "2.7.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://alioth.debian.org/frs/download.php/"
-                           "file/4215/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://salsa.debian.org/minicom-team/minicom.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32
-         "1wa1l36fa4npd21xa9nz60yrqwkk5cq713fa3p5v0zk7g9mq6bsk"))))
+        (base32 "0f36wv015zpz1x895qv0z6marlynzyh0d5mfkyd7lfyy2xd1i2w0"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-lock-dir=/var/lock")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-lock-check
+         (replace 'bootstrap
+           ;; autogen.sh needlessly hard-codes aclocal-1.14.
+           (lambda _
+             (invoke "autoreconf" "-vif")
+             #t))
+         (add-before 'configure 'patch-lock-check
            (lambda _
              (substitute* "configure"
                (("test -d [$]UUCPLOCK") "true"))
              #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("ncurses" ,ncurses)))
-    (home-page "https://alioth.debian.org/projects/minicom/")
+    (home-page "https://salsa.debian.org/minicom-team/minicom")
     (synopsis "Serial terminal emulator")
     (description "@code{minicom} is a serial terminal emulator.")
     (license license:gpl2+)))

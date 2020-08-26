@@ -22,15 +22,21 @@
 
 (define-module (gnu packages language)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages java)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
@@ -38,10 +44,153 @@
   #:use-module (guix build-system python)
   #:use-module ((guix licenses)
                 #:select
-                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 perl-license zpl2.1))
+                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ perl-license zpl2.1))
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils))
+
+(define-public liblouis
+  (package
+    (name "liblouis")
+    (version "3.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/liblouis/liblouis.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0v6w8b9r994mkkbm2gqgd7k5yfmdhgbabh0j1gmn375nyvhy4qqh"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "bin" "doc" "python"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-ucs4")
+       #:phases
+       (modify-phases %standard-phases
+         ;; To install the sub-package "python".
+         (add-after 'install 'install-python-extension
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "python"
+               (invoke "python" "setup.py" "install"
+                       (string-append "--prefix="
+                                      (assoc-ref outputs "python"))
+                       "--root=/")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("clang-format" ,clang)
+       ("help2man" ,help2man)
+       ("libtool" ,libtool)
+       ("libyaml" ,libyaml)
+       ("makeinfo" ,texinfo)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (synopsis "Braille translator and back-translator")
+    (description "Liblouis is a braille translator and back-translator named in
+honor of Louis Braille.  It features support for computer and literary braille,
+supports contracted and uncontracted translation for many languages and has
+support for hyphenation.  New languages can easily be added through tables that
+support a rule- or dictionary based approach.  Tools for testing and debugging
+tables are also included.  Liblouis also supports math braille, Nemeth and
+Marburg.")
+    (home-page "http://liblouis.org/")
+    (license
+     (list
+      ;; Library
+      lgpl2.1+
+      ;; Tools
+      gpl3+))))
+
+(define-public liblouisutdml
+  (package
+    (name "liblouisutdml")
+    (version "2.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/liblouis/liblouisutdml.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11xxky3crjm8bidfljzpqaz1m1i1m1yskmdpavf9b4jpf87nzjj2"))
+       (patches
+        (search-patches "liblouisutdml-fix-tests.patch"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "bin" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("help2man" ,help2man)
+       ("jdk" ,icedtea "jdk")
+       ("libtool" ,libtool)
+       ("makeinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("liblouis" ,liblouis)
+       ("liblouis:bin" ,liblouis "bin")))
+    (synopsis "Braille transcription services")
+    (description "Liblouisutdml is a library providing complete braille
+transcription services for xml, html and text documents.  It translates into
+appropriate braille codes and formats according to its style sheet and the
+specifications in the document.")
+    (home-page "http://liblouis.org/")
+    (license
+     (list
+      ;; Library
+      lgpl3+
+      ;; Tools
+      gpl3+))))
+
+(define-public libstemmer
+  (package
+    (name "libstemmer")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://snowballstem.org/dist/libstemmer_c.tgz")
+       (sha256
+        (base32 "1z2xvrjsaaypc04lwz7dg8mjm5cq1gzmn0l544pn6y2ll3r7ckh5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist
+       #:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target))
+        "CFLAGS=-fPIC")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-bin (string-append out "/bin"))
+                    (out-include (string-append out "/include"))
+                    (out-lib (string-append out "/lib")))
+               (install-file "stemwords" out-bin)
+               (install-file "include/libstemmer.h" out-include)
+               (rename-file "libstemmer.o" "libstemmer.a")
+               (install-file "libstemmer.a" out-lib)
+               #t))))))
+    (synopsis "Stemming Library")
+    (description "LibStemmer provides stemming library, supporting several
+languages.")
+    (home-page "https://snowballstem.org/")
+    (license bsd-3)))
 
 (define-public perl-lingua-en-findnumber
   (package

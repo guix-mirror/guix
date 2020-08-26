@@ -9950,6 +9950,7 @@ annotations.")
     (arguments
      `(#:build-target "jarall"
        #:test-target "junit-tests-all"
+       #:make-flags (list "-DDATE" "(no date for reproducibility)")
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'fix-pom
@@ -11879,6 +11880,7 @@ inside a Zip archive.")
     (build-system ant-build-system)
     (arguments
      `(#:build-target "package"
+       #:make-flags (list "-DDATE" "(no recorded date for reproducibility)")
        #:tests? #f; tests are run as part of the build process
        #:phases
        (modify-phases %standard-phases

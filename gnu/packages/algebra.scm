@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
@@ -74,7 +74,7 @@
 (define-public mpfrcx
   (package
    (name "mpfrcx")
-   (version "0.5")
+   (version "0.6")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -82,7 +82,7 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "1s968480ymv6w0rnvfp9mxvx98hvi29fkvw8nk4ggzc6azxgwybs"))))
+              "0gz5rma9al2jrifpknqkcnd9dkf8l05jcxy3s4ghwhd4y3h5dwia"))))
    (build-system gnu-build-system)
    (propagated-inputs
      `(("gmp" ,gmp)
@@ -151,7 +151,12 @@ line applications.")
 (define-public fplll
   (package
     (name "fplll")
-    (version "5.2.1")
+    ;; The most recent version 5.3.3 fails in the configure phase:
+    ;; ./configure: line 12956: syntax error near unexpected token `LIBQD,'
+    ;; ./configure: line 12956: `  PKG_CHECK_MODULES(LIBQD, qd, have_libqd="yes",'
+    ;; The error disappears when adding qd as an input; but this is
+    ;; supposed to be an optional input.
+    (version "5.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -160,7 +165,7 @@ line applications.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "015qmrd7nfaysbv1hbwiprz9g6hnww1y1z1xw8f43ysb7k1b5nbg"))))
+                "00iyz218ywspizjiimrjdcqvdqmrsb2367zyy3vkmypnf9i9l680"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -198,7 +203,7 @@ the real span of the lattice.")
 (define-public python-fpylll
   (package
     (name "python-fpylll")
-    (version "0.4.1")
+    (version "0.5.2")
     (source
      (origin
        ;; Pypi contains and older release, so we use a tagged release from
@@ -210,7 +215,7 @@ the real span of the lattice.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "01x2sqdv0sbjj4g4waj0hj4rcn4bq7h17442xaqwbznym9azmn9w"))))
+         "1a25iibihph626jl4wbs4b77xc4a2c4nfc2ypscf9wpani3dnhjf"))))
     (build-system python-build-system)
     (inputs
      `(("fplll" ,fplll)
@@ -346,7 +351,8 @@ varieties, i.e. Jacobians of hyperelliptic curves.
 It can also be used to compute theta constants at arbitrary
 precision.")
    (license license:gpl3+)
-   (home-page "http://cmh.gforge.inria.fr/")))
+   (home-page
+     "https://gitlab.inria.fr/cmh/cmh#cmh-computation-of-genus-2-class-polynomials")))
 
 (define-public giac
   (package
@@ -440,14 +446,13 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.6.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "http://flintlib.org/flint-"
-                  version ".tar.gz"))
-            (sha256 (base32
-                     "0h08a71kn8347zsqjamqnmrxjpsnnzpmhvxb6d2xmfrcs6nyv2ch"))))
+   (version "2.6.3")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "http://flintlib.org/flint-" version ".tar.gz"))
+      (sha256
+       (base32 "1qrf6hzbbmg7mhkhbb0bab8z2xpdnba5cj4kmmf72lzs0457a6nf"))))
    (build-system gnu-build-system)
    (inputs
     `(("ntl" ,ntl)))
@@ -455,7 +460,7 @@ or text interfaces) or as a C++ library.")
     `(("gmp" ,gmp)
       ("mpfr" ,mpfr))) ; header files from both are included by flint/arith.h
    (arguments
-    `(#:parallel-tests? #f ; seems to be necessary on arm
+    `(#:parallel-tests? #f              ; seems to be necessary on arm
       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'newer-c++
@@ -469,8 +474,8 @@ or text interfaces) or as a C++ library.")
                    (gmp (assoc-ref inputs "gmp"))
                    (mpfr (assoc-ref inputs "mpfr"))
                    (ntl (assoc-ref inputs "ntl")))
-               ;; do not pass "--enable-fast-install", which makes the
-               ;; homebrew configure process fail
+               ;; Do not pass "--enable-fast-install", which makes the
+               ;; homebrew configure process fail.
                (invoke "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--with-gmp=" gmp)
@@ -489,7 +494,7 @@ Operations that can be performed include conversions, arithmetic,
 GCDs, factoring, solving linear systems, and evaluating special
 functions.  In addition, FLINT provides various low-level routines for
 fast arithmetic.")
-   (license license:gpl2+)
+   (license license:lgpl2.1+)
    (home-page "http://flintlib.org/")))
 
 (define-public arb

@@ -28,6 +28,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -39,16 +40,15 @@
 (define-public sane-backends-minimal
   (package
     (name "sane-backends-minimal")
-    (version "1.0.30")
+    (version "1.0.31")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://gitlab.com/sane-project/backends/uploads/"
-                   "c3dd60c9e054b5dee1e7b01a7edc98b0/"
+                   "8bf1cae2e1803aefab9e5331550e5d5d/"
                    "sane-backends-" version ".tar.gz"))
              (sha256
-              (base32
-               "18vryaycps3zpjzxh0wjgg8nv2f4pdvcfxxmdfj28qbzqjlrcp9z"))
+              (base32 "1am5w92zyybs26wx4brgmky6dzpd8n34jyfrfx3qbvcqngy10fsa"))
              (modules '((guix build utils)))
              (snippet
               ;; Generated HTML files and udev rules normally embed a
@@ -123,8 +123,9 @@ package contains the library, but no drivers.")
     (name "sane-backends")
     (inputs
      `(("hplip" ,(@ (gnu packages cups) hplip-minimal))
-       ("libjpeg" ,libjpeg-turbo)       ; wanted by pixma, epsonds, others
+       ("libjpeg" ,libjpeg-turbo)       ; for pixma/epsonds/other back ends
        ("libpng" ,libpng)               ; support ‘scanimage --format=png’
+       ("libxml2" ,libxml2)             ; for pixma back end
        ,@(package-inputs sane-backends-minimal)))
     (arguments
      (substitute-keyword-arguments (package-arguments sane-backends-minimal)

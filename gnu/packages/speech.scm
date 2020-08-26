@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,74 @@
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils))
+
+(define-public flite
+  (package
+    (name "flite")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://www.festvox.org/" name "/packed/" name
+                       "-" version "/" name "-" version "-release.tar.bz2"))
+       (sha256
+        (base32 "119b7l7pjb1l5raqq24p8rmhdqni49vjh2mgdryrfr575rm3yg67"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX:
+     ;; There numerous issues with the testsuite.
+     ;; Enable all of them once they are fixed in upstream.
+     `(#:tests? #f
+       #:configure-flags
+       (list
+        "--enable-shared"
+        (string-append "LDFLAGS=-Wl,-rpath="
+                       (assoc-ref %outputs "out")
+                       "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-rpath
+           (lambda _
+             (substitute* "main/Makefile"
+              (("flite_LIBS_flags \\+= -Wl,-rpath [^ ]*")
+               "flite_LIBS_flags +="))
+             #t))
+         (delete 'check)
+         ;; Modifying testsuite/Makefile is not done in favor of
+         ;; overriding 'check.
+         ;; The path not taken would be:
+         ;; test:\n\t$(foreach x,$(subst tris1,,$(subst dcoffset_wave,,$(subst flite_test,,$(subst by_word,,$(subst bin2ascii,,$(subst lpc_resynth,,$(subst rfc,,$(subst compare_wave,,$(subst record_in_noise,,$(subst combine_waves,,$(patsubst play_%,,$(subst record_wave,,$(subst lex_lookup,,$(patsubst lpc_test%,,$(patsubst asciiS2U%,,$(patsubst asciiU2S%,,$(ALL))))))))))))))))),echo TEST $x && ./$x data.one && ) true
+         (add-after 'install 'check
+           (lambda _
+             (invoke "make" "-C" "testsuite")
+             (with-directory-excursion "testsuite"
+               (invoke "./token_test")
+               (invoke "./hrg_test")
+               (invoke "./regex_test")
+               (invoke "./nums_test")
+               (invoke "./lex_test")
+               (invoke "./utt_test")
+               (invoke "./multi_thread"))
+             #t))
+         (add-after 'install 'remove-static-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (for-each delete-file
+                         (find-files out "\\.a$"))
+               #t))))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (inputs
+     `(("alsa" ,alsa-lib)))
+    (synopsis "Speech synthesis system")
+    (description "Flite (festival-lite) is a small, fast run-time text to speech
+synthesis engine developed at CMU and primarily designed for small embedded
+machines and/or large servers.  It is designed as an alternative text to speech
+synthesis engine to Festival for voices built using the FestVox suite of voice
+building tools.")
+    (home-page "http://www.festvox.org/flite/index.html")
+    (license (license:non-copyleft "file:///COPYING"))))
 
 (define-public espeak
   (package
@@ -497,7 +566,8 @@ control.")
                            "sphinxbase/" version "/"
                            "sphinxbase-" version ".tar.gz"))
        (sha256
-        (base32 "0vr4k8pv5a8nvq9yja7kl13b5lh0f9vha8fc8znqnm8bwmcxnazp"))))
+        (base32 "0vr4k8pv5a8nvq9yja7kl13b5lh0f9vha8fc8znqnm8bwmcxnazp"))
+       (patches (search-patches "sphinxbase-fix-doxygen.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f))           ;tests fail otherwise

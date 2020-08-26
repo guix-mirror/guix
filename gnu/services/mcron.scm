@@ -57,8 +57,35 @@
   (jobs              mcron-configuration-jobs     ;list of <mcron-job>
                      (default '())))
 
-(define (job-file job)
-  (scheme-file "mcron-job" job))
+(define (job-files mcron jobs)
+  "Return a list of file-like object for JOBS, a list of gexps."
+  (define (validated-file job)
+    ;; This procedure behaves like 'scheme-file' but it runs 'mcron
+    ;; --schedule' to detect any error in JOB.
+    (computed-file "mcron-job"
+                   (with-imported-modules '((guix build utils))
+                     #~(begin
+                         (use-modules (guix build utils))
+
+                         (call-with-output-file "prologue"
+                           (lambda (port)
+                             ;; This prologue allows 'mcron --schedule' to
+                             ;; proceed no matter what #:user option is passed
+                             ;; to 'job'.
+                             (write '(set! getpw
+                                       (const (getpwuid (getuid))))
+                                    port)))
+
+                         (call-with-output-file "job"
+                           (lambda (port)
+                             (write '#$job port)))
+
+                         (invoke #+(file-append mcron "/bin/mcron")
+                                 "--schedule=20" "prologue" "job")
+                         (copy-file "job" #$output)))
+                   #:options '(#:env-vars (("COLUMNS" . "150")))))
+
+  (map validated-file jobs))
 
 (define (shepherd-schedule-action mcron files)
   "Return a Shepherd action that runs MCRON with '--schedule' for the given
@@ -101,7 +128,7 @@ files."
     (($ <mcron-configuration> mcron ())           ;nothing to do!
      '())
     (($ <mcron-configuration> mcron jobs)
-     (let ((files (map job-file jobs)))
+     (let ((files (job-files mcron jobs)))
        (list (shepherd-service
               (provision '(mcron))
               (requirement '(user-processes))

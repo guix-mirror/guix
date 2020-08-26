@@ -1,0 +1,49 @@
+From 6d512b5c4d774a9853b51dae464a10cea7e3423a Mon Sep 17 00:00:00 2001
+From: Peter Rustler <peter.rustler@basyskom.com>
+Date: Mon, 7 Dec 2015 11:40:05 +0000
+Subject: [PATCH] Add support for new webkit version 4.0 to build system
+
+Add new configure value for option --with-webkit.
+Now you can add 4.0 as value to --with-webkit.
+Default is still 3.0.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=759171
+---
+ configure.ac | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 2313c093..3d5d4823 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -77,12 +77,12 @@ dnl ==============================WebKit=======================================
+ m4_define([webkit_default], [3.0])
+ 
+ AC_ARG_WITH([webkit],
+-            [AC_HELP_STRING([--with-webkit=@<:@3.0/1.0@:>@],
++            [AC_HELP_STRING([--with-webkit=@<:@4.0/3.0/1.0@:>@],
+                             [Select the Webkit backend, default=3.0])],
+ 	    [],
+             [with_webkit=webkit_default])
+ 
+-dnl=== support both 1.0 and 3.0 (default 3.0) ==
++dnl=== support all 1.0, 3.0 and 4.0 (default 3.0) ==
+ AS_CASE([$with_webkit],
+ 	[3.0], [
+ 		WEBKIT_PC=webkitgtk-3.0
+@@ -90,6 +90,12 @@ AS_CASE([$with_webkit],
+ 		AC_CHECK_LIB(webkitgtk-3.0, JSContextGroupCreate,,
+ 	                AC_CHECK_LIB(javascriptcoregtk-3.0, JSContextGroupCreate,WEBKIT_PC=javascriptcoregtk-3.0)) 
+ 	],
++	[4.0], [
++		WEBKIT_PC=webkitgtk-4.0
++		SEED_GTK_VERSION=-gtk4
++		AC_CHECK_LIB(webkitgtk-4.0, JSContextGroupCreate,,
++	                AC_CHECK_LIB(javascriptcoregtk-4.0, JSContextGroupCreate,WEBKIT_PC=javascriptcoregtk-4.0))
++	],
+ 	[1.0], [
+ 		AC_CHECK_LIB(webkitgtk-1.0, JSContextGroupCreate,WEBKIT_PC=webkitgtk-1.0,
+ 	                AC_CHECK_LIB(javascriptcoregtk-1.0, JSContextGroupCreate,WEBKIT_PC=javascriptcoregtk-1.0, 
+-- 
+GitLab
+

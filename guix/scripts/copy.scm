@@ -175,6 +175,8 @@ Copy ITEMS to or from the specified host over SSH.\n"))
         (set-build-options-from-command-line store opts)
         (with-build-handler (build-notifier #:use-substitutes?
                                             (assoc-ref opts 'substitutes?)
+                                            #:verbosity
+                                            (assoc-ref opts 'verbosity)
                                             #:dry-run?
                                             (assoc-ref opts 'dry-run?))
           (with-status-verbosity (assoc-ref opts 'verbosity)

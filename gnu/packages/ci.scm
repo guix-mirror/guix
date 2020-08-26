@@ -47,8 +47,8 @@
   #:use-module (guix build-system gnu))
 
 (define-public cuirass
-  (let ((commit "136a8295e4e09724eccc230c127fb880aa84b57d")
-        (revision "38"))
+  (let ((commit "f2984c7230f69a6e50810edc5e9d36bd671801f9")
+        (revision "43"))
     (package
       (name "cuirass")
       (version (git-version "0.0.1" revision commit))
@@ -60,7 +60,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "04fzc2q8cd02dnlrarzlxq0yfi90735s5f6dw7g2k63rbxlhcq8j"))))
+                  "1p9mlmhv4kz8wixgywh1ffm3140p4mkgz92n7ry3n5s9w5n7fpjl"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -93,8 +93,10 @@
                       (git    (assoc-ref inputs "guile-git"))
                       (bytes  (assoc-ref inputs "guile-bytestructures"))
                       (fibers (assoc-ref inputs "guile-fibers"))
+                      (zlib   (assoc-ref inputs "guile-zlib"))
                       (guix   (assoc-ref inputs "guix"))
-                      (deps   (list gcrypt json sqlite git bytes fibers guix))
+                      (deps   (list gcrypt json sqlite git bytes fibers
+                                    zlib guix))
                       (guile  (assoc-ref %build-inputs "guile"))
                       (effective (read-line
                                   (open-pipe* OPEN_READ
@@ -126,6 +128,7 @@
          ("guile-json" ,guile-json-4)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-git" ,guile-git)
+         ("guile-zlib" ,guile-zlib)
          ;; FIXME: this is propagated by "guile-git", but it needs to be among
          ;; the inputs to add it to GUILE_LOAD_PATH.
          ("guile-bytestructures" ,guile-bytestructures)

@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -126,9 +126,9 @@ use their packages mostly unmodified in our Android NDK build system.")
 ;; Big thanks to them for laying the groundwork.
 
 ;; The version tag is consistent between all repositories.
-(define (android-platform-version) "7.1.2_r36")
+(define-public (android-platform-version) "7.1.2_r36")
 
-(define (android-platform-system-core version)
+(define-public (android-platform-system-core version)
   (origin
     (method git-fetch)
     (uri (git-reference
@@ -185,7 +185,7 @@ use their packages mostly unmodified in our Android NDK build system.")
      (base32
       checksum))))
 
-(define android-liblog
+(define-public android-liblog
   (package
     (name "android-liblog")
     (version (android-platform-version))
@@ -201,7 +201,16 @@ use their packages mostly unmodified in our Android NDK build system.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (symlink "liblog.so.0" (string-append out "/lib/liblog.so"))
-               #t))))))
+               #t)))
+         (add-after 'install 'install-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively
+                 "../include/log" (string-append out "/include/log"))
+               ;; For android/log.h, the only header in the android directory.
+               (copy-recursively
+                 "../include/android" (string-append out "/include/android")))
+             #t)))))
     (home-page "https://developer.android.com/")
     (synopsis "Logging library from the Android platform.")
     (description "@code{liblog} represents an interface to the volatile Android
@@ -229,7 +238,7 @@ in Main, System, Radio and Events sub-logs.")
 various Android core host applications.")
     (license license:asl2.0)))
 
-(define android-libcutils
+(define-public android-libcutils
   (package
     (name "android-libcutils")
     (version (android-platform-version))
@@ -691,7 +700,7 @@ file system.")
 (define-public android-udev-rules
   (package
     (name "android-udev-rules")
-    (version "20191103")
+    (version "20200613")
     (source
      (origin
        (method git-fetch)
@@ -700,7 +709,7 @@ file system.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x2f2sv0x0ry7kccp47s0hlxps3hbpg37dj3xjjgpdm5hmn2cjq3"))))
+        (base32 "0cf5br8x6iwxc1cifv0i1klw7skgs8hghdx6qlqby68kyqg81bb2"))))
     (build-system trivial-build-system)
     (native-inputs `(("source" ,source)))
     (arguments

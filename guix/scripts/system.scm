@@ -565,16 +565,14 @@ any, are available.  Raise an error if they're not."
   (define fail? #f)
 
   (define (file-system-location* fs)
-    (location->string
-     (source-properties->location
-      (file-system-location fs))))
+    (and=> (file-system-location fs)
+           source-properties->location))
 
   (let-syntax ((error (syntax-rules ()
                         ((_ args ...)
                          (begin
                            (set! fail? #t)
-                           (format (current-error-port)
-                                   args ...))))))
+                           (report-error args ...))))))
     (for-each (lambda (fs)
                 (catch 'system-error
                   (lambda ()
@@ -582,9 +580,9 @@ any, are available.  Raise an error if they're not."
                   (lambda args
                     (let ((errno  (system-error-errno args))
                           (device (file-system-device fs)))
-                      (error (G_ "~a: error: device '~a' not found: ~a~%")
-                             (file-system-location* fs) device
-                             (strerror errno))
+                      (error (file-system-location* fs)
+                             (G_ "device '~a' not found: ~a~%")
+                             device (strerror errno))
                       (unless (string-prefix? "/" device)
                         (display-hint (format #f (G_ "If '~a' is a file system
 label, write @code{(file-system-label ~s)} in your @code{device} field.")
@@ -594,13 +592,14 @@ label, write @code{(file-system-label ~s)} in your @code{device} field.")
                 (let ((label (file-system-label->string
                               (file-system-device fs))))
                   (unless (find-partition-by-label label)
-                    (error (G_ "~a: error: file system with label '~a' not found~%")
-                           (file-system-location* fs) label))))
+                    (error (file-system-location* fs)
+                           (G_ "file system with label '~a' not found~%")
+                           label))))
               labeled)
     (for-each (lambda (fs)
                 (unless (find-partition-by-uuid (file-system-device fs))
-                  (error (G_ "~a: error: file system with UUID '~a' not found~%")
-                         (file-system-location* fs)
+                  (error (file-system-location* fs)
+                         (G_ "file system with UUID '~a' not found~%")
                          (uuid->string (file-system-device fs)))))
               uuid)
 
@@ -1068,6 +1067,12 @@ Some ACTIONS support additional ARGS.\n"))
     (image-size . guess)
     (install-bootloader? . #t)))
 
+(define (verbosity-level opts)
+  "Return the verbosity level based on OPTS, the alist of parsed options."
+  (or (assoc-ref opts 'verbosity)
+      (if (eq? (assoc-ref opts 'action) 'build)
+          2 1)))
+
 
 ;;;
 ;;; Entry point.
@@ -1127,6 +1132,8 @@ resulting from command-line parsing."
 
       (with-build-handler (build-notifier #:use-substitutes?
                                           (assoc-ref opts 'substitutes?)
+                                          #:verbosity
+                                          (verbosity-level opts)
                                           #:dry-run?
                                           (assoc-ref opts 'dry-run?))
         (run-with-store store
@@ -1283,8 +1290,7 @@ argument list and OPTS is the option alist."
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
       (parameterize ((%graft? (assoc-ref opts 'graft?)))
-        (with-status-verbosity (or (assoc-ref opts 'verbosity)
-                                   (if (eq? command 'build) 2 1))
+        (with-status-verbosity (verbosity-level opts)
           (process-command command args opts))))))
 
 ;;; Local Variables:

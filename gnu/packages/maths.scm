@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
-;;; Copyright © 2018, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -511,6 +512,50 @@ differential equations, linear algebra, Fast Fourier Transforms and random
 numbers.")
     (license license:gpl3+)))
 
+(define-public sleef
+  (package
+    (name "sleef")
+    (version "3.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/shibatch/sleef")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gvf7cfvszmgjrsqivwmyy1jnp3hy80dmszxx827lhjz8yqq5019"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags (list "-DCMAKE_BUILD_TYPE=Release"
+                               (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                              (assoc-ref %outputs "out")
+                                              "/lib")
+                               (string-append "-DCMAKE_INSTALL_PREFIX="
+                                              (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; SLEEF generates a header library during the build process and writes
+         ;; to it via shell redirection.  Make the checkout writable so the
+         ;; build can succeed.
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t)))))
+    (inputs
+     `(("fftw" ,fftw)
+       ("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("openssl" ,openssl)))
+    (home-page "https://sleef.org/")
+    (synopsis "SIMD library for evaluating elementary functions and DFT")
+    (description
+     "SLEEF (SIMD Library for Evaluating Elementary Functions) is a library that
+implements vectorized versions of all C99 real floating point math functions.
+It can utilize SIMD instructions that are available on modern processors.")
+    (license (list license:boost1.0       ;sleef
+                   license:cc-by4.0))))   ;simplex algorithm
+
 (define-public glpk
   (package
     (name "glpk")
@@ -764,6 +809,62 @@ problems in numerical linear algebra.")
     (license (license:non-copyleft "file://LICENSE"
                                 "See LICENSE in the distribution."))))
 
+(define-public clapack
+  (package
+    (name "clapack")
+    (version "3.2.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.netlib.org/clapack/clapack-"
+                          version "-CMAKE.tgz"))
+      (sha256
+       (base32
+        "0nnap9q1mv14g57dl3vkvxrdr10k5w7zzyxs6rgxhia8q8mphgqb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; These tests use a lot of stack variables and segfault without
+         ;; lifting resource limits.
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             (substitute* "TESTING/CMakeLists.txt"
+               (("add_lapack_test.* xeigtstz\\)") ""))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib"))
+                    (f2cinc (string-append out "/include/libf2c")))
+               (mkdir-p f2cinc)
+               (display (getcwd))
+               (for-each (lambda (file)
+                           (install-file file libdir))
+                         '("SRC/liblapack.a"
+                           "F2CLIBS/libf2c/libf2c.a"
+                           "TESTING/MATGEN/libtmglib.a"
+                           "BLAS/SRC/libblas.a"))
+               (for-each (lambda (file)
+                           (install-file file f2cinc))
+                         (cons "F2CLIBS/libf2c/arith.h"
+                               (find-files (string-append "../clapack-"
+                                                          ,version "-CMAKE/F2CLIBS/libf2c")
+                                           "\\.h$")))
+               (copy-recursively (string-append "../clapack-"
+                                                ,version "-CMAKE/INCLUDE")
+                                 (string-append out "/include"))
+               #t))))))
+    (home-page "https://www.netlib.org/clapack/")
+    (synopsis "Numerical linear algebra library for C")
+    (description
+     "The CLAPACK library was built using a Fortran to C conversion utility
+called f2c.  The entire Fortran 77 LAPACK library is run through f2c to obtain
+C code, and then modified to improve readability.  CLAPACK's goal is to
+provide LAPACK for someone who does not have access to a Fortran compiler.")
+    (license (license:non-copyleft "file://LICENSE"
+                                   "See LICENSE in the distribution."))))
+
 (define-public scalapack
   (package
     (name "scalapack")
@@ -952,7 +1053,7 @@ incompatible with HDF5.")
     (synopsis
      "HDF4 without netCDF API, can be combined with the regular netCDF library")))
 
-(define-public hdf5
+(define-public hdf5-1.8
   (package
     (name "hdf5")
     (version "1.8.21")
@@ -1080,23 +1181,27 @@ extremely large and complex data collections.")
               "https://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
 (define-public hdf5-1.10
-  (package (inherit hdf5)
+  (package/inherit hdf5-1.8
     (version "1.10.6")
     (source
      (origin
-      (method url-fetch)
-      (uri (list (string-append "https://support.hdfgroup.org/ftp/HDF5/releases/"
-                                "hdf5-" (version-major+minor version)
-                                "/hdf5-" version "/src/hdf5-"
-                                version ".tar.bz2")
-                 (string-append "https://support.hdfgroup.org/ftp/HDF5/"
-                                "current"
-                                (apply string-append
-                                       (take (string-split version #\.) 2))
-                                "/src/hdf5-" version ".tar.bz2")))
-      (sha256
-       (base32 "1gf38x51128hn00744358w27xgzjk0ff4wra4yxh2lk804ck1mh9"))
-      (patches (search-patches "hdf5-config-date.patch"))))))
+       (method url-fetch)
+       (uri (list (string-append "https://support.hdfgroup.org/ftp/HDF5/releases/"
+                                 "hdf5-" (version-major+minor version)
+                                 "/hdf5-" version "/src/hdf5-"
+                                 version ".tar.bz2")
+                  (string-append "https://support.hdfgroup.org/ftp/HDF5/"
+                                 "current"
+                                 (apply string-append
+                                        (take (string-split version #\.) 2))
+                                 "/src/hdf5-" version ".tar.bz2")))
+       (sha256
+        (base32 "1gf38x51128hn00744358w27xgzjk0ff4wra4yxh2lk804ck1mh9"))
+       (patches (search-patches "hdf5-config-date.patch"))))))
+
+(define-public hdf5
+  ;; Default version of HDF5.
+  hdf5-1.8)
 
 (define-public hdf-java
   (package
@@ -1306,7 +1411,7 @@ Swath).")
     (license (license:non-copyleft home-page))))
 
 (define-public hdf5-parallel-openmpi
-  (package (inherit hdf5)
+  (package/inherit hdf5-1.10                      ;use the latest
     (name "hdf5-parallel-openmpi")
     (inputs
      `(("mpi" ,openmpi)
@@ -1332,7 +1437,7 @@ Swath).")
                (substitute* "testpar/Makefile"
                  (("(^TEST_PROG_PARA.*)t_pflush1(.*)" front back)
                   (string-append front back "\n")))
-               (substitute* "tools/h5diff/testph5diff.sh"
+               (substitute* "tools/test/h5diff/testph5diff.sh"
                  (("/bin/sh") (which "sh")))
                #t))))))
     (synopsis "Management suite for data with parallel IO support")))
@@ -1502,7 +1607,11 @@ sharing of scientific data.")
                 "--enable-parallel-tests"
                 ;; Shared libraries not supported with parallel IO.
                 "--disable-shared" "--with-pic"
-                ,flags))))))
+                ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'build 'mpi-setup
+             ,%openmpi-setup)))))))
 
 (define-public netcdf-fortran
   (package
@@ -1795,8 +1904,6 @@ script files.")
 (define-public octave
   (package (inherit octave-cli)
     (name "octave")
-    (source (origin
-              (inherit (package-source octave-cli))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
@@ -2017,6 +2124,70 @@ visualization capabilities.  Gmsh is built around four modules: geometry,
 mesh, solver and post-processing.  The specification of any input to these
 modules is done either interactively using the graphical user interface or in
 ASCII text files using Gmsh's own scripting language.")
+    (license license:gpl2+)))
+
+(define-public veusz
+  (package
+    (name "veusz")
+    (version "3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "veusz" version))
+       (sha256
+        (base32 "00vmfpvyd6f33l5awlf02qdik3gmbhzyfizfwwbx7qnam2i9bbwy"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Tests will fail because they depend on optional packages like
+       ;; python-astropy, which is not packaged.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; Veusz will append 'PyQt5' to sip_dir by default. That is not how
+         ;; the path is defined in Guix, therefore we have to change it.
+         (add-after 'unpack 'fix-sip-dir
+           (lambda _
+             (substitute* "pyqtdistutils.py"
+               (("os.path.join\\(sip_dir, 'PyQt5'\\)") "sip_dir"))
+             #t))
+         ;; Now we have to pass the correct sip_dir to setup.py.
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; We need to tell setup.py where to locate QtCoremod.sip
+             ((@@ (guix build python-build-system) call-setuppy)
+              "build_ext"
+              (list (string-append "--sip-dir="
+                                   (assoc-ref inputs "python-pyqt")
+                                   "/share/sip"))
+              #t)))
+         ;; Ensure that icons are found at runtime.
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/veusz")
+                 `("QT_PLUGIN_PATH" prefix
+                   ,(list (string-append (assoc-ref inputs "qtsvg")
+                                         "/lib/qt5/plugins/"))))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ;;("python-astropy" ,python-astropy) ;; FIXME: Package this.
+       ("qttools" ,qttools)))
+    (inputs
+     `(("ghostscript" ,ghostscript) ;optional, for EPS/PS output
+       ("python-dbus" ,python-dbus)
+       ("python-h5py" ,python-h5py) ;optional, for HDF5 data
+       ("python-pyqt" ,python-pyqt)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://veusz.github.io/")
+    (synopsis "Scientific plotting package")
+    (description
+     "Veusz is a scientific plotting and graphing program with a graphical
+user interface, designed to produce publication-ready 2D and 3D plots.  In
+addition it can be used as a module in Python for plotting.  It supports
+vector and bitmap output, including PDF, Postscript, SVG and EMF.")
     (license license:gpl2+)))
 
 (define-public maxflow
@@ -3218,7 +3389,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "20.04.0")
+    (version "20.06.6")
     (source
      (origin
        (method git-fetch)
@@ -3227,7 +3398,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vrjxzfgmjdzm1rgl0crz4b4badl14jwh032y3xkcdvjl5j67lp3"))))
+        (base32 "054f7n5kx75ng5j20rd5q27n9xxk03mrd7sbxyym1lsswzimqh4w"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -3245,6 +3416,14 @@ point numbers.")
      `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-doc-path
+           (lambda _
+             ;; Don't look in share/doc/wxmaxima-xx.xx.x for the
+             ;; documentation.  Only licensing information is placed there by
+             ;; Guix.
+             (substitute* "src/Dirstructure.cpp"
+               (("/doc/wxmaxima-\\%s") "/doc/wxmaxima"))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -4653,7 +4832,7 @@ reduction.")
 (define-public mcrl2
   (package
     (name "mcrl2")
-    (version "201908.0")
+    (version "202006.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4661,7 +4840,7 @@ reduction.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1i4xgl2d5fgiz1mwi50cyfkrrcpm8nxfayfjgmhq7chs58wlhfsz"))))
+                "167ryrzk1a2j53c2j198jlxa98amcaym070gkcj730619gymv5zl"))))
     (inputs
      `(("boost" ,boost)
        ("glu" ,glu)

@@ -189,7 +189,7 @@ graph), and battery status (high - green, low - yellow, or critical - red).")
 (define-public wmnd
   (package
     (name "wmnd")
-    (version "0.4.17")
+    (version "0.4.18")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -197,7 +197,7 @@ graph), and battery status (high - green, low - yellow, or critical - red).")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1amkbiwgr31gwkcp7wrjsr7aj1kns8bpmjpv70n86wb8v9mpm828"))))
+                "01s37d8cfpncza1mlw13ar4rcwbrc1vgaj3ifhglmlcnzvvayg0n"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)

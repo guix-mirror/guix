@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (guix http-client)
   #:use-module (guix json)
   #:use-module (guix i18n)
+  #:use-module ((guix diagnostics) #:select (formatted-message))
   #:use-module (json)
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
@@ -194,15 +195,11 @@ records."
       (raise (condition (&message
                          (message "invalid CVE feed")))))
     (unless (equal? format "MITRE")
-      (raise (condition
-              (&message
-               (message (format #f (G_ "unsupported CVE format: '~a'")
-                                format))))))
+      (raise (formatted-message (G_ "unsupported CVE format: '~a'")
+                                format)))
     (unless (equal? version "4.0")
-      (raise (condition
-              (&message
-               (message (format #f (G_ "unsupported CVE data version: '~a'")
-                                version))))))
+      (raise (formatted-message (G_ "unsupported CVE data version: '~a'")
+                                version)))
 
     (map json->cve-item
          (vector->list (assoc-ref alist "CVE_Items")))))

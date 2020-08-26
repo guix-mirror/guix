@@ -468,7 +468,7 @@ should be thread-safe.")
 (define-public libvterm
   (package
     (name "libvterm")
-    (version "0.1.1")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
@@ -476,7 +476,7 @@ should be thread-safe.")
                            "libvterm-" version ".tar.gz"))
        (sha256
         (base32
-         "1n5maylann2anfifjy576vzyar9q5m1kzpyiz2hca2pacxy8xf4v"))))
+         "1pfkhbbihd2kvaza707vl2nvk7bxaawmb37wf9v6d72mjng38w5w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1155,9 +1155,9 @@ made by suckless.")
         ("rust-log" ,rust-log-0.4)
         ("rust-time" ,rust-time-0.1)
         ("rust-env-logger" ,rust-env-logger-0.7)
-        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde" ,rust-serde-1)
         ("rust-serde-yaml" ,rust-serde-yaml-0.8)
-        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-serde-json" ,rust-serde-json-1)
         ("rust-glutin" ,rust-glutin-0.22) ; adjust 'patch-glutin-libgl-path as needed
         ("rust-notify" ,rust-notify-4)
         ("rust-libc" ,rust-libc-0.2)
@@ -1171,7 +1171,7 @@ made by suckless.")
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-base64" ,rust-base64-0.11)
         ("rust-bigflags" ,rust-bitflags-1)
-        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-fnv" ,rust-fnv-1)
         ("rust-mio" ,rust-mio-0.6)
         ("rust-mio-extras" ,rust-mio-extras-2)
         ("rust-terminfo" ,rust-terminfo-0.6)
@@ -1236,21 +1236,29 @@ made by suckless.")
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
                     (share (string-append out "/share"))
                     (icons (string-append share "/icons/hicolor/scalable/apps"))
                     (tic   (string-append (assoc-ref inputs "ncurses") "/bin/tic"))
                     (man   (string-append share "/man/man1"))
                     (alacritty-bin "target/release/alacritty"))
 
-               ;; Install binary
-               (install-file alacritty-bin (string-append out "/bin"))
+               ;; Install and wrap the binary.
+               (install-file alacritty-bin bin)
+               (wrap-program (string-append bin "/alacritty")
+                 ;; Both libraries are dlopen()d by cargo dependencies above
+                 ;; when running Alacritty on pure Wayland.
+                 ;; XXX Find out how to patch these at the source.
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append (assoc-ref inputs "libxkbcommon") "/lib:"
+                                    (assoc-ref inputs "wayland") "/lib"))))
 
-               ;; Install man pages
+               ;; Install man pages.
                (mkdir-p man)
                (copy-file "extra/alacritty.man"
                           (string-append man "/alacritty.1"))
 
-               ;; Install desktop file
+               ;; Install desktop file.
                (install-file "extra/linux/alacritty.desktop"
                              (string-append share "/applications"))
 
@@ -1259,7 +1267,7 @@ made by suckless.")
                (copy-file "extra/logo/alacritty-term.svg"
                           (string-append icons "/Alacritty.svg"))
 
-               ;; Install terminfo
+               ;; Install terminfo.
                (mkdir-p (string-append share "/terminfo"))
                ;; We don't compile alacritty-common entry because
                ;; it's being used only for inheritance.
@@ -1267,7 +1275,7 @@ made by suckless.")
                        "-o" (string-append share "/terminfo/")
                        "extra/alacritty.info")
 
-               ;; Install completions
+               ;; Install completions.
                (install-file
                  "extra/completions/alacritty.bash"
                  (string-append out "/etc/bash_completion.d"))

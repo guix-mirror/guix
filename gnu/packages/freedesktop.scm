@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
@@ -60,6 +62,7 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -77,6 +80,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
@@ -93,6 +97,103 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
+
+(define-public libglib-testing
+  (package
+    (name "libglib-testing")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/pwithnall/libglib-testing.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xmycsrlqyji6sc2i4wvp2gxf3897z65a57ygihfnpjpyl7zlwkr"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+             'check 'pre-check
+           (lambda _
+             ;; The test suite requires a running dbus-daemon.
+             (system "dbus-daemon &")
+             ;; Don't fail on missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("gtk-doc" ,gtk-doc)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("glib" ,glib)))
+    (synopsis "Glib testing library")
+    (description "Libglib-testing is a test library providing test harnesses and
+mock classes which complement the classes provided by GLib.  It is intended to
+be used by any project which uses GLib and which wants to write internal unit
+tests.")
+    (home-page "https://gitlab.gnome.org/pwithnall/libglib-testing")
+    (license license:lgpl2.1+)))
+
+(define-public malcontent
+  (package
+    (name "malcontent")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/pwithnall/malcontent.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vnf0pk516fwwh41v96c29l2i7h1pnwhivlkbf53kkx1q35g7lb3"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         ;; AppInfo not available inside build environment.
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "libmalcontent/tests/app-filter.c"
+               (("g_test_add_func \\(\"/app-filter/appinfo\", test_app_filter_appinfo\\);")
+                 ""))
+             #t)))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("itstool" ,itstool)
+       ("libglib-testing" ,libglib-testing)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("accountsservice" ,accountsservice)
+       ("appstream-glib" ,appstream-glib)
+       ("dbus" ,dbus)
+       ("flatpak" ,flatpak)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libostree" ,libostree)
+       ("linux-pam" ,linux-pam)
+       ("polkit" ,polkit)))
+    (synopsis "Parental controls support")
+    (description "MalContent implements parental controls support which can
+be used by applications to filter or limit the access of child accounts to
+inappropriate content.")
+    (home-page "https://gitlab.freedesktop.org/pwithnall/malcontent")
+    (license
+     (list
+      license:gpl2+
+      license:lgpl2.1+))))
 
 (define-public xdg-utils
   (package
@@ -1880,4 +1981,145 @@ useful with system integration.")
     (description "A library to allow applications to export a menu, originally
 into the Unity menu bar.  Based on KSNI, it also works in KDE and will
 fallback to generic Systray support if none of those are available.")
+    (license license:lgpl2.1+)))
+
+(define-public libportal
+  (let ((commit "bff3289")
+        (revision "1"))
+    (package
+      (name "libportal")
+      (version (git-version "0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/flatpak/libportal")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "104b91qircr1i9jkmm6f725awywky52aimrki303kiaadn2v8b5i"))))
+      (build-system meson-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'move-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc"))
+                     (html "/share/gtk-doc"))
+                 (copy-recursively (string-append out html)
+                                   (string-append doc html))
+                 (delete-file-recursively (string-append out html))
+                 #t))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("gtk-doc" ,gtk-doc)
+         ("docbook-xsl" ,docbook-xsl)
+         ("docbook-xml" ,docbook-xml)
+         ("libxml2" ,libxml2)
+         ("glib:bin" ,glib "bin")))
+      (propagated-inputs
+       `(("glib" ,glib)))
+      (outputs '("out" "doc"))
+      (home-page "https://github.com/flatpak/libportal")
+      (synopsis "Flatpak portal library")
+      (description
+       "libportal provides GIO-style async APIs for most Flatpak portals.")
+      (license license:lgpl2.1+))))
+
+(define-public xdg-desktop-portal
+  (package
+    (name "xdg-desktop-portal")
+    (version "1.7.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/flatpak/xdg-desktop-portal")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rkwpsmbn3d3spkzc2zsd50l2r8pp4la390zcpsawaav8w7ql7xm"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("glib:bin" ,glib "bin")
+       ("which" ,which)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("glib" ,glib)
+       ("flatpak" ,flatpak)
+       ("fontconfig" ,fontconfig)
+       ("json-glib" ,json-glib)
+       ("libportal" ,libportal)
+       ("dbus" ,dbus)
+       ("geoclue" ,geoclue)
+       ("pipewire" ,pipewire-0.3)
+       ("fuse" ,fuse)))
+    (home-page "https://github.com/flatpak/xdg-desktop-portal")
+    (synopsis "Desktop integration portal for sandboxed apps")
+    (description
+     "xdg-desktop-portal is a @dfn{portal front-end service} for Flatpak and
+possibly other desktop containment frameworks.  It works by exposing a series
+of D-Bus interfaces known as portals under a well-known
+name (@code{org.freedesktop.portal.Desktop}) and object
+path (@code{/org/freedesktop/portal/desktop}).
+
+The portal interfaces include APIs for file access, opening URIs, printing
+and others.")
+    (license license:lgpl2.1+)))
+
+(define-public xdg-desktop-portal-gtk
+  (package
+    (name "xdg-desktop-portal-gtk")
+    (version "1.7.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/flatpak/xdg-desktop-portal-gtk")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "183iha9dxmvprn99ymgz17jx1lyn1fj5jyj6ghxl716zn9mxmird"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'po-chmod
+           (lambda _
+             ;; Make sure 'msgmerge' can modify the PO files.
+             (for-each (lambda (po)
+                         (chmod po #o666))
+                       (find-files "po" "\\.po$"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("xdg-desktop-portal" ,xdg-desktop-portal)
+       ("glib:bin" ,glib "bin")
+       ("which" ,which)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk" ,gtk+)
+       ("fontconfig" ,fontconfig)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XDG_DESKTOP_PORTAL_DIR")
+            (files '("share/xdg-desktop-portal/portals")))))
+    (home-page "https://github.com/flatpak/xdg-desktop-portal-gtk")
+    (synopsis "GTK implementation of xdg-desktop-portal")
+    (description
+     "This package provides a backend implementation for xdg-desktop-portal
+which uses GTK+ and various pieces of GNOME infrastructure, such as the
+@code{org.gnome.Shell.Screenshot} or @code{org.gnome.SessionManager} D-Bus
+interfaces.")
     (license license:lgpl2.1+)))

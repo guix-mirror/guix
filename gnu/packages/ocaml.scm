@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,13 +61,13 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web-browsers)
   #:use-module (gnu packages xml)
@@ -461,10 +462,6 @@ the opam file fomat.")
 
        #:test-target "tests"
 
-       ;; FIXME: There's an obscure test failure:
-       ;;   …/_obuild/opam/opam.asm install P1' failed.
-       #:tests? #f
-
        #:phases (modify-phases %standard-phases
                  (add-before 'build 'pre-build
                    (lambda* (#:key inputs make-flags #:allow-other-keys)
@@ -495,15 +492,31 @@ the opam file fomat.")
                        #t)))
                  (add-before 'check 'pre-check
                    (lambda _
-                     (setenv "HOME" (getcwd))
-                     (invoke "git" "config" "--global" "user.email" "guix@gnu.org")
-                     (invoke "git" "config" "--global" "user.name" "Guix")
+                     ;; The "repo" test attempts to open some of these files O_WRONLY
+                     ;; and fails with a bogus "OpamSystem.File_not_found" otherwise.
+                     (for-each
+                      (lambda (f) (chmod f #o644))
+                      (find-files "tests/packages" "\\.opam$"))
+
+                     (substitute* "tests/Makefile"
+                       (("/usr/bin/printf")
+                        (which "printf"))
+                       ;; By default tests run twice: once with a "local" repository
+                       ;; and once with a git repository: disable the git tests to
+                       ;; avoid the dependency.
+                       (("all: local git")
+                        "all: local"))
                      #t)))))
     (native-inputs
      `(("dune" ,dune)
-       ("git" ,git)                               ;for the tests
        ("ocaml-cppo" ,ocaml-cppo)
-       ("python" ,python)))                       ;for the tests
+
+       ;; For tests.
+       ("openssl" ,openssl)
+       ("python" ,python-wrapper)
+       ("rsync" ,rsync)
+       ("unzip" ,unzip)
+       ("which" ,which)))
     (inputs
      `(("ocaml" ,ocaml)
        ("ncurses" ,ncurses)

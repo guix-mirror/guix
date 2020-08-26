@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix man-db)
-  #:use-module (guix zlib)
+  #:use-module (zlib)
   #:use-module ((guix build utils) #:select (find-files))
   #:use-module (gdbm)                             ;gdbm-ffi
   #:use-module (srfi srfi-9)

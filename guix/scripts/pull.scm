@@ -773,6 +773,8 @@ Use '~/.config/guix/channels.scm' instead."))
                                  (%graft? (assoc-ref opts 'graft?)))
                     (with-build-handler (build-notifier #:use-substitutes?
                                                         substitutes?
+                                                        #:verbosity
+                                                        (assoc-ref opts 'verbosity)
                                                         #:dry-run? dry-run?)
                       (set-build-options-from-command-line store opts)
                       (ensure-default-profile)

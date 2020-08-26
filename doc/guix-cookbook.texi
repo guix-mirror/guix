@@ -64,6 +64,7 @@ Translation Project}.
 * Packaging::                   Packaging tutorials
 * System Configuration::        Customizing the GNU System
 * Advanced package management:: Power to the users!
+* Environment management::      Control environment
 
 * Acknowledgments::             Thanks!
 * GNU Free Documentation License::  The license of this document.
@@ -2267,6 +2268,130 @@ mkdir -p "$GUIX_EXTRA_PROFILES/my-project"
 
 It's safe to delete the Guix channel profile you've just installed with the
 channel specification, the project profile does not depend on it.
+
+@c *********************************************************************
+@node Environment management
+@chapter Environment management
+
+Guix provides multiple tools to manage environment.  This chapter
+demonstrate such utilities.
+
+@menu
+* Guix environment via direnv:: Setup Guix environment with direnv
+@end menu
+
+@node Guix environment via direnv
+@section Guix environment via direnv
+
+Guix provides a @samp{direnv} package, which could extend shell after
+directory change.  This tool could be used to prepare a pure Guix
+environment.
+
+The following example provides a shell function for @file{~/.direnvrc}
+file, which could be used from Guix Git repository in
+@file{~/src/guix/.envrc} file to setup a build environment similar to
+described in @pxref{Building from Git,,, guix, GNU Guix Reference
+Manual}.
+
+Create a @file{~/.direnvrc} with a Bash code:
+
+@example
+# Thanks <https://github.com/direnv/direnv/issues/73#issuecomment-152284914>
+export_function()
+@{
+  local name=$1
+  local alias_dir=$PWD/.direnv/aliases
+  mkdir -p "$alias_dir"
+  PATH_add "$alias_dir"
+  local target="$alias_dir/$name"
+  if declare -f "$name" >/dev/null; then
+    echo "#!$SHELL" > "$target"
+    declare -f "$name" >> "$target" 2>/dev/null
+    # Notice that we add shell variables to the function trigger.
+    echo "$name \$*" >> "$target"
+    chmod +x "$target"
+  fi
+@}
+
+use_guix()
+@{
+    # Set GitHub token.
+    export GUIX_GITHUB_TOKEN="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+    # Unset 'GUIX_PACKAGE_PATH'.
+    export GUIX_PACKAGE_PATH=""
+
+    # Recreate a garbage collector root.
+    gcroots="$HOME/.config/guix/gcroots"
+    mkdir -p "$gcroots"
+    gcroot="$gcroots/guix"
+    if [ -L "$gcroot" ]
+    then
+        rm -v "$gcroot"
+    fi
+
+    # Miscellaneous packages.
+    PACKAGES_MAINTENANCE=(
+        direnv
+        git
+        git:send-email
+        git-cal
+        gnupg
+        guile-colorized
+        guile-readline
+        less
+        ncurses
+        openssh
+        xdot
+    )
+
+    # Environment packages.
+    PACKAGES=(help2man guile-sqlite3 guile-gcrypt)
+
+    # Thanks <https://lists.gnu.org/archive/html/guix-devel/2016-09/msg00859.html>
+    eval "$(guix environment --search-paths --root="$gcroot" --pure guix --ad-hoc $@{PACKAGES[@@]@} $@{PACKAGES_MAINTENANCE[@@]@} "$@@")"
+
+    # Predefine configure flags.
+    configure()
+    @{
+        ./configure --localstatedir=/var --prefix=
+    @}
+    export_function configure
+
+    # Run make and optionally build something.
+    build()
+    @{
+        make -j 2
+        if [ $# -gt 0 ]
+        then
+            ./pre-inst-env guix build "$@@"
+        fi
+    @}
+    export_function build
+
+    # Predefine push Git command.
+    push()
+    @{
+        git push --set-upstream origin
+    @}
+    export_function push
+
+    clear                        # Clean up the screen.
+    git-cal --author='Your Name' # Show contributions calendar.
+
+    # Show commands help.
+    echo "
+build          build a package or just a project if no argument provided
+configure      run ./configure with predefined parameters
+push           push to upstream Git repository
+"
+@}
+@end example
+
+Every project containing @file{.envrc} with a string @code{use guix}
+will have predefined environment variables and procedures.
+
+Run @command{direnv allow} to setup the environment for the first time.
 
 @c *********************************************************************
 @node Acknowledgments

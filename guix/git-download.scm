@@ -84,35 +84,26 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
           ("tar" ,(module-ref (resolve-interface '(gnu packages base))
                               'tar)))))
 
-  (define zlib
-    (module-ref (resolve-interface '(gnu packages compression)) 'zlib))
-
   (define guile-json
     (module-ref (resolve-interface '(gnu packages guile)) 'guile-json-3))
+
+  (define guile-zlib
+    (module-ref (resolve-interface '(gnu packages guile)) 'guile-zlib))
 
   (define gnutls
     (module-ref (resolve-interface '(gnu packages tls)) 'gnutls))
 
-  (define config.scm
-    (scheme-file "config.scm"
-                 #~(begin
-                     (define-module (guix config)
-                       #:export (%libz))
-
-                     (define %libz
-                       #+(file-append zlib "/lib/libz")))))
-
   (define modules
-    (cons `((guix config) => ,config.scm)
-          (delete '(guix config)
-                  (source-module-closure '((guix build git)
-                                           (guix build utils)
-                                           (guix build download-nar)
-                                           (guix swh))))))
+    (delete '(guix config)
+            (source-module-closure '((guix build git)
+                                     (guix build utils)
+                                     (guix build download-nar)
+                                     (guix swh)))))
 
   (define build
     (with-imported-modules modules
-      (with-extensions (list guile-json gnutls)   ;for (guix swh)
+      (with-extensions (list guile-json gnutls   ;for (guix swh)
+                             guile-zlib)
         #~(begin
             (use-modules (guix build git)
                          (guix build utils)

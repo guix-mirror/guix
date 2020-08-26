@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e89a6a9..a594786 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -126,10 +126,6 @@ find_package(LibBpf)
+ find_package(LibBfd)
+ find_package(LibOpcodes)
+ 
+-if(${LIBBFD_FOUND} AND ${LIBOPCODES_FOUND})
+-  set(HAVE_BFD_DISASM TRUE)
+-endif()
+-
+ include(CheckIncludeFile)
+ check_include_file("sys/sdt.h" HAVE_SYSTEMTAP_SYS_SDT_H)
+ 

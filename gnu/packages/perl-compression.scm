@@ -36,14 +36,14 @@
 (define-public perl-compress-bzip2
   (package
     (name "perl-compress-bzip2")
-    (version "2.26")
+    (version "2.28")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Compress-Bzip2-" version ".tar.gz"))
        (sha256
-        (base32 "032gbhpjch4yc7r32b0glhi5qn6f1sm35lrnxrvlv9bpyg2z0cji"))))
+        (base32 "0vhi6nqayvg6wz55bynccv5xd6gzhbigk9mjv088i6aw7xf877w5"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -69,14 +69,14 @@ is available in this module.")
 (define-public perl-compress-raw-bzip2
   (package
     (name "perl-compress-raw-bzip2")
-    (version "2.091")
+    (version "2.095")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "Compress-Raw-Bzip2-" version ".tar.gz"))
        (sha256
-        (base32 "0c5lwaynkcprjd18d3c82m8cniyq3c8mc4jk42gb32lp7cyyzmr7"))))
+        (base32 "1n72lr35axc9hhxxf9ss6b576s1fn8vab6dcsmbbb7h234j5hzg5"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
     (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
@@ -88,14 +88,14 @@ compression library.")
 (define-public perl-compress-raw-zlib
   (package
     (name "perl-compress-raw-zlib")
-    (version "2.091")
+    (version "2.095")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "Compress-Raw-Zlib-" version ".tar.gz"))
        (sha256
-        (base32 "0vrzk1jzw2kwrsvnd190m7jl925cbd4skp6ipv5pndkn4y8gnzxn"))))
+        (base32 "1ci1mp361cjkky2s30ganzvxcjj93rqjf26mli786wyicwr6ab5s"))))
     (build-system perl-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -123,14 +123,14 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.091")
+    (version "2.095")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "IO-Compress-" version ".tar.gz"))
        (sha256
-        (base32 "15ayljvmxszkd5bvzd52l7gv71ldj8bhdqdnj9f48dipn681238z"))))
+        (base32 "14spyqv7x608kvi7wsj4pw68dxwnjlh0aqff5b5iw7wg5v569q4h"))))
     (build-system perl-build-system)
     (propagated-inputs
      ;; These two packages should be updated to this one's version first.

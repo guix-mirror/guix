@@ -11,6 +11,8 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,8 +35,11 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix l:)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -248,7 +253,7 @@ sound server.")
 (define-public pavucontrol
   (package
     (name "pavucontrol")
-    (version "3.0")
+    (version "4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -257,7 +262,7 @@ sound server.")
                    ".tar.xz"))
              (sha256
               (base32
-               "14486c6lmmirkhscbfygz114f6yzf97h35n3h3pdr27w4mdfmlmk"))))
+               "1qhlkl3g8d7h72xjskii3g1l7la2cavwp69909pzmbi2jyn5pi4g"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)          ;hard-coded theme
@@ -314,7 +319,7 @@ sinks.")
 (define-public pulsemixer
   (package
     (name "pulsemixer")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -323,7 +328,7 @@ sinks.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "162nfpyqn4gp45x332a73n07c118vispz3jicin4p67x3f8f0g3j"))))
+                "1jagx9zmz5pfsld8y2rj2kqg6ww9f6vqiawfy3vhqc49x3xx92p4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -468,3 +473,116 @@ volume levels of the sinks (get, set, decrease, increase, toggle mute, etc).")
 PulseAudio server settings from the X11 system tray.  See the project
 README.md for a detailed list of features.")
     (license l:lgpl2.1+)))
+
+(define-public paprefs
+  (package
+    (name "paprefs")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.freedesktop.org/software/pulseaudio/"
+                           name "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "189z5p20hk0xv9vwvym293503j4pwl03xqk9hl7cl6dwgv0l7wkf"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtkmm" ,gtkmm)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "https://freedesktop.org/software/pulseaudio/paprefs/")
+    (synopsis "Simple GTK based configuration dialog for the PulseAudio sound
+server")
+    (description "@command{paprefs} is a simple GTK based configuration
+dialog for the PulseAudio sound server.  Note that this program can
+only configure local servers, and requires that a special module
+module-gsettings is loaded in the sound server.")
+    (license l:gpl2)))
+
+(define-public rnnoise
+  (package
+    (name "rnnoise")
+    (version "0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/werman/noise-suppression-for-voice")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18bq5b50xw3d4r1ildinafpg3isb9y216430h4mm9wr3ir7h76a7"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (inputs
+     `(;; TODO: Package VST to build the corresponding plugin.
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "https://github.com/werman/noise-suppression-for-voice")
+    (synopsis "Real-time Noise suppression plugin based on Xiph's RNNoise")
+    (description "The plugin is meant to suppress a wide range of noise
+origins: computer fans, office, crowd, airplane, car, train, construction.
+
+Mild background noise is always suppressed, loud sounds, like
+clicking of mechanical keyboard, are suppressed while there is no voice
+however they are only reduced in volume when voice is present.
+
+The plugin is made to work with 1 or 2 channels (ladspa plugin),
+16 bit, 48000 Hz audio input.")
+    (license l:gpl3)))
+
+(define-public noisetorch
+  (package
+    (name "noisetorch")
+    (version "0.6.1-beta")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lawl/NoiseTorch")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jmh7204mhlabdn0azfjrm3kb944j24n0w0cwibqrs9lfgdn8k52"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/lawl/NoiseTorch"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'symlink-rnnoise
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src/github.com/lawl/NoiseTorch"
+               (let ((dir "librnnoise_ladspa/bin/ladspa")
+                     (rnnoise (assoc-ref inputs "rnnoise")))
+                 (mkdir-p dir)
+                 (symlink (string-append rnnoise "/lib/ladspa/librnnoise_ladspa.so")
+                          (string-append dir "/librnnoise_ladspa.so"))))
+             #t))
+         (add-after 'unpack 'gen-version.go
+           (lambda _
+             (with-directory-excursion "src/github.com/lawl/NoiseTorch"
+               (substitute* "main.go"
+                 (("//go:generate go run scripts/embedversion\\.go") ""))
+               (with-output-to-file "version.go"
+                 (lambda ()
+                   (format #t "package main~%~%var version=~s~&" ,version))))
+             #t))
+         (add-before 'build 'go-generate
+           (lambda _
+             (with-directory-excursion "src/github.com/lawl/NoiseTorch"
+               (invoke "go" "generate")))))))
+    (inputs
+     `(("rnnoise" ,rnnoise)))
+    (home-page "https://github.com/lawl/NoiseTorch")
+    (synopsis "Real-time microphone noise suppression")
+    (description "NoiseTorch creates a virtual PulseAudio microphone that
+suppresses noise, in any application.  Use whichever conferencing or VOIP
+application you like and simply select the NoiseTorch Virtual Microphone as
+input to torch the sound of your mechanical keyboard, computer fans, trains
+and the likes.")
+    (license l:gpl3)))

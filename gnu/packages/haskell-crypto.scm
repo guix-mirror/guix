@@ -150,6 +150,7 @@ algorithm (ex: padding) is within scope of this package.")
         (base32
          "0w3j43jdrlj28jryp18hc6q84nkl2yf4vs1hhgrsk7gb9kfyqjpl"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs `(("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
               ("ghc-crypto-api" ,ghc-crypto-api)
               ("ghc-cereal" ,ghc-cereal)
@@ -310,6 +311,7 @@ the C implementation.")
     ;; FIXME: tests are broken.
     ;; See https://github.com/haskell-crypto/cryptonite/issues/260
     (arguments '(#:tests? #f))
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-basement" ,ghc-basement)
        ("ghc-memory" ,ghc-memory)
@@ -343,6 +345,8 @@ generators, and more.")
         (base32
          "04gy2zp8yzvv7j9bdfvmfzcz3sqyqa6rwslqcn4vyair2vmif5v4"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("zlib")))
     (inputs
      `(("zlib" ,zlib)))
     (home-page
@@ -790,6 +794,8 @@ extensions.")
         (base32
          "0qivl9clmybfglwxqp2sq308rv4ia4rhwshcsc8b029bvpp0mpsi"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:extra-directories ("openssl")))
     (inputs
      `(("ghc-network" ,ghc-network)
        ("openssl" ,openssl)))

@@ -778,12 +778,13 @@ Guile,, gnutls-guile, GnuTLS-Guile});
 @item
 @uref{https://notabug.org/guile-sqlite3/guile-sqlite3, Guile-SQLite3}, version 0.1.0
 or later;
+@item @uref{https://notabug.org/guile-zlib/guile-zlib, Guile-zlib};
+@item @uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib};
 @item
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
 2017 or later;
 @item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON} 3.x;
-@item @url{https://zlib.net, zlib};
 @item @url{https://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
@@ -1042,29 +1043,31 @@ When desired, the build daemon can @dfn{offload} derivation builds to
 other machines running Guix, using the @code{offload} @dfn{build
 hook}@footnote{This feature is available only when
 @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH} is
-present.}.  When that
-feature is enabled, a list of user-specified build machines is read from
-@file{/etc/guix/machines.scm}; every time a build is requested, for
-instance via @code{guix build}, the daemon attempts to offload it to one
-of the machines that satisfy the constraints of the derivation, in
-particular its system type---e.g., @file{x86_64-linux}.  Missing
-prerequisites for the build are copied over SSH to the target machine,
-which then proceeds with the build; upon success the output(s) of the
-build are copied back to the initial machine.
+present.}.  When that feature is enabled, a list of user-specified build
+machines is read from @file{/etc/guix/machines.scm}; every time a build
+is requested, for instance via @code{guix build}, the daemon attempts to
+offload it to one of the machines that satisfy the constraints of the
+derivation, in particular its system types---e.g., @code{x86_64-linux}.
+A single machine can have multiple system types, either because its
+architecture natively supports it, via emulation (@pxref{Transparent
+Emulation with QEMU}), or both.  Missing prerequisites for the build are
+copied over SSH to the target machine, which then proceeds with the
+build; upon success the output(s) of the build are copied back to the
+initial machine.
 
 The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @lisp
 (list (build-machine
         (name "eightysix.example.org")
-        (system "x86_64-linux")
+        (systems (list "x86_64-linux" "i686-linux"))
         (host-key "ssh-ed25519 AAAAC3Nza@dots{}")
         (user "bob")
         (speed 2.))     ;incredibly fast!
 
       (build-machine
         (name "armeight.example.org")
-        (system "aarch64-linux")
+        (systems (list "aarch64-linux"))
         (host-key "ssh-rsa AAAAB3Nza@dots{}")
         (user "alice")
         (private-key
@@ -1074,8 +1077,8 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @noindent
 In the example above we specify a list of two build machines, one for
-the @code{x86_64} architecture and one for the @code{aarch64}
-architecture.
+the @code{x86_64} and @code{i686} architectures and one for the
+@code{aarch64} architecture.
 
 In fact, this file is---not surprisingly!---a Scheme file that is
 evaluated when the @code{offload} hook is started.  Its return value
@@ -1095,8 +1098,9 @@ builds.  The important fields are:
 @item name
 The host name of the remote machine.
 
-@item system
-The system type of the remote machine---e.g., @code{"x86_64-linux"}.
+@item systems
+The system types the remote machine supports---e.g., @code{(list
+"x86_64-linux" "i686-linux")}.
 
 @item user
 The user account to use when connecting to the remote machine over SSH.
@@ -4245,10 +4249,28 @@ time-machine}, the command looks up the introductory commit and verifies
 that it is signed by the specified OpenPGP key.  From then on, it
 authenticates commits according to the rule above.
 
-To summarize, as the author of a channel, there are two things you have
+Additionally, your channel must provide all the OpenPGP keys that were
+ever mentioned in @file{.guix-authorizations}, stored as @file{.key}
+files, which can be either binary or ``ASCII-armored''.  By default,
+those @file{.key} files are searched for in the branch named
+@code{keyring} but you can specify a different branch name in
+@code{.guix-channel} like so:
+
+@lisp
+(channel
+  (version 0)
+  (keyring-reference "my-keyring-branch"))
+@end lisp
+
+To summarize, as the author of a channel, there are three things you have
 to do to allow users to authenticate your code:
 
 @enumerate
+@item
+Export the OpenPGP keys of past and present committers with @command{gpg
+--export} and store them in @file{.key} files, by default in a branch
+named @code{keyring} (we recommend making it an @dfn{orphan branch}).
+
 @item
 Introduce an initial @file{.guix-authorizations} in the channel's
 repository.  Do that in a signed commit (@pxref{Commit Access}, for
@@ -4340,6 +4362,12 @@ something like this:
          (body (en "Don't miss the @@code@{hello@} package!"))))
 @end lisp
 
+While the news file is using the Scheme syntax, avoid naming it with a
+@file{.scm} extension or else it will get picked up when building the
+channel and yield an error since it is not a valid module.
+Alternatively, you can move the channel module to a subdirectory and
+store the news file in another directory.
+
 The file consists of a list of @dfn{news entries}.  Each entry is
 associated with a commit or tag: it describes changes made in this
 commit, possibly in preceding commits as well.  Users see entries only
@@ -4358,7 +4386,7 @@ you write news entries in English first, the command below creates a PO
 file containing the strings to translate:
 
 @example
-xgettext -o news.po -l scheme -ken etc/news.scm
+xgettext -o news.po -l scheme -ken etc/news.txt
 @end example
 
 To sum up, yes, you could use your channel as a blog.  But beware, this
@@ -4379,7 +4407,7 @@ say, on another machine, by providing a channel specification in
 (list (channel
        (name 'guix)
        (url "https://git.savannah.gnu.org/git/guix.git")
-       (commit "d894ab8e9bfabcefa6c49d9ba2e834dd5a73a300"))
+       (commit "6298c3ffd9654d3231a6f25390b056483e8f407c"))
       (channel
        (name 'my-personal-packages)
        (url "https://example.org/personal-packages.git")
@@ -11927,7 +11955,7 @@ If the @code{users} list lacks a user account with UID@tie{}0, a
 ``root'' account with UID@tie{}0 is automatically added.
 
 @item @code{skeletons} (default: @code{(default-skeletons)})
-A list target file name/file-like object tuples (@pxref{G-Expressions,
+A list of target file name/file-like object tuples (@pxref{G-Expressions,
 file-like objects}).  These are the skeleton files that will be added to
 the home directory of newly-created user accounts.
 
@@ -11945,8 +11973,15 @@ A string denoting the contents of the @file{/etc/issue} file, which is
 displayed when users log in on a text console.
 
 @item @code{packages} (default: @code{%base-packages})
-The set of packages installed in the global profile, which is accessible
-at @file{/run/current-system/profile}.
+A list of packages to be installed in the global profile, which is accessible
+at @file{/run/current-system/profile}.  Each element is either a package
+variable or a package/output tuple.  Here's a simple example of both:
+
+@lisp
+(cons* git                     ; the default "out" output
+       (list git "send-email") ; another output of git
+       %base-packages)         ; the default set
+@end lisp
 
 The default set includes core utilities and it is good practice to
 install non-core utilities in user profiles (@pxref{Invoking guix
@@ -12147,6 +12182,12 @@ errors before being mounted.
 
 @item @code{create-mount-point?} (default: @code{#f})
 When true, the mount point is created if it does not exist yet.
+
+@item @code{mount-may-fail?} (default: @code{#f})
+When true, this indicates that mounting this file system can fail but
+that should not be considered an error.  This is useful in unusual
+cases; an example of this is @code{efivarfs}, a file system that can
+only be mounted on EFI/UEFI systems.
 
 @item @code{dependencies} (default: @code{'()})
 This is a list of @code{<file-system>} or @code{<mapped-device>} objects
@@ -12915,6 +12956,7 @@ declaration.
 * Scheduled Job Execution::     The mcron service.
 * Log Rotation::                The rottlog service.
 * Networking Services::         Network setup, SSH daemon, etc.
+* Unattended Upgrades::         Automated system upgrades.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
@@ -15131,7 +15173,7 @@ a positive integer, ports @var{n} and @var{n}+1 are used for
 monitoring the connection, such that port @var{n} is the base
 monitoring port and @code{n+1} is the echo port.  When set to
 @code{"@var{n}:@var{m}"} where @var{n} and @var{m} are positive
-integers, the ports @var{n} and @var{n}+1 are used for monitoring the
+integers, the ports @var{n} and @var{m} are used for monitoring the
 connection, such that port @var{n} is the base monitoring port and
 @var{m} is the echo port.
 
@@ -15284,6 +15326,140 @@ is @code{proto:kitename:host:port:secret}.
 Extra configuration file to read, which you are expected to create manually.
 Use this to add additional options and manage shared secrets out-of-band.
 
+@end table
+@end deftp
+
+@node Unattended Upgrades
+@subsection Unattended Upgrades
+
+@cindex unattended upgrades
+@cindex upgrades, unattended
+Guix provides a service to perform @emph{unattended upgrades}:
+periodically, the system automatically reconfigures itself from the
+latest Guix.  Guix System has several properties that make unattended
+upgrades safe:
+
+@itemize
+@item
+upgrades are transactional (either the upgrade succeeds or it fails, but
+you cannot end up with an ``in-between'' system state);
+@item
+the upgrade log is kept---you can view it with @command{guix system
+list-generations}---and you can roll back to any previous generation,
+should the upgraded system fail to behave as intended;
+@item
+channel code is authenticated so you know you can only run genuine code
+(@pxref{Channels});
+@item
+@command{guix system reconfigure} prevents downgrades, which makes it
+immune to @dfn{downgrade attacks}.
+@end itemize
+
+To set up unattended upgrades, add an instance of
+@code{unattended-upgrade-service-type} like the one below to the list of
+your operating system services:
+
+@lisp
+(service unattended-upgrade-service-type)
+@end lisp
+
+The defaults above set up weekly upgrades: every Sunday at midnight.
+You do not need to provide the operating system configuration file: it
+uses @file{/run/current-system/configuration.scm}, which ensures it
+always uses your latest configuration---@pxref{provenance-service-type},
+for more information about this file.
+
+There are several things that can be configured, in particular the
+periodicity and services (daemons) to be restarted upon completion.
+When the upgrade is successful, the service takes care of deleting
+system generations older that some threshold, as per @command{guix
+system delete-generations}.  See the reference below for details.
+
+To ensure that upgrades are actually happening, you can run
+@command{guix system describe}.  To investigate upgrade failures, visit
+the unattended upgrade log file (see below).
+
+@defvr {Scheme Variable} unattended-upgrade-service-type
+This is the service type for unattended upgrades.  It sets up an mcron
+job (@pxref{Scheduled Job Execution}) that runs @command{guix system
+reconfigure} from the latest version of the specified channels.
+
+Its value must be a @code{unattended-upgrade-configuration} record (see
+below).
+@end defvr
+
+@deftp {Data Type} unattended-upgrade-configuration
+This data type represents the configuration of the unattended upgrade
+service.  The following fields are available:
+
+@table @asis
+@item @code{schedule} (default: @code{"30 01 * * 0"})
+This is the schedule of upgrades, expressed as a gexp containing an
+mcron job schedule (@pxref{Guile Syntax, mcron job specifications,,
+mcron, GNU@tie{}mcron}).
+
+@item @code{channels} (default: @code{#~%default-channels})
+This gexp specifies the channels to use for the upgrade
+(@pxref{Channels}).  By default, the tip of the official @code{guix}
+channel is used.
+
+@item @code{operating-system-file} (default: @code{"/run/current-system/configuration.scm"})
+This field specifies the operating system configuration file to use.
+The default is to reuse the config file of the current configuration.
+
+There are cases, though, where referring to
+@file{/run/current-system/configuration.scm} is not enough, for instance
+because that file refers to extra files (SSH public keys, extra
+configuration files, etc.) @i{via} @code{local-file} and similar
+constructs.  For those cases, we recommend something along these lines:
+
+@lisp
+(unattended-upgrade-configuration
+  (operating-system-file
+    (file-append (local-file "." "config-dir" #:recursive? #t)
+                 "/config.scm")))
+@end lisp
+
+The effect here is to import all of the current directory into the
+store, and to refer to @file{config.scm} within that directory.
+Therefore, uses of @code{local-file} within @file{config.scm} will work
+as expected.  @xref{G-Expressions}, for information about
+@code{local-file} and @code{file-append}.
+
+@item @code{services-to-restart} (default: @code{'(mcron)})
+This field specifies the Shepherd services to restart when the upgrade
+completes.
+
+Those services are restarted right away upon completion, as with
+@command{herd restart}, which ensures that the latest version is
+running---remember that by default @command{guix system reconfigure}
+only restarts services that are not currently running, which is
+conservative: it minimizes disruption but leaves outdated services
+running.
+
+By default, the @code{mcron} service is restarted.  This ensures that
+the latest version of the unattended upgrade job will be used next time.
+
+@item @code{system-expiration} (default: @code{(* 3 30 24 3600)})
+This is the expiration time in seconds for system generations.  System
+generations older that this amount of time are deleted with
+@command{guix system delete-generations} when an upgrade completes.
+
+@quotation Note
+The unattended upgrade service does not run the garbage collector.  You
+will probably want to set up your own mcron job to run @command{guix gc}
+periodically.
+@end quotation
+
+@item @code{maximum-duration} (default: @code{3600})
+Maximum duration in seconds for the upgrade; past that time, the upgrade
+aborts.
+
+This is primarily useful to ensure the upgrade does not end up
+rebuilding or re-downloading ``the world''.
+
+@item @code{log-file} (default: @code{"/var/log/unattended-upgrade.log"})
+File where unattended upgrades are logged.
 @end table
 @end deftp
 
@@ -17130,6 +17306,24 @@ server.
 The PostgreSQL daemon loads its runtime configuration from @var{config-file},
 creates a database cluster with @var{locale} as the default
 locale, stored in @var{data-directory}.  It then listens on @var{port}.
+
+If the services fails to start, it may be due to an incompatible
+cluster already present in @var{data-directory}.  Adjust it (or, if you
+don't need the cluster anymore, delete @var{data-directory}), then
+restart the service.
+
+Peer authentication is used by default and the @code{postgres} user
+account has no shell, which prevents the direct execution of @code{psql}
+commands as this user.  To use @code{psql}, you can temporarily log in
+as @code{postgres} using a shell, create a PostgreSQL superuser with the
+same name as one of the system users and then create the associated
+database.
+
+@example
+sudo -u postgres -s /bin/sh
+createuser --interactive
+createdb $MY_USER_LOGIN      # Replace appropriately.
+@end example
 
 @cindex postgresql extension-packages
 Additional extensions are loaded from packages listed in
@@ -23497,16 +23691,16 @@ source is detected.  More information can be found at
 @uref{https://linrunner.de/en/tlp/tlp.html, TLP home page}.
 
 @deffn {Scheme Variable} tlp-service-type
-The service type for the TLP tool.  Its value should be a valid
-TLP configuration (see below).  To use the default settings, simply
-write:
+The service type for the TLP tool.  The default settings are optimised
+for battery life on most systems, but you can tweak them to your heart's
+content by adding a valid @code{tlp-configuration}:
 @lisp
-(service tlp-service-type)
+(service tlp-service-type
+         (tlp-configuration
+          (cpu-scaling-governor-on-ac (list "performance"))
+          (sched-powersave-on-bat? #t)))
 @end lisp
 @end deffn
-
-By default TLP does not need much configuration but most TLP parameters
-can be tweaked using @code{tlp-configuration}.
 
 Each parameter definition is preceded by its type; for example,
 @samp{boolean foo} indicates that the @code{foo} parameter
@@ -24841,7 +25035,7 @@ Maximum number of backup files to keep.
 Defaults to @samp{3}
 
 @end deftypevr
-
+@node Transparent Emulation with QEMU
 @subsubheading Transparent Emulation with QEMU
 
 @cindex emulation
@@ -25444,7 +25638,7 @@ When true, the daemon performs additional logging for debugging purposes.
 @defvr {Scheme Variable} ganeti-luxid-service-type
 @command{ganeti-luxid} is a daemon used to answer queries related to the
 configuration and the current live state of a Ganeti cluster.  Additionally,
-it is the authorative daemon for the Ganeti job queue.   Jobs can be
+it is the authoritative daemon for the Ganeti job queue.   Jobs can be
 submitted via this daemon and it schedules and starts them.
 
 It takes a @code{ganeti-luxid-configuration} object.
@@ -27136,6 +27330,51 @@ parameters, can be done as follow:
 @end lisp
 @end deffn
 
+@cindex zram
+@cindex compressed swap
+@cindex Compressed RAM-based block devices
+@subsubheading Zram Device Service
+
+The Zram device service provides a compressed swap device in system
+memory.  The Linux Kernel documentation has more information about
+@uref{https://www.kernel.org/doc/html/latest/admin-guide/blockdev/zram.html,zram}
+devices.
+
+@deffn {Scheme Variable} zram-device-service-type
+This service creates the zram block device, formats it as swap and
+enables it as a swap device.  The service's value is a
+@code{zram-device-configuration} record.
+
+@deftp {Data Type} zram-device-configuration
+This is the data type representing the configuration for the zram-device
+service.
+
+@table @asis
+@item @code{size} (default @var{"1G"})
+This is the amount of space you wish to provide for the zram device.  It
+accepts a string and can be a number of bytes or use a suffix, eg.:
+@var{"512M"} or @var{1024000}.
+@item @code{compression-algorithm} (default @var{'lzo})
+This is the compression algorithm you wish to use.  It is difficult to
+list all the possible compression options, but common ones supported by
+Guix's Linux Libre Kernel include @var{'lzo}, @var{'lz4} and @var{'zstd}.
+@item @code{memory-limit} (default @var{0})
+This is the maximum amount of memory which the zram device can use.
+Setting it to '0' disables the limit.  While it is generally expected
+that compression will be 2:1, it is possible that uncompressable data
+can be written to swap and this is a method to limit how much memory can
+be used.  It accepts a string and can be a number of bytes or use a
+suffix, eg.: @var{"2G"}.
+@item @code{priority} (default @var{-1})
+This is the priority of the swap device created from the zram device.
+@code{swapon} accepts values between -1 and 32767, with higher values
+indicating higher priority.  Higher priority swap will generally be used
+first.
+@end table
+
+@end deftp
+@end deffn
+
 @node Hurd Services
 @subsection Hurd Services
 
@@ -27455,6 +27694,9 @@ Enable or disable the use of the Docker user-land networking proxy.
 @item @code{debug?} (default @code{#f})
 Enable or disable debug output.
 
+@item @code{enable-iptables?} (default @code{#t})
+Enable or disable the addition of iptables rules.
+
 @end table
 @end deftp
 
@@ -27489,10 +27731,12 @@ Network access
 @command{auditctl} from the @code{audit} package can be used in order
 to add or remove events to be tracked (until the next reboot).
 In order to permanently track events, put the command line arguments
-of auditctl into @file{/etc/audit/audit.rules}.
+of auditctl into a file called @code{audit.rules} in the configuration
+directory (see below).
 @command{aureport} from the @code{audit} package can be used in order
 to view a report of all recorded events.
-The audit daemon usually logs into the directory @file{/var/log/audit}.
+The audit daemon by default logs into the file
+@file{/var/log/audit.log}.
 
 @end defvr
 
@@ -27503,6 +27747,11 @@ This is the data type representing the configuration of auditd.
 
 @item @code{audit} (default: @code{audit})
 The audit package to use.
+
+@item @code{configuration-directory} (default: @code{%default-auditd-configuration-directory})
+The directory containing the configuration file for the audit package, which
+must be named @code{auditd.conf}, and optionally some audit rules to
+instantiate on startup.
 
 @end table
 @end deftp
@@ -27626,6 +27875,9 @@ This is a list of strings or objects appended to the
 This is a list of strings or objects appended to the configuration file.
 It is used to pass extra text to be added verbatim to the configuration
 file.
+
+@item @code{extra-options} (default: @code{'()})
+Extra command line options for @code{nix-service-type}.
 @end table
 @end deftp
 
@@ -29019,6 +29271,16 @@ When @code{host-key} is @code{#f}, the server is authenticated against
 the @file{~/.ssh/known_hosts} file, just like the OpenSSH @command{ssh}
 client does.
 
+@item @code{allow-downgrades?} (default: @code{#f})
+Whether to allow potential downgrades.
+
+Like @command{guix system reconfigure}, @command{guix deploy} compares
+the channel commits currently deployed on the remote host (as returned
+by @command{guix system describe}) to those currently in use (as
+returned by @command{guix describe}) to determine whether commits
+currently in use are descendants of those deployed.  When this is not
+the case and @code{allow-downgrades?} is false, it raises an error.
+This ensures you do not accidentally downgrade remote machines.
 @end table
 @end deftp
 
@@ -29604,6 +29866,7 @@ extend it by passing it lists of packages to add to the system profile.
 @end defvr
 
 @cindex provenance tracking, of the operating system
+@anchor{provenance-service-type}
 @defvr {Scheme Variable} provenance-service-type
 This is the type of the service that records @dfn{provenance meta-data}
 in the system itself.  It creates several files under

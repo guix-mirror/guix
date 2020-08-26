@@ -94,6 +94,38 @@
   #:use-module (guix deprecation)
   #:use-module (srfi srfi-1))
 
+(define-public iqa
+  (package
+    (name "iqa")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/iqa/files/"
+                       "1.1.2%20Release/iqa_1.1.2_src.tar.gz/download"))
+       (sha256
+        (base32 "00mgwy031ammab6bwmd1whhvqv3fxy1cs1igabq0n3ag12zhjs77"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (install-file "build/debug/libiqa.a" lib)
+               #t))))))
+    (synopsis "Image Quality Assessment")
+    (description "IQA is a C library for objectively measuring image/video
+quality.  It implements many popular algorithms, such as MS-SSIM, MS-SSIM*,
+SIMM, MSE, and PSNR.  It is designed to be fast, accurate, and reliable.  All
+code is Valgrind-clean and unit tested.")
+    (home-page "https://sourceforge.net/projects/iqa/")
+    (license license:bsd-4)))
+
 (define-public libpng
   (package
    (name "libpng")
@@ -372,13 +404,13 @@ Features:
 (define-public ijg-libjpeg
   (package
    (name "libjpeg")
-   (version "9c")
+   (version "9d")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://www.ijg.org/files/jpegsrc.v"
                    version ".tar.gz"))
             (sha256 (base32
-                     "08kixcf3a7s9x91174abjnk1xbvj4v8crdc73zi4k9h3jfbm00k5"))))
+                     "0clwys9lcqlxqgcw8s1gwfm5ix2zjlqpklmd3mbvqmj5ibj51jwr"))))
    (build-system gnu-build-system)
    (synopsis "Library for handling JPEG files")
    (description
@@ -397,16 +429,6 @@ lossless JPEG manipulations such as rotation, scaling or cropping:
 @end enumerate")
    (license license:ijg)
    (home-page "https://www.ijg.org/")))
-
-(define-public ijg-libjpeg-8
-  (package (inherit ijg-libjpeg)
-   (version "8d")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "https://www.ijg.org/files/jpegsrc.v"
-                   version ".tar.gz"))
-            (sha256 (base32
-                     "1cz0dy05mgxqdgjf52p54yxpyy95rgl30cnazdrfmw7hfca9n0h0"))))))
 
 (define-public libjxr
   (package
@@ -759,6 +781,28 @@ images of initially unknown height.")
     (license (list license:isc          ; pbmtools/p?m.5
                    license:gpl2+))))    ; the rest
 
+(define-public openjpeg-data
+  (package
+    (name "openjpeg-data")
+    (version "2020.05.19")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/uclouvain/openjpeg-data.git")
+         (commit "c5c4a8c")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jp84gbhw8q5b8mhc322ql9410hjf32w9hg10x4isfa9j59mnncb"))))
+    (build-system copy-build-system)
+    (synopsis "Test files for OpenJPEG")
+    (description "OpenJPEG-Data contains all files required to run the openjpeg
+test suite, including conformance tests (following Rec. ITU-T T.803 | ISO/IEC
+15444-4 procedures), non-regression tests and unit tests.")
+    (home-page "https://github.com/uclouvain/openjpeg-data")
+    (license license:bsd-2)))
+
 (define-public openjpeg
   (package
     (name "openjpeg")
@@ -1030,7 +1074,19 @@ supplies a generic doubly-linked list and some string functions.")
                     (delete-file-recursively (string-append "Source/" dir)))
                   '("LibJPEG" "LibOpenJPEG" "LibPNG" "LibRawLite"
                     "LibJXR" "LibWebP" "OpenEXR" "ZLib"))))
-            (patches (search-patches "freeimage-unbundle.patch"))))
+            (patches
+             (append
+              (search-patches "freeimage-unbundle.patch")
+              ;; Take one patch from Arch Linux that adds LibRaw 0.20 compatibility.
+              (list (origin
+                      (method url-fetch)
+                      (uri "https://raw.githubusercontent.com/archlinux\
+/svntogit-community/ca3e6a52f5a46dec87cbf85e9d84fe370e282c8c/trunk\
+/freeimage-libraw-0.20.patch")
+                      (file-name "freeimage-libraw-compat.patch")
+                      (sha256
+                       (base32
+                        "0cwjxjz0f4gs6igvwqg0p99mnrsrwzkal1l2n08yvz2xq9s5khki"))))))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -1259,14 +1315,14 @@ channels.")
 (define-public exiv2
   (package
     (name "exiv2")
-    (version "0.27.2")
+    (version "0.27.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.exiv2.org/builds/exiv2-" version
                            "-Source.tar.gz"))
        (sha256
-        (base32 "0gqminvj14xm3rgbnydbywf22608js80rp7nmxxk4497j5mzali6"))))
+        (base32 "0y77wfadjsrcxijdqgkr3q88b6mm9y3rg8kqsmaig8iah49md7x7"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ; no test suite
     (propagated-inputs
@@ -1353,7 +1409,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.16")
+    (version "2.0.19")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1362,7 +1418,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05l75yd1zsxwv25ykwwwjs8961szv7iywf16nc6vc6qpby27ckv6"))))
+                "036rcr0wkz9gzmvk1jb96piznk0c0bwxgf31z1zrlg8js4zl1n84"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg-turbo)))
     (synopsis "JPEG-2000 library")
@@ -1578,6 +1634,7 @@ is hereby granted."))))
   (package
     (name "libjpeg-turbo")
     (version "2.0.4")
+    (replacement libjpeg-turbo/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
@@ -1633,6 +1690,18 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
+
+(define libjpeg-turbo/fixed
+  (package
+    (inherit libjpeg-turbo)
+    (version "2.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
+                                  version "/libjpeg-turbo-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pbv6pc97kbj7ib31qcwi7lnmm9xg5y3b11aasmkhfjvf7rgdy0n"))))))
 
 (define-deprecated libjpeg libjpeg-turbo)
 (export libjpeg)
@@ -1859,7 +1928,7 @@ identical visual appearance.")
 (define-public grim
   (package
    (name "grim")
-   (version "1.2.0")
+   (version "1.3.1")
    (source
     (origin
      (method git-fetch)
@@ -1868,7 +1937,7 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "0brljl4zfbn5mh9hkfrfkvd27c5y9vdkgap9r1hrfy9r1x20sskn"))))
+      (base32 "0fjmjq0ws9rlblkcqxxw2lv7zvvyi618jqzlnz5z9zb477jwdfib"))))
    (build-system meson-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)
                     ("scdoc" ,scdoc)))

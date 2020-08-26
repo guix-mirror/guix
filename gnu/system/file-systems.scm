@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -28,6 +28,8 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (guix records)
+  #:use-module ((guix diagnostics) #:select (&fix-hint))
+  #:use-module (guix i18n)
   #:use-module (gnu system uuid)
   #:re-export (uuid                               ;backward compatibility
                string->uuid
@@ -46,6 +48,7 @@
             alist->file-system-options
 
             file-system-mount?
+            file-system-mount-may-fail?
             file-system-check?
             file-system-create-mount-point?
             file-system-dependencies
@@ -66,6 +69,8 @@
             %pseudo-file-system-types
             %fuse-control-file-system
             %binary-format-file-system
+            %debug-file-system
+            %efivars-file-system
             %shared-memory-file-system
             %pseudo-terminal-file-system
             %tty-gid
@@ -111,6 +116,8 @@
                     (default #f))
   (mount?           file-system-mount?            ; Boolean
                     (default #t))
+  (mount-may-fail?  file-system-mount-may-fail?   ; Boolean
+                    (default #f))
   (needed-for-boot? %file-system-needed-for-boot? ; Boolean
                     (default #f))
   (check?           file-system-check?            ; Boolean
@@ -298,18 +305,21 @@ store--e.g., if FS is the root file system."
   "Return a list corresponding to file-system FS that can be passed to the
 initrd code."
   (match fs
-    (($ <file-system> device mount-point type flags options _ _ check?)
+    (($ <file-system> device mount-point type flags options mount?
+                      mount-may-fail? needed-for-boot? check?)
+     ;; Note: Add new fields towards the end for compatibility.
      (list (cond ((uuid? device)
                   `(uuid ,(uuid-type device) ,(uuid-bytevector device)))
                  ((file-system-label? device)
                   `(file-system-label ,(file-system-label->string device)))
                  (else device))
-           mount-point type flags options check?))))
+           mount-point type flags options mount-may-fail? check?))))
 
 (define (spec->file-system sexp)
   "Deserialize SEXP, a list, to the corresponding <file-system> object."
   (match sexp
-    ((device mount-point type flags options check?)
+    ((device mount-point type flags options mount-may-fail? check?
+             _ ...)                               ;placeholder for new fields
      (file-system
        (device (match device
                  (('uuid (? symbol? type) (? bytevector? bv))
@@ -320,6 +330,7 @@ initrd code."
                   device)))
        (mount-point mount-point) (type type)
        (flags flags) (options options)
+       (mount-may-fail? mount-may-fail?)
        (check? check?)))))
 
 (define (specification->file-system-mapping spec writable?)
@@ -364,6 +375,24 @@ TARGET in the other system."
     (device "binfmt_misc")
     (mount-point "/proc/sys/fs/binfmt_misc")
     (type "binfmt_misc")
+    (check? #f)))
+
+(define %debug-file-system
+  (file-system
+    (type "debugfs")
+    (device "none")
+    (mount-point "/sys/kernel/debug")
+    (check? #f)
+    (create-mount-point? #t)))
+
+(define %efivars-file-system
+  ;; Support for EFI variables file system.
+  (file-system
+    (device "efivarfs")
+    (mount-point "/sys/firmware/efi/efivars")
+    (type "efivarfs")
+    (mount-may-fail? #t)
+    (needed-for-boot? #f)
     (check? #f)))
 
 (define %tty-gid
@@ -465,7 +494,9 @@ TARGET in the other system."
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are
   ;; currently mounted by the initrd.
   (list %pseudo-terminal-file-system
+        %debug-file-system
         %shared-memory-file-system
+        %efivars-file-system
         %immutable-store))
 
 ;; File systems for Linux containers differ from %base-file-systems in that
@@ -613,12 +644,13 @@ store is located, else #f."
     ;; XXX: Deriving the subvolume name based from a subvolume ID is not
     ;; supported, as we'd need to query the actual file system.
     (or (and=> (assoc-ref options "subvol") prepend-slash/maybe)
-        ;; FIXME: Use &fix-hint once it no longer pulls in (guix utils).
         (raise (condition
                 (&message
                  (message "The store is on a Btrfs subvolume, but the \
-subvolume name is unknown.
-Hint: Use the \"subvol\" Btrfs file system option.")))))))
+subvolume name is unknown."))
+                (&fix-hint
+                 (hint
+                  (G_ "Use the @code{subvol} Btrfs file system option."))))))))
 
 
 ;;; file-systems.scm ends here

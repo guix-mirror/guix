@@ -191,7 +191,7 @@ windows in a terminal, colorize, filter and merge.")
 (define-public spdlog
   (package
     (name "spdlog")
-    (version "1.6.1")
+    (version "1.7.0")
     (source
      (origin
        (method git-fetch)
@@ -201,7 +201,7 @@ windows in a terminal, colorize, filter and merge.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1b1b3zmbyjgqz5yfdgaasi55x03d37z7l2pasvgikx3mm1gabq5a"))))
+         "1ryaa22ppj60461hcdb8nk7jwj84arp4iw4lyw594py92g4vnx3j"))))
     (build-system cmake-build-system)
     ;; TODO run benchmark. Currently not possible, as adding
     ;; (gnu packages benchmark) forms a dependency cycle

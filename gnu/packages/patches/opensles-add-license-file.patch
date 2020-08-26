@@ -1,0 +1,45 @@
+From 3a78134a35b448d9d4136ffbc55175be7fab6644 Mon Sep 17 00:00:00 2001
+From: Raghav Gururajan <raghavgururajan@disroot.org>
+Date: Mon, 6 Jul 2020 00:34:20 -0400
+Subject: [PATCH] [PATCH]: Add license file.
+
+---
+ LICENSE.txt | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ create mode 100644 LICENSE.txt
+
+diff --git a/LICENSE.txt b/LICENSE.txt
+new file mode 100644
+index 0000000..0fce823
+--- /dev/null
++++ b/LICENSE.txt
+@@ -0,0 +1,25 @@
++/*
++ * Copyright (c) 2007-2011 The Khronos Group Inc.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and /or associated documentation files (the "Materials "), to
++ * deal in the Materials without restriction, including without limitation the
++ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
++ * sell copies of the Materials, and to permit persons to whom the Materials are
++ * furnished to do so, subject to
++ * the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included
++ * in all copies or substantial portions of the Materials.
++ *
++ * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE MATERIALS OR THE USE OR OTHER DEALINGS IN THE
++ * MATERIALS.
++ *
++ * OpenSLES_IID.c - OpenSL ES version 1.1
++ *
++ */
+\ No newline at end of file
+-- 
+2.26.2
+

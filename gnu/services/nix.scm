@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,10 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (guix modules)
-  #:export (nix-service-type))
+  #:export (nix-service-type
+
+            nix-configuration
+            nix-configuration?))
 
 ;;; Commentary:
 ;;;
@@ -51,7 +55,9 @@
                        (default #t))
   (build-sandbox-items nix-configuration-build-sandbox-items ;list of strings
                        (default '()))
-  (extra-config        nix-configuration-extra-options ;list of strings
+  (extra-config        nix-configuration-extra-config ;list of strings
+                       (default '()))
+  (extra-options       nix-configuration-extra-options ;list of strings
                        (default '())))
 
 ;; Copied from gnu/services/base.scm
@@ -112,19 +118,21 @@ GID."
                                            '#$(map references-file
                                                    (list package)))
                                '#$build-sandbox-items))
-               (for-each (cut display <>) '#$extra-config))))))))
+               (for-each (cut display <>) '#$extra-config)
+               (newline))))))))
 
 (define nix-shepherd-service
   ;; Return a <shepherd-service> for Nix.
   (match-lambda
-    (($ <nix-configuration> package _ ...)
+    (($ <nix-configuration> package _ _ _ extra-options)
      (list
       (shepherd-service
        (provision '(nix-daemon))
        (documentation "Run nix-daemon.")
        (requirement '())
        (start #~(make-forkexec-constructor
-                 (list (string-append #$package "/bin/nix-daemon"))))
+                 (list (string-append #$package "/bin/nix-daemon")
+                       #$@extra-options)))
        (respawn? #f)
        (stop #~(make-kill-destructor)))))))
 
@@ -134,7 +142,9 @@ GID."
    (extensions
     (list (service-extension shepherd-root-service-type nix-shepherd-service)
           (service-extension account-service-type nix-accounts)
-          (service-extension activation-service-type nix-activation)))
+          (service-extension activation-service-type nix-activation)
+          (service-extension profile-service-type
+                             (compose list nix-configuration-package))))
    (description "Run the Nix daemon.")
    (default-value (nix-configuration))))
 

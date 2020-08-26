@@ -96,7 +96,6 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gnuzilla))
@@ -456,14 +455,19 @@ do so.")
        ("python-dnspython" ,python-dnspython)
        ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
     (arguments
-     `(#:tests? #f ;; package doesn't have any tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'patch-home
+         (add-after 'unpack 'fix-prefix
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "setup.py"
-               (("~/.local/share")
-                (string-append (assoc-ref outputs "out") "/local/share"))))))))
+             (let ((out (assoc-ref outputs "out")))
+               ;; setup.py installs to ~/.local/share if sys.prefix/share isn't
+               ;; writable.  sys.prefix points to Python's, not our, --prefix.
+               (mkdir-p (string-append out "/share"))
+               (substitute* "setup.py"
+                 (("sys\\.prefix")
+                  (format #f "\"~a\"" out)))
+               #t))))))
     (home-page "https://electrum.org/")
     (synopsis "Bitcoin wallet")
     (description
@@ -509,7 +513,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:modules ((guix build python-build-system)
                   (guix build qt-utils)
                   (guix build utils))
@@ -517,16 +521,17 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            (guix build qt-utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-home
+         (add-after 'unpack 'create-output-directories
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "setup.py"
-               (("~/.local/share")
-                (string-append (assoc-ref outputs "out") "/local/share")))))
+             ;; setup.py installs to ~/.local/share if this doesn't exist.
+             (mkdir-p (string-append (assoc-ref outputs "out") "/share"))
+             #t))
          (add-after 'unpack 'use-libsecp256k1-input
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "lib/secp256k1.py"
                (("library_paths = .* 'libsecp256k1.so.0'.")
-                (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))))
+                (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))
+             #t))
          (add-after 'install 'wrap-qt
            (lambda* (#:key outputs #:allow-other-keys)
              (wrap-qt-program (assoc-ref outputs "out") "electron-cash")
@@ -548,7 +553,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.16.0.1")
+    (version "0.16.0.3")
     (source
      (origin
        (method git-fetch)
@@ -568,12 +573,10 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               "external/unbound"))
            #t))
        (sha256
-        (base32
-         "0n2cviqm8radpynx70fc0819k1xknjc58cvb4whlc49ilyvh8ky6"))))
+        (base32 "1r9x3712vhb24dxxirfiwj5f9x0h4m7x0ngiiavf5983dfdlgz33"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
-       ("git" ,git)
        ("graphviz" ,graphviz)
        ("pkg-config" ,pkg-config)
        ("protobuf" ,protobuf)
@@ -667,7 +670,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.16.0.2")
+    (version "0.16.0.3")
     (source
      (origin
        (method git-fetch)
@@ -676,8 +679,7 @@ the Monero command line client and daemon.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1b1m8vhs0hdh81ysm8s8vfwqskqsihylb51wz16kc98ba40r9gqg"))))
+        (base32 "0iwjp8x5swy8i8pzrlm5v55awhm54cf48pm1vz98lcq361lhfzk6"))))
     (build-system qt-build-system)
     (native-inputs
      `(("monero-source" ,(package-source monero))
@@ -884,14 +886,13 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.12.0")
+    (version "0.12.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
-          (base32
-            "0ycmpwjv5xp25993divjhaq5j766zgcy22xx39xfc1pcvldq5g7n"))))
+          (base32 "1w19m9lws55k9sjhras47hpfpqwq1jm5vy135nj65yhkblygqg19"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)
@@ -1033,14 +1034,13 @@ agent.")
 (define-public python-stdnum
   (package
     (name "python-stdnum")
-    (version "1.13")
+    (version "1.14")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-stdnum" version))
        (sha256
-        (base32
-         "0q4128rjdgavywhzlm2gz2n5ybc9b9sxs81g50dvxf5q7z9q63qj"))))
+        (base32 "070vd9zgvq0jchs4xc4j1h4r1l1lg4wwb8xs3p25k8c2xjw94fpx"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1049,10 +1049,8 @@ agent.")
                       (invoke "nosetests"))))))
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (home-page
-     "https://arthurdejong.org/python-stdnum/")
-    (synopsis
-     "Python module to handle standardized number and code formats")
+    (home-page "https://arthurdejong.org/python-stdnum/")
+    (synopsis "Python module to handle standardized number and code formats")
     (description
      "This is a Python library that aims to provide functions to handle,
 parse and validate standard numbers.
@@ -1239,7 +1237,7 @@ Trezor wallet.")
 (define-public bitcoin-abc
   (package
     (name "bitcoin-abc")
-    (version "0.21.10")
+    (version "0.21.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.bitcoinabc.org/"
@@ -1247,7 +1245,7 @@ Trezor wallet.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cgr416cp7p14mlnfryxfjfcxys5hksfjhi0i4amxl4fbnpgjwk0"))))
+                "1amzwy3gpl8ai90dsy7g0z51qq8vxfzbf642wn4bfynb8jmw3kx5"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

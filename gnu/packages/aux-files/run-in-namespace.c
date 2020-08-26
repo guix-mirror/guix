@@ -371,24 +371,64 @@ exec_with_proot (const char *store, int argc, char *argv[])
 
 #if HAVE_EXEC_WITH_LOADER
 
+/* Traverse PATH, a NULL-terminated string array, and return a colon-separated
+   search path where each item of PATH has been relocated to STORE.  The
+   result is malloc'd.  */
+static char *
+relocated_search_path (const char *path[], const char *store)
+{
+  char *new_path;
+  size_t size = 0;
+
+  for (size_t i = 0; path[i] != NULL; i++)
+    size += strlen (store) + strlen (path[i]) + 1;  /* upper bound */
+
+  new_path = xmalloc (size + 1);
+  new_path[0] = '\0';
+
+  for (size_t i = 0; path[i] != NULL; i++)
+    {
+      if (strncmp (path[i], original_store,
+		   sizeof original_store - 1) == 0)
+	{
+	  strcat (new_path, store);
+	  strcat (new_path, path[i] + sizeof original_store - 1);
+	}
+      else
+	strcat (new_path, path[i]);	  /* possibly $ORIGIN */
+
+      strcat (new_path, ":");
+    }
+
+  new_path[strlen (new_path) - 1] = '\0'; /* Remove trailing colon.  */
+
+  return new_path;
+}
+
 /* Execute the wrapped program by invoking the loader (ld.so) directly,
    passing it the audit module and preloading libfakechroot.so.  */
 static void
 exec_with_loader (const char *store, int argc, char *argv[])
 {
+  static const char *audit_library_path[] = LOADER_AUDIT_RUNPATH;
   char *loader = concat (store,
 			 PROGRAM_INTERPRETER + sizeof original_store);
-  size_t loader_specific_argc = 6;
+  size_t loader_specific_argc = 8;
   size_t loader_argc = argc + loader_specific_argc;
   char *loader_argv[loader_argc + 1];
   loader_argv[0] = argv[0];
   loader_argv[1] = "--audit";
   loader_argv[2] = concat (store,
 			   LOADER_AUDIT_MODULE + sizeof original_store);
-  loader_argv[3] = "--preload";
-  loader_argv[4] = concat (store,
+
+  /* The audit module depends on libc.so and libgcc_s.so.  */
+  loader_argv[3] = "--library-path";
+  loader_argv[4] = relocated_search_path (audit_library_path, store);
+
+  loader_argv[5] = "--preload";
+  loader_argv[6] = concat (store,
 			   FAKECHROOT_LIBRARY + sizeof original_store);
-  loader_argv[5] = concat (store,
+  loader_argv[7] = concat (store,
 			   "@WRAPPED_PROGRAM@" + sizeof original_store);
 
   for (size_t i = 0; i < argc; i++)
@@ -401,10 +441,23 @@ exec_with_loader (const char *store, int argc, char *argv[])
   char *new_root = mkdtemp (strdup ("/tmp/guix-exec-XXXXXX"));
   mirror_directory ("/", new_root, make_symlink);
 
+  /* 'mirror_directory' created a symlink for the ancestor of ORIGINAL_STORE,
+     typically "/gnu".  Remove that entry so we can create NEW_STORE
+     below.  */
+  const char *slash = strchr (original_store + 1, '/');
+  const char *top = slash != NULL
+    ? strndupa (original_store, slash - original_store)
+    : original_store;
+  char *new_store_top = concat (new_root, top);
+  unlink (new_store_top);
+
+  /* Now create the store under NEW_ROOT.  */
   char *new_store = concat (new_root, original_store);
   char *new_store_parent = dirname (strdup (new_store));
   mkdir_p (new_store_parent);
-  symlink (store, new_store);
+  err = symlink (store, new_store);
+  if (err < 0)
+    assert_perror (errno);
 
 #ifdef GCONV_DIRECTORY
   /* Tell libc where to find its gconv modules.  This is necessary because

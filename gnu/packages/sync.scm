@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
@@ -108,7 +108,7 @@ distributions.")
 (define-public megatools
   (package
     (name "megatools")
-    (version "1.10.2")
+    (version "1.10.3")
     (source
      (origin
        (method url-fetch)
@@ -116,8 +116,17 @@ distributions.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "12n32w5mqvpk0hvh9yg9qkj9i0g2wp7jp9rq28bnqs94iv3897hp"))))
+         "1nwbalc54iz6616liyxfalf5yafwx0iv6cmqgvg4kz9khqscmhcd"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-completions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "contrib/bash-completion/megatools"
+                           (string-append (assoc-ref outputs "out")
+                                          "/etc/bash_completion.d"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ;; For documentation
@@ -360,14 +369,14 @@ over the Internet in an HTTP and CDN friendly way;
 (define-public rclone
   (package
     (name "rclone")
-    (version "1.52.2")
+    (version "1.52.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/rclone/rclone/releases/download/"
                            "v" version "/rclone-v" version ".tar.gz"))
        (sha256
-        (base32 "1y0ysdbqqb1dj8daziwwhz531c7kfr7f9fsvc7xyg4ysppz1qxfq"))))
+        (base32 "1pdhsxzc5ch2brfylghc602h9ba3x5dshxm3vcaldrgfac0rx0zl"))))
     ;; FIXME: Rclone bundles some libraries Guix already provides.  Need to
     ;; un-bundle them.
     (build-system go-build-system)

@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -206,15 +207,17 @@ encoder in C++.  The developer using protozero has to manually translate the
 (define-public python-protobuf
   (package
     (name "python-protobuf")
-    (version "3.11.3")
+    (version "3.12.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "protobuf" version))
        (sha256
         (base32
-         "07qby3yc2a8a1vsxnc79j687q4r68k1d3npni7bldwmd3m6rfz67"))))
+         "0mj6z58aiw532s1mq48m9xdrm3gdyp2vv9cdinfb5wmnfpm5m7n9"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-wheel" ,python-wheel)))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "https://github.com/google/protobuf")

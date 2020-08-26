@@ -21,9 +21,10 @@
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module ((guix diagnostics)
+                #:select (source-properties->location))
   #:use-module ((guix utils)
                 #:select (%current-system
-                          source-properties->location
                           call-with-temporary-directory
                           version>? version-prefix?
                           cache-directory))

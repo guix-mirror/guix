@@ -22,6 +22,8 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,8 +55,10 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
@@ -1013,6 +1017,7 @@ in userspace)
         (base32 "09yirf3w77w6f49q6nxhrjm9c3a4y9s30s1k09chqrw8zdgx8sjc"))))
     (build-system python-build-system)
     (inputs `(("openssl" ,openssl)))
+    (native-inputs `(("swig" ,swig)))
     (home-page "https://gitlab.com/m2crypto/m2crypto")
     (synopsis "Python crypto and TLS toolkit")
     (description "@code{M2Crypto} is a complete Python wrapper for OpenSSL
@@ -1346,6 +1351,66 @@ items and collections, editing items, locking and unlocking collections
 (asynchronous unlocking is also supported).")
     (license license:bsd-3)))
 
+(define-public python-trustme
+  (package
+    (name "python-trustme")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "trustme" version))
+       (sha256
+        (base32 "0v3vr5z6apnfmklf07m45kv5kaqvm6hxrkaqywch57bjd2siiywx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-more-itertools" ,python-more-itertools)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-service-identity" ,python-service-identity)
+       ("python-zipp" ,python-zipp)))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)))
+    (home-page "https://github.com/python-trio/trustme")
+    (synopsis "Fake a certificate authority for tests")
+    (description
+     "@code{trustme} is a tiny Python package that does one thing: it gives you
+a fake certificate authority (CA) that you can use to generate fake TLS certs to
+use in your tests.")
+    ;; Either license applies.
+    (license (list license:expat license:asl2.0))))
+
+(define-public python-certipy
+  (package
+    (name "python-certipy")
+    (version "0.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "certipy" version))
+        (sha256
+         (base32
+          "0n980gqpzh0fm58h3i4mi2i10wgj606lscm1r5sk60vbf6vh8mv9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyopenssl" ,python-pyopenssl)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/LLNL/certipy")
+    (synopsis "Utility to create and sign CAs and certificates")
+    (description
+     "Certipy was made to simplify the certificate creation process.  To that
+end, certipy exposes methods for creating and managing certificate authorities,
+certificates, signing and building trust bundles.")
+    (license license:bsd-3)))
+
 (define-public python-jeepney
   (package
     (name "python-jeepney")
@@ -1446,3 +1511,61 @@ can decide how long it takes to hash a password and how much memory is required.
 data such as API keys, cryptocurrency wallets, or seeds for digital
 signatures.")
     (license (list license:expat license:asl2.0)))) ; dual licensed
+
+(define-public python-pgpy
+  (package
+    (name "python-pgpy")
+    (version "0.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "PGPy" version))
+        (sha256
+         (base32
+          "0i4lqhzdwkjkim3wab0kqadx28z3r5ixlh6qxj4lif4gif56c0m7"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-singledispatch" ,python-singledispatch)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/SecurityInnovation/PGPy")
+    (synopsis "Python implementation of OpenPGP")
+    (description
+     "Currently, PGPy can load keys and signatures of all kinds in both ASCII
+armored and binary formats.
+
+It can create and verify RSA, DSA, and ECDSA signatures, at the moment.  It
+can also encrypt and decrypt messages using RSA and ECDH.")
+    (license license:bsd-3)))
+
+(define-public python-sop
+  (package
+    (name "python-sop")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "sop" version))
+        (sha256
+         (base32
+          "0gljyjsdn6hdmwlwwb5g5s0c031p6izamvfxp0d39x60af8k5jyf"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; There are no tests, and unittest throws an error trying
+                     ; to find some:
+                     ;     TypeError: don't know how to make test from: 0.2.0
+    (home-page "https://gitlab.com/dkg/python-sop")
+    (synopsis "Stateless OpenPGP Command-Line Interface")
+    (description
+     "The Stateless OpenPGP Command-Line Interface (or sop) is a
+specification that encourages OpenPGP implementors to provide a common,
+relatively simple command-line API for purposes of object security.
+
+This Python module helps implementers build such a CLI from any implementation
+accessible to the Python interpreter.
+
+It does not provide such an implementation itself -- this is just the
+scaffolding for the command line, which should make it relatively easy to
+supply a handful of python functions as methods to a class.")
+    (license license:expat))) ; MIT license

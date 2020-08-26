@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: guix 1.1.0-pre2\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2020-04-09 18:27+0200\n"
-"PO-Revision-Date: 2020-04-13 16:44+0200\n"
+"PO-Revision-Date: 2020-07-18 14:15+0200\n"
 "Last-Translator: Julien Lepiller <julien@lepiller.eu>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -4246,7 +4246,7 @@ msgstr "  ~,1h Mo sur le disque (décompressé)~%"
 
 #: guix/scripts/weather.scm:207
 msgid "  ~,3h seconds per request (~,1h seconds in total)~%"
-msgstr "  ~,3h secondes par requête (~,1h secondesen tout)~%"
+msgstr "  ~,3h secondes par requête (~,1h secondes en tout)~%"
 
 #: guix/scripts/weather.scm:209
 msgid "  ~,1h requests per second~%"

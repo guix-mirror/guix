@@ -28,6 +28,7 @@
 (define-module (gnu packages photo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix download)
@@ -40,6 +41,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
@@ -173,14 +175,14 @@ cards and generate meaningful file and folder names.")
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.19.5")
+    (version "0.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1x827sh6vl8j3ll2ihkcr234y07f31hi1v7sl08jfw3irkbn58j0"))))
+                "18wlsvj6c1rv036ph3695kknpgzc3lk2ikgshy8417yfl8ykh2hz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -609,6 +611,71 @@ interface.  It suits a wide variety of different tasks and users who value a
 more nimble workflow.  Features include basic image editing capabilities,
 paint brushes, image filters, colour adjustments and more advanced features
 such as Batch image processing.")
+    (license license:gpl3+)))
+
+(define-public entangle
+  (package
+    (name "entangle")
+    (version "3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/entangle/entangle")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pdmgxjdb3xlcqsaz7l8qzj5f7g7nwzhsrgid8929bm36d49cgc7"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
+         (add-after 'install 'wrap-gi-python
+           ;; Make GTK find files needed by plugins.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                   (python-path       (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/entangle")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                 `("PYTHONPATH" ":" prefix (,python-path))))
+             #t)))))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("gexiv2" ,gexiv2)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gstreamer" ,gstreamer)
+       ("gtk+" ,gtk+)
+       ("lcms" ,lcms)
+       ("libgphoto2" ,libgphoto2)
+       ("libgudev" ,libgudev)
+       ("libpeas" ,libpeas)
+       ("libraw" ,libraw)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "https://entangle-photo.org/")
+    (synopsis "Camera control and capture")
+    (description
+     "Entangle is an application which uses GTK and libgphoto2 to provide a
+graphical interface for tethered photography with digital cameras.  It
+includes control over camera shooting and configuration settings and 'hands
+off' shooting directly from the controlling computer.")
     (license license:gpl3+)))
 
 (define-public hugin

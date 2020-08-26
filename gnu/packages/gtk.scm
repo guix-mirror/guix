@@ -61,6 +61,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -83,6 +84,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages cups)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
@@ -223,6 +225,67 @@ affine transformation (scale, rotation, shear, etc.).")
    (license (license:x11-style "file://COPYING"
                        "See 'COPYING' in the distribution."))
    (home-page "https://www.freedesktop.org/wiki/Software/HarfBuzz/")))
+
+(define-public libdatrie
+  (package
+    (name "libdatrie")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://linux.thai.net/pub/ThaiLinux/software/"
+                       "libthai/libdatrie-" version ".tar.xz"))
+       (sha256
+        (base32 "0jz9k0dd8jim4iyk5xrhkkdm4zq2ly6aw317ydjss44ymg97nz2l"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-html-docdir="
+                       (assoc-ref %outputs "doc")
+                       "/share/doc/datrie/html"))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Double-Array Trie Library")
+    (description "Libdatrie is an implementation of double-array structure for
+representing trie.  Trie is a kind of digital search tree.")
+    (home-page "https://linux.thai.net/~thep/datrie/datrie.html")
+    (license license:lgpl2.1+)))
+
+(define-public libthai
+  (package
+    (name "libthai")
+    (version "0.1.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://linux.thai.net/pub/thailinux/software/"
+                       "libthai/libthai-" version ".tar.xz"))
+       (sha256
+        (base32 "04g93bgxrcnay9fglpq2lj9nr7x1xh06i60m7haip8as9dxs3q7z"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-html-docdir="
+                       (assoc-ref %outputs "doc")
+                       "/share/doc/libthai/html"))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("datrie" ,libdatrie)))
+    (synopsis "Thai language support library")
+    (description "LibThai is a set of Thai language support routines aimed to
+ease developers’ tasks to incorporate Thai language support in their
+applications.")
+    (home-page "https://linux.thai.net/projects/libthai")
+    (license license:lgpl2.1+)))
 
 (define-public pango
   (package
@@ -1138,6 +1201,23 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
 library.")
     (license license:lgpl2.0+)))
 
+(define-public cairomm-1.13
+  (package
+    (inherit cairomm)
+    (name "cairomm")
+    (version "1.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.cairographics.org/releases/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xlfl0fm5mgv53lr8xjv2kqsk3bz67qkk6qzvbrqmbvbvvbqp9wp"))))
+    (propagated-inputs
+     `(("cairo" ,cairo)
+       ("sigc++" ,libsigc++-2)))))
+
 (define-public pangomm
   (package
     (name "pangomm")
@@ -1163,6 +1243,25 @@ library.")
      "Pangomm provides a C++ programming interface to the Pango text rendering
 library.")
     (license license:lgpl2.1+)))
+
+(define-public pangomm-2.42
+  (package
+    (inherit pangomm)
+    (name "pangomm")
+    (version "2.42.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version)  "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "03zli5amizhv9bfklwfq7xyf0b5dagchx1lnz9f0v1rhk69h9gql"))))
+    (propagated-inputs
+     `(("cairomm" ,cairomm-1.13)
+       ("glibmm" ,glibmm-2.64)
+       ("pango" ,pango)))))
 
 (define-public atkmm
   (package
@@ -1766,40 +1865,47 @@ Parcellite and adds bugfixes and features.")
   (package
     (name "graphene")
     (version "1.10.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ebassi/graphene/releases/"
-                                  "download/" version
-                                  "/graphene-" version ".tar.xz"))
-              (sha256
-               (base32 "16b4hz73bnrgv5v8n96dczkd6xp9qc06lrl43zln3jnl3psrfva0"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/ebassi/graphene.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14a0j1rvjlc7yhfdmhmckdmkzy4ch61qbzywdlw1xv58h23wx29p"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dinstalled_tests=false")))
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:configure-flags
+       (list
+        "-Dinstalled_tests=false")))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
+     `(("git" ,git-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("mutest" ,mutest)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("python" ,python)
-       ("glib" ,glib)))
-    (home-page "https://ebassi.github.io/graphene/")
+     `(("glib" ,glib)
+       ("python" ,python)))
     (synopsis "Thin layer of graphic data types")
-    (description "This library provides graphic types and their relative API;
-it does not deal with windowing system surfaces, drawing, scene graphs, or
-input.")
+    (description "Graphene provides graphic types and their relative API; it
+does not deal with windowing system surfaces, drawing, scene graphs, or input.")
+    (home-page "https://ebassi.github.io/graphene/")
     (license license:expat)))
 
 (define-public spread-sheet-widget
   (package
     (name "spread-sheet-widget")
-    (version "0.3")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://alpha.gnu.org/gnu/ssw/"
                            "spread-sheet-widget-" version ".tar.gz"))
        (sha256
-        (base32 "1h93yyh2by6yrmkwqg38nd5knids05k5nqzcihc1hdwgzg3c4b8y"))))
+        (base32 "08ck9l697xg8vpya5h07raq837i4pqxjqzx30vhscq4xpps2b8kj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.

@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -934,7 +934,7 @@ Guile will work for XBindKeys.")
 (define-public sxhkd
   (package
     (name "sxhkd")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
        (method git-fetch)
@@ -943,7 +943,7 @@ Guile will work for XBindKeys.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0j7bl2l06r0arrjzpz7al9j6cwzc730knbsijp7ixzz96pq7xa2h"))))
+        (base32 "1winwzdy9yxvxnrv8gqpigl9y0c2px27mnms62bdilp4x6llrs9r"))))
     (build-system gnu-build-system)
     (inputs
      `(("asciidoc" ,asciidoc)
@@ -2020,7 +2020,7 @@ temperature of the screen.")
          "--with-xkb"
          "--with-default-authproto-module=/run/setuid-programs/authproto_pam")))
     (native-inputs
-     `(("pandoc" ,ghc-pandoc)
+     `(("pandoc" ,pandoc)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -2470,6 +2470,11 @@ create layout indicator widgets.")
      `(#:configure-flags '("-DWITH_GIT_CATCH=off")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'find-catch
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("PATH_SUFFIXES catch") "PATH_SUFFIXES catch2"))
+             #t))
          (replace 'check
            (lambda _
              (invoke "./j4-dmenu-tests" "exclude:SearchPath/XDG_DATA_HOME"))))))

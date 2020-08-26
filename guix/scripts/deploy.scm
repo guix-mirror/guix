@@ -140,18 +140,21 @@ Perform the deployment specified by FILE.\n"))
   (define (handle-argument arg result)
     (alist-cons 'file arg result))
 
-  (let* ((opts (parse-command-line args %options (list %default-options)
-                                   #:argument-handler handle-argument))
-         (file (assq-ref opts 'file))
-         (machines (or (and file (load-source-file file)) '())))
-    (show-what-to-deploy machines)
+  (with-error-handling
+    (let* ((opts (parse-command-line args %options (list %default-options)
+                                     #:argument-handler handle-argument))
+           (file (assq-ref opts 'file))
+           (machines (or (and file (load-source-file file)) '())))
+      (show-what-to-deploy machines)
 
-    (with-status-verbosity (assoc-ref opts 'verbosity)
-      (with-store store
-        (set-build-options-from-command-line store opts)
-        (with-build-handler (build-notifier #:use-substitutes?
-                                            (assoc-ref opts 'substitutes?))
-          (parameterize ((%graft? (assq-ref opts 'graft?)))
-            (map/accumulate-builds store
-                                   (cut deploy-machine* store <>)
-                                   machines)))))))
+      (with-status-verbosity (assoc-ref opts 'verbosity)
+        (with-store store
+          (set-build-options-from-command-line store opts)
+          (with-build-handler (build-notifier #:use-substitutes?
+                                              (assoc-ref opts 'substitutes?)
+                                              #:verbosity
+                                              (assoc-ref opts 'verbosity))
+            (parameterize ((%graft? (assq-ref opts 'graft?)))
+              (map/accumulate-builds store
+                                     (cut deploy-machine* store <>)
+                                     machines))))))))

@@ -24,6 +24,7 @@
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system uuid)
+  #:use-module ((gnu services) #:select (sexp->system-provenance))
   #:use-module (guix diagnostics)
   #:use-module (guix gexp)
   #:use-module (guix i18n)
@@ -55,6 +56,7 @@
             machine-ssh-configuration-host-name
             machine-ssh-configuration-build-locally?
             machine-ssh-configuration-authorize?
+            machine-ssh-configuration-allow-downgrades?
             machine-ssh-configuration-port
             machine-ssh-configuration-user
             machine-ssh-configuration-host-key
@@ -83,6 +85,8 @@
                   (default #t))
   (authorize?     machine-ssh-configuration-authorize?     ; boolean
                   (default #t))
+  (allow-downgrades? machine-ssh-configuration-allow-downgrades? ; boolean
+                     (default #f))
   (port           machine-ssh-configuration-port           ; integer
                   (default 22))
   (user           machine-ssh-configuration-user           ; string
@@ -179,11 +183,9 @@ exist on the machine."
                             (lambda args
                               (system-error-errno args)))))
       (when (number? errno)
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "device '~a' not found: ~a")
+        (raise (formatted-message (G_ "device '~a' not found: ~a")
                                   (file-system-device fs)
-                                  (strerror errno)))))))))
+                                  (strerror errno))))))
 
   (define (check-labeled-file-system fs)
     (define remote-exp
@@ -196,11 +198,9 @@ exist on the machine."
 
     (remote-let ((result remote-exp))
       (unless result
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "no file system with label '~a'")
+        (raise (formatted-message (G_ "no file system with label '~a'")
                                   (file-system-label->string
-                                   (file-system-device fs))))))))))
+                                   (file-system-device fs)))))))
 
   (define (check-uuid-file-system fs)
     (define remote-exp
@@ -217,10 +217,8 @@ exist on the machine."
 
     (remote-let ((result remote-exp))
       (unless result
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "no file system with UUID '~a'")
-                                  (uuid->string (file-system-device fs))))))))))
+        (raise (formatted-message (G_ "no file system with UUID '~a'")
+                                  (uuid->string (file-system-device fs)))))))
 
   (append (map check-literal-file-system
                (filter (lambda (fs)
@@ -277,6 +275,27 @@ not available in the initrd."
 
   (map missing-modules file-systems))
 
+(define* (machine-check-forward-update machine)
+  "Check whether we are making a forward update for MACHINE.  Depending on its
+'allow-upgrades?' field, raise an error or display a warning if we are
+potentially downgrading it."
+  (define config
+    (machine-configuration machine))
+
+  (define validate-reconfigure
+    (if (machine-ssh-configuration-allow-downgrades? config)
+        warn-about-backward-reconfigure
+        ensure-forward-reconfigure))
+
+  (remote-let ((provenance #~(call-with-input-file
+                                 "/run/current-system/provenance"
+                               read)))
+    (define channels
+      (sexp->system-provenance provenance))
+
+    (check-forward-update validate-reconfigure
+                          #:current-channels channels)))
+
 (define (machine-check-building-for-appropriate-system machine)
   "Raise a '&message' error condition if MACHINE is configured to be built
 locally and the 'system' field does not match the '%current-system' reported
@@ -285,19 +304,18 @@ by MACHINE."
         (system (remote-system (machine-ssh-session machine))))
     (when (and (machine-ssh-configuration-build-locally? config)
                (not (string= system (machine-ssh-configuration-system config))))
-      (raise (condition
-              (&message
-               (message (format #f (G_ "incorrect target system\
+      (raise (formatted-message (G_ "incorrect target system\
  ('~a' was given, while the system reports that it is '~a')~%")
                                 (machine-ssh-configuration-system config)
-                                system))))))))
+                                system)))))
 
 (define (check-deployment-sanity machine)
   "Raise a '&message' error condition if it is clear that deploying MACHINE's
 'system' declaration would fail."
   (define assertions
     (append (machine-check-file-system-availability machine)
-            (machine-check-initrd-modules machine)))
+            (machine-check-initrd-modules machine)
+            (list (machine-check-forward-update machine))))
 
   (define aggregate-exp
     ;; Gather all the expressions so that a single round-trip is enough to
@@ -402,11 +420,9 @@ environment type of 'managed-host."
   (when (machine-ssh-configuration-authorize?
          (machine-configuration machine))
     (unless (file-exists? %public-key-file)
-      (raise (condition
-              (&message
-               (message (format #f (G_ "no signing key '~a'. \
+      (raise (formatted-message (G_ "no signing key '~a'. \
 have you run 'guix archive --generate-key?'")
-                                %public-key-file))))))
+                                %public-key-file)))
     (remote-authorize-signing-key (call-with-input-file %public-key-file
                                     (lambda (port)
                                       (string->canonical-sexp
@@ -497,9 +513,11 @@ connection to the host.")))
   (let ((config (machine-configuration machine))
         (environment (environment-type-name (machine-environment machine))))
     (unless (and config (machine-ssh-configuration? config))
-      (raise (condition
-              (&message
-               (message (format #f (G_ "unsupported machine configuration '~a'
+      (raise (formatted-message (G_ "unsupported machine configuration '~a'
 for environment of type '~a'")
                                 config
-                                environment))))))))
+                                environment)))))
+
+;; Local Variables:
+;; eval: (put 'remote-let 'scheme-indent-function 1)
+;; End:

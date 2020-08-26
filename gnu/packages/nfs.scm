@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,8 @@
 
 (define-module (gnu packages nfs)
   #:use-module (gnu packages)
+  #:use-module (gnu packages attr)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libevent)
@@ -35,6 +38,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -133,3 +137,43 @@ disk.  It allows for fast, seamless sharing of files across a network.")
     ;; restrictive licence, and until advice to the contrary we must assume
     ;; that is what is intended.
     (license license:gpl2)))
+
+(define-public nfs4-acl-tools
+  (package
+    (name "nfs4-acl-tools")
+    (version "0.3.7")
+    (source (origin
+              (method git-fetch)
+              ;; tarballs are available here:
+              ;; http://linux-nfs.org/~bfields/nfs4-acl-tools/
+              (uri (git-reference
+                    (url "git://git.linux-nfs.org/projects/bfields/nfs4-acl-tools.git")
+                    (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0lq9xdaskxysggs918vs8x42xvmg9nj7lla21ni2scw5ljld3h1i"))
+              (patches (search-patches "nfs4-acl-tools-0.3.7-fixpaths.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-bin-sh
+           (lambda _
+             (substitute* "include/buildmacros"
+               (("/bin/sh") (which "sh")))
+             #t)))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("attr" ,attr)))
+    (home-page "https://linux-nfs.org/wiki/index.php/Main_Page")
+    (synopsis "Commandline ACL utilities for the Linux NFSv4 client")
+    (description "This package provides the commandline utilities
+@command{nfs4_getfacl} and @command{nfs4_setfacl}, which are similar to their
+POSIX equivalents @command{getfacl} and @command{setfacl}.  They fetch and
+manipulate access control lists for files and directories on NFSv4 mounts.")
+    (license license:bsd-3)))

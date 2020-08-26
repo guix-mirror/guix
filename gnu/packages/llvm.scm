@@ -388,25 +388,28 @@ given PATCHES.  When TOOLS-EXTRA is given, it must point to the
                                 (("@GLIBC_LIBDIR@")
                                  (string-append libc "/lib"))))))
                         #t)))
-                  (add-after 'install 'symlink-cfi_blacklist
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (lib-share (string-append out "/lib/clang/"
-                                                       ,version "/share"))
-                             (compiler-rt (assoc-ref inputs "clang-runtime"))
-                             ;; The location varies between Clang versions.
-                             (cfi-blacklist
-                              (cond ((file-exists?
-                                      (string-append compiler-rt "/cfi_blacklist.txt"))
-                                     (string-append compiler-rt "/cfi_blacklist.txt"))
-                                    (else (string-append compiler-rt
-                                                         "/share/cfi_blacklist.txt")))))
-                        (mkdir-p lib-share)
-                        ;; Symlink cfi_blacklist.txt to where Clang expects
-                        ;; to find it.
-                        (symlink cfi-blacklist
-                                 (string-append lib-share "/cfi_blacklist.txt"))
-                        #t)))
+                  ,@(if (version>? version "3.8")
+                        `((add-after 'install 'symlink-cfi_blacklist
+                            (lambda* (#:key inputs outputs #:allow-other-keys)
+                              (let* ((out (assoc-ref outputs "out"))
+                                     (lib-share (string-append out "/lib/clang/"
+                                                               ,version "/share"))
+                                     (compiler-rt (assoc-ref inputs "clang-runtime"))
+                                     ;; The location varies between Clang versions.
+                                     (cfi-blacklist
+                                      (cond
+                                       ((file-exists?
+                                         (string-append compiler-rt "/cfi_blacklist.txt"))
+                                        (string-append compiler-rt "/cfi_blacklist.txt"))
+                                       (else (string-append compiler-rt
+                                                            "/share/cfi_blacklist.txt")))))
+                                (mkdir-p lib-share)
+                                ;; Symlink cfi_blacklist.txt to where Clang expects
+                                ;; to find it.
+                                (symlink cfi-blacklist
+                                         (string-append lib-share "/cfi_blacklist.txt"))
+                                #t))))
+                        '())
                   (add-after 'install 'install-clean-up-/share/clang
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -778,6 +781,7 @@ components which highly leverage existing libraries in the larger LLVM Project."
                   llvm-3.5
                   "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"
                   '("clang-runtime-asan-build-fixes.patch"
+                    "clang-runtime-3.5-libsanitizer-mode-field.patch"
                     "clang-3.5-libsanitizer-ustat-fix.patch"))))
     (package
       (inherit runtime)

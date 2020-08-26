@@ -43,14 +43,14 @@
 (define-public chrony
   (package
     (name "chrony")
-    (version "3.5")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.tuxfamily.org/chrony/"
                            "chrony-" version ".tar.gz"))
        (sha256
-        (base32 "1d9r2dhslll4kzdmxrj0qfgwq1b30d4l3s5cwr8yr93029dpj0jf"))))
+        (base32 "19ywl8a3lb2id7lcna5hp2g4pjnfwdc9ihr0fk6i9m45vdq2za0v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)

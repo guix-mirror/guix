@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -121,7 +122,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
@@ -129,7 +130,7 @@ human.")
                            "/releases/download/" version "/keepassxc-"
                            version "-src.tar.xz"))
        (sha256
-        (base32 "0fpx6pq336g1xwjl5yzvsky6vqvaa38zb8pwkgswph9slybkvlnh"))))
+        (base32 "1j4cmj5mv13m5b4ig950yas8ayybakqs366lp1cimmzw8ycparml"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_ALL=YES"
@@ -305,14 +306,14 @@ applications, there is xclip integration." )
 (define-public yapet
   (package
     (name "yapet")
-    (version "2.3")
+    (version "2.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://yapet.guengel.ch/downloads/yapet-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1fl4s7v1psl52ndd6i7716i9f493aj8ipl6lgmraadnn5h26l3pm"))))
+        (base32 "0b1v0whf70dfjzlwqwwvfv526s828skjvm4xvwly3vcvcmpz59sh"))))
     (build-system gnu-build-system)
     (inputs
      `(("argon2" ,argon2)
@@ -1076,7 +1077,7 @@ your online accounts makes it necessary.")
 (define-public hashcat
   (package
     (name "hashcat")
-    (version "5.1.0")
+    (version "6.1.1")
     (source
      (origin
        (method url-fetch)
@@ -1084,7 +1085,7 @@ your online accounts makes it necessary.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0f73y4cg8c7a6q7x34qvpfi4g3lw6j9bnn0a13g43aqyiskflfr8"))))
+         "104z63m7lqbb0sdrxhf9yi15l4a9zwf9m6zs9dbb3gf0nfxl1h9r"))))
     (native-inputs
      `(("opencl-headers" ,opencl-headers)))
     (build-system gnu-build-system)

@@ -6,6 +6,8 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,12 +31,15 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ruby)
   #:use-module (gnu packages)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages web))
 
 (define-public groff
   (package
@@ -169,11 +174,11 @@ is usually the formatter of \"man\" documentation pages.")
 
 ;; There are no releases, so we take the latest commit.
 (define-public roffit
-  (let ((commit "e5228388e3faf2b7f1ae5bd048ad46ed565304c6")
+  (let ((commit "b59e6c855ebea03daf76e996b5c0f8343f11be3d")
         (revision "1"))
     (package
       (name "roffit")
-      (version (string-append "0.11-" revision "." (string-take commit 9)))
+      (version (string-append "0.12-" revision "." (string-take commit 9)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -182,7 +187,7 @@ is usually the formatter of \"man\" documentation pages.")
                 (file-name (string-append "roffit-" commit "-checkout"))
                 (sha256
                  (base32
-                  "1y7ndbqciy7h0khlpi1bv4v1614vhybnmm4jysj6fwxkw9cwv1nc"))))
+                  "0z4cs92yqh22sykfgbjlyxfaifdvsd47cf1yhr0f2rgcc6l0fj1r"))))
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
@@ -197,6 +202,7 @@ is usually the formatter of \"man\" documentation pages.")
                (mkdir-p (string-append (assoc-ref outputs "out")
                                        "/bin"))
                #t)))))
+      (native-inputs `(("html-tree" ,perl-html-tree))) ; for test
       (inputs
        `(("perl" ,perl)))
       (home-page "https://daniel.haxx.se/projects/roffit/")
@@ -205,3 +211,49 @@ is usually the formatter of \"man\" documentation pages.")
        "Roffit is a program that reads an nroff file and outputs an HTML file.
 It is typically used to display man pages on a web site.")
       (license expat))))
+
+(define-public ronn-ng
+  (package
+    (name "ronn-ng")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ronn-ng" version))
+       (sha256
+        (base32
+         "1slxfg57cabmh98fw507z4ka6lwq1pvbrqwppflxw6700pi8ykfh"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'fix-gemspec-mustache
+           (lambda _
+             (substitute* "ronn-ng.gemspec"
+               (("(<mustache>.freeze.*~>).*(\".*$)" all start end)
+                (string-append start " 1.0" end)))
+             #t))
+         (add-after 'wrap 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref %outputs "out") "/bin/ronn")))
+               (wrap-program prog
+                 `("PATH" ":" suffix ,(map
+                                       (lambda (exp_inpt)
+                                         (string-append
+                                          (assoc-ref %build-inputs exp_inpt)
+                                          "/bin"))
+                                       '("ruby-kramdown"
+                                         "ruby-mustache"
+                                         "ruby-nokogiri")))))
+             #t)))))
+    (inputs
+     `(("ruby-kramdown" ,ruby-kramdown)
+       ("ruby-mustache" ,ruby-mustache)
+       ("ruby-nokogiri" ,ruby-nokogiri)))
+    (synopsis
+     "Build manuals in HTML and Unix man page format from Markdown")
+    (description
+     "Ronn-NG is an updated fork of ronn.  It builds manuals in HTML and Unix
+man page format from Markdown.")
+    (home-page "https://github.com/apjanke/ronn-ng")
+    (license expat)))

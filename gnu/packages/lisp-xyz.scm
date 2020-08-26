@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1387,10 +1388,11 @@ several blockable channels.)")
   (sbcl-package->ecl-package sbcl-jpl-queues))
 
 (define-public sbcl-eos
-  (let ((commit "b0faca83781ead9a588661e37bd47f90362ccd94"))
+  (let ((commit "b4413bccc4d142cbe1bf49516c3a0a22c9d99243")
+        (revision "2"))
     (package
       (name "sbcl-eos")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -1398,8 +1400,7 @@ several blockable channels.)")
                (url "https://github.com/adlai/Eos")
                (commit commit)))
          (sha256
-          (base32
-           "1bq8cfg087iyxmxi1mwgx5cfgy3b8ydrf81xljcis8qbgb2vszph"))
+          (base32 "1afllvmlnx97yzz404gycl3pa3kwx427k3hrbf37rpmjlv47knhk"))
          (file-name (git-file-name "eos" version))))
       (build-system asdf-build-system/sbcl)
       (synopsis "Unit Testing for Common Lisp")
@@ -13328,3 +13329,213 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
          ("trivial-gray-streams" ,cl-trivial-gray-streams)
          ("swank" ,cl-slime-swank)
          ("zpb-ttf" ,cl-zpb-ttf))))))
+
+(define-public sbcl-cl-inflector
+  (let ((commit "f1ab16919ccce3bd82a0042677d9616dde2034fe")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-inflector")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/cl-inflector")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xwwlhik1la4fp984qnx2dqq24v012qv4x0y49sngfpwg7n0ya7y"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lisp-unit2" ,sbcl-lisp-unit2)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (home-page "https://github.com/AccelerationNet/cl-inflector")
+      (synopsis "Library to pluralize/singularize English and Portuguese words")
+      (description
+       "This is a common lisp library to easily pluralize and singularize
+English and Portuguese words.  This is a port of the ruby ActiveSupport
+Inflector module.")
+      (license license:expat))))
+
+(define-public cl-inflector
+  (sbcl-package->cl-source-package sbcl-cl-inflector))
+
+(define-public ecl-cl-inflector
+  (sbcl-package->ecl-package sbcl-cl-inflector))
+
+(define-public sbcl-qbase64
+  (package
+    (name "sbcl-qbase64")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chaitanyagupta/qbase64")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dir0s70ca3hagxv9x15zq4p4ajgl7jrcgqsza2n2y7iqbxh0dwi"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("metabang-bind" ,sbcl-metabang-bind)
+       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (home-page "https://github.com/chaitanyagupta/qbase64")
+    (synopsis "Base64 encoder and decoder for Common Lisp")
+    (description "@code{qbase64} provides a fast and flexible base64 encoder
+and decoder for Common Lisp.")
+    (license license:bsd-3)))
+
+(define-public cl-qbase64
+  (sbcl-package->cl-source-package sbcl-qbase64))
+
+(define-public ecl-qbase64
+  (sbcl-package->ecl-package sbcl-qbase64))
+
+(define-public sbcl-hu.dwim.common-lisp
+  (package
+    (name "sbcl-hu.dwim.common-lisp")
+    (version "2015-07-09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://beta.quicklisp.org/archive/hu.dwim.common-lisp/"
+             version "/hu.dwim.common-lisp-"
+             (string-replace-substring version "-" "")
+             "-darcs.tgz"))
+       (sha256
+        (base32 "13cxrvh55rw080mvfir7s7k735l9rcfh3khxp97qfwd5rz0gadb9"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+    (home-page "http://dwim.hu/")
+    (synopsis "Redefine some standard Common Lisp names")
+    (description "This library is a redefinition of the standard Common Lisp
+package that includes a number of renames and shadows. ")
+    (license license:public-domain)))
+
+(define-public cl-hu.dwim.common-lisp
+  (sbcl-package->cl-source-package sbcl-hu.dwim.common-lisp))
+
+(define-public ecl-hu.dwim.common-lisp
+  (sbcl-package->ecl-package sbcl-hu.dwim.common-lisp))
+
+(define-public sbcl-hu.dwim.common
+  (package
+    (name "sbcl-hu.dwim.common")
+    (version "2015-07-09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://beta.quicklisp.org/archive/hu.dwim.common/"
+             version "/hu.dwim.common-"
+             (string-replace-substring version "-" "")
+             "-darcs.tgz"))
+       (sha256
+        (base32 "12l1rr6w9m99w0b5gc6hv58ainjfhbc588kz6vwshn4gqsxyzbhp"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("anaphora" ,sbcl-anaphora)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("hu.dwim.common-lisp" ,sbcl-hu.dwim.common-lisp)
+       ("iterate" ,sbcl-iterate)
+       ("metabang-bind" ,sbcl-metabang-bind)))
+    (home-page "http://dwim.hu/")
+    (synopsis "Common Lisp library shared by other hu.dwim systems")
+    (description "")
+    (license license:public-domain)))
+
+(define-public cl-hu.dwim.common
+  (sbcl-package->cl-source-package sbcl-hu.dwim.common))
+
+(define-public ecl-hu.dwim.common
+  (sbcl-package->ecl-package sbcl-hu.dwim.common))
+
+(define-public sbcl-hu.dwim.defclass-star
+  (package
+    (name "sbcl-hu.dwim.defclass-star")
+    (version "2015-07-09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://beta.quicklisp.org/archive/hu.dwim.defclass-star/"
+             version "/hu.dwim.defclass-star-"
+             (string-replace-substring version "-" "")
+             "-darcs.tgz"))
+       (sha256
+        (base32 "032982lyp0hm0ssxlyh572whi2hr4j1nqkyqlllaj373v0dbs3vs"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(;; These 2 inputs are only needed tests which are disabled, see below.
+       ;; ("hu.dwim.common" ,sbcl-hu.dwim.common)
+       ;; Need cl- package for the :hu.dwim.stefil+hu.dwim.def+swank system.
+       ;; ("hu.dwim.stefil" ,cl-hu.dwim.stefil)
+       ("hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+    (arguments
+     `(#:test-asd-file "hu.dwim.defclass-star.test.asd"
+       ;; Tests require a circular dependency: hu.dwim.stefil -> hu.dwim.def
+       ;; -> hu.dwim.util -> hu.dwim.defclass-star.
+       #:tests? #f))
+    (home-page "http://dwim.hu/?_x=dfxn&_f=mRIMfonK")
+    (synopsis "Simplify definitions with defclass* and friends in Common Lisp")
+    (description "@code{defclass-star} provides defclass* and defcondition* to
+simplify class and condition declarations.  Features include:
+
+@itemize
+@item Automatically export all or select slots at compile time.
+@item Define the @code{:initarg} and @code{:accesor} automatically.
+@item Specify a name transformer for both the @code{:initarg} and
+@code{:accessor}, etc.
+@item Specify the @code{:initform} as second slot value.
+@end itemize
+
+See
+@url{https://common-lisp.net/project/defclass-star/configuration.lisp.html}
+for an example.")
+    (license license:public-domain)))
+
+(define-public cl-hu.dwim.defclass-star
+  (sbcl-package->cl-source-package sbcl-hu.dwim.defclass-star))
+
+(define-public ecl-hu.dwim.defclass-star
+  (sbcl-package->ecl-package sbcl-hu.dwim.defclass-star))
+
+(define-public sbcl-livesupport
+  (let ((commit "71e6e412df9f3759ad8378fabb203913d82e228a")
+	(revision "1"))
+    (package
+      (name "sbcl-livesupport")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cbaggers/livesupport")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1rvnl0mncylbx63608pz5llss7y92j7z3ydambk9mcnjg2mjaapg"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/cbaggers/livesupport")
+      (synopsis "Some helpers that make livecoding a little easier")
+      (description "This package provides a macro commonly used in livecoding to
+enable continuing when errors are raised.  Simply wrap around a chunk of code
+and it provides a restart called @code{continue} which ignores the error and
+carrys on from the end of the body.")
+      (license license:bsd-2))))
+
+(define-public cl-livesupport
+  (sbcl-package->cl-source-package sbcl-livesupport))
+
+(define-public ecl-livesupport
+  (sbcl-package->ecl-package sbcl-livesupport))

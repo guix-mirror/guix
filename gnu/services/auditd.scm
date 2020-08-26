@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2020 Robin Green <greenrd@greenrd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,29 +27,47 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:export (auditd-configuration
-            auditd-service-type))
+            auditd-service-type
+            %default-auditd-configuration-directory))
 
-; /etc/audit/audit.rules
+(define auditd.conf
+  (plain-file "auditd.conf" "log_file = /var/log/audit.log\nlog_format = \
+ENRICHED\nfreq = 1\nspace_left = 5%\nspace_left_action = \
+syslog\nadmin_space_left_action = ignore\ndisk_full_action = \
+ignore\ndisk_error_action = syslog\n"))
 
-(define-configuration auditd-configuration
-  (audit
-   (package audit)
-   "Audit package."))
+(define %default-auditd-configuration-directory
+  (computed-file "auditd"
+                 #~(begin
+                     (mkdir #$output)
+                     (copy-file #$auditd.conf
+                                (string-append #$output "/auditd.conf")))))
+
+(define-record-type* <auditd-configuration>
+  auditd-configuration make-auditd-configuration
+  auditd-configuration?
+  (audit                   auditd-configuration-audit                          ; package
+                           (default audit))
+  (configuration-directory auditd-configuration-configuration-directory))      ; file-like
 
 (define (auditd-shepherd-service config)
-  (let* ((audit (auditd-configuration-audit config)))
+  (let* ((audit (auditd-configuration-audit config))
+         (configuration-directory (auditd-configuration-configuration-directory config)))
     (list (shepherd-service
-           (documentation "Auditd allows you to audit file system accesses.")
+           (documentation "Auditd allows you to audit file system accesses and process execution.")
            (provision '(auditd))
            (start #~(make-forkexec-constructor
-                     (list (string-append #$audit "/sbin/auditd"))))
+                     (list (string-append #$audit "/sbin/auditd") "-c" #$configuration-directory)
+                     #:pid-file "/var/run/auditd.pid"))
            (stop #~(make-kill-destructor))))))
 
 (define auditd-service-type
   (service-type (name 'auditd)
-                (description "Allows auditing file system accesses.")
+                (description "Allows auditing file system accesses and process execution.")
                 (extensions
                  (list
                   (service-extension shepherd-root-service-type
                                      auditd-shepherd-service)))
-                (default-value (auditd-configuration))))
+                (default-value
+                  (auditd-configuration
+                   (configuration-directory %default-auditd-configuration-directory)))))

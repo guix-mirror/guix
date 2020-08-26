@@ -536,6 +536,31 @@ the position of the variable and allows you to modify its value.")
     ;; by GPLv3 or later.
     (license (list license:lgpl3+ license:gpl3+))))
 
+(define-public remake
+  (package (inherit gnu-make)
+    (name "remake")
+    (version "4.3-1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((upstream-version
+                          (match (string-split version #\-)
+                            ((ver sub) (string-append ver "%2Bdbg-" sub)))))
+                     (string-append "mirror://sourceforge/bashdb/"
+                                    "remake/" upstream-version "/"
+                                    "remake-" upstream-version ".tar.gz")))
+              (file-name (string-append "remake-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xlx2485y0israv2pfghmv74lxcv9i5y65agy69mif76yc4vfvif"))
+              (patches (search-patches "remake-impure-dirs.patch"))))
+    (inputs
+     `(("readline" ,readline)
+       ,@(package-inputs gnu-make)))
+    (home-page "http://bashdb.sourceforge.net/remake/")
+    (description "Remake is an enhanced version of GNU Make that adds improved
+error reporting, better tracing, profiling, and a debugger.")
+    (license license:gpl3+)))
+
 (define-public rr
   (package
     (name "rr")

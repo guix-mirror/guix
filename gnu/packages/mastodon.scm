@@ -23,6 +23,9 @@
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages time)
+  #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz))
 
@@ -63,3 +66,40 @@ Features include:
 @item Simple switching between authenticated in Mastodon accounts
 @end itemize")
     (license license:gpl3)))
+
+(define-public python-mastodon-py
+  (package
+    (name "python-mastodon-py")
+    (version "1.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Mastodon.py" version))
+        (sha256
+         (base32
+          "1vikvkzcij2gd730cssigxi38vlmzqmwdy58r3y2cwsxifnxpz9a"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-blurhash" ,python-blurhash)
+       ("python-dateutil" ,python-dateutil)
+       ("python-decorator" ,python-decorator)
+       ("python-magic" ,python-magic)
+       ("python-pytz" ,python-pytz)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-blurhash" ,python-blurhash)
+       ("python-cryptography" ,python-cryptography)
+       ("python-http-ece" ,python-http-ece)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest-vcr" ,python-pytest-vcr)
+       ("python-requests-mock" ,python-requests-mock)
+       ("python-vcrpy" ,python-vcrpy)))
+    (home-page "https://github.com/halcy/Mastodon.py")
+    (synopsis "Python wrapper for the Mastodon API")
+    (description
+     "This package provides a python wrapper for the Mastodon API.")
+    (license license:expat)))

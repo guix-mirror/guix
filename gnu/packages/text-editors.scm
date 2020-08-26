@@ -46,6 +46,7 @@
   #:use-module (gnu packages code)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -74,21 +75,27 @@
 (define-public vis
   (package
     (name "vis")
-    (version "0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/martanne/vis/releases"
-                                  "/download/v" version
-                                  "/vis-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "0aw35n8xk7ir84ckvczc6yshj9ynishrlz0qlv4yc1afbra1gxmn"))))
+    (version "0.6")                     ; also update the vis-test input
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/martanne/vis")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1zjm89cn3rfq8fxpwp66khy53s6vqlmw6q103qyyvix8ydzxdmsh"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:tests? #f                  ; no releases; snapshots are missing tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-test-suite
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((vis-test (assoc-ref inputs "vis-test")))
+               (copy-recursively vis-test "test")
+               #t)))
+         (delete 'check)                ; the tests need a wrapped vis
          (add-after 'install 'wrap-binary
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -101,7 +108,34 @@
                (wrap-program (string-append out "/bin/vis")
                  `("LUA_PATH" ":" prefix (,LUA_PATH))
                  `("LUA_CPATH" ":" prefix (,LUA_CPATH)))
+               #t)))
+         (add-after 'wrap-binary 'check
+           (assoc-ref %standard-phases 'check))
+         (add-before 'check 'set-up-tests
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; DEFAULT_COMPILER is hard-coded here.
+               (substitute* "test/core/ccan-config.c"
+                 (("\"cc\"")
+                  (format #f "\"~a\"" ,(cc-for-target))))
+
+               ;; Use the ‘vis’ executable that we wrapped above.
+               (install-file (string-append out "/bin/vis") ".")
+
+               ;; XXX Delete 2 failing tests.  TODO: make them not fail. :-)
+               (for-each delete-file
+                         (find-files "test/vis/selections" "^complement"))
                #t))))))
+    (native-inputs
+     `(("vis-test"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/martanne/vis-test")
+                 (commit "4c4f6645de77f697a45899e8645e0c2bbdc7208a")))
+           (sha256
+            (base32 "10vh1pxsqw88a5xwh5irkm85xr66dbycmgpmabyw9h0vm14cvcz2"))
+           (file-name (git-file-name "vis-test" version))))))
     (inputs `(("lua" ,lua)
               ("ncurses" ,ncurses)
               ("libtermkey" ,libtermkey)
@@ -121,7 +155,7 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2020.01.16")
+    (version "2020.08.04")
     (source
      (origin
        (method url-fetch)
@@ -129,7 +163,7 @@ based command language.")
                            "releases/download/v" version "/"
                            "kakoune-" version ".tar.bz2"))
        (sha256
-        (base32 "1bhd990gywdwdhxc5dn83wwj418c5cw1ndqycf7k0a02kxlg3550"))))
+        (base32 "08gikjxyvcr415br1g1llzh5pnq737q55yinalb92cgq3yn9yih2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -148,7 +182,7 @@ based command language.")
                                "\";\n        " line)))
              #t))
          (delete 'configure)            ; no configure script
-         ;; kakoune requires us to be in the src/ directory to build
+         ;; kakoune requires us to be in the src/ directory to build.
          (add-before 'build 'chdir
            (lambda _ (chdir "src") #t)))))
     (native-inputs
@@ -246,7 +280,26 @@ bindings and many of the powerful features of GNU Emacs.")
                         (setenv "DISPLAY" display)
                         (system (string-append xorg-server "/bin/Xvfb "
                                                display " &")))
-                      #t)))))
+                      #t))
+                  (add-after 'install 'wrap
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; The package needs GTK+ and GtkSourceView on XDG_DATA_DIRS
+                      ;; for syntax highlighting to work.  shared-mime-info is
+                      ;; necessary for MIME handling.
+                      ;; XXX: Ideally we'd reuse glib-or-gtk-wrap here, but it
+                      ;; does not pick up $gtksourceview/share/gtksourceview-3.0.
+                      (let ((out (assoc-ref outputs "out"))
+                            (gtk+ (assoc-ref inputs "gtk+"))
+                            (gtksourceview (assoc-ref inputs "gtksourceview"))
+                            (shared-mime-info (assoc-ref inputs "shared-mime-info")))
+                        (wrap-program (string-append out "/bin/juci")
+                          `("XDG_DATA_DIRS" ":" prefix
+                            (,(string-join
+                               (map (lambda (pkg)
+                                      (string-append pkg "/share"))
+                                    (list out gtk+ gtksourceview shared-mime-info))
+                               ":"))))
+                        #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server-for-tests)))
@@ -700,32 +753,35 @@ editors.")
 (define-public texmacs
   (package
     (name "texmacs")
-    (version "1.99.11")
+    (version "1.99.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.texmacs.org/Download/ftp/tmftp/"
                            "source/TeXmacs-" version "-src.tar.gz"))
        (sha256
-        (base32 "12bp0f34izzqimz49lfpgf4lyz3h45s9xbmk8v6zsawdjki76alg"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (delete-file-recursively "3rdparty")
-           #t))))
+        (base32 "1d590yyanh2ar88pd0ns4mf616bq1lq4cwg93m863anhir5irb82"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("xdg-utils" ,xdg-utils)))       ;for xdg-icon-resource
     (inputs
      `(("freetype" ,freetype)
        ("guile" ,guile-1.8)
        ("perl" ,perl)
        ("python" ,python-wrapper)
-       ("qt" ,qt-4)))
+       ("qt" ,qtbase)))
     (arguments
      `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-icon-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "packages/linux/icons.sh"
+                 (("/usr/share")
+                  (string-append out "/share")))
+               #t)))
          (add-before 'configure 'gzip-flags
            (lambda _
              (substitute* "Makefile.in"
@@ -733,24 +789,24 @@ editors.")
     (synopsis "Editing platform with special features for scientists")
     (description
      "GNU TeXmacs is a text editing platform which is specialized for
-scientists.  It is ideal for editing structured documents with different
-types of content.  It has robust support for mathematical formulas and plots.
- It can also act as an interface to external mathematical programs such as R
-and Octave.  TeXmacs is completely extensible via Guile.")
+scientists.  It is ideal for editing structured documents with different types
+of content.  It has robust support for mathematical formulas and plots.  It
+can also act as an interface to external mathematical programs such as R and
+Octave.  TeXmacs is completely extensible via Guile.")
     (license license:gpl3+)
     (home-page "https://www.texmacs.org/tmweb/home/welcome.en.html")))
 
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.4.3")
+    (version "4.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (let ((v (apply string-append (string-split version #\.))))
               (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
        (sha256
-        (base32 "080v9l7dn3qgkdg0nc0kwpj6warwpi904zjgz9kzg1l6pknxf21s"))))
+        (base32 "1zjsb6iiqi4cw9r9md3xv8qyy86ssz11p680xn7vmllrxshxvs8y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
@@ -899,7 +955,7 @@ card.  It offers:
 (define-public ne
   (package
     (name "ne")
-    (version "3.2.1")
+    (version "3.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -908,7 +964,7 @@ card.  It offers:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h6d08cnwrk96ss83i9bragwwanph6x54sm3ak1z81146dsqsiif"))))
+                "01aglnsfljlvx0wvyvpjfn4y88jf450a06qnj9a8lgdqv1hdkq1a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)

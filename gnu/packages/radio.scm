@@ -66,7 +66,6 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
@@ -296,7 +295,6 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
-       ("git" ,git-minimal)
        ("ghostscript" ,ghostscript)
        ("orc" ,orc)
        ("pkg-config" ,pkg-config)
@@ -420,7 +418,7 @@ environment.")
 (define-public gnuradio-osmosdr
   (package
     (name "gnuradio-osmosdr")
-    (version "0.2.0")
+    (version "0.2.2")
     (source
      (origin
        (method git-fetch)
@@ -429,11 +427,10 @@ environment.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rdx7fa0xiq0qmgrrbby7z1bblmqhl9qh9jqpsznzxkx91f17ypd"))))
+        (base32 "1aqj5cylipmmjh1x1kb2j8262hxq6mi86dgb2zphj94wvsab2ghx"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
-       ("git" ,git-minimal)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
        ("python-mako" ,python-mako)
@@ -473,7 +470,6 @@ to access different radio hardware.")
        ("automake" ,automake)
        ("bash-minimal" ,bash-minimal)
        ("doxygen" ,doxygen)
-       ("git" ,git-minimal)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("texlive" ,(texlive-union (list texlive-amsfonts
@@ -582,14 +578,14 @@ using GNU Radio and the Qt GUI toolkit.")
 (define-public fldigi
   (package
     (name "fldigi")
-    (version "4.1.13")
+    (version "4.1.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.w1hkj.com/files/fldigi/fldigi-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0mlq4z5k3h466plij8hg9xn5xbjxk557g4pw13cplpf32fhng224"))))
+        (base32 "0hr6xbv01xf7z4r2jxxhn8xjdmca2198q4m9glh4877dllvfq6xj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

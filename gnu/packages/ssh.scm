@@ -15,6 +15,7 @@
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -295,82 +296,81 @@ Additionally, various channel-specific options can be negotiated.")
     (synopsis "OpenSSH client and server without X11 support")))
 
 (define-public guile-ssh
-  (package
-    (name "guile-ssh")
-    (version "0.13.0")
-    (home-page "https://github.com/artyom-poptsov/guile-ssh")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit (string-append "v" version))))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1q96h98p6x7ah6nc0d2wfx503fmsj36riv9ka9s79z3lzwaf0k26"))
-              (modules '((guix build utils)))))
-    (build-system gnu-build-system)
-    (outputs '("out" "debug"))
-    (arguments
-     `(;; It makes no sense to build libguile-ssh.a.
-       #:configure-flags '("--disable-static")
-
-       #:phases (modify-phases %standard-phases
-                  (add-before 'build 'fix-libguile-ssh-file-name
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Build and install libguile-ssh.so so that we can use
-                      ;; its absolute file name in .scm files, before we build
-                      ;; the .go files.
-                      (let* ((out (assoc-ref outputs "out"))
-                             (lib (string-append out "/lib")))
-                        (invoke "make" "install"
-                                "-C" "libguile-ssh"
-                                "-j" (number->string
-                                      (parallel-job-count)))
-                        (substitute* (find-files "." "\\.scm$")
-                          (("\"libguile-ssh\"")
-                           (string-append "\"" lib "/libguile-ssh\"")))
-                        #t)))
-                  ,@(if (%current-target-system)
-                        '()
-                        '((add-before 'check 'fix-guile-path
-                             (lambda* (#:key inputs #:allow-other-keys)
-                               (let ((guile (assoc-ref inputs "guile")))
-                                 (substitute* "tests/common.scm"
-                                   (("/usr/bin/guile")
-                                    (string-append guile "/bin/guile")))
-                                 #t)))))
-                  (add-after 'install 'remove-bin-directory
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin"))
-                             (examples (string-append
-                                        out "/share/guile-ssh/examples")))
-                        (mkdir-p examples)
-                        (rename-file (string-append bin "/ssshd.scm")
-                                     (string-append examples "/ssshd.scm"))
-                        (rename-file (string-append bin "/sssh.scm")
-                                     (string-append examples "/sssh.scm"))
-                        (delete-file-recursively bin)
-                        #t))))
-       ;; Tests are not parallel-safe.
-       #:parallel-tests? #f))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)
-                     ("texinfo" ,texinfo)
-                     ("pkg-config" ,pkg-config)
-                     ("which" ,which)
-                     ("guile" ,guile-3.0))) ;needed when cross-compiling.
-    (inputs `(("guile" ,guile-3.0)
-              ("libssh" ,libssh)
-              ("libgcrypt" ,libgcrypt)))
-    (synopsis "Guile bindings to libssh")
-    (description
-     "Guile-SSH is a library that provides access to the SSH protocol for
-programs written in GNU Guile interpreter.  It is a wrapper to the underlying
-libssh library.")
-    (license license:gpl3+)))
+  ;; This unreleased commit fixes for <https://issues.guix.gnu.org/42740>.
+  (let ((commit "688d7f3797b5155257a6c2ee4ea5084b3d8cc244")
+        (revision "1"))
+    (package
+      (name "guile-ssh")
+      (version (git-version "0.13.0" revision commit))
+      (home-page "https://github.com/artyom-poptsov/guile-ssh")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0mbff4v8738pmcs6sdma4b9gqb0bklraj346i5g5b1mwdywhzljj"))
+                (modules '((guix build utils)))))
+      (build-system gnu-build-system)
+      (outputs '("out" "debug"))
+      (arguments
+       `(#:configure-flags '("--disable-static")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'fix-libguile-ssh-file-name
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Build and install libguile-ssh.so so that we can use
+               ;; its absolute file name in .scm files, before we build
+               ;; the .go files.
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib")))
+                 (invoke "make" "install"
+                         "-C" "libguile-ssh"
+                         "-j" (number->string
+                               (parallel-job-count)))
+                 (substitute* (find-files "." "\\.scm$")
+                   (("\"libguile-ssh\"")
+                    (string-append "\"" lib "/libguile-ssh\"")))
+                 #t)))
+           ,@(if (%current-target-system)
+                 '()
+                 '((add-before 'check 'fix-guile-path
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (let ((guile (assoc-ref inputs "guile")))
+                         (substitute* "tests/common.scm"
+                           (("/usr/bin/guile")
+                            (string-append guile "/bin/guile")))
+                         #t)))))
+           (add-after 'install 'remove-bin-directory
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (examples (string-append
+                                 out "/share/guile-ssh/examples")))
+                 (mkdir-p examples)
+                 (rename-file (string-append bin "/ssshd.scm")
+                              (string-append examples "/ssshd.scm"))
+                 (rename-file (string-append bin "/sssh.scm")
+                              (string-append examples "/sssh.scm"))
+                 (delete-file-recursively bin)
+                 #t))))))
+      (native-inputs `(("autoconf" ,autoconf)
+                       ("automake" ,automake)
+                       ("libtool" ,libtool)
+                       ("texinfo" ,texinfo)
+                       ("pkg-config" ,pkg-config)
+                       ("which" ,which)
+                       ("guile" ,guile-3.0))) ;needed when cross-compiling.
+      (inputs `(("guile" ,guile-3.0)
+                ("libssh" ,libssh)
+                ("libgcrypt" ,libgcrypt)))
+      (synopsis "Guile bindings to libssh")
+      (description "Guile-SSH is a library that provides access to the SSH
+protocol for programs written in GNU Guile interpreter.  It is a wrapper to
+the underlying libssh library.")
+      (license license:gpl3+))))
 
 (define-public guile2.0-ssh
   (package

@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,7 +87,9 @@
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages haskell-xyz)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages language)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
@@ -111,6 +114,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages search)
@@ -184,14 +188,14 @@ example, modify the message headers or body, or encrypt or sign the message.")
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.9")
+    (version "3.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1g1xf2lal04nsnf1iym9n9n0wxjpqbcr9nysxpm98v4pniinqwsz"))))
+               "17smrxjdgbbzbzakik30vj46q4iib85ksqhb82jr4vjp57akszh9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -229,6 +233,13 @@ example, modify the message headers or body, or encrypt or sign the message.")
              (substitute* "comsat/tests/Makefile.in"
                (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
                 (string-append "-" all)))
+
+             ;; XXX: The ‘moderator: program discard’ test does not specify
+             ;; an explicit From: but does expect an exact match.  But why are
+             ;; all other tests unaffected?
+             (substitute* "sieve/tests/testsuite"
+               (("gray@")
+                "nixbld@"))
 
              ;; 'frm' tests expect write access to $HOME.
              (setenv "HOME" (getcwd))
@@ -746,7 +757,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.4.10")
+    (version "1.4.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
@@ -754,7 +765,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0vbyrmv3d2bja4vx86za93gq46vxg18j12g0lca3x1dl8d5g2xa6"))))
+                "13kfpr77qrnp3i5qnb5zd03frd3fdviggnl50973gdk0hr7m0smj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1244,14 +1255,14 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.11")
+    (version "1.8.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "0q0fg235qk448l1xjcwyxr7vcpzk6w57jzhjbkb0m7nffyhhypzj"))))
+        (base32 "0m33m5bc7ajmgy7vivnzj3mhybg37259hx79xypj769kfyafyvx8"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1400,7 +1411,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.10.1")
+    (version "2.3.11.3")
     (source
      (origin
        (method url-fetch)
@@ -1408,13 +1419,16 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "035idr2j81s5mngnhd58rih79dhwwak7q01mqbx3rcmi4cpychk6"))))
+        (base32 "1p5gp8jbavcsaara5mfn5cbrnlxssajnchczbgmmfzr7228fmnfk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("bzip2" ,bzip2)
+       ("clucene" ,clucene)
+       ("icu4c" ,icu4c)
        ("libsodium" ,libsodium)         ; extra password algorithms
+       ("libstemmer" ,libstemmer)
        ;; FIXME: The 'test-backtrace' tests fail on arm when using glibc's
        ;; backtrace_symbol() function so fallback to using libunwind.
        ,@(if (target-arm?)
@@ -1424,11 +1438,13 @@ facilities for checking incoming mail.")
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var"
-                           "--with-sqlite") ; not auto-detected
+                           "--with-sqlite"  ; not auto-detected
+                           "--with-lucene") ; not auto-detected
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
@@ -1550,14 +1566,14 @@ hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.3.1")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "1sphd30jplii58y2zmw365bckm6pszmapcy905zhjll1sm1ldjv8"))))
+                "10n8ykag0q3ws6fc15xqyg3v980v5nq3kzpablly2rh2z7vkn8gj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -1566,7 +1582,7 @@ hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
        ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl-1.0)
        ("zlib" ,zlib)))
-    (home-page "http://isync.sourceforge.net/")
+    (home-page "https://isync.sourceforge.io/")
     (synopsis "Mailbox synchronization program")
     (description
      "isync/mbsync is a command-line tool for two-way synchronization of
@@ -1945,13 +1961,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.16.1")
+    (version "0.17.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0fg4qh5gzki5wg958wlpc8a2icnk74gzg33lqxjm755cfnjng7qd"))))
+                "062nv4xkfsjc11k9m52dh6xjn9z68a4a6x1s8z05wwv4jbp1lkhn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1967,7 +1983,6 @@ maintained.")
     (inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-configobj" ,python-configobj)
-       ("python-pyyaml" ,python-pyyaml)
        ("python-ruamel.yaml" ,python-ruamel.yaml)
        ("python-unidecode" ,python-unidecode)
        ("python-vobject" ,python-vobject)))
@@ -3293,90 +3308,88 @@ related tools to process winmail.dat files.")
     (license license:gpl2+)))
 
 (define-public public-inbox
-  (let ((commit "05a06f3262a2ddbf46adb85169e13ce9127e4524")
-        (revision "0"))
-    (package
-     (name "public-inbox")
-     (version (git-version "1.2.0" revision commit))
-     (source
-      (origin (method git-fetch)
-              (uri (git-reference
-                    (url "https://public-inbox.org")
-                    (commit commit)))
-              (sha256
-               (base32
-                "06cclxg46gsls3x19l9s8s9x8gkjghm6gd4jb1v9ng6fds6xi2fg"))
-              (file-name (git-file-name name version))))
-     (build-system perl-build-system)
-     (arguments
-      '(#:phases
-        (modify-phases %standard-phases
-          (add-before 'configure 'qualify-paths
-            (lambda _
-              ;; Use absolute paths for 'xapian-compact'.
-              (let ((xapian-compact (which "xapian-compact")))
-                (substitute* "script/public-inbox-compact"
-                  (("xapian-compact") xapian-compact)))
-              #t))
-          (add-before 'check 'pre-check
-            (lambda _
-              (substitute* "t/spawn.t"
-                (("\\['env'\\]") (string-append "['" (which "env") "']")))
-              (substitute* "t/ds-leak.t"
-                (("/bin/sh") (which "sh")))
-              (invoke "./certs/create-certs.perl")
-              ;; XXX: This test fails due to zombie process is not reaped by
-              ;; the builder.
-              (substitute* "t/httpd-unix.t"
-                (("^SKIP: \\{") "SKIP: { skip('Guix');"))
-              #t))
-          (add-after 'install 'wrap-programs
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                (for-each
-                 (lambda (prog)
-                   (wrap-program prog
-                     ;; Let those scripts find their perl modules.
-                     `("PERL5LIB" ":" prefix
-                       (,(string-append out "/lib/perl5/site_perl")
-                        ,(getenv "PERL5LIB")))
-                     ;; 'git' is invoked in various files of the PublicInbox
-                     ;; perl module.
-                     `("PATH" ":" prefix
-                       (,(string-append (assoc-ref inputs "git") "/bin")))))
-                 (find-files (string-append out "/bin"))))
-              #t)))))
-     (native-inputs
-      `(("git" ,git)
-        ("xapian" ,xapian)
-        ;; For testing.
-        ("lsof" ,lsof)
-        ("openssl" ,openssl)))
-     (inputs
-      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
-        ("perl-dbi" ,perl-dbi)
-        ("perl-email-address-xs" ,perl-email-address-xs)
-        ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
-        ("perl-email-mime" ,perl-email-mime)
-        ("perl-email-simple" ,perl-email-simple)
-        ("perl-net-server" ,perl-net-server)
-        ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
-        ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
-        ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)
-        ("perl-plack" ,perl-plack)
-        ("perl-search-xapian" ,perl-search-xapian)
-        ("perl-timedate" ,perl-timedate)
-        ("perl-uri-escape" ,perl-uri-escape)
-        ;; For testing.
-        ("perl-ipc-run" ,perl-ipc-run)
-        ("perl-xml-feed" ,perl-xml-feed)))
-     (home-page "https://public-inbox.org/README.html")
-     (synopsis "Archive mailing lists in git repositories")
-     (description
-      "public-inbox implements the sharing of an email inbox via git to
+  (package
+    (name "public-inbox")
+    (version "1.5.0")
+    (source
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://public-inbox.org")
+                   (commit (string-append "v" version))))
+             (sha256
+              (base32
+               "03zj7shdl3vibs7k5lr673bwcf8j1xx8is3mjz34ca4cdh6p5j2k"))
+             (file-name (git-file-name name version))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'qualify-paths
+           (lambda _
+             ;; Use absolute paths for 'xapian-compact'.
+             (let ((xapian-compact (which "xapian-compact")))
+               (substitute* "script/public-inbox-compact"
+                 (("xapian-compact") xapian-compact)))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (substitute* "t/spawn.t"
+               (("\\['env'\\]") (string-append "['" (which "env") "']")))
+             (substitute* "t/ds-leak.t"
+               (("/bin/sh") (which "sh")))
+             (invoke "./certs/create-certs.perl")
+             ;; XXX: This test fails due to zombie process is not reaped by
+             ;; the builder.
+             (substitute* "t/httpd-unix.t"
+               (("^SKIP: \\{") "SKIP: { skip('Guix');"))
+             #t))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (prog)
+                  (wrap-program prog
+                    ;; Let those scripts find their perl modules.
+                    `("PERL5LIB" ":" prefix
+                      (,(string-append out "/lib/perl5/site_perl")
+                       ,(getenv "PERL5LIB")))
+                    ;; 'git' is invoked in various files of the PublicInbox
+                    ;; perl module.
+                    `("PATH" ":" prefix
+                      (,(string-append (assoc-ref inputs "git") "/bin")))))
+                (find-files (string-append out "/bin"))))
+             #t)))))
+    (native-inputs
+     `(("xapian" ,xapian)
+       ;; For testing.
+       ("lsof" ,lsof)
+       ("openssl" ,openssl)))
+    (inputs
+     `(("git" ,git)
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-dbi" ,perl-dbi)
+       ("perl-email-address-xs" ,perl-email-address-xs)
+       ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
+       ("perl-email-mime" ,perl-email-mime)
+       ("perl-email-simple" ,perl-email-simple)
+       ("perl-net-server" ,perl-net-server)
+       ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
+       ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
+       ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)
+       ("perl-plack" ,perl-plack)
+       ("perl-search-xapian" ,perl-search-xapian)
+       ("perl-timedate" ,perl-timedate)
+       ("perl-uri-escape" ,perl-uri-escape)
+       ;; For testing.
+       ("perl-ipc-run" ,perl-ipc-run)
+       ("perl-xml-feed" ,perl-xml-feed)))
+    (home-page "https://public-inbox.org/README.html")
+    (synopsis "Archive mailing lists in git repositories")
+    (description
+     "public-inbox implements the sharing of an email inbox via git to
 complement or replace traditional mailing lists.  Readers may read via NNTP,
 Atom feeds or HTML archives.")
-     (license license:agpl3+))))
+    (license license:agpl3+)))
 
 (define-public sylpheed
   (package
@@ -3452,14 +3465,13 @@ current standard.  No backward compatibility issues have been noted.")
 (define-public python-dkimpy
   (package
     (name "python-dkimpy")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dkimpy" version))
         (sha256
-         (base32
-          "14idcs0wiyc0iyi5bz3xqimxf3x6dizcjfn92s2ka5zxp95xdyvd"))))
+         (base32 "088iz5cqjqh4c7141d94pvn13bh25aizqlrifwv6fs5g16zj094s"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -3520,20 +3532,23 @@ DKIM and ARC sign messages and output the corresponding signature headers.")
 (define-public python-aiosmtpd
   (package
     (name "python-aiosmtpd")
-    (version "1.2")
+    (version "1.2.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "aiosmtpd" version))
-        (sha256
-         (base32
-          "1xdfk741pjmz1cm8dsi4n5vq4517i175rm94696m3f7kcgk7xsmp"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aio-libs/aiosmtpd")
+             (commit version)))
+       (sha256
+        (base32 "14c30dm6jzxiblnsah53fdv68vqhxwvb9x0aq9bc4vcdas747vr7"))
+       (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-failing-test
+         (add-after 'unpack 'delete-failing-tests
            (lambda _
+             ;; This test uses an expired certificate.
              (delete-file "aiosmtpd/tests/test_smtps.py")
              #t))
          (replace 'check

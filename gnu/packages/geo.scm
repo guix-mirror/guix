@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017, 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -59,6 +59,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
@@ -101,10 +102,73 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+(define-public memphis
+  (package
+    (name "memphis")
+    (version "0.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/jiuka/memphis.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "068c3943pgbpfjq44pmvn5fmkh005ak5aa67vvrq3fn487c6w54q"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static"
+        "--enable-gtk-doc"
+        "--enable-vala"
+        (string-append "--with-html-dir="
+                       (assoc-ref %outputs "doc")
+                       "/share/gtk-doc/html"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-autogen
+           (lambda _
+             (substitute* "autogen.sh"
+               (("\\./configure \"\\$@\"")
+                ""))
+             #t))
+         (add-after 'patch-autogen 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs/reference"
+               (substitute* "libmemphis-docs.sgml"
+                 (("http://www.oasis-open.org/docbook/xml/4.3/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("seed" ,seed)
+       ("vala" ,vala)))
+    (inputs
+     `(("expat" ,expat)
+       ("glib" ,glib)))
+    (propagated-inputs
+     `(("cairo" ,cairo)))
+    (synopsis "Map-rendering for OpenSteetMap")
+    (description "Memphis is a map-rendering application and a library for
+OpenStreetMap written in C using eXpat, Cairo and GLib.")
+    (home-page "http://trac.openstreetmap.ch/trac/memphis/")
+    (license license:lgpl2.1+)))
+
 (define-public geos
   (package
     (name "geos")
-    (version "3.8.0")
+    (version "3.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.osgeo.org/geos/geos-"
@@ -112,7 +176,7 @@
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1mb2v9fy1gnbjhcgv0xny11ggfb17vkzsajdyibigwsxr4ylq4cr"))))
+                "1xqpmr10xi0n9sj47fbwc89qb0yr9imh4ybk0jsxpffy111syn22"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases
@@ -723,14 +787,14 @@ utilities for data translation and processing.")
 (define-public postgis
   (package
     (name "postgis")
-    (version "3.0.0")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.osgeo.org/postgis/source/postgis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15557fbk0xkngihwhqsbdyz2ng49blisf5zydw81j0gabk6x4vy0"))))
+                "1jmji8i2wjabkrzqil683lypnmimigdmn64a10j3kj3kzlfn98d3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -1212,7 +1276,7 @@ to the OSM opening hours specification.")
 (define-public josm
   (package
     (name "josm")
-    (version "16731")
+    (version "16812")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1221,7 +1285,7 @@ to the OSM opening hours specification.")
                      (recursive? #f)))
               (sha256
                (base32
-                "036kdb1ckhym5f7lj5ydzblli7f1i1pl8z00hxvagf2rczdf5fi3"))
+                "131ly6ah9ygrah1wq1h2199v4hyzgflnh62ychs4jqvy9wz0dal6"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
@@ -1348,7 +1412,7 @@ ways, and relations) and their metadata tags.")
 (define-public libmaxminddb
   (package
     (name "libmaxminddb")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
@@ -1356,14 +1420,11 @@ ways, and relations) and their metadata tags.")
                            "/releases/download/" version "/"
                            "/libmaxminddb-" version ".tar.gz"))
        (sha256
-        (base32 "0mnimbaxnnarlw7g1rh8lpxsyf7xnmzwcczcc3lxw8xyf6ljln6x"))))
+        (base32 "0fd4a4sxiiwzbd5h74wl1ijnb7xybjyybb7q41vdq3w8nk3zdzd5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'set-cc-to-gcc
-           (lambda _
-             (setenv "CC" "gcc"))))))
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "https://maxmind.github.io/libmaxminddb/")
@@ -1538,14 +1599,14 @@ QLandkarte GT application.")
 (define-public readosm
   (package
     (name "readosm")
-    (version "1.1.0")
+    (version "1.1.0a")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
                            "readosm-" version ".tar.gz"))
        (sha256
-        (base32 "1v20pnda67imjd70fn0zw30aar525xicy3d3v49md5cvqklws265"))))
+        (base32 "0zv6p352pqjcv70nvcaf2x3011z35jqa24dcdm27a4ns1wha3cjc"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)

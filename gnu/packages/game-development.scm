@@ -2127,14 +2127,14 @@ a.k.a. XenoCollide) as described in Game Programming Gems 7.")
 (define-public ode
   (package
     (name "ode")
-    (version "0.16.1")
+    (version "0.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://bitbucket.org/odedevs/ode/downloads/"
                            "ode-" version ".tar.gz"))
        (sha256
-        (base32 "1flfdqgdbcn1bx8nrrd4qnp6cvsxrhvk8cdg7vaq2dzkh6nsqa5j"))
+        (base32 "08hgh4gqdk77jcw8b7gq2mwsfg4a5v5y0j7g42bxiqhmn3ffnsmj"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2142,12 +2142,7 @@ a.k.a. XenoCollide) as described in Game Programming Gems 7.")
            #t))))
     (build-system cmake-build-system)
     (arguments
-     ;; Tests fail on all systems but x86_64.  This is fixed upstream and can
-     ;; be removed in 0.16.2+.
-     `(#:tests? ,(string-prefix? "x86_64-"
-                                 (or (%current-target-system)
-                                     (%current-system)))
-       #:configure-flags '("-DODE_WITH_LIBCCD_SYSTEM=ON")
+     `(#:configure-flags '("-DODE_WITH_LIBCCD_SYSTEM=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unbundle-libccd

@@ -45,6 +45,7 @@
             string->btrfs-uuid
             string->fat-uuid
             string->jfs-uuid
+            string->ntfs-uuid
             iso9660-uuid->string
 
             ;; XXX: For lack of a better place.
@@ -197,6 +198,38 @@ ISO9660 UUID representation."
 
 
 ;;;
+;;; NTFS.
+;;;
+
+(define-syntax %ntfs-endianness
+  ;; Endianness of NTFS file system.
+  (identifier-syntax (endianness little)))
+
+(define (ntfs-uuid->string uuid)
+  "Convert NTFS UUID, a 8-byte bytevector, to its string representation."
+  (format #f "~{~:@(~x~)~}" (reverse (bytevector->u8-list uuid))))
+
+(define %ntfs-uuid-rx
+  (make-regexp "^([[:xdigit:]]{16})$"))
+
+(define (string->ntfs-uuid str)
+  "Parse STR, which is in NTFS format, and return a bytevector or #f."
+  (match (regexp-exec %ntfs-uuid-rx str)
+    (#f
+     #f)
+    (rx-match
+     (u8-list->bytevector
+      (let loop ((str str)
+                 (res '()))
+        (if (string=? str "")
+            res
+            (loop (string-drop str 2)
+                  (cons
+                   (string->number (string-take str 2) 16)
+                   res))))))))
+
+
+;;;
 ;;; Generic interface.
 ;;;
 
@@ -220,13 +253,15 @@ ISO9660 UUID representation."
   (vhashq
    ('dce 'ext2 'ext3 'ext4 'btrfs 'jfs 'luks => string->dce-uuid)
    ('fat32 'fat16 'fat => string->fat-uuid)
+   ('ntfs => string->ntfs-uuid)
    ('iso9660 => string->iso9660-uuid)))
 
 (define %uuid-printers
   (vhashq
    ('dce 'ext2 'ext3 'ext4 'btrfs 'jfs 'luks => dce-uuid->string)
    ('iso9660 => iso9660-uuid->string)
-   ('fat32 'fat16 'fat => fat-uuid->string)))
+   ('fat32 'fat16 'fat => fat-uuid->string)
+   ('ntfs => ntfs-uuid->string)))
 
 (define* (string->uuid str #:optional (type 'dce))
   "Parse STR as a UUID of the given TYPE.  On success, return the

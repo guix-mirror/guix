@@ -510,7 +510,11 @@ server and embedded PowerPC, and S390 guests.")
                (("\\$\\(GHC\\)")
                 "$(GHC) -package-db=../package.conf.d"))
              #t))
-
+         (add-after 'configure 'make-ghc-use-shared-libraries
+           (lambda _
+             (substitute* "Makefile"
+               (("HFLAGS =") "HFLAGS = -dynamic -fPIC"))
+             #t))
          (add-after 'configure 'fix-installation-directories
            (lambda _
              (substitute* "Makefile"

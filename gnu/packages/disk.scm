@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Pkill -9 <pkill9@runbox.com>
@@ -520,7 +520,7 @@ a card with a smaller capacity than stated.")
 (define-public python-parted
   (package
     (name "python-parted")
-    (version "3.11.2")
+    (version "3.11.6")
     (source
      (origin
        (method git-fetch)
@@ -529,7 +529,7 @@ a card with a smaller capacity than stated.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0r6916n3w4vldxrq30a3z2iagvxgly4vfmlidjm65vwqnyv17bvn"))))
+        (base32 "1xgrqhvn44vr3676j5sy2x3xfv2dzf7vncg25cmrsmkbd49x3z5j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -554,9 +554,6 @@ a card with a smaller capacity than stated.")
     (synopsis "Parted bindings for Python")
     (description "This package provides @code{parted} bindings for Python.")
     (license license:gpl2+)))
-
-(define-public python2-parted
-  (package-with-python2 python-parted))
 
 (define-public duperemove
   (package
@@ -793,7 +790,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
 (define-public libblockdev
   (package
     (name "libblockdev")
-    (version "2.23")
+    (version "2.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/storaged-project/"
@@ -801,7 +798,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
                                   version "-1/libblockdev-" version ".tar.gz"))
               (sha256
                (base32
-                "15c7g2gbkahmy8c6677pvbvblan5h8jxcqqmn6nlvqwqynq2mkjm"))))
+                "0wq7624pnprvfzrf39bq1cybd9lqwawbdg5bm0cchlpgvdq7q86w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1004,4 +1001,43 @@ since they are better handled by external tools.")
 the popular but discontinued, X Win Commander.  It aims to be the file manager
 of choice for all light thinking Unix addicts!")
     (home-page "http://roland65.free.fr/xfe/")
+    (license license:gpl2+)))
+
+(define-public hddtemp
+  (package
+    (name "hddtemp")
+    (version "0.3-beta15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/hddtemp/hddtemp-"
+                                  version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0nzgg4nl8zm9023wp4dg007z6x3ir60rwbcapr9ks2al81c431b1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append
+                                "--with-db-path="
+                                (assoc-ref %outputs "out")
+                                "/share/hddtemp/hddtemp.db"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-db
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/share/hddtemp/hddtemp.db")))
+               (mkdir-p (dirname target))
+               (copy-file (assoc-ref inputs "db") target)))))))
+    (inputs
+     `(("db" ,(origin
+                (method url-fetch)
+                (uri "mirror://savannah/hddtemp/hddtemp.db")
+                (sha256
+                 (base32 "1fr6qgns6qv7cr40lic5yqwkkc7yjmmgx8j0z6d93csg3smzhhya"))))))
+    (home-page "https://savannah.nongnu.org/projects/hddtemp/")
+    (synopsis "Report the temperature of hard drives from S.M.A.R.T. information")
+    (description "@command{hddtemp} is a small utility that gives you the
+temperature of your hard drive by reading S.M.A.R.T. informations (for drives
+that support this feature).")
     (license license:gpl2+)))

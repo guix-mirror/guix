@@ -222,7 +222,8 @@ inferior to MAX-SIZE, #f otherwise."
     ((btrfs) "btrfs")
     ((fat16) "fat16")
     ((fat32) "fat32")
-    ((jfs) "jfs")
+    ((jfs)   "jfs")
+    ((ntfs)  "ntfs")
     ((swap)  "linux-swap")))
 
 (define (user-fs-type->mount-type fs-type)
@@ -232,7 +233,8 @@ inferior to MAX-SIZE, #f otherwise."
     ((btrfs) "btrfs")
     ((fat16) "fat")
     ((fat32) "vfat")
-    ((jfs) "jfs")))
+    ((jfs)   "jfs")
+    ((ntfs)  "ntfs")))
 
 (define (partition-filesystem-user-type partition)
   "Return the filesystem type of PARTITION, to be stored in the FS-TYPE field
@@ -246,6 +248,7 @@ of <user-partition> record."
             ((string=? name "fat16") 'fat16)
             ((string=? name "fat32") 'fat32)
             ((string=? name "jfs") 'jfs)
+            ((string=? name "ntfs") 'ntfs)
             ((or (string=? name "swsusp")
                  (string=? name "linux-swap(v0)")
                  (string=? name "linux-swap(v1)"))
@@ -326,6 +329,11 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
   (device-open device)
   (device-sync device)
   (device-close device))
+
+(define (remove-logical-devices)
+  "Remove all active logical devices."
+  (with-null-output-ports
+   (invoke "dmsetup" "remove_all")))
 
 (define (non-install-devices)
   "Return all the available devices, except the busy one, allegedly the
@@ -1040,6 +1048,11 @@ bit bucket."
   (with-null-output-ports
    (invoke "jfs_mkfs" "-f" partition)))
 
+(define (create-ntfs-file-system partition)
+  "Create a JFS file-system for PARTITION file-name."
+  (with-null-output-ports
+   (invoke "mkfs.ntfs" "-F" "-f" partition)))
+
 (define (create-swap-partition partition)
   "Set up swap area on PARTITION file-name."
   (with-null-output-ports
@@ -1117,6 +1130,10 @@ NEED-FORMATING? field set to #t."
           (and need-formatting?
                (not (eq? type 'extended))
                (create-jfs-file-system file-name)))
+         ((ntfs)
+          (and need-formatting?
+               (not (eq? type 'extended))
+               (create-ntfs-file-system file-name)))
          ((swap)
           (create-swap-partition file-name))
          (else
@@ -1328,6 +1345,9 @@ USER-PARTITIONS, or return nothing."
 (define (init-parted)
   "Initialize libparted support."
   (probe-all-devices!)
+  ;; Remove all logical devices, otherwise "device-is-busy?" will report true
+  ;; on all devices containaing active logical volumes.
+  (remove-logical-devices)
   (exception-set-handler (lambda (exception)
                            EXCEPTION-OPTION-UNHANDLED)))
 

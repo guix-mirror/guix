@@ -26,8 +26,12 @@
   #:use-module (guix derivations)
   #:use-module (guix sets)
   #:use-module (guix gexp)
-  #:use-module ((guix utils)
-                #:select (error-location? error-location location-line))
+  #:use-module ((guix diagnostics)
+                #:select (error-location?
+                          error-location location-line
+                          formatted-message?
+                          formatted-message-string
+                          formatted-message-arguments))
   #:use-module ((guix build utils) #:select (which))
   #:use-module (git)
   #:use-module (guix git)
@@ -415,8 +419,8 @@
              (channel (channel (url (string-append "file://" directory))
                                (name 'guix))))
 
-        (guard (c ((message-condition? c)
-                   (->bool (string-contains (condition-message c)
+        (guard (c ((formatted-message? c)
+                   (->bool (string-contains (formatted-message-string c)
                                             "introduction"))))
           (with-store store
             ;; Attempt a downgrade from NEW to OLD.
@@ -459,9 +463,15 @@
                (channel (channel (name 'example)
                                  (url (string-append "file://" directory))
                                  (introduction intro))))
-          (guard (c ((message-condition? c)
-                     (->bool (string-contains (condition-message c)
-                                              "initial commit"))))
+          (guard (c ((formatted-message? c)
+                     (and (string-contains (formatted-message-string c)
+                                           "initial commit")
+                          (equal? (formatted-message-arguments c)
+                                  (list
+                                   (oid->string (commit-id commit1))
+                                   (key-fingerprint %ed25519-public-key-file)
+                                   (key-fingerprint
+                                    %ed25519bis-public-key-file))))))
             (authenticate-channel channel directory
                                   (commit-id-string commit2)
                                   #:keyring-reference-prefix "")

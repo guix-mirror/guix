@@ -70,7 +70,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.1145")
+    (version "8.2.1500")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -79,19 +79,25 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "01z5hgi7m8d63gl1fgfn4p9rsdaqbl5xn4vr247nbxjq5x5hrs7a"))))
+               "1f3ghv7g6khcvvs8irkxmskzc352xxmxw3wy0jq9q9r497v6p3ls"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'fix-installman
+           (lambda _
+             (substitute* "src/installman.sh"
+               ((" /bin/sh") (which "sh")))
+             #t))
          (add-after 'configure 'patch-absolute-paths
            (lambda _
              (substitute* "runtime/tools/mve.awk"
                (("/usr/bin/nawk") (which "gawk")))
              (substitute* '("src/testdir/Makefile"
                             "src/testdir/test_normal.vim"
+                            "src/testdir/test_popupwin.vim"
                             "src/testdir/test_system.vim"
                             "src/testdir/test_terminal.vim"
                             "src/testdir/test_terminal2.vim")
@@ -120,20 +126,15 @@
              (substitute* "src/testdir/test_swap.vim"
                (("if !IsRoot\\(\\)") "if 0"))
 
-             ;; These tests fail on upstream's CI on FreeBSD because they are
-             ;; run as root.  They fail for us because PID 1 and the test suite
-             ;; are run by the same user.
-             (substitute* '("src/testdir/test_backup.vim"
-                            "src/testdir/test_writefile.vim")
-               (("CheckNotBSD") "throw 'Skipped: this test fails on Guix'")
-               (("'bsd'") "'unix'"))
-
-             ;; This test checks how the terminal looks after executing some
+             ;; These tests check how the terminal looks after executing some
              ;; actions.  The path of the bash binary is shown, which results in
              ;; a difference being detected.  Patching the expected result is
              ;; non-trivial due to the special format used, so skip the test.
              (substitute* "src/testdir/test_terminal.vim"
                ((".*Test_terminal_postponed_scrollback.*" line)
+                (string-append line "return\n")))
+             (substitute* "src/testdir/test_popupwin.vim"
+               ((".*Test_popup_drag_termwin.*" line)
                 (string-append line "return\n")))
              #t)))))
     (inputs
@@ -629,7 +630,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method git-fetch)
@@ -638,7 +639,7 @@ are detected, the user is notified.")))
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03p7pic7hw9yxxv7fbgls1f42apx3lik2k6mpaz1a109ngyc5kaj"))))
+        (base32 "11zyj6jvkwas3n6w1ckj3pk6jf81z1g7ngg4smmwm7c27y2a6f2m"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)

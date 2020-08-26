@@ -37,6 +37,7 @@
 ;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
 ;;; Copyright © 2020 Noisytoot <noisytoot@gmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -464,6 +465,129 @@ follow links and submit forms.  It doesn’t do JavaScript.")
 (define-public python2-mechanicalsoup
   (package-with-python2 python-mechanicalsoup))
 
+(define-public python-hyperframe
+  (package
+    (name "python-hyperframe")
+    (version "5.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hyperframe" version))
+       (sha256
+        (base32 "07xlf44l1cw0ghxx46sbmkgzil8vqv8kxwy42ywikiy35izw3xd9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python-hyper/hyperframe")
+    (synopsis "HTTP/2 framing layer for Python")
+    (description
+     "This library contains the HTTP/2 framing code used in the hyper project.
+It provides a pure-Python codebase that is capable of decoding a binary stream
+into HTTP/2 frames.")
+    (license license:expat)))
+
+(define-public python-hpack
+  (package
+    (name "python-hpack")
+    (version "3.0.0")
+    (source
+     (origin
+       ;; PyPI tarball is missing some files necessary for the tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python-hyper/hpack")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0w8hkz50a6lzkmgi41ryicm0mh9ca9cx29pm3s0xlpn0vs29xrmd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test" "-k"
+                     ;; This test will be fixed in the next version. See:
+                     ;; https://github.com/python-hyper/hpack/issues/168.
+                     "not test_get_by_index_out_of_range"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://hyper.rtfd.org")
+    (synopsis "Pure-Python HPACK header compression")
+    (description
+     "This module contains a pure-Python HTTP/2 header encoding (HPACK) logic
+for use in Python programs that implement HTTP/2.")
+    (license license:expat)))
+
+(define-public python-h11
+  (package
+    (name "python-h11")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "h11" version))
+       (sha256
+        (base32 "1qfad70h59hya21vrzz8dqyyaiqhac0anl2dx3s3k80gpskvrm1k"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python-hyper/h11")
+    (synopsis "Pure-Python, bring-your-own-I/O implementation of HTTP/1.1")
+    (description
+     "This is a little HTTP/1.1 library written from scratch in Python, heavily
+inspired by hyper-h2.  It's a bring-your-own-I/O library; h11 contains no IO
+code whatsoever.  This means you can hook h11 up to your favorite network API,
+and that could be anything you want.")
+    (license license:expat)))
+
+(define-public python-h2
+  (package
+    (name "python-h2")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "h2" version))
+       (sha256
+        (base32 "051gg30aca26rdxsmr9svwqm06pdz9bv21ch4n0lgi7jsvml2pw7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-hpack" ,python-hpack)
+       ("python-hyperframe" ,python-hyperframe)))
+    (home-page "https://github.com/python-hyper/hyper-h2")
+    (synopsis "HTTP/2 State-Machine based protocol implementation")
+    (description
+     "This module contains a pure-Python implementation of a HTTP/2 protocol
+stack.  It does not provide a parsing layer, a network layer, or any rules
+about concurrency.  Instead, it's a purely in-memory solution, defined in
+terms of data actions and HTTP/2 frames.  This is one building block of a full
+Python HTTP implementation.")
+    (license license:expat)))
+
 (define-public python-sockjs-tornado
   (package
     (name "python-sockjs-tornado")
@@ -871,6 +995,111 @@ teams extension for python-openid.")
 
 (define-public python2-openid-teams
   (package-with-python2 python-openid-teams))
+
+(define-public python-priority
+  (package
+    (name "python-priority")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "priority" version))
+       (sha256
+        (base32 "1gpzn9k9zgks0iw5wdmad9b4dry8haiz2sbp6gycpjkzdld9dhbb"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test" "-k"
+                     ;; This test exceeded the Hypothesis deadline.
+                     "not test_period_of_repetition"))))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-xdist" ,python-pytest-xdist)))
+    (home-page "https://python-hyper.org/projects/priority/en/latest/")
+    (synopsis "Pure-Python implementation of the HTTP/2 priority tree")
+    (description
+     "Priority is a pure-Python implementation of the priority logic for HTTP/2,
+set out in RFC 7540 Section 5.3 (Stream Priority).")
+    (license license:expat)))
+
+(define-public python-wsproto
+  (package
+    (name "python-wsproto")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "wsproto" version))
+       (sha256
+        (base32 "17gsxlli4w8am1wwwl3k90hpdfa213ax40ycbbvb7hjx1v1rhiv1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "test"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-h11" ,python-h11)))
+    (home-page "https://github.com/python-hyper/wsproto/")
+    (synopsis "WebSockets state-machine based protocol implementation")
+    (description
+     "@code{wsproto} is a pure-Python implementation of a WebSocket protocol
+stack.  It's written from the ground up to be embeddable in whatever program you
+choose to use, ensuring that you can communicate via WebSockets, as defined in
+RFC6455, regardless of your programming paradigm.")
+    (license license:expat)))
+
+(define-public python-hypercorn
+  (package
+    (name "python-hypercorn")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Hypercorn" version))
+       (sha256
+        (base32 "15dgy47a18w2ls3hwykra1cyf7yzxmfjqnsqml482p12cxr2xwqr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (propagated-inputs
+     `(("python-h11" ,python-h11)
+       ("python-h2" ,python-h2)
+       ("python-priority" ,python-priority)
+       ("python-toml" ,python-toml)
+       ("python-typing-extensions" ,python-typing-extensions)
+       ("python-wsproto" ,python-wsproto)))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-trio" ,python-pytest-trio)
+       ("python-trio" ,python-trio)))
+    (home-page "https://gitlab.com/pgjones/hypercorn/")
+    (synopsis "ASGI Server based on Hyper libraries")
+    (description
+     "Hypercorn is an ASGI web server based on the sans-io hyper, h11, h2, and
+wsproto libraries and inspired by Gunicorn.  It supports HTTP/1, HTTP/2,
+WebSockets (over HTTP/1 and HTTP/2), ASGI/2, and ASGI/3 specifications.  It can
+utilise asyncio, uvloop, or trio worker types.")
+    (license license:expat)))
 
 (define-public python-tornado
   (package
@@ -2545,13 +2774,13 @@ applications.")
 (define-public python-flask-sqlalchemy
   (package
     (name "python-flask-sqlalchemy")
-    (version "2.4.3")
+    (version "2.4.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask-SQLAlchemy" version))
               (sha256
                (base32
-                "19apnn2m9bl1d1h2nc52pnmiyx993mwzmfjrv04l3wn5hyznyr8b"))))
+                "1rgsj49gnx361hnb3vn6c1h17497qh22yc3r70l1r6w0mw71bixz"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flask" ,python-flask)
@@ -3522,17 +3751,13 @@ Python.")
 (define-public python-slugify
   (package
     (name "python-slugify")
-    (version "3.0.4")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-slugify" version))
        (sha256
-        (base32 "0dv97yi5fq074q5qyqbin09pmi8ixg36caf5nkpw2bqkd8jh6pap"))
-       (patches
-        (search-patches "python-slugify-depend-on-unidecode.patch"))))
-    (native-inputs
-     `(("python-wheel" ,python-wheel)))
+        (base32 "0w22fapghmzk3xdasc4dn7h8sl58l08d1h5zbf72dh80drv1g9b9"))))
     (propagated-inputs
      `(("python-unidecode" ,python-unidecode)))
     (arguments
@@ -4393,3 +4618,37 @@ Agent is a web crawler.  It uses the list of registered robots from
      "This module provides an interface that queries the Apache Solr server
 using a pure Python implementation.")
     (license license:bsd-3)))
+
+(define-public python-http-ece
+  (package
+    (name "python-http-ece")
+    (version "1.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/web-push-libs/encrypted-content-encoding")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0bp4cc0xc123i72h80ax3qz3ixfwx3j7pw343kc7i6kdvfi8klx7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _ (chdir "python") #t)))))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/web-push-libs/encrypted-content-encoding")
+    (synopsis "Encrypted Content Encoding for HTTP")
+    (description
+     "This package provices a simple implementation of Encrypted Content
+Encoding for HTTP.")
+    (license license:expat)))

@@ -37,6 +37,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
@@ -75,6 +76,7 @@
        ("mesa" ,mesa)
        ("webkitgtk" ,webkitgtk)
        ("sdl" ,sdl)
+       ("shared-mime-info" ,shared-mime-info)
        ("xdg-utils" ,xdg-utils)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -97,11 +99,15 @@
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'refer-to-inputs
-           (lambda _
-             (substitute* "src/unix/utilsx11.cpp"
-               (("wxExecute\\(xdg_open \\+")
-                (string-append "wxExecute(\"" (which "xdg-open") "\"")))
-             #t)))))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((mime (string-append (assoc-ref inputs "shared-mime-info")
+                                         "/share/mime")))
+               (substitute* "src/unix/utilsx11.cpp"
+                 (("wxExecute\\(xdg_open \\+")
+                  (string-append "wxExecute(\"" (which "xdg-open") "\"")))
+               (substitute* "src/unix/mimetype.cpp"
+                 (("/usr(/local)?/share/mime") mime))
+               #t))))))
     (home-page "https://www.wxwidgets.org/")
     (synopsis "Widget toolkit for creating graphical user interfaces")
     (description
