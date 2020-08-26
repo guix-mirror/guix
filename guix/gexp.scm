@@ -1507,7 +1507,8 @@ last one is created from the given <scheme-file> object."
                            (guile (%guile-for-build))
                            (module-path %load-path)
                            (extensions '())
-                           (deprecation-warnings #f))
+                           (deprecation-warnings #f)
+                           (optimization-level 1))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other.  When TARGET is true, cross-compile MODULES for
@@ -1531,6 +1532,13 @@ TARGET, a GNU triplet."
                       (system base target)
                       (system base compile))
 
+         (define optimizations-for-level
+           (or (and=> (false-if-exception
+                       (resolve-interface '(system base optimize)))
+                      (lambda (iface)
+                        (module-ref iface 'optimizations-for-level))) ;Guile 3.0
+               (const '())))
+
          (define (regular? file)
            (not (member file '("." ".."))))
 
@@ -1551,7 +1559,9 @@ TARGET, a GNU triplet."
                      (compile-file entry
                                    #:output-file output
                                    #:opts
-                                   %auto-compilation-options)))
+                                   `(,@%auto-compilation-options
+                                     ,@(optimizations-for-level
+                                        (ungexp optimization-level))))))
 
                  (+ 1 processed))))
 
