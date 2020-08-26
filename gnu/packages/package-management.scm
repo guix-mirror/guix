@@ -1184,14 +1184,14 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.8.1")
+   (version "1.8.2")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
                          version "/flatpak-" version ".tar.xz"))
      (sha256
-      (base32 "1bcymiv0yzs05rplbyzpimb1k17s345a95y0dhw7jh56z5k4p4b6"))))
+      (base32 "1c45a0k7wx685n5b3ihv7dk0mm2kmwbw7cx8w5g2la62yxfn49kr"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.
@@ -1227,7 +1227,7 @@ cp -r /tmp/locale/*/en_US.*")))
               (("/usr/bin/python3") (which "python3")))
             #t))
         ;; Many tests fail for unknown reasons, so we just run a few basic
-        ;; tests
+        ;; tests.
         (replace 'check
           (lambda _
             (setenv "HOME" "/tmp")
