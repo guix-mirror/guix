@@ -4537,7 +4537,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          ("postgresql" ,postgresql-11)
          ("sqitch" ,sqitch)))
       (native-inputs
-       `(("guile" ,guile-3.0)
+       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("autoconf" ,autoconf)
          ("automake" ,automake)
          ("emacs-minimal" ,emacs-minimal)
