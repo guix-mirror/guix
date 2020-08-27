@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
@@ -854,29 +854,38 @@ match the terminating newline of a line."
 ;;;
 
 (define* (dump-port in out
+                    #:optional len
                     #:key (buffer-size 16384)
                     (progress (lambda (t k) (k))))
-  "Read as much data as possible from IN and write it to OUT, using chunks of
-BUFFER-SIZE bytes.  Call PROGRESS at the beginning and after each successful
-transfer of BUFFER-SIZE bytes or less, passing it the total number of bytes
-transferred and the continuation of the transfer as a thunk."
+  "Read LEN bytes from IN or as much data as possible if LEN is #f, and write
+it to OUT, using chunks of BUFFER-SIZE bytes.  Call PROGRESS at the beginning
+and after each successful transfer of BUFFER-SIZE bytes or less, passing it
+the total number of bytes transferred and the continuation of the transfer as
+a thunk."
   (define buffer
     (make-bytevector buffer-size))
 
   (define (loop total bytes)
     (or (eof-object? bytes)
+        (and len (= total len))
         (let ((total (+ total bytes)))
           (put-bytevector out buffer 0 bytes)
           (progress total
                     (lambda ()
                       (loop total
-                            (get-bytevector-n! in buffer 0 buffer-size)))))))
+                            (get-bytevector-n! in buffer 0
+                                               (if len
+                                                   (min (- len total) buffer-size)
+                                                   buffer-size))))))))
 
   ;; Make sure PROGRESS is called when we start so that it can measure
   ;; throughput.
   (progress 0
             (lambda ()
-              (loop 0 (get-bytevector-n! in buffer 0 buffer-size)))))
+              (loop 0 (get-bytevector-n! in buffer 0
+                                         (if len
+                                             (min len buffer-size)
+                                             buffer-size))))))
 
 (define (set-file-time file stat)
   "Set the atime/mtime of FILE to that specified by STAT."
