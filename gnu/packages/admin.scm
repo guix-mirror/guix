@@ -623,16 +623,10 @@ re-executing them as necessary.")
                                    "--disable-uucpd"
                                    "--disable-whois")
                                  '()))
-       ;; Make sure that canonical "coreutils" package is not referred.
-       #:make-flags
-       (list (string-append "CPPFLAGS=-DPATHDEF_CP=\\\""
-                            (assoc-ref %build-inputs "coreutils*")
-                            "/bin/cp\\\""))
        ;; On some systems, 'libls.sh' may fail with an error such as:
        ;; "Failed to tell switch -a apart from -A".
        #:parallel-tests? #f))
-    (inputs `(("coreutils*" ,coreutils)
-              ("ncurses" ,ncurses)
+    (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))        ;for 'ftp'
     (native-inputs (if (member (%current-system)
                                (package-supported-systems net-tools))
