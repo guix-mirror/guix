@@ -15477,7 +15477,22 @@ some of the details of opening and jumping in tabix-indexed files.")
                      (install-file file (string-append out "/include/smithwaterman")))
                    (find-files "." "\\.h$"))
                  (install-file "libsmithwaterman.so" lib)
-                 (install-file "libsw.a" lib))
+                 (install-file "libsw.a" lib)
+                 (mkdir-p (string-append lib "/pkgconfig"))
+                 (with-output-to-file (string-append lib "/pkgconfig/smithwaterman.pc")
+                   (lambda _
+                     (format #t "prefix=~a~@
+                             exec_prefix=${prefix}~@
+                             libdir=${exec_prefix}/lib~@
+                             includedir=${prefix}/include/smithwaterman~@
+                             ~@
+                             ~@
+                             Name: smithwaterman~@
+                             Version: ~a~@
+                             Description: smith-waterman-gotoh alignment algorithm~@
+                             Libs: -L${libdir} -lsmithwaterman~@
+                             Cflags: -I${includedir}~%"
+                             out ,version))))
                #t)))))
       (home-page "https://github.com/ekg/smithwaterman")
       (synopsis "Implementation of the Smith-Waterman algorithm")
