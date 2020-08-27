@@ -15412,6 +15412,21 @@ mutations from scRNA-Seq data.")
               (install-file "libtabixpp.so" lib)
               (install-file "libtabixpp.a" lib)
               (install-file "tabix.hpp" (string-append out "/include"))
+              (mkdir-p (string-append lib "/pkgconfig"))
+              (with-output-to-file (string-append lib "/pkgconfig/tabixpp.pc")
+                (lambda _
+                  (format #t "prefix=~a~@
+                          exec_prefix=${prefix}~@
+                          libdir=${exec_prefix}/lib~@
+                          includedir=${prefix}/include~@
+                          ~@
+                          ~@
+                          Name: libtabixpp~@
+                          Version: ~a~@
+                          Description: C++ wrapper around tabix project~@
+                          Libs: -L${libdir} -ltabixpp~@
+                          Cflags: -I${includedir}~%"
+                          out ,version)))
               #t))))))
    (home-page "https://github.com/ekg/tabixpp")
    (synopsis "C++ wrapper around tabix project")
