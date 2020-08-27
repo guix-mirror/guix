@@ -1,0 +1,135 @@
+This patch is a combination of many of the patches from Debian:
+https://sources.debian.org/src/libvcflib/1.0.1+dfsg-3/debian/patches/
+
+---
+ Makefile | 63 +++++++++++---------------------------------------------
+ 1 file changed, 12 insertions(+), 51 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 6b13350..be85f22 100644
+--- a/Makefile
++++ b/Makefile
+@@ -114,43 +114,25 @@ BIN_SOURCES = src/vcfecho.cpp \
+ 			  src/vcfnull2ref.cpp \
+ 			  src/vcfinfosummarize.cpp
+ 
+-# when we can figure out how to build on mac
+-# src/vcfsom.cpp
+-
+ #BINS = $(BIN_SOURCES:.cpp=)
+ BINS = $(addprefix $(BIN_DIR)/,$(notdir $(BIN_SOURCES:.cpp=)))
+ SHORTBINS = $(notdir $(BIN_SOURCES:.cpp=))
+ 
+-TABIX = tabixpp/tabix.o
+-FASTAHACK = fastahack/Fasta.o
+-SMITHWATERMAN = smithwaterman/SmithWatermanGotoh.o
+-REPEATS = smithwaterman/Repeats.o
+-INDELALLELE = smithwaterman/IndelAllele.o
+-DISORDER = smithwaterman/disorder.o
+-LEFTALIGN = smithwaterman/LeftAlign.o
+-FSOM = fsom/fsom.o
+ FILEVERCMP = filevercmp/filevercmp.o
+ 
+-# Work out how to find htslib
+-# Use the one we ship in tabixpp unless told otherwise by the environment
+-HTS_LIB ?= $(VCF_LIB_LOCAL)/tabixpp/htslib/libhts.a
+-HTS_INCLUDES ?= -I$(VCF_LIB_LOCAL)/tabixpp/htslib
+-HTS_LDFLAGS ?= -L$(VCF_LIB_LOCAL)/tabixpp/htslib -lhts -lbz2 -lm -lz -llzma -pthread
+-
+-
+-INCLUDES = $(HTS_INCLUDES) -I$(INC_DIR) 
+-LDFLAGS = -L$(LIB_DIR) -lvcflib $(HTS_LDFLAGS) -lpthread -lz -lm -llzma -lbz2
++INCLUDES = -I$(INC_DIR) $(shell pkg-config --cflags htslib fastahack smithwaterman tabixpp)
++LDFLAGS = -L$(LIB_DIR) -lvcflib -lpthread -lz -lstdc++ -lm -llzma -lbz2 $(shell pkg-config --libs htslib fastahack smithwaterman tabixpp)
+ 
+ 
+ 
+-all: $(OBJECTS) $(BINS) scriptToBin
++all: $(OBJECTS) $(BINS) scriptToBin libvcflib.a
+ 
+ scriptToBin: $(BINS)
+ 	$(CP) scripts/* $(BIN_DIR)
+ 
+ GIT_VERSION += $(shell git describe --abbrev=4 --dirty --always)
+ 
+-CXXFLAGS = -Ofast -D_FILE_OFFSET_BITS=64 -std=c++0x
++CXXFLAGS = -Ofast -D_FILE_OFFSET_BITS=64 -std=c++0x -fPIC
+ #CXXFLAGS = -O2
+ #CXXFLAGS = -pedantic -Wall -Wshadow -Wpointer-arith -Wcast-qual
+ 
+@@ -168,7 +150,7 @@ profiling:
+ gprof:
+ 	$(MAKE) CXXFLAGS="$(CXXFLAGS) -pg" all
+ 
+-$(OBJECTS): $(SOURCES) $(HEADERS) $(TABIX) multichoose pre $(SMITHWATERMAN) $(FILEVERCMP) $(FASTAHACK)
++$(OBJECTS): $(SOURCES) $(HEADERS) multichoose pre $(FILEVERCMP)
+ 	$(CXX) -c -o $@ src/$(*F).cpp $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) && $(CP) src/*.h* $(VCF_LIB_LOCAL)/$(INC_DIR)/
+ 
+ multichoose: pre
+@@ -177,39 +159,22 @@ multichoose: pre
+ intervaltree: pre
+ 	cd intervaltree && $(MAKE) && $(CP) *.h* $(VCF_LIB_LOCAL)/$(INC_DIR)/
+ 
+-$(TABIX): pre
+-	cd tabixpp && INCLUDES="$(HTS_INCLUDES)" LIBPATH="-L. $(HTS_LDFLAGS)" HTSLIB="$(HTS_LIB)" $(MAKE) && $(CP) *.h* $(VCF_LIB_LOCAL)/$(INC_DIR)/
+-
+-$(SMITHWATERMAN): pre
+-	cd smithwaterman && $(MAKE) && $(CP) *.h* $(VCF_LIB_LOCAL)/$(INC_DIR)/ && $(CP) *.o $(VCF_LIB_LOCAL)/$(OBJ_DIR)/
+-
+-$(DISORDER): $(SMITHWATERMAN)
+-
+-$(REPEATS): $(SMITHWATERMAN)
+-
+-$(LEFTALIGN): $(SMITHWATERMAN)
+-
+-$(INDELALLELE): $(SMITHWATERMAN)
+-
+-$(FASTAHACK): pre
+-	cd fastahack && $(MAKE) && $(CP) *.h* $(VCF_LIB_LOCAL)/$(INC_DIR)/ && $(CP) Fasta.o $(VCF_LIB_LOCAL)/$(OBJ_DIR)/
+-
+-#$(FSOM):
+-#	cd fsom && $(CXX) $(CXXFLAGS) -c fsom.c -lm
+-
+ $(FILEVERCMP): pre
+ 	cd filevercmp && make && $(CP) *.h* $(VCF_LIB_LOCAL)/$(INC_DIR)/ && $(CP) *.o $(VCF_LIB_LOCAL)/$(INC_DIR)/
+ 
+ $(SHORTBINS): pre
+ 	$(MAKE) $(BIN_DIR)/$@
+ 
+-$(BINS): $(BIN_SOURCES) libvcflib.a $(OBJECTS) $(SMITHWATERMAN) $(FASTAHACK) $(DISORDER) $(LEFTALIGN) $(INDELALLELE) $(SSW) $(FILEVERCMP) pre intervaltree
++$(BINS): $(BIN_SOURCES) libvcflib.so $(OBJECTS) $(SSW) $(FILEVERCMP) pre intervaltree
+ 	$(CXX) src/$(notdir $@).cpp -o $@ $(INCLUDES) $(LDFLAGS) $(CXXFLAGS) -DVERSION=\"$(GIT_VERSION)\"
+ 
+-libvcflib.a: $(OBJECTS) $(SMITHWATERMAN) $(REPEATS) $(FASTAHACK) $(DISORDER) $(LEFTALIGN) $(INDELALLELE) $(SSW) $(FILEVERCMP) $(TABIX) pre
+-	ar rs libvcflib.a $(OBJECTS) smithwaterman/sw.o $(FASTAHACK) $(SSW) $(FILEVERCMP) $(TABIX)
++libvcflib.a: $(OBJECTS) $(SSW) $(FILEVERCMP) pre
++	ar rs libvcflib.a $(OBJECTS) $(SSW) $(FILEVERCMP)
+ 	$(CP) libvcflib.a $(LIB_DIR)
+ 
++libvcflib.so: $(OBJECTS) $(SSW) $(FILEVERCMP) pre
++	$(CXX) -shared -o libvcflib.so $(OBJECTS) $(SSW) $(FILEVERCMP)
++	$(CP) libvcflib.so $(LIB_DIR)
+ 
+ test: $(BINS)
+ 	@prove -Itests/lib -w tests/*.t
+@@ -230,16 +195,12 @@ clean:
+ 	$(RM) $(BINS) $(OBJECTS)
+ 	$(RM) ssw_cpp.o ssw.o
+ 	$(RM) libvcflib.a
++	$(RM) libvcflib.so
+ 	$(RM) -r $(BIN_DIR)
+ 	$(RM) -r $(LIB_DIR)
+ 	$(RM) -r $(INC_DIR)
+ 	$(RM) -r $(OBJ_DIR)
+-	$(MAKE) clean -C tabixpp
+-	$(MAKE) clean -C smithwaterman
+-	$(MAKE) clean -C fastahack
+ 	$(MAKE) clean -C multichoose
+-	$(MAKE) clean -C fsom
+-	$(MAKE) clean -C libVCFH
+ 	$(MAKE) clean -C test
+ 	$(MAKE) clean -C filevercmp
+ 	$(MAKE) clean -C intervaltree
+-- 
+2.28.0
+

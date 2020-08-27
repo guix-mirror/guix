@@ -15641,9 +15641,16 @@ library automatically handles index file generation and use.")
                            "/vcflib-" version "-src.tar.gz"))
        (sha256
         (base32 "14zzrg8hg8cq9cvq2wdvp21j7nmxxkjrbagw2apd2yqv2kyx42lm"))
+       (patches (search-patches "vcflib-use-shared-libraries.patch"))
        (modules '((guix build utils)))
        (snippet
         `(begin
+           (substitute* (find-files "." "\\.(h|c)(pp)?$")
+             (("\"SmithWatermanGotoh.h\"") "<smithwaterman/SmithWatermanGotoh.h>")
+             (("\"convert.h\"") "<smithwaterman/convert.h>")
+             (("\"disorder.h\"") "<smithwaterman/disorder.h>")
+             (("\"tabix.hpp\"") "<tabix.hpp>")
+             (("\"Fasta.h\"") "<fastahack/Fasta.h>"))
            (for-each delete-file-recursively
                      '("fastahack" "filevercmp" "fsom" "googletest" "intervaltree"
                        "libVCFH" "multichoose" "smithwaterman" "tabixpp"))
@@ -15651,34 +15658,34 @@ library automatically handles index file generation and use.")
     (build-system gnu-build-system)
     (inputs
      `(("htslib" ,htslib)
+       ("fastahack" ,fastahack)
        ("perl" ,perl)
        ("python" ,python)
+       ("smithwaterman" ,smithwaterman)
+       ("tabixpp" ,tabixpp)
+       ("xz" ,xz)
        ("zlib" ,zlib)))
     (native-inputs
-     `(;; Submodules.
+     `(("pkg-config" ,pkg-config)
+       ;; Submodules.
        ;; This package builds against the .o files so we need to extract the source.
-       ("fastahack-src" ,(package-source fastahack))
        ("filevercmp-src" ,(package-source filevercmp))
-       ("fsom-src" ,(package-source fsom))
        ("intervaltree-src" ,(package-source intervaltree))
-       ("multichoose-src" ,(package-source multichoose))
-       ("smithwaterman-src" ,(package-source smithwaterman))
-       ("tabixpp-src" ,(package-source tabixpp))))
+       ("multichoose-src" ,(package-source multichoose))))
     (arguments
      `(#:tests? #f ; no tests
-       #:make-flags (list (string-append "HTS_LIB="
-                                         (assoc-ref %build-inputs "htslib")
-                                         "/lib/libhts.a")
-                          (string-append "HTS_INCLUDES= -I"
-                                         (assoc-ref %build-inputs "htslib")
-                                         "/include/htslib")
-                          (string-append "HTS_LDFLAGS= -L"
-                                         (assoc-ref %build-inputs "htslib")
-                                         "/include/htslib" " -lhts"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'set-flags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("LDFLAGS =")
+                (string-append "LDFLAGS = -Wl,-rpath="
+                               (assoc-ref outputs "out") "/lib ")))
+             (substitute* "filevercmp/Makefile"
+               (("-c") "-c -fPIC"))
+             #t))
          (delete 'configure)
-         (delete 'check)
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((unpack (lambda (source target)
@@ -15690,34 +15697,23 @@ library automatically handles index file generation and use.")
                                            (assoc-ref inputs source)
                                            "--strip-components=1"))))))
                (and
-                (unpack "fastahack-src" "fastahack")
                 (unpack "filevercmp-src" "filevercmp")
-                (unpack "fsom-src" "fsom")
                 (unpack "intervaltree-src" "intervaltree")
-                (unpack "multichoose-src" "multichoose")
-                (unpack "smithwaterman-src" "smithwaterman")
-                (unpack "tabixpp-src" "tabixpp")))))
-         (replace 'build
-           (lambda* (#:key inputs make-flags #:allow-other-keys)
-             (let ((htslib (assoc-ref inputs "htslib")))
-               (with-directory-excursion "tabixpp"
-                 (substitute* "Makefile"
-                   (("-Ihtslib") (string-append "-I" htslib "/include/htslib"))
-                   (("-Lhtslib") (string-append "-L" htslib "/lib/htslib"))
-                   (("htslib/htslib") (string-append htslib "/include/htslib")))
-                 (invoke "make"
-                         (string-append "HTS_LIB=" htslib "/lib/libhts.a")))
-               (apply invoke "make" "CC=gcc" "CFLAGS=-Itabixpp" make-flags))))
+                (unpack "multichoose-src" "multichoose")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
-                   (lib (string-append (assoc-ref outputs "out") "/lib")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib")))
                (for-each (lambda (file)
                            (install-file file bin))
                          (find-files "bin" ".*"))
-               ;; The header files in src/ do not interface libvcflib,
-               ;; therefore they are left out.
-               (install-file "libvcflib.a" lib))
+               (install-file "libvcflib.so" lib)
+               (install-file "libvcflib.a" lib)
+               (for-each
+                 (lambda (file)
+                   (install-file file (string-append out "/include")))
+                 (find-files "include" "\\.h(pp)?$")))
              #t)))))
     (home-page "https://github.com/vcflib/vcflib/")
     (synopsis "Library for parsing and manipulating VCF files")
