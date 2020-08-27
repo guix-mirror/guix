@@ -23,6 +23,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Mason Hock <chaosmonk@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -759,7 +760,7 @@ end-to-end encryption support; XML console.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.7.4")
+    (version "2.7.7")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -767,7 +768,7 @@ end-to-end encryption support; XML console.")
                     version ".zip"))
               (sha256
                (base32
-                "00zrj57n86c2m99n0swmmaws4f8zccbgbi8fknv6f9b1vif9jc8p"))))
+                "17jl4blkq04ag3g0har6z1bmk36523d29s51g260wb1pywfb536h"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
