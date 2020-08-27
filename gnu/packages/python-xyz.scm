@@ -21773,3 +21773,35 @@ dates in almost any string formats commonly found on web pages.")
     (synopsis "Parser for Python dependency files")
     (description "This package provides a parser for Python dependency files.")
     (license license:expat)))
+
+(define-public python-safety
+  (package
+    (name "python-safety")
+    (version "1.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "safety" version))
+        (sha256
+          (base32
+            "1j801xsxfzavjbzhhc934awvnk1b7jc0qsw3jp3ys0241mlj1gr3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-tests
+           (lambda _
+             (substitute* "tests/test_safety.py"
+               ;; requires network
+               (("def test_check_live") "def _test_check_live"))
+             #t)))))
+    (propagated-inputs
+      `(("python-click" ,python-click)
+        ("python-dparse" ,python-dparse)
+        ("python-packaging" ,python-packaging)
+        ("python-requests" ,python-requests)))
+    (home-page "https://github.com/pyupio/safety")
+    (synopsis "Check installed dependencies for known vulnerabilities")
+    (description "Safety checks installed dependencies for known vulnerabilities.
+By default it uses the open Python vulnerability database Safety DB.")
+  (license license:expat)))
