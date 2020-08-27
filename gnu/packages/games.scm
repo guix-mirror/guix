@@ -2726,7 +2726,7 @@ interface or via an external visual interface such as GNU XBoard.")
                   (ftp-directory . "/chess")))
     (license license:gpl3+)))
 
-(define freedink-engine
+(define-public freedink-engine
   (package
     (name "freedink-engine")
     (version "109.6")
@@ -2756,7 +2756,16 @@ interface or via an external visual interface such as GNU XBoard.")
 	     (invoke "autoreconf")
 	     ;; Build fails when autom4te.cache exists.
 	     (delete-file-recursively "autom4te.cache")
-             #t)))))
+             #t))
+         (add-after 'install 'delete-freedinkedit-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+             ;; freedinkedit does not know where to find freedink data
+             ;; freedink data is read-only, so it cannot be edited anyway.
+             ;; TODO: fix freedink.desktop
+             (delete-file-recursively (string-append
+                            out "/share/applications"))
+             #t))))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("cxxtest" ,cxxtest)
@@ -2778,7 +2787,7 @@ game data files but it also supports user-produced game mods or \"D-Mods\".
 To that extent, it also includes a front-end for managing all of your D-Mods.")
     (license license:gpl3+)))
 
-(define freedink-data
+(define-public freedink-data
   (package
     (name "freedink-data")
     (version "1.08.20190120")
