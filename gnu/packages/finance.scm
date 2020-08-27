@@ -1397,7 +1397,7 @@ entity management.")
 (define-public bitcoin-unlimited
   (package
     (name "bitcoin-unlimited")
-    (version "1.8.0.0")
+    (version "1.9.0.0")
     (source
      (origin
        (method git-fetch)
@@ -1406,7 +1406,7 @@ entity management.")
              (commit (string-append "BCHunlimited" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ivkig6q7i4n389dg1zv06cmfki20bjq0slmshx0p5a1aavkqj7k"))))
+        (base32 "1a64h7mcqdra4ahnw1nycp4ysx308ymgbl4yn5fj5jfaszdzvy0h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
