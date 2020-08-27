@@ -15582,10 +15582,28 @@ neural networks.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure) ; There is no configure phase.
+           (add-after 'unpack 'patch-source
+             (lambda _
+               (substitute* "Makefile"
+                 (("-c ") "-c -fPIC "))
+               #t))
+         (add-after 'build 'build-dynamic
+           (lambda _
+             (invoke "g++"
+                     "-shared" "-o" "libfastahack.so"
+                     "Fasta.o" "FastaHack.o" "split.o" "disorder.o")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (install-file "fastahack" bin))
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p (string-append out "/include/fastahack"))
+               (for-each
+                 (lambda (file)
+                   (install-file file (string-append out "/include/fastahack")))
+                 (find-files "." "\\.h$"))
+               (install-file "fastahack" bin)
+               (install-file "libfastahack.so" lib))
              #t)))))
     (home-page "https://github.com/ekg/fastahack")
     (synopsis "Indexing and sequence extraction from FASTA files")
