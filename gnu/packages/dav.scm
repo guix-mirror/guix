@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages sphinx))
+  #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages xml))
 
 (define-public radicale
   (package
@@ -56,6 +58,44 @@ Radicale intentionally does not fully comply with the CalDAV and CardDAV RFCs.
 Instead, it supports the CalDAV and CardDAV implementations of popular
 clients.")
     (home-page "https://radicale.org/")
+    (license gpl3+)))
+
+(define-public xandikos
+  (package
+    (name "xandikos")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xandikos" version))
+       (sha256
+        (base32 "13ikmcja9p42azb5ccqj2bw98zybna6zlflj10hqy0kvbib70l94"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-defusedxml" ,python-defusedxml)
+       ("python-dulwich" ,python-dulwich)
+       ("python-icalendar" ,python-icalendar)
+       ("python-jinja2" ,python-jinja2)
+       ("python-multidict" ,python-multidict)))
+    (home-page "https://www.xandikos.org/")
+    (synopsis "Lightweight CalDAV/CardDAV server")
+    (description
+     "Xandikos is a lightweight yet complete CardDAV/CalDAV server that backs
+onto a Git repository.
+
+Features:
+
+@itemize
+@item Easy to set up
+@item Share calendars (events, todo items, journal entries) via CalDAV and
+contacts (vCard) via CardDAV
+@item Automatically keep history and back up changes in Git
+@item Supports synchronization extensions for CalDAV/CardDAV for quick and
+efficient syncing
+@item Automatically keep history and back up
+@item Works with all tested CalDAV and CardDAV clients
+@end itemize")
     (license gpl3+)))
 
 (define-public vdirsyncer
