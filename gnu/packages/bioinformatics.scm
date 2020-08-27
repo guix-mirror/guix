@@ -15603,7 +15603,22 @@ neural networks.")
                    (install-file file (string-append out "/include/fastahack")))
                  (find-files "." "\\.h$"))
                (install-file "fastahack" bin)
-               (install-file "libfastahack.so" lib))
+               (install-file "libfastahack.so" lib)
+               (mkdir-p (string-append lib "/pkgconfig"))
+               (with-output-to-file (string-append lib "/pkgconfig/fastahack.pc")
+                 (lambda _
+                   (format #t "prefix=~a~@
+                           exec_prefix=${prefix}~@
+                           libdir=${exec_prefix}/lib~@
+                           includedir=${prefix}/include/fastahack~@
+                           ~@
+                           ~@
+                           Name: fastahack~@
+                           Version: ~a~@
+                           Description: Indexing and sequence extraction from FASTA files~@
+                           Libs: -L${libdir} -lfastahack~@
+                           Cflags: -I${includedir}~%"
+                           out ,version))))
              #t)))))
     (home-page "https://github.com/ekg/fastahack")
     (synopsis "Indexing and sequence extraction from FASTA files")
