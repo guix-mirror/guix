@@ -640,7 +640,7 @@ computing convex hulls.")
 (define-public lrslib
   (package
     (name "lrslib")
-    (version "7.0a")
+    (version "7.1")
     (source
      (origin
        (method url-fetch)
@@ -649,7 +649,7 @@ computing convex hulls.")
                            (string-delete #\. version) ".tar.gz"))
        (sha256
         (base32
-         "034fa45r9hwx6ljmgpxk2872q34nklkalpdkc6s9hqw57rivi36k"))))
+         "05kq3hzam31dlmkccv3v358r478kpvx76mw37ka12c6ypwv5dsnk"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
