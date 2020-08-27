@@ -15454,12 +15454,29 @@ some of the details of opening and jumping in tabix-indexed files.")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure) ; There is no configure phase.
+           (add-after 'unpack 'patch-source
+             (lambda _
+               (substitute* "Makefile"
+                 (("-c ") "-c -fPIC "))
+               #t))
+           (add-after 'build 'build-dynamic
+             (lambda _
+               (invoke "g++"
+                       "-shared" "-o" "libsmithwaterman.so"
+                       "smithwaterman.o" "SmithWatermanGotoh.o"
+                       "disorder.o" "BandedSmithWaterman.o"
+                       "LeftAlign.o" "Repeats.o" "IndelAllele.o")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin"))
                       (lib (string-append out "/lib")))
                  (install-file "smithwaterman" bin)
+                 (for-each
+                   (lambda (file)
+                     (install-file file (string-append out "/include/smithwaterman")))
+                   (find-files "." "\\.h$"))
+                 (install-file "libsmithwaterman.so" lib)
                  (install-file "libsw.a" lib))
                #t)))))
       (home-page "https://github.com/ekg/smithwaterman")
