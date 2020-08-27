@@ -1,0 +1,56 @@
+Do not attempt to create $localstatedir and $sysconfdir (i.e., /var and /etc)
+upon "make install".
+
+diff --git a/Makefile.in b/Makefile.in
+index c32cb7d..77a5c00 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -7991,7 +7991,7 @@ sssdconfdir = $(sysconfdir)/sssd
+ sssddatadir = $(datadir)/sssd
+ sssdapiplugindir = $(sssddatadir)/sssd.api.d
+ sssdtapscriptdir = $(sssddatadir)/systemtap
+-dbuspolicydir = $(sysconfdir)/dbus-1/system.d
++dbuspolicydir = $(prefix)/etc/dbus-1/system.d
+ dbusservicedir = $(datadir)/dbus-1/system-services
+ sss_statedir = $(localstatedir)/lib/sss
+ pamlibdir = @pammoddir@
+@@ -8000,7 +8000,7 @@ nfslibdir = @nfsidmaplibdir@
+ keytabdir = $(sss_statedir)/keytabs
+ pkgconfigdir = $(libdir)/pkgconfig
+ sudolibdir = @sudolibpath@
+-pamconfdir = $(sysconfdir)/pam.d
++pamconfdir = $(prefix)/etc/pam.d
+ systemtap_tapdir = @tapset_dir@
+ sssdkcmdatadir = $(datadir)/sssd-kcm
+ deskprofilepath = $(sss_statedir)/deskprofile
+@@ -43733,7 +43733,6 @@ installsssddirs::
+     $(DESTDIR)$(bindir) \
+     $(DESTDIR)$(sbindir) \
+     $(DESTDIR)$(mandir) \
+-    $(DESTDIR)$(pidpath) \
+     $(DESTDIR)$(pluginpath) \
+     $(DESTDIR)$(libdir)/ldb \
+     $(DESTDIR)$(dbuspolicydir) \
+@@ -43743,22 +43742,9 @@ installsssddirs::
+     $(DESTDIR)$(sssddatadir) \
+     $(DESTDIR)$(sudolibdir) \
+     $(DESTDIR)$(autofslibdir) \
+-    $(DESTDIR)$(pipepath)/private \
+-    $(SSSD_USER_DIRS) \
+     $(NULL);
+ @SSSD_USER_TRUE@	-chown $(SSSD_USER):$(SSSD_USER) $(SSSD_USER_DIRS)
+ @SSSD_USER_TRUE@	-chown $(SSSD_USER) $(DESTDIR)$(pipepath)/private
+-	$(INSTALL) -d -m 0700 $(DESTDIR)$(dbpath) $(DESTDIR)$(logpath) \
+-	    $(DESTDIR)$(keytabdir) \
+-	    $(NULL)
+-	$(INSTALL) -d -m 0750 $(DESTDIR)$(pipepath)/private
+-	$(INSTALL) -d -m 0755 $(DESTDIR)$(mcpath) $(DESTDIR)$(pipepath) \
+-            $(DESTDIR)$(pubconfpath) \
+-            $(DESTDIR)$(pubconfpath)/krb5.include.d $(DESTDIR)$(gpocachepath)
+-	$(INSTALL) -d -m 0711 $(DESTDIR)$(sssdconfdir) \
+-                          $(DESTDIR)$(sssdconfdir)/conf.d \
+-                          $(DESTDIR)$(sssdconfdir)/pki
+-@BUILD_SECRETS_TRUE@	$(MKDIR_P) $(DESTDIR)$(secdbpath)
+ 
+ @HAVE_DOXYGEN_TRUE@docs:
+ @HAVE_DOXYGEN_TRUE@	$(DOXYGEN) src/doxy.config
