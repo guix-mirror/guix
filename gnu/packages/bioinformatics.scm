@@ -15713,7 +15713,23 @@ library automatically handles index file generation and use.")
                (for-each
                  (lambda (file)
                    (install-file file (string-append out "/include")))
-                 (find-files "include" "\\.h(pp)?$")))
+                 (find-files "include" "\\.h(pp)?$"))
+               (mkdir-p (string-append lib "/pkgconfig"))
+               (with-output-to-file (string-append lib "/pkgconfig/vcflib.pc")
+                 (lambda _
+                   (format #t "prefix=~a~@
+                           exec_prefix=${prefix}~@
+                           libdir=${exec_prefix}/lib~@
+                           includedir=${prefix}/include~@
+                           ~@
+                           ~@
+                           Name: libvcflib~@
+                           Version: ~a~@
+                           Requires: smithwaterman, fastahack~@
+                           Description: C++ library for parsing and manipulating VCF files~@
+                           Libs: -L${libdir} -lvcflib~@
+                           Cflags: -I${includedir}~%"
+                           out ,version))))
              #t)))))
     (home-page "https://github.com/vcflib/vcflib/")
     (synopsis "Library for parsing and manipulating VCF files")
