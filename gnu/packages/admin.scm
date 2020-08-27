@@ -1042,10 +1042,10 @@ connection alive.")
                ;; if finds all the programs it needs.
                (let* ((out       (assoc-ref outputs "out"))
                       (libexec   (string-append out "/libexec"))
-                      (coreutils (assoc-ref inputs "coreutils"))
+                      (coreutils (assoc-ref inputs "coreutils*"))
                       (inetutils (assoc-ref inputs "inetutils"))
                       (net-tools (assoc-ref inputs "net-tools"))
-                      (sed       (assoc-ref inputs "sed")))
+                      (sed       (assoc-ref inputs "sed*")))
                  (substitute* "client/scripts/linux"
                    (("/sbin/ip")
                     (string-append (assoc-ref inputs "iproute")
@@ -1085,12 +1085,8 @@ connection alive.")
                      (base32
                       "1j9a4r83a77mp8k1y8z524c9rzdqgd8rzwczd6zwmw86a00xiimg"))))
 
-                ;; When cross-compiling, we need the cross Coreutils and sed.
-                ;; Otherwise just use those from %FINAL-INPUTS.
-                ,@(if (%current-target-system)
-                      `(("coreutils" ,coreutils)
-                        ("sed" ,sed))
-                      '())))
+                ("coreutils*" ,coreutils)
+                ("sed*" ,sed)))
 
       (home-page "https://www.isc.org/products/DHCP/")
       (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
