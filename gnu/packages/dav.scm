@@ -24,30 +24,45 @@
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages xml))
 
 (define-public radicale
   (package
     (name "radicale")
-    (version "1.1.6")
-    (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "Radicale" version))
-             (sha256
-              (base32
-               "0ay90nj6fmr2aq8imi0mbjl4m2rzq7a83ikj8qs9gxsylj71j1y0"))))
+    (version "3.0.4")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kozea/Radicale")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hj9mmhrj32mzhxlnjcfijb7768cyjsn603nalp54clgb2gkmvw8"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; The tests are not distributed in the PyPi release.
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-waitress" ,python-waitress)))
     (propagated-inputs
-      ;; TODO: Add python-pam
-     `(("python-requests" ,python-requests)))
+     `(("python-dateutil" ,python-dateutil)
+       ("python-defusedxml" ,python-defusedxml)
+       ("python-passlib" ,python-passlib)
+       ("python-vobject" ,python-vobject)))
     (synopsis "Basic CalDAV and CardDAV server")
     (description "Radicale is a CalDAV and CardDAV server for UNIX-like
 platforms.  Calendars and address books are available for both local and remote
