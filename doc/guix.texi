@@ -8327,10 +8327,12 @@ This is the declarative counterpart of @code{text-file}.
 @end deffn
 
 @deffn {Scheme Procedure} computed-file @var{name} @var{gexp} @
-          [#:options '(#:local-build? #t)]
+          [#:local-build? #t]
+          [#:options '()]
 Return an object representing the store item @var{name}, a file or
-directory computed by @var{gexp}.  @var{options}
-is a list of additional arguments to pass to @code{gexp->derivation}.
+directory computed by @var{gexp}.  When @var{local-build?} is true (the
+default), the derivation is built locally.  @var{options} is a list of
+additional arguments to pass to @code{gexp->derivation}.
 
 This is the declarative counterpart of @code{gexp->derivation}.
 @end deffn
