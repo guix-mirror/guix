@@ -21750,3 +21750,26 @@ It adds a simple and readable way to print stuff during development.")
      "@code{python-dateparser} provides modules to easily parse localized
 dates in almost any string formats commonly found on web pages.")
     (license license:bsd-3)))
+
+(define-public python-dparse
+  (package
+    (name "python-dparse")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "dparse" version))
+        (sha256
+          (base32
+            "0rzkg3nymsbwdjc0ms2bsajkda02jipwyp3xk97qj71f21lz3dd1"))))
+    (build-system python-build-system)
+    (native-inputs
+      `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+      `(("python-packaging" ,python-packaging)
+        ("python-pyyaml" ,python-pyyaml)
+        ("python-toml" ,python-toml)))
+    (home-page "https://github.com/pyupio/dparse")
+    (synopsis "Parser for Python dependency files")
+    (description "This package provides a parser for Python dependency files.")
+    (license license:expat)))
