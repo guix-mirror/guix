@@ -765,7 +765,7 @@ data on your platform, so the seed itself will be as random as possible.
                      "libdir=" out "/lib\n"
                      "includedir=" out "/include\n\n"
                      "Name: libcrypto++-" ,version "\n"
-                     "Description: Class library of cryptographic schemes"
+                     "Description: Class library of cryptographic schemes\n"
                      "Version: " ,version "\n"
                      "Libs: -L${libdir} -lcryptopp\n"
                      "Cflags: -I${includedir}\n"))
