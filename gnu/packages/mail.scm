@@ -138,6 +138,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
@@ -2492,6 +2493,125 @@ to esoteric or niche requirements.")
 for OpenSMTPD to extend its functionality.")
     (license (list license:bsd-2 license:bsd-3 ; openbsd-compat
                    license:isc))))             ; everything else
+
+(define libopensmtpd
+  ;; Private source dependency of opensmtpd-filter-dkimsign (by the same
+  ;; author), until any project actually uses it in its compiled form.
+  (let ((revision 48))
+    (package
+      (name "libopensmtpd")
+      (version (format #f "0.0.0-~a" revision))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "http://imperialat.at/dev/libopensmtpd/")
+               (revision revision)))
+         (sha256
+          (base32 "04fgibpi6q0c3468ww3z7gsvraz0gyfps0c2dj8mdyri636c0x0s"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         (list "-f" "Makefile.gnu"
+               (string-append "CC=" ,(cc-for-target))
+               (string-append "LOCALBASE=" (assoc-ref %outputs "out")))
+         #:tests? #f                    ; no test suite
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'inherit-ownership
+             (lambda _
+               (substitute* "Makefile.gnu"
+                 (("-o \\$\\{BINOWN\\} -g \\$\\{BINGRP\\}") ""))
+               #t))
+           (delete 'configure)          ; no configure script
+           (add-before 'install 'create-output-directories
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (mkdir-p (string-append out "/lib"))
+                 #t)))
+           (add-after 'install 'install-header-file
+             (lambda* (#:key make-flags outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (mkdir-p (string-append out "/include"))
+                 (apply invoke "make" "includes" make-flags))))
+           (add-after 'install 'install-man-page
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (man3 (string-append out "/share/man/man3")))
+                 ;; There is no make target for this.
+                 (install-file "osmtpd_run.3" man3)
+                 #t))))))
+      (inputs
+       `(("libevent" ,libevent)))
+      (home-page "http://imperialat.at/dev/libopensmtpd/")
+      (synopsis "OpenSMTPd filter C API")
+      (description
+       "The @code{osmtpd} API is an event-based C programming interface for
+writing OpenSMTPd filters.")
+      (license license:expat))))
+
+(define-public opensmtpd-filter-dkimsign
+  (package
+    (name "opensmtpd-filter-dkimsign")
+    ;; The .arch repackaging provides not only a usable Makefile, but patches
+    ;; the source to actually build on GNU, e.g., by making pledge() optional.
+    ;; It's effectively the portable branch that upstream lacks at this time.
+    (version "0.2.arch2")               ; also update both native-inputs
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/de-vri-es/filter-dkimsign")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1dv6184h0gq2safnc7ln4za3arbafzc1xwkgwmiihqcjvdyxig0c"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source inputs #:allow-other-keys)
+             (copy-recursively source "filter-dkimsign")
+             (copy-recursively (assoc-ref inputs "libopensmtpd-source")
+                               "libopensmtpd")
+             (copy-file (assoc-ref inputs "Makefile") "Makefile")
+             #t))
+         (delete 'configure)            ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (libexec (string-append out "/libexec/opensmtpd"))
+                    (man8    (string-append out "/share/man/man8")))
+               (chdir "filter-dkimsign")
+               (install-file "filter-dkimsign" libexec)
+               (install-file "filter-dkimsign.8" man8)
+               #t))))))
+    (native-inputs
+     `(("Makefile"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://aur.archlinux.org/cgit/aur.git/plain/Makefile"
+                 "?h=opensmtpd-filter-dkimsign"
+                 "&id=58393470477a2ff2a58f9d72f5d851698067539f"))
+           (sha256
+            (base32 "0da5qr9hfjkf07ybvfva967njmf2x0b82z020r6v5f93jzsbqx92"))
+           (file-name (string-append name "-" version "-Makefile"))))
+       ("libopensmtpd-source" ,(package-source libopensmtpd))))
+    (inputs
+     `(("libevent" ,libevent)
+       ("libressl" ,libressl)))         ; openssl works too but follow opensmtpd
+    (home-page "http://imperialat.at/dev/filter-dkimsign/")
+    (synopsis "OpenSMTPd filter for signing mail with DKIM")
+    (description
+     "The @command{filter-dkimsign} OpenSMTPd filter signs outgoing e-mail
+messages with @acronym{DKIM, DomainKeys Identified Mail} (RFC 4871).")
+    (license license:expat)))
 
 (define-public mailman
   (package
