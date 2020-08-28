@@ -572,14 +572,14 @@ directories.
 (define-public evisum
   (package
     (name "evisum")
-    (version "0.5.3")
+    (version "0.5.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://download.enlightenment.org/rel/apps/"
                             "evisum/evisum-" version ".tar.xz"))
         (sha256
-         (base32 "06ws75qfid0xizasw2aqpdhvxl4c31bn66fqa8aq4w0rykzs2r46"))))
+         (base32 "1ip3w2d476g45sivqvm1madfyqmkni9q2i99qqxk53859jgs91pa"))))
     (build-system meson-build-system)
     (arguments
      '(#:tests? #f))                    ; no tests
