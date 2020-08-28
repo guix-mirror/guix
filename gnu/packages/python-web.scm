@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -1855,6 +1855,27 @@ WebSocket usage in Python programs.")
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
          ,@(package-native-inputs base))))))
+
+(define-public python-purl
+  (package
+    (name "python-purl")
+    (version "1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "purl" version))
+        (sha256
+          (base32
+            "15ibnz1xrh5msmn04j0nr00sz4n7jwx6cwd6zlx99kkz3vpin53m"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-six" ,python-six)))
+    (home-page
+      "https://github.com/codeinthehole/purl")
+    (synopsis
+      "Python package for URL manipulation")
+    (description
+      "Purl is a Python package for handling URLs.")
+    (license license:expat)))
 
 (define-public python-requests
   (package
