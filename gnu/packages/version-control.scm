@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 John D. Boy <jboy@bius.moe>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -1633,6 +1635,32 @@ execution of any hook written in any language before every commit.")
 It efficiently handles projects of any size
 and offers an easy and intuitive interface.")
     (license license:gpl2+)))
+
+(define-public python-hg-evolve
+  (package
+    (name "python-hg-evolve")
+    (version "10.0.1")
+    (source
+      (origin
+        (method hg-fetch)
+        (uri (hg-reference
+               (url "https://www.mercurial-scm.org/repo/evolve")
+               (changeset version)))
+        (file-name (string-append name "-" version "-checkout"))
+        (sha256
+          (base32
+            "1lz407373lfam9n02gq0l0rc2sjvn0m96kbzy93ipia3ika8fa68"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests need mercurial source code.
+     '(#:tests? #f))
+    (propagated-inputs
+      `(("mercurial" ,mercurial)))
+    (home-page "https://www.mercurial-scm.org/doc/evolution/")
+    (synopsis "Flexible evolution of Mercurial history")
+    (description "Evolve is a Mercurial extension for faster and safer mutable
+history.  It implements the changeset evolution concept for Mercurial.")
+    (license license:gpl2)))
 
 (define-public neon
   (package
