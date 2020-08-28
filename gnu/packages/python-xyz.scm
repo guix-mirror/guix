@@ -16071,14 +16071,14 @@ validating Swagger API specifications.")
 (define-public python-apache-libcloud
   (package
     (name "python-apache-libcloud")
-    (version "2.4.0")
+    (version "3.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "apache-libcloud" version))
         (sha256
          (base32
-          "0daj3mkzw79v5zin2r1s2wkrz1hplfc16bwj4ss68i5qjq4l2p0j"))))
+          "1b28j265kvibgxrgxx0gwfm6cmv252c8ph1j2vb0cpms8ph5if5v"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -16091,22 +16091,10 @@ validating Swagger API specifications.")
              #t))
          (add-after 'unpack 'patch-tests
            (lambda _
-             (substitute* "./libcloud/test/test_file_fixtures.py"
-               ;; See <https://issues.apache.org/jira/browse/LIBCLOUD-923>.
-               (("def _ascii") "def _raw_data(self, method, url, body, headers):
-        return (httplib.OK,
-                \"1234abcd\",
-                {\"test\": \"value\"},
-                httplib.responses[httplib.OK])
-    def _ascii"))
              (substitute* "libcloud/test/compute/test_ssh_client.py"
                (("class ShellOutSSHClientTests")
                 "@unittest.skip(\"Guix container doesn't have ssh service\")
-class ShellOutSSHClientTests")
-               ;; See <https://issues.apache.org/jira/browse/LIBCLOUD-924>.
-               (("'.xf0.x90.x8d.x88'") "b'\\xF0\\x90\\x8D\\x88'")
-               (("'.xF0', '.x90', '.x8D', '.x88'")
-                "b'\\xF0', b'\\x90', b'\\x8D', b'\\x88'"))
+class ShellOutSSHClientTests"))
              #t))
          (add-before 'check 'copy-secret
            (lambda _
