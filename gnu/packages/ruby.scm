@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
@@ -6787,7 +6787,7 @@ inspired by the Sinatra microframework style of specifying actions:
 (define-public ruby-rubocop-ast
   (package
     (name "ruby-rubocop-ast")
-    (version "0.1.0")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)               ;no test suite in distributed gem
@@ -6797,7 +6797,7 @@ inspired by the Sinatra microframework style of specifying actions:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nz25z5b76xkgb9sh370hni3l946j07fr05cdwkdj9x7ibgsb6nj"))))
+         "1ycf6qcj8nbzk2js72priim4642lkn56w5kbny1nlryjkckxgm04"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
