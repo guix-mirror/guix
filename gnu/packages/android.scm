@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2019, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -931,7 +931,13 @@ useful for reverse engineering, analysis of Android applications and more.")
          (add-after 'unpack 'fix-versioning
            (lambda _
              (substitute* "setup.py"
-               (("0.2.1") ,(package-version python-pyasn1-modules)))
+               (("0.2.1") ,(package-version python-pyasn1-modules))
+               ;; The dependency on docker has been removed upstream by
+               ;; a fairly large patch:
+               ;; https://gitlab.com/fdroid/fdroidserver/-/commit/89614851250c79a05db84070feca6dea033af334
+               ;; that is not in a release yet. It appears we can compile with
+               ;; a newer version.
+               (("docker-py >= 1.9, < 2.0") "docker >= 1.9"))
              #t)))))
     (propagated-inputs
      `(("python-androguard" ,python-androguard)
