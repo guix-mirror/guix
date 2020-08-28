@@ -579,15 +579,48 @@ things as appropriate and is thus more efficient."
   (write-sequence lst write-item port)
   (put-char port #\)))
 
+(define %escape-char-set
+  ;; Characters that need to be escaped.
+  (char-set #\" #\\ #\newline #\return #\tab))
+
+(define (escaped-string str)
+  "Escape double quote characters found in STR, if any."
+  (define escape
+    (match-lambda
+      (#\"       "\\\"")
+      (#\\       "\\\\")
+      (#\newline "\\n")
+      (#\return  "\\r")
+      (#\tab     "\\t")))
+
+  (let loop ((str   str)
+             (result '()))
+    (let ((index (string-index str %escape-char-set)))
+      (if index
+          (let ((rest (string-drop str (+ 1 index))))
+            (loop rest
+                  (cons* (escape (string-ref str index))
+                         (string-take str index)
+                         result)))
+          (if (null? result)
+              str
+              (string-concatenate-reverse (cons str result)))))))
+
 (define (write-derivation drv port)
   "Write the ATerm-like serialization of DRV to PORT.  See Section 2.4 of
 Eelco Dolstra's PhD dissertation for an overview of a previous version of
 that form."
 
   ;; Use 'put-string', which does less work and is faster than 'display'.
+  ;; Likewise, 'write-escaped-string' is faster than 'write'.
+
+  (define (write-escaped-string str port)
+    (put-char port #\")
+    (put-string port (escaped-string str))
+    (put-char port #\"))
 
   (define (write-string-list lst)
-    (write-list lst write port))
+    (write-list lst write-escaped-string port))
 
   (define (write-output output port)
     (match output
@@ -599,7 +632,7 @@ that form."
                              "")
                          (or (and=> hash bytevector->base16-string)
                              ""))
-                   write
+                   write-escaped-string
                    port))))
 
   (define (write-input input port)
@@ -619,11 +652,11 @@ that form."
   (define (write-env-var env-var port)
     (match env-var
       ((name . value)
-       (put-string port "(")
-       (write name port)
-       (put-string port ",")
-       (write value port)
-       (put-string port ")"))))
+       (put-char port #\()
+       (write-escaped-string name port)
+       (put-char port #\,)
+       (write-escaped-string value port)
+       (put-char port #\)))))
 
   ;; Assume all the lists we are writing are already sorted.
   (match drv
