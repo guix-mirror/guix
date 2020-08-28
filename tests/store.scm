@@ -141,6 +141,15 @@
                     (string-append (%store-prefix) "/"
                                    (make-string 32 #\e) "-foobar"))))
 
+(test-equal "with-store, multiple values"        ;<https://bugs.gnu.org/42912>
+  '(1 2 3)
+  (call-with-values
+      (lambda ()
+        (with-store s
+          (add-text-to-store s "foo" "bar")
+          (values 1 2 3)))
+    list))
+
 (test-assert "valid-path? error"
   (with-store s
     (guard (c ((store-protocol-error? c) #t))

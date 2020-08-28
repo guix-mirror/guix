@@ -628,9 +628,10 @@ connection.  Use with care."
     (define (thunk)
       (parameterize ((current-store-protocol-version
                       (store-connection-version store)))
-        (let ((result (proc store)))
-          (close-connection store)
-          result)))
+        (call-with-values (lambda () (proc store))
+          (lambda results
+            (close-connection store)
+            (apply values results)))))
 
     (cond-expand
       (guile-3
