@@ -1397,15 +1397,14 @@ can be used as backgrounds in the MATE Desktop environment.")
 (define-public pluma
   (package
     (name "pluma")
-    (version "1.24.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "1vmndhlhy3qkf3xs5kkv0xhbv5ar25pqz0kp17hc4qhgjzycfr0r"))))
+        (base32 "1sgc5f480icr2ans6gd3akvcax58mr4jp3zjk3xn7bx1mw9i299f"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(; Tests can not succeed.
