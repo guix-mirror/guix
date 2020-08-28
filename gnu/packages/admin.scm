@@ -1365,10 +1365,11 @@ at once based on a Perl regular expression.")
                          "packdir=\"/var/log\""))
                       #t))
                   (add-before 'install 'tweak-rc-weekly
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "rc/weekly"
                         (("/bin/kill")
-                         (which "kill"))
+                         (string-append (assoc-ref inputs "coreutils*")
+                                        "/bin/kill"))
                         (("syslogd\\.pid")
                          ;; The file is called 'syslog.pid' (no 'd').
                          "syslog.pid"))
@@ -1379,6 +1380,7 @@ at once based on a Perl regular expression.")
     (native-inputs `(("texinfo" ,texinfo)
                      ("automake" ,automake)
                      ("util-linux" ,util-linux))) ; for 'cal'
+    (inputs `(("coreutils*" ,coreutils)))
     (home-page "https://www.gnu.org/software/rottlog/")
     (synopsis "Log rotation and management")
     (description
