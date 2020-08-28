@@ -1077,14 +1077,14 @@ in an isolated environment, in separate namespaces.")
 (define-public gcab
   (package
     (name "gcab")
-    (version "1.2")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gcab/"
                                   version "/gcab-" version ".tar.xz"))
               (sha256
                (base32
-                "038h5kk41si2hc9d9169rrlvp8xgsxq27kri7hv2vr39gvz9cbas"))))
+                "13q43iqld4l50yra45lhvkd376pn6qpk7rkx374zn8y9wsdzm9b7"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums
