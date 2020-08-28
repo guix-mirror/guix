@@ -29770,6 +29770,23 @@ calls it, passing it the initial value of the service as the first
 argument and the result of applying @code{compose} to the extension
 values as the second argument.  It must return a value that is a valid
 parameter value for the service instance.
+
+@item @code{description}
+This is a string, possibly using Texinfo markup, describing in a couple
+of sentences what the service is about.  This string allows users to
+find about the service through @command{guix system search}
+(@pxref{Invoking guix system}).
+
+@item @code{default-value} (default: @code{&no-default-value})
+The default value associated for instances of this service type.  This
+allows users to use the @code{service} form without its second argument:
+
+@lisp
+(service @var{type})
+@end lisp
+
+The returned service in this case has the default value specified by
+@var{type}.
 @end table
 
 @xref{Service Types and Services}, for examples.
