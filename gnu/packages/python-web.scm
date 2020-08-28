@@ -1949,14 +1949,14 @@ library.")
 (define-public python-requests-mock
   (package
     (name "python-requests-mock")
-    (version "1.3.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "requests-mock" version))
        (sha256
         (base32
-         "0jr997dvk6zbmhvbpcv3rajrgag69mcsm1ai3w3rgk2jdh6rg1mx"))))
+         "09nj8fmyj7xz2mgwyvbw0fl9zybmx2d3qd2hf529vvjc9s24d3z6"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-requests" ,python-requests)
@@ -1967,9 +1967,10 @@ library.")
        ("python-docutils" ,python-docutils)
        ("python-fixtures" ,python-fixtures)
        ("python-mock" ,python-mock)
+       ("python-purl" ,python-purl)
+       ("python-pytest" ,python-pytest)
        ("python-sphinx" ,python-sphinx)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testtools" ,python-testtools)))
+       ("python-testrepository" ,python-testrepository)))
     (home-page "https://requests-mock.readthedocs.org/")
     (synopsis "Mock out responses from the requests package")
     (description
