@@ -191,17 +191,6 @@
                            (rename-file real wrapper))
                          pdmp pdmp-real))
              #t))
-         (add-after 'glib-or-gtk-wrap 'strip-double-wrap
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Directly copy emacs-X.Y to emacs, so that it is not wrapped
-             ;; twice.  This also fixes a minor issue, where WMs would not be
-             ;; able to track emacs back to emacs.desktop.
-             (with-directory-excursion (assoc-ref outputs "out")
-               (copy-file (string-append
-                           "bin/emacs-"
-                           ,(version-major+minor (package-version emacs)))
-                          "bin/emacs")
-               #t)))
          (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
            ;; The 'reset-gzip-timestamps phase will throw a permission error
            ;; if gzip files aren't writable then.  This phase is needed when
