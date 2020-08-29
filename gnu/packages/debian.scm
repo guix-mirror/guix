@@ -202,7 +202,7 @@ unpacking them into a directory which can eventually be chrooted into.")
 (define-public debianutils
   (package
     (name "debianutils")
-    (version "4.11")
+    (version "4.11.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -211,7 +211,7 @@ unpacking them into a directory which can eventually be chrooted into.")
               (file-name (git-file-name "debianutils" version))
               (sha256
                (base32
-                "1fmhzvymajack7kh8g4qjbwd9mq85z6rxl1psd1sm67s5695i9rc"))))
+                "18ypb7fivch53wwrdf73yhf1fhkwn9kvw1kfdc1m450241d6191w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
