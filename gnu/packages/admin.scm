@@ -514,20 +514,24 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "2.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://hisham.hm/htop/releases/"
-                                  version "/htop-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/htop-dev/htop")
+             (commit version)))
+       (sha256
+        (base32 "096gdnpaszs5rfp7qj8npi2jkvdqpp8mznn89f97ykrg6pgagwq4"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
     (native-inputs
-     `(("python" ,python-wrapper)))     ;for scripts/MakeHeader.py
-    (home-page "https://hisham.hm/htop/")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("python" ,python-wrapper)))     ; for scripts/MakeHeader.py
+    (home-page "https://htop.dev")
     (synopsis "Interactive process viewer")
     (description
      "This is htop, an interactive process viewer.  It is a text-mode
