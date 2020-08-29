@@ -2943,10 +2943,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    ;; Upstream doesn't use git tags, but does ‘tag’ their releases in the
-    ;; commit message.  Hence the lack of GIT-VERSIONing despite using a commit
-    ;; ID below.  Don't forget to update it…
-    (version "2.22")
+    (version "2.23.2")
     (source
      (origin
        (method git-fetch)
@@ -2956,10 +2953,10 @@ operators and scripters.")
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
        (uri (git-reference
              (url "http://repo.or.cz/alpine.git")
-             (commit "b50297779a4becb9ceca9c6b5b375d526fe3df78")))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06js44fvdl7l33hfd4lsxpcd1cz3c0h796cswyzz0lkrzx89yl48"))
+        (base32 "16ldmmcymrnpnbfc1kb2rhac7nzlc87wjawic4wfinkphd124d1y"))
        (modules '((guix build utils)))
        (snippet
         '(begin
