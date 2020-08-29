@@ -4636,7 +4636,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.36.0")
+    (version "3.36.1")
     (source
      (origin
        (method url-fetch)
@@ -4644,8 +4644,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "0m53ymxbgr3rb3yv13fzjwqh6shsfr51abkm47rchsy2jryqkzja"))))
+        (base32 "0m2680r94nk61imym4x73j03jwfjd8cxm592m5ybiqdfdw6i723i"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
