@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Eric Bavier <bavier@cray.com>
 #
 # This file is part of GNU Guix.
@@ -45,13 +45,6 @@ export PATH
 # The daemon invokes 'guix'; tell it which one to use.
 GUIX="$abs_top_builddir/scripts/guix"
 export GUIX
-
-# The following variables need only be defined when compiling Guix
-# modules, but we define them to be on the safe side in case of
-# auto-compilation.
-
-NIX_HASH="@NIX_HASH@"
-export NIX_HASH
 
 # Define $GUIX_UNINSTALLED to prevent `guix' from
 # prepending @guilemoduledir@ to the Guile load paths.

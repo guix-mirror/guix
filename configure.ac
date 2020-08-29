@@ -194,11 +194,6 @@ AC_ARG_WITH([nix-prefix],
    esac],
   [])
 
-AC_PATH_PROG([NIX_HASH], [nix-hash])
-if test "x$guix_build_daemon$NIX_HASH" = "xno"; then
-   AC_MSG_ERROR([Nix programs not found; please install Nix or use `--with-nix-prefix'.])
-fi
-
 AC_ARG_WITH([nixpkgs],
   [AS_HELP_STRING([--with-nixpkgs=DIR],
     [search for Nixpkgs in DIR (for testing purposes only)])],
