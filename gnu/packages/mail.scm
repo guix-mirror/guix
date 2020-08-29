@@ -393,7 +393,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.8")
+    (version "6.4.10")
     (source
      (origin
        (method url-fetch)
@@ -401,7 +401,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "1g893dr3982vrqzxybmflnqfmd1q6yipd9krvxn0avhlrrp97k96"))))
+        (base32 "0pmjsy8pvgbv24nvjhrisqzya8fk54vbdz8pp0bhbb58p11zvgnv"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
