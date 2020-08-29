@@ -365,6 +365,8 @@ of free disk space on '~a'~%")
                                        #:log-port (current-error-port)
                                        #:lock? #f)))
 
+  (close-connection store)
+  (disconnect! session)
   (format (current-error-port) "done with offloaded '~a'~%"
           (derivation-file-name drv)))
 
