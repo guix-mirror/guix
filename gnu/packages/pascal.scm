@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -28,6 +29,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
@@ -212,4 +214,53 @@ many useful extensions to the Pascal programming language.")
     ;; The majority of the software included is licensed under the GPLv2
     ;; or later.  For more licensing details, see the appropriate files in
     ;; the install/doc directory of the source distribution.
+    (license license:gpl2+)))
+
+(define-public p2c
+  (package
+    (name "p2c")
+    (version "2.01")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://alum.mit.edu/www/toms/p2c/p2c-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "03x72lv6jrvikbrpz4kfq1xp61l2jw5ki6capib71lxs65zndajn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "CC=" ,(cc-for-target))
+               (string-append "HOMEDIR=" out "/lib/p2c")
+               (string-append "INCDIR=" out "/include/p2c")
+               (string-append "BINDIR=" out "/bin")
+               (string-append "LIBDIR=" out "/lib")
+               (string-append "MANDIR=" out "/share/man/man1")
+               "MANFILE=p2c.man.inst"))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'mkdir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/share/man"))
+               (mkdir-p (string-append out "/lib"))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/include")))
+             #t))
+         (add-before 'build 'chdir
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (chdir "src")
+             #t)))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("which" ,which)))
+    (synopsis "p2c converts Pascal programs to C programs--which you can then
+compile using gcc")
+    (description "This package provides @command{p2c}, a program to convert
+Pascal source code to C source code, and @command{p2cc}, a compiler for
+Pascal programs.")
+    (home-page "http://users.fred.net/tds/lab/p2c/")
     (license license:gpl2+)))
