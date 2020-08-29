@@ -28836,7 +28836,9 @@ the @option{--image-size} option is ignored in the case of
 @code{docker-image}.
 
 You can specify the root file system type by using the
-@option{--file-system-type} option.  It defaults to @code{ext4}.
+@option{--file-system-type} option.  It defaults to @code{ext4}.  When its
+value is @code{iso9660}, the @option{--label} option can be used to specify
+a volume ID with @code{disk-image}.
 
 When using @code{vm-image}, the returned image is in qcow2 format, which
 the QEMU emulator can efficiently use. @xref{Running Guix in a VM},

@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -667,7 +668,7 @@ checking this by themselves in their 'check' procedure."
 (define* (system-derivation-for-action os base-image action
                                        #:key image-size file-system-type
                                        full-boot? container-shared-network?
-                                       mappings)
+                                       mappings label)
   "Return as a monadic value the derivation for OS according to ACTION."
   (case action
     ((build init reconfigure)
@@ -691,7 +692,7 @@ checking this by themselves in their 'check' procedure."
      (lower-object
       (system-image
        (image
-        (inherit base-image)
+        (inherit (if label (image-with-label base-image label) base-image))
         (size image-size)
         (operating-system os)))))
     ((docker-image)
@@ -746,7 +747,7 @@ and TARGET arguments."
                          install-bootloader?
                          dry-run? derivations-only?
                          use-substitutes? bootloader-target target
-                         image-size file-system-type full-boot?
+                         image-size file-system-type full-boot? label
                          container-shared-network?
                          (mappings '())
                          (gc-root #f))
@@ -800,6 +801,7 @@ static checks."
       ((target*   (current-target-system))
        (image ->  (find-image file-system-type target*))
        (sys       (system-derivation-for-action os image action
+                                                #:label label
                                                 #:file-system-type file-system-type
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
@@ -950,6 +952,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
       --no-bootloader    for 'init', do not install a bootloader"))
   (display (G_ "
+      --label=LABEL      for 'disk-image', label disk image with LABEL"))
+  (display (G_ "
       --save-provenance  save provenance information"))
   (display (G_ "
       --share=SPEC       for 'vm', share host file system according to SPEC"))
@@ -1015,6 +1019,9 @@ Some ACTIONS support additional ARGS.\n"))
          (option '("no-bootloader" "no-grub") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'install-bootloader? #f result)))
+         (option '("label") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'label arg result)))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
@@ -1072,7 +1079,8 @@ Some ACTIONS support additional ARGS.\n"))
     (validate-reconfigure . ,ensure-forward-reconfigure)
     (file-system-type . "ext4")
     (image-size . guess)
-    (install-bootloader? . #t)))
+    (install-bootloader? . #t)
+    (label . #f)))
 
 (define (verbosity-level opts)
   "Return the verbosity level based on OPTS, the alist of parsed options."
@@ -1126,6 +1134,7 @@ resulting from command-line parsing."
 
          (dry?        (assoc-ref opts 'dry-run?))
          (bootloader? (assoc-ref opts 'install-bootloader?))
+         (label       (assoc-ref opts 'label))
          (target-file (match args
                         ((first second) second)
                         (_ #f)))
@@ -1176,6 +1185,7 @@ resulting from command-line parsing."
                                                         (_ #f))
                                                       opts)
                                #:install-bootloader? bootloader?
+                               #:label label
                                #:target target-file
                                #:bootloader-target bootloader-target
                                #:gc-root (assoc-ref opts 'gc-root)))))
