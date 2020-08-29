@@ -24369,3 +24369,41 @@ applying highlighting to any face in GNU Emacs.  The functionality
 of this library depends on overlays, which by default are not
 picked up when copy-pasting text from buffer to buffer.")
       (license license:gpl2+))))
+
+(define-public emacs-org-webring
+  (package
+    (name "emacs-org-webring")
+    (version "1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~brettgilio/org-webring")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1snxkp2rc48y4gmc5arslfg06yf2a2axln4gvi4piiz1cvcva9gy"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-assets
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (assets
+                     (string-append out "/share/emacs/org-webring-assets")))
+               (mkdir-p assets)
+               (copy-recursively "assets" assets)
+               #t))))))
+    (propagated-inputs
+     `(("emacs-xmlgen" ,emacs-xmlgen)))
+    (home-page "https://sr.ht/~brettgilio/org-webring")
+    (synopsis "Generate webrings for Org-based sites / blogs")
+    (description "Org-webring is an alternative implementation of a
+feed-based webring, taking inspiration from openring by Drew DeVault.
+Intended to integrate with Org-based websites and blogs (either
+directly, or indirectly, as in ox-hugo), it will fetch a given list of
+web feed files and correctly parse and format the elements to be
+displayed for sharing.")
+    (license license:gpl3+)))
