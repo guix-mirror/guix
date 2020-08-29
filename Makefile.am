@@ -834,6 +834,7 @@ release: dist-with-updated-version
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
 	    --file-system-type=iso9660							\
+	    --label="GUIX_$${system}_$(VERSION)"						\
             --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
