@@ -9157,7 +9157,7 @@ existing databases over the internet.")
        ("gtk+" ,gtk+)
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("libhandy" ,libhandy)
+       ("libhandy" ,libhandy-0.0)
        ("libnotify" ,libnotify)
        ("libsoup" ,libsoup)
        ("nautilus" ,nautilus)
@@ -10521,6 +10521,20 @@ interfaces for mobile devices using GTK+.  It provides responsive GTK+ widgets
 for usage on small and big screens.")
     (license license:lgpl2.1+)))
 
+(define-public libhandy-0.0
+  (package
+    (inherit libhandy)
+    (version "0.0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/GNOME/libhandy")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "libhandy" version))
+       (sha256
+        (base32 "1y23k623sjkldfrdiwfarpchg5mg58smcy1pkgnwfwca15wm1ra5"))))))
+
 (define-public libgit2-glib
   (package
     (name "libgit2-glib")
@@ -10895,7 +10909,7 @@ join_paths\\('build-aux', 'post_install.py'\\)\\)")
        ("json-glib" ,json-glib)
        ("libcanberra" ,libcanberra)
        ("libgee" ,libgee)
-       ("libhandy" ,libhandy)
+       ("libhandy" ,libhandy-0.0)
        ("libpeas" ,libpeas)
        ("libsecret" ,libsecret)
        ("libunwind" ,libunwind)
