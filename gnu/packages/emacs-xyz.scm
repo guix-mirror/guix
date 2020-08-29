@@ -7183,7 +7183,17 @@ allowing unprefixed keys to insert their respective characters as expected.")
        ("emacs-s" ,emacs-s)))
     (arguments
      `(#:tests? #t
-       #:test-command '("buttercup")))
+       #:test-command '("buttercup")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           ;; See: https://github.com/clojure-emacs/clojure-mode/issues/568
+           (lambda _
+             (substitute* "clojure-mode.el"
+               (("\\(list \\(cdr project\\)\\)" line)
+                (string-append "\"Return the list of directory roots of the PROJECT.\"\n"
+                               line)))
+             #t)))))
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
     (description
