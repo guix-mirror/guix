@@ -8331,7 +8331,7 @@ endpoint and it understands SPARQL. ")
 (define-public tracker-miners
   (package
     (name "tracker-miners")
-    (version "2.3.3")
+    (version "2.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker-miners/"
@@ -8339,7 +8339,7 @@ endpoint and it understands SPARQL. ")
                                   "/tracker-miners-" version ".tar.xz"))
               (sha256
                (base32
-                "06abxrnrz7xayykrabn135rpsm6z0fqw7gibrb9j09l6swlalwkl"))))
+                "10wy8d8ski52k809p7s6lbw72qmg05bbmhnl00vx4qrbzqyxvc0b"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
