@@ -1029,7 +1029,7 @@ Library reference documentation.")
 (define-public phodav
   (package
    (name "phodav")
-   (version "2.4")
+   (version "2.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1037,10 +1037,21 @@ Library reference documentation.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1hxq8c5qfah3w7mxcyy3yhzdgswplll31a69p5mqdl04bsvw5pbx"))))
+              "045rdzf8isqmzix12lkz6z073b5qvcqq6ad028advm5gf36skw3i"))))
    (build-system meson-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'check 'start-virtual-dir-server
+          ;; The same server when started by tests/virtual-dir returns an
+          ;; unexpected status (4 instead of 200) and fails a test.  It is
+          ;; unclear why starting it manually here makes it pass.
+          (lambda _
+            (system "tests/virtual-dir-server &")
+            #t)))))
    (native-inputs
-    `(("gettext" ,gettext-minimal)
+    `(("docbook-xml" ,docbook-xml-4.3)
+      ("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
       ("gtk-doc" ,gtk-doc)
       ("pkg-config" ,pkg-config)))
