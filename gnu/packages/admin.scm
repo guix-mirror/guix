@@ -2133,24 +2133,19 @@ degradation and failure.")
 (define-public fdupes
   (package
     (name "fdupes")
-    (version "1.6.1")
+    (version "2.1.2")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/adrianlopezroche/fdupes")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/adrianlopezroche/fdupes/"
+                           "releases/download/v" version "/"
+                           "fdupes-" version ".tar.gz"))
        (sha256
-        (base32 "19b6vqblddaw8ccw4sn0qsqzbswlhrz8ia6n4m3hymvcxn8skpz9"))))
+        (base32 "1g9p50xhi2sp0hqxml4w2k0kq9jv988q2yxm347z5349dlxvap6d"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (delete 'configure))
-       #:tests? #f ; no 'check' target
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("pcre2" ,pcre2)))
     (home-page "https://github.com/adrianlopezroche/fdupes")
     (synopsis "Identify duplicate files")
     (description
