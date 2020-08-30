@@ -2620,7 +2620,7 @@ with Python.")
 (define-public delly
   (package
     (name "delly")
-    (version "0.7.9")
+    (version "0.8.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2628,7 +2628,7 @@ with Python.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "034jqsxswy9gqdh2zkgc1js99qkv75ks4xvzgmh0284sraagv61z"))
+               (base32 "1ibnplgfzj96w8glkx17v7sld3pm402fr5ybmf3h0rlcryabxrqy"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2652,9 +2652,9 @@ with Python.")
                #t))))))
     (inputs
      `(("boost" ,boost)
+       ("bzip2" ,bzip2)
        ("htslib" ,htslib)
-       ("zlib" ,zlib)
-       ("bzip2" ,bzip2)))
+       ("zlib" ,zlib)))
     (home-page "https://github.com/dellytools/delly")
     (synopsis "Integrated structural variant prediction method")
     (description "Delly is an integrated structural variant prediction method
