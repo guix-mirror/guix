@@ -246,8 +246,8 @@ to the structure and choosing one or more fields to act as the key.")
              #t))
         (add-after 'install 'install-pkgconfig-file
           (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out"))
-                  (lib (string-append out "/lib")))
+            (let* ((out (assoc-ref outputs "out"))
+                   (lib (string-append out "/lib")))
               (mkdir-p (string-append lib "/pkgconfig"))
               (with-output-to-file (string-append lib "/pkgconfig/sdsl-lite.pc")
                 (lambda _
