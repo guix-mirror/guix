@@ -518,7 +518,7 @@ user's graphical desktop.")
 (define-public scrypt
   (package
     (name "scrypt")
-    (version "1.2.1")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
@@ -526,13 +526,16 @@ user's graphical desktop.")
                             version ".tgz"))
         (sha256
          (base32
-          "0xy5yhrwwv13skv9im9vm76rybh9f29j2dh4hlh2x01gvbkza8a6"))))
+          "1hnl0r6pmyxiy4dmafmqk1db7wpc0x9rqpzqcwr9d2cmghcj6byz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:license-file-regexp "COPYRIGHT"
        #:phases (modify-phases %standard-phases
-        (add-after 'unpack 'patch-command-invocations
+        (add-after 'unpack 'patch-$PATH-assumptions
           (lambda _
+            (substitute* "configure"
+              (("\\{POSIX_PATH\\}")
+               "{PATH}"))
             (substitute* "Makefile.in"
               (("command -p") ""))
             #t))
