@@ -3836,7 +3836,7 @@ IRC bouncer with ERC.")
 ERC, an Emacs client for IRC (Internet Relay Chat).  It relies on the
 @code{erc-track} module, and displays all the same information
 @code{erc-track} does in the mode line, but in an alternative format.")
-      (license license:expat))))
+      (license license:gpl3+))))
 
 (define-public emacs-shut-up
   (package
