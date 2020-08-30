@@ -16170,14 +16170,14 @@ LargeVis method of Tang et al. (2016) is also provided.")
 (define-public r-kableextra
   (package
     (name "r-kableextra")
-    (version "1.1.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "kableExtra" version))
        (sha256
         (base32
-         "1nicvw06xsf3a1f5c10mih07b76m2v5s5h165vmz0qx6n1a3492i"))))
+         "0n25y7zwpspvkd62rd6x8c22dg2ys27smlpdz5brqs5ddv7x9dis"))))
     (properties `((upstream-name . "kableExtra")))
     (build-system r-build-system)
     (propagated-inputs
@@ -16186,7 +16186,6 @@ LargeVis method of Tang et al. (2016) is also provided.")
        ("r-htmltools" ,r-htmltools)
        ("r-knitr" ,r-knitr)
        ("r-magrittr" ,r-magrittr)
-       ("r-readr" ,r-readr)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-rvest" ,r-rvest)
@@ -16195,6 +16194,8 @@ LargeVis method of Tang et al. (2016) is also provided.")
        ("r-viridislite" ,r-viridislite)
        ("r-webshot" ,r-webshot)
        ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://haozhu233.github.io/kableExtra/")
     (synopsis "Construct complex tables with pipe syntax")
     (description
