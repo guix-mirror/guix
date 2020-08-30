@@ -2437,11 +2437,11 @@ The picture values can directly be displayed in Geiser.")
                       guile-picture-language))
 
 (define-public guile-studio
-  (let ((commit "d24d59a68e3f1fa9477e3430fc48a2efe97b805d")
+  (let ((commit "5c05b03e8a5c450f7358ceec7ea602f29c49d54e")
         (revision "1"))
     (package
       (name "guile-studio")
-      (version (git-version "0.0.2" revision commit))
+      (version (git-version "0.0.3" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2450,7 +2450,7 @@ The picture values can directly be displayed in Geiser.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0kqi0q8a7si65n21b7gn8vbninwcg0fqy5hmvy3l1bi6iync20zr"))))
+                  "11wyf6x7mhyhimv0cd57pl39zgav9hc9ljqi3g2g35b264hylpnx"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules
@@ -2487,6 +2487,7 @@ The picture values can directly be displayed in Geiser.")
          ("emacs-geiser" ,emacs-geiser)
          ("emacs-company" ,emacs-company)
          ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-flycheck-guile" ,emacs-flycheck-guile)
          ("emacs-smart-mode-line" ,emacs-smart-mode-line)
          ("emacs-paren-face" ,emacs-paren-face)
          ("adwaita-icon-theme" ,adwaita-icon-theme)))
