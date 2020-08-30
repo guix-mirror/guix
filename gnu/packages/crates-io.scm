@@ -2332,6 +2332,34 @@ in a byte slice, fast.")
      "This package provides a crate for mucking around with piles of bytes.")
     (license license:zlib)))
 
+(define-public rust-bytemuck-derive-1
+  (package
+    (name "rust-bytemuck-derive")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bytemuck-derive" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1k59b6g2d87nf32qwhp73vng3al0zklxg64iiwf0pkxy74xf5ni8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-bytemuck" ,rust-bytemuck-1))))
+    (home-page "https://github.com/Lokathor/bytemuck")
+    (synopsis "Derive proc-macros for @code{bytemuck}")
+    (description
+     "This package derives proc-macros for the @code{bytemuck} crate.")
+    (license
+      (list license:zlib license:asl2.0 license:expat))))
+
 (define-public rust-byteorder-1.3
   (package
     (name "rust-byteorder")
