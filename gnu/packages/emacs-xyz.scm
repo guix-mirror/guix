@@ -7525,31 +7525,33 @@ to all the other commands, too.")
     (license license:gpl3+)))
 
 (define-public emacs-js2-mode
-  (package
-    (name "emacs-js2-mode")
-    (version "20190219")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/mooz/js2-mode")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0766bbr4piia9vfr4ivd2gwi8dxah654adv6h28ylz4q8xmfzm1b"))))
-    (build-system emacs-build-system)
-    (arguments
-     `(#:tests? #t
-       #:test-command '("make" "test")))
-    (home-page "https://github.com/mooz/js2-mode/")
-    (synopsis "Improved JavaScript editing mode for Emacs")
-    (description
-     "Js2-mode provides a JavaScript major mode for Emacs that is more
+  (let ((commit "40aab27581279d0fdbfeb9afeb85f39d401a927f")
+        (revision "1"))
+    (package
+      (name "emacs-js2-mode")
+      (version (git-version "20190219" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mooz/js2-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ysd0ji3vvk2zpjcg1wl7b2hva8471vq0ypib4h6spnpjdr43vzk"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("make" "test")))
+      (home-page "https://github.com/mooz/js2-mode/")
+      (synopsis "Improved JavaScript editing mode for Emacs")
+      (description
+       "Js2-mode provides a JavaScript major mode for Emacs that is more
 advanced than the built-in javascript-mode.  Features include accurate syntax
 highlighting using a recursive-descent parser, on-the-fly reporting of syntax
 errors and strict-mode warnings, smart line-wrapping within comments and
 strings, and code folding.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-nodejs-repl
   (package
