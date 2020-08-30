@@ -771,14 +771,14 @@ binary booleans, @code{TRUE} and @code{FALSE} can be stored with 1 bit only.")
 (define-public r-bit64
   (package
     (name "r-bit64")
-    (version "4.0.2")
+    (version "4.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bit64" version))
        (sha256
         (base32
-         "1yrwvgvxdlsa8y42l05vy173qndlqkwfk6mp2zrqwm8l7c7p79g9"))))
+         "0y0m7q1rwam1g88cjx7zyi07mj5dipxd9jkl90f294syx8k6ipr5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bit" ,r-bit)))
