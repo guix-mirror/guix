@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix profiles)
   #:use-module (guix packages)
   #:use-module (guix channels)
+  #:use-module (guix config)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
   #:use-module (guix monads)
@@ -233,7 +235,9 @@ system.")
         ,(->job 'iso9660-image
                 (build-image
                  (image
-                  (inherit iso9660-image)
+                  (inherit (image-with-label
+                             iso9660-image
+                             (string-append "GUIX_" system "_" %guix-version)))
                   (operating-system installation-os))))
         ;; Only cross-compile Guix System images from x86_64-linux for now.
         ,@(if (string=? system "x86_64-linux")
