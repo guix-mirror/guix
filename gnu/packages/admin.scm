@@ -443,7 +443,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.34")
+    (version "4.0.35")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -452,7 +452,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19lcmmcnxkbirvh5bn5xa9a99z48zmb1b8845cp5r598y019gxqp"))))
+                "1f203g2hp96cp8w4x1myhqdj5j09z9s23kylwkrxr69fjhn0vhnb"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
