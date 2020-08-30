@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ryan Moe <ryan.moe@gmail.com>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -803,6 +803,33 @@ given QEMU package."
                  "This service supports transparent emulation of binaries
 compiled for other architectures using QEMU and the @code{binfmt_misc}
 functionality of the kernel Linux.")))
+
+
+;;;
+;;; Secrets for guest VMs.
+;;;
+
+(define (secret-service-activation port)
+  "Return an activation snippet that fetches sensitive material at local PORT,
+over TCP.  Reboot upon failure."
+  (with-imported-modules '((gnu build secret-service)
+                           (guix build utils))
+    #~(begin
+        (use-modules (gnu build secret-service))
+        (let ((sent (secret-service-receive-secrets #$port)))
+          (unless sent
+            (sleep 3)
+            (reboot))))))
+
+(define secret-service-type
+  (service-type
+   (name 'secret-service)
+   (extensions (list (service-extension activation-service-type
+                                        secret-service-activation)))
+   (description
+    "This service fetches secret key and other sensitive material over TCP at
+boot time.  This service is meant to be used by virtual machines (VMs) that
+can only be accessed by their host.")))
 
 
 ;;;

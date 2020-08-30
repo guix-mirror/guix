@@ -659,6 +659,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/linux-initrd.scm			\
   %D%/build/linux-modules.scm			\
   %D%/build/marionette.scm			\
+  %D%/build/secret-service.scm			\
   %D%/build/vm.scm				\
 						\
   %D%/tests.scm					\
