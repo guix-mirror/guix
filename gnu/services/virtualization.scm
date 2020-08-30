@@ -39,6 +39,7 @@
   #:use-module (gnu system)
   #:use-module (guix derivations)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix records)
@@ -61,7 +62,10 @@
             hurd-vm-configuration-options
             hurd-vm-configuration-id
             hurd-vm-configuration-net-options
+            hurd-vm-configuration-secrets
+
             hurd-vm-disk-image
+            hurd-vm-port
             hurd-vm-net-options
             hurd-vm-service-type
 
@@ -846,6 +850,8 @@ can only be accessed by their host.")))
                  (target "/dev/vda")
                  (timeout 0)))
     (services (cons*
+               ;; Receive secret keys on port 1004, TCP.
+               (service secret-service-type 1004)
                (service openssh-service-type
                         (openssh-configuration
                          (openssh openssh-sans-x)
@@ -876,7 +882,9 @@ can only be accessed by their host.")))
                (default #f))
   (net-options hurd-vm-configuration-net-options        ;list of string
                (thunked)
-               (default (hurd-vm-net-options this-record))))
+               (default (hurd-vm-net-options this-record)))
+  (secret-root hurd-vm-configuration-secret-root        ;string
+               (default "/etc/childhurd")))
 
 (define (hurd-vm-disk-image config)
   "Return a disk-image for the Hurd according to CONFIG."
@@ -888,15 +896,27 @@ can only be accessed by their host.")))
       (size disk-size)
       (operating-system os)))))
 
-(define (hurd-vm-net-options config)
+(define (hurd-vm-port config base)
+  "Return the forwarded vm port for this childhurd config."
   (let ((id (or (hurd-vm-configuration-id config) 0)))
-    (define (qemu-vm-port base)
-      (number->string (+ base (* 1000 id))))
-    `("--device" "rtl8139,netdev=net0"
-      "--netdev" ,(string-append
-                   "user,id=net0"
-                   ",hostfwd=tcp:127.0.0.1:" (qemu-vm-port 10022) "-:2222"
-                   ",hostfwd=tcp:127.0.0.1:" (qemu-vm-port 15900) "-:5900"))))
+    (+ base (* 1000 id))))
+(define %hurd-vm-secrets-port 11004)
+(define %hurd-vm-ssh-port 10022)
+(define %hurd-vm-vnc-port 15900)
+
+(define (hurd-vm-net-options config)
+  `("--device" "rtl8139,netdev=net0"
+    "--netdev"
+    ,(string-append "user,id=net0"
+                    ",hostfwd=tcp:127.0.0.1:"
+                    (number->string (hurd-vm-port config %hurd-vm-secrets-port))
+                    "-:1004"
+                    ",hostfwd=tcp:127.0.0.1:"
+                    (number->string (hurd-vm-port config %hurd-vm-ssh-port))
+                    "-:2222"
+                    ",hostfwd=tcp:127.0.0.1:"
+                    (number->string (hurd-vm-port config %hurd-vm-vnc-port))
+                    "-:5900")))
 
 (define (hurd-vm-shepherd-service config)
   "Return a <shepherd-service> for a Hurd in a Virtual Machine with CONFIG."
@@ -927,8 +947,26 @@ can only be accessed by their host.")))
                             (string->symbol (number->string id)))
                       provisions)
                      provisions))
-      (requirement '(networking))
-      (start #~(make-forkexec-constructor #$vm-command))
+      (requirement '(loopback networking user-processes))
+      (start
+       (with-imported-modules
+           (source-module-closure '((gnu build secret-service)
+                                    (guix build utils)))
+         #~(let ((spawn (make-forkexec-constructor #$vm-command)))
+             (lambda _
+               (let ((pid (spawn))
+                     (port #$(hurd-vm-port config %hurd-vm-secrets-port))
+                     (root #$(hurd-vm-configuration-secret-root config)))
+                 (catch #t
+                   (lambda _
+                     (secret-service-send-secrets port root))
+                   (lambda (key . args)
+                     (kill (- pid) SIGTERM)
+                     (apply throw key args)))
+                 pid)))))
+      (modules `((gnu build secret-service)
+                 (guix build utils)
+                 ,@%default-modules))
       (stop  #~(make-kill-destructor))))))
 
 (define hurd-vm-service-type

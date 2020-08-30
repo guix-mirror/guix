@@ -25121,6 +25121,7 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 
 @cindex @code{hurd}
 @cindex the Hurd
+@cindex childhurd
 
 Service @code{hurd-vm} provides support for running GNU/Hurd in a
 virtual machine (VM), a so-called ``Childhurd''.  The virtual machine is
@@ -25193,14 +25194,40 @@ By default, it produces
 @lisp
 '("--device" "rtl8139,netdev=net0"
   "--netdev" "user,id=net0\
+              ,hostfwd=tcp:127.0.0.1:<secrets-port>-:1004\
               ,hostfwd=tcp:127.0.0.1:<ssh-port>-:2222\
               ,hostfwd=tcp:127.0.0.1:<vnc-port>-:5900")
 @end lisp
 with forwarded ports
 @example
+<ssh-port>: @code{(+ 11004 (* 1000 @var{ID}))}
 <ssh-port>: @code{(+ 10022 (* 1000 @var{ID}))}
 <vnc-port>: @code{(+ 15900 (* 1000 @var{ID}))}
 @end example
+
+@item @code{secret-root} (default: @file{/etc/childhurd})
+The root directory with out-of-band secrets to be installed into the
+childhurd once it runs.  Childhurds are volatile which means that on
+every startup, secrets such as the SSH host keys and Guix signing key
+are recreated.
+
+If the @file{/etc/childhurd} directory does not exist, the
+@code{secret-service} running in the Childhurd will be sent an empty
+list of secrets.
+
+Typical use to populate @file{"/etc/childhurd"} with a tree of
+non-volatile secrets, like so
+
+@example
+/etc/childhurd/etc/guix/signing-key.pub
+/etc/childhurd/etc/guix/signing-key.sec
+/etc/childhurd/etc/ssh/ssh_host_ed25519_key
+/etc/childhurd/etc/ssh/ssh_host_ecdsa_key
+/etc/childhurd/etc/ssh/ssh_host_ed25519_key.pub
+/etc/childhurd/etc/ssh/ssh_host_ecdsa_key.pub
+@end example
+
+to be sent to the Childhurd, including permissions.
 
 @end table
 @end deftp
