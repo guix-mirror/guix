@@ -2315,7 +2315,7 @@ in a byte slice, fast.")
 (define-public rust-bytemuck-1
   (package
     (name "rust-bytemuck")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
@@ -2324,8 +2324,11 @@ in a byte slice, fast.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1scaac5xbfynzbpvz9yjbmg9ag2jalxfijapwlqh7xldf4li0ynv"))))
+          "071043n73hwi55z9c55ga4v52v8a7ri56gqja8r98clkdyxns14j"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytemuck-derive" ,rust-bytemuck-derive-1))))
     (home-page "https://github.com/Lokathor/bytemuck")
     (synopsis "Crate for mucking around with piles of bytes")
     (description
