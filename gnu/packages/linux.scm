@@ -212,12 +212,6 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
    (base32 "07z7sglyrfh0706icqqf3shadf638pvyid9386r661ds5lbsa2mw")
    (base32 "0j6jba5fcddqlb42f95gjl78jisfla4nswqila074gglcrbnl9q7")))
 
-(define deblob-scripts-5.7
-  (linux-libre-deblob-scripts
-   "5.7.18"
-   (base32 "1gharhw104wxp9dxjkzzvsqc2xn44mc9yvacc3v7jh7b6bb0a64a")
-   (base32 "19mzampqx6j85fbdnl347wsy8zw2fnm189llsjc7jwfm10qc2kms")))
-
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    "5.4.61"
@@ -397,14 +391,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.8)))
 
-(define-public linux-libre-5.7-version "5.7.19")
-(define-public linux-libre-5.7-pristine-source
-  (let ((version linux-libre-5.7-version)
-        (hash (base32 "1rwzp51ddlkdzanj6i8jqj5yh0njpzn7ly4r8nnzwkdfp5465721")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.7)))
-
 (define-public linux-libre-5.4-version "5.4.61")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
@@ -475,11 +461,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-5.8-source
   (source-with-patches linux-libre-5.8-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-5.7-source
-  (source-with-patches linux-libre-5.7-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
@@ -585,10 +566,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-headers-5.8
   (make-linux-libre-headers* linux-libre-5.8-version
                              linux-libre-5.8-source))
-
-(define-public linux-libre-headers-5.7
-  (make-linux-libre-headers* linux-libre-5.7-version
-                             linux-libre-5.7-source))
 
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
@@ -867,12 +844,6 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-pristine-source linux-libre-5.8-pristine-source)
 (define-public linux-libre-source          linux-libre-5.8-source)
 (define-public linux-libre                 linux-libre-5.8)
-
-(define-public linux-libre-5.7
-  (make-linux-libre* linux-libre-5.7-version
-                     linux-libre-5.7-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version

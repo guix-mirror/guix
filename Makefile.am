@@ -335,10 +335,6 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/5.8-arm64.conf     \
   gnu/packages/aux-files/linux-libre/5.8-i686.conf      \
   gnu/packages/aux-files/linux-libre/5.8-x86_64.conf    \
-  gnu/packages/aux-files/linux-libre/5.7-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.7-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/5.7-i686.conf	\
-  gnu/packages/aux-files/linux-libre/5.7-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.4-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.4-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.4-i686.conf	\
