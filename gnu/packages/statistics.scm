@@ -3458,13 +3458,13 @@ memory-mapped files.")
 (define-public r-r-methodss3
   (package
     (name "r-r-methodss3")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.methodsS3" version))
               (sha256
                (base32
-                "19c5870v7b59fs6xk58bh3rfkmhfralmgsax86zzpdmz47pga1g0"))))
+                "16v1br7lf7vxv40z65giv9jnqkpnyqagcmgqa0s1jy7spj0zp64a"))))
     (properties `((upstream-name . "R.methodsS3")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/R.methodsS3")
