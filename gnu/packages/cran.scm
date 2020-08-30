@@ -305,14 +305,14 @@ organisms via the @code{g:Profiler} toolkit.")
 (define-public r-gprofiler2
   (package
     (name "r-gprofiler2")
-    (version "0.1.9")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gprofiler2" version))
        (sha256
         (base32
-         "112hmmvdwg8xz90w1bsbzc55y4xi9jj4dqy0q4bsgp49x58r92rb"))))
+         "0q8hl3gdxy34c0181ql405fdklz82nfvmwdcafd5mzf935rjpyjg"))))
     (properties `((upstream-name . "gprofiler2")))
     (build-system r-build-system)
     (propagated-inputs
