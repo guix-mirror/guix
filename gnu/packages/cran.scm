@@ -4454,14 +4454,14 @@ to variables on the left-hand side of the assignment.")
 (define-public r-vctrs
   (package
     (name "r-vctrs")
-    (version "0.3.2")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vctrs" version))
        (sha256
         (base32
-         "05s8v3ms4jaim44c7m4y0dnv8mysj9b26cdfyrfgcjpllayrjib2"))))
+         "0xvqgc36zhd9y1xsm7kwrbr5sxwnd3jbr9qrb1gma2lqkqf42izb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
