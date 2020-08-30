@@ -529,7 +529,8 @@ user's graphical desktop.")
           "0xy5yhrwwv13skv9im9vm76rybh9f29j2dh4hlh2x01gvbkza8a6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:license-file-regexp "COPYRIGHT"
+       #:phases (modify-phases %standard-phases
         (add-after 'unpack 'patch-command-invocations
           (lambda _
             (substitute* "Makefile.in"
@@ -538,8 +539,8 @@ user's graphical desktop.")
         (add-after 'install 'install-docs
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref %outputs "out"))
-                   (misc (string-append out "/share/doc/scrypt")))
-              (install-file "FORMAT" misc)
+                   (doc (string-append out "/share/doc/" ,name "-" ,version)))
+              (install-file "FORMAT" doc)
               #t))))))
     (inputs
      `(("openssl" ,openssl)))
