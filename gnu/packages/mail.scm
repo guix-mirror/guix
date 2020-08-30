@@ -3453,23 +3453,22 @@ designed for keyboard-oriented operation.")
            (lambda _
              (invoke "python" "-m" "authres" "-v"))))))
     (home-page "https://launchpad.net/authentication-results-python")
-    (synopsis "Email Authentication Results Header Module")
+    (synopsis "Authentication-Results email header creator and parser")
     (description
-     "This module can be used to generate and parse RFC 5451/7001/7601
-Authentication-Results headers.  It also supports Authentication Results
-extensions:
+     "This Python module can be used to generate and parse RFC 5451/7001/7601
+@code{Authentication-Results} email headers.  It supports extensions such as:
 @itemize
 @item RFC 5617 DKIM/ADSP
-@item RFC 6008 DKIM signature identification (header.b)
-@item RFC 6212 Vouch By Reference (VBR)
-@item RFC 6577 Sender Policy Framework (SPF)
-@item RFC 7281 Authentication-Results Registration for S/MIME
-@item RFC 7293 The Require-Recipient-Valid-Since Header Field
-@item RFC 7489 Domain-based Message Authentication, Reporting, and Conformance (DMARC)
-@item Authenticated Recieved Chain (ARC) (draft-ietf-dmarc-arc-protocol-08)
-@end itemize
-Note: RFC 7601 obsoletes RFC 5451, 6577, 7001, and 7410.  Authres supports the
-current standard.  No backward compatibility issues have been noted.")
+@item RFC 6008 DKIM signature identification (@code{header.b})
+@item RFC 6212 @acronym{VBR, Vouch By Reference}
+@item RFC 6577 @acronym{SPF, Sender Policy Framework}
+@item RFC 7281 @code{Authentication-Results} registration for S/MIME
+@item RFC 7293 The @code{Require-Recipient-Valid-Since} header field
+@item RFC 7489 @acronym{DMARC, Domain-based Message Authentication Reporting
+and Conformance}
+@item @acronym{ARC, Authenticated Received Chain}
+(draft-ietf-dmarc-arc-protocol-08)
+@end itemize\n")
     (license license:asl2.0)))
 
 (define-public python-dkimpy
