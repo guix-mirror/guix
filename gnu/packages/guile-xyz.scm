@@ -2888,6 +2888,45 @@ formatting combinators specified by
 more expressive and flexible than the traditional @code{format} procedure.")
       (license license:bsd-3))))
 
+(define-public guile-srfi-180
+  (let ((commit "9188bf9724c6d320ef804579d222e855b007b193")
+        (revision "0"))
+    (package
+      (name "guile-srfi-180")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/scheme-requests-for-implementation/srfi-180.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "08lf70rsak8mwfij55xc37pg9zg7c87fizmhz7ln46skzj68sl3y"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (delete-file-recursively "srfi/files")
+             (delete-file "srfi/run-r7rs-checks.guile.scm")
+             (delete-file "srfi/run-r7rs-checks.scm")
+             (delete-file "srfi/check.scm")
+             #t))
+         (file-name (git-file-name name version))))
+      (build-system guile-build-system)
+      (arguments
+       '(#:not-compiled-file-regexp "body\\.scm$"))
+      (native-inputs
+       `(("guile" ,guile-3.0)))
+      (propagated-inputs
+       `(("guile-srfi-145" ,guile-srfi-145)))
+      (home-page "https://srfi.schemers.org/srfi-180/")
+      (synopsis "JSON parser and printer for Guile")
+      (description
+       "This library implements a JavaScript Object Notation (JSON) parser and printer.
+It also supports parsing JSON objects that may be bigger than memory with a streaming
+API.")
+      (license license:expat))))
+
 (define-public emacsy
   (package
     (name "emacsy")
