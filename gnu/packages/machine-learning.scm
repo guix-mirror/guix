@@ -1049,7 +1049,16 @@ the following advantages:
        (modify-phases %standard-phases
          (add-after 'unpack 'make-files-writable
            (lambda _
-             (for-each make-file-writable (find-files "." ".*")) #t)))))
+             (for-each make-file-writable (find-files "." ".*")) #t))
+         (add-after 'install 'install-more-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each
+               (lambda (file)
+                 (install-file file (string-append
+                                      (assoc-ref outputs "out")
+                                      "/include/vowpalwabbit")))
+               (find-files "vowpalwabbit" "\\.h$"))
+             #t)))))
     (build-system gnu-build-system)
     (home-page "https://github.com/JohnLangford/vowpal_wabbit")
     (synopsis "Fast machine learning library for online learning")
