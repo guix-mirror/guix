@@ -556,7 +556,7 @@ WireGuard was added to Linux 5.6.")
 (define-public wireguard-tools
   (package
     (name "wireguard-tools")
-    (version "1.0.20200820")
+    (version "1.0.20200827")
     (source
      (origin
        (method git-fetch)
@@ -565,7 +565,7 @@ WireGuard was added to Linux 5.6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n8gxms0hmialm5zgh51bhbrl4fndxfc9vfwj20grp9fr7r6vzc4"))))
+        (base32 "1h351hn531z6z85sx9ya27xjz1jszgn1pkwibacjj49mds15f7gn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
