@@ -6074,14 +6074,14 @@ Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
 (define-public r-renv
   (package
     (name "r-renv")
-    (version "0.11.0")
+    (version "0.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "renv" version))
        (sha256
         (base32
-         "0dd63jr240pg95a6p058s5kcclfmscihdy89v212msihmwvylwh3"))))
+         "1jwm1ik600xswb53i1swjsnfrjjdffmmyk5k9hjc7kc8nlfl0ay5"))))
     (properties `((upstream-name . "renv")))
     (build-system r-build-system)
     (native-inputs
