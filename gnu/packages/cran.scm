@@ -2366,14 +2366,14 @@ in main memory.")
 (define-public r-ffbase
   (package
     (name "r-ffbase")
-    (version "0.12.8")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ffbase" version))
        (sha256
         (base32
-         "0mjk7dkq1ginqqfvngzny747ggf9a8fd7kblq96n5ys1jrwjyqhq"))))
+         "0knl0vnh8w4q3ry24gp4fd55ipnaj9hb1rwm31fs119kgmh3gd8x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bit" ,r-bit)
