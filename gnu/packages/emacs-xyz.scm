@@ -1313,8 +1313,6 @@ regexp-like arguments to @code{skip-chars-forward} and
           (base32
            "134fj493sdn93pyyac8rpz1fzahzmayvphsrmqp3wvgysmfqm38l"))))
       (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-seq" ,emacs-seq)))
       (home-page "https://github.com/Malabarba/elisp-bug-hunter")
       (synopsis "Hunt down errors by bisecting elisp files")
       (description
@@ -3523,7 +3521,6 @@ IRC bouncer with ERC.")
          (sha256
           (base32 "1hwlhzgx03z8891sblz56zdp8zj0izh72kxykgcnz5rrkyc3vfi3"))))
       (build-system emacs-build-system)
-      (propagated-inputs `(("emacs-seq" ,emacs-seq)))
       (home-page "https://github.com/drewbarbs/erc-status-sidebar")
       (synopsis "Hexchat-like activity overview for ERC channels")
       (description
@@ -13600,8 +13597,7 @@ and can be consulted and modified.")
          ("emacs-dash" ,emacs-dash)
          ("emacs-flycheck" ,emacs-flycheck)
          ("emacs-let-alist" ,emacs-let-alist)
-         ("emacs-s" ,emacs-s)
-         ("emacs-seq" ,emacs-seq)))
+         ("emacs-s" ,emacs-s)))
       (home-page "https://github.com/purescript-emacs/psc-ide-emacs")
       (synopsis "Emacs integration for PureScript's psc-ide tool")
       (description
@@ -14361,8 +14357,7 @@ with (La)TeX mode, Org mode and other Emacs editing modes.")
         (base32 "1gxjind6r235az59dr8liv03d8994mqb8a7m28j3c12q7p70aziz"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-seq" ,emacs-seq)
-       ("emacs-dash" ,emacs-dash)
+     `(("emacs-dash" ,emacs-dash)
        ("emacs-let-alist" ,emacs-let-alist)))
     (home-page "https://github.com/cpitclaudel/biblio.el")
     (synopsis "Browse and import bibliographic references")
@@ -14768,24 +14763,6 @@ timestamps and date-time format strings library for Emacs.")
     (synopsis "Minor mode for working with @code{npm} projects")
     (description
      "@code{npm-mode} provides a minor mode to work with @code{npm} projects.")
-    (license license:gpl3+)))
-
-(define-public emacs-seq
-  (package
-    (name "emacs-seq")
-    (version "2.20")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/seq-" version ".tar"))
-       (sha256
-        (base32
-         "0vrpx6nnyjb0gsypknzagimlhvcvi5y1rcdkpxyqr42415zr8d0n"))))
-    (build-system emacs-build-system)
-    (home-page "https://elpa.gnu.org/packages/seq.html")
-    (synopsis "Sequence manipulation functions")
-    (description "Sequence-manipulation functions that complement basic
-functions provided by @file{subr.el}.")
     (license license:gpl3+)))
 
 (define-public emacs-itail
@@ -20498,7 +20475,6 @@ unescaping of quotes.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
-         ("emacs-seq" ,emacs-seq)
          ("emacs-flycheck" ,emacs-flycheck)
          ("emacs-haskell-mode" ,emacs-haskell-mode)
          ("emacs-let-alist" ,emacs-let-alist)))
