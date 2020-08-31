@@ -151,11 +151,14 @@
                                     "|stex\\.stex"
                                     "|newrelease"
                                     "|workarea"
+                                    "|unix\\.ms"
+                                    "|^6\\.ms"
                                     ;;"|[a-zA-Z0-9.]+\\.ms" ; guile can't read
                                     ")"))
                  (("/bin/rm") (which "rm"))
                  (("/bin/ln") (which "ln"))
-                 (("/bin/cp") (which "cp")))
+                 (("/bin/cp") (which "cp"))
+                 (("/bin/echo") (which "echo")))
                (substitute* "makefiles/installsh"
                  (("/bin/true") (which "true")))
                (substitute* "stex/Makefile"
