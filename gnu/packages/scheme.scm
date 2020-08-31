@@ -396,7 +396,7 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "7.8")
+    (version "7.8") ;; Note: Remember to also update racket-minimal!
     (source (origin
               (method url-fetch)
               (uri (list (string-append "http://mirror.racket-lang.org/installers/"
@@ -538,7 +538,7 @@ of libraries.")
                           version "/racket-minimal-" version "-src.tgz")))
               (sha256
                (base32
-                "1lxcd4ix8q3089xql48hwccxvcpkinfxwxnc6fhcjdgzqcyxh3ln"))
+                "0bbglf9vfacpm2hn3lskhvc8cpg6z088fbnzpqsn17z8qdk8yvb3"))
               (patches (search-patches
                         "racket-store-checksum-override.patch"))))
     (synopsis "Racket without bundled packages such as Dr. Racket")
