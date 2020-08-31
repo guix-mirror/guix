@@ -12877,7 +12877,7 @@ pairs in insertion order.")
 (define-public rust-libssh2-sys-0.2
   (package
     (name "rust-libssh2-sys")
-    (version "0.2.14")
+    (version "0.2.19")
     (source
       (origin
         (method url-fetch)
@@ -12885,7 +12885,7 @@ pairs in insertion order.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "042gsgbvxgm5by4mk906j3zm4qdvzcfhjxrb55is1lrr6f0nxain"))
+          "0mkhw4pksbz7gldj8hia7k6npc479n1x09i8r0pm275sac424ina"))
         (modules '((guix build utils)))
         (snippet
          '(begin (delete-file-recursively "libssh2") #t))))
