@@ -467,7 +467,7 @@ if __name__ == \"__main__\":
     (inputs
      `(("python-wrapper" ,python-wrapper)))
     (propagated-inputs
-     `(("python-django" ,python-django)
+     `(("python-django" ,python-django-2.2)
        ;; TODO: Make this configurable
        ("python-psycopg2" ,python-psycopg2)
        ("python-mysqlclient" ,python-mysqlclient)

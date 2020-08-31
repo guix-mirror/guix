@@ -3118,7 +3118,7 @@ which sends emails to HyperKitty, the official Mailman3 web archiver.")
                      "--settings=hyperkitty.tests.settings_test"))))))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
-       ("python-django" ,python-django)
+       ("python-django" ,python-django-2.2)
        ("python-django-compressor" ,python-django-compressor)
        ("python-django-extensions" ,python-django-extensions)
        ("python-django-gravatar2" ,python-django-gravatar2)

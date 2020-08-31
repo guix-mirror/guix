@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,43 +46,55 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "1.11.29")
+    (version "3.1.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "171jsi54fbnxzi2n3l4hkdmmwfnfrwacs180rw59l0bqcvxsw022"))))
+                "0bzwy58hrxbsh7szak1yfh7qvvfnpdpi8ay1x7d3pvbkm1f15j2r"))))
     (build-system python-build-system)
     (arguments
-     '(#:modules ((srfi srfi-1)
-                  (guix build python-build-system)
-                  (guix build utils))
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-tzdir
+         (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The test-suite tests timezone-dependent functions, thus tzdata
              ;; needs to be available.
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
-             #t))
-         (replace 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "PYTHONPATH"
-                     (string-append ".:" (getenv "PYTHONPATH")))
+
+             ;; Disable test for incorrect timezone: it only raises the
+             ;; expected error when /usr/share/zoneinfo exists, even though
+             ;; the machinery gracefully falls back to TZDIR.  According to
+             ;; django/conf/__init__.py, lack of /usr/share/zoneinfo is
+             ;; harmless, so just ignore this test.
+             (substitute* "tests/settings_tests/tests.py"
+               ((".*def test_incorrect_timezone.*" all)
+                (string-append "    @unittest.skipIf(True, 'Disabled by Guix')\n"
+                               all)))
+
+             ;; Preserve the PYTHONPATH created by Guix when running the tests.
              (substitute* "tests/admin_scripts/tests.py"
                (("python_path = \\[")
                 (string-append "python_path = ['"
-                               (find (lambda (entry)
-                                       (string-prefix?
-                                        (assoc-ref inputs "python-pytz")
-                                        entry))
-                                     (string-split (getenv "PYTHONPATH")
-                                                   #\:))
+                               (string-join
+                                (string-split (getenv "PYTHONPATH") #\:)
+                                "','")
                                "', ")))
-             (invoke "python" "tests/runtests.py"))))))
+
+             #t))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "tests"
+               (setenv "PYTHONPATH"
+                       (string-append "..:" (getenv "PYTHONPATH")))
+               (invoke "python" "runtests.py"
+                       ;; By default tests run in parallel, which may cause
+                       ;; various race conditions.  Run sequentially for
+                       ;; consistent results.
+                       "--parallel=1")))))))
     ;; TODO: Install extras/django_bash_completion.
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
@@ -99,6 +112,7 @@
        ("python-tblib" ,python-tblib)))
     (propagated-inputs
      `(("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-asgiref" ,python-asgiref)
        ("python-bcrypt" ,python-bcrypt)
        ("python-pytz" ,python-pytz)))
     (home-page "https://www.djangoproject.com/")
@@ -124,6 +138,21 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
          ;; When adding memcached mind: for Python 2 memcached <= 1.53 is
          ;; required.
          ,@(package-native-inputs base))))))
+
+(define-public python-django-2.2
+  (package
+    (inherit python-django)
+    (version "2.2.16")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Django" version))
+              (sha256
+               (base32
+                "1535g2r322cl4x52fb0dmzlbg23539j2wx6027j54p22xvjlbkv2"))))
+    (native-inputs
+     `(;; XXX: In 2.2 and 3.0, selenium is required for the test suite.
+       ("python-selenium" ,python-selenium)
+       ,@(package-native-inputs python-django)))))
 
 (define-public python-django-extensions
   (package
