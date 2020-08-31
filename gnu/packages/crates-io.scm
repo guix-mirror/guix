@@ -1172,7 +1172,7 @@ trace (backtrace) at runtime in a Rust program.")
 (define-public rust-backtrace-sys-0.1
   (package
     (name "rust-backtrace-sys")
-    (version "0.1.35")
+    (version "0.1.37")
     (source
       (origin
         (method url-fetch)
@@ -1180,7 +1180,7 @@ trace (backtrace) at runtime in a Rust program.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "066iviphi72mx9hd3njzsplk5v45jhi10mrccbbyij391ahsps3x"))))
+          "16a3igz22q9lnnjjr77f4k8ci48v8zdwrs67khx3h7wx3jzfpyqq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
