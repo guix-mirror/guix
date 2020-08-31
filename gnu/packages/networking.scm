@@ -280,6 +280,14 @@ GLib-based library, libnice, as well as GStreamer elements to use it.")
         (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'omit-static-library
+           (lambda _
+             (substitute* "librtmp/Makefile"
+               (("cp librtmp\\.a .*")   ; don't install it
+                "")
+               (("librtmp\\.a ")        ; don't build it
+                ""))
+             #t))
          (delete 'configure))))
     (inputs
      `(("openssl" ,openssl-1.0)
