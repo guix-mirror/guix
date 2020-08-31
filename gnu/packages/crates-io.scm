@@ -2512,7 +2512,7 @@ exposed as Reader/Writer streams.")
 (define-public rust-bzip2-sys-0.1
   (package
     (name "rust-bzip2-sys")
-    (version "0.1.7")
+    (version "0.1.9+1.0.8")
     (source
      (origin
        (method url-fetch)
@@ -2521,11 +2521,11 @@ exposed as Reader/Writer streams.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0pz2mdhkk8yphiqdh2kghdxb60kqyd10lfrjym3r4k5dylvam135"))
+         "0pi8lxzb1104q9cpvv1jgnk909cggqh2zcdhywqwlbq6c2i3jfxd"))
         (modules '((guix build utils)))
         (snippet
          '(begin
-            (delete-file-recursively "bzip2-1.0.6")
+            (delete-file-recursively "bzip2-1.0.8")
             (delete-file "build.rs")
             ;; Inspired by Debian's patch.
             (with-output-to-file "build.rs"
@@ -2538,7 +2538,8 @@ exposed as Reader/Writer streams.")
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-cc" ,rust-cc-1))))
+        ("rust-cc" ,rust-cc-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (home-page "https://github.com/alexcrichton/bzip2-rs")
     (synopsis "Rust bindings to libbzip2")
     (description
