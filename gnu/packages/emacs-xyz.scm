@@ -24461,3 +24461,28 @@ It is similar in purpose to services such as Gist or Pastebin,
 but is much simpler since it assumes the user has access to a
 publically-accessible HTTP server.")
       (license license:gpl3+))))
+
+(define-public emacs-company-reftex
+  (package
+    (name "emacs-company-reftex")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/TheBB/company-reftex")
+             (commit "275ef708f08d3bf0eb30632148e5c6184eeaacdb")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "118cgw5lsffqdqz95mnkw36mmnsbg9m52r2np4m7v14mjjwr9fby"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/TheBB/company-reftex")
+    (synopsis "RefTeX backends for company-mode")
+    (description "This package provides company-mode backends for completing
+label references and citations in LaTeX.  It is based on RefTeX, which is
+included with Emacs.")
+    (license license:gpl3+)))
