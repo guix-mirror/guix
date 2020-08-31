@@ -4045,7 +4045,7 @@ libraries written in C.")
 (define-public vala-0.48
   (package
     (inherit vala)
-    (version "0.48.7")
+    (version "0.48.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vala/"
@@ -4053,7 +4053,7 @@ libraries written in C.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "0lswkb7gj0chas9n3l3dbrm9l71hs77adhvm2v600id2ipi37pi8"))))))
+                "1agyrvslv2yh9ikiw7k5nw6j6il1l2zrzfan0pzdpb9xpg9idslw"))))))
 
 (define-public vte
   (package
