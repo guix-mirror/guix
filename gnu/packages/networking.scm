@@ -259,20 +259,24 @@ GLib-based library, libnice, as well as GStreamer elements to use it.")
 (define-public rtmpdump
   (package
     (name "rtmpdump")
-    (version "2.3")
+    (version "2.4")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://rtmpdump.mplayerhq.hu/download/"
-                       name "-" version ".tgz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.ffmpeg.org/rtmpdump")
+             (commit "c28f1bab7822de97353849e7787b59e50bbb1428")))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0b2b49a57kpz9gi8dx1x3cs8b0gjx8x0c89x0q96kkl2knlvff7g"))))
+        (base32 "1n3kdip83nvvs4sin30zpcdr5q711mqhq2lxrv5vgbc6lskpwzlj"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; No tests
+     `(#:tests? #f                      ; no tests
        #:make-flags
        (list
+        ;; The ‘validate-runpath’ phase fails to find librtmp.so.0.
+        (string-append "LDFLAGS=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib")
         (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
