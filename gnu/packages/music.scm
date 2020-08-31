@@ -5065,15 +5065,15 @@ short-time Fourier transform, available as LV2 audio plugin and JACK client.")
 (define-public x42-plugins
   (package
     (name "x42-plugins")
-    (version "20191215")
+    (version "20200714")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "http://gareus.org/misc/x42-plugins/x42-plugins-"
+        (string-append "https://gareus.org/misc/x42-plugins/x42-plugins-"
                        version ".tar.xz"))
        (sha256
-        (base32 "1mwfvhsvc0qgjyiwd8pmmam1mav43lmv39fljhmj9yri558v5g1c"))))
+        (base32 "1av05ykph8x67018hm9zfgh1vk0zi39mvrsxkj6bm4hkarxf0vvl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
