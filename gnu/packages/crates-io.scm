@@ -12715,7 +12715,7 @@ functions and static variables these libraries contain.")
 (define-public rust-libz-sys-1.0
   (package
     (name "rust-libz-sys")
-    (version "1.0.25")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
@@ -12723,16 +12723,19 @@ functions and static variables these libraries contain.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1gjycyl2283525abks98bhxa4r259m617xfm5z52p3p3c8ry9d9f"))
+          "1q25cb8vs113si7q2p0innhi8jk0wpq37hqi2wcc219hcmw43cr3"))
         (modules '((guix build utils)))
         (snippet
-         '(begin (delete-file-recursively "src/zlib") #t))))
+         '(begin (delete-file-recursively "src/zlib")
+                 (delete-file-recursively "src/zlib-ng")
+                 #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1)
+        ("rust-cmake" ,rust-cmake-0.1)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
