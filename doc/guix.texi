@@ -144,6 +144,7 @@ Project}.
 * Introduction::                What is Guix about?
 * Installation::                Installing Guix.
 * System Installation::         Installing the whole operating system.
+* Getting Started::             Your first steps.
 * Package Management::          Package installation, upgrade, etc.
 * Development::                 Guix-aided software development.
 * Programming Interface::       Using Guix in Scheme.
@@ -195,6 +196,8 @@ System Installation
 * After System Installation::   When installation succeeded.
 * Installing Guix in a VM::     Guix System playground.
 * Building the Installation Image::  How this comes to be.
+
+Getting Started
 
 Manual Installation
 
@@ -562,6 +565,9 @@ wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh
 chmod +x guix-install.sh
 ./guix-install.sh
 @end example
+
+When you're done, @pxref{Application Setup} for extra configuration you
+might need, and @ref{Getting Started} for your first steps!
 @end quotation
 
 Installing goes along these lines:
@@ -2476,7 +2482,8 @@ as.  This means that if you choose to use @command{guix system reconfigure} in
 root's login shell, you'll need to @command{guix pull} separately.
 @end quotation
 
-Join us on @code{#guix} on the Freenode IRC network or on
+Now, @pxref{Getting Started}, and
+join us on @code{#guix} on the Freenode IRC network or on
 @email{guix-devel@@gnu.org} to share your experience!
 
 
@@ -2564,6 +2571,210 @@ guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-wit
 board, a list of possible boards will be printed.
 
 @c *********************************************************************
+@node Getting Started
+@chapter Getting Started
+
+Presumably, you've reached this section because either you have
+installed Guix on top of another distribution (@pxref{Installation}), or
+you've installed the standalone Guix System (@pxref{System
+Installation}).  It's time for you to get started using Guix and this
+section aims to help you do that and give you a feel of what it's like.
+
+Guix is about installing software, so probably the first thing you'll
+want to do is to actually look for software.  Let's say you're looking
+for a text editor, you can run:
+
+@example
+guix search text editor
+@end example
+
+This command shows you a number of matching @dfn{packages}, each time
+showing the package's name, version, a description, and additional info.
+Once you've found out the one you want to use, let's say Emacs (ah ha!),
+you can go ahead and install it (run this command as a regular user,
+@emph{no need for root privileges}!):
+
+@example
+guix install emacs
+@end example
+
+You've installed your first package, congrats!  In the process, you've
+probably noticed that Guix downloaded pre-built binaries; or, if you
+explicitly chose to @emph{not} use pre-built binaries, then probably
+Guix is still building software (@pxref{Substitutes}, for more info).
+
+Unless you're using Guix System, the @command{guix install} command must
+have printed this hint:
+
+@example
+hint: Consider setting the necessary environment variables by running:
+
+     GUIX_PROFILE="$HOME/.guix-profile"
+     . "$GUIX_PROFILE/etc/profile"
+
+Alternately, see `guix package --search-paths -p "$HOME/.guix-profile"'.
+@end example
+
+Indeed, you must now tell your shell where @command{emacs} and other
+programs installed with Guix are to be found.  Pasting the two lines
+above will do just that: it will add
+@code{$HOME/.guix-profile/bin}---which is where the installed package
+is---to the @code{PATH} environment variable.  You can paste these two
+lines in your shell so they take effect right away, but more importantly
+you should add them to @file{~/.bash_profile} (or equivalent file if you
+do not use Bash) so that environment variables are set next time you
+spawn a shell.  You only need to do this once and other search paths
+environment variables will be taken care of similarly---e.g., if you
+eventually install @code{python} and Python libraries, @code{PYTHONPATH}
+will be defined.
+
+You can go on installing packages at your will.  To list installed
+packages, run:
+
+@example
+guix package --list-installed
+@end example
+
+To remove a package, you would unsurprisingly run @command{guix remove}.
+A distinguishing feature is the ability to @dfn{roll back} any operation
+you made---installation, removal, upgrade---by simply typing:
+
+@example
+guix package --roll-back
+@end example
+
+This is because each operation is in fact a @dfn{transaction} that
+creates a new @dfn{generation}.  These generations and the difference
+between them can be displayed by running:
+
+@example
+guix package --list-generations
+@end example
+
+Now you know the basics of package management!
+
+@quotation Going further
+@xref{Package Management}, for more about package management.  You may
+like @dfn{declarative} package management with @command{guix package
+--manifest}, managing separate @dfn{profiles} with @option{--profile},
+deleting old generations, collecting garbage, and other nifty features
+that will come in handy as you become more familiar with Guix.  If you
+are a developer, @pxref{Development} for additional tools.  And if
+you're curious, @pxref{Features}, to peek under the hood.
+@end quotation
+
+Once you've installed a set of packages, you will want to periodically
+@emph{upgrade} them to the latest and greatest version.  To do that, you
+will first pull the latest revision of Guix and its package collection:
+
+@example
+guix pull
+@end example
+
+The end result is a new @command{guix} command, under
+@file{~/.config/guix/current/bin}.  Unless you're on Guix System, the
+first time you run @command{guix pull}, be sure to follow the hint that
+the command prints and, similar to what we saw above, paste these two
+lines in your terminal and @file{.bash_profile}:
+
+@example
+GUIX_PROFILE="$HOME/.config/guix/current/etc/profile"
+. "$GUIX_PROFILE/etc/profile"
+@end example
+
+@noindent
+You must also instruct your shell to point to this new @command{guix}:
+
+@example
+hash guix
+@end example
+
+At this point, you're running a brand new Guix.  You can thus go ahead
+and actually upgrade all the packages you previously installed:
+
+@example
+guix upgrade
+@end example
+
+As you run this command, you will see that binaries are downloaded (or
+perhaps some packages are built), and eventually you end up with the
+upgraded packages.  Should one of these upgraded packages not be to your
+liking, remember you can always roll back!
+
+You can display the exact revision of Guix you're currently using by
+running:
+
+@example
+guix describe
+@end example
+
+The information it displays is @emph{all it takes to reproduce the exact
+same Guix}, be it at a different point in time or on a different
+machine.
+
+@quotation Going further
+@xref{Invoking guix pull}, for more information.  @xref{Channels}, on
+how to specify additional @dfn{channels} to pull packages from, how to
+replicate Guix, and more.  You may also find @command{time-machine}
+handy (@pxref{Invoking guix time-machine}).
+@end quotation
+
+If you installed Guix System, one of the first things you'll want to do
+is to upgrade your system.  Once you've run @command{guix pull} to get
+the latest Guix, you can upgrade the system like this:
+
+@example
+sudo guix system reconfigure /etc/config.scm
+@end example
+
+Upon completion, the system runs the latest versions of its software
+packages.  When you eventually reboot, you'll notice a sub-menu in the
+bootloader that reads ``Old system generations'': it's what allows you
+to boot @emph{an older generation of your system}, should the latest
+generation be ``broken'' or otherwise unsatisfying.  Just like for
+packages, you can always @emph{roll back} to a previous generation
+@emph{of the whole system}:
+
+@example
+sudo guix system roll-back
+@end example
+
+There are many things you'll probably want to tweak on your system:
+adding new user accounts, adding new system services, fiddling with the
+configuration of those services, etc.  The system configuration is
+@emph{entirely} described in the @file{/etc/config.scm} file.
+@xref{Using the Configuration System}, to learn how to change it.
+
+Now you know enough to get started!
+
+@quotation Resources
+The rest of this manual provides a reference for all things Guix.  Here
+are some additional resources you may find useful:
+
+@itemize
+@item
+@xref{Top,,, guix-cookbook, The GNU Guix Cookbook}, for a list of
+``how-to'' style of recipes for a variety of applications.
+
+@item
+The @uref{https://guix.gnu.org/guix-refcard.pdf, GNU Guix Reference
+Card} lists in two pages most of the commands and options you'll ever
+need.
+
+@item
+The web site contains @uref{https://guix.gnu.org/en/videos/,
+instructional videos} covering topics such as everyday use of Guix, how
+to get help, and how to become a contributor.
+
+@item
+@xref{Documentation}, to learn how to access documentation on your
+computer.
+@end itemize
+
+We hope you will enjoy Guix as much as the community enjoys building it!
+@end quotation
+
+@c *********************************************************************
 @node Package Management
 @chapter Package Management
 
@@ -2601,6 +2812,10 @@ guix install emacs-guix
 
 @node Features
 @section Features
+
+Here we assume you've already made your first steps with Guix
+(@pxref{Getting Started}) and would like to get an overview about what's
+going on under the hood.
 
 When using Guix, each package ends up in the @dfn{package store}, in its
 own directory---something that resembles
