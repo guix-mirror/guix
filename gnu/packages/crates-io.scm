@@ -5081,7 +5081,7 @@ Transparency logs for use with sct crate.")
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-libnghttp2-sys" ,rust-libnghttp2-sys-0.1)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-cc" ,rust-cc-1)
@@ -7440,7 +7440,7 @@ cross platform API.")
         ("rust-crc32fast" ,rust-crc32fast-1.2)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-miniz-sys" ,rust-miniz-sys-0.1)
         ("rust-miniz-oxide" ,rust-miniz-oxide-0.3)
         ("rust-tokio-io" ,rust-tokio-io-0.1))
@@ -7822,7 +7822,7 @@ values to other threads.")
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (inputs
      `(("freetype" ,freetype)
@@ -12487,7 +12487,7 @@ macros on libc without stdlib.")
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-libssh2-sys" ,rust-libssh2-sys-0.2)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ;; Build dependencies:
@@ -12550,7 +12550,7 @@ macros on libc without stdlib.")
        (("rust-curl-sys" ,rust-curl-sys-0.4)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-libssh2-sys" ,rust-libssh2-sys-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))))
@@ -12712,7 +12712,7 @@ functions and static variables these libraries contain.")
     (description "Native bindings to the libsqlite3 library")
     (license license:expat)))
 
-(define-public rust-libz-sys-1.0
+(define-public rust-libz-sys-1
   (package
     (name "rust-libz-sys")
     (version "1.1.1")
@@ -12893,7 +12893,7 @@ pairs in insertion order.")
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1)

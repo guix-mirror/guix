@@ -97,7 +97,7 @@
         ("rust-gettext-rs" ,rust-gettext-rs-0.4)
         ("rust-gettext-sys" ,rust-gettext-sys-0.19)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-natord" ,rust-natord-1.0)
         ("rust-nom" ,rust-nom-5)
         ("rust-once-cell" ,rust-once-cell-1.2)
