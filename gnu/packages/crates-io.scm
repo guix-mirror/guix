@@ -12647,7 +12647,7 @@ functions and static variables these libraries contain.")
 (define-public rust-libnghttp2-sys-0.1
   (package
     (name "rust-libnghttp2-sys")
-    (version "0.1.2")
+    (version "0.1.4+1.41.0")
     (source
       (origin
         (method url-fetch)
@@ -12655,18 +12655,30 @@ functions and static variables these libraries contain.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0qr4lyh7righx9n22c7amlcpk906rn1jnb2zd6gdfpa3yi24s982"))
+          "1wcd93a8cw1h9y25834160y6ng982fi0qcd277hpjvhnvz34wqh3"))
         (modules '((guix build utils)))
         (snippet
-         '(begin (delete-file-recursively "nghttp2") #t))))
+         '(begin
+            (delete-file-recursively "nghttp2")
+            (substitute* "Cargo.toml"
+              (("false")
+               "false\n[build-dependencies.pkg-config]\nversion = \"0.3\"\n"))
+            (delete-file "build.rs")
+            (with-output-to-file "build.rs"
+              (lambda _
+                (format #t "fn main() {~@
+                        println!(\"cargo:rustc-link-lib=nghttp2\");~@
+                        }~%")))
+                 #t))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t     ; Uses unstable features
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-cc" ,rust-cc-1))))
+        ("rust-cc" ,rust-cc-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (inputs
-     `(("nghttp2" ,nghttp2)))
+     `(("nghttp2" ,nghttp2 "lib")
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/alexcrichton/nghttp2-rs")
     (synopsis "FFI bindings for libnghttp2 (nghttp2)")
     (description
