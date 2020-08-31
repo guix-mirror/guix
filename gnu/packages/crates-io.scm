@@ -1031,7 +1031,7 @@ Mac, and Unix.")
 (define-public rust-autocfg-1.0
   (package
     (name "rust-autocfg")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
@@ -1040,7 +1040,7 @@ Mac, and Unix.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "17cv6pwb4q08s0ynpr4n8hv5299hcmhdgvdchzixfpw8y5qcgapq"))))
+         "0jj6i9zn4gjl03kjvziqdji6rwx8ykz8zk2ngpc331z2g3fk3c6d"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/cuviper/autocfg")
     (synopsis
