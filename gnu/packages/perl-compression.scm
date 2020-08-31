@@ -170,14 +170,14 @@ in the format used by the @command{gzip} program.")
 (define-public perl-archive-extract
   (package
     (name "perl-archive-extract")
-    (version "0.82")
+    (version "0.86")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Archive-Extract-"
                            version ".tar.gz"))
        (sha256
-        (base32 "00zq2ishxk70192sjl1wciq14vhb9isz8rcafcy1j89va1srpvrn"))))
+        (base32 "11xnmb21835hysdk2mcq6ndch0136j03n2i111nhpkz8p36hkkcs"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Archive-Extract")
     (synopsis "Generic archive extracting mechanism")
