@@ -13101,7 +13101,8 @@ interfaces in Python.  It's like GNU Readline but it also features syntax
 highlighting while typing, out-of-the-box multi-line input editing, advanced
 code completion, incremental search, support for Chinese double-width
 characters, mouse support, and auto suggestions.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python-prompt-toolkit-2))))))
 
 (define-public python-prompt-toolkit-2
   (package (inherit python-prompt-toolkit)
@@ -13117,7 +13118,8 @@ characters, mouse support, and auto suggestions.")
     (propagated-inputs
      `(("python-wcwidth" ,python-wcwidth)
        ("python-six" ,python-six)
-       ("python-pygments" ,python-pygments)))))
+       ("python-pygments" ,python-pygments)))
+    (properties '())))
 
 (define-public python2-prompt-toolkit
   (package-with-python2 python-prompt-toolkit-2))
