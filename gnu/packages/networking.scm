@@ -379,6 +379,28 @@ sockets, and also some helper utilities around SCTP.")
       ;; Others.
       license:gpl2+))))
 
+(define-public knockd
+  (package
+    (name "knockd")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.zeroflux.org/proj/knock/files/knock-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "193qcpsy7v51c6awhg9652l5blyz8vp6n7y6fi7l4rhh6af4ff4r"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (home-page "https://www.zeroflux.org/projects/knock")
+    (synopsis "Small port-knock daemon")
+    (description "@command{knockd} is a port-knock daemon.  It listens to all traffic on
+an ethernet or PPP interface, looking for special \"knock\" sequences of @dfn{port-hits}
+(UDP/TCP packets sent to a server port).  This port need not be open, since knockd listens
+at the link-layer level.")
+    (license license:gpl2+)))
+
 (define-public nng
   (package
     (name "nng")
