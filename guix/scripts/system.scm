@@ -835,7 +835,9 @@ static checks."
                  (upgrade-shepherd-services local-eval os)
                  (return (format #t (G_ "\
 To complete the upgrade, run 'herd restart SERVICE' to stop,
-upgrade, and restart each service that was not automatically restarted.\n"))))))
+upgrade, and restart each service that was not automatically restarted.\n")))
+                 (return (format #t (G_ "\
+Run 'herd status' to view the list of services on your system.\n"))))))
             ((init)
              (newline)
              (format #t (G_ "initializing operating system under '~a'...~%")
