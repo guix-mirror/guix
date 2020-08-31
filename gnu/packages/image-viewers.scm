@@ -89,7 +89,8 @@
        #:test-target "test"
        #:make-flags
        (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             "exif=1")))
+             "exif=1"
+             "inotify=1")))
     (native-inputs
      `(("perl" ,perl)
        ("perl-test-command" ,perl-test-command)))
