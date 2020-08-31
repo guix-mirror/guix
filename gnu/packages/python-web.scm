@@ -223,6 +223,36 @@ The package includes a module with full coverage of JSON RPC versions 1.0 and
 comes with a SOCKS proxy client.")
     (license (list license:expat license:bsd-2))))
 
+(define-public python-asgiref
+  (package
+    (name "python-asgiref")
+    (version "3.2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "asgiref" version))
+              (sha256
+               (base32
+                "06kg3hnnvh7qg0w9amkvk1hd6n6bs055r04b7if6ipa7w4g92lby"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+    (home-page "https://github.com/django/asgiref/")
+    (synopsis "ASGI specs, helper code, and adapters")
+    (description
+     "ASGI is a standard for Python asynchronous web apps and servers to
+communicate with each other, and positioned as an asynchronous successor to
+WSGI.  This package includes libraries for implementing ASGI servers.")
+    (license license:bsd-3)))
+
 (define-public python-falcon
   (package
     (name "python-falcon")
