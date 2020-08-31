@@ -13177,18 +13177,18 @@ well.")
 (define-public ptpython
   (package
     (name "ptpython")
-    (version "0.34")
+    (version "3.0.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ptpython" version))
               (sha256
                (base32
-                "1mmbiyzf0n8hm7z2a562x7w5cbl6jc0zsk6vp40q1z4cyblv1k13"))))
+                "0c2ry5gwi2v99slna62j8r2bwq0hpzmvgdryqg9m6x57vbjfg52h"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: No tests in pypi tarball.
     (propagated-inputs
-     `(("python-docopt" ,python-docopt)
+     `(("python-appdirs" ,python-appdirs)
        ("python-jedi" ,python-jedi)
        ("python-prompt-toolkit" ,python-prompt-toolkit)
        ("python-pygments" ,python-pygments)))
