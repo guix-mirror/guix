@@ -271,28 +271,33 @@ expression in %STORE-MONAD."
 
 (define (report-shepherd-error error)
   "Report ERROR, a '&shepherd-error' error condition object."
-  (cond ((service-not-found-error? error)
-         (report-error (G_ "service '~a' could not be found~%")
-                       (service-not-found-error-service error)))
-        ((action-not-found-error? error)
-         (report-error (G_ "service '~a' does not have an action '~a'~%")
-                       (action-not-found-error-service error)
-                       (action-not-found-error-action error)))
-        ((action-exception-error? error)
-         (report-error (G_ "exception caught while executing '~a' \
+  (when error
+    (cond ((service-not-found-error? error)
+           (warning (G_ "service '~a' could not be found~%")
+                    (service-not-found-error-service error)))
+          ((action-not-found-error? error)
+           (warning (G_ "service '~a' does not have an action '~a'~%")
+                    (action-not-found-error-service error)
+                    (action-not-found-error-action error)))
+          ((action-exception-error? error)
+           (warning (G_ "exception caught while executing '~a' \
 on service '~a':~%")
-                       (action-exception-error-action error)
-                       (action-exception-error-service error))
-         (print-exception (current-error-port) #f
-                          (action-exception-error-key error)
-                          (action-exception-error-arguments error)))
-        ((unknown-shepherd-error? error)
-         (report-error (G_ "something went wrong: ~s~%")
-                       (unknown-shepherd-error-sexp error)))
-        ((shepherd-error? error)
-         (report-error (G_ "shepherd error~%")))
-        ((not error)                              ;not an error
-         #t)))
+                    (action-exception-error-action error)
+                    (action-exception-error-service error))
+           (print-exception (current-error-port) #f
+                            (action-exception-error-key error)
+                            (action-exception-error-arguments error)))
+          ((unknown-shepherd-error? error)
+           (warning (G_ "something went wrong: ~s~%")
+                    (unknown-shepherd-error-sexp error)))
+          ((shepherd-error? error)
+           (warning (G_ "shepherd error~%"))))
+
+    ;; Don't leave users out in the cold and explain what that means and what
+    ;; they can do.
+    (warning (G_ "some services could not be upgraded~%"))
+    (display-hint (G_ "To allow changes to all the system services to take
+effect, you will need to reboot."))))
 
 (define-syntax-rule (unless-file-not-found exp)
   (catch 'system-error
