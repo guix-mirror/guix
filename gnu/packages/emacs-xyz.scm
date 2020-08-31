@@ -175,6 +175,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages video)
   #:use-module (gnu packages haskell-xyz)
@@ -1914,6 +1915,21 @@ as a library for other Emacs packages.")
        #:exclude '("^tests/" "^latex/README")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (emacs-substitute-variables "preview.el"
+               ("preview-gs-command"
+                (string-append (assoc-ref inputs "ghostscript") "/bin/gs")))
+             (substitute* "preview.el"
+               (("\"dvipng ")
+                (string-append "\"" (assoc-ref inputs "texlive")
+                               "/bin/dvipng "))
+               (("\"dvips ")
+                (string-append "\"" (assoc-ref inputs "texlive")
+                               "/bin/dvips "))
+               (("\"pdf2dsc ")
+                (string-append "\"" (assoc-ref inputs "ghostscript")
+                               "/bin/pdf2dsc ")))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1928,7 +1944,8 @@ as a library for other Emacs packages.")
     (native-inputs
      `(("perl" ,perl)))
     (inputs
-     `(("texlive" ,(texlive-union (list texlive-amsfonts)))))
+     `(("ghostscript" ,ghostscript)
+       ("texlive" ,(texlive-union (list texlive-amsfonts)))))
     (home-page "https://www.gnu.org/software/auctex/")
     (synopsis "Integrated environment for TeX")
     (description
