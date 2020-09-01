@@ -13697,7 +13697,6 @@ like Ruby's ActiveRecord.
            (add-after 'unpack 'remove-non-functional-tests
              (lambda _
                (substitute* "mito-test.asd"
-                 ;; (("\\(:test-file \"migration/mysql\"\\)") "")
                  (("\\(:test-file \"db/mysql\"\\)") "")
                  (("\\(:test-file \"db/postgres\"\\)") "")
                  (("\\(:test-file \"dao\"\\)") "")
