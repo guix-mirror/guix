@@ -279,6 +279,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (srfi srfi-1)
                              (ice-9 match)
                              (ice-9 ftw))
+
+                (setvbuf (current-output-port) 'line)
+
                 (let ((dir (string-append "linux-" #$version)))
 
                   (mkdir "/tmp/bin")
@@ -315,12 +318,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                   (if (file-is-directory? #+upstream-source)
                       (begin
                         (format #t "Copying upstream linux source...~%")
-                        (force-output)
                         (invoke "cp" "--archive" #+upstream-source dir)
                         (invoke "chmod" "--recursive" "u+w" dir))
                       (begin
                         (format #t "Unpacking upstream linux tarball...~%")
-                        (force-output)
                         (invoke "tar" "xf" #$upstream-source)
                         (match (scandir "."
                                         (lambda (name)
@@ -334,11 +335,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
                   (with-directory-excursion dir
                     (format #t "Running deblob script...~%")
-                    (force-output)
                     (invoke "/tmp/bin/deblob"))
 
                   (format #t "~%Packing new Linux-libre tarball...~%")
-                  (force-output)
                   (invoke "tar" "cvfa" #$output
                           ;; Avoid non-determinism in the archive.
                           "--mtime=@0"
