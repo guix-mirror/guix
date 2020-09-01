@@ -2350,7 +2350,6 @@ etc; plus other capabilities including support for MIME and
 powerful user customization features.")
     (license license:gpl2+)))
 
-
 (define-public sendmail
   (package
     (name "sendmail")
@@ -2432,6 +2431,70 @@ Allman.  It is highly configurable and supports many delivery methods and many
 transfer protocols.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
+
+(define-public sieve-connect
+  (package
+    (name "sieve-connect")
+    (version "0.90")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://people.spodhuis.org/phil.pennock/software/"
+                           "sieve-connect-" version ".tar.bz2"))
+       (sha256
+        (base32 "00vnyzr67yr2ilnprbd388gfnwmrmbdx1jsig9d0n5q902jqn62a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'install 'create-output-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (subdirectory)
+                           (mkdir-p (string-append out "/" subdirectory)))
+                         (list "bin"
+                               "man/man1"))
+               #t)))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (path (getenv "PERL5LIB")))
+               (wrap-script (string-append out "/bin/sieve-connect")
+                 `("PERL5LIB" ":" = (,path)))
+               #t))))))
+    (inputs
+     `(("guile" ,guile-3.0)             ; for wrap-script
+       ("perl" ,perl)
+       ("perl-authen-sasl" ,perl-authen-sasl)
+       ("perl-io-socket-inet6" ,perl-io-socket-inet6)
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-net-dns" ,perl-net-dns)
+       ("perl-socket6" ,perl-socket6)
+       ("perl-term-readkey" ,perl-term-readkey)
+       ("perl-term-readline" ,perl-term-readline-gnu)))
+    (home-page
+     "https://people.spodhuis.org/phil.pennock/software/#sieve-connect")
+    (synopsis "ManageSieve client for managing Sieve e-mail filters")
+    (description
+     "Sieve-connect lets you view, upload, edit, delete, and otherwise manage
+Sieve scripts on any mail server that speaks the @dfn{ManageSieve} protocol,
+as specifed in RFC 5804.
+
+@dfn{Sieve} (RFC 5228) is a specialised language for e-mail filtering.  Sieve
+scripts are stored on the server and run whenever mail arrives.  They can
+automatically sort new messages into folders, silently reject them, send an
+automated response, and more.
+
+@command{sieve-connect} is designed to be both a tool which can be invoked
+from scripts as well as a decent interactive client.  It supports TLS for
+connection privacy, as well as authentication with SASL or GSSAPI client
+certificates.  It should be a drop-in replacement for @command{sieveshell}
+from the Cyrus IMAP project.")
+      (license license:bsd-3)))
 
 (define-public opensmtpd
   (package
