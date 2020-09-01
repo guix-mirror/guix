@@ -155,7 +155,7 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2020.08.04")
+    (version "2020.09.01")
     (source
      (origin
        (method url-fetch)
@@ -163,7 +163,7 @@ based command language.")
                            "releases/download/v" version "/"
                            "kakoune-" version ".tar.bz2"))
        (sha256
-        (base32 "08gikjxyvcr415br1g1llzh5pnq737q55yinalb92cgq3yn9yih2"))))
+        (base32 "0x81rxy7bqnhd9374g5ypy4w4nxmm0vnqw6b52bf62jxdg2qj6l6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
