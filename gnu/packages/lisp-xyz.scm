@@ -3611,6 +3611,12 @@ RFC 1321 by R. Rivest, published April 1992.")
 (define-public cl-md5
   (sbcl-package->cl-source-package sbcl-md5))
 
+(define-public ecl-md5
+  (package
+    (inherit (sbcl-package->ecl-package sbcl-md5))
+    (inputs
+     `(("flexi-streams" ,ecl-flexi-streams)))))
+
 (define-public sbcl-cl+ssl
   (let ((commit "701e645081e6533a3f0f0b3ac86389d6f506c4b5")
         (revision "1"))
