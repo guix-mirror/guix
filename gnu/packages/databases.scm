@@ -2715,6 +2715,47 @@ You might also want to install the following optional dependencies:
 (define-public python2-sqlalchemy-utils
   (package-with-python2 python-sqlalchemy-utils))
 
+(define-public python-alchemy-mock
+  (package
+    (name "python-alchemy-mock")
+    (version "0.4.3")
+    (home-page "https://github.com/miki725/alchemy-mock")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "alchemy-mock" version))
+              (sha256
+               (base32
+                "0ylxygl3bcdapzz529n8wgk7vx9gjwb3ism564ypkpd7dbsw653r"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      ;; Create pytest.ini that adds doctest options to
+                      ;; prevent test failure.  Taken from tox.ini.
+                      (call-with-output-file "pytest.ini"
+                        (lambda (port)
+                          (format port "[pytest]
+doctest_optionflags=IGNORE_EXCEPTION_DETAIL
+")))
+                      (invoke "pytest" "-vv" "--doctest-modules"
+                              "alchemy_mock/"))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (synopsis "Mock helpers for SQLAlchemy")
+    (description
+     "This package provides mock helpers for SQLAlchemy that makes it easy
+to mock an SQLAlchemy session while preserving the ability to do asserts.
+
+Normally Normally SQLAlchemy's expressions cannot be easily compared as
+comparison on binary expression produces yet another binary expression, but
+this library provides functions to facilitate such comparisons.")
+    (license license:expat)))
+
 (define-public python-alembic
   (package
     (name "python-alembic")
