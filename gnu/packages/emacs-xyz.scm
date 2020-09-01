@@ -21157,7 +21157,7 @@ through Dash docsets.")
 (define-public emacs-calibredb
   (package
     (name "emacs-calibredb")
-    (version "2.5.0")
+    (version "2.6.0")
     (source
      (origin
        (method git-fetch)
@@ -21166,11 +21166,10 @@ through Dash docsets.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11m9d015fnjf89qg6wpy0vs1vhvak5q753m4dzqrdw3jgm9zsnmv"))))
+        (base32 "132afbbh4km2cbll46i6bpksvin0ncgfy782g4nkfjmwjaqh3d5l"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
-       ("emacs-org" ,emacs-org)
        ("emacs-s" ,emacs-s)
        ("emacs-transient" ,emacs-transient)))
     (home-page "https://github.com/chenyanming/calibredb.el")
