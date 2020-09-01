@@ -658,13 +658,13 @@ use, simply add the field to one of your models.")
 (define-public python-dj-database-url
   (package
     (name "python-dj-database-url")
-    (version "0.4.2")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "dj-database-url" version))
               (sha256
                (base32
-                "024zbkc5rli4hia9lz9g8kf1zxhb2gwawj5abf67i7gf8n22v0x6"))))
+                "0qs16g5y3lflxibsl8gwkwap21crhmmv98l60rdq6x1wawgypsja"))))
     (build-system python-build-system)
     (home-page "https://github.com/kennethreitz/dj-database-url")
     (synopsis "Use Database URLs in your Django Application")
