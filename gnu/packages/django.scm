@@ -772,13 +772,13 @@ for Django sites.")
 (define-public python-django-contrib-comments
   (package
     (name "python-django-contrib-comments")
-    (version "1.8.0")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-contrib-comments" version))
               (sha256
                (base32
-                "0bxsgw8jrkhg6r5s0z6ksfi4w8yknaqb1s9acmxd9pm3pnsnp5kx"))))
+                "0ccdiv784a5vnpfal36km4dyg12340rwhpr0riyy0k89wfnjn8yi"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-django" ,python-django)))
