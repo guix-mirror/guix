@@ -19442,6 +19442,27 @@ file-based data structures that are @code{mmap}ped into memory so that many
 processes may share the same data.")
     (license license:asl2.0)))
 
+(define-public python-croniter
+  (package
+    (name "python-croniter")
+    (version "0.3.34")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "croniter" version))
+              (sha256
+               (base32
+                "0r79cx4v2dw4hzr0annkkxxis46c8hivq61sr39z6p7lcjsbk1ki"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-natsort" ,python-natsort)))
+    (home-page "https://github.com/kiorky/croniter")
+    (synopsis "Iterate datetime objects with cron-like syntax")
+    (description
+     "@code{croniter} provides iteration for datetime object with cron-like
+format.")
+    (license license:expat)))
+
 (define-public python-pylzma
   (package
     (name "python-pylzma")
