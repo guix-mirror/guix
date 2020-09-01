@@ -296,11 +296,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                          #+(canonical-package bzip2)
                          #+(canonical-package gzip)
                          #+(canonical-package tar)
-                         ;; The comments in the 'deblob-check' script
-                         ;; claim that it supports Python 2 and 3, but
-                         ;; in fact it fails when run in Python 3 as
-                         ;; of version 5.1.3.
-                         #+python-2))
+                         #+python-wrapper))
 
                   (with-directory-excursion "/tmp/bin"
 
@@ -337,7 +333,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                            (error "multiple directories found" dirs)))))
 
                   (with-directory-excursion dir
-                    (setenv "PYTHON" (which "python"))
                     (format #t "Running deblob script...~%")
                     (force-output)
                     (invoke "/tmp/bin/deblob"))
