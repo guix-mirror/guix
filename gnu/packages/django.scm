@@ -200,21 +200,37 @@ commands, additional database fields and admin extensions.")
 (define-public python-django-simple-math-captcha
   (package
     (name "python-django-simple-math-captcha")
-    (version "1.0.7")
+    (version "1.0.9")
+    (home-page "https://github.com/alsoicode/django-simple-math-captcha")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "django-simple-math-captcha" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0906hms6y6znjhpd0g4wmzv9vcla4brkdpsm4zha9zdj8g5vq2hd"))))
+                "0fhy9k8haqa1296v0qpg1b5w7y3pyw9qi9z9laj5ijry1gk35qaw"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: Upstream uses a 'runtests.py' script that is not
-     ;; present in the pypi tarball.
-     '(#:tests? #f))
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-six-imports
+                    (lambda _
+                      ;; Django no longer bundles six, adjust the imports
+                      ;; accordingly.  The six dependency can likely be
+                      ;; removed in the next version.
+                      (substitute* (find-files "." "\\.py$")
+                        (("from django\\.utils import six")
+                         "import six"))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "runtests.py"))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
     (propagated-inputs
-     `(("python-django" ,python-django)))
-    (home-page "https://github.com/alsoicode/django-simple-math-captcha")
+     `(("python-django" ,python-django)
+       ("python-six" ,python-six)))
     (synopsis "Easy-to-use math field/widget captcha for Django forms")
     (description
      "A multi-value-field that presents a human answerable question,
