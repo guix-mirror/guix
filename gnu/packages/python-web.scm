@@ -253,6 +253,30 @@ communicate with each other, and positioned as an asynchronous successor to
 WSGI.  This package includes libraries for implementing ASGI servers.")
     (license license:bsd-3)))
 
+(define-public python-css-html-js-minify
+  (package
+    (name "python-css-html-js-minify")
+    (version "2.5.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "css-html-js-minify" version ".zip"))
+              (sha256
+               (base32
+                "0v3l2dqdk2y4r6ax259gs4ij1zzm9yxg6491s6254vs9w3vi37sa"))))
+    (build-system python-build-system)
+    ;; XXX: The git repository has no tags, and the PyPI releases do not
+    ;; contain tests.
+    (arguments '(#:tests? #f))
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://github.com/juancarlospaco/css-html-js-minify")
+    (synopsis "CSS/HTML/JS minifier")
+    (description
+     "This package provides a single-file minifier for CSS, HTML, and JavaScript.")
+    ;; XXX: The README just says "GNU GPL and GNU LGPL and MIT".  From
+    ;; <https://github.com/juancarlospaco/css-html-js-minify/issues/9> it
+    ;; looks like the user can choose a license.
+    (license (list license:gpl3+ license:lgpl3+ license:expat))))
+
 (define-public python-falcon
   (package
     (name "python-falcon")
