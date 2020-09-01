@@ -976,20 +976,25 @@ using Python multiprocessing.")
 (define-public python-django-sortedm2m
   (package
     (name "python-django-sortedm2m")
-    (version "1.3.3")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-sortedm2m" version))
               (sha256
                (base32
-                "0axf765i7b3c2s83nlph47asi8s071dhq8l7y382v1pw785s22vi"))))
+                "0z0yymmrr2l5cznqbzwziw624df0qsiflvbpqwrpan52nww3dk4a"))))
     (build-system python-build-system)
     (arguments
-     ;; no tests.
-     `(#:tests? #f))
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH" (string-append "./test_project:"
+                                                          "./build/lib:.:"
+                                                          (getenv "PYTHONPATH")))
+                      (invoke "django-admin.py" "test" "--settings=settings"))))))
     (propagated-inputs
      `(("python-django" ,python-django)))
-    (home-page "https://github.com/gregmuellegger/django-sortedm2m")
+    (home-page "https://github.com/jazzband/django-sortedm2m")
     (synopsis "Drop-in replacement for django's own ManyToManyField")
     (description
       "Sortedm2m is a drop-in replacement for django's own ManyToManyField.
