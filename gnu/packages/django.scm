@@ -559,33 +559,14 @@ templatetags and a full test suite.")
 (define-public python-django-assets
   (package
     (name "python-django-assets")
-    (version "0.12")
+    (version "2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-assets" version))
               (sha256
                (base32
-                "0y0007fvkn1rdlj2g0y6k1cnkx53kxab3g8i85i0rd58k335p365"))))
+                "0fc6i77faxxv1gjlp06lv3kw64b5bhdiypaygfxh5djddgk83fwa"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'fix-tests
-           (lambda _
-             (begin
-               ;; https://github.com/miracle2k/django-assets/issues/87
-               (substitute* "tests/__init__.py"
-                 (("settings.configure.*")
-                  (string-append
-                    "settings.configure(\n"
-                    "INSTALLED_APPS=['django_assets', "
-                    "'django.contrib.staticfiles'],\n"
-                    "TEMPLATES=[{'BACKEND': "
-                    "'django.template.backends.django.DjangoTemplates'}],\n"
-                    ")\n")))
-              ;; These tests fail
-              (substitute* "tests/test_django.py"
-                (("TestLoader") "NoTestLoader"))))))))
     (native-inputs
      `(("python-nose" ,python-nose)))
     (propagated-inputs
