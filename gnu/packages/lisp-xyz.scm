@@ -13872,3 +13872,41 @@ that and not limited to a certain server or text format.")
 
 (define-public ecl-cl-emb
   (sbcl-package->ecl-package sbcl-cl-emb))
+
+(define-public sbcl-cl-project
+  (let ((commit "151107014e534fc4666222d57fec2cc8549c8814")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-project")
+      (version (git-version "0.3.1" revision commit))
+      (home-page "https://github.com/fukamachi/cl-project")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1rmh6s1ncv8s2yrr14ja9wisgg745sq6xibqwb341ikdicxdp26y"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-emb" ,sbcl-cl-emb)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("local-time" ,sbcl-local-time)
+         ("prove" ,sbcl-prove)))
+      (arguments
+       ;; Tests depend on caveman, which in turns depends on cl-project.
+       '(#:tests? #f))
+      (synopsis "Generate a skeleton for modern Common Lisp projects")
+      (description "This library provides a modern project skeleton generator.
+In contract with other generators, CL-Project generates one package per file
+and encourages unit testing by generating a system for unit testing, so you
+can begin writing unit tests as soon as the project is generated.")
+      (license license:llgpl))))
+
+(define-public cl-project
+  (sbcl-package->cl-source-package sbcl-cl-project))
+
+(define-public ecl-cl-project
+  (sbcl-package->ecl-package sbcl-cl-project))
