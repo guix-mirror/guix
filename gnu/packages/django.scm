@@ -160,7 +160,7 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
 (define-public python-django-extensions
   (package
     (name "python-django-extensions")
-    (version "2.1.6")
+    (version "3.0.6")
     (source
      (origin
        (method git-fetch)
@@ -171,10 +171,10 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
        (file-name (string-append name "-" version))
        (sha256
         (base32
-         "0p4qrdinrv6indczlc8dcnm528i5fzmcn9xk1ja7ycfkyk5x6j5w"))))
+         "0sra6hazqvspxd1pnx5cj7gia1rkaz3hn06ib4wd0frc167f5afy"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ;TODO collected 378 items / 3 errors / 1 skipped
+     '(#:tests? #f)) ;XXX: requires a Postgres or MySQL database
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-vobject" ,python-vobject)
