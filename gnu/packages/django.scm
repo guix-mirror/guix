@@ -605,7 +605,7 @@ merging, minifying and compiling CSS and Javascript files.")
 (define-public python-django-jinja
   (package
     (name "python-django-jinja")
-    (version "2.4.1")
+    (version "2.6.0")
     (source
      (origin
        (method git-fetch)
@@ -615,7 +615,7 @@ merging, minifying and compiling CSS and Javascript files.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fcrxlznlq1xvl26y3j1r22vvy6m08r5l97xi2wj50rdmxhfvhis"))))
+         "06ldbkfkm6sc0p9sqpjph06gxrqpj78ih3dc2yik2fcba2y5mak1"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-django" ,python-django)
