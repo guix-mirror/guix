@@ -657,21 +657,17 @@ environment with Markdown markup.")
                      (icons-dir (string-append out "/share/pixmaps")))
                  (install-file "icons/Manuskript/manuskript.svg" icons-dir)
                  (mkdir-p apps)
-                 (with-output-to-file (string-append apps "/manuskript.desktop")
-                   (lambda _
-                     (format #t
-                             "[Desktop Entry]~@
-                         Name=Manuskript~@
-                         MimeType=application/x-manuskript-book;~@
-                         Exec=~a/bin/manuskript %f~@
-                         Comment=Tool for writers~@
-                         Comment[es]=Herramienta para escritores/as~@
-                         Keywords=manuskript;office;write;edit;novel;text;msk~@
-                         Terminal=false~@
-                         Type=Application~@
-                         Icon=manuskript~@
-                         Categories=Office;WordProcessor;~%"
-                             out))))
+                 (make-desktop-entry-file (string-append apps "/manuskript.desktop")
+                   #:name "Manuskript"
+                   #:mime-type "application/x-manuskript-book;"
+                   #:exec (string-append out "/bin/manuskript %f")
+                   #:comment '((#f "Tool for writers")
+                               ("es" "Herramienta para escritores/as"))
+                   #:keywords "manuskript;office;write;edit;novel;text;msk"
+                   #:terminal #f
+                   #:type "Application"
+                   #:icon "manuskript"
+                   #:categories "Office;WordProcessor;"))
                #t))))))
     (inputs
      `(("ghc-pandoc" ,ghc-pandoc)
