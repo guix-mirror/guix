@@ -13714,3 +13714,44 @@ like Ruby's ActiveRecord.
 
 (define-public cl-mito
   (sbcl-package->cl-source-package sbcl-mito))
+
+(define-public sbcl-kebab
+  (let ((commit "e7f77644c4e46131e7b8039d191d35fe6211f31b")
+        (revision "1"))
+    (package
+      (name "sbcl-kebab")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/pocket7878/kebab")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0j5haabnvj0vz0rx9mwyfsb3qzpga9nickbjw8xs6vypkdzlqv1b"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("alexandria" ,sbcl-alexandria)
+         ("cl-interpol" ,sbcl-cl-interpol)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (native-inputs
+       `(("prove-asdf" ,sbcl-prove-asdf)
+         ("prove" ,sbcl-prove)))
+      (arguments
+       ;; Tests passes but the phase fails with
+       ;; Component KEBAB-ASD::KEBAB-TEST not found, required by #<SYSTEM "kebab">.
+       `(#:tests? #f))
+      (synopsis "Common Lisp case converter")
+      (description "This Common Lisp library converts strings, symbols and
+keywords between any of the following typographical cases: PascalCase,
+camelCase, snake_case, kebab-case (lisp-case).")
+      (license license:llgpl))))
+
+(define-public cl-kebab
+  (sbcl-package->cl-source-package sbcl-kebab))
+
+(define-public ecl-kebab
+  (sbcl-package->ecl-package sbcl-kebab))
