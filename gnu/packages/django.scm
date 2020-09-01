@@ -1247,18 +1247,27 @@ template tag.")
 (define-public python-django-override-storage
   (package
     (name "python-django-override-storage")
-    (version "0.1.6")
+    (version "0.3.0")
+    (home-page "https://github.com/danifus/django-override-storage")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "django-override-storage" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "022arq94lxnlyykn8wvfnkykhi2dldnsn93pa2i41na551i0wpiv"))))
+        (base32 "081kzfk7mmybhihvc92d3hsdg0r2k20ydq88fs1fgd348sq1ax51"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "runtests.py"))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
     (propagated-inputs
      `(("python-django" ,python-django)))
-    (home-page
-     "https://github.com/danifus/django-override-storage")
     (synopsis "Django test helpers to manage file storage side effects")
     (description
      "This project provides tools to help reduce the side effects of using
