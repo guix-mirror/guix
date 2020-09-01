@@ -10916,6 +10916,19 @@ a PostgreSQL server over a socket.")))
 (define-public cl-postgres
   (sbcl-package->cl-source-package sbcl-cl-postgres))
 
+(define-public ecl-cl-postgres
+  (package
+    (inherit (sbcl-package->ecl-package sbcl-cl-postgres))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-ecl
+           (lambda _
+             (substitute* "cl-postgres.asd"
+               (("\\) \"usocket\"") " :ecl) \"usocket\""))
+             #t)))
+       #:tests? #f))))
+
 (define-public sbcl-simple-date-postgres-glue
   (package
     (inherit sbcl-simple-date)
