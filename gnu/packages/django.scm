@@ -269,14 +269,14 @@ when coding custom template tags.")
 (define-public python-django-taggit
   (package
     (name "python-django-taggit")
-    (version "1.1.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-taggit" version))
        (sha256
         (base32
-         "044fzcpmns90kaxdi49qczlam4xsi8rl73rpfwvxx1gkcqzidgq1"))))
+         "0bbkabbs77z229ps0800gxfhf75yagp4x4j5jzfysbac3zvkp0sa"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
