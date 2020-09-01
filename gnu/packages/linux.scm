@@ -48,6 +48,7 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -299,6 +301,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                          #+(canonical-package bzip2)
                          #+(canonical-package gzip)
                          #+(canonical-package tar)
+                         #+(canonical-package gawk)
                          #+python-wrapper))
 
                   (with-directory-excursion "/tmp/bin"
@@ -345,7 +348,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                           "--group=root:0"
                           "--sort=name"
                           "--hard-dereference"
-                          dir))))))))))
+                          dir)
+
+                  (format #t "~%Scanning the generated tarball for blobs...~%")
+                  (invoke "/tmp/bin/deblob-check" "--use-awk" "--list-blobs"
+                          #$output))))))))))
 
 
 ;;;
