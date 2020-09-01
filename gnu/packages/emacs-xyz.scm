@@ -24424,3 +24424,31 @@ directly, or indirectly, as in ox-hugo), it will fetch a given list of
 web feed files and correctly parse and format the elements to be
 displayed for sharing.")
     (license license:gpl3+)))
+
+(define-public emacs-scpaste
+  (let ((commit "cd4fa0aafecd839736e0b6cba68b4fc4d7045472")
+        (revision "0"))
+    (package
+      (name "emacs-scpaste")
+      (version "0.6.5")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.sr.ht/~technomancy/scpaste")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32
+           "1nvwbwl26z03963g9c82b3ggm39r95z1vp7c9qsa9mjm46dyq27w"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-htmlize" ,emacs-htmlize)))
+      (home-page "https://git.sr.ht/~technomancy/scpaste")
+      (synopsis "Emacs-based static HTML pastebin")
+      (description "This library will place an HTML copy of a
+buffer on an active webserver to which the user has SSH access.
+It is similar in purpose to services such as Gist or Pastebin,
+but is much simpler since it assumes the user has access to a
+publically-accessible HTTP server.")
+      (license license:gpl3+))))
