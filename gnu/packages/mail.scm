@@ -928,20 +928,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.30-0.31rc1")  ; Ensure it is ordered before "0.31"
+    (version "0.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
-                                  ;; version
-                                  "0.31~rc1" ;FIXME: Remove on the next update
-                                  ".tar.xz"))
-              ;; FIXME: The 'file-name' field below is needed only because of
-              ;; the tilde "~" in the URL base name.  Remove it when the tilde
-              ;; is no longer there.
-              (file-name (string-append name "-" version ".tar.xz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "11f10r9pp3p22afpfsrlz0xa0raas4w7fg2jkscgkjj5710ws8fw"))))
+                "1543l57viqzqikjgfzp2abpwz3p0k2iq0b1b3wmn31lwaghs07sp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -973,7 +967,7 @@ invoking @command{notifymuch} from the post-new hook.")
                                 (string-append "--emacsetcdir=" elisp)))))
                   (add-before 'check 'disable-failing-tests
                     ;; FIXME: Investigate why these tests are failing,
-                    ;; and try removing this for notmuch versions >= 0.31.
+                    ;; and try removing this for notmuch versions > 0.31.
                     (lambda _
                       (substitute* "test/T356-protected-headers.sh"
                         (("\\$NOTMUCH_GMIME_X509_CERT_VALIDITY") "0"))
