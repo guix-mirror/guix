@@ -950,31 +950,22 @@ settings.py and easily use them in your project.")
 (define-public python-django-q
   (package
     (name "python-django-q")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django-q" version))
         (sha256
          (base32
-          "0ac3rjxv37bn97a62ly8b7qvbv765z6paiinzpwxx83nal2icc42"))))
+          "1fs29767940akbsn3vdzw2rqnn9v77b0b55bi7fvydny1rk7fw6y"))))
     (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (setenv "DJANGO_SETTINGS_MODULE" "django_q.tests.settings")
-             (invoke "django-admin" "test" "django_q.tests"
-                     "--pythonpath=."))))))
+    ;; FIXME: Tests require disque, Redis, MongoDB, Docker.
+    (arguments '(#:tests? #f))
     (propagated-inputs
      `(("python-arrow" ,python-arrow)
        ("python-blessed" ,python-blessed)
        ("python-django" ,python-django)
        ("python-django-picklefield" ,python-django-picklefield)))
-    (native-inputs
-     `(("python-django-redis" ,python-django-redis)
-       ("python-pytest-django" ,python-pytest-django)))
     (home-page "https://django-q.readthedocs.io/")
     (synopsis "Multiprocessing distributed task queue for Django")
     (description
