@@ -1,0 +1,27 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Tue, 01 Sep 2020 04:23:25 +0200
+Subject: [PATCH] Update bpaste URL & regular expressions.
+
+diff -Naur wgetpaste-2.30/wgetpaste wgetpaste-2.30a/wgetpaste
+--- wgetpaste-2.30/wgetpaste	2020-07-31 23:56:05.000000000 +0200
++++ wgetpaste-2.30a/wgetpaste	2020-09-01 04:22:37.499898403 +0200
+@@ -16,7 +16,7 @@
+ SERVICES="codepad bpaste dpaste gists snippets"
+ # bpaste
+ ENGINE_bpaste=pinnwand
+-URL_bpaste="https://bpaste.net/"
++URL_bpaste="https://bpa.st/"
+ DEFAULT_EXPIRATION_bpaste="1week"
+ DEFAULT_LANGUAGE_bpaste="text"
+ # codepad
+@@ -194,8 +194,8 @@
+ xml+velocity xml xquery xslt xtend yaml"
+ EXPIRATIONS_pinnwand="1day 1week 1month never"
+ POST_pinnwand="submit=Paste! % % lexer expiry % code"
+-REGEX_LOC_pinnwand="\(/show/[^ ]*\).*$|https://bpaste.net\1"
+-REGEX_RAW_pinnwand='s|^\(https\?://[^/]*/\)show\(/[^ ]*/\?\)$|\1raw\2|'
++REGEX_LOC_pinnwand="\(/[^ ]*\).*$|https://bpa.st\1"
++REGEX_RAW_pinnwand='s|^\(https\?://[^/]*\)\(/[^ ]*/\?\)$|\1/raw\2|'
+ 
+ ### errors
+ die() {

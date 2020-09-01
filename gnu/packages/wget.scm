@@ -83,7 +83,8 @@ in downloaded documents to relative links.")
         (uri (string-append "https://wgetpaste.zlin.dk/wgetpaste-"
                             version ".tar.bz2"))
         (sha256
-         (base32 "14k5i6j6f34hcf9gdb9cnvfwscn0ys2dgd73ci421wj9zzqkbv73"))))
+         (base32 "14k5i6j6f34hcf9gdb9cnvfwscn0ys2dgd73ci421wj9zzqkbv73"))
+        (patches (search-patches "wgetpaste-update-bpaste.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
