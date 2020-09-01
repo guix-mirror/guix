@@ -709,7 +709,7 @@ in plain text file format.")
 (define-public editorconfig-core-c
   (package
     (name "editorconfig-core-c")
-    (version "0.12.3")
+    (version "0.12.4")
     (source
       (origin
         (method git-fetch)
@@ -718,8 +718,7 @@ in plain text file format.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0jkc69r4jwn4rih6h6cqvgljjc3ff49cxj8286mi515aczr48cm1"))))
+         (base32 "1311fhh2jfsja2hhk3nwb6nijlq03jw8dk35cwbrac0p9jvy03jx"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
@@ -730,15 +729,16 @@ in plain text file format.")
                (copy-recursively tests "tests"))
              #t)))))
     (native-inputs
-     `(("tests" ,(origin
-                   (method git-fetch)
-                   (uri (git-reference
-                          (url "https://github.com/editorconfig/editorconfig-core-test")
-                          (commit "6ea1d8ece62cac9cf72c79dce4879b046abe1fe7"))) ; matches version
-                   (file-name (git-file-name "editorconfig-core-test" version))
-                   (sha256
-                    (base32
-                     "1sf6910idnd4bgzbj8w8f9ldsbkaqa0lh6syymwy3hfqda63acj7"))))))
+     `(("tests"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/editorconfig/editorconfig-core-test")
+                 ;; The tests submodule commit matching this package's version.
+                 (commit "48610d43b7455af12195473377f93c4ceea654f5")))
+           (file-name (git-file-name "editorconfig-core-test" version))
+           (sha256
+            (base32 "1s29p4brmcsc3xsww3gk85dg45f1kk3iykh1air3ij0hymf5dyqy"))))))
     (inputs
      `(("pcre2" ,pcre2)))
     (home-page "https://editorconfig.org/")
