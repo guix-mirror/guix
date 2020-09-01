@@ -21,6 +21,7 @@
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -275,6 +276,43 @@ documentation on all aspects of the system, from basic editing to writing
 large Lisp programs.  It has full Unicode support for nearly all human
 languages.")
     (license license:gpl3+)))
+
+(define-public emacs-next
+  (let ((commit "2ea34662c20f71d35dd52a5ed996542c7386b9cb")
+        (revision "0")
+        (emacs-version "28.0.50.1"))
+    (package/inherit emacs
+      (name "emacs-next")
+      (version (git-version emacs-version revision commit))
+      (source
+       (origin
+         (inherit (package-source emacs))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/emacs.git/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0igjm9kwiswn2dpiy2k9xikbdfc7njs07ry48fqz70anljj8y7y3"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments emacs)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'strip-double-wrap
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; Directly copy emacs-X.Y to emacs, so that it is not wrapped
+                 ;; twice.  This also fixes a minor issue, where WMs would not be
+                 ;; able to track emacs back to emacs.desktop.
+                 (with-directory-excursion (assoc-ref outputs "out")
+                   (copy-file (string-append
+                               "bin/emacs-"
+                               ,(version-major+minor+point (package-version emacs-next)))
+                              "bin/emacs")
+                   #t)))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ,@(package-native-inputs emacs))))))
 
 (define-public emacs-minimal
   ;; This is the version that you should use as an input to packages that just
