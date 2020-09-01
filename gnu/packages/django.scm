@@ -1148,14 +1148,14 @@ provides features like a web browseable API and authentication policies.")
 (define-public python-django-sekizai
   (package
     (name "python-django-sekizai")
-    (version "1.1.0")
+    (version "2.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django-sekizai" version))
         (sha256
          (base32
-          "1nc4sv109valdn6azmgm2j01k7khxy2wnji84z63x7fxsikfdxp2"))))
+          "0vrkli625b5s1wldri3dyrfvqbxg7zxy2pg0rpjixw3b1ndz0ag8"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; Tests not included with release.
     (propagated-inputs
