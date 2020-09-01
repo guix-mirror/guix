@@ -311,7 +311,15 @@ Linux kernel.")
     (arguments
      `(#:configure-flags
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
-                            "/share/doc/" ,name "-" ,version))))
+                            "/share/doc/" ,name "-" ,version))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each delete-file (find-files lib "\\.a$"))
+               #t))))))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("perl" ,perl)
