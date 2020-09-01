@@ -497,7 +497,7 @@ account authentication.")
 (define-public python-django-debug-toolbar
   (package
     (name "python-django-debug-toolbar")
-    (version "1.10.1")
+    (version "2.2")
     (source
      (origin
        (method git-fetch)
@@ -507,7 +507,7 @@ account authentication.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zr6yjsms97wlvvd17rdbrx01irkg887dn9x70c1hzfjmfvp9afk"))))
+         "14069rlgjd5g724iaglai0nc636g9km4ba56r4j3k84chibqzn03"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sqlparse" ,python-sqlparse)
