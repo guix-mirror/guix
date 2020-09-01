@@ -545,8 +545,9 @@ There is NO WARRANTY, to the extent permitted by law.
 Report bugs to: ~a.") %guix-bug-report-address)
   (format #t (G_ "
 ~a home page: <~a>") %guix-package-name %guix-home-page-url)
-  (display (G_ "
-General help using GNU software: <http://www.gnu.org/gethelp/>"))
+  (format #t (G_ "
+General help using Guix and GNU software: <~a>")
+           "https://guix.gnu.org/help/")
   (newline))
 
 (define (augmented-system-error-handler file)
