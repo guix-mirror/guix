@@ -504,6 +504,32 @@ account authentication.")
 request and response as a toolbar on the rendered page.")
     (license license:bsd-3)))
 
+(define-public python-django-debug-toolbar-alchemy
+  (package
+    (name "python-django-debug-toolbar-alchemy")
+    (version "0.1.5")
+    (home-page "https://github.com/miki725/django-debug-toolbar-alchemy")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-debug-toolbar-alchemy" version))
+              (sha256
+               (base32
+                "1kmpzghnsc247bc1dl22s4y62k9ijgy1pjms227018h5a4frsa5b"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;XXX: 'make check' does "echo TODO"
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-django-debug-toolbar" ,python-django-debug-toolbar)
+       ("python-jsonplus" ,python-jsonplus)
+       ("python-six" ,python-six)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (synopsis "Django Debug Toolbar panel for SQLAlchemy")
+    (description
+     "This package completely mimics the default Django Debug Toolbar SQL
+panel (internally it is actually subclassed), but instead of displaying
+queries done via the Django ORM, SQLAlchemy generated queries are displayed.")
+    (license license:expat)))
+
 (define-public python-django-gravatar2
   (package
     (name "python-django-gravatar2")
