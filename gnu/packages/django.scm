@@ -1042,18 +1042,33 @@ name is purely coincidental.")
 (define-public python-django-statici18n
   (package
     (name "python-django-statici18n")
-    (version "1.3.0")
+    (version "1.9.0")
+    (home-page "https://github.com/zyegfryed/django-statici18n")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "django-statici18n" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0alcf4g1nv69njhq5k3qw4mfl2k6dc18bik5nk0g1mnp3m8zyz7k"))))
+                "1p3myp2im6c87yc05alh91jyahqws5lcw3zzdsj4dh8lx9s9cgpf"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./tests/test_project:./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (setenv "DJANGO_SETTINGS_MODULE" "project.settings")
+                      (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-django" ,python-pytest-django)))
     (propagated-inputs
      `(("python-django" ,python-django)
        ("django-appconf" ,python-django-appconf)))
-    (home-page "https://github.com/zyegfryed/django-statici18n")
     (synopsis "Generate JavaScript catalog to static files")
     (description
       "A Django app that provides helper for generating JavaScript catalog to
