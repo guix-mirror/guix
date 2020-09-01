@@ -911,13 +911,13 @@ support, and optional data-URI image and font embedding.")
 (define-public python-django-rq
   (package
     (name "python-django-rq")
-    (version "1.3.1")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-rq" version))
               (sha256
                (base32
-                "1ips1ikv5qhgwb58ssn496vgqg9qv6jinwmwbrg9l3s75fskd1l5"))))
+                "0lksnjn3q3f7y72bj2yr8870w28a5b6x0vjnd9nhpq2ah6xfz6pf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -929,7 +929,9 @@ support, and optional data-URI image and font embedding.")
                      "--settings=django_rq.tests.settings"
                      "--pythonpath=."))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("python-django-redis" ,python-django-redis)
+       ("python-mock" ,python-mock)
+       ("python-rq-scheduler" ,python-rq-scheduler)
        ("redis" ,redis)))
     (propagated-inputs
      `(("python-django" ,python-django)
