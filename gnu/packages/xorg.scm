@@ -2781,20 +2781,19 @@ X server.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "19.0.1")
+    (version "19.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/driver/"
                            "xf86-video-ati-" version ".tar.bz2"))
        (sha256
-        (base32 "1c31g5q5p3nk9nscwikh1vvfnhdwsxiw7j8v678nlm34hrfh3djw"))))
+        (base32 "0j9w4axsqlycv4v14g53xyhkm9h7d27b2fcv9lrzb9gf54b5m7v5"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (arguments `(#:configure-flags `("--disable-glamor"))) ; TODO: Enable glamor
     (home-page "https://www.x.org/wiki/")
     (synopsis "ATI Radeon video driver for X server")
     (description
