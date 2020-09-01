@@ -727,7 +727,14 @@ in plain text file format.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((tests (assoc-ref inputs "tests")))
                (copy-recursively tests "tests"))
-             #t)))))
+             #t))
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (with-directory-excursion lib
+                 (delete-file "libeditorconfig_static.a"))
+               #t))))))
     (native-inputs
      `(("tests"
         ,(origin
