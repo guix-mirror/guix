@@ -19876,6 +19876,31 @@ hard (or impossible without root privileges) to set the state of the real
 services to what you expect in your tests.")
     (license license:lgpl3+)))
 
+(define-public python-jsonplus
+  (package
+    (name "python-jsonplus")
+    (version "0.8.0")
+    (home-page "https://github.com/randomir/jsonplus")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "jsonplus" version))
+              (sha256
+               (base32
+                "05yv3dw813zwas9snz124k2hki49y268b3mx0gj9w7v1nrjmglq1"))))
+    (build-system python-build-system)
+    ;; XXX: No tests on PyPI, and the repository has no tags.
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-simplejson" ,python-simplejson)
+       ("python-sortedcontainers" ,python-sortedcontainers)))
+    (synopsis "Serialize Python types to/from JSON")
+    (description
+     "This package provides functionality to serialize arbitrary data types
+to and from JSON.  Common data types are implemented and it is easy to
+register custom encoders and decoders.")
+    (license license:expat)))
+
 (define-public python-ujson
   (package
     (name "python-ujson")
