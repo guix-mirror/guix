@@ -1205,3 +1205,28 @@ FileFields during tests.")
     (description
      "This packages provides a LDAP authentication backend for Django.")
     (license license:bsd-2)))
+
+(define-public python-django-logging-json
+  (package
+    (name "python-django-logging-json")
+    (version "1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-logging-json" version))
+              (sha256
+               (base32
+                "06041a8icazzp73kg93c7k1ska12wvkq7fpcad0l0sm1qnxx5yx7"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no tests
+    (propagated-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-django" ,python-django)
+       ("python-elasticsearch" ,python-elasticsearch)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/cipriantarta/django-logging")
+    (synopsis "Log requests/responses in various formats")
+    (description
+     "This package provides a Django library that logs request, response,
+and exception details in a JSON document.  It can also send logs directly
+to ElasticSearch.")
+    (license license:bsd-2)))
