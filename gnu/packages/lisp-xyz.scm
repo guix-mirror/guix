@@ -13910,3 +13910,71 @@ can begin writing unit tests as soon as the project is generated.")
 
 (define-public ecl-cl-project
   (sbcl-package->ecl-package sbcl-cl-project))
+
+(define-public sbcl-caveman
+  (let ((commit "faa5f7e3b364fd7e7096af9a7bb06728b8d80441") ; No release since 2012
+        (revision "1"))
+    (package
+      (name "sbcl-caveman")
+      (version (git-version "2.4.0" revision commit))
+      (home-page "http://8arrow.org/caveman/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/caveman/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0kh0gx05pczk8f7r9qdi4zn1p3d0a2prps27k7jpgvc1dxkl8qhq"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("ningle" ,cl-ningle)
+         ("lack-request" ,sbcl-lack-request)
+         ("lack-response" ,sbcl-lack-response)
+         ("cl-project" ,sbcl-cl-project)
+         ("dbi" ,sbcl-dbi)
+         ("cl-syntax-annot" ,sbcl-cl-syntax-annot)
+         ("myway" ,sbcl-myway)
+         ("quri" ,sbcl-quri)))
+      (native-inputs
+       `(("usocket" ,sbcl-usocket)
+         ("dexador" ,sbcl-dexador)))
+      (arguments
+       `(#:asd-file "caveman2.asd"
+         #:asd-system-name "caveman2"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'remove-v1
+             (lambda _
+               (delete-file-recursively "v1")
+               (for-each delete-file
+                         '("README.v1.markdown" "caveman.asd" "caveman-test.asd")))))
+         ;; TODO: Tests fail with:
+         ;; writing /gnu/store/j4l1k28yq47qbg074b4yf1b7wnccg8j1-sbcl-caveman-2.4.0-1.faa5f7e/share/common-lisp/sbcl-source/caveman2/v2/t/tmp/myapp573/tests/myapp573.lisp
+         ;; While evaluating the form starting at line 38, column 0
+         ;;   of #P"/tmp/guix-build-sbcl-caveman-2.4.0-1.faa5f7e.drv-0/source/v2/t/caveman.lisp":
+         ;; Unhandled ASDF/FIND-COMPONENT:MISSING-COMPONENT in thread #<SB-THREAD:THREAD "main thread" RUNNING
+         ;;                                                              {10009F8083}>:
+         ;;   Component "myapp573" not found
+         #:tests? #f))
+      (synopsis "Lightweight web application framework in Common Lisp")
+      (description "Caveman is intended to be a collection of common parts for
+web applications.  Caveman2 has three design goals:
+
+@itemize
+@item Be extensible.
+@item Be practical.
+@item Don't force anything.
+@end itemize\n")
+      (license license:llgpl))))
+
+(define-public cl-caveman
+  (package
+    (inherit
+     (sbcl-package->cl-source-package sbcl-caveman))
+    (propagated-inputs
+     `(("ningle" ,cl-ningle)))))
+
+(define-public ecl-caveman
+  (sbcl-package->ecl-package sbcl-caveman))
