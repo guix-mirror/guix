@@ -80,7 +80,7 @@ in downloaded documents to relative links.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://wgetpaste.zlin.dk/wgetpaste-"
+        (uri (string-append "https://wgetpaste.zlin.dk/wgetpaste-"
                             version ".tar.bz2"))
         (sha256
          (base32
@@ -128,7 +128,7 @@ in downloaded documents to relative links.")
     (inputs
      `(("wget" ,wget)
        ("xclip" ,xclip)))
-    (home-page "http://wgetpaste.zlin.dk/")
+    (home-page "https://wgetpaste.zlin.dk/")
     (synopsis "Script that automates pasting to a number of pastebin services")
     (description
      "@code{wgetpaste} is an extremely simple command-line interface to various
