@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,12 +94,12 @@ in downloaded documents to relative links.")
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
-         (add-after 'unpack 'remove-dead-paste-site
-           ;; This phase is adaped from the following patch:
-           ;; https://gitweb.gentoo.org/repo/gentoo.git/tree/app-text/wgetpaste/files/wgetpaste-remove-dead.patch
+         (add-after 'unpack 'change-unfriendly-default
            (lambda _
              (substitute* "wgetpaste"
-               (("-bpaste") "-dpaste")) ; dpaste blocks tor users
+               ;; dpaste blocks Tor users.  Use a better default.
+               (("DEFAULT_SERVICE:-dpaste")
+                "DEFAULT_SERVICE-bpaste"))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
