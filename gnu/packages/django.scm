@@ -1170,14 +1170,14 @@ a single block.")
 (define-public python-django-crispy-forms
   (package
     (name "python-django-crispy-forms")
-    (version "1.7.2")
+    (version "1.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-crispy-forms" version))
        (sha256
         (base32
-         "0pv7y648i8iz7mf64gkjizpbx5d01ap2s4vqqa30n38if6wvlljr"))))
+         "0fxlf233f49hjax786p4r650rd0ilvhnpyvw8hv1d1aqnkxy1wgj"))))
     (build-system python-build-system)
     (arguments
      '(;; No included tests
