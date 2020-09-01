@@ -3363,7 +3363,7 @@ Xorg X server.")
 (define-public xf86-video-sis
   (package
     (name "xf86-video-sis")
-    (version "0.10.9")
+    (version "0.12.0")
     (source
       (origin
         (method url-fetch)
@@ -3371,16 +3371,15 @@ Xorg X server.")
                "mirror://xorg/individual/driver/xf86-video-sis-"
                version
                ".tar.bz2"))
-        (patches (search-patches "xf86-video-sis-xorg-compat.patch"))
         (sha256
-          (base32
-           "03f1abjjf68y8y1iz768rn95va9d33wmbwfbsqrgl6k0gi0bf9jj"))))
+         (base32
+          "0nrs6cjldlhakx5987fiiggjrlzilsbdc7l9pz22x1iwslbkz78i"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Sis video driver for X server")
     (description
