@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -1414,14 +1414,13 @@ certificates, signing and building trust bundles.")
 (define-public python-jeepney
   (package
     (name "python-jeepney")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "jeepney" version))
         (sha256
-         (base32
-          "1fz9lb5fl831sijg2j0sbki698j2z6awbblas7mz3gp9jz2xi9hb"))))
+         (base32 "0vp3p1lqhqk2kd3254q5sxr50znmm2hmysc8a7g0fr1brihvhy9l"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-testpath" ,python-testpath)
