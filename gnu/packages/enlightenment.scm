@@ -378,17 +378,7 @@ embedded systems.")
     (license license:bsd-2)))
 
 (define-public enlightenment-wayland
-  (package
-    (inherit enlightenment)
-    (name "enlightenment-wayland")
-    (arguments
-     (substitute-keyword-arguments (package-arguments enlightenment)
-       ((#:configure-flags flags)
-        `(cons* "-Dwl=true" ,flags))))
-    (inputs
-     `(("wayland-protocols" ,wayland-protocols)
-       ("xorg-server-xwayland" ,xorg-server-xwayland)
-       ,@(package-inputs enlightenment)))))
+  (deprecated-package "enlightenment-wayland" enlightenment))
 
 (define-public python-efl
   (package
