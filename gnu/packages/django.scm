@@ -711,21 +711,17 @@ conn_max_age argument to easily enable Django’s connection pool.")
 (define-public python-django-bulk-update
   (package
     (name "python-django-bulk-update")
-    (version "1.1.10")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-bulk-update" version))
               (sha256
                (base32
-                "0mbng9m7swfc0dnidipbzlxfhlfjrv755dlnha5s4m9mgdxb1fhc"))))
+                "0dxkmrm3skyw82i0qa8vklxw1ma1y308kh9w2hcnvhpacn5cxdss"))))
     (build-system python-build-system)
     (arguments
-     ;; tests don't support django 1.10, but the module seems to work.
+     ;; XXX: Tests require a Postgres database.
      `(#:tests? #f))
-    (native-inputs
-     `(("six" ,python-six)
-       ("jsonfield" ,python-django-jsonfield)
-       ("python-dj-database-url" ,python-dj-database-url)))
     (propagated-inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/aykut/django-bulk-update")
