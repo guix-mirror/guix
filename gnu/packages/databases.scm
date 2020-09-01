@@ -3070,14 +3070,35 @@ reasonable substitute.")
 (define-public python-rq
   (package
     (name "python-rq")
-    (version "0.13.0")
+    (version "1.5.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "rq" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rq/rq")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0xvapd2bxnyq480i48bdkddzlqmv2axbsq85rlfy8k3al8zxxxrf"))))
+        (base32 "0i7yyw828wdvl7ap4gb7jhm4p94502is3xxrgrdgwwp0l1rac004"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'start-redis
+                    (lambda _
+                      (invoke "redis-server" "--daemonize" "yes")))
+                  (replace 'check
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        ;; Drop test that needs the SDK for Sentry.io.
+                        (delete-file "tests/test_sentry.py")
+                        ;; Ensure 'rq' and 'rqworker' ends up on PATH.
+                        (setenv "PATH" (string-append out "/bin:"
+                                                      (getenv "PATH")))
+                        (invoke "pytest" "-vv")))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("redis" ,redis)))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-redis" ,python-redis)))
