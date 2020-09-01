@@ -458,14 +458,14 @@ them do this.")
 (define-public python-django-allauth
   (package
     (name "python-django-allauth")
-    (version "0.40.0")
+    (version "0.42.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-allauth" version))
        (sha256
         (base32
-         "12f5gjidcpb7a0d1f601k0c5dcdmb6fg9sfn7xn5j8zfsg29y63a"))))
+         "0c0x8izvrnjhrr48w6pwsfk9ddbi6yfxg7v3hh5dm1vz1d0hjwpi"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
