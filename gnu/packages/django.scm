@@ -1280,3 +1280,50 @@ to ElasticSearch.")
      "This package provides mappings for the PostgreSQL @code{INET} and
 @code{CIDR} fields for use in Django projects.")
     (license license:bsd-3)))
+
+(define-public python-django-url-filter
+  (package
+    (name "python-django-url-filter")
+    (version "0.3.15")
+    (home-page "https://github.com/miki725/django-url-filter")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0r4zhqhs8y6cnplwyvcb0zpijizw1ifnszs38n4w8138657f9026"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f            ;FIXME: Django raises "Apps aren't loaded yet"!?
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'loosen-requirements
+                    (lambda _
+                      ;; Do not depend on compatibility package for old
+                      ;; Python versions.
+                      (substitute* "requirements.txt"
+                        (("enum-compat") ""))
+                      #t))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (begin
+                            (setenv "PYTHONPATH"
+                                    (string-append "./build/lib:.:"
+                                                   (getenv "PYTHONPATH")))
+                            (setenv "DJANGO_SETTINGS_MODULE"
+                                    "test_project.settings")
+                            (invoke "pytest" "-vv" "--doctest-modules"
+                                    "tests/" "url_filter/"))
+                          (format #t "test suite not run~%")))))))
+    (propagated-inputs
+     `(("python-cached-property" ,python-cached-property)
+       ("python-django" ,python-django)
+       ("python-six" ,python-six)))
+    (synopsis "Filter data via human-friendly URLs")
+    (description
+     "The main goal of Django URL Filter is to provide an easy URL interface
+for filtering data.  It allows the user to safely filter by model attributes
+and also allows to specify the lookup type for each filter (very much like
+Django's filtering system in ORM).")
+    (license license:expat)))
