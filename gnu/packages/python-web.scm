@@ -3173,15 +3173,29 @@ for Flask.")
 (define-public python-webassets
   (package
     (name "python-webassets")
-    (version "0.12.1")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "webassets" version))
        (sha256
         (base32
-         "1nrqkpb7z46h2b77xafxihqv3322cwqv6293ngaky4j3ff4cing7"))))
+         "1kc1042jydgk54xpgcp0r1ib4gys91nhy285jzfcxj3pfqrk4w8n"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-some-tests
+                    (lambda _
+                      ;; This test requires 'postcss' and 'babel' which are
+                      ;; not yet available in Guix.
+                      (delete-file "tests/test_filters.py")
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv"))))))
     (native-inputs
      `(("python-jinja2" ,python-jinja2)
        ("python-mock" ,python-mock)
