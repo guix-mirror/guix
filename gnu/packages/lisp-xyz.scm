@@ -13539,3 +13539,47 @@ carrys on from the end of the body.")
 
 (define-public ecl-livesupport
   (sbcl-package->ecl-package sbcl-livesupport))
+
+(define-public sbcl-envy
+  (let ((commit "956321b2852d58ba71c6fe621f5c2924178e9f88")
+	(revision "1"))
+    (package
+      (name "sbcl-envy")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/fukamachi/envy")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "17iwrfxcdinjbb2h6l09qf40s7xkbhrpmnljlwpjy8l8rll8h3vg"))))
+      (build-system asdf-build-system/sbcl)
+      ;; (native-inputs ; Only for tests.
+      ;;  `(("prove" ,sbcl-prove)
+      ;;    ("osicat" ,sbcl-osicat)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "envy-test.asd"
+                 (("cl-test-more") "prove"))
+               #t)))
+         ;; Tests fail with
+         ;;   Component ENVY-ASD::ENVY-TEST not found, required by #<SYSTEM "envy">
+         ;; like xsubseq.  Why?
+         #:tests? #f))
+      (synopsis "Common Lisp configuration switcher inspired by Perl's Config::ENV.")
+      (description "Envy is a configuration manager for various applications.
+Envy uses an environment variable to determine a configuration to use.  This
+can separate configuration system from an implementation.")
+      (license license:bsd-2))))
+
+(define-public cl-envy
+  (sbcl-package->cl-source-package sbcl-envy))
+
+(define-public ecl-envy
+  (sbcl-package->ecl-package sbcl-envy))
