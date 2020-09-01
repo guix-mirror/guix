@@ -118,7 +118,8 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
      `(("freetype" ,freetype)
        ("harfbuzz" ,harfbuzz)))
     (arguments
-     `(#:configure-flags '("--with-qt=no"))) ;no gui
+     `(#:configure-flags '("--disable-static"
+                           "--with-qt=no"))) ;no gui
     (synopsis "Automated font hinting")
     (description
      "ttfautohint provides a 99% automated hinting process and a platform for
