@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +57,9 @@ This is an alias for 'guix package -s'.\n"))
                 (member "load-path" (option-names option)))
               %standard-build-options)))
 
-(define (guix-search . args)
+(define-command (guix-search . args)
+  (synopsis "search for packages")
+
   (define (handle-argument arg result)
     ;; Treat all non-option arguments as regexps.
     (cons `(query search ,(or arg ""))

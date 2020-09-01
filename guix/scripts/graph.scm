@@ -565,7 +565,10 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
 ;;; Entry point.
 ;;;
 
-(define (guix-graph . args)
+(define-command (guix-graph . args)
+  (category packaging)
+  (synopsis "view and query package dependency graphs")
+
   (with-error-handling
     (define opts
       (parse-command-line args %options

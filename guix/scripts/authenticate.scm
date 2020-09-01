@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +18,7 @@
 
 (define-module (guix scripts authenticate)
   #:use-module (guix config)
+  #:use-module (guix scripts)
   #:use-module (guix base16)
   #:use-module (gcrypt pk-crypto)
   #:use-module (guix pki)
@@ -90,7 +91,10 @@ to stdout upon success."
 ;;; unmodified currently.
 ;;;
 
-(define (guix-authenticate . args)
+(define-command (guix-authenticate . args)
+  (category internal)
+  (synopsis "sign or verify signatures on normalized archives (nars)")
+
   ;; Signature sexps written to stdout may contain binary data, so force
   ;; ISO-8859-1 encoding so that things are not mangled.  See
   ;; <http://bugs.gnu.org/17312> for details.

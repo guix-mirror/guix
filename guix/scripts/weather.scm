@@ -495,7 +495,9 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
 ;;; Entry point.
 ;;;
 
-(define (guix-weather . args)
+(define-command (guix-weather . args)
+  (synopsis "report on the availability of pre-built package binaries")
+
   (define (package-list opts)
     ;; Return the package list specified by OPTS.
     (let ((files (filter-map (match-lambda

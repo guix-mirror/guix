@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -298,7 +298,10 @@ Report the size of the PACKAGE or STORE-ITEM, with its dependencies.\n"))
 ;;; Entry point.
 ;;;
 
-(define (guix-size . args)
+(define-command (guix-size . args)
+  (category packaging)
+  (synopsis "profile the on-disk size of packages")
+
   (with-error-handling
     (let* ((opts     (parse-command-line args %options (list %default-options)
                                          #:build-options? #f))

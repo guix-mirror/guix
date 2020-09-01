@@ -156,7 +156,10 @@ and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
 ;;; Entry point.
 ;;;
 
-(define (guix-download . args)
+(define-command (guix-download . args)
+  (category packaging)
+  (synopsis "download a file to the store and print its hash")
+
   (define (parse-options)
     ;; Return the alist of option values.
     (args-fold* args %options

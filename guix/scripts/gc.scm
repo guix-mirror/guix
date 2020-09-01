@@ -220,7 +220,9 @@ is deprecated; use '-D'~%"))
 ;;; Entry point.
 ;;;
 
-(define (guix-gc . args)
+(define-command (guix-gc . args)
+  (synopsis "invoke the garbage collector")
+
   (define (parse-options)
     ;; Return the alist of option values.
     (parse-command-line args %options (list %default-options)

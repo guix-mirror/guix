@@ -20,6 +20,7 @@
 
 (define-module (guix scripts substitute)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix combinators)
@@ -1095,8 +1096,10 @@ default value."
   (unless (string->uri uri)
     (leave (G_ "~a: invalid URI~%") uri)))
 
-(define (guix-substitute . args)
-  "Implement the build daemon's substituter protocol."
+(define-command (guix-substitute . args)
+  (category internal)
+  (synopsis "implement the build daemon's substituter protocol")
+
   (define print-build-trace?
     (match (or (find-daemon-option "untrusted-print-extended-build-trace")
                (find-daemon-option "print-extended-build-trace"))

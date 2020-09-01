@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
@@ -78,7 +78,10 @@ line."
         (search-path* %load-path (location-file location))))
 
 
-(define (guix-edit . args)
+(define-command (guix-edit . args)
+  (category packaging)
+  (synopsis "view and edit package definitions")
+
   (define (parse-arguments)
     ;; Return the list of package names.
     (args-fold* args %options

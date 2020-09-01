@@ -57,7 +57,9 @@ This is an alias for 'guix package --show='.\n"))
                 (member "load-path" (option-names option)))
               %standard-build-options)))
 
-(define (guix-show . args)
+(define-command (guix-show . args)
+  (synopsis "show information about packages")
+
   (define (handle-argument arg result)
     ;; Treat all non-option arguments as regexps.
     (cons `(query show ,arg)

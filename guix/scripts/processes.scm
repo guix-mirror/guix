@@ -223,7 +223,9 @@ List the current Guix sessions and their processes."))
 ;;; Entry point.
 ;;;
 
-(define (guix-processes . args)
+(define-command (guix-processes . args)
+  (category plumbing)
+  (synopsis "list currently running sessions")
   (define options
     (args-fold* args %options
                 (lambda (opt name arg result)

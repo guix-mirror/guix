@@ -304,7 +304,8 @@ text.  The hyperlink links to a web view of COMMIT, when available."
 ;;; Entry point.
 ;;;
 
-(define (guix-describe . args)
+(define-command (guix-describe . args)
+  (synopsis "describe the channel revisions currently used")
   (let* ((opts    (args-fold* args %options
                               (lambda (opt name arg result)
                                 (leave (G_ "~A: unrecognized option~%")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,7 +66,9 @@ This is an alias for 'guix package -i'.\n"))
                  %transformation-options
                  %standard-build-options)))
 
-(define (guix-install . args)
+(define-command (guix-install . args)
+  (synopsis "install packages")
+
   (define (handle-argument arg result arg-handler)
     ;; Treat all non-option arguments as package specs.
     (values (alist-cons 'install arg result)

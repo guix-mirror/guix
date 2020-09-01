@@ -60,6 +60,7 @@
                         ;; Avoid "overrides core binding" warning.
                         delete))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
@@ -1993,6 +1994,44 @@ optionally contain a version number and an output name, as in these examples:
           (G_ "Try `guix --help' for more information.~%"))
   (exit 1))
 
+;; Representation of a 'guix' command.
+(define-immutable-record-type <command>
+  (command name synopsis category)
+  command?
+  (name     command-name)
+  (synopsis command-synopsis)
+  (category command-category))
+
+(define (source-file-command file)
+  "Read FILE, a Scheme source file, and return either a <command> object based
+on the 'define-command' top-level form found therein, or #f if FILE does not
+contain a 'define-command' form."
+  (define command-name
+    (match (string-split file #\/)
+      ((_ ... "guix" "scripts" name)
+       (list (file-sans-extension name)))
+      ((_ ... "guix" "scripts" first second)
+       (list first (file-sans-extension second)))))
+
+  ;; The strategy here is to parse FILE.  This is much cheaper than a
+  ;; technique based on run-time introspection where we'd load FILE and all
+  ;; the modules it depends on.
+  (call-with-input-file file
+    (lambda (port)
+      (let loop ()
+        (match (read port)
+          (('define-command _ ('synopsis synopsis)
+             _ ...)
+           (command command-name synopsis 'main))
+          (('define-command _
+             ('category category) ('synopsis synopsis)
+             _ ...)
+           (command command-name synopsis category))
+          ((? eof-object?)
+           #f)
+          (_
+           (loop)))))))
+
 (define (command-files)
   "Return the list of source files that define Guix sub-commands."
   (define directory
@@ -2004,28 +2043,51 @@ optionally contain a version number and an output name, as in these examples:
     (cut string-suffix? ".scm" <>))
 
   (if directory
-      (scandir directory dot-scm?)
+      (map (cut string-append directory "/" <>)
+           (scandir directory dot-scm?))
       '()))
 
 (define (commands)
-  "Return the list of Guix command names."
-  (map (compose (cut string-drop-right <> 4)
-                basename)
-       (command-files)))
+  "Return the list of commands, alphabetically sorted."
+  (filter-map source-file-command (command-files)))
 
 (define (show-guix-help)
   (define (internal? command)
     (member command '("substitute" "authenticate" "offload"
                       "perform-download")))
 
+  (define (display-commands commands)
+    (let* ((names     (map (lambda (command)
+                             (string-join (command-name command)))
+                           commands))
+           (max-width (reduce max 0 (map string-length names))))
+      (for-each (lambda (name command)
+                  (format #t "    ~a  ~a~%"
+                          (string-pad-right name max-width)
+                          (G_ (command-synopsis command))))
+                names
+                commands)))
+
+  (define (category-predicate category)
+    (lambda (command)
+      (eq? category (command-category command))))
+
   (format #t (G_ "Usage: guix COMMAND ARGS...
 Run COMMAND with ARGS.\n"))
   (newline)
   (format #t (G_ "COMMAND must be one of the sub-commands listed below:\n"))
-  (newline)
-  ;; TODO: Display a synopsis of each command.
-  (format #t "~{   ~a~%~}" (sort (remove internal? (commands))
-                                 string<?))
+
+  (let ((commands   (commands))
+        (categories (module-ref (resolve-interface '(guix scripts))
+                                '%command-categories)))
+    (for-each (match-lambda
+                (('internal . _)
+                 #t)                              ;hide internal commands
+                ((category . synopsis)
+                 (format #t "~%  ~a~%" (G_ synopsis))
+                 (display-commands (filter (category-predicate category)
+                                           commands))))
+              categories))
   (show-bug-report-information))
 
 (define (run-guix-command command . args)

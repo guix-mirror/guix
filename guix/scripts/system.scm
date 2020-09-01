@@ -1253,7 +1253,9 @@ argument list and OPTS is the option alist."
     ;; need an operating system configuration file.
     (else (process-action command args opts))))
 
-(define (guix-system . args)
+(define-command (guix-system . args)
+  (synopsis "build and deploy full operating systems")
+
   (define (parse-sub-command arg result)
     ;; Parse sub-command ARG and augment RESULT accordingly.
     (if (assoc-ref result 'action)

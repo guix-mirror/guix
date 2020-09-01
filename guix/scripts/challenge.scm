@@ -475,7 +475,10 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
 ;;; Entry point.
 ;;;
 
-(define (guix-challenge . args)
+(define-command (guix-challenge . args)
+  (category packaging)
+  (synopsis "challenge substitute servers, comparing their binaries")
+
   (with-error-handling
     (let* ((opts     (parse-command-line args %options (list %default-options)
                                          #:build-options? #f))
