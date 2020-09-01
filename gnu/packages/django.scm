@@ -683,18 +683,27 @@ conn_max_age argument to easily enable Django’s connection pool.")
 (define-public python-django-picklefield
   (package
     (name "python-django-picklefield")
-    (version "2.1.1")
+    (version "3.0.1")
+    (home-page "https://github.com/gintas/django-picklefield")
+    ;; Use a git checkout because the PyPI release lacks tests.
     (source
       (origin
-        (method url-fetch)
-        (uri (pypi-uri "django-picklefield" version))
+        (method git-fetch)
+        (uri (git-reference
+              (url home-page)
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "0imncys5s3vsy2q79nn7k5d670da1xgmcr9gmhn06fry6ibf39b7"))))
+          "0ni7bc86k0ra4pc8zv451pzlpkhs1nyil1sq9jdb4m2mib87b5fk"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "-m" "django" "test" "-v2"
+                              "--settings=tests.settings"))))))
     (propagated-inputs `(("python-django" ,python-django)))
-    (native-inputs `(("python-tox" ,python-tox)))
-    (home-page "https://github.com/gintas/django-picklefield")
     (synopsis "Pickled object field for Django")
     (description "Pickled object field for Django")
     (license license:expat)))
