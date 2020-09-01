@@ -1117,14 +1117,14 @@ Django projects, which allows association of a number of tags with any
 (define-public python-djangorestframework
   (package
     (name "python-djangorestframework")
-    (version "3.7.7")
+    (version "3.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "djangorestframework" version))
        (sha256
         (base32
-         "11qv117gqwswxjljs7wafxg1hyzzlx3qrviwlk9hw41bsbl997lz"))))
+         "0chbl1d0m1x23mmpdj7y85k3n32lpxrhcdl07ywnylfj9dd2vl3d"))))
     (build-system python-build-system)
     (arguments
      '(;; No included tests
