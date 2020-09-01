@@ -13755,3 +13755,58 @@ camelCase, snake_case, kebab-case (lisp-case).")
 
 (define-public ecl-kebab
   (sbcl-package->ecl-package sbcl-kebab))
+
+(define-public sbcl-datafly
+  (let ((commit "adece27fcbc4b5ea39ad1a105048b6b7166e3b0d")
+        (revision "1"))
+    (package
+      (name "sbcl-datafly")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/fukamachi/datafly")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16b78kzmglp2a4nxlxxl7rpf5zaibsgagn0p3c56fsxvx0c4hszv"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("iterate" ,sbcl-iterate)
+         ("optima" ,sbcl-optima)
+         ("trivial-types" ,sbcl-trivial-types)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("cl-syntax-annot" ,sbcl-cl-syntax-annot)
+         ("sxql" ,sbcl-sxql)
+         ("dbi" ,sbcl-dbi)
+         ("babel" ,sbcl-babel)
+         ("local-time" ,sbcl-local-time)
+         ("function-cache" ,sbcl-function-cache)
+         ("jonathan" ,sbcl-jonathan)
+         ("kebab" ,sbcl-kebab)
+         ("log4cl" ,sbcl-log4cl)))
+      (native-inputs
+       `(("prove-asdf" ,sbcl-prove-asdf)
+         ("prove" ,sbcl-prove)
+         ("dbd-sqlite3" ,sbcl-dbd-sqlite3)))
+      (arguments
+       ;; TODO: Tests fail with
+       ;; While evaluating the form starting at line 22, column 0
+       ;;   of #P"/tmp/guix-build-sbcl-datafly-0.1-1.adece27.drv-0/source/t/datafly.lisp":
+       ;; Unhandled SQLITE:SQLITE-ERROR in thread #<SB-THREAD:THREAD "main thread" RUNNING
+       ;; {10009F8083}>:
+       ;;   Error when binding parameter 1 to value NIL.
+       ;; Code RANGE: column index out of range.
+       `(#:tests? #f))
+      (synopsis "Lightweight database library for Common Lisp")
+      (description "Datafly is a lightweight database library for Common Lisp.")
+      (license license:bsd-3))))
+
+(define-public cl-datafly
+  (sbcl-package->cl-source-package sbcl-datafly))
+
+(define-public ecl-datafly
+  (sbcl-package->ecl-package sbcl-datafly))
