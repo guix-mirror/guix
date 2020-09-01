@@ -308,6 +308,10 @@ Linux kernel.")
        (sha256
         (base32 "1cwpc4j90dpxa2siia68rg9qwwm2xk6bhxnslfjj364507jy6s4l"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("perl" ,perl)
