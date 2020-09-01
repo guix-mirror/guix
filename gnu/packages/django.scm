@@ -34,6 +34,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages check)
   #:use-module (gnu packages geo)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
@@ -1169,3 +1170,38 @@ template tag.")
      "This project provides tools to help reduce the side effects of using
 FileFields during tests.")
     (license license:expat)))
+
+(define-public python-django-auth-ldap
+  (package
+    (name "python-django-auth-ldap")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-auth-ldap" version))
+              (sha256
+               (base32
+                "1gq49l5lv6ar6yf73c8pix8n7md4109yq31s5jfk64w6n1rigbqi"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((openldap (assoc-ref inputs "openldap")))
+                        ;; The tests need 'slapd' which is installed to the
+                        ;; libexec directory of OpenLDAP.
+                        (setenv "SLAPD" (string-append openldap "/libexec/slapd"))
+                        (setenv "SCHEMA"
+                                (string-append openldap "/etc/openldap/schema"))
+                        (invoke "python" "-m" "django" "test"
+                                "--settings" "tests.settings")))))))
+    (native-inputs
+     `(("openldap" ,openldap)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-ldap" ,python-ldap)))
+    (home-page "https://github.com/django-auth-ldap/django-auth-ldap")
+    (synopsis "Django LDAP authentication backend")
+    (description
+     "This packages provides a LDAP authentication backend for Django.")
+    (license license:bsd-2)))
