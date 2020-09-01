@@ -1230,3 +1230,27 @@ FileFields during tests.")
 and exception details in a JSON document.  It can also send logs directly
 to ElasticSearch.")
     (license license:bsd-2)))
+
+(define-public python-django-netfields
+  (package
+    (name "python-django-netfields")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-netfields" version))
+              (sha256
+               (base32
+                "1c47azr5am0q8g45x0fbn0cay7vyrack6n7k6siliw1j2p0gzi7s"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))      ;XXX: Requires a running PostgreSQL server
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-netaddr" ,python-netaddr)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/jimfunk/django-postgresql-netfields")
+    (synopsis "PostgreSQL netfields implementation for Django")
+    (description
+     "This package provides mappings for the PostgreSQL @code{INET} and
+@code{CIDR} fields for use in Django projects.")
+    (license license:bsd-3)))
