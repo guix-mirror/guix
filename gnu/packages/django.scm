@@ -844,14 +844,14 @@ project.")
 (define-public python-django-pipeline
   (package
     (name "python-django-pipeline")
-    (version "1.6.14")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-pipeline" version))
        (sha256
         (base32
-         "1a207y71r7za033ira0qmh2yrgp5rq0l04gw2fg9b8jri7sslrzg"))))
+         "19vrbd5s12qw4qlg5n8ldv7zz2rs5y2sdid1i7lvgp92m71dayvc"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -872,7 +872,8 @@ project.")
                 (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
                 (invoke "django-admin" "test" "tests"))))))))
     (propagated-inputs
-     `(("python-django" ,python-django)
+     `(("python-css-html-js-minify" ,python-css-html-js-minify)
+       ("python-django" ,python-django)
        ("python-slimit" ,python-slimit)
        ("python-jsmin" ,python-jsmin)))
     (home-page
