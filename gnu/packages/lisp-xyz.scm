@@ -13810,3 +13810,34 @@ camelCase, snake_case, kebab-case (lisp-case).")
 
 (define-public ecl-datafly
   (sbcl-package->ecl-package sbcl-datafly))
+
+(define-public sbcl-do-urlencode
+  (let ((commit "199846441dad5dfac5478b8dee4b4e20d107af6a")
+        (revision "1"))
+    (package
+      (name "sbcl-do-urlencode")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/drdo/do-urlencode")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0k2i3d4k9cpci235mwfm0c5a4yqfkijr716bjv7cdlpzx88lazm9"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)))
+      (synopsis "Percent Encoding (aka URL Encoding) Common Lisp library")
+      (description "This library provides trivial percent encoding and
+decoding functions for URLs.")
+      (license license:isc))))
+
+(define-public cl-do-urlencode
+  (sbcl-package->cl-source-package sbcl-do-urlencode))
+
+(define-public ecl-do-urlencode
+  (sbcl-package->ecl-package sbcl-do-urlencode))
