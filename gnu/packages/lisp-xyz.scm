@@ -13841,3 +13841,34 @@ decoding functions for URLs.")
 
 (define-public ecl-do-urlencode
   (sbcl-package->ecl-package sbcl-do-urlencode))
+
+(define-public sbcl-cl-emb
+  (let ((commit "fd8652174d048d4525a81f38cdf42f4fa519f840")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-emb")
+      (version (git-version "0.4.3" revision commit))
+      (home-page "https://common-lisp.net/project/cl-emb/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/38a938c2/cl-emb")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xcm31n7afh5316lwz8iqbjx7kn5lw0l11arg8mhdmkx42aj4gkk"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)))
+      (synopsis "Templating system for Common Lisp")
+      (description "A mixture of features from eRuby and HTML::Template.  You
+could name it \"Yet Another LSP\" (LispServer Pages) but it's a bit more than
+that and not limited to a certain server or text format.")
+      (license license:llgpl))))
+
+(define-public cl-emb
+  (sbcl-package->cl-source-package sbcl-cl-emb))
+
+(define-public ecl-cl-emb
+  (sbcl-package->ecl-package sbcl-cl-emb))
