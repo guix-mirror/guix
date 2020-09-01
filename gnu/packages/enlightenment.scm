@@ -303,6 +303,7 @@ Libraries with some extra bells and whistles.")
        (let ((efl (assoc-ref %build-inputs "efl")))
          (list "-Dsystemd=false"
                "-Dpackagekit=false"
+               "-Dwl=true"
                (string-append "-Dedje-cc=" efl "/bin/edje_cc")
                (string-append "-Deldbus-codegen=" efl "/bin/eldbus-codegen")
                (string-append "-Deet=" efl "/bin/eet")))
@@ -363,8 +364,10 @@ Libraries with some extra bells and whistles.")
        ("linux-pam" ,linux-pam)
        ("puleseaudio" ,pulseaudio)
        ("setxkbmap" ,setxkbmap)
+       ("wayland-protocols" ,wayland-protocols)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
-       ("xkeyboard-config" ,xkeyboard-config)))
+       ("xkeyboard-config" ,xkeyboard-config)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)))
     (home-page "https://www.enlightenment.org/about-enlightenment")
     (synopsis "Lightweight desktop environment")
     (description
