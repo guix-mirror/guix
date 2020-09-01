@@ -1008,17 +1008,24 @@ the order of added relations.")
 (define-public python-django-appconf
   (package
     (name "python-django-appconf")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-appconf" version))
               (sha256
                (base32
-                "1qw0p9qh78bvkgi38ba58djwn0rd5j1lrkg2c2wk5wb7snj3rw9m"))))
+                "101k8nkc7xlffpjdi2qbrp9pc4v8hzvmkzi12qp7vms39asxwn5y"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH" (string-append ".:"
+                                                          (getenv "PYTHONPATH")))
+                      (setenv "DJANGO_SETTINGS_MODULE" "tests.test_settings")
+                      (invoke "django-admin.py" "test" "-v2"))))))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-six" ,python-six)))
+     `(("python-django" ,python-django)))
     (home-page "https://github.com/django-compressor/django-appconf")
     (synopsis "Handle configuration defaults of packaged Django apps")
     (description
