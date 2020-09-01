@@ -10997,31 +10997,35 @@ foreign libraries.
   (sbcl-package->cl-source-package sbcl-postmodern))
 
 (define-public sbcl-dbi
-  (package
-    (name "sbcl-dbi")
-    (version "0.9.4")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/fukamachi/cl-dbi")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0m1fsravfaizamdak84adh3jxc4j91maqnrb4m08bfbmb04cdqhs"))))
-    (build-system asdf-build-system/sbcl)
-    (inputs
-     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("closer-mop" ,sbcl-closer-mop)
-       ("split-sequence" ,sbcl-split-sequence)))
-    (arguments
-     `(#:tests? #f)) ; TODO: Break circular dependency with dbd-*
-    (synopsis "Database independent interface for Common Lisp")
-    (description
-     "@code{dbi} is a Common Lisp library providing a database independent
+  ;; Master includes a breaking change which other packages depend on since
+  ;; Quicklisp decided to follow it:
+  ;; https://github.com/fukamachi/cl-dbi/commit/31c46869722f77fd5292a81b5b101f1347d7fce1
+  (let ((commit "31c46869722f77fd5292a81b5b101f1347d7fce1"))
+    (package
+      (name "sbcl-dbi")
+      (version (git-version "0.9.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/cl-dbi")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r3n4rw12qqxad0cryym2ibm4ddl49gbq4ra227afibsr43nw5k3"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (arguments
+       `(#:tests? #f))            ; TODO: Break circular dependency with dbd-*
+      (synopsis "Database independent interface for Common Lisp")
+      (description
+       "@code{dbi} is a Common Lisp library providing a database independent
 interface for MySQL, PostgreSQL and SQLite.")
-    (home-page "https://github.com/fukamachi/cl-dbi")
-    (license license:llgpl)))
+      (home-page "https://github.com/fukamachi/cl-dbi")
+      (license license:llgpl))))
 
 (define-public cl-dbi
   (sbcl-package->cl-source-package sbcl-dbi))
