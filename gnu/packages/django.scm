@@ -874,13 +874,13 @@ support, and optional data-URI image and font embedding.")
 (define-public python-django-redis
   (package
     (name "python-django-redis")
-    (version "4.10.0")
+    (version "4.12.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-redis" version))
               (sha256
                (base32
-                "1rxcwnv9ik0swkwvfqdi9i9baw6n8if5pj6q63fjh4p9chw3j2xg"))))
+                "0qvsm8yjchl0d3i7g20wba6px9lb5gv8kp3fcnr6hr0y0b3qjr9h"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
