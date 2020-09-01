@@ -76,15 +76,14 @@ in downloaded documents to relative links.")
 (define-public wgetpaste
   (package
     (name "wgetpaste")
-    (version "2.29")
+    (version "2.30")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://wgetpaste.zlin.dk/wgetpaste-"
                             version ".tar.bz2"))
         (sha256
-         (base32
-          "1rp0wxr3zy7y2xp3azaadfghrx7g0m138f9qg6icjxkkz4vj9r22"))))
+         (base32 "14k5i6j6f34hcf9gdb9cnvfwscn0ys2dgd73ci421wj9zzqkbv73"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
