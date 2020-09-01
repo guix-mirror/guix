@@ -108,13 +108,16 @@
        ("python-pillow" ,python-pillow)
        ("python-pyyaml" ,python-pyyaml)
        ;; optional for tests: ("python-selenium" ,python-selenium)
-       ("python-sqlparse" ,python-sqlparse)
        ("python-tblib" ,python-tblib)))
     (propagated-inputs
      `(("python-argon2-cffi" ,python-argon2-cffi)
        ("python-asgiref" ,python-asgiref)
        ("python-bcrypt" ,python-bcrypt)
-       ("python-pytz" ,python-pytz)))
+       ("python-pytz" ,python-pytz)
+
+       ;; This input is not strictly required, but in practice many Django
+       ;; libraries need it for test suites and similar.
+       ("python-sqlparse" ,python-sqlparse)))
     (home-page "https://www.djangoproject.com/")
     (synopsis "High-level Python Web framework")
     (description
