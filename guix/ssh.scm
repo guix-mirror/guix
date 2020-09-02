@@ -441,14 +441,15 @@ Use SIZES to determine the size of ITEM, which is about to be sent."
             (progress-bar % (- (max (current-terminal-columns) 5) 5)))
     (force-output port))
 
-  (let ((% (* 100. (/ sent total))))
-    (match (vhash-assoc item sizes)
-      (#f
-       (display-bar %)
-       (values port sizes total sent))
-      ((_ . size)
-       (display-bar %)
-       (values port sizes total (+ sent size))))))
+  (unless (zero? total)
+    (let ((% (* 100. (/ sent total))))
+      (match (vhash-assoc item sizes)
+        (#f
+         (display-bar %)
+         (values port sizes total sent))
+        ((_ . size)
+         (display-bar %)
+         (values port sizes total (+ sent size)))))))
 
 (define (notify-transfer-completion port . args)
   "Notify the user that the transfer has completed."
