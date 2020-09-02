@@ -466,7 +466,7 @@ Return the list of store items actually sent."
   ;; Compute the subset of FILES missing on SESSION and send them.
   (let* ((files   (if recursive? (requisites local files) files))
          (session (channel-get-session (store-connection-socket remote)))
-         (missing (take files 20) #;(inferior-remote-eval
+         (missing (inferior-remote-eval
                    `(begin
                       (use-modules (guix)
                                    (srfi srfi-1) (srfi srfi-26))
