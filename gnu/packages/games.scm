@@ -8848,7 +8848,8 @@ play with up to four players simultaneously.  It has network support.")
      ;; XXX: Engine is built as Pascal source code, requiring Free Pascal
      ;; Compiler, which we haven't packaged yet.  With the flag below, we use
      ;; a Pascal to C translator and Clang instead.
-     `(#:configure-flags (list "-DBUILD_ENGINE_C=ON")
+     `(#:configure-flags (list "-DBUILD_ENGINE_C=ON"
+                               "-Dhaskell_flags=-dynamic;-fPIC")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
