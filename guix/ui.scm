@@ -494,7 +494,11 @@ guix package -i glibc-utf8-locales
 export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"
 @end example
 
-See the \"Application Setup\" section in the manual, for more info.\n")))))
+See the \"Application Setup\" section in the manual, for more info.\n"))
+      ;; We're now running in the "C" locale.  Try to install a UTF-8 locale
+      ;; instead.  This one is guaranteed to be available in 'guix' from 'guix
+      ;; pull'.
+      (false-if-exception (setlocale LC_ALL "en_US.utf8")))))
 
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
