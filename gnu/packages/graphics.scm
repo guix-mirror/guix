@@ -824,7 +824,7 @@ other vector formats such as:
 (define-public ogre
   (package
     (name "ogre")
-    (version "1.12.5")
+    (version "1.12.6")
     (source
      (origin
        (method git-fetch)
@@ -834,7 +834,7 @@ other vector formats such as:
              (recursive? #t)))          ;for Dear ImGui submodule
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sx0jsw4kmb4ycf62bgx3ygwv8k1cgjx52y47d7dk07z6gk6wpyj"))))
+        (base32 "1ap3krrl55hswv1n2r3ijf3xrb3kf9dnqvwyrc0fgnc7j7vd45sk"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
