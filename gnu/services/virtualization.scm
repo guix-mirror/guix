@@ -835,6 +835,14 @@ over TCP.  Reboot upon failure."
 boot time.  This service is meant to be used by virtual machines (VMs) that
 can only be accessed by their host.")))
 
+(define (secret-service-operating-system os)
+  "Return an operating system based on OS that includes the secret-service,
+that will be listening to receive secret keys on port 1004, TCP."
+  (operating-system
+    (inherit os)
+    (services (cons (service secret-service-type 1004)
+                    (operating-system-user-services os)))))
+
 
 ;;;
 ;;; The Hurd in VM service: a Childhurd.
@@ -850,8 +858,6 @@ can only be accessed by their host.")))
                  (target "/dev/vda")
                  (timeout 0)))
     (services (cons*
-               ;; Receive secret keys on port 1004, TCP.
-               (service secret-service-type 1004)
                (service openssh-service-type
                         (openssh-configuration
                          (openssh openssh-sans-x)
@@ -887,8 +893,9 @@ can only be accessed by their host.")))
                (default "/etc/childhurd")))
 
 (define (hurd-vm-disk-image config)
-  "Return a disk-image for the Hurd according to CONFIG."
-  (let ((os (hurd-vm-configuration-os config))
+  "Return a disk-image for the Hurd according to CONFIG.  The secret-service
+is added to the OS specified in CONFIG."
+  (let ((os (secret-service-operating-system (hurd-vm-configuration-os config)))
         (disk-size (hurd-vm-configuration-disk-size config)))
     (system-image
      (image
