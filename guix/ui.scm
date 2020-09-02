@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1238,30 +1239,23 @@ separator between subsequent columns."
 (define* (show-manifest-transaction store manifest transaction
                                     #:key dry-run?)
   "Display what will/would be installed/removed from MANIFEST by TRANSACTION."
-  (define (package-strings names versions outputs)
+  (define* (package-strings names versions outputs #:key old-versions)
     (tabulate (zip (map (lambda (name output)
                           (if (string=? output "out")
                               name
                               (string-append name ":" output)))
                         names outputs)
-                   versions)
+                   (if old-versions
+                       (map (lambda (old new)
+                          (if (string=? old new)
+                              (G_ "(dependencies or package changed)")
+                              (string-append old " " → " " new)))
+                            old-versions versions)
+                       versions))
               #:initial-indent 3))
 
   (define →                        ;an arrow that can be represented on stderr
     (right-arrow (current-error-port)))
-
-  (define (upgrade-string names old-version new-version outputs)
-    (tabulate (zip (map (lambda (name output)
-                          (if (string=? output "out")
-                              name
-                              (string-append name ":" output)))
-                        names outputs)
-                   (map (lambda (old new)
-                          (if (string=? old new)
-                              (G_ "(dependencies or package changed)")
-                              (string-append old " " → " " new)))
-                        old-version new-version))
-              #:initial-indent 3))
 
   (let-values (((remove install upgrade downgrade)
                 (manifest-transaction-effects manifest transaction)))
@@ -1285,8 +1279,8 @@ separator between subsequent columns."
       (((($ <manifest-entry> name old-version)
          . ($ <manifest-entry> _ new-version output item)) ..1)
        (let ((len       (length name))
-             (downgrade (upgrade-string name old-version new-version
-                                        output)))
+             (downgrade (package-strings name new-version output
+                                         #:old-versions old-version)))
          (if dry-run?
              (format (current-error-port)
                      (N_ "The following package would be downgraded:~%~{~a~%~}~%"
@@ -1303,9 +1297,8 @@ separator between subsequent columns."
       (((($ <manifest-entry> name old-version)
          . ($ <manifest-entry> _ new-version output item)) ..1)
        (let ((len     (length name))
-             (upgrade (upgrade-string name
-                                      old-version new-version
-                                      output)))
+             (upgrade (package-strings name new-version output
+                                       #:old-versions old-version)))
          (if dry-run?
              (format (current-error-port)
                      (N_ "The following package would be upgraded:~%~{~a~%~}~%"
