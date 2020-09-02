@@ -71,6 +71,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (ice-9 match)
@@ -4926,6 +4927,51 @@ performance and simplicity in mind.")
 
 (define-public cl-ningle
   (sbcl-package->cl-source-package sbcl-ningle))
+
+(define-public sbcl-cl-fastcgi
+  (let ((commit "d576d20eeb12f225201074b28934ba395b15781a")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-fastcgi")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/KDr2/cl-fastcgi/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "02mvzzyn0k960s38rbxaqqmdkwcfmyhf8dx6ynz8xyxflmp0s5zv"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("usocket" ,sbcl-usocket)
+         ("cffi" ,sbcl-cffi)
+         ("fcgi" ,fcgi)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "cl-fastcgi.lisp"
+                 (("\"libfcgi.so\"")
+                  (string-append
+                   "\""
+                   (assoc-ref inputs "fcgi") "/lib/libfcgi.so\""))))))))
+      (home-page "https://kdr2.com/project/cl-fastcgi.html")
+      (synopsis "FastCGI wrapper for Common Lisp")
+      (description
+       "CL-FastCGI is a generic version of SB-FastCGI, targeting to run on
+mostly Common Lisp implementation.")
+      ;; TODO: Upstream on specifies "BSD license":
+      ;; https://github.com/KDr2/cl-fastcgi/issues/4
+      (license license:bsd-2))))
+
+(define-public cl-fastcgi
+  (sbcl-package->cl-source-package sbcl-cl-fastcgi))
+
+(define-public ecl-cl-fastcgi
+  (sbcl-package->ecl-package sbcl-cl-fastcgi))
 
 (define-public sbcl-clack
   (let ((commit "e3e032843bb1220ab96263c411aa7f2feb4746e0")
