@@ -4973,35 +4973,52 @@ mostly Common Lisp implementation.")
 (define-public ecl-cl-fastcgi
   (sbcl-package->ecl-package sbcl-cl-fastcgi))
 
+(define clack-commit "e3e032843bb1220ab96263c411aa7f2feb4746e0")
+(define clack-revision "1")
+
 (define-public sbcl-clack
-  (let ((commit "e3e032843bb1220ab96263c411aa7f2feb4746e0")
-        (revision "1"))
-    (package
-     (name "sbcl-clack")
-     (version (git-version "2.0.0" revision commit))
-     (source
-      (origin
+  (package
+    (name "sbcl-clack")
+    (version (git-version "2.0.0" clack-revision clack-commit))
+    (source
+     (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/fukamachi/clack")
-             (commit commit)))
+             (commit clack-commit)))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1ymzs6qyrwhlj6cgqsnpyn6g5cbp7a3s1vgxwna20y2q7y4iacy0"))))
-     (build-system asdf-build-system/sbcl)
-     (inputs
-      `(("sbcl-lack" ,sbcl-lack)
-        ("sbcl-lack-middleware-backtrace" ,sbcl-lack-middleware-backtrace)
-        ("sbcl-bordeaux-threads" ,sbcl-bordeaux-threads)))
-     (home-page "https://github.com/fukamachi/clack")
-     (synopsis "Web Application Environment for Common Lisp")
-     (description
-      "Clack is a web application environment for Common Lisp inspired by
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("sbcl-lack" ,sbcl-lack)
+       ("sbcl-lack-middleware-backtrace" ,sbcl-lack-middleware-backtrace)
+       ("sbcl-bordeaux-threads" ,sbcl-bordeaux-threads)))
+    (home-page "https://github.com/fukamachi/clack")
+    (synopsis "Web Application Environment for Common Lisp")
+    (description
+     "Clack is a web application environment for Common Lisp inspired by
 Python's WSGI and Ruby's Rack.")
-     (license license:llgpl))))
+    (license license:llgpl)))
 
 (define-public cl-clack
   (sbcl-package->cl-source-package sbcl-clack))
+
+(define-public sbcl-clack-handler-fcgi
+  (package
+    (inherit sbcl-clack)
+    (name "sbcl-clack-handler-fcgi")
+    (version (git-version "0.3.1" clack-revision clack-commit))
+    (inputs
+     `(("cl-fastcgi" ,sbcl-cl-fastcgi)
+       ("alexandria" ,sbcl-alexandria)
+       ("flexi-streams" ,sbcl-flexi-streams)
+       ("usocket" ,sbcl-usocket)
+       ("quri" ,sbcl-quri)))
+    (synopsis "Web Application Environment for Common Lisp (FastCGI handler)")))
+
+(define-public cl-clack-handler-fcgi
+  (sbcl-package->cl-source-package sbcl-clack-handler-fcgi))
 
 (define-public sbcl-log4cl
   (let ((commit "611e094458504b938d49de904eab141285328c7c")
