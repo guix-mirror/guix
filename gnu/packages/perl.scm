@@ -5033,6 +5033,10 @@ relic support.")
         (base32
          "0h3wfnpv5d4d3f9xzmwkchay6251nhzngdv3f6xia56mj4hxabs0"))))
     (build-system perl-build-system)
+    (native-inputs
+     ;; For tests only.
+     `(("perl-clone" ,perl-clone)
+       ("perl-clone-pp" ,perl-clone-pp)))
     (propagated-inputs
      `(("perl-clone-choose" ,perl-clone-choose)))
     (home-page "https://metacpan.org/release/Hash-Merge")
