@@ -293,8 +293,7 @@ the Rust programming language.")
          (base32
           "19f8v503ibvlyr824g5ynicrh1lsmp2i0zmpszr8lqay0qw3vkl1"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-memchr" ,rust-memchr-2))
        #:cargo-development-inputs
        (("rust-csv" ,rust-csv-1.1)
