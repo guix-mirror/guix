@@ -5023,15 +5023,14 @@ relic support.")
 (define-public perl-hash-merge
   (package
     (name "perl-hash-merge")
-    (version "0.300")
+    (version "0.302")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+       (uri (string-append "mirror://cpan/authors/id/H/HE/HERMES/"
                            "Hash-Merge-" version ".tar.gz"))
        (sha256
-        (base32
-         "0h3wfnpv5d4d3f9xzmwkchay6251nhzngdv3f6xia56mj4hxabs0"))))
+        (base32 "0i46agids6pk445gfck80f8z7q3pjvkp0ip1vmhqnq1rcpvj41df"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests only.
