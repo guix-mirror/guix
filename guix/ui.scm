@@ -1240,18 +1240,21 @@ separator between subsequent columns."
                                     #:key dry-run?)
   "Display what will/would be installed/removed from MANIFEST by TRANSACTION."
   (define* (package-strings names versions outputs #:key old-versions)
-    (tabulate (zip (map (lambda (name output)
-                          (if (string=? output "out")
-                              name
-                              (string-append name ":" output)))
-                        names outputs)
-                   (if old-versions
-                       (map (lambda (old new)
-                          (if (string=? old new)
-                              (G_ "(dependencies or package changed)")
-                              (string-append old " " → " " new)))
-                            old-versions versions)
-                       versions))
+    (tabulate (stable-sort
+               (zip (map (lambda (name output)
+                           (if (string=? output "out")
+                               name
+                               (string-append name ":" output)))
+                         names outputs)
+                    (if old-versions
+                        (map (lambda (old new)
+                               (if (string=? old new)
+                                   (G_ "(dependencies or package changed)")
+                                   (string-append old " " → " " new)))
+                             old-versions versions)
+                        versions))
+               (lambda (x y)
+                 (string<? (first x) (first y))))
               #:initial-indent 3))
 
   (define →                        ;an arrow that can be represented on stderr
