@@ -5020,6 +5020,26 @@ Python's WSGI and Ruby's Rack.")
 (define-public cl-clack-handler-fcgi
   (sbcl-package->cl-source-package sbcl-clack-handler-fcgi))
 
+(define sbcl-clack-socket
+  (package
+    (inherit sbcl-clack)
+    (name "sbcl-clack-socket")
+    (version (git-version "0.1" clack-revision clack-commit))))
+
+(define-public sbcl-clack-handler-hunchentoot
+  (package
+    (inherit sbcl-clack)
+    (name "sbcl-clack-handler-hunchentoot")
+    (version (git-version "0.4.0" clack-revision clack-commit))
+    (inputs
+     `(("hunchentoot" ,sbcl-hunchentoot)
+       ("clack-socket" ,sbcl-clack-socket)
+       ("flexi-streams" ,sbcl-flexi-streams)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("split-sequence" ,sbcl-split-sequence)
+       ("alexandria" ,sbcl-alexandria)))
+    (synopsis "Web Application Environment for Common Lisp (Hunchentoot handler)")))
+
 (define-public sbcl-log4cl
   (let ((commit "611e094458504b938d49de904eab141285328c7c")
         (revision "1"))
