@@ -56,7 +56,8 @@ or a branch.  Return #t on success, #f otherwise."
     (with-directory-excursion directory
       (invoke git-repo-command "init" "-u" manifest-url "-b" manifest-revision
               "--depth=1")
-      (invoke git-repo-command "sync" "-c" "--fail-fast" "-v" "-j" "3")
+      (invoke git-repo-command "sync" "-c" "--fail-fast" "-v" "-j"
+              (number->string (parallel-job-count)))
 
       ;; Delete vendor/**/.git, system/**/.git, toolchain/**/.git,
       ;; .repo/**/.git etc since they contain timestamps.
