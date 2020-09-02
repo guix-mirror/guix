@@ -393,6 +393,12 @@ means that these shams cause many ES5 methods to silently fail.")
            (lambda _
              (substitute* "src/FileSaver.js"
                (("export ") ""))
+             #t))
+         (add-after 'install 'install-unminified-version
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "src/FileSaver.js"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/javascript"))
              #t)))))
     (home-page
      "https://eligrey.com/blog/saving-generated-files-on-the-client-side/")
