@@ -8229,7 +8229,7 @@ with file paths.")
 (define-public perl-pdf-api2
   (package
     (name "perl-pdf-api2")
-    (version "2.036")
+    (version "2.038")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8237,7 +8237,7 @@ with file paths.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0x0pa75wpb87pcshl92y5nh8pzikjp46ljlr2pqvdgpqzvll8107"))))
+                "02dxz798sx0ncdphjrfvfl2a3c1lkplyriyk4psq99q2kdsc8ivl"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)
