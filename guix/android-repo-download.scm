@@ -28,7 +28,6 @@
   #:use-module (guix packages)
   #:use-module (guix modules)
   #:autoload   (guix build-system gnu) (standard-packages)
-  #:use-module (git) ; FIXME Remove
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
@@ -36,7 +35,7 @@
   #:use-module (srfi srfi-35)
   #:export (android-repo-reference
             android-repo-reference?
-            android-repo-reference-mainfest-url
+            android-repo-reference-manifest-url
             android-repo-reference-revision
 
             android-repo-fetch
@@ -48,7 +47,7 @@
 ;;; An <origin> method that fetches a specific commit from an Android repo
 ;;; repository.
 ;;; The repository's manifest (URL and revision) can be specified with a
-;; <android-repo-reference> object.
+;;; <android-repo-reference> object.
 ;;;
 ;;; Code:
 
@@ -71,7 +70,7 @@
   "Return a fixed-output derivation that fetches REF, an
 <android-repo-reference> object.  The output is expected to have recursive
 hash HASH of type HASH-ALGO (a symbol).  Use NAME as the file name, or a
-generic name if #f."
+generic name if unset."
   ;; TODO: Remove.
   (define inputs
     (standard-packages))
