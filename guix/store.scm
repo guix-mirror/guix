@@ -820,7 +820,7 @@ encoding conversion errors."
                             (terminal-columns (terminal-columns))
 
                             ;; Locale of the client.
-                            (locale (false-if-exception (setlocale LC_ALL))))
+                            (locale (false-if-exception (setlocale LC_MESSAGES))))
   ;; Must be called after `open-connection'.
 
   (define buffered
