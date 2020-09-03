@@ -458,6 +458,14 @@ including media capture, encoding and decoding, and rendering.")
                (delete-file-recursively
                 (string-append out "/share/doc/linphone-" ,version))
                #t)))
+         (add-after 'install 'install-man-pages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man1")))
+               (for-each (lambda (file)
+                           (install-file file man))
+                         (find-files ".." ".*.1$"))
+               #t)))
          (add-after 'separate-outputs 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
