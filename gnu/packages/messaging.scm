@@ -228,6 +228,29 @@ identi.ca and status.net).")
     (home-page "https://www.bitlbee.org/")
     (license (list license:gpl2+ license:bsd-2))))
 
+(define-public bitlbee-purple
+  ;; This variant uses libpurple, which provides support for more protocols at
+  ;; the expense of a much bigger closure.
+  (package/inherit bitlbee
+    (name "bitlbee-purple")
+    (synopsis "IRC to instant messaging gateway (using Pidgin's libpurple)")
+    (inputs `(("purple" ,pidgin)
+              ,@(package-inputs bitlbee)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments bitlbee)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'configure                    ;add "--purple=1"
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "./configure"
+                       (string-append "--prefix="
+                                      (assoc-ref outputs "out"))
+                       "--otr=1" "--purple=1")))))
+       ((#:tests? _ #t)
+        ;; XXX: Tests fail to link, and ./configure says that it's "supported
+        ;; on a best-effort basis" anyway.
+        #f)))))
+
 (define-public bitlbee-discord
   (package
     (name "bitlbee-discord")
