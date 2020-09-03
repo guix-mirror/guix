@@ -237,7 +237,10 @@ system.")
                  (image
                   (inherit (image-with-label
                              iso9660-image
-                             (string-append "GUIX_" system "_" %guix-version)))
+                             (string-append "GUIX_" system "_"
+                                            (if (> (string-length %guix-version) 7)
+                                                (substring %guix-version 0 7)
+                                                %guix-version))))
                   (operating-system installation-os))))
         ;; Only cross-compile Guix System images from x86_64-linux for now.
         ,@(if (string=? system "x86_64-linux")
