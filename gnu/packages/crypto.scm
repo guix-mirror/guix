@@ -1061,6 +1061,58 @@ Features:
       (home-page "https://github.com/bitcoin-core/secp256k1")
       (license license:unlicense))))
 
+(define-public libsecp256k1-bitcoin-cash
+  (package
+    (name "libsecp256k1-bitcoin-cash")
+    (version "0.22.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Bitcoin-ABC/secp256k1")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rnif3iny6pz1r3g69bagzr342mm3x0v66b60csnmm1rg44bd5v1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     '(#:configure-flags '("--enable-module-recovery"
+                           "--enable-experimental"
+                           "--enable-module-ecdh"
+                           "--disable-jni"
+                           "--with-bignum=no"
+                           "--enable-module-schnorr"
+                           "--disable-static"
+                           "--enable-shared")))
+    (synopsis "Optimized C library for EC operations on curve secp256k1")
+    (description
+     "Optimized C library for cryptographic operations on curve secp256k1.
+
+This library is used for consensus critical cryptographic operations on the
+Bitcoin Cash network.
+
+Features:
+
+@itemize
+@item secp256k1 ECDSA signing/verification and key generation.
+@item secp256k1 Schnorr signing/verification (Bitcoin Cash Schnorr variant).
+@item Additive and multiplicative tweaking of secret/public keys.
+@item Serialization/parsing of secret keys, public keys, signatures.
+@item Constant time, constant memory access signing and pubkey generation.
+@item Derandomized ECDSA (via RFC6979 or with a caller provided function).
+@item Very efficient implementation.
+@item Suitable for embedded systems.
+@item Optional module for public key recovery.
+@item Optional module for ECDH key exchange (experimental).
+@item Optional module for multiset hash (experimental).
+@end itemize\n")
+    (home-page "https://github.com/Bitcoin-ABC/secp256k1")
+    (license license:expat)))
+
 (define-public stoken
   (package
     (name "stoken")
