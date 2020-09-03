@@ -118,7 +118,7 @@ SYSTEM."
   ;; Note: Don't put the '-final' package variants because (1) that's
   ;; implicit, and (2) they cannot be cross-built (due to the explicit input
   ;; chain.)
-  (list gcc-4.8 gcc-4.9 gcc-5 glibc binutils
+  (list gcc-7 gcc-8 gcc-9 gcc-10 glibc binutils
         gmp mpfr mpc coreutils findutils diffutils patch sed grep
         gawk gnu-gettext hello guile-2.0 guile-2.2 zlib gzip xz
         %bootstrap-binaries-tarball
