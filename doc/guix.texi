@@ -28036,7 +28036,7 @@ The common way to create this file is as follows:
        (app       (string-append out "/bin/" ,name))
        (Rbin      (string-append (assoc-ref %build-inputs "r-min")
                                  "/bin/Rscript")))
-@dots{}
+  ;; @dots{}
   (mkdir-p (string-append out "/bin"))
   (call-with-output-file app
     (lambda (port)
@@ -28045,8 +28045,7 @@ The common way to create this file is as follows:
 library(shiny)
 setwd(\"~a\")
 runApp(launch.browser=0, port=4202)~%\n"
-      Rbin targetdir)))
-@dots{}
+      Rbin targetdir))))
 @end lisp
 
 @end table
