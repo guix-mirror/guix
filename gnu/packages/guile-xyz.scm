@@ -3039,20 +3039,20 @@ in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
 
 (define-public emacsy-minimal
-  (let ((commit "v0.4.1-28-gd459ca1"))
+  (let ((commit "v0.4.1-31-g415d96f"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
       (version (string-drop commit 1))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/emacsy.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1ps15w8cxj9kc18gmvys9jv9xa1qqa7m43ismv34l3cmhddrn0sr"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/emacsy.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1cs1i1hxwrv0a512j54yrvfh743nci1chx6qjgp4jyzq98ncvxgg"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)
@@ -3063,10 +3063,10 @@ in C using Gtk+-3 and WebKitGtk.")
        `(#:configure-flags '("--without-examples")
          #:phases
          (modify-phases %standard-phases
-         (add-before 'configure 'setenv
-           (lambda _
-             (setenv "GUILE_AUTO_COMPILE" "0")
-             #t))))))))
+           (add-before 'configure 'setenv
+             (lambda _
+               (setenv "GUILE_AUTO_COMPILE" "0")
+               #t))))))))
 
 (define-public guile-jpeg
   (let ((commit "6a1673578b297c2c1b28e44a76bd5c49e76a5046")
