@@ -27,6 +27,7 @@
 (define-module (gnu packages kde-frameworks)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -355,6 +356,33 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
     (description "This package contains artwork, styles and assets associated
 with the Breeze visual style.")
     (license license:gpl2+)))
+
+(define-public breeze
+  (package
+    (name "breeze")
+    (version (package-version breeze-assets))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build union))
+       #:builder
+       (begin
+         (use-modules (ice-9 match)
+                      (guix build union))
+         (match %build-inputs
+           (((names . directories) ...)
+            (union-build (assoc-ref %outputs "out")
+                         directories)
+            #t)))))
+    (inputs
+     `(("breeze-icons" ,breeze-icons)
+       ("breeze-assets" ,breeze-assets)))
+    (home-page "https://github.com/KDE/breeze-icons")
+    (synopsis "Full KDE Breeze theme")
+    (description
+     "This package contains the full Breeze visual style for KDE:
+assets and icons.")
+    (license (list license:gpl2 license:gpl3+))))
 
 (define-public kapidox
   (package
