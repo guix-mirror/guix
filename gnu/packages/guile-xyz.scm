@@ -798,6 +798,7 @@ using Guile's foreign function interface.")
     (build-system guile-build-system)
     (arguments
      '(#:source-directory "src"
+       #:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'move-files-around
                     (lambda _
@@ -806,8 +807,7 @@ using Guile's foreign function interface.")
                       (mkdir-p "src/pfds")
                       (for-each (lambda (file)
                                   (rename-file file
-                                               (string-append "src/pfds/"
-                                                              file)))
+                                    (string-append "src/pfds/" file)))
                                 '("bbtrees.sls"
                                   "deques"
                                   "deques.sls"
@@ -821,15 +821,6 @@ using Guile's foreign function interface.")
                                   "queues.sls"
                                   "sequences.sls"
                                   "sets.sls"))
-
-                      ;; In Guile <= 2.2.4, there's no way to tell 'guild
-                      ;; compile' to accept the ".sls" extension.  So...
-                      (for-each (lambda (file)
-                                  (rename-file file
-                                               (string-append
-                                                (string-drop-right file 4)
-                                                ".scm")))
-                                (find-files "." "\\.sls$"))
                       #t)))))
     (native-inputs
      `(("guile" ,guile-3.0)))
@@ -892,7 +883,18 @@ types are supported.")
      (substitute-keyword-arguments (package-arguments guile-pfds)
        ((#:phases phases)
         `(modify-phases ,phases
-           (delete 'work-around-guile-bug)))))))
+           (delete 'work-around-guile-bug)
+           (add-after 'move-files-around 'sls->scm
+             (lambda _
+               ;; In Guile <= 2.2.4, there's no way to tell 'guild
+               ;; compile' to accept the ".sls" extension.  So...
+               (for-each (lambda (file)
+                           (rename-file file
+                                        (string-append
+                                         (string-drop-right file 4)
+                                         ".scm")))
+                         (find-files "." "\\.sls$"))
+               #t))))))))
 
 (define-public guile3.0-pfds
   (deprecated-package "guile3.0-pfds" guile-pfds))
