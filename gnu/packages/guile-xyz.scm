@@ -1759,19 +1759,20 @@ capabilities.")
     (license license:gpl3+)))
 
 (define-public g-golf
-  (let ((commit "5d2903afb4b6b65c22f587835d8fdff91916e5ee"))
+  (let ((commit   "84e894eb7945c3bcdf7f8d5135c1be3efa524c92")
+        (revision "822"))
     (package
       (name "g-golf")
-      (version (git-version "1" "804" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/g-golf.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1xkb6a5d3i9s8lpb5cf06bd64p5srqnnhn5l0b2f5csbvyz8hmmh"))))
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/g-golf.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1pkcij65zy2lkip5yrfzj85nq17pp9mrf0d4sk6hpjqr4kd0bxd5"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
