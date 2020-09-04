@@ -57,6 +57,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages kde-plasma)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
@@ -324,6 +325,36 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
     ;; directories are lgpl3, while the top directory contains the lgpl2.1.
     ;; text.
     (license license:lgpl3+)))
+
+(define-public breeze-assets
+  (package
+    (inherit breeze-icons)
+    (name "breeze-assets")
+    (version "5.19.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/plasma/" version
+                    "/breeze-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0dpk1w7zcafrzf46j060i1qb0fwqpsflkfzr6gcar81llmjnc4b1"))))
+    (inputs
+     `(,@(package-inputs breeze-icons)
+       ("ki18n" ,ki18n)
+       ("kpackage" ,kpackage)
+       ("kguiaddons" ,kguiaddons)
+       ("kdecoration" ,kdecoration)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kiconthemes" ,kiconthemes)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://github.com/KDE/breeze")
+    (synopsis "Artwork, styles and assets for the Breeze visual style")
+    (description "This package contains artwork, styles and assets associated
+with the Breeze visual style.")
+    (license license:gpl2+)))
 
 (define-public kapidox
   (package
