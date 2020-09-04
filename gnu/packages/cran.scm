@@ -5041,14 +5041,14 @@ interface.")
 (define-public r-trend
   (package
     (name "r-trend")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "trend" version))
        (sha256
         (base32
-         "09b6ycyfgs4xlhx6kn6qm5rl2acp58hzhv8qclzn3kb1wjjyvxy5"))))
+         "0bj40acr1sc7vfxdcsdja3g28xsmrclmgb3n94p89gfjcgp8nv1d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-extradistr" ,r-extradistr)))
