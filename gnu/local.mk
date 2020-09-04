@@ -1074,6 +1074,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
   %D%/packages/patches/go-skip-gc-test.patch			\
   %D%/packages/patches/gpm-glibc-2.26.patch			\
+  %D%/packages/patches/gpodder-disable-updater.patch		\
   %D%/packages/patches/gpsbabel-minizip.patch     		\
   %D%/packages/patches/gpsbabel-qstring.patch     		\
   %D%/packages/patches/grantlee-merge-theme-dirs.patch		\
