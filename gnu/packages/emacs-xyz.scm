@@ -9663,6 +9663,29 @@ lists, and project planning with a fast and effective plain-text system.
 This package is equivalent to org-plus-contrib, but only includes additional
 files that you would find in @file{contrib/} from the git repository.")))
 
+(define-public emacs-org-edna
+  (package
+    (name "emacs-org-edna")
+    (version "1.1.2")
+    (source (origin
+              (method bzr-fetch)
+              (uri (bzr-reference
+                    (url "bzr://bzr.savannah.nongnu.org/org-edna-el")
+                    (revision version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "01dblddgx0yid5hrgl4swbr4grhv057kfbdy122wihzqpsrgq86n"))))
+    (build-system emacs-build-system)
+    (home-page "https://savannah.nongnu.org/projects/org-edna-el/")
+    (synopsis "Manage Org task dependencies")
+    (description "This package provides an extensible means of specifying
+conditions which must be fulfilled before a task can be completed and actions
+to take once it is.  Org Edna runs when either the BLOCKER or TRIGGER
+properties are set on a heading, and when it is changing from a TODO state to
+a DONE state.")
+    (license license:gpl3+)))
+
 (define-public emacs-flx
   (package
     (name "emacs-flx")
