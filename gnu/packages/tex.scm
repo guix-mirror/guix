@@ -7323,7 +7323,7 @@ styles as well as the optional active quotes are freely configurable.")
       (propagated-inputs
        `(("texlive-etoolbox" ,texlive-etoolbox)))
       (home-page "https://www.ctan.org/pkg/logreq")
-      (synopsis "Context sensitive quotation facilities")
+      (synopsis "Support for automation of the LaTeX workflow")
       (description "The package helps to automate a typical LaTeX
 workflow that involves running LaTeX several times and running tools
 such as BibTeX or makeindex.  It will log requests like \"please rerun
