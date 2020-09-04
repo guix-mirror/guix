@@ -568,8 +568,7 @@ out) and returning a package that uses that as its 'source'."
                "15p50jkss6szinisb7axhxybgfi29sm9grz7mxwair8ljj2553yx"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--sysconfdir=/etc")
+     `(#:configure-flags '("--sysconfdir=/etc" "--enable-gc")
        #:phases
        (modify-phases %standard-phases
          (replace 'install
