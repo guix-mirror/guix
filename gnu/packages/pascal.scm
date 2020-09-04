@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Kei Kebreau <address@hidden>
+;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,7 +55,7 @@
 (define-public fpc
   (package
     (name "fpc")
-    (version "3.2.0")
+    (version "3.2.0")                   ; Update release date below!
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/freepascal/Source/"
@@ -131,6 +132,18 @@
              (lambda _
                (substitute* "fpcsrc/compiler/cscript.pas"
                  (("#!/bin/sh") (string-append "#!" (which "sh"))))
+               #t))
+           (add-before 'build 'patch-release-date
+             (lambda _                  ; reproducibility
+               (substitute* (list "fpcdocs/prog.tex"
+                                  "fpcsrc/packages/amunits/examples/sortdemo.pas"
+                                  "fpcsrc/packages/libogcfpc/src/ogc/libversion.inc"
+                                  "fpcsrc/utils/fpcres/fpcjres.pas"
+                                  "fpcsrc/utils/fpcres/fpcres.pas"
+                                  "fpcsrc/utils/fpcm/fpcmmain.pp"
+                                  "fpcsrc/utils/fpcreslipo/fpcreslipo.pp"
+                                  "fpcsrc/compiler/version.pas")
+                 (("\\{\\$I(NCLUDE)? %DATE%\\}") "'2020/06/19'"))
                #t))
            (replace 'configure
              (lambda* (#:key inputs outputs #:allow-other-keys)
