@@ -6460,14 +6460,14 @@ genes in the gene-set that are ranked above the leading edge).")
 (define-public r-cicero
   (package
     (name "r-cicero")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "cicero" version))
        (sha256
         (base32
-         "0nf9yqg5krj26n4n82iyx3rsr84d46b17i9zfk35sh12l4xssbii"))))
+         "042ba6yfa7fksij2v7cwnp2sca3vmz7izn6fsxx9xswnncrkgcqh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
