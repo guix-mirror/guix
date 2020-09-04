@@ -3452,14 +3452,14 @@ surface of a flowcell.")
 (define-public r-gkmsvm
   (package
     (name "r-gkmsvm")
-    (version "0.80.0")
+    (version "0.81.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gkmSVM" version))
        (sha256
         (base32
-         "0ljcga246ad0ql8x3drvrdsyp0f20mgp3p6lnl79xb76qgfdnm0p"))))
+         "119g5rhc7ffyviz04r04aj5z1g6abnj3ddd01g7db505sdr6lapj"))))
     (properties `((upstream-name . "gkmSVM")))
     (build-system r-build-system)
     (propagated-inputs
