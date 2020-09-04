@@ -12413,6 +12413,19 @@ example for an encrypted partition (@pxref{Mapped Devices}).
 @end table
 @end deftp
 
+@deffn {Scheme Procedure} file-system-label @var{str}
+This procedure returns an opaque file system label from @var{str}, a
+string:
+
+@lisp
+(file-system-label "home")
+@result{} #<file-system-label "home">
+@end lisp
+
+File system labels are used to refer to file systems by label rather
+than by device name.  See above for examples.
+@end deffn
+
 The @code{(gnu system file-systems)} exports the following useful
 variables.
 
@@ -12458,6 +12471,29 @@ The @code{fusectl} file system, which allows unprivileged users to mount
 and unmount user-space FUSE file systems.  This requires the
 @code{fuse.ko} kernel module to be loaded.
 @end defvr
+
+The @code{(gnu system uuid)} module provides tools to deal with file
+system ``unique identifiers'' (UUIDs).
+
+@deffn {Scheme Procedure} uuid @var{str} [@var{type}]
+Return an opaque UUID (unique identifier) object of the given @var{type}
+(a symbol) by parsing @var{str} (a string):
+
+@lisp
+(uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")
+@result{} #<<uuid> type: dce bv: @dots{}>
+
+(uuid "1234-ABCD" 'fat)
+@result{} #<<uuid> type: fat bv: @dots{}>
+@end lisp
+
+@var{type} may be one of @code{dce}, @code{iso9660}, @code{fat},
+@code{ntfs}, or one of the commonly found synonyms for these.
+
+UUIDs are another way to unambiguously refer to file systems in
+operating system configuration.  See the examples above.
+@end deffn
+
 
 @node Btrfs file system
 @subsection Btrfs file system
