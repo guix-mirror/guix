@@ -209,14 +209,13 @@ This package provides a Python interface for BLAKE2.")
 (define-public python-paramiko
   (package
     (name "python-paramiko")
-    (version "2.7.1")
+    (version "2.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "paramiko" version))
        (sha256
-        (base32
-         "17wx8lkhqxmddfdq7z7x45xqq2w3gwa974hpq1n3y0dqbn4r414j"))))
+        (base32 "0dahwq623jnna7gsr9j0mkwr9k2n1pvkapjryhcx508d5jxg8dkz"))))
     (build-system python-build-system)
     (arguments
      `(;; FIXME: Tests require many unpackaged libraries, see dev-requirements.txt.
