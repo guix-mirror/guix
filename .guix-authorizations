@@ -101,6 +101,9 @@
    (name "ngz"))
   ("CEF4 CB91 4856 BA38 0A20  A7E2 3008 88CB 39C6 3817"
    (name "pelzflorian"))
+  (;; primary: "41CA 12EA DE0C F33F 6885  A58F 5719 6E37 E00B 77FD"
+   "72D5 3D81 8CB6 F4A1 7258  374C A8FC 9E44 7F4F 7D54"
+   (name "planglois"))
   (;; primary: "B68B DF22 73F9 DA0E 63C1  8A32 515B F416 9242 D600"
    "C699 ED09 E51B CE89 FD1D  A078 AAC7 E891 896B 568A"
    (name "pgarlick"))
