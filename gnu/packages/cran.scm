@@ -15513,14 +15513,14 @@ regular expressions from human readable expressions")
 (define-public r-xmlparsedata
   (package
     (name "r-xmlparsedata")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xmlparsedata" version))
        (sha256
         (base32
-         "0gjr3l5z5dp276lchr2649as1rkj56d2mlvbr66yg393zzw50lsh"))))
+         "177vfyjrqfi3wam8scpsradap1lv35yc25xq745dr7gabg116yrq"))))
     (properties `((upstream-name . "xmlparsedata")))
     (build-system r-build-system)
     (home-page "https://github.com/r-lib/xmlparsedata#readme")
