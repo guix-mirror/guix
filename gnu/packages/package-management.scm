@@ -1000,6 +1000,15 @@ environments.")
                   (substitute* "configure.ac"
                     (("^GUILE_PKG.*")
                      "GUILE_PKG([3.0 2.2])\n"))
+
+                  ;; Avoid name clash and build failure now that
+                  ;; 'define-json-mapping' is also provided by Guile-JSON, as
+                  ;; of version 4.3.
+                  (substitute* (find-files "." "\\.scm$")
+                    (("define-json-mapping")
+                     "define-json-mapping*")
+                    (("<=>")
+                     "<->"))
                   #t))
               (file-name (string-append "guix-jupyter-" version "-checkout"))))
     (build-system gnu-build-system)
