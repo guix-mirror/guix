@@ -13469,6 +13469,29 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
                 "mcclim-test-util"))
              #t)))))))
 
+(define-public sbcl-clim-examples
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-clim-examples")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("mcclim" ,sbcl-mcclim)
+       ("mcclim-bezier" ,sbcl-mcclim-bezier)
+       ("mcclim-layouts-tab" ,sbcl-mcclim-layouts-tab)
+       ("mcclim-raster-image" ,sbcl-mcclim-raster-image)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Examples/clim-examples.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-asd-system-names
+           (lambda _
+             (substitute* "Examples/clim-examples.asd"
+               (("mcclim-layouts/tab")
+                "mcclim-layouts-tab"))
+             #t)))))))
+
 (define-public sbcl-cl-inflector
   (let ((commit "f1ab16919ccce3bd82a0042677d9616dde2034fe")
         (revision "1"))
