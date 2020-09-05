@@ -47,14 +47,14 @@
 (define-public node
   (package
     (name "node")
-    (version "10.22.0")
+    (version "10.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "1nz18fa550li10r0kzsm28c2rvvq61nq8bqdygip0rmvbi2paxg0"))
+                "0cvjwnl0wkcsyw3kannbdv01s235wrnp11n2s6swzjx95gpichfi"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -186,7 +186,7 @@
        ("http-parser" ,http-parser)
        ("icu4c" ,icu4c)
        ("libuv" ,libuv)
-       ("nghttp2" ,nghttp2-1.41 "lib")
+       ("nghttp2" ,nghttp2 "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
