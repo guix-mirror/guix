@@ -2916,7 +2916,7 @@ event-based scripts for scrobbling, notifications, etc.")
 (define-public picard
   (package
     (name "picard")
-    (version "2.1.3")
+    (version "2.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2924,7 +2924,8 @@ event-based scripts for scrobbling, notifications, etc.")
                     "picard/picard-" version ".tar.gz"))
               (sha256
                (base32
-                "19w5k3bf4886gdycxjds9nkjvir0gwy2r5cqkz0lbls4ikk4y14f"))))
+                "1c5l7i43jaj3s4wklc0cba6nn2x9cmpcggk4q4h9m1bci2xilsiy"))
+              (patches (search-patches "picard-fix-id3-rename-test.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:use-setuptools? #f
@@ -2943,7 +2944,8 @@ event-based scripts for scrobbling, notifications, etc.")
                  (assoc-ref inputs "chromaprint") "/bin/fpcalc")))
              #t)))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)))
+     `(("gettext" ,gettext-minimal)
+       ("python-dateutil" ,python-dateutil)))
     (inputs
      `(("chromaprint" ,chromaprint)
        ("python-discid" ,python-discid)

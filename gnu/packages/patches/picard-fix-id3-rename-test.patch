@@ -1,0 +1,11 @@
+Index: b/test/formats/test_id3.py
+===================================================================
+--- a/test/formats/test_id3.py
++++ b/test/formats/test_id3.py
+@@ -266,5 +266,5 @@
+         def test_rename_txxx_tags(self):
+             file_path = os.path.join('test', 'data', 'test-id3-rename-tags.mp3')
+-            filename = self.copy_file_tmp(file_path, 'mp3')
++            filename = self.copy_file_tmp(file_path, '.mp3')
+             raw_metadata = load_raw(filename)
+             self.assertIn('TXXX:Artists', raw_metadata)
