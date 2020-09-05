@@ -13446,6 +13446,29 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
      '(#:asd-file "mcclim.asd"
        #:asd-system-name "mcclim/test-util"))))
 
+(define-public sbcl-mcclim-raster-image
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-raster-image")
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("mcclim-test-util" ,sbcl-mcclim-test-util)))
+    (inputs
+     `(("clim-basic" ,sbcl-clim-basic)
+       ("mcclim-backend-common" ,sbcl-mcclim-backend-common)
+       ("mcclim-render" ,sbcl-mcclim-render)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "Backends/RasterImage/mcclim-raster-image.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-asd-system-names
+           (lambda _
+             (substitute* "Backends/RasterImage/mcclim-raster-image.asd"
+               (("mcclim/test-util")
+                "mcclim-test-util"))
+             #t)))))))
+
 (define-public sbcl-cl-inflector
   (let ((commit "f1ab16919ccce3bd82a0042677d9616dde2034fe")
         (revision "1"))
