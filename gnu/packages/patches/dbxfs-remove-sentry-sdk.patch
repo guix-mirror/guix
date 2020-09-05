@@ -1,0 +1,64 @@
+sentry-sdk provides a link to sentry.io, a service which monitors applications deployed in the wild.
+Defaults to true. Best to just remove the option.
+
+---
+ dbxfs/main.py | 16 ----------------
+ setup.py      |  1 -
+ 2 files changed, 17 deletions(-)
+
+diff --git a/dbxfs/main.py b/dbxfs/main.py
+index 5a6cea1..5d00818 100755
+--- a/dbxfs/main.py
++++ b/dbxfs/main.py
+@@ -40,8 +40,6 @@ import userspacefs
+ import keyring
+ from keyring.errors import KeyringError
+ 
+-import sentry_sdk
+-
+ from block_tracing import block_tracing, BLOCK_TRACING_INHERITS
+ 
+ from dbxfs.dbxfs import FileSystem as DropboxFileSystem
+@@ -299,12 +297,6 @@ def _main(argv=None):
+             config['keyring_user'] = keyring_user
+             save_config = True
+ 
+-    if not config.get("asked_send_error_reports", False):
+-        if yes_no_input("Would you like to help us improve %s by providing anonymous error reports?" % (APP_NAME,), default_yes=True):
+-            config['send_error_reports'] = True
+-        config['asked_send_error_reports'] = True
+-        save_config = True
+-
+     if save_access_token and yes_no_input("Do you want \"%s\" to be the default mount point?" % (mount_point,), default_yes=True):
+         config['mount_point'] = mount_point
+         save_config = True
+@@ -315,14 +307,6 @@ def _main(argv=None):
+ 
+     log.info("Starting %s...", APP_NAME)
+ 
+-    if config.get('send_error_reports', False):
+-        try:
+-            sentry_sdk.init("https://b4b13ebd300849bd92260507a594e618@sentry.io/1293235",
+-                            release='%s@%s' % (APP_NAME, version),
+-                            with_locals=False)
+-        except Exception:
+-            log.warning("Failed to initialize sentry", exc_info=True)
+-
+     if cache_folder is None:
+         cache_folder = os.path.join(appdirs.user_cache_dir(APP_NAME), "file_cache")
+         try:
+diff --git a/setup.py b/setup.py
+index 89e25c6..f940d47 100644
+--- a/setup.py
++++ b/setup.py
+@@ -43,7 +43,6 @@ setup(
+         "privy>=6.0,<7",
+         "keyring>=15.1.0",
+         "keyrings.alt>=3.1,<4",
+-        "sentry_sdk>=0.3,<1",
+     ],
+     extras_require={
+         'safefs': ["safefs"],
+-- 
+2.28.0
+

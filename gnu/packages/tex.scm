@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7308,3 +7309,35 @@ facilities designed to cope with the more specific demands of academic
 writing, especially in the humanities and the social sciences.  All quote
 styles as well as the optional active quotes are freely configurable.")
       (license license:lppl1.3c+))))
+
+(define-public texlive-logreq
+  (let ((template (simple-texlive-package
+                   "texlive-logreq"
+                   (list "/doc/latex/logreq/"
+                         "/tex/latex/logreq/")
+                   (base32
+                    "13difccs3cxlkqlnhw286yb0c7mifrxfd402a2x5wwxv0m1kgfqd")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-etoolbox" ,texlive-etoolbox)))
+      (home-page "https://www.ctan.org/pkg/logreq")
+      (synopsis "Support for automation of the LaTeX workflow")
+      (description "The package helps to automate a typical LaTeX
+workflow that involves running LaTeX several times and running tools
+such as BibTeX or makeindex.  It will log requests like \"please rerun
+LaTeX\" or \"please run BibTeX on file X\" to an external file in a
+machine-readable format.  Compiler scripts and integrated LaTeX
+editing environments may parse this file to determine the next steps
+in the workflow.  In sum, the package will do two things:
+
+@enumerate
+@item
+enable package authors to use LaTeX commands to issue requests, and
+
+@item
+collect all requests from all packages and write them to an external
+XML file.
+@end enumerate\n")
+      (license license:lppl1.3c))))

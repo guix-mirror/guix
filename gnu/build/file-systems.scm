@@ -478,6 +478,42 @@ not valid header was found."
 
 
 ;;;
+;;; NTFS file systems.
+;;;
+
+;; Taken from <linux-libre>/fs/ntfs/layout.h
+
+(define-syntax %ntfs-endianness
+  ;; Endianness of NTFS file systems.
+  (identifier-syntax (endianness little)))
+
+(define (ntfs-superblock? sblock)
+  "Return #t when SBLOCK is a NTFS superblock."
+  (bytevector=? (sub-bytevector sblock 3 8)
+                (string->utf8 "NTFS    ")))
+
+(define (read-ntfs-superblock device)
+  "Return the raw contents of DEVICE's NTFS superblock as a bytevector, or #f
+if DEVICE does not contain a NTFS file system."
+  (read-superblock device 0 511 ntfs-superblock?))
+
+(define (ntfs-superblock-uuid sblock)
+  "Return the UUID of NTFS superblock SBLOCK as a 8-byte bytevector."
+  (sub-bytevector sblock 72 8))
+
+;; TODO: Add ntfs-superblock-volume-name.  The partition label is not stored
+;; in the BOOT SECTOR like the UUID, but in the MASTER FILE TABLE, which seems
+;; way harder to access.
+
+(define (check-ntfs-file-system device)
+  "Return the health of a NTFS file system on DEVICE."
+  (match (status:exit-val
+          (system* "ntfsfix" device))
+    (0 'pass)
+    (_ 'fatal-error)))
+
+
+;;;
 ;;; Partition lookup.
 ;;;
 
@@ -585,7 +621,9 @@ partition field reader that returned a value."
         (partition-field-reader read-jfs-superblock
                                 jfs-superblock-uuid)
         (partition-field-reader read-f2fs-superblock
-                                f2fs-superblock-uuid)))
+                                f2fs-superblock-uuid)
+        (partition-field-reader read-ntfs-superblock
+                                ntfs-superblock-uuid)))
 
 (define read-partition-label
   (cut read-partition-field <> %partition-label-readers))
@@ -684,6 +722,7 @@ were found."
      ((string-suffix? "fat" type) check-fat-file-system)
      ((string-prefix? "jfs" type) check-jfs-file-system)
      ((string-prefix? "f2fs" type) check-f2fs-file-system)
+     ((string-prefix? "ntfs" type) check-ntfs-file-system)
      ((string-prefix? "nfs" type) (const 'pass))
      (else #f)))
 
@@ -775,26 +814,33 @@ corresponds to the symbols listed in FLAGS."
     (when (file-system-check? fs)
       (check-file-system source type))
 
-    ;; Create the mount point.  Most of the time this is a directory, but
-    ;; in the case of a bind mount, a regular file or socket may be needed.
-    (if (and (= MS_BIND (logand flags MS_BIND))
-             (not (file-is-directory? source)))
-        (unless (file-exists? mount-point)
-          (mkdir-p (dirname mount-point))
-          (call-with-output-file mount-point (const #t)))
-        (mkdir-p mount-point))
+    (catch 'system-error
+      (lambda ()
+        ;; Create the mount point.  Most of the time this is a directory, but
+        ;; in the case of a bind mount, a regular file or socket may be
+        ;; needed.
+        (if (and (= MS_BIND (logand flags MS_BIND))
+                 (not (file-is-directory? source)))
+            (unless (file-exists? mount-point)
+              (mkdir-p (dirname mount-point))
+              (call-with-output-file mount-point (const #t)))
+            (mkdir-p mount-point))
 
-    (cond
-     ((string-prefix? "nfs" type)
-      (mount-nfs source mount-point type flags options))
-     (else
-      (mount source mount-point type flags options)))
+        (cond
+         ((string-prefix? "nfs" type)
+          (mount-nfs source mount-point type flags options))
+         (else
+          (mount source mount-point type flags options)))
 
-    ;; For read-only bind mounts, an extra remount is needed, as per
-    ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.
-    (when (and (= MS_BIND (logand flags MS_BIND))
-               (= MS_RDONLY (logand flags MS_RDONLY)))
-      (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
-        (mount source mount-point type flags #f)))))
+        ;; For read-only bind mounts, an extra remount is needed, as per
+        ;; <http://lwn.net/Articles/281157/>, which still applies to Linux
+        ;; 4.0.
+        (when (and (= MS_BIND (logand flags MS_BIND))
+                   (= MS_RDONLY (logand flags MS_RDONLY)))
+          (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
+            (mount source mount-point type flags #f))))
+      (lambda args
+        (or (file-system-mount-may-fail? fs)
+            (apply throw args))))))
 
 ;;; file-systems.scm ends here

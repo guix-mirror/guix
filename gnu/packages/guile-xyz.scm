@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357@gmail.com>
+;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
@@ -102,6 +104,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
   #:use-module (guix utils)
@@ -1883,18 +1886,18 @@ understand, extend, and port to host languages other than Scheme.")
 (define-public guile-reader
   (package
     (name "guile-reader")
-    (version "0.6.2")
+    (version "0.6.3")
     (source  (origin
                (method url-fetch)
                (uri (string-append "mirror://savannah/guile-reader/guile-reader-"
                                    version ".tar.gz"))
                (sha256
                 (base32
-                 "0592s2s8ampqmqwilc4fvcild6rb9gy79di6vxv5kcdmv23abkgx"))))
+                 "1fyjckmygkhq22lq8nqc86yl5zzbqd7a944dnz5c1f6vx92b9hiq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkgconfig" ,pkg-config)
-                     ("gperf" ,gperf-3.0)))
-    (inputs `(("guile" ,guile-2.2)))
+                     ("gperf" ,gperf)))
+    (inputs `(("guile" ,guile-3.0)))
     (synopsis "Framework for building readers for GNU Guile")
     (description
      "Guile-Reader is a simple framework for building readers for GNU Guile.
@@ -1910,6 +1913,12 @@ hopefully more powerful and flexible (for instance, one may instantiate as
 many readers as needed).")
     (home-page "https://www.nongnu.org/guile-reader/")
     (license license:gpl3+)))
+
+(define-public guile2.2-reader
+  (package
+    (inherit guile-reader)
+    (name "guile2.2-reader")
+    (inputs `(("guile" ,guile-2.2)))))
 
 (define-public guile-ncurses
   (package
@@ -2215,8 +2224,7 @@ inspired by the SCSH regular expression system.")
     (inputs
      `(("guile" ,guile-3.0)))
     (propagated-inputs
-     ;; XXX: Guile-Reader is currently unavailable for Guile 2.2 so strip it.
-     `(;;("guile-reader" ,guile-reader)
+     `(("guile-reader" ,guile-reader)
        ("guile-commonmark" ,guile-commonmark)))
     (synopsis "Functional static site generator")
     (description "Haunt is a static site generator written in Guile
@@ -2231,7 +2239,7 @@ interface for reading articles in any format.")
     (name "guile2.2-haunt")
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-reader" ,guile-reader)
+     `(("guile-reader" ,guile2.2-reader)
        ("guile-commonmark" ,guile2.2-commonmark)))))
 
 (define-public guile2.0-haunt
@@ -2337,14 +2345,14 @@ is no support for parsing block and inline level HTML.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.1.4")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mcron/mcron-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1521w3h33bhdlg6qc66sq4dwv3qsx8r8x6srq4ca6kaahy6dszw8"))))
+                "1midrn15d5kqy4zd2029bj1db6gnfhxg8mcgfy4bkp5p9nl4v4rd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -2429,11 +2437,11 @@ The picture values can directly be displayed in Geiser.")
                       guile-picture-language))
 
 (define-public guile-studio
-  (let ((commit "d24d59a68e3f1fa9477e3430fc48a2efe97b805d")
+  (let ((commit "5c05b03e8a5c450f7358ceec7ea602f29c49d54e")
         (revision "1"))
     (package
       (name "guile-studio")
-      (version (git-version "0.0.2" revision commit))
+      (version (git-version "0.0.3" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2442,7 +2450,7 @@ The picture values can directly be displayed in Geiser.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0kqi0q8a7si65n21b7gn8vbninwcg0fqy5hmvy3l1bi6iync20zr"))))
+                  "11wyf6x7mhyhimv0cd57pl39zgav9hc9ljqi3g2g35b264hylpnx"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules
@@ -2479,6 +2487,7 @@ The picture values can directly be displayed in Geiser.")
          ("emacs-geiser" ,emacs-geiser)
          ("emacs-company" ,emacs-company)
          ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-flycheck-guile" ,emacs-flycheck-guile)
          ("emacs-smart-mode-line" ,emacs-smart-mode-line)
          ("emacs-paren-face" ,emacs-paren-face)
          ("adwaita-icon-theme" ,adwaita-icon-theme)))
@@ -2699,10 +2708,10 @@ list of components.  This module takes care of that for you.")
               (sha256
                (base32
                 "05xbwrk50h4f9fh8la8fk2wsxbnm0jcyb9phnpkkjq4sqkhkxlbj"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
-       #:modules ((guix build gnu-build-system)
+       #:modules ((guix build glib-or-gtk-build-system)
                   (guix build utils)
                   (ice-9 popen)
                   (ice-9 rdelim))
@@ -2725,7 +2734,7 @@ list of components.  This module takes care of that for you.")
                             (format #f "~alibguile-gi"
                                     (if (getenv "GUILE_GI_UNINSTALLED")
                                         ""
-                                        ,(format #f "~a/lib/guile/~a/"
+                                        ,(format #f "~a/lib/guile/~a/extensions/"
                                                  (assoc-ref outputs "out")
                                                  effective)))
                             ,arg)))))
@@ -2764,12 +2773,90 @@ pre-alpha code.")
   (package
     (inherit guile-gi)
     (name "guile2.2-gi")
-    (native-inputs
+    (inputs
      `(("guile" ,guile-2.2)
-       ,@(package-native-inputs guile-gi)))))
+       ,@(alist-delete "guile" (package-inputs guile-gi))))))
 
 (define-public guile3.0-gi
   (deprecated-package "guile3.0-gi" guile-gi))
+
+(define-public guile-srfi-89
+  (package
+    (name "guile-srfi-89")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/mjbecze/guile-srfi-89.git")
+             (commit version)))
+       (sha256
+         (base32
+           "1981c0rrzxqx3md9jx8ir7j3m2mzg9m72b33p5jvw36zirbzpl20"))
+       (file-name (git-file-name name version))))
+    (build-system guile-build-system)
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://gitlab.com/mjbecze/guile-srfi-89")
+    (synopsis "Hygienic implementation of SRFI-89 for Guile")
+    (description
+     "This package provides SRFI-89 optional positional and named
+parameters, which  define* and lambda* special forms")
+    (license license:gpl3+)))
+
+(define-public guile-srfi-145
+  (package
+    (name "guile-srfi-145")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/mjbecze/guile-srfi-145.git")
+             (commit version)))
+       (sha256
+         (base32
+           "1gssa8cmcp8640fil9z8dpil8v5l279wlalqjcx3fls5jwv13q1b"))
+       (file-name (git-file-name name version))))
+    (build-system guile-build-system)
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://gitlab.com/mjbecze/guile-srfi-145")
+    (synopsis "SRFI-145 port for Guile")
+    (description
+     "This package provides SRFI-145.  This provides the means to
+denote the invalidity of certain code paths in a Scheme program.")
+    (license license:gpl3+)))
+
+(define-public guile-srfi-158
+  (package
+    (name "guile-srfi-158")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/mjbecze/guile-srfi-158.git")
+             (commit version)))
+       (sha256
+        (base32
+         "0b8hlv1bldbcwkcxi9y8mm6xp5gbgpg7b15bwqxv70iynl9d9a7c"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://gitlab.com/samplet/guile-srfi-158")
+    (synopsis "SRFI 158 (Generators and Accumulators) for Guile")
+    (description "This package provides an implementation of SRFI 158
+for Guile.  SRFI 158 defines utility procedures that create,
+transform, and consume generators.  It also defines procedures that
+return accumulators.  It is implemented by wrapping the sample
+implementation in a thin Guile compatibility layer.")
+    (license license:gpl3+)))
 
 (define-public guile-srfi-159
   (let ((commit "1bd98abda2ae4ef8f36761a167903e55c6bda7bb")
@@ -2800,6 +2887,45 @@ formatting combinators specified by
 @uref{https://srfi.schemers.org/srfi-159/srfi-159.html, SRFI-159}.  These are
 more expressive and flexible than the traditional @code{format} procedure.")
       (license license:bsd-3))))
+
+(define-public guile-srfi-180
+  (let ((commit "9188bf9724c6d320ef804579d222e855b007b193")
+        (revision "0"))
+    (package
+      (name "guile-srfi-180")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/scheme-requests-for-implementation/srfi-180.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "08lf70rsak8mwfij55xc37pg9zg7c87fizmhz7ln46skzj68sl3y"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (delete-file-recursively "srfi/files")
+             (delete-file "srfi/run-r7rs-checks.guile.scm")
+             (delete-file "srfi/run-r7rs-checks.scm")
+             (delete-file "srfi/check.scm")
+             #t))
+         (file-name (git-file-name name version))))
+      (build-system guile-build-system)
+      (arguments
+       '(#:not-compiled-file-regexp "body\\.scm$"))
+      (native-inputs
+       `(("guile" ,guile-3.0)))
+      (propagated-inputs
+       `(("guile-srfi-145" ,guile-srfi-145)))
+      (home-page "https://srfi.schemers.org/srfi-180/")
+      (synopsis "JSON parser and printer for Guile")
+      (description
+       "This library implements a JavaScript Object Notation (JSON) parser and printer.
+It also supports parsing JSON objects that may be bigger than memory with a streaming
+API.")
+      (license license:expat))))
 
 (define-public emacsy
   (package
@@ -2949,7 +3075,7 @@ perform geometrical transforms on JPEG images.")
 (define-public nomad
   (package
     (name "nomad")
-    (version "0.1.2-alpha")
+    (version "0.2.0-alpha")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2958,7 +3084,7 @@ perform geometrical transforms on JPEG images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dnkr1hmvfkwgxd75dcf93pg39yfgawvdpzdhv991yhghv0qxc9h"))))
+                "1z2z5x37v1qrk2vb8qlz2yj030iirzzd0maa9fjxzlqkrg6krbaj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2972,21 +3098,32 @@ perform geometrical transforms on JPEG images.")
        ("perl" ,perl)))
     (inputs
      `(("guile" ,guile-2.2)
-       ("guile-lib" ,guile-lib)
-       ("guile-gcrypt" ,guile-gcrypt)
-       ("guile-readline" ,guile-readline)
+       ("guile-lib" ,guile2.2-lib)
+       ("guile-readline" ,guile2.2-readline)
+       ("guile-gcrypt" ,guile2.2-gcrypt)
        ("gnutls" ,gnutls)
        ("shroud" ,shroud)
        ("emacsy" ,emacsy-minimal)
        ("glib" ,glib)
        ("dbus-glib" ,dbus-glib)
        ("gtk+" ,gtk+)
+       ("gtk+:bin" ,gtk+ "bin")
        ("gtksourceview" ,gtksourceview)
        ("webkitgtk" ,webkitgtk)
+       ("g-golf" ,g-golf)
        ("xorg-server" ,xorg-server)))
     (propagated-inputs
      `(("glib" ,glib)
        ("glib-networking" ,glib-networking)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gst-plugins-ugly" ,gst-plugins-ugly)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("vte" ,vte)
+       ("webkitgtk" ,webkitgtk)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -3006,9 +3143,16 @@ perform geometrical transforms on JPEG images.")
          (add-after 'install 'wrap-binaries
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (gio-deps (map (cut assoc-ref inputs <>) '("glib-networking"
-                                                               "glib")))
-                    (gio-mod-path (map (cut string-append <> "/lib/gio/modules")
+                    (gio-deps (map (cut assoc-ref inputs <>)
+                                   '("glib-networking"
+                                     "glib"
+                                     "gstreamer"
+                                     "gst-plugins-base"
+                                     "gst-plugins-good"
+                                     "gst-plugins-bad"
+                                     "gst-plugins-ugly")))
+                    (gio-mod-path (map (cut string-append <>
+                                            "/lib/gio/modules")
                                        gio-deps))
                     (effective (read-line (open-pipe*
                                            OPEN_READ
@@ -3016,7 +3160,7 @@ perform geometrical transforms on JPEG images.")
                                            "(display (effective-version))")))
                     (deps (map (cut assoc-ref inputs <>)
                                '("emacsy" "guile-lib" "guile-readline"
-                                 "shroud")))
+                                 "g-golf" "shroud")))
                     (scm-path (map (cut string-append <>
                                         "/share/guile/site/" effective)
                                    `(,out ,@deps)))
@@ -3032,12 +3176,19 @@ perform geometrical transforms on JPEG images.")
                            prefix ,go-path))
                     progs)
                #t))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GI_TYPELIB_PATH")
+            (separator ":")
+            (files '("lib/girepository-1.0")))
+           (search-path-specification
+            (variable "NOMAD_WEB_EXTENSION_DIR")
+            (separator ":")
+            (files '("libexec/nomad")))))
     (home-page "https://savannah.nongnu.org/projects/nomad/")
     (synopsis "Extensible Web Browser in Guile Scheme")
-    (description "Nomad is an Emacs-like Web Browser built using Webkitgtk and
-Emacsy.  It has a small C layer and most browser features are fully
-programmable in Guile.  It has hooks, keymaps, and self documentation
-features.")
+    (description "Nomad is a Emacs-like web browser that consists of a modular
+feature-set, fully programmable in Guile Scheme.")
     (license license:gpl3+)))
 
 (define-public guile-cv

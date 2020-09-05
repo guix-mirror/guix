@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -73,37 +73,35 @@ and parameters ~s~%"
         (error "no Setup.hs nor Setup.lhs found"))))
 
 (define* (configure #:key outputs inputs tests? (configure-flags '())
-                    #:allow-other-keys)
+                    (extra-directories '()) #:allow-other-keys)
   "Configure a given Haskell package."
   (let* ((out (assoc-ref outputs "out"))
          (doc (assoc-ref outputs "doc"))
          (lib (assoc-ref outputs "lib"))
-         (bin (assoc-ref outputs "bin"))
          (name-version (strip-store-file-name out))
-         (input-dirs (match inputs
-                       (((_ . dir) ...)
-                        dir)
-                       (_ '())))
+         (extra-dirs (filter-map (cut assoc-ref inputs <>) extra-directories))
          (ghc-path (getenv "GHC_PACKAGE_PATH"))
-         (params (append `(,(string-append "--prefix=" out))
-                         `(,(string-append "--libdir=" (or lib out) "/lib"))
-                         `(,(string-append "--bindir=" (or bin out) "/bin"))
-                         `(,(string-append
-                             "--docdir=" (or doc out)
-                             "/share/doc/" name-version))
-                         '("--libsubdir=$compiler/$pkg-$version")
-                         `(,(string-append "--package-db=" %tmp-db-dir))
-                         '("--global")
-                         `(,@(map
-                              (cut string-append "--extra-include-dirs=" <>)
-                              (search-path-as-list '("include") input-dirs)))
-                         `(,@(map
-                              (cut string-append "--extra-lib-dirs=" <>)
-                              (search-path-as-list '("lib") input-dirs)))
-                         (if tests?
-                             '("--enable-tests")
-                             '())
-                         configure-flags)))
+         (params `(,(string-append "--prefix=" out)
+                   ,(string-append "--libdir=" (or lib out) "/lib")
+                   ,(string-append "--docdir=" (or doc out)
+                                   "/share/doc/" name-version)
+                   "--libsubdir=$compiler/$pkg-$version"
+                   ,(string-append "--package-db=" %tmp-db-dir)
+                   "--global"
+                   ,@(map (cut string-append "--extra-include-dirs=" <>)
+                          (search-path-as-list '("include") extra-dirs))
+                   ,@(map (cut string-append "--extra-lib-dirs=" <>)
+                          (search-path-as-list '("lib") extra-dirs))
+                   ,@(if tests?
+                         '("--enable-tests")
+                         '())
+                   ;; Build and link with shared libraries
+                   "--enable-shared"
+                   "--enable-executable-dynamic"
+                   "--ghc-option=-fPIC"
+                   ,(string-append "--ghc-option=-optl=-Wl,-rpath=" (or lib out)
+                                   "/lib/$compiler/$pkg-$version")
+                   ,@configure-flags)))
     ;; Cabal errors if GHC_PACKAGE_PATH is set during 'configure', so unset
     ;; and restore it.
     (unsetenv "GHC_PACKAGE_PATH")
@@ -121,13 +119,27 @@ and parameters ~s~%"
     (setenv "GHC_PACKAGE_PATH" ghc-path)
     #t))
 
-(define* (build #:rest empty)
+(define* (build #:key parallel-build? #:allow-other-keys)
   "Build a given Haskell package."
-  (run-setuphs "build" '()))
+  (run-setuphs "build"
+               (if parallel-build?
+                   `(,(string-append "--ghc-option=-j" (number->string (parallel-job-count))))
+                   '())))
 
-(define* (install #:rest empty)
+(define* (install #:key outputs #:allow-other-keys)
   "Install a given Haskell package."
-  (run-setuphs "copy" '()))
+  (run-setuphs "copy" '())
+  (when (assoc-ref outputs "static")
+    (let ((static (assoc-ref outputs "static"))
+          (lib (or (assoc-ref outputs "lib")
+                   (assoc-ref outputs "out"))))
+      (for-each (lambda (static-lib)
+                  (let* ((subdir (string-drop static-lib (string-length lib)))
+                         (new    (string-append static subdir)))
+                    (mkdir-p (dirname new))
+                    (rename-file static-lib new)))
+                (find-files lib "\\.a$"))))
+  #t)
 
 (define (grep rx port)
   "Given a regular-expression RX including a group, read from PORT until the
@@ -227,9 +239,10 @@ given Haskell package."
              (loop seen tail))))))
 
   (let* ((out (assoc-ref outputs "out"))
+         (doc (assoc-ref outputs "doc"))
          (haskell  (assoc-ref inputs "haskell"))
          (name-verion (strip-store-file-name haskell))
-         (lib (string-append out "/lib"))
+         (lib (string-append (or (assoc-ref outputs "lib") out) "/lib"))
          (config-dir (string-append lib
                                     "/" name-verion
                                     "/" name ".conf.d"))
@@ -241,8 +254,25 @@ given Haskell package."
     ;; The conf file is created only when there is a library to register.
     (when (file-exists? config-file)
       (mkdir-p config-dir)
-      (let* ((config-file-name+id
-              (call-with-ascii-input-file config-file (cut grep id-rx <>))))
+      (let ((config-file-name+id
+             (call-with-ascii-input-file config-file (cut grep id-rx <>))))
+
+        ;; Remove reference to "doc" output from "lib" (or "out") by rewriting the
+        ;; "haddock-interfaces" field and removing the optional "haddock-html"
+        ;; field in the generated .conf file.
+        (when doc
+          (substitute* config-file
+            (("^haddock-html: .*") "\n")
+            (((format #f "^haddock-interfaces: ~a" doc))
+             (string-append "haddock-interfaces: " lib)))
+          ;; Move the referenced file to the "lib" (or "out") output.
+          (match (find-files doc "\\.haddock$")
+            ((haddock-file . rest)
+             (let* ((subdir (string-drop haddock-file (string-length doc)))
+                    (new    (string-append lib subdir)))
+               (mkdir-p (dirname new))
+               (rename-file haddock-file new)))
+            (_ #f)))
         (install-transitive-deps config-file %tmp-db-dir config-dir)
         (rename-file config-file
                      (string-append config-dir "/"

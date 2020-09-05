@@ -310,6 +310,8 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                    (loop rest (cons (entity->string entity) strings)))
                   ((('span _ lst ...) . rest)     ;for <span class="roman">
                    (loop (append lst rest) strings))
+                  ((('var name) . rest)           ;for @var{name} within @lisp
+                   (loop rest (cons name strings))) ;XXX: losing formatting
                   (something
                    (pk 'unsupported-code-snippet something)
                    (primitive-exit 1)))))

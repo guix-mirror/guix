@@ -1,0 +1,18 @@
+Description: Modify the default value for check_on_startup to false.
+ This prevents an privacy/information disclosure unless the user
+ explicitly opts-in for the update check.
+Forwarded: not-needed
+Origin: vendor
+Author: tony mancill <tmancill@debian.org>
+
+--- a/src/gpodder/config.py
++++ b/src/gpodder/config.py
+@@ -93,7 +93,7 @@
+
+     # Software updates from gpodder.org
+     'software_update': {
+-        'check_on_startup': True,  # check for updates on start
++        'check_on_startup': False,  # check for updates on start
+         'last_check': 0,  # unix timestamp of last update check
+         'interval': 5,  # interval (in days) to check for updates
+     },

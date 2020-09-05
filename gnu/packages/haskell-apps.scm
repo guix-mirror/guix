@@ -307,15 +307,14 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public ghcid
   (package
     (name "ghcid")
-    (version "0.8.4")
+    (version "0.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/ghcid/"
                            "ghcid-" version ".tar.gz"))
        (sha256
-        (base32
-         "0wpm4ikrm1krz1ckzwk0srng091yh2skjal4fh95iz1hq3dw6qlw"))))
+        (base32 "0yqc1pkfajnr56gnh43sbj50r7c3r41b2jfz07ivgl6phi4frjbq"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extra" ,ghc-extra)
@@ -326,8 +325,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
-    (home-page
-     "https://github.com/ndmitchell/ghcid#readme")
+    (home-page "https://github.com/ndmitchell/ghcid#readme")
     (synopsis "GHCi based bare bones IDE")
     (description
      "Either \"GHCi as a daemon\" or \"GHC + a bit of an IDE\".  A very simple Haskell
@@ -341,14 +339,14 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20200720.1")
+    (version "8.20200810")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "0g4wlfkwr9w21hvdywc7sk077rxlnigdr4m4yz41rc0s2nbjc9fn"))))
+        (base32 "1wy6ckcf5f6m94gakg1504h1zryail3mmj85sglq03s45vawjcg6"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -427,7 +425,17 @@ to @code{cabal repl}).")
                         (string-append bin "/git-annex-shell"))
                (symlink (string-append bin "/git-annex")
                         (string-append bin "/git-remote-tor-annex"))
-               #t))))))
+               #t)))
+         (add-after 'install 'touch-static-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The Haskell build system adds a "static" output by
+             ;; default, and there is no way to override this until
+             ;; <https://issues.guix.gnu.org/41569> is fixed.  Without
+             ;; this phase, the daemon complains because we do not
+             ;; create the "static" output.
+             (with-output-to-file (assoc-ref outputs "static")
+               (lambda ()
+                 (display "static output not used\n"))))))))
     (inputs
      `(("curl" ,curl)
        ("ghc-aeson" ,ghc-aeson)
@@ -730,6 +738,20 @@ is programmed in Haskell.")
          (base32
           "0apzrvf99rskj4dbmn57jjxrsf19j436s8a09m950df5aws3a0wj"))))
     (build-system haskell-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'touch-static-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The Haskell build system adds a "static" output by
+             ;; default, and there is no way to override this until
+             ;; <https://issues.guix.gnu.org/41569> is fixed.  Without
+             ;; this phase, the daemon complains because we do not
+             ;; create the "static" output.
+             (with-output-to-file (assoc-ref outputs "static")
+               (lambda ()
+                 (display "static output not used\n")))
+             #t)))))
     (inputs
      `(("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-data-default" ,ghc-data-default)

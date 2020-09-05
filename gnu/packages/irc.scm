@@ -7,6 +7,9 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,10 +29,13 @@
 (define-module (gnu packages irc)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aspell)
@@ -44,22 +50,30 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages lxqt)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -85,7 +99,7 @@
          '(begin
             (delete-file "data/scripts/inxi")
             #t))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
       ;; The three binaries are not mutually exlusive, and are all built
       ;; by default.
@@ -115,6 +129,7 @@
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
        ("qtscript" ,qtscript)
+       ("qtsvg" ,qtsvg)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))
     (home-page "https://quassel-irc.org/")
@@ -170,14 +185,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1301lrb3xnm9dcw3av82rkqjzqxxwwhrq0p6i37h6fxdxnas4gjm"))))
+                "03psmp4hxsb9sz35i4cyz6dcbs3ab73amhyx0w0hv8f3hp1hdd7a"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -200,30 +215,14 @@ SILC and ICB protocols via plugins.")
        ("tcl" ,tcl)))
     (arguments
      `(#:configure-flags
-       (list "-DENABLE_JAVASCRIPT=OFF"
-             "-DENABLE_PHP=OFF"
+       (list "-DENABLE_PHP=OFF"
              "-DENABLE_RUBY=OFF"
              "-DENABLE_TESTS=ON")       ; ‘make test’ fails otherwise
-       ;; Tests hang indefinately on non-Intel platforms.
+       ;; Tests hang indefinitely on non-Intel platforms.
        #:tests? ,(if (any (cute string-prefix? <> (or (%current-target-system)
                                                       (%current-system)))
                           '("i686" "x86_64"))
-                   '#t '#f)
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-failing-tests
-           ;; For reasons best left to the imagination, CppUTest cannot skip
-           ;; more than one single test...  Resort to manual patching instead.
-           ;; See <https://cpputest.github.io/manual.html#command_line>.
-           (λ _
-             ;; Don't test plugin support for languages we don't enable.
-             (substitute* "tests/unit/test-plugins.cpp"
-               ((".*\\$\\{plugin.name\\} == (javascript|php|ruby)" all)
-                (string-append "// SKIP" all)))
-             (substitute* "tests/scripts/test-scripts.cpp"
-               ((".*\\{ \"(javascript|php|ruby)\", " all)
-                (string-append "// SKIP" all)))
-             #t)))))
+                   '#t '#f)))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
 @dfn{Internet Relay Chat} (IRC) client, which is designed to be light and fast.
@@ -234,6 +233,49 @@ Everything in WeeChat can be done with the keyboard, though it also supports
 using a mouse.  It is customizable and extensible with plugins and scripts.")
     (home-page "https://www.weechat.org/")
     (license license:gpl3)))
+
+(define-public srain
+  (package
+    (name "srain")
+    (version "1.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/SrainApp/srain")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jjs3lrlz67z9ghpc4c406a5r3naisn1famdh9rwwcg4y4y1vcws"))))
+    (arguments
+     `(#:tests? #f ;there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'fix-permissions
+           ;; Make po folder writable for gettext to install translations.
+           (lambda _
+             (for-each make-file-writable
+                       (find-files "po" "." #:directories? #t)))))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("libconfig" ,libconfig)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("openssl" ,openssl)))
+    (home-page "https://srain.im")
+    (synopsis "Modern IRC client written in GTK")
+    (description
+     "Srain is an IRC client written in GTK.  It aims to be modern and easy to
+use while still remaining useful to power users.  It also has partial support
+for the IRCv3 protocol.")
+    (license license:gpl3+)))
 
 (define-public ircii
   (package
@@ -453,3 +495,77 @@ interface for those who are accustomed to the ircII way of doing things.")
                    ;; "Redistribution is permitted" clause of the license if you
                    ;; distribute binaries.
                    (license:non-copyleft "http://epicsol.org/copyright")))))
+
+(define-public inspircd
+  (package
+    (name "inspircd")
+    (version "3.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/inspircd/inspircd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1npzp23c3ac7m1grkm39i1asj04rs4i0jwf5w0c0j0hmnwslnz7a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (map (lambda (module)
+                                (string-append "--enable-extras=" module))
+                              '("m_geo_maxmind.cpp"
+                                "m_ldap.cpp"
+                                "m_mysql.cpp"
+                                "m_pgsql.cpp"
+                                "m_regex_pcre.cpp"
+                                "m_regex_posix.cpp"
+                                "m_regex_stdlib.cpp"
+                                "m_regex_re2.cpp"
+                                "m_regex_tre.cpp"
+                                "m_sqlite3.cpp"
+                                "m_ssl_gnutls.cpp"
+                                "m_ssl_openssl.cpp"
+                                "m_ssl_mbedtls.cpp"
+                                "m_sslrehashsignal.cpp"))
+       #:tests? #f ; Figure out later.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'module-configure
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (apply invoke "./configure"
+                    configure-flags)
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-lib (string-append out "/lib/"))
+                    (out-bin (string-append out "/bin/"))
+                    (out-etc (string-append out "/etc/"))
+                    (name "inspircd"))
+               (invoke "./configure"
+                       (string-append "--prefix=" out-lib name)
+                       (string-append "--binary-dir=" out-bin)
+                       (string-append "--module-dir=" out-lib name "/modules/")
+                       (string-append "--config-dir=" out-etc name)))
+             #t)))))
+    (native-inputs
+     `(("gnutls" ,gnutls)
+       ("libgcrypt" ,libgcrypt)
+       ("libmaxminddb" ,libmaxminddb)
+       ("mysql" ,mysql)
+       ("mbedtls-apache" ,mbedtls-apache)
+       ("openldap" ,openldap)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre "bin")
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("postgresql" ,postgresql)
+       ("re2" ,re2)
+       ("sqlite" ,sqlite)
+       ("tre" ,tre)))
+    (synopsis "Modular IRC server written in C++")
+    (description "InspIRCd is a modular Internet Relay Chat
+server written in C++ for Unix-like operating systems.")
+    (home-page "https://www.inspircd.org/")
+    (license license:gpl2)))

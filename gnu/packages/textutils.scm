@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -46,6 +46,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -235,14 +236,25 @@ nested include statements).")
         (base32 "0jiybkb2z58wa2msvllnphr4js2hvjvh988pavb3mzkgr6ihwbkr"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
-           (lambda _ (invoke "sh" "reconf"))))))
+           (lambda _ (invoke "sh" "reconf")))
+         (add-after 'set-paths 'hide-default-gcc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               ;; Remove the default GCC from CPLUS_INCLUDE_PATH to prevent
+               ;; conflicts with the GCC 5 input.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                        ":"))
+               #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gcc" ,gcc-5) ;; doesn't build with later versions
+       ("gcc@5" ,gcc-5) ; doesn't build with later versions
        ("libtool" ,libtool)))
     (home-page "https://github.com/agordon/libgtextutils")
     (synopsis "Gordon's text utils library")
@@ -1137,7 +1149,7 @@ This package provides Python bindings.")
 (define-public aha
   (package
     (name "aha")
-    (version "0.5")
+    (version "0.5.1")
     (source
      (origin
        (method git-fetch)
@@ -1145,19 +1157,17 @@ This package provides Python bindings.")
              (url "https://github.com/theZiz/aha")
              (commit version)))
        (sha256
-        (base32
-         "0byml4rmpiaalwx69jcixl3yvpvwmwiss1jzgsqwshilb2p4qnmz"))
+        (base32 "1gywad0rvvz3c5balz8cxsnx0562hj2ngzqyr8zsy2mb4pn0lpgv"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure))
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
-       ;; no check target
-       #:tests? #f))
+       #:tests? #f))                    ; no test suite
     (home-page "https://github.com/theZiz/aha")
     (synopsis "Converts terminal escape sequences to HTML")
     (description "@command{aha} (Ansi Html Adapter) converts ANSI escape sequences

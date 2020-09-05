@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,7 +32,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages avahi)
-  #:use-module (gnu packages bash)
   #:use-module (gnu packages bittorrent)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
@@ -199,7 +198,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.7.0")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -207,7 +206,7 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "11qan2k6w94cglysh95yxkbv6hw9x15ri927hkiy3k0hbmpbrxc8"))
+                "1fxqjf7g30ix4qxi6366rrax27s3maxq43z2vakwnhz4mp49m9h4"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               (snippet
@@ -288,7 +287,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.24.1")
+    (version "0.24.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -296,7 +295,7 @@ Libraries with some extra bells and whistles.")
                               "enlightenment/enlightenment-" version ".tar.xz"))
               (sha256
                (base32
-                "02aadl5fqvpmpjnisrc4aw7ffwyp1109y4k1wvmp33ciihbvdqmf"))
+                "1wfz0rwwsx7c1mkswn4hc9xw1i6bsdirhxiycf7ha2vcipqy465y"))
               (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
     (build-system meson-build-system)
     (arguments
@@ -304,6 +303,7 @@ Libraries with some extra bells and whistles.")
        (let ((efl (assoc-ref %build-inputs "efl")))
          (list "-Dsystemd=false"
                "-Dpackagekit=false"
+               "-Dwl=true"
                (string-append "-Dedje-cc=" efl "/bin/edje_cc")
                (string-append "-Deldbus-codegen=" efl "/bin/eldbus-codegen")
                (string-append "-Deet=" efl "/bin/eet")))
@@ -315,7 +315,6 @@ Libraries with some extra bells and whistles.")
              (setenv "HOME" "/tmp")
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
                    (setxkbmap (assoc-ref inputs "setxkbmap"))
-                   (utils     (assoc-ref inputs "util-linux"))
                    (libc      (assoc-ref inputs "libc"))
                    (bc        (assoc-ref inputs "bc"))
                    (efl       (assoc-ref inputs "efl")))
@@ -346,14 +345,13 @@ Libraries with some extra bells and whistles.")
                (substitute* "data/etc/meson.build"
                  (("/bin/mount") "/run/setuid-programs/mount")
                  (("/bin/umount") "/run/setuid-programs/umount")
-                 (("/usr/bin/eject") (string-append utils "/bin/eject")))
+                 (("/usr/bin/eject") "/run/current-system/profile/bin/eject"))
                (substitute* "src/bin/system/e_system_power.c"
                  (("systemctl") "loginctl"))
                #t))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)
-       ("util-linux" ,util-linux)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("bc" ,bc)
@@ -366,8 +364,10 @@ Libraries with some extra bells and whistles.")
        ("linux-pam" ,linux-pam)
        ("puleseaudio" ,pulseaudio)
        ("setxkbmap" ,setxkbmap)
+       ("wayland-protocols" ,wayland-protocols)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
-       ("xkeyboard-config" ,xkeyboard-config)))
+       ("xkeyboard-config" ,xkeyboard-config)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)))
     (home-page "https://www.enlightenment.org/about-enlightenment")
     (synopsis "Lightweight desktop environment")
     (description
@@ -378,17 +378,7 @@ embedded systems.")
     (license license:bsd-2)))
 
 (define-public enlightenment-wayland
-  (package
-    (inherit enlightenment)
-    (name "enlightenment-wayland")
-    (arguments
-     (substitute-keyword-arguments (package-arguments enlightenment)
-       ((#:configure-flags flags)
-        `(cons* "-Dwl=true" ,flags))))
-    (inputs
-     `(("wayland-protocols" ,wayland-protocols)
-       ("xorg-server-xwayland" ,xorg-server-xwayland)
-       ,@(package-inputs enlightenment)))))
+  (deprecated-package "enlightenment-wayland" enlightenment))
 
 (define-public python-efl
   (package
@@ -405,13 +395,15 @@ embedded systems.")
         (modules '((guix build utils)))
         ;; Remove files generated by Cython
         (snippet
-          '(begin
-             (copy-file "efl/dbus_mainloop/e_dbus.c" "efl/dbus_mainloop/e_dbus.q")
-             (for-each delete-file (find-files "efl" ".*\\.c$"))
-             (delete-file "efl/eo/efl.eo_api.h")
-             (copy-file "efl/dbus_mainloop/e_dbus.q" "efl/dbus_mainloop/e_dbus.c")
-             (delete-file "efl/dbus_mainloop/e_dbus.q")
-             #t))))
+         '(begin
+            (for-each (lambda (file)
+                        (let ((generated-file
+                                (string-append (string-drop-right file 3) "c")))
+                          (when (file-exists? generated-file)
+                            (delete-file generated-file))))
+                      (find-files "efl" "\\.pyx$"))
+            (delete-file "efl/eo/efl.eo_api.h")
+            #t))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -572,18 +564,17 @@ directories.
 (define-public evisum
   (package
     (name "evisum")
-    (version "0.4.1")
+    (version "0.5.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://download.enlightenment.org/rel/apps/"
                             "evisum/evisum-" version ".tar.xz"))
         (sha256
-         (base32
-          "0c3sgz6g8agig1i6fwn1jv318zsm556l9f3f0dm1jll146dlk2iv"))))
+         (base32 "1ip3w2d476g45sivqvm1madfyqmkni9q2i99qqxk53859jgs91pa"))))
     (build-system meson-build-system)
     (arguments
-     '(#:tests? #f))    ; no tests
+     '(#:tests? #f))                    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

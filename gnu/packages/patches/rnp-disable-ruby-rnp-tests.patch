@@ -1,0 +1,26 @@
+From 40e53d639d86337cf58be3a2b9750b6c97a3c740 Mon Sep 17 00:00:00 2001
+From: Justus Winter <teythoon@avior.uberspace.de>
+Date: Tue, 21 Jul 2020 16:10:21 +0200
+Subject: [PATCH 2/2] Disable ruby-rnp tests.
+
+Prevents cmake from cloning the ruby-rnp repository in order to run its tests.
+---
+ src/tests/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/tests/CMakeLists.txt b/src/tests/CMakeLists.txt
+index d3c4fbe6..e7e1965e 100644
+--- a/src/tests/CMakeLists.txt
++++ b/src/tests/CMakeLists.txt
+@@ -125,7 +125,7 @@ gtest_discover_tests(rnp_tests
+ 
+ # ruby-rnp
+ # cruby does not currently play nice with ASaN et al.
+-if (NOT ENABLE_SANITIZERS AND BUILD_SHARED_LIBS AND NOT WIN32)
++if (NOT ENABLE_SANITIZERS AND BUILD_SHARED_LIBS AND NOT WIN32 AND IGNORE)
+   include(ExternalProject)
+   set(_sourcedir "${CMAKE_BINARY_DIR}/ruby-rnp")
+   if (DEFINED ENV{RUBY_RNP_INSTALL})
+-- 
+2.20.1
+

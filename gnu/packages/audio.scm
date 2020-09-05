@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,6 +114,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -126,6 +128,308 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public opensles
+  (package
+    (name "opensles")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/KhronosGroup/OpenSL-ES-Registry.git")
+         (commit "ea5104bf37bf525c25e6ae2386586048179d0fda")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0j5bm7h3ahz66f23i9abwc0y10agfkpksnj6y078x2nichq66h4f"))
+       (patches
+        (search-patches "opensles-add-license-file.patch"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'clean
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/etc"))
+               (mkdir-p (string-append out "/include"))
+               (mkdir-p (string-append out "/share"))
+               (rename-file
+                (string-append out "/api/1.1/OpenSLES_IID.c")
+                (string-append out "/etc/OpenSLES_IID.c"))
+               (rename-file
+                (string-append out "/api/1.1/OpenSLES.h")
+                (string-append out "/include/OpenSLES.h"))
+               (rename-file
+                (string-append out "/api/1.1/OpenSLES_Platform.h")
+                (string-append out "/include/OpenSLES_Platform.h"))
+               (rename-file
+                (string-append out "/api/1.1/README.txt")
+                (string-append out "/share/README.txt"))
+               (rename-file
+                (string-append out "/LICENSE.txt")
+                (string-append out "/share/LICENSE.txt"))
+               (for-each delete-file-recursively
+                         (list
+                          (string-append out "/api")
+                          (string-append out "/specs")))
+               (for-each delete-file
+                         (list
+                          (string-append out "/CODE_OF_CONDUCT.md")
+                          (string-append out "/index.php")
+                          (string-append out "/README.md"))))
+             #t)))))
+    (synopsis "Embedded Audio Acceleration")
+    (description "OpenSLES is a royalty-free, cross-platform,
+hardware-accelerated audio API tuned for embedded systems.  It provides a
+standardized, high-performance, low-latency method to access audio
+functionality for developers of native applications on embedded mobile
+multimedia devices, enabling straightforward cross-platform deployment of
+hardware and software audio capabilities, reducing implementation effort, and
+promoting the market for advanced audio.")
+    (home-page "https://www.khronos.org/opensles/")
+    (license (license:non-copyleft "file:///LICENSE.txt"))))
+
+(define-public wildmidi
+  (package
+    (name "wildmidi")
+    (version "0.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Mindwerks/wildmidi.git")
+         (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01f4a9c5xlap5a4pkfnlgkzk5pjlk43zkq6fnw615ghya04g6hrl"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; No target
+       #:configure-flags
+       (list
+        "-DWANT_ALSA=ON"
+        "-DWANT_OSS=ON"
+        "-DWANT_OPENAL=ON")))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("openal" ,openal)))
+    (synopsis "Software Synthesizer")
+    (description "WildMIDI is a simple software midi player which has a core
+softsynth library that can be use with other applications.")
+    (home-page "https://www.mindwerks.net/projects/wildmidi/")
+    (license
+     (list
+      ;; Library.
+      license:lgpl3+
+      ;; Player.
+      license:gpl3+))))
+
+(define-public webrtc-audio-processing
+  (package
+    (name "webrtc-audio-processing")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://freedesktop.org/software/pulseaudio/"
+                       name "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1gsx7k77blfy171b6g3m0k0s0072v6jcawhmx1kjs9w5zlwdkzd0"))))
+    (build-system gnu-build-system)
+    (synopsis "WebRTC's Audio Processing Library")
+    (description "WebRTC-Audio-Processing library based on Google's
+implementation of WebRTC.")
+    (home-page
+     "https://freedesktop.org/software/pulseaudio/webrtc-audio-processing/")
+    (license (license:non-copyleft "file:///COPYING"))))
+
+(define-public vo-aacenc
+  (package
+    (name "vo-aacenc")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/opencore-amr/files/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dhghm3c8pqrriwwyj5x9i0yf52fmdfijbgqqkvqvwarldvp86p5"))))
+    (build-system gnu-build-system)
+    (synopsis "VisualOn AAC Encoder")
+    (description "VO-AACENC is the VisualOn implementation of Advanced Audio
+Coding (AAC) encoder.")
+    (home-page "https://sourceforge.net/projects/opencore-amr/")
+    (license license:asl2.0)))
+
+(define-public tinyalsa
+  (package
+    (name "tinyalsa")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/tinyalsa/tinyalsa.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ajyvml5bnzvhiyyrn42gqwgg23ssxkfh09rvsnywhzxhd0xai4h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))
+       #:make-flags
+       (list
+        (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (synopsis "ALSA interfacing library")
+    (description "TinyALSA is a small library to interface with ALSA in the
+Linux kernel.")
+    (home-page "https://github.com/tinyalsa/tinyalsa")
+    (license (license:non-copyleft "file:///NOTICE"))))
+
+(define-public libopenmpt
+  (package
+    (name "libopenmpt")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
+                       "libopenmpt-" version "+release.autotools.tar.gz"))
+       (sha256
+        (base32 "1cwpc4j90dpxa2siia68rg9qwwm2xk6bhxnslfjj364507jy6s4l"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each delete-file (find-files lib "\\.a$"))
+               #t))))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("flac" ,flac)
+       ("mpg123" ,mpg123)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl2" ,sdl2)
+       ("sndfile" ,libsndfile)
+       ("vorbis" ,libvorbis)
+       ("zlib" ,zlib)))
+    (synopsis "Audio tracking library")
+    (description "LibOpenMPT is a cross-platform C++ and C module playback
+library.  It is based on the player code of the Open ModPlug Tracker project.")
+    (home-page "https://openmpt.org/")
+    (license (license:non-copyleft "file:///LICENSE"))))
+
+(define-public libofa
+  (package
+    (name "libofa")
+    (version "0.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://storage.googleapis.com/"
+                       "google-code-archive-downloads/v2/code.google.com/"
+                       "musicip-libofa/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "184ham039l7lwhfgg0xr2vch2xnw1lwh7sid432mh879adhlc5h2"))
+       (patches
+        (search-patches
+         "libofa-ftbfs-1.diff"
+         "libofa-curl.diff"
+         "libofa-ftbfs-2.diff"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("expat" ,expat)))
+    (propagated-inputs
+     `(("fftw" ,fftw)))
+    (synopsis "Open Fingerprint Architecture")
+    (description "LibOFA is an audio fingerprint library, created and provided
+by MusicIP.")
+    (home-page "https://code.google.com/archive/p/musicip-libofa/")
+    (license license:gpl2+)))
+
+(define-public faac
+  (package
+    (name "faac")
+    (version "1.30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/faac/files/faac-src/"
+                       "faac-1.30/faac-1_30.tar.gz/download"))
+       (sha256
+        (base32 "1lmj0dib3mjp84jhxc5ddvydkzzhb0gfrdh3ikcidjlcb378ghxd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Freeware Advanced Audio Coder")
+    (description "FAAC is an MPEG-4 and MPEG-2 AAC encoder.")
+    (home-page "https://www.audiocoding.com/faac.html")
+    (license
+     (list
+      ;; ISO MPEG-4 reference code.
+      license:gpl2+
+      ;; Others.
+      license:lgpl2.0+))))
+
+(define-public libtimidity
+  (package
+    (name "libtimidity")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/" name "/files/"
+                       name "/" version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0p2px0m907gi1zpdr0l9adq25jl89j85c11ag9s2g4yc6n1nhgfm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))       ; XXX: LibTiMidity could not be initialised
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ao" ,ao)))
+    (synopsis "MIDI to WAVE converter library")
+    (description "LibTiMidity is a MIDI to WAVE converter library that uses
+Gravis Ultrasound-compatible patch files to generate digital audio data from
+General MIDI files.")
+    (home-page "http://libtimidity.sourceforge.net/")
+    (license
+     ;; This project is dual-licensed.
+     ;; Either of the following licenses can be exercised.
+     (list
+      license:lgpl2.1+
+      license:artistic2.0))))
 
 (define-public vo-amrwbenc
   (package
@@ -474,7 +778,7 @@ engineers, musicians, soundtrack editors and composers.")
           ;; SSE instructions are available on Intel systems only.
           ,@(if (any (cute string-prefix? <> (or (%current-target-system)
                                                  (%current-system)))
-                    '("x64_64" "i686"))
+                    '("x86_64" "i686"))
               '()
               '("--enable-sse=no"))
           ;; portmidi, libid3tag and libmad provide no .pc files, so
@@ -1386,22 +1690,22 @@ also play midifiles using a Soundfont.")
 (define-public faad2
   (package
     (name "faad2")
-    (version "2.8.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/faac/faad2-src/faad2-"
-                                  (version-major+minor version) ".0/"
-                                  "faad2-" version ".tar.gz"))
-              (sha256
-               (base32
-                "089zqykqgmmysznvk0bi2pfvdqwclnn540d0zks83sv2pynpfjb5"))))
+    (version "2.8.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/faac/faad2-src/faad2-"
+                       (version-major+minor version) ".0/"
+                       "faad2-" version ".tar.gz"))
+       (sha256
+        (base32 "0va284hndhn0ynm4lyn219qw4y8wa4agfkqgwlaji7bqp6nkyp4q"))))
     (build-system gnu-build-system)
     (home-page "https://www.audiocoding.com/faad2.html")
     (synopsis "MPEG-4 and MPEG-2 AAC decoder")
     (description
-     "FAAD2 is an MPEG-4 and MPEG-2 AAC decoder supporting LC, Main, LTP, SBR,
-PS, and DAB+.")
-    (license license:gpl2)))
+     "FAAD2 is an MPEG-4 and MPEG-2 AAC decoder supporting LC, Main, LTP, SBR, -PS, and DAB+.")
+    (license license:gpl2+)))
 
 (define-public faust
   (package
@@ -1990,6 +2294,48 @@ with applications that support them (e.g. PulseAudio).")
      "liblo is a lightweight library that provides an easy to use
 implementation of the Open Sound Control (@dfn{OSC}) protocol.")
     (license license:lgpl2.1+)))
+
+(define-public rtaudio
+  (package
+    (name "rtaudio")
+    (version "5.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/thestk/rtaudio")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "156c2dgh6jrsyfn1y89nslvaxm4yifmxridsb708yvkaym02w2l8"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("pulseaudio" ,pulseaudio)))
+    (synopsis "Common API for real-time audio I/O")
+    (description
+     "RtAudio is a set of C++ classes that provides a common API for real-time
+audio input/output.  It was designed with the following objectives:
+
+@itemize
+@item object-oriented C++ design
+@item simple, common API across all supported platforms
+@item only one source and one header file for easy inclusion in programming
+projects
+@item allow simultaneous multi-api support
+@item support dynamic connection of devices
+@item provide extensive audio device parameter control
+@item allow audio device capability probing
+@item automatic internal conversion for data format, channel number
+compensation, (de)interleaving, and byte-swapping
+@end itemize")
+    (home-page "https://www.music.mcgill.ca/~gary/rtaudio/")
+    ;; License is expat with a non-binding request to send modifications to
+    ;; original developer.
+    (license license:expat)))
 
 (define-public python-pyaudio
   (package
@@ -2582,9 +2928,12 @@ aimed at audio/musical applications.")
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
        ("libtool" ,libtool)))
-    (synopsis "Real-time library for sampling rate conversion")
-    (description "The @command{resample} software package contains free
-sampling-rate conversion and filter design utilities.")
+    (synopsis "Sampling rate conversion and filter design utilities")
+    (description "This package contains the @command{resample} and
+@command{windowfilter} command line utilities.  The @command{resample} command
+allows changing the sampling rate of a sound file, while the
+@command{windowfilter} command allows to design Finite Impulse Response (FIR)
+filters using the so-called @emph{window method}.")
     (home-page "https://ccrma.stanford.edu/~jos/resample/Free_Resampling_Software.html")
     (license license:lgpl2.1+)))
 
@@ -3676,14 +4025,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "20.5")
+    (version "20.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "1frg64q2d8cia6v7jia7kahzx0apwdl0z252mzlbwqdz5960nv90"))))
+                "1h4dsq5xcvwjbnayhn719cln0lg199w3xm59sl9d2jz8bq78gqgj"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -4397,6 +4746,38 @@ audio plugin UIs, where the dependencies often need to be kept to a
 minimum.")
     (home-page "https://git.zrythm.org/cgit/ztoolkit/")
     (license license:agpl3+)))
+
+(define-public libinstpatch
+  (package
+    (name "libinstpatch")
+    (version "1.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swami/libinstpatch")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0psx4hc5yksfd3k2xqsc7c8lbz2d4yybikyddyd9hlkhq979cmjb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ;there are no tests
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libsndfile" ,libsndfile)))
+    (home-page "http://www.swamiproject.org/")
+    (synopsis "Instrument file software library")
+    (description
+     "libInstPatch is a library for processing digital sample based MIDI
+instrument \"patch\" files.  The types of files libInstPatch supports are used
+for creating instrument sounds for wavetable synthesis.  libInstPatch provides
+an object framework (based on GObject) to load patch files, which can then be
+edited, converted, compressed and saved.")
+    (license license:lgpl2.1)))
 
 (define-public ztoolkit-rsvg
   (package

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -348,14 +348,13 @@ pocl.")
 (define-public python-pytools
   (package
     (name "python-pytools")
-    (version "2020.1")
+    (version "2020.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytools" version))
        (sha256
-        (base32
-         "19h47pqfrq7ax7601i5g8icpb6b42h8zzwq0dqfdcjjqamwd2cn1"))))
+        (base32 "0q7439iy365a874ckpavx6h1mhnnngfy8nl7xj5grdd127zkknrp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)

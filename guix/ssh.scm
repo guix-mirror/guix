@@ -20,7 +20,11 @@
   #:use-module (guix store)
   #:use-module (guix inferior)
   #:use-module (guix i18n)
-  #:use-module ((guix utils) #:select (&fix-hint))
+  #:use-module ((guix diagnostics)
+                #:select (info &fix-hint formatted-message))
+  #:use-module ((guix progress)
+                #:select (progress-bar
+                          erase-current-line current-terminal-columns))
   #:use-module (gcrypt pk-crypto)
   #:use-module (ssh session)
   #:use-module (ssh auth)
@@ -36,6 +40,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 binary-ports)
+  #:use-module (ice-9 vlist)
   #:export (open-ssh-session
             authenticate-server*
 
@@ -88,14 +93,12 @@ actual key does not match."
       ;; provided its Ed25519 key when we where expecting its RSA key.  XXX:
       ;; Guile-SSH 0.10.1 doesn't know about ed25519 keys and 'get-key-type'
       ;; returns #f in that case.
-      (raise (condition
-              (&message
-               (message (format #f (G_ "server at '~a' returned host key \
+      (raise (formatted-message (G_ "server at '~a' returned host key \
 '~a' of type '~a' instead of '~a' of type '~a'~%")
                                 (session-get session 'host)
                                 (public-key->string server)
                                 (get-key-type server)
-                                key type))))))))
+                                key type)))))
 
 (define* (open-ssh-session host #:key user port identity
                            host-key
@@ -148,12 +151,10 @@ Throw an error on failure."
            (match (authenticate-server session)
              ('ok #f)
              (reason
-              (raise (condition
-                      (&message
-                       (message (format #f (G_ "failed to authenticate \
+              (raise (formatted-message (G_ "failed to authenticate \
 server at '~a': ~a")
                                         (session-get session 'host)
-                                        reason))))))))
+                                        reason)))))
 
        ;; Use public key authentication, via the SSH agent if it's available.
        (match (userauth-public-key/auto! session)
@@ -173,10 +174,8 @@ server at '~a': ~a")
                                        host (get-error session)))))))))))
       (x
        ;; Connection failed or timeout expired.
-       (raise (condition
-               (&message
-                (message (format #f (G_ "SSH connection to '~a' failed: ~a~%")
-                                 host (get-error session))))))))))
+       (raise (formatted-message (G_ "SSH connection to '~a' failed: ~a~%")
+                                 host (get-error session)))))))
 
 (define* (remote-inferior session #:optional become-command)
   "Return a remote inferior for the given SESSION.  If BECOME-COMMAND is
@@ -187,11 +186,9 @@ given, use that to invoke the remote Guile REPL."
     (when (eof-object? (peek-char pipe))
       (let ((status (channel-get-exit-status pipe)))
         (close-port pipe)
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "remote command '~{~a~^ ~}' failed \
+        (raise (formatted-message (G_ "remote command '~{~a~^ ~}' failed \
 with status ~a")
-                                  repl-command status)))))))
+                                  repl-command status))))
     (port->inferior pipe)))
 
 (define* (inferior-remote-eval exp session #:optional become-command)
@@ -291,6 +288,11 @@ can be written."
   ;; consumed.
   (define import
     `(begin
+       (eval-when (load expand eval)
+         (unless (resolve-module '(guix) #:ensure #f)
+           (write `(module-error))
+           (exit 7)))
+
        (use-modules (guix) (srfi srfi-34)
                     (rnrs io ports) (rnrs bytevectors))
 
@@ -313,6 +315,9 @@ can be written."
                        (consume-input (current-input-port))
                        (list 'protocol-error (nix-protocol-error-message c))))
               (with-store store
+                (write '(importing))              ;we're ready
+                (force-output)
+
                 (setvbuf (current-input-port) 'none)
                 (import-paths store (current-input-port))
                 '(success))))
@@ -402,6 +407,56 @@ to the system ACL file if it has not yet been authorized."
    session
    become-command))
 
+(define (prepare-to-send store host log-port items)
+  "Notify the user that we're about to send ITEMS to HOST.  Return three
+values allowing 'notify-send-progress' to track the state of this transfer."
+  (let* ((count (length items))
+         (sizes (fold (lambda (item result)
+                        (vhash-cons item
+                                    (path-info-nar-size
+                                     (query-path-info store item))
+                                    result))
+                      vlist-null
+                      items))
+         (total  (vlist-fold (lambda (pair result)
+                               (match pair
+                                 ((_ . size) (+ size result))))
+                             0
+                             sizes)))
+    (info (N_ "sending ~a store item (~h MiB) to '~a'...~%"
+              "sending ~a store items (~h MiB) to '~a'...~%" count)
+          count
+          (inexact->exact (round (/ total (expt 2. 20))))
+          host)
+
+    (values log-port sizes total 0)))
+
+(define (notify-transfer-progress item port sizes total sent)
+  "Notify the user that we've already transferred SENT bytes out of TOTAL.
+Use SIZES to determine the size of ITEM, which is about to be sent."
+  (define (display-bar %)
+    (erase-current-line port)
+    (format port "~3@a% ~a"
+            (inexact->exact (round (* 100. (/ sent total))))
+            (progress-bar % (- (max (current-terminal-columns) 5) 5)))
+    (force-output port))
+
+  (unless (zero? total)
+    (let ((% (* 100. (/ sent total))))
+      (match (vhash-assoc item sizes)
+        (#f
+         (display-bar %)
+         (values port sizes total sent))
+        ((_ . size)
+         (display-bar %)
+         (values port sizes total (+ sent size)))))))
+
+(define (notify-transfer-completion port . args)
+  "Notify the user that the transfer has completed."
+  (apply notify-transfer-progress "" port args) ;display the 100% progress bar
+  (erase-current-line port)
+  (force-output port))
+
 (define* (send-files local files remote
                      #:key
                      recursive?
@@ -409,24 +464,11 @@ to the system ACL file if it has not yet been authorized."
   "Send the subset of FILES from LOCAL (a local store) that's missing to
 REMOTE, a remote store.  When RECURSIVE? is true, send the closure of FILES.
 Return the list of store items actually sent."
-  (define (inferior-remote-eval* exp session)
-    (guard (c ((inferior-exception? c)
-               (match (inferior-exception-arguments c)
-                 (('quit 7)
-                  (report-module-error (remote-store-host remote)))
-                 (_
-                  (report-inferior-exception c (remote-store-host remote))))))
-      (inferior-remote-eval exp session)))
-
   ;; Compute the subset of FILES missing on SESSION and send them.
   (let* ((files   (if recursive? (requisites local files) files))
          (session (channel-get-session (store-connection-socket remote)))
-         (missing (inferior-remote-eval*
+         (missing (inferior-remote-eval
                    `(begin
-                      (eval-when (load expand eval)
-                        (unless (resolve-module '(guix) #:ensure #f)
-                          (exit 7)))
-
                       (use-modules (guix)
                                    (srfi srfi-1) (srfi srfi-26))
 
@@ -434,19 +476,21 @@ Return the list of store items actually sent."
                         (remove (cut valid-path? store <>)
                                 ',files)))
                    session))
-         (count   (length missing))
-         (sizes   (map (lambda (item)
-                         (path-info-nar-size (query-path-info local item)))
-                       missing))
-         (port    (store-import-channel session)))
-    (format log-port (N_ "sending ~a store item (~h MiB) to '~a'...~%"
-                         "sending ~a store items (~h MiB) to '~a'...~%" count)
-            count
-            (inexact->exact (round (/ (reduce + 0 sizes) (expt 2. 20))))
-            (session-get session 'host))
+         (port    (store-import-channel session))
+         (host    (session-get session 'host)))
+    ;; Make sure everything alright on the remote side.
+    (match (read port)
+      (('importing)
+       #t)
+      (sexp
+       (handle-import/export-channel-error sexp remote)))
 
     ;; Send MISSING in topological order.
-    (export-paths local missing port)
+    (let ((tty? (isatty? log-port)))
+      (export-paths local missing port
+                    #:start (cut prepare-to-send local host log-port <>)
+                    #:progress (if tty? notify-transfer-progress (const #f))
+                    #:finish (if tty? notify-transfer-completion (const #f))))
 
     ;; Tell the remote process that we're done.  (In theory the end-of-archive
     ;; mark of 'export-paths' would be enough, but in practice it's not.)
@@ -513,6 +557,29 @@ to the length of FILES.)"
              (&message
               (message (format #f fmt args ...))))))))
 
+(define (handle-import/export-channel-error sexp remote)
+  "Report an error corresponding to SEXP, the EOF object or an sexp read from
+REMOTE."
+  (match sexp
+    ((? eof-object?)
+     (report-guile-error (remote-store-host remote)))
+    (('module-error . _)
+     (report-module-error (remote-store-host remote)))
+    (('connection-error file code . _)
+     (raise-error (G_ "failed to connect to '~A' on remote host '~A': ~a")
+                  file (remote-store-host remote) (strerror code)))
+    (('invalid-items items . _)
+     (raise-error (N_ "no such item on remote host '~A':~{ ~a~}"
+                      "no such items on remote host '~A':~{ ~a~}"
+                      (length items))
+                  (remote-store-host remote) items))
+    (('protocol-error status message . _)
+     (raise-error (G_ "protocol error on remote host '~A': ~a")
+                  (remote-store-host remote) message))
+    (_
+     (raise-error (G_ "failed to retrieve store items from '~a'")
+                  (remote-store-host remote)))))
+
 (define* (retrieve-files* files remote
                           #:key recursive? (log-port (current-error-port))
                           (import (const #f)))
@@ -533,24 +600,8 @@ from REMOTE.  When RECURSIVE? is true, retrieve the closure of FILES."
            (import port))
          (lambda ()
            (close-port port))))
-      ((? eof-object?)
-       (report-guile-error (remote-store-host remote)))
-      (('module-error . _)
-       (report-module-error (remote-store-host remote)))
-      (('connection-error file code . _)
-       (raise-error (G_ "failed to connect to '~A' on remote host '~A': ~a")
-                    file (remote-store-host remote) (strerror code)))
-      (('invalid-items items . _)
-       (raise-error (N_ "no such item on remote host '~A':~{ ~a~}"
-                        "no such items on remote host '~A':~{ ~a~}"
-                        (length items))
-                    (remote-store-host remote) items))
-      (('protocol-error status message . _)
-       (raise-error (G_ "protocol error on remote host '~A': ~a")
-                    (remote-store-host remote) message))
-      (_
-       (raise-error (G_ "failed to retrieve store items from '~a'")
-                    (remote-store-host remote))))))
+      (sexp
+       (handle-import/export-channel-error sexp remote)))))
 
 (define* (retrieve-files local files remote
                          #:key recursive? (log-port (current-error-port)))

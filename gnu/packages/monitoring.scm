@@ -158,7 +158,7 @@ etc. via a Web interface.  Features include:
 (define-public zabbix-agentd
   (package
     (name "zabbix-agentd")
-    (version "5.0.2")
+    (version "5.0.3")
     (source
      (origin
        (method url-fetch)
@@ -166,7 +166,7 @@ etc. via a Web interface.  Features include:
              "https://cdn.zabbix.com/zabbix/sources/stable/"
              (version-major+minor version) "/zabbix-" version ".tar.gz"))
        (sha256
-        (base32 "1cnns7ixqi7ank3cbvcs7d8rb5zh9qiqbmgivazr83jnz81qg46w"))))
+        (base32 "1dc3fb9pa2cr6mfwgfyy1hpx26pbrws7989wj2kiiilmvimvrz1l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -429,7 +429,7 @@ written in Go with pluggable metric collectors.")
 (define-public fswatch
   (package
     (name "fswatch")
-    (version "1.14.0")
+    (version "1.15.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -438,7 +438,7 @@ written in Go with pluggable metric collectors.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ihn7wp3y7ml2lm8drz2hc6fmgj8kygbygnw8mz7gjax88f9dbx7"))))
+                "1yz65jsbgdx4cmy16x24wz5di352lvyi7fp6jm90bhgl1vpzxlsx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

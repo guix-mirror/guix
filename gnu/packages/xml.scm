@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,11 +42,18 @@
 
 (define-module (gnu packages xml)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages java)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
@@ -60,10 +68,44 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config))
+
+(define-public libxmlb
+  (package
+    (name "libxmlb")
+    (version "0.1.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hughsie/libxmlb.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1mb73pnfwqc4mm0lm16yfn0lj495h8hcciprb2v6wgy3ifnnjxib"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("glib" ,glib)))
+    (synopsis "Library to help create and query binary XML blobs")
+    (description "Libxmlb library takes XML source, and converts it to a
+structured binary representation with a deduplicated string table; where the
+strings have the NULs included.  This allows an application to mmap the binary
+XML file, do an XPath query and return some strings without actually parsing
+the entire document.")
+    (home-page "https://github.com/hughsie/libxmlb")
+    (license license:lgpl2.1+)))
 
 (define-public expat
   (package
@@ -166,6 +208,81 @@ hierarchical form with variable field lengths.")
      "Libxml2 is the XML C parser and toolkit developed for the Gnome
 project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
+
+;; This is the latest stable release.
+(define-public libxmlplusplus
+  (package
+    (name "libxmlplusplus")
+    (version "3.2.0")
+    (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/libxmlplusplus/libxmlplusplus.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0wjz591rjlgbah7dcq8i0yn0zw9d62b7g6r0pppx81ic0cx8n8ga"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-documentation
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook"))
+                   (xsldoc (string-append (assoc-ref inputs "docbook-xsl")
+                                          "/xml/xsl/docbook-xsl-"
+                                          ,(package-version docbook-xsl))))
+               (substitute* '("examples/dom_xpath/example.xml"
+                              "docs/manual/libxml++_without_code.xml")
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               (setenv "SGML_CATALOG_FILES"
+                       (string-append xmldoc "/catalog.xml"))
+               (substitute* "docs/manual/docbook-customisation.xsl"
+                 (("http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl")
+                  (string-append xsldoc "/html/chunk.xsl"))))
+             #t)))))
+    (propagated-inputs
+     `(("libxml2" ,libxml2)))
+    (inputs
+     `(("glibmm" ,glibmm)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("doxygen" ,doxygen)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("graphviz" ,graphviz) ; for dot
+       ("libtool" ,libtool)
+       ("libxslt" ,libxslt)
+       ("mm-common" ,mm-common)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/libxmlplusplus/libxmlplusplus/")
+    (synopsis "C++ bindings for libxml2")
+    (description
+     "libxml++ (a.k.a. libxmlplusplus) provides a C++ interface to XML files.
+It uses libxml2 to access the XML files.")
+    (license license:lgpl2.1+)))
+
+;; This is the last release providing the 2.6 API, hence the name.
+;; This is needed by tascam-gtk
+(define-public libxmlplusplus-2.6
+  (package
+    (inherit libxmlplusplus)
+    (name "libxmlplusplus")
+    (version "2.40.1")
+    (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/libxmlplusplus/libxmlplusplus.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0gbfi4l88w828gmyc9br11l003ylyi4vigp5d1kfgsn0k4cig3y9"))))))
 
 (define-public python-libxml2
   (package/inherit libxml2
@@ -1157,7 +1274,7 @@ XSLT and EXSLT.")
 (define-public html-xml-utils
  (package
    (name "html-xml-utils")
-   (version "7.8")
+   (version "7.9")
    (source
     (origin
       (method url-fetch)
@@ -1165,7 +1282,7 @@ XSLT and EXSLT.")
             "https://www.w3.org/Tools/HTML-XML-utils/html-xml-utils-"
             version ".tar.gz"))
       (sha256
-       (base32 "0p8df3c6mw879vdi8l63kbdqylkf1is10b067mh9kipgfy91rd4s"))))
+       (base32 "0gs3xvdbzhk5k12i95p5d4fgkkaldnlv45sch7pnncb0lrpcjsnq"))))
    (build-system gnu-build-system)
    (home-page "https://www.w3.org/Tools/HTML-XML-utils/")
    (synopsis "Command line utilities to manipulate HTML and XML files")
@@ -1264,14 +1381,14 @@ files.  It is designed to be fast and to handle large input files.")
 (define-public freexl
   (package
     (name "freexl")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.gaia-gis.it/gaia-sins/"
-                                  name  "-" version ".tar.gz"))
+              (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
+                                  "freexl-" version ".tar.gz"))
               (sha256
                (base32
-                "03bmwq6hngmzwpqpb7c2amqlspz4q69iv96nlf0f5c0qs98b3j9x"))))
+                "08pwj17l0lgp6zms9nmpawdxpvhzrslklbd53s4b430k7mxbbs1x"))))
     (build-system gnu-build-system)
     (home-page "https://www.gaia-gis.it/fossil/freexl/index")
     (synopsis "Read Excel files")
@@ -1311,6 +1428,42 @@ to read and write XML data.  A shared library is provided for parsing,
 generating, manipulating, and validating XML documents using the DOM, SAX, and
 SAX2 APIs.")
     (license license:asl2.0)))
+
+(define-public xlsxio
+  (package
+    (name "xlsxio")
+    (version "0.2.26")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brechtsanders/xlsxio")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0j8jral3yc2aib2ykp527lyb62a1d9p7qmfbszy7iy3s65pkma9b"))))
+    (native-inputs
+     `(("expat" ,expat)
+       ("make" ,gnu-make)
+       ("minizip" ,minizip)
+       ("which" ,which)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "install"
+                     (string-append
+                      "PREFIX=" (assoc-ref outputs "out"))))))))
+    (synopsis "C library for reading and writing .xlsx files")
+    (description "XLSX I/O aims to provide a C library for reading and writing
+.xlsx files.  The .xlsx file format is the native format used by Microsoft(R)
+Excel(TM) since version 2007.")
+    (home-page "https://github.com/brechtsanders/xlsxio")
+    (license license:expat)))
 
 (define-public java-simple-xml
   (package

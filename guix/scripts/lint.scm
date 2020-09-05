@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -174,23 +174,24 @@ run the checkers on all packages.\n"))
     (when (assoc-ref opts 'list?)
       (list-checkers-and-exit checkers))
 
-    (let ((any-lint-checker-requires-store?
-           (any lint-checker-requires-store? checkers)))
+    (with-error-handling
+      (let ((any-lint-checker-requires-store?
+             (any lint-checker-requires-store? checkers)))
 
-      (define (call-maybe-with-store proc)
-        (if any-lint-checker-requires-store?
-            (with-store store
-              (proc store))
-            (proc #f)))
+        (define (call-maybe-with-store proc)
+          (if any-lint-checker-requires-store?
+              (with-store store
+                (proc store))
+              (proc #f)))
 
-      (call-maybe-with-store
-       (lambda (store)
-         (cond
-          ((null? args)
-           (fold-packages (lambda (p r) (run-checkers p checkers
-                                                      #:store store)) '()))
-          (else
-           (for-each (lambda (spec)
-                       (run-checkers (specification->package spec) checkers
-                                     #:store store))
-                     args))))))))
+        (call-maybe-with-store
+         (lambda (store)
+           (cond
+            ((null? args)
+             (fold-packages (lambda (p r) (run-checkers p checkers
+                                                        #:store store)) '()))
+            (else
+             (for-each (lambda (spec)
+                         (run-checkers (specification->package spec) checkers
+                                       #:store store))
+                       args)))))))))

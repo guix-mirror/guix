@@ -50,9 +50,9 @@
 
 (define %docker-version "19.03.12")
 
-(define-public python-docker-py
+(define-public python-docker
   (package
-    (name "python-docker-py")
+    (name "python-docker")
     (version "3.7.3")
     (source
      (origin
@@ -116,7 +116,7 @@ client.")
     (inputs
      `(("python-cached-property"
         ,python-cached-property)
-       ("python-docker-py" ,python-docker-py)
+       ("python-docker" ,python-docker)
        ("python-dockerpty" ,python-dockerpty)
        ("python-docopt" ,python-docopt)
        ("python-jsonschema" ,python-jsonschema)

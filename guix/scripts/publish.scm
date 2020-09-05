@@ -50,10 +50,9 @@
   #:use-module (guix workers)
   #:use-module (guix store)
   #:use-module ((guix serialization) #:select (write-file))
-  #:use-module (guix zlib)
-  #:autoload   (guix lzlib) (lzlib-available?
-                             call-with-lzip-output-port
-                             make-lzip-output-port)
+  #:use-module (zlib)
+  #:autoload   (lzlib) (call-with-lzip-output-port
+                        make-lzip-output-port)
   #:use-module (guix cache)
   #:use-module (guix ui)
   #:use-module (guix scripts)
@@ -880,8 +879,8 @@ blocking."
   "Return a symbol denoting the compression method expressed by STRING; return
 #f if STRING doesn't match any supported method."
   (match string
-    ("gzip" (and (zlib-available?) 'gzip))
-    ("lzip" (and (lzlib-available?) 'lzip))
+    ("gzip" 'gzip)
+    ("lzip" 'lzip)
     (_      #f)))
 
 (define (effective-compression requested-type compressions)
@@ -1032,9 +1031,7 @@ methods, return the applicable compression."
                                             opts)
                            (()
                             ;; Default to fast & low compression.
-                            (list (if (zlib-available?)
-                                      %default-gzip-compression
-                                      %no-compression)))
+                            (list %default-gzip-compression))
                            (lst (reverse lst))))
            (address (let ((addr (assoc-ref opts 'address)))
                       (make-socket-address (sockaddr:fam addr)

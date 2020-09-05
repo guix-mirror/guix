@@ -1,0 +1,29 @@
+Adjust libsanitizer to ABI change in glibc 2.31.
+
+Adapted to 3.x from this upstream commit:
+https://github.com/llvm/llvm-project/commit/947f9692440836dcb8d88b74b69dd379d85974ce
+
+--- a/lib/sanitizer_common/saniniitizer_platform_limits_posix.h.orig	2020-08-11 16:01:32.494882282 +0200 #
++++ b/lib/sanitizer_common/sanitizer_platform_limits_posix.h	2020-08-11 16:32:49.711383554 +0200
+@@ -176,8 +176,7 @@
+     unsigned long __unused1;
+     unsigned long __unused2;
+ #else
+-    unsigned short mode;
+-    unsigned short __pad1;
++    unsigned int mode;
+     unsigned short __seq;
+     unsigned short __pad2;
+ #if defined(__x86_64__) && !defined(_LP64)
+--- a/lib/sanitizer_common/sanitizer_platform_limits_posix.cc	2020-08-11 16:01:07.926821829 +0200
++++ b/lib/sanitizer_common/sanitizer_platform_limits_posix.cc.orig	2020-08-11 16:01:03.698811421 +0200
+@@ -1056,7 +1056,9 @@
+ CHECK_SIZE_AND_OFFSET(ipc_perm, gid);
+ CHECK_SIZE_AND_OFFSET(ipc_perm, cuid);
+ CHECK_SIZE_AND_OFFSET(ipc_perm, cgid);
++#if !SANITIZER_LINUX || __GLIBC_PREREQ (2, 31)
+ CHECK_SIZE_AND_OFFSET(ipc_perm, mode);
++#endif
+ 
+ CHECK_TYPE_SIZE(shmid_ds);
+ CHECK_SIZE_AND_OFFSET(shmid_ds, shm_perm);

@@ -628,9 +628,10 @@ connection.  Use with care."
     (define (thunk)
       (parameterize ((current-store-protocol-version
                       (store-connection-version store)))
-        (let ((result (proc store)))
-          (close-connection store)
-          result)))
+        (call-with-values (lambda () (proc store))
+          (lambda results
+            (close-connection store)
+            (apply values results)))))
 
     (cond-expand
       (guile-3
@@ -819,7 +820,7 @@ encoding conversion errors."
                             (terminal-columns (terminal-columns))
 
                             ;; Locale of the client.
-                            (locale (false-if-exception (setlocale LC_ALL))))
+                            (locale (false-if-exception (setlocale LC_MESSAGES))))
   ;; Must be called after `open-connection'.
 
   (define buffered
@@ -1727,10 +1728,20 @@ is raised if the set of paths read from PORT is not signed (as per
       (or done? (loop (process-stderr server port))))
     (= 1 (read-int s))))
 
-(define* (export-paths server paths port #:key (sign? #t) recursive?)
+(define* (export-paths server paths port #:key (sign? #t) recursive?
+                       (start (const #f))
+                       (progress (const #f))
+                       (finish (const #f)))
   "Export the store paths listed in PATHS to PORT, in topological order,
 signing them if SIGN? is true.  When RECURSIVE? is true, export the closure of
-PATHS---i.e., PATHS and all their dependencies."
+PATHS---i.e., PATHS and all their dependencies.
+
+START, PROGRESS, and FINISH are used to track progress of the data transfer.
+START is a one-argument that is passed the list of store items that will be
+transferred; it returns values that are then used as the initial state
+threaded through PROGRESS calls.  PROGRESS is passed the store item about to
+be sent, along with the values previously return by START or by PROGRESS
+itself.  FINISH is called when the last store item has been called."
   (define ordered
     (let ((sorted (topologically-sorted server paths)))
       ;; When RECURSIVE? is #f, filter out the references of PATHS.
@@ -1738,14 +1749,20 @@ PATHS---i.e., PATHS and all their dependencies."
           sorted
           (filter (cut member <> paths) sorted))))
 
-  (let loop ((paths ordered))
+  (let loop ((paths ordered)
+             (state (call-with-values (lambda () (start ordered))
+                      list)))
     (match paths
       (()
+       (apply finish state)
        (write-int 0 port))
       ((head tail ...)
        (write-int 1 port)
        (and (export-path server head port #:sign? sign?)
-            (loop tail))))))
+            (loop tail
+                  (call-with-values
+                      (lambda () (apply progress head state))
+                    list)))))))
 
 (define-operation (query-failed-paths)
   "Return the list of store items for which a build failure is cached.

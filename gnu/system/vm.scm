@@ -699,7 +699,8 @@ of the GNU system as described by OS."
        (device (file-system->mount-tag source))
        (type "9p")
        (flags (if writable? '() '(read-only)))
-       (options "trans=virtio,cache=loose")
+       (options (string-append "trans=virtio"
+                               (if writable? "" ",cache=loose")))
        (check? #f)
        (create-mount-point? #t)))))
 

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,6 +113,7 @@
                     #:system ,system
                     #:test-command ,test-command
                     #:tests? ,tests?
+                    #:parallel-tests? ,parallel-tests?
                     #:phases ,phases
                     #:outputs %outputs
                     #:include ,include

@@ -35,8 +35,9 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix profiles)
-  #:use-module (guix ui)
-  #:use-module (guix utils)
+  #:use-module ((guix utils) #:select (substitute-keyword-arguments))
+  #:use-module (guix i18n)
+  #:use-module (guix diagnostics)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cross-base)
@@ -650,7 +651,20 @@ bookkeeping."
                                     gc-root-service-type roots)
                     (operating-system-user-services os)))))
 
-(define* (operating-system-with-provenance os #:optional config-file)
+(define (operating-system-configuration-file os)
+  "Return the configuration file of OS, based on its 'location' field, or #f
+if it could not be determined."
+  (let ((file (and=> (operating-system-location os)
+                     location-file)))
+    (and file
+         (or (and (string-prefix? "/" file) file)
+             (search-path %load-path file)))))
+
+(define* (operating-system-with-provenance os
+                                           #:optional
+                                           (config-file
+                                            (operating-system-configuration-file
+                                             os)))
   "Return a variant of OS that stores its own provenance information,
 including CONFIG-FILE, if available.  This is achieved by adding an instance
 of PROVENANCE-SERVICE-TYPE to its services."
@@ -732,6 +746,18 @@ This is the GNU system.  Welcome.\n")
 (define (default-/etc/hosts host-name)
   "Return the default /etc/hosts file."
   (plain-file "hosts" (local-host-aliases host-name)))
+
+(define (validated-sudoers-file file)
+  "Return a copy of FILE, a sudoers file, after checking that it is
+syntactically correct."
+  (computed-file "sudoers"
+                 (with-imported-modules '((guix build utils))
+                   #~(begin
+                       (use-modules (guix build utils))
+
+                       (invoke #+(file-append sudo "/sbin/visudo")
+                               "--check" "--file" #$file)
+                       (copy-file #$file #$output)))))
 
 (define* (operating-system-etc-service os)
   "Return a <service> that builds containing the static part of the /etc
@@ -859,7 +885,9 @@ fi\n")))
        ("timezone" ,(plain-file "timezone" (operating-system-timezone os)))
        ("localtime" ,(file-append tzdata "/share/zoneinfo/"
                                   (operating-system-timezone os)))
-       ,@(if sudoers `(("sudoers" ,sudoers)) '())
+       ,@(if sudoers
+             `(("sudoers" ,(validated-sudoers-file sudoers)))
+             '())
        ,@(if hurd
              `(("login" ,(file-append hurd "/etc/login"))
                ("motd"  ,(file-append hurd "/etc/motd"))
@@ -1112,9 +1140,7 @@ TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
   "Variant of 'locale-name->definition' that raises an error upon failure."
   (match (locale-name->definition name)
     (#f
-     (raise (condition
-             (&message
-              (message (format #f (G_ "~a: invalid locale name") name))))))
+     (raise (formatted-message (G_ "~a: invalid locale name") name)))
     (def def)))
 
 (define (operating-system-locale-directory os)

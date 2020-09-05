@@ -34,19 +34,133 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages patchutils)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
+
+(define-public poly2tri-c
+  (package
+    (name "poly2tri-c")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://storage.googleapis.com/"
+                       "google-code-archive-source/v2/code.google.com/"
+                       "poly2tri-c/source-archive.zip"))
+       (file-name
+        (string-append name "-" version ".zip"))
+       (sha256
+        (base32 "17cw0zhbnf2gb59jm26z0wcarqgdwir9jr1fpi3v9lcvyb2s3mqj"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-strict-rules
+           (lambda _
+             (substitute* "configure.ac"
+               (("\\$CFLAGS -Wall -ansi -pedantic")
+                "$CFLAGS")
+               (("\\$CFLAGS -Werror")
+                "$CFLAGS"))
+             #t))
+         (add-after 'disable-strict-rules 'fix-build-errors
+           (lambda _
+             (substitute* "poly2tri-c/refine/Makefile.am"
+               (("cdt.c")
+                "rcdt.c")
+               (("cdt.h")
+                "rcdt.h")
+               (("utils.c")
+                "rutils.c")
+               (("utils.h")
+                "rutils.h"))
+             #t))
+         (add-before 'bootstrap 'configure-later
+           (lambda _
+             (setenv "NOCONFIGURE" "set")
+             #t))
+         (add-after 'build 'generate-doc
+           (lambda _
+             (invoke "doxygen")
+             #t))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (copy-recursively
+                "doc"
+                (string-append doc "/share/doc/poly2tri-c"))
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("doxygen" ,doxygen)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("glib" ,glib)))
+    (synopsis "2D constrained Delaunay triangulation library")
+    (description "Poly2Tri-C is a library for generating, refining and rendering
+2-Dimensional Constrained Delaunay Triangulations.")
+    (home-page "https://code.google.com/archive/p/poly2tri-c/")
+    (license license:bsd-3)))
+
+(define-public mrg
+  (package
+    (name "mrg")
+    (version "0.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hodefoting/mrg.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "106qhh0c11576cc5kh90ds0ram72d3r6n9sadw0y4krnhap6dvwk"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("alsa" ,alsa-lib)
+       ("cairo" ,cairo)
+       ("gtk+" ,gtk+)
+       ("mmm" ,mmm)
+       ("x11" ,libx11)))
+    (synopsis "Microraptor GUI")
+    (description "MrG is is a C API for creating user interfaces.  It can be
+used as an application writing environment or as an interactive canvas for part
+of a larger interface.")
+    (home-page "https://github.com/hodefoting/mrg")
+    (license license:lgpl2.0+)))
 
 (define-public babl
   (package

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,7 +61,7 @@ This is an alias for 'guix package -u'.\n"))
          ;; Preserve some of the 'guix package' options.
          (append (filter (lambda (option)
                            (any (cut member <> (option-names option))
-                                '("profile" "dry-run" "verbosity")))
+                                '("profile" "dry-run" "verbosity" "do-not-upgrade")))
                          %package-options)
 
                  %transformation-options

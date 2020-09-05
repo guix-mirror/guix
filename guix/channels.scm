@@ -40,10 +40,6 @@
   #:use-module (guix sets)
   #:use-module (guix store)
   #:use-module (guix i18n)
-  #:use-module ((guix utils)
-                #:select (source-properties->location
-                          &error-location
-                          &fix-hint))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
@@ -382,16 +378,16 @@ their relation.  When AUTHENTICATE? is false, CHANNEL is not authenticated."
             ;; TODO: Warn for all the channels once the authentication interface
             ;; is public.
             (when (guix-channel? channel)
-              (raise (condition
-                      (&message
-                       (message (format #f (G_ "channel '~a' lacks an \
+              (raise (make-compound-condition
+                      (formatted-message (G_ "channel '~a' lacks an \
 introduction and cannot be authenticated~%")
-                                        (channel-name channel))))
-                      (&fix-hint
-                       (hint (G_ "Add the missing introduction to your
+                                         (channel-name channel))
+                      (condition
+                       (&fix-hint
+                        (hint (G_ "Add the missing introduction to your
 channels file to address the issue.  Alternatively, you can pass
 @option{--disable-authentication}, at the risk of running unauthenticated and
-thus potentially malicious code.")))))))
+thus potentially malicious code."))))))))
         (warning (G_ "channel authentication disabled~%")))
 
     (when (guix-channel? channel)

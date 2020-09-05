@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,11 +34,12 @@
   #:use-module ((guix serialization)
                 #:select (nar-error? nar-error-file))
   #:use-module (guix nar)
-  #:use-module (guix utils)
+  #:use-module ((guix utils) #:select (%current-system))
   #:use-module ((guix build syscalls)
                 #:select (fcntl-flock set-thread-name))
   #:use-module ((guix build utils) #:select (which mkdir-p))
   #:use-module (guix ui)
+  #:use-module (guix diagnostics)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -65,14 +67,16 @@
 ;;;
 ;;; Code:
 
-
 (define-record-type* <build-machine>
   build-machine make-build-machine
   build-machine?
   (name            build-machine-name)            ; string
   (port            build-machine-port             ; number
                    (default 22))
-  (system          build-machine-system)          ; string
+  (systems         %build-machine-systems         ; list of strings
+                   (default #f))                  ; drop default after system is removed
+  (system          %build-machine-system          ; deprecated
+                   (default #f))
   (user            build-machine-user)            ; string
   (private-key     build-machine-private-key      ; file name
                    (default (user-openssh-private-key)))
@@ -89,6 +93,19 @@
                    (default 1.0))
   (features        build-machine-features         ; list of strings
                    (default '())))
+
+;;; Deprecated.
+(define (build-machine-system machine)
+  (warning (G_ "The 'system' field is deprecated, \
+please use 'systems' instead.~%"))
+  (%build-machine-system machine))
+
+;;; TODO: Remove after the deprecated 'system' field is removed.
+(define (build-machine-systems machine)
+  (or (%build-machine-systems machine)
+      (list (build-machine-system machine))
+      (leave (G_ "The build-machine object lacks a value for its 'systems'
+field."))))
 
 (define-record-type* <build-requirements>
   build-requirements make-build-requirements
@@ -156,10 +173,9 @@ can interpret meaningfully."
     (lambda ()
       (private-key-from-file file))
     (lambda (key proc str . rest)
-      (raise (condition
-              (&message (message (format #f (G_ "failed to load SSH \
+      (raise (formatted-message (G_ "failed to load SSH \
 private key from '~a': ~a")
-                                         file str))))))))
+                                file str)))))
 
 (define* (open-ssh-session machine #:optional (max-silent-time -1))
   "Open an SSH session for MACHINE and return it.  Throw an error on failure."
@@ -349,6 +365,8 @@ of free disk space on '~a'~%")
                                        #:log-port (current-error-port)
                                        #:lock? #f)))
 
+  (close-connection store)
+  (disconnect! session)
   (format (current-error-port) "done with offloaded '~a'~%"
           (derivation-file-name drv)))
 
@@ -359,8 +377,8 @@ of free disk space on '~a'~%")
 
 (define (machine-matches? machine requirements)
   "Return #t if MACHINE matches REQUIREMENTS."
-  (and (string=? (build-requirements-system requirements)
-                 (build-machine-system machine))
+  (and (member (build-requirements-system requirements)
+               (build-machine-systems machine))
        (lset<= string=?
                (build-requirements-features requirements)
                (build-machine-features machine))))
@@ -779,7 +797,8 @@ machine."
     (("--version")
      (show-version-and-exit "guix offload"))
     (("--help")
-     (format #t (G_ "Usage: guix offload SYSTEM PRINT-BUILD-TRACE
+     (format #t (G_ "Usage: guix offload SYSTEM MAX-SILENT-TIME \
+PRINT-BUILD-TRACE? BUILD-TIMEOUT
 Process build offload requests written on the standard input, possibly
 offloading builds to the machines listed in '~a'.~%")
              %machine-file)

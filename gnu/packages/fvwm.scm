@@ -54,18 +54,11 @@
              (let* ((out (assoc-ref outputs "out"))
                     (xsessions (string-append out "/share/xsessions")))
                (mkdir-p xsessions)
-               (with-output-to-file
-                   (string-append xsessions "/fvwm2.desktop")
-                 (lambda _
-                   (format #t
-                           "[Desktop Entry]~@
-                    Name=FVWM~@
-                    Comment=FVWM~@
-                    Exec=~a/bin/fvwm~@
-                    TryExec=~@*~a/bin/fvwm~@
-                    Icon=~@
-                    Type=Application~%"
-                           out))))
+               (make-desktop-entry-file
+                 (string-append xsessions "/fvwm2.desktop")
+                 #:name "FVWM"
+                 #:exec (string-append out "/bin/" ,name)
+                 #:comment '("FVWM")))
              #t)))))
     (native-inputs
      `(("perl" ,perl)
@@ -86,5 +79,5 @@
     (description
      "FVWM is an extremely powerful ICCCM-compliant multiple virtual desktop
 window manager for the X Window system.")
-    (home-page "http://www.fvwm.org/")
+    (home-page "https://www.fvwm.org/")
     (license gpl2+)))

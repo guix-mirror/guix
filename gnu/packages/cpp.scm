@@ -11,6 +11,8 @@
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,6 +82,42 @@
 strings, configuration, bit streams, threading, translation, and cross-platform
 operating system functions.")
     (license license:zlib)))
+
+(define-public rttr
+  (package
+    (name "rttr")
+    (version "0.9.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rttrorg/rttr/")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1yxad8sj40wi75hny8w6imrsx8wjasjmsipnlq559n4b6kl84ijp"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(;; No check target. Setting test-target to "unit_test" runs it twice.
+       #:tests? #f
+       #:configure-flags
+       '("-DBUILD_DOCUMENTATION=OFF" "-DBUILD_EXAMPLES=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         ;; library_test fails in chroot.
+         (add-after 'unpack 'skip-library-test
+           (lambda _
+             (substitute* "src/unit_tests/unit_tests.cmake"
+               (("misc/library_test.cpp") ""))
+             #t)))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/rttrorg/rttr/")
+    (synopsis "C++ Reflection Library")
+    (description
+     "RTTR stands for Run Time Type Reflection.  It describes the ability of a
+computer program to introspect and modify an object at runtime.  It is also
+the name of the library itself, which is written in C++.")
+    (license license:expat)))
 
 (define-public rct
   (let* ((commit "b3e6f41d9844ef64420e628e0c65ed98278a843a")
@@ -246,7 +284,7 @@ as ordering relation.")
 (define-public json-modern-cxx
   (package
     (name "json-modern-cxx")
-    (version "3.7.3")
+    (version "3.9.1")
     (home-page "https://github.com/nlohmann/json")
     (source
      (origin
@@ -254,8 +292,7 @@ as ordering relation.")
        (uri (git-reference (url home-page)
                            (commit (string-append "v" version))))
        (sha256
-        (base32
-         "04rry1xzis71z5gj1ylcj8b4li5q18zxhcwaviwvi3hx0frzxl9w"))
+        (base32 "0ar4mzp53lskxw3vdzw07f47njcshl3lwid9jfq6l7yx6ds2nyjc"))
        (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
@@ -278,12 +315,40 @@ as ordering relation.")
                   (string-append
                    "#include <fifo_map/" fifo-map-hpp ">")))))
            #t))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "-DJSON_TestDataDirectory="
+                            (assoc-ref %build-inputs "json_test_data")))
+       #:phases (modify-phases %standard-phases
+                  ;; XXX: When tests are enabled, the install phase will cause
+                  ;; a needless rebuild without the given configure flags,
+                  ;; ultimately creating both $out/lib and $out/lib64.  Move
+                  ;; the check phase after install to work around it.
+                  (delete 'check)
+                  (add-after 'install 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          ;; Some tests need git and a full checkout, skip those.
+                          (invoke "ctest" "-LE" "git_required")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (native-inputs
      `(("amalgamate" ,amalgamate)
-       ("doctest" ,doctest)))
+       ("doctest" ,doctest)
+       ("json_test_data"
+        ,(let ((version "3.0.0"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/nlohmann/json_test_data")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name "json_test_data" version))
+             (sha256
+              (base32
+               "0nzsjzlvk14dazwh7k2jb1dinb0pv9jbx5jsyn264wvva0y7daiv")))))))
     (inputs
      `(("fifo-map" ,fifo-map)))
-    (build-system cmake-build-system)
     (synopsis "JSON parser and printer library for C++")
     (description "JSON for Modern C++ is a C++ JSON library that provides
 intuitive syntax and trivial integration.")
@@ -295,7 +360,7 @@ intuitive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.6.13")
+    (version "0.6.17")
     (source (origin
               (method git-fetch)
               (uri
@@ -304,7 +369,7 @@ intuitive syntax and trivial integration.")
                 (commit version)))
               (sha256
                (base32
-                "0py70lm2i3sxzpgca2cic8zfn6dn18q837h76a5fchl2c0kpxm91"))
+                "136djmx4l34ff5z4fw1c866x52vp7k4f8zcnbs49whymxzhzwpw0"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)

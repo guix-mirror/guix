@@ -21,12 +21,31 @@
 
 (define-module (gnu packages accessibility)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages lisp)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages ocaml)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages polkit)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages music)
+  #:use-module (gnu packages language)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages speech)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages swig)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages java)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gstreamer)
@@ -36,6 +55,154 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libusb))
+
+(define-public libbraille
+  (package
+    (name "libbraille")
+    (version "0.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/" name "/files/" name "/"
+                       name "-" version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05g8r0ypazqn10i7k48iibs8bzc3scdfcnhcykab8j16lhzd27d0"))))
+    (build-system glib-or-gtk-build-system)
+    (outputs '("out" "bin"))
+    (arguments
+     `(#:tests? #f                      ; Tests require drivers
+       #:configure-flags
+       (list
+        "--disable-static"
+        "--enable-fake")))
+    (native-inputs
+     `(("latex2html" ,latex2html)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("swig" ,swig)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("libusb" ,libusb-compat)))
+    (synopsis "Portable Braille Library")
+    (description "Libbraille is a library to easily access Braille displays and
+terminals.")
+    (home-page "https://libbraille.org")
+    (license license:lgpl2.1+)))
+
+(define-public brltty
+  (package
+    (name "brltty")
+    (version "6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://brltty.app/archive/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nk54chr7z2w579vyiak9xk2avhnvrx7x2l5sk8nyw2zplchkx9q"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:configure-flags
+       (list
+        (string-append "--with-tcl-config="
+                       (assoc-ref %build-inputs "tcl")
+                       "/lib/tclConfig.sh")
+        (string-append "--with-libbraille="
+                       (assoc-ref %build-inputs "libbraille"))
+        (string-append "--with-espeak_ng="
+                       (assoc-ref %build-inputs "espeak-ng"))
+        (string-append "--with-espeak="
+                       (assoc-ref %build-inputs "espeak"))
+        (string-append "--with-flite="
+                       (assoc-ref %build-inputs "flite"))
+        ;; Required for RUNPATH validation.
+        (string-append "LDFLAGS=-Wl,-rpath="
+                       (assoc-ref %outputs "out")
+                       "/lib"))
+       #:make-flags
+       (list
+        (string-append "JAVA_JAR_DIR="
+                       (assoc-ref %outputs "out"))
+        (string-append "JAVA_JNI_DIR="
+                       (assoc-ref %outputs "out"))
+        (string-append "OCAML_DESTDIR="
+                       (assoc-ref %outputs "out")
+                       "/lib")
+        (string-append "PYTHON_PREFIX="
+                       (assoc-ref %outputs "out"))
+        "PYTHON_ROOT=/"
+        (string-append "TCL_DIR="
+                       (assoc-ref %outputs "out")
+                       "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-errors
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "configure"
+               (("/sbin/ldconfig")
+                (which "true")))
+             ;; Make Python bindings use rpath.
+             (substitute* "Bindings/Python/setup.py.in"
+               (("extra_compile_args =")
+                (string-append "extra_link_args = ['-Wl,-rpath="
+                               (assoc-ref outputs "out")
+                               "/lib'], "
+                               "extra_compile_args = ")))
+             #t)))))
+    (native-inputs
+     `(("clisp" ,clisp)
+       ("cython" ,python-cython)
+       ("doxygen" ,doxygen)
+       ("gettext" ,gettext-minimal)
+       ("java" ,icedtea "jdk")
+       ;; ("linuxdoc" ,linuxdoc-tools)
+       ("ocaml" ,ocaml)
+       ("ocamlfind" ,ocaml-findlib)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("tcl" ,tcl)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("atspi2" ,at-spi2-core)
+       ("bluez" ,bluez)
+       ("dbus" ,dbus)
+       ("espeak" ,espeak)
+       ("espeak-ng" ,espeak-ng)
+       ("expat" ,expat)
+       ("festival" ,festival)
+       ("flite" ,flite)
+       ("glib" ,glib)
+       ("gpm" ,gpm)
+       ("iconv" ,libiconv)
+       ("icu" ,icu4c)
+       ("libbraille" ,libbraille)
+       ("libpcre2" ,pcre2)
+       ("linux-headers" ,linux-libre-headers)
+       ("louis" ,liblouis)
+       ("ncurses" ,ncurses)
+       ("polkit" ,polkit)
+       ("speech-dispatcher" ,speech-dispatcher)
+       ("util-linux" ,util-linux)
+       ("util-linux:lib" ,util-linux "lib")
+       ("x11" ,libx11)
+       ("xaw" ,libxaw)
+       ("xaw3d" ,libxaw3d)
+       ("xext" ,libxext)
+       ("xfixes" ,libxfixes)
+       ("xt" ,libxt)
+       ("xtst" ,libxtst)))
+    (synopsis "Braille TTY")
+    (description "BRLTTY is a background process (daemon) which provides access
+to the Linux/Unix console (when in text mode) for a blind person using a
+refreshable braille display.  It drives the braille display, and provides
+complete screen review functionality.  Some speech capability has also been
+incorporated.")
+    (home-page "https://brltty.app/")
+    (license license:lgpl2.1+)))
 
 (define-public florence
   (package

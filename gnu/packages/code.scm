@@ -125,14 +125,14 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.6.4")
+    (version "6.6.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1515642wsjz7x3rsgaqk4sc7n0z2znl7idsk8jz8wgy5aswqqzlq"))))
+               "10vvsgx8v54whb4j9mk5qqyb5h3rdd9da0il3wir8pcpksyk0dww"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("libltdl" ,libltdl)

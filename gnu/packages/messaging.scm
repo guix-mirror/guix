@@ -23,6 +23,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Mason Hock <chaosmonk@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -227,6 +228,29 @@ identi.ca and status.net).")
     (home-page "https://www.bitlbee.org/")
     (license (list license:gpl2+ license:bsd-2))))
 
+(define-public bitlbee-purple
+  ;; This variant uses libpurple, which provides support for more protocols at
+  ;; the expense of a much bigger closure.
+  (package/inherit bitlbee
+    (name "bitlbee-purple")
+    (synopsis "IRC to instant messaging gateway (using Pidgin's libpurple)")
+    (inputs `(("purple" ,pidgin)
+              ,@(package-inputs bitlbee)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments bitlbee)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'configure                    ;add "--purple=1"
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "./configure"
+                       (string-append "--prefix="
+                                      (assoc-ref outputs "out"))
+                       "--otr=1" "--purple=1")))))
+       ((#:tests? _ #t)
+        ;; XXX: Tests fail to link, and ./configure says that it's "supported
+        ;; on a best-effort basis" anyway.
+        #f)))))
+
 (define-public bitlbee-discord
   (package
     (name "bitlbee-discord")
@@ -265,7 +289,7 @@ identi.ca and status.net).")
                      ("bitlbee" ,bitlbee) ; needs bitlbee headers
                      ("bash" ,bash)))
     (synopsis "Discord plugin for Bitlbee")
-    (description "Bitlbee-discord is a plugin for Bitlbee witch provides
+    (description "Bitlbee-discord is a plugin for Bitlbee which provides
 access to servers running the Discord protocol.")
     (home-page "https://github.com/sm00th/bitlbee-discord/")
     (license license:gpl2+)))
@@ -759,7 +783,7 @@ end-to-end encryption support; XML console.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.7.4")
+    (version "2.7.7")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -767,7 +791,7 @@ end-to-end encryption support; XML console.")
                     version ".zip"))
               (sha256
                (base32
-                "00zrj57n86c2m99n0swmmaws4f8zccbgbi8fknv6f9b1vif9jc8p"))))
+                "17jl4blkq04ag3g0har6z1bmk36523d29s51g260wb1pywfb536h"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -1306,14 +1330,14 @@ with several different talk daemons at the same time.")
 (define-public gloox
   (package
     (name "gloox")
-    (version "1.0.23")
+    (version "1.0.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://camaya.net/download/gloox-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "12jz8glg9zmyk0iyv1ywf5i0hq93dfq8lvn6lyjgy8730w66mjwp"))))
+        (base32 "1jgrd07qr9jvbb5hcmhrqz4w4lvwc51m30jls1fgxf1f5az6455f"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
@@ -2257,7 +2281,7 @@ support for high performance Telegram Bot creation.")
       ("folks" ,folks)
       ("libgcrypt" ,libgcrypt)
       ("libgee" ,libgee)
-      ("libhandy" ,libhandy)
+      ("libhandy" ,libhandy-0.0)
       ("pidgin" ,pidgin)
       ("purple-mm-sms" ,purple-mm-sms)
       ("sqlite" ,sqlite)))

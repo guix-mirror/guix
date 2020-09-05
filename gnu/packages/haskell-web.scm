@@ -171,7 +171,7 @@ both client and server code).")
   (package
     (name "ghc-http")
     (version "4000.3.14")
-    (outputs '("out" "doc"))
+    (outputs '("out" "static" "doc"))
     (source
      (origin
        (method url-fetch)
@@ -197,7 +197,23 @@ both client and server code).")
        ("ghc-network-uri" ,ghc-network-uri)
        ("ghc-split" ,ghc-split)))
     (arguments
-     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+     `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-simple-paths-module
+           (lambda _
+             (call-with-output-file "Paths_HTTP.hs"
+               (lambda (port)
+                 (format port "\
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE NoRebindableSyntax #-}
+{-# OPTIONS_GHC -fno-warn-missing-import-lists #-}
+module Paths_HTTP (version) where
+import Data.Version (Version(..))
+version :: Version
+version = Version [~a] []
+" (string-map (lambda (chr) (if (eq? chr #\.) #\, chr)) ,version))))
+             #t)))))
     (home-page "https://github.com/haskell/HTTP")
     (synopsis "Library for client-side HTTP")
     (description
@@ -904,6 +920,7 @@ entity decoding bugfixes applied.")
         (base32
          "0k1r1hddjgqighazcazxrx6xfhvy2gm8il8l82ainv3cai13yl30"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-blaze-markup" ,ghc-blaze-markup)))
@@ -934,6 +951,7 @@ entity decoding bugfixes applied.")
          "1jhabz1lbbv6yqxqiybifi86cb5xlsadrn368n5dd0wzzc7ja4iz"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-base-compat" ,ghc-base-compat)
@@ -1470,6 +1488,7 @@ derivations of regular expressions.")
         (base32
          "0836k65px3w9c5h1h2bmzq5a7mp6ajxwvfg3pfr2kbxwkgc0j63j"))))
     (build-system haskell-build-system)
+    (outputs '("out" "static" "doc"))
     (inputs
      `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
        ("ghc-hxt-unicode" ,ghc-hxt-unicode)

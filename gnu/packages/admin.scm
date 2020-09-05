@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014, 2015, 2016, 2018, 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
@@ -443,59 +443,65 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.26")
+    (version "4.0.35")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/puppetlabs/facter-ng")
+                    (url "https://github.com/puppetlabs/facter")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bab3by926gavbhkvp0in82vim575ybj8z6av3b12jdvla1s9rmz"))))
+                "1f203g2hp96cp8w4x1myhqdj5j09z9s23kylwkrxr69fjhn0vhnb"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'delete-facter-ng-gemspec
-                    (lambda _
-                      ;; XXX: ruby-build-system incorrectly finds
-                      ;; facter-ng.gemspec from this directory and tries to
-                      ;; build that instead of the proper facter.gemspec.
-                      ;; Just delete it as a workaround, as it appears to
-                      ;; only exist for backwards-compatibility after the
-                      ;; facter-ng->facter rename.
-                      (delete-file "agent/facter-ng.gemspec")
-                      #t))
-                  (add-after 'unpack 'embed-iproute-reference
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((iproute (assoc-ref inputs "iproute")))
-                        ;; Provide an absolute reference to the 'ip' executable
-                        ;; to avoid propagating it.
-                        (substitute* "lib/resolvers/networking_linux_resolver.rb"
-                          (("execute\\('ip")
-                           (string-append "execute('" iproute "/sbin/ip")))
-                        #t)))
-                  (delete 'check)
-                  (add-after 'wrap 'check
-                    (lambda* (#:key tests? outputs #:allow-other-keys)
-                      ;; XXX: The test suite wants to run Bundler and
-                      ;; complains that the gemspec is invalid.  For now
-                      ;; just make sure that we can run the wrapped
-                      ;; executable directly.
-                      (if tests?
-                          (invoke (string-append (assoc-ref outputs "out")
-                                                 "/bin/facter")
-                                  ;; Many facts depend on /sys, /etc/os-release,
-                                  ;; etc, so we only run a small sample.
-                                  "facterversion" "architecture"
-                                  "kernel" "kernelversion")
-                          (format #t "tests disabled~%"))
-                      #t)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-facter-ng-gemspec
+           (lambda _
+             ;; XXX: ruby-build-system incorrectly finds
+             ;; facter-ng.gemspec from this directory and tries to
+             ;; build that instead of the proper facter.gemspec.
+             ;; Just delete it as a workaround, as it appears to
+             ;; only exist for backwards-compatibility after the
+             ;; facter-ng->facter rename.
+             (delete-file "agent/facter-ng.gemspec")
+             #t))
+         (add-after 'unpack 'embed-absolute-references
+           ;; Refer to absolute executable file names to avoid propagation.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (find-files "lib/facter/resolvers" "\\.rb$")
+               (("execute\\('(which |)([^ ']+)" _ _ name)
+                (string-append "execute('" (or (which name)
+                                               name))))
+             #t))
+         (delete 'check)
+         (add-after 'wrap 'check
+           (lambda* (#:key tests? outputs #:allow-other-keys)
+             ;; XXX: The test suite wants to run Bundler and
+             ;; complains that the gemspec is invalid.  For now
+             ;; just make sure that we can run the wrapped
+             ;; executable directly.
+             (if tests?
+                 (invoke (string-append (assoc-ref outputs "out")
+                                        "/bin/facter")
+                         ;; Many facts depend on /sys, /etc/os-release,
+                         ;; etc, so we only run a small sample.
+                         "facterversion" "architecture"
+                         "kernel" "kernelversion")
+                 (format #t "tests disabled~%"))
+             #t)))))
     (inputs
-     `(("iproute" ,iproute)
-       ("ruby-hocon" ,ruby-hocon)
+     `(("ruby-hocon" ,ruby-hocon)
        ("ruby-sys-filesystem" ,ruby-sys-filesystem)
-       ("ruby-thor" ,ruby-thor)))
+       ("ruby-thor" ,ruby-thor)
+
+       ;; For ‘embed-absolute-references’.
+       ("dmidecode" ,dmidecode)
+       ("inetutils" ,inetutils)         ; for ‘hostname’
+       ("iproute" ,iproute)
+       ("pciutils" ,pciutils)
+       ("util-linux" ,util-linux)))
     (synopsis "Collect and display system facts")
     (description
      "Facter is a tool that gathers basic facts about nodes (systems) such
@@ -508,25 +514,53 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "2.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://hisham.hm/htop/releases/"
-                                  version "/htop-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/htop-dev/htop")
+             (commit version)))
+       (sha256
+        (base32 "096gdnpaszs5rfp7qj8npi2jkvdqpp8mznn89f97ykrg6pgagwq4"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
     (native-inputs
-     `(("python" ,python-wrapper)))     ;for scripts/MakeHeader.py
-    (home-page "https://hisham.hm/htop/")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("python" ,python-wrapper)))     ; for scripts/MakeHeader.py
+    (home-page "https://htop.dev")
     (synopsis "Interactive process viewer")
     (description
      "This is htop, an interactive process viewer.  It is a text-mode
 application (for console or X terminals) and requires ncurses.")
     (license license:gpl2)))
+
+(define-public bashtop
+  (package
+    (name "bashtop")
+    (version "0.9.25")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aristocratos/bashtop")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07nlr6vmyb7yihaxj1fp424lmhwkdjl6mls92v90f6gsvikpa13v"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" %output))
+       #:tests? #f      ; bats test fails with loading load.bash
+       #:phases (modify-phases %standard-phases (delete 'configure))))
+    (home-page "https://github.com/aristocratos/bashtop")
+    (synopsis "Linux/OSX/FreeBSD resource monitor")
+    (description "Resource monitor that shows usage and stats for processor,
+memory, disks, network and processes.")
+    (license license:asl2.0)))
 
 (define-public pies
   (package
@@ -916,7 +950,7 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "18")
+         (bind-patch-version "22")
          (bind-release-type "")         ; for patch release, use "-P"
          (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
@@ -1012,10 +1046,10 @@ connection alive.")
                ;; if finds all the programs it needs.
                (let* ((out       (assoc-ref outputs "out"))
                       (libexec   (string-append out "/libexec"))
-                      (coreutils (assoc-ref inputs "coreutils"))
+                      (coreutils (assoc-ref inputs "coreutils*"))
                       (inetutils (assoc-ref inputs "inetutils"))
                       (net-tools (assoc-ref inputs "net-tools"))
-                      (sed       (assoc-ref inputs "sed")))
+                      (sed       (assoc-ref inputs "sed*")))
                  (substitute* "client/scripts/linux"
                    (("/sbin/ip")
                     (string-append (assoc-ref inputs "iproute")
@@ -1053,14 +1087,10 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "0vws0zzb39mkphj4hhjrgfj9dzw951lc4pfa6pqg5ll5ma51mbsr"))))
+                      "1j9a4r83a77mp8k1y8z524c9rzdqgd8rzwczd6zwmw86a00xiimg"))))
 
-                ;; When cross-compiling, we need the cross Coreutils and sed.
-                ;; Otherwise just use those from %FINAL-INPUTS.
-                ,@(if (%current-target-system)
-                      `(("coreutils" ,coreutils)
-                        ("sed" ,sed))
-                      '())))
+                ("coreutils*" ,coreutils)
+                ("sed*" ,sed)))
 
       (home-page "https://www.isc.org/products/DHCP/")
       (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
@@ -1339,10 +1369,11 @@ at once based on a Perl regular expression.")
                          "packdir=\"/var/log\""))
                       #t))
                   (add-before 'install 'tweak-rc-weekly
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "rc/weekly"
                         (("/bin/kill")
-                         (which "kill"))
+                         (string-append (assoc-ref inputs "coreutils*")
+                                        "/bin/kill"))
                         (("syslogd\\.pid")
                          ;; The file is called 'syslog.pid' (no 'd').
                          "syslog.pid"))
@@ -1353,6 +1384,7 @@ at once based on a Perl regular expression.")
     (native-inputs `(("texinfo" ,texinfo)
                      ("automake" ,automake)
                      ("util-linux" ,util-linux))) ; for 'cal'
+    (inputs `(("coreutils*" ,coreutils)))
     (home-page "https://www.gnu.org/software/rottlog/")
     (synopsis "Log rotation and management")
     (description
@@ -1829,7 +1861,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200528")
+    (version "20200717")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1837,7 +1869,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "01ajxnz9dpnvdbib7yv20dw21a1yyfgwiw3whg0xi57cf4app2md"))))
+                "0jyy71szjr40c8v40qqw6yh3gfk8d6sl3nay69zrn5d88i3r0jca"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2049,7 +2081,7 @@ track changes in important system configuration files.")
 (define-public libcap-ng
   (package
     (name "libcap-ng")
-    (version "0.7.10")
+    (version "0.7.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2057,7 +2089,7 @@ track changes in important system configuration files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1gzzy12agfa9ddipdf72h9y68zqqnvsjjylv4vnq6hj4w2safk58"))))
+                "1s8akhnnazk0b5c6z5i3x54rjb26p8pz2wdl1m21ml3231qmr0c5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2101,24 +2133,19 @@ degradation and failure.")
 (define-public fdupes
   (package
     (name "fdupes")
-    (version "1.6.1")
+    (version "2.1.2")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/adrianlopezroche/fdupes")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/adrianlopezroche/fdupes/"
+                           "releases/download/v" version "/"
+                           "fdupes-" version ".tar.gz"))
        (sha256
-        (base32 "19b6vqblddaw8ccw4sn0qsqzbswlhrz8ia6n4m3hymvcxn8skpz9"))))
+        (base32 "1g9p50xhi2sp0hqxml4w2k0kq9jv988q2yxm347z5349dlxvap6d"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (delete 'configure))
-       #:tests? #f ; no 'check' target
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("pcre2" ,pcre2)))
     (home-page "https://github.com/adrianlopezroche/fdupes")
     (synopsis "Identify duplicate files")
     (description
@@ -3170,7 +3197,7 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "7.0.0")
+    (version "7.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3179,7 +3206,7 @@ tool for remote execution and deployment.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xc0fdc7n5bhqirh83agqiy8r14l14zwca07czvj8vgnsnfybslr"))))
+                "0i7wpisipwzk0j62pzaigbiq42y1mn4sbraz4my2jlz6ahwf00kv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -3344,14 +3371,14 @@ information tool.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1jiaygylwrlz6rlls1q69xw10j6ypr96yshsbzisg0adk37lbchn"))))
+        (base32 "189h950m1jjrnhvgcvzk6nj89l58rkxim7bxa0441ssajxpaw0vq"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -3562,7 +3589,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.04-1")
+      (version "3.1.06-1")
       (source
        (origin
          (method git-fetch)
@@ -3571,7 +3598,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "1mirnrrqfjyl2r7fwnpjlk37i5hf8f7lxv2yxcbdfjf2b3dfbpvl"))))
+          (base32 "0h65n03q9kdsv0i1q5f88i11iv79ca7fqq97rdkzkmiqb4whhnm2"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -3954,21 +3981,22 @@ supplied by the user when logging in.")
 (define-public jc
   (package
     (name "jc")
-    (version "1.11.8")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/kellyjonbrazil/jc")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0rkckbgm04ql4r48wjgljfiqvsz36n99yqcpcyna8lvlm8h4nmwa"))))
+    (version "1.13.4")
+    (source
+     (origin
+       ;; The PyPI tarball lacks the test suite.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kellyjonbrazil/jc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rwvyyrdnw43pixp8h51rncq2inc9pbbj1j2191y5si00pjw34zr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ruamel.yaml" ,python-ruamel.yaml)
-       ("python-xmltodict" ,python-xmltodict)
-       ("python-pygments" ,python-pygments)))
+     `(("python-pygments" ,python-pygments)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-xmltodict" ,python-xmltodict)))
     (home-page "https://github.com/kellyjonbrazil/jc")
     (synopsis "Convert the output of command-line tools to JSON")
     (description "@code{jc} JSONifies the output of many CLI tools and

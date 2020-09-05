@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -94,7 +94,8 @@ XTEA, 3WAY, TWOFISH, BLOWFISH, ARCFOUR, WAKE and more.")
       (sha256
        (base32
         "1w7yiljan8gf1ibiypi6hm3r363imm3sxl1j8hapjdq3m591qljn"))
-      (patches (search-patches "mhash-keygen-test-segfault.patch"))))
+      (patches (search-patches "mhash-keygen-test-segfault.patch"
+                               "libmhash-hmac-fix-uaf.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))                 ;for tests

@@ -15,6 +15,7 @@
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -297,7 +298,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.13.0")
+    (version "0.13.1")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               (method git-fetch)
@@ -307,7 +308,7 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1q96h98p6x7ah6nc0d2wfx503fmsj36riv9ka9s79z3lzwaf0k26"))
+                "1xpxkvgj7wgcl450djkcrmrf957mcy2f36hfs5g6kpla1gax2d1g"))
               (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
@@ -352,9 +353,7 @@ Additionally, various channel-specific options can be negotiated.")
                         (rename-file (string-append bin "/sssh.scm")
                                      (string-append examples "/sssh.scm"))
                         (delete-file-recursively bin)
-                        #t))))
-       ;; Tests are not parallel-safe.
-       #:parallel-tests? #f))
+                        #t))))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("libtool" ,libtool)

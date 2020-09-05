@@ -40,7 +40,7 @@
 ;;; Copyright © 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
+;;; Copyright © 2019, 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
@@ -52,6 +52,8 @@
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Trevor Hass <thass@okstate.edu>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1366,7 +1368,8 @@ built-in level editor.")
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "CXXFLAGS=-lpthread")
        #:phases
        (modify-phases %standard-phases
          ;; No configure script.
@@ -1398,7 +1401,7 @@ destroying an ancient book using a special wand.")
 (define-public gnome-chess
   (package
     (name "gnome-chess")
-    (version "3.36.1")
+    (version "3.37.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-chess/"
@@ -1406,7 +1409,7 @@ destroying an ancient book using a special wand.")
                                   "gnome-chess-" version ".tar.xz"))
               (sha256
                (base32
-                "165bk8s3nngyqbikggspj4rff5nxxfkfcmgzjb4grmsrgbqwk5di"))))
+                "09axf0q1mp13sv8cs0syfg8ahcd9r2qb26278r09j6s4njxmkfv4"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -1555,14 +1558,14 @@ Chess).  It is similar to standard chess but this variant is far more complicate
 (define-public ltris
   (package
     (name "ltris")
-    (version "1.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/lgames/ltris/"
                            "ltris-" version ".tar.gz"))
        (sha256
-        (base32 "15b18p7id55xiz2jkf56w2f1g6yw1rcb98bpa188i6skqrgnrg57"))))
+        (base32 "0959vvxh5xnxzpdv7i67lpd2b6ghx69z65ldnclj1z6llyfzfs7q"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The code in LTris uses traditional GNU semantics for inline functions
@@ -2729,6 +2732,7 @@ interface or via an external visual interface such as GNU XBoard.")
               (method url-fetch)
               (uri (string-append "mirror://gnu/freedink/freedink-" version
                                   ".tar.gz"))
+              (patches (search-patches "freedink-engine-fix-sdl-hints.patch"))
               (sha256
                (base32
                 "00hhk1bjdrc1np2qz44sa5n1mb62qzwxbvsnws3vpms6iyn3a2sy"))))
@@ -2742,6 +2746,14 @@ interface or via an external visual interface such as GNU XBoard.")
              ;; These tests require a graphical interface.
              (substitute* "src/Makefile.am"
                (("test_gfx_fonts TestIOGfxDisplay") ""))
+             #t))
+         (add-before 'bootstrap 'autoreconf
+           (lambda _
+	     ;; automake is out of date in the source
+	     ;; autoreconf updates the automake scripts
+	     (invoke "autoreconf")
+	     ;; Build fails when autom4te.cache exists.
+	     (delete-file-recursively "autom4te.cache")
              #t)))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
@@ -3129,6 +3141,30 @@ in different ways.")
     (home-page "https://www.minetest.net/")
     (license license:lgpl2.1+)))
 
+(define-public minetest-mineclone
+  (package
+    (name "minetest-mineclone")
+    (version "0.66.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.minetest.land/Wuzzy/MineClone2")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0miszzlzplpvaj0j1yii9867ydr42wsaqa9g6grxdrci75p05g00"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       '(("." "share/minetest/games/mineclone"))))
+    (synopsis "Minecraft clone based on Minetest engine")
+    (description
+     "MineClone is a Minetest subgame, that aims to recreate Minecraft as
+closely as the engine allows.")
+    (home-page "https://content.minetest.net/packages/Wuzzy/mineclone2/")
+    (license license:gpl3+)))
+
 (define glkterm
   (package
    (name "glkterm")
@@ -3505,14 +3541,16 @@ also available.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1n747p7h0qp48szgp262swg0xh8kxy1bw8ag1qczs4i26hyzs5x4"))))
+                "1n747p7h0qp48szgp262swg0xh8kxy1bw8ag1qczs4i26hyzs5x4"))
+              (patches (search-patches "unknown-horizons-python-3.8-distro.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'set-HOME
            (lambda _
-             (setenv "HOME" "/tmp")))
+             (setenv "HOME" "/tmp")
+             #t))
          (add-after 'build 'build-extra
            (lambda _
              (invoke "python3" "./setup.py" "build_i18n")
@@ -3526,6 +3564,14 @@ also available.")
                   (string-append "os.chdir(\""
                                  (assoc-ref outputs "out")
                                  "/share/unknown-horizons\")"))))
+             #t))
+         (add-before 'check 'fix-tests-with-pytest>=4
+           (lambda _
+             (substitute* "tests/conftest.py"
+               (("pytest_namespace")
+                "pytest_configure")
+               (("get_marker")
+                "get_closest_marker"))
              #t))
          ;; TODO: Run GUI tests as well
          (replace 'check
@@ -3545,6 +3591,7 @@ also available.")
        ("python-pyyaml" ,python-pyyaml)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("python-distro" ,python-distro)
 
        ;; Required for tests
        ("python-greenlet" ,python-greenlet)
@@ -4166,14 +4213,14 @@ are only two levels to play with, but they are very addictive.")
 (define-public pioneers
   (package
     (name "pioneers")
-    (version "15.5")
+    (version "15.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://downloads.sourceforge.net/pio/"
+              (uri (string-append "https://downloads.sourceforge.net/pio/"
                                   "pioneers-" version ".tar.gz"))
               (sha256
                (base32
-                "037gdiiw690jw3wd1s9lxmkqx0caxyk0b4drpm7i9p28gig43q9y"))))
+                "07b3xdd81n8ybsb4fzc5lx0813y9crzp1hj69khncf4faj48sdcs"))))
     (build-system gnu-build-system)
     (inputs `(("avahi" ,avahi)
               ("gtk+" ,gtk+)
@@ -4741,7 +4788,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.3")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4750,7 +4797,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "156ivi8cqqv9gxi8kj393av1s2sj7bblabm1b3kibla1s8l090n9"))))
+                "13396hvsj4cswlrw52kwqn37dadxps00vhr0hrqgm87fl4ih5yyx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5903,7 +5950,8 @@ with the mouse isn’t always trivial.")
                 "047sf00x71xbmi8bqrhfbmr9bk89l2gbykkqsfpw4wz6yfjscs6y"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f))                    ; no tests included
+     `(#:tests? #f                      ; no tests included
+       #:configure-flags '("CFLAGS=-fgnu89-inline"))) ; fix inlines
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
        ("freetype" ,freetype)
@@ -7000,7 +7048,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public odamex
   (package
     (name "odamex")
-    (version "0.8.1")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
@@ -7008,7 +7056,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
              "mirror://sourceforge/odamex/Odamex/" version "/"
              "odamex-src-" version ".tar.gz"))
        (sha256
-        (base32 "1ywbqkfacc9fc5di3dn95y5ah2ys9i241j64q3f37a73x92llw1i"))))
+        (base32 "0f887g87bmcq4dpcga7xc2mpxs947dkbc934ir9xs55gz6z13q96"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests
     (inputs
@@ -7751,7 +7799,7 @@ GameController.")
 (define-public quadrapassel
   (package
     (name "quadrapassel")
-    (version "3.36.02")
+    (version "3.36.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/quadrapassel/"
@@ -7759,7 +7807,7 @@ GameController.")
                                   "quadrapassel-" version ".tar.xz"))
               (sha256
                (base32
-                "0c80pzipxricyh4wydffsc94wj6ymnanqr9bg6wdx51hz1mmmilb"))))
+                "04abxmimh5npw8rhz1sfi6wxilgc6i1wka9mlnfwp8v1p1cb00cv"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -7894,7 +7942,7 @@ civilized than your own.")
              ;; SSE instructions are available on Intel systems only.
              ,@(if (any (cute string-prefix? <> (or (%current-target-system)
                                                     (%current-system)))
-                        '("x64_64" "i686"))
+                        '("x86_64" "i686"))
                    '()
                    '("-DWITH_SSE2=NO"))
              ;; Configuration cannot find GTK2 without the two following
@@ -8800,7 +8848,8 @@ play with up to four players simultaneously.  It has network support.")
      ;; XXX: Engine is built as Pascal source code, requiring Free Pascal
      ;; Compiler, which we haven't packaged yet.  With the flag below, we use
      ;; a Pascal to C translator and Clang instead.
-     `(#:configure-flags (list "-DBUILD_ENGINE_C=ON")
+     `(#:configure-flags (list "-DBUILD_ENGINE_C=ON"
+                               "-Dhaskell_flags=-dynamic;-fPIC")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
@@ -9433,15 +9482,15 @@ win.")
 (define-public freeorion
   (package
     (name "freeorion")
-    (version "0.4.9")
+    (version "0.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/freeorion/freeorion/releases/"
                            "download/v" version "/FreeOrion_v" version
-                           "_2020-02-02.db53471_Source.tar.gz"))
+                           "_2020-07-10.f3d403e_Source.tar.gz"))
        (sha256
-        (base32 "1qfnqkysagh8dw26plk229qh17mv4prjxs6qhfyczrmrrakb72an"))
+        (base32 "12xspixrkx6mmmsdqjha0hg02r4y73pk229l0wjq9s0yp8nb8ap7"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -9463,7 +9512,7 @@ win.")
                   (string-append "\"" roboto-dir "Roboto-" type ".ttf\");")))
                #t))))))
     (inputs
-     `(("boost" ,boost-with-python2)
+     `(("boost" ,boost)
        ("boost_signals" ,boost-signals2)
        ("font-dejavu" ,font-dejavu)
        ("font-roboto" ,font-google-roboto)
@@ -9474,7 +9523,7 @@ win.")
        ("libpng" ,libpng)
        ("libvorbis" ,libvorbis)
        ("openal" ,openal)
-       ("python2" ,python-2.7)
+       ("python" ,python)
        ("sdl2" ,sdl2)
        ("zlib" ,zlib)))
     (home-page "https://www.freeorion.org/index.php/Main_Page")
@@ -11622,7 +11671,7 @@ game.")  ;thanks to Debian for description
        ("gsasl" ,gsasl)
        ("libgcrypt" ,libgcrypt)
        ("libircclient" ,libircclient)
-       ("protobuf" ,protobuf-2)
+       ("protobuf" ,protobuf-2)         ; remove package when no longer needed
        ("qtbase" ,qtbase)
        ("sdl" ,(sdl-union (list sdl sdl-mixer)))
        ("sqlite" ,sqlite)
@@ -11667,3 +11716,72 @@ game.")  ;thanks to Debian for description
      "With PokerTH you can play the Texas holdem poker game, either against
 computer opponents or against real players online.")
     (license license:agpl3+)))
+
+(define-public azimuth
+  (package
+    (name "azimuth")
+    ;; Not marked as latest release, but it fixes a compiling issue
+    ;; and adds the install target.
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mdsteele/azimuth")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1znfvpmqiixd977jv748glk5zc4cmhw5813zp81waj07r9b0828r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         ;; Build release version instead of debug version.
+         (add-after 'unpack 'set-release
+           (lambda _
+             (setenv "BUILDTYPE" "release") #t))
+         (add-after 'unpack 'fix-install ; set install directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile" (("/usr") (assoc-ref outputs "out"))) #t)))))
+    (inputs `(("sdl" ,sdl)))
+    (home-page "https://mdsteele.games/azimuth/")
+    (synopsis "Metroidvania game with vector graphics")
+    (description
+     "Pilot your ship inside a planet to find and rescue the colonists trapped
+inside the Zenith Colony.")
+    (license license:gpl3+)))
+
+(define-public paperview
+  (let ((commit "9f8538eb6734c76877b878b8f1e52587f2ae19e6")
+        (revision "1"))
+    (package
+      (name "paperview")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/glouw/paperview")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09sb9sg44fvkgfdyycrm1ndpx7cnkrglxhci41y8f3gpagnvi7jk"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("sdl2" ,sdl2)))
+      (arguments
+       '(#:tests? #f ;no tests
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (home-page "https://github.com/glouw/paperview/")
+      (synopsis "High performance X11 animated wallpaper setter")
+      (description "High performance animated desktop background setter for
+X11 that won't set your CPU on fire, drain your laptop battery, or lower video
+game FPS.")
+      (license license:unlicense))))

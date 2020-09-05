@@ -29,36 +29,55 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages iso-codes)
+  #:use-module (gnu packages java)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages ruby)
+  #:use-module (gnu packages speech)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages telephony)
@@ -66,6 +85,277 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages xml))
+
+(define-public openni2
+  (package
+    (name "openni2")
+    (version "2.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/occipital/OpenNI2.git")
+         (commit (string-append "v" version "-debian"))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mfnyzpq53wnzgjfx91xcbx0nrl0lp1vrk1rk20a3gb3kshsr675"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("graphviz" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("openjdk" ,openjdk14)
+       ("openjdk:jdk" ,openjdk14 "jdk")
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("freeglut3" ,freeglut)
+       ("libudev" ,eudev)
+       ("libusb" ,libusb)))
+    (synopsis "Framework for sensor-based 'Natural Interaction")
+    (description "OpenNI is a framework for getting data to support
+'Natural Interaction', i.e. skeleton tracking, gesture tracking, and similar
+ways of getting data from humans.  It provides the interface for physical devices
+and for middleware components.")
+    (home-page "https://structure.io/openni")
+    (license license:asl2.0)))
+
+(define-public libdc1394
+  (package
+    (name "libdc1394")
+    (version "2.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://sourceforge.net/projects/" name "/files/"
+                              name "-2" "/" version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1v8gq54n1pg8izn7s15yylwjf8r1l1dmzbm2yvf6pv2fmb4mz41b"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glu" ,glu)
+       ("libraw1394" ,libraw1394)
+       ("libusb" ,libusb)
+       ("libxv" ,libxv)
+       ("linux-headers" ,linux-libre-headers)
+       ("mesa" ,mesa)
+       ("sdl" ,sdl)
+       ("v4l" ,v4l-utils)))
+    (synopsis "1394-Based Digital Camera Control Library")
+    (description "LibDC1394 is a library that provides functionality to control
+any camera that conforms to the 1394-Based Digital Camera Specification written
+by the 1394 Trade Association.  It utilizes the lowlevel functionality provided
+by libraw1394 to communicate with the camera.  It also uses the video1394 kernel
+module for the DMA capture of the video flow.")
+    (home-page "https://damien.douxchamps.net/ieee1394/libdc1394/")
+    (license license:lgpl2.0+)))
+
+(define-public ccextractor
+  (package
+    (name "ccextractor")
+    (version "0.88")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/CCExtractor/ccextractor.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sya45hvv4d46bk7541yimmafgvgyhkpsvwfz9kv6pm4yi1lz6nb"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No target
+       #:configure-flags
+       (list
+        "-DWITH_FFMPEG=ON"
+        "-DWITH_OCR=ON"
+        "-DWITH_SHARING=ON"
+        "-DWITH_HARDSUBX=ON")
+       #:phases
+       (modify-phases %standard-phases
+         ;; The package is in a sub-dir of this repo.
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "src")
+             #t))
+         (add-after 'chdir 'fix-build-errors
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("libnanomsg")
+                "nanomsg"))
+             #t)))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("ffmeg" ,ffmpeg-3.4)
+       ("nanomsg" ,nanomsg)
+       ("leptonica" ,leptonica)
+       ("ocr" ,tesseract-ocr)
+       ("zlib" ,zlib)))
+    (synopsis "Closed Caption Extractor")
+    (description "CCExtractor is a tool that analyzes video files and produces
+independent subtitle files from the closed captions data.  It is portable, small,
+and very fast.")
+    (home-page "https://www.ccextractor.org/")
+    (license license:gpl2+)))
+
+(define-public libvisual
+  (package
+    (name "libvisual")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Libvisual/libvisual.git")
+         (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02xwakwkqjsznc03pjlb6hcv1li1gw3r8xvyswqsm4msix5xq18a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The package is in a sub-dir of this repo.
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "libvisual")
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("libintl" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl" ,sdl)))
+    (native-search-paths
+     (list
+      (search-path-specification
+       (variable "LIBVISUAL_PLUGINS_BASE_DIR")
+       (files '("lib/libvisual-0.4")))))
+    ;; To load libvisual-plugins.
+    (search-paths native-search-paths)
+    (synopsis "Audio visualisation library")
+    (description "Libvisual is a library that acts as a middle layer between
+applications that want audio visualisation and audio visualisation plugins.")
+    (home-page "http://libvisual.org/")
+    (license
+     (list
+      ;; Libraries.
+      license:lgpl2.1+
+      ;; Examples and Tests.
+      license:gpl2+))))
+
+(define-public libvisual-plugins
+  (package
+    (name "libvisual-plugins")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/Libvisual/libvisual.git")
+         (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02xwakwkqjsznc03pjlb6hcv1li1gw3r8xvyswqsm4msix5xq18a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--disable-gstreamer-plugin"
+        "--disable-corona"
+        "--disable-gforce"
+        (string-append "--with-plugins-base-dir=" (assoc-ref %outputs "out")
+                       "/lib/libvisual-0.4"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The package is in a sub-dir of this repo.
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "libvisual-plugins")
+             #t)))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
+       ("libintl" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("esound" ,esound)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("gtk+" ,gtk+-2)
+       ("jack" ,jack-2)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (propagated-inputs
+     `(("libvisual" ,libvisual)))
+    (synopsis "Audio visualisation library")
+    (description "Libvisual is a library that acts as a middle layer between
+applications that want audio visualisation and audio visualisation plugins.")
+    (home-page "http://libvisual.org/")
+    (license license:gpl2+)))
+
+(define-public esound
+  (package
+    (name "esound")
+    (version "0.2.41")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://gitlab.gnome.org/Archive/esound.git")
+         (commit "ESOUND_0_2_41")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "141jg70fim276i8k2kyypm84gy89i1k9mm4yf68mfwnybvjw1d6n"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("gnome-common" ,gnome-common)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("tcsh" ,tcsh)                      ; for the tests
+       ("which" ,which)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("pcaudiolib" ,pcaudiolib)
+       ("tcp-wrappers" ,tcp-wrappers)))
+    (propagated-inputs
+     `(("audiofile" ,audiofile)))
+    (synopsis "Enlightened Sound Daemon")
+    (description "The Enlightened Sound Daemon mixes several audio streams for
+playback by a single audio device.  You can also pre-load samples, and play them
+back without having to send all the data for the sound.  Network transparency is
+also built in, so you can play sounds on one machine, and listen to them on
+another.")
+    (home-page "https://web.archive.org/web/20160528230227/
+http://www.tux.org/~ricdude/overview.html")
+    (license
+     (list
+      ;; Libraries.
+      license:lgpl2.0+
+      ;; Others.
+      license:gpl2+))))
 
 (define-public orc
   (package
@@ -257,78 +547,97 @@ for the GStreamer multimedia library.")
     (version "1.16.2")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append
-            "https://gstreamer.freedesktop.org/src/" name "/"
-            name "-" version ".tar.xz"))
-      (sha256
-       (base32
-        "068k3cbv1yf3gbllfdzqsg263kzwh21y8dpwr0wvgh15vapkpfs0"))))
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://gstreamer.freedesktop.org/src/" name "/"
+         name "-" version ".tar.xz"))
+       (sha256
+        (base32 "068k3cbv1yf3gbllfdzqsg263kzwh21y8dpwr0wvgh15vapkpfs0"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* "plugins/gst-plugins-good-plugins-docs.sgml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-before
+             'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Tests look for $XDG_RUNTIME_DIR.
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
+       ("xmllint" ,libxml2)
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("aalib" ,aalib)
+       ("bzip2" ,bzip2)
        ("cairo" ,cairo)
        ("flac" ,flac)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gst-plugins-base" ,gst-plugins-base)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("glu" ,glu)
        ("gtk+" ,gtk+)
-       ("jack" ,jack-1)
+       ("jack" ,jack-2)
        ("lame" ,lame)
        ("libavc1394" ,libavc1394)
        ("libcaca" ,libcaca)
        ("libdv" ,libdv)
+       ("libgudev" ,libgudev)
        ("libiec61883" ,libiec61883)
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libshout" ,libshout)
        ("libsoup" ,libsoup)
        ("libvpx" ,libvpx)
+       ("libx11" ,libx11)
+       ("libxdamage" ,libxdamage)
+       ("libxfixes" ,libxfixes)
+       ("libxext" ,libxext)
+       ("libxshm" ,libxshmfence)
+       ("mesa" ,mesa)
        ("mpg123" ,mpg123)
        ("orc" ,orc)
        ("pulseaudio" ,pulseaudio)
        ("speex" ,speex)
        ("taglib" ,taglib)
        ("twolame" ,twolame)
-       ("wavpack" ,wavpack)))
-    (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)
-       ("python-wrapper" ,python-wrapper)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ,@%common-gstreamer-phases
-         ,@(if (string-prefix? "arm" (or (%current-target-system)
-                                         (%current-system)))
-               ;; FIXME: These tests started failing on armhf after switching to Meson.
-               ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/issues/689
-               `((add-after 'unpack 'disable-tests-for-armhf
-                   (lambda _
-                     (substitute* "tests/check/elements/rtpbin_buffer_list.c"
-                       (("tcase_add_test \\(tc_chain, test_bufferlist\\);")
-                        ""))
-                     (substitute* "tests/check/elements/rtpulpfec.c"
-                       (("tcase_add_loop_test.*rtpulpfecdec_recovered_from_many.*")
-                        "")
-                       (("tcase_add.*rtpulpfecdec_recovered_using_recovered_packet.*")
-                        ""))
-                     #t)))
-               '())
-         (add-after
-          'unpack 'disable-failing-tests
-          (lambda _
-            ;; Disable tests that fail non-deterministically.
-            ;; This test fails on aarch64 on 1.12.x.
-            (substitute* "tests/check/elements/alpha.c"
-              (("tcase_add_test \\(tc_chain, test_chromakeying\\);" all)
-               (string-append "/* " all " */")))
-            #t)))))
+       ("v4l-utils" ,v4l-utils)
+       ("wavpack" ,wavpack)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (synopsis "GStreamer plugins and helper libraries")
+    (description "GStreamer-Plugins-Good is a collection of plug-ins you'd want
+to have right next to you on the battlefield.  Shooting sharp and making no
+mistakes, these plug-ins have it all: good looks, good code, and good
+licensing.  Documented and dressed up in tests.  If you're looking for a role
+model to base your own plug-in on, here it is.")
     (home-page "https://gstreamer.freedesktop.org/")
-    (synopsis
-     "Plugins for the GStreamer multimedia library")
-    (description "GStreamer Good Plug-ins is a set of plug-ins for the
-GStreamer multimedia library.  This set contains those plug-ins which the
-developers consider to have good quality code and correct functionality.")
     (license license:lgpl2.0+)))
 
 (define-public gst-plugins-bad
@@ -430,70 +739,114 @@ par compared to the rest.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gstreamer.freedesktop.org/src/"
-                           name "/" name "-" version ".tar.xz"))
+       (uri
+        (string-append "https://gstreamer.freedesktop.org/src/"
+                       name "/" name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "1jpvc32x6q01zjkfgh6gmq6aaikiyfwwnhj7bmvn52syhrdl202m"))))
+        (base32 "1jpvc32x6q01zjkfgh6gmq6aaikiyfwwnhj7bmvn52syhrdl202m"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  ,@%common-gstreamer-phases)))
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* "plugins/gst-plugins-ugly-plugins-docs.sgml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-before
+             'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Tests look for $XDG_RUNTIME_DIR.
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
-     `(("gst-plugins-base" ,gst-plugins-base)
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
        ("liba52" ,liba52)
        ("libcdio" ,libcdio)
-       ("libmpeg2" ,libmpeg2)
        ("libdvdread" ,libdvdread)
+       ("libmpeg2" ,libmpeg2)
        ("libx264" ,libx264)
-       ;; TODO:
-       ;; * opencore-amr (for the AMR-NB decoder and encoder and the
-       ;;   AMR-WB decoder) <http://sourceforge.net/projects/opencore-amr/>
+       ("opencore-amr" ,opencore-amr)
        ("orc" ,orc)))
-    (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)
-       ("python-wrapper" ,python-wrapper)))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (synopsis "GStreamer plugins and helper libraries")
+    (description "Gst-Plugins-Ugly are the ones that might have a patent noose
+around their neck, or a lock-up license, or any other problem that makes you
+think twice about shipping them.")
     (home-page "https://gstreamer.freedesktop.org/")
-    (synopsis "GStreamer plugins from the \"ugly\" set")
-    (description "GStreamer Ugly Plug-ins.  This set contains those plug-ins
-which the developers consider to have good quality code but that might pose
-distribution problems in some jurisdictions, e.g. due to patent threats.")
     (license license:lgpl2.0+)))
 
 (define-public gst-libav
   (package
     (name "gst-libav")
     (version "1.16.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://gstreamer.freedesktop.org/src/" name "/"
-                    name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1wpfilc98bad9nsv3y1qapxp35dvn2mvwvrmqwrsj58cf09gc967"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Drop bundled ffmpeg.
-                  (delete-file-recursively "gst-libs/ext/libav")
-                  #t))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://gstreamer.freedesktop.org/src/" name "/"
+         name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1wpfilc98bad9nsv3y1qapxp35dvn2mvwvrmqwrsj58cf09gc967"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Drop bundled ffmpeg.
+           (delete-file-recursively "gst-libs/ext/libav")
+           #t))))
     (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (substitute* "plugins/gst-libav-plugins-docs.sgml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))
+             #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("ruby" ,ruby)))
     (inputs
-     `(("gst-plugins-base" ,gst-plugins-base)
-       ("ffmpeg" ,ffmpeg)
-       ("orc" ,orc)
-       ("zlib" ,zlib)))
+     `(("ffmpeg" ,ffmpeg)))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (synopsis "GStreamer plugins and helper libraries")
+    (description "Gst-Libav contains a GStreamer plugin for using the encoders,
+decoders, muxers, and demuxers provided by FFmpeg.")
     (home-page "https://gstreamer.freedesktop.org/")
-    (synopsis "Plugins for the GStreamer multimedia library")
-    (description
-     "This GStreamer plugin supports a large number of audio and video
-compression formats through the use of the libav library.")
-    (license license:gpl2+)))
+    (license license:lgpl2.0+)))
 
 (define-public gst-editing-services
   (package

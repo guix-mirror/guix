@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -258,7 +258,7 @@ for platform-specific firmwares executing in M-mode.")
 (define-public seabios
   (package
     (name "seabios")
-    (version "1.13.0")
+    (version "1.14.0")
     (source
      (origin
        (method git-fetch)
@@ -267,7 +267,7 @@ for platform-specific firmwares executing in M-mode.")
              (commit (string-append "rel-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n1bd6msfs7xn8844sz2qnm7hb5x2qfl3zb06kp4bx9vdc3i6619"))))
+        (base32 "0jp4rxsv9jdzvx4gjvkybj6g1yjg8pkd2wys4sdh6c029npp6y8p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))

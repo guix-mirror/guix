@@ -141,6 +141,18 @@ if test "x$guix_cv_have_recent_guile_gcrypt" != "xyes"; then
   AC_MSG_ERROR([A recent Guile-Gcrypt could not be found; please install it.])
 fi
 
+dnl Check for Guile-zlib.
+GUILE_MODULE_AVAILABLE([have_guile_zlib], [(zlib)])
+if test "x$have_guile_zlib" != "xyes"; then
+  AC_MSG_ERROR([Guile-zlib is missing; please install it.])
+fi
+
+dnl Check for Guile-lzlib.
+GUILE_MODULE_AVAILABLE([have_guile_lzlib], [(lzlib)])
+if test "x$have_guile_lzlib" != "xyes"; then
+  AC_MSG_ERROR([Guile-lzlib is missing; please install it.])
+fi
+
 dnl Guile-newt is used by the graphical installer.
 GUILE_MODULE_AVAILABLE([have_guile_newt], [(newt)])
 
@@ -158,10 +170,6 @@ AM_CONDITIONAL([ENABLE_INSTALLER],
 
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])
-
-dnl Make sure we don't suffer from the bug in 'equal?' wrt. syntax objects
-dnl found in 2.2.1.  See <https://bugs.gnu.org/29903>.
-GUIX_ASSERT_SYNTAX_OBJECT_EQUAL
 
 AC_PROG_SED
 
@@ -185,11 +193,6 @@ AC_ARG_WITH([nix-prefix],
       ;;
    esac],
   [])
-
-AC_PATH_PROG([NIX_HASH], [nix-hash])
-if test "x$guix_build_daemon$NIX_HASH" = "xno"; then
-   AC_MSG_ERROR([Nix programs not found; please install Nix or use `--with-nix-prefix'.])
-fi
 
 AC_ARG_WITH([nixpkgs],
   [AS_HELP_STRING([--with-nixpkgs=DIR],
@@ -244,27 +247,6 @@ esac
 
 AC_SUBST([LIBGCRYPT_PREFIX])
 AC_SUBST([LIBGCRYPT_LIBDIR])
-
-dnl Library name of zlib suitable for 'dynamic-link'.
-GUIX_LIBZ_LIBDIR([libz_libdir])
-if test "x$libz_libdir" = "x"; then
-  LIBZ="libz"
-else
-  LIBZ="$libz_libdir/libz"
-fi
-AC_MSG_CHECKING([for zlib's shared library name])
-AC_MSG_RESULT([$LIBZ])
-AC_SUBST([LIBZ])
-
-dnl Library name of lzlib suitable for 'dynamic-link'.
-GUIX_LIBLZ_FILE_NAME([LIBLZ])
-if test "x$LIBLZ" = "x"; then
-  LIBLZ="liblz"
-else
-  # Strip the .so or .so.1 extension since that's what 'dynamic-link' expects.
-  LIBLZ="`echo $LIBLZ | sed -es'/\.so\(\.[[0-9.]]\+\)\?//g'`"
-fi
-AC_SUBST([LIBLZ])
 
 dnl Check for Guile-SSH, for the (guix ssh) module.
 GUIX_CHECK_GUILE_SSH

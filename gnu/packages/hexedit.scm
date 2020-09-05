@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,7 +34,7 @@
 (define-public hexedit
   (package
     (name "hexedit")
-    (version "1.4.2")
+    (version "1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -43,7 +43,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xsxa5mip892jkvz9jshj73y6c7j3mgp8y393ciihqlyf2nmfs67"))))
+                "1sfa4i374n1xrz2ivvzcd8jzc296ly11x1713s4bplvszcqpw6dv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target

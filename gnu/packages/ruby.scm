@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
@@ -21,6 +21,8 @@
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1578,48 +1580,44 @@ to save time in the following ways:
     (license license:expat)))
 
 (define-public ruby-chunky-png
-  ;; There hasn't been a release since 2018/11/21 and there are test failures
-  ;; in that release, so use the latest commit.
-  (let ((revision "1")
-        (commit "143b9cd1412e49edd4f8b661c7cd9b22941f43c0"))
-    (package
-      (name "ruby-chunky-png")
-      (version (git-version "1.3.11" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/wvanbergen/chunky_png.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0wbcgfzymbpmmxsb04arc49a2icki6f2fc6d6sqgg8369mc67g9z"))))
-      (build-system ruby-build-system)
-      (arguments
-       `(#:test-target "spec"
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'disable-bundler
-             (lambda _
-               (substitute* (find-files "." "\\.rb$")
-                 (("require.*bundler/setup.*") ""))
-               #t))
-           (replace 'replace-git-ls-files
-             (lambda _
-               ;; TODO: Remove after the fix of using 'cut' to better mimic the
-               ;; git ls-files output is merged in ruby-build-system.
-               (substitute* "chunky_png.gemspec"
-                 (("`git ls-files`")
-                  "`find . -type f -not -regex '.*\\.gem$' |sort |cut -c3-`"))
-               #t)))))
-      (native-inputs
-       `(("bundler" ,bundler)
-         ("ruby-rspec" ,ruby-rspec)
-         ("ruby-standard" ,ruby-standard)
-         ("ruby-yard" ,ruby-yard)))
-      (synopsis "Ruby library to handle PNG images")
-      (description "ChunkyPNG is a pure Ruby library that can read and write
+  (package
+    (name "ruby-chunky-png")
+    (version "1.3.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wvanbergen/chunky_png.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0hn8ap7iib47qkqdp0awmxgma11z0lmk1ca3lp7c97ykhv7ij1zs"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-bundler
+           (lambda _
+             (substitute* (find-files "." "\\.rb$")
+               (("require.*bundler/setup.*") ""))
+             #t))
+         (replace 'replace-git-ls-files
+           (lambda _
+             ;; TODO: Remove after the fix of using 'cut' to better mimic the
+             ;; git ls-files output is merged in ruby-build-system.
+             (substitute* "chunky_png.gemspec"
+               (("`git ls-files`")
+                "`find . -type f -not -regex '.*\\.gem$' |sort |cut -c3-`"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-standard" ,ruby-standard)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Ruby library to handle PNG images")
+    (description "ChunkyPNG is a pure Ruby library that can read and write
 Portable Network Graphics (PNG) images without depending on an external image
 library.  It tries to be memory efficient and reasonably fast.  It has
 features such as:
@@ -1642,8 +1640,8 @@ Performance: ChunkyPNG is reasonably fast for Ruby standards, by only using
 integer math and a highly optimized saving routine.
 @item Interoperability with RMagick.
 @end itemize")
-      (home-page "https://github.com/wvanbergen/chunky_png/wiki")
-      (license license:expat))))
+    (home-page "https://github.com/wvanbergen/chunky_png/wiki")
+    (license license:expat)))
 
 (define-public ruby-text-hyphen
   (package
@@ -6430,9 +6428,10 @@ other things and it comes with a command line interface.")
            ;; There is no Rakefile and minitest can only run one file at once,
            ;; so we have to iterate over all test files.
            (lambda _
-             (map (lambda (file)
-                    (invoke "ruby" "-Itest" file))
-                  (find-files "./test" "test_.*\\.rb")))))))
+             (for-each (lambda (file)
+                         (invoke "ruby" "-Itest" file))
+                       (find-files "./test" "test_.*\\.rb"))
+             #t)))))
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)))
     (synopsis "Library to read and update netrc files")
@@ -6788,7 +6787,7 @@ inspired by the Sinatra microframework style of specifying actions:
 (define-public ruby-rubocop-ast
   (package
     (name "ruby-rubocop-ast")
-    (version "0.1.0")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)               ;no test suite in distributed gem
@@ -6798,7 +6797,7 @@ inspired by the Sinatra microframework style of specifying actions:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nz25z5b76xkgb9sh370hni3l946j07fr05cdwkdj9x7ibgsb6nj"))))
+         "1ycf6qcj8nbzk2js72priim4642lkn56w5kbny1nlryjkckxgm04"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
@@ -8906,14 +8905,13 @@ extension plugins.")
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
-    (version "0.5.20180417")
+    (version "0.5.20190701")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "domain_name" version))
        (sha256
-        (base32
-         "0abdlwb64ns7ssmiqhdwgl27ly40x2l27l8hs8hn0z4kb3zd2x3v"))))
+        (base32 "0lcqjsmixjp52bnlgzh4lg9ppsk52x9hpwdjd53k8jnbah2602h0"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -9548,8 +9546,7 @@ or JRuby.")
          "10jmmbjm0lkglwxbn4rpqghgg1ipjxrswm117n50adhmy8yij650"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("git" ,git)))
+     `(("ruby-hoe" ,ruby-hoe)))
     (synopsis "Hoe plugins for tighter Git integration")
     (description
      "This package provides a set of Hoe plugins for tighter Git integration.
@@ -9900,13 +9897,13 @@ programs running in the background, in Ruby.")
 (define-public ruby-public-suffix
   (package
     (name "ruby-public-suffix")
-    (version "4.0.1")
+    (version "4.0.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "public_suffix" version))
               (sha256
                (base32
-                "0xnfv2j2bqgdpg2yq9i2rxby0w2sc9h5iyjkpaas2xknwrgmhdb0"))))
+                "0vywld400fzi17cszwrchrzcqys4qm6sshbv73wy5mwcixmrgg7g"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
@@ -10701,13 +10698,13 @@ functionality from Prawn.")
 (define-public ruby-kramdown
   (package
     (name "ruby-kramdown")
-    (version "1.17.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "kramdown" version))
               (sha256
                (base32
-                "1n1c4jmrh5ig8iv1rw81s4mw4xsp4v97hvf8zkigv4hn5h542qjq"))))
+                "1vmw752c26ny2jwl0npn0gbyqwgz4hdmlpxnsld9qi9xhk5b1qh7"))))
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)); FIXME: some test failures
     (native-inputs
@@ -10719,6 +10716,28 @@ functionality from Prawn.")
 of Markdown.  It is completely written in Ruby, supports standard Markdown
 (with some minor modifications) and various extensions that have been made
 popular by the PHP @code{Markdown Extra} package and @code{Maruku}.")
+    (license license:expat)))
+
+(define-public ruby-kramdown-parser-gfm
+  (package
+    (name "ruby-kramdown-parser-gfm")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "kramdown-parser-gfm" version))
+       (sha256
+        (base32 "0a8pb3v951f4x7h968rqfsa19c8arz21zw1vaj42jza22rap8fgv"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no rakefile
+    (propagated-inputs
+     `(("ruby-kramdown" ,ruby-kramdown)))
+    (synopsis "Kramdown parser for the GFM dialect of Markdown")
+    (description
+     "This is a parser for kramdown that converts Markdown documents in the
+GFM dialect to HTML.")
+    (home-page "https://github.com/kramdown/parser-gfm")
     (license license:expat)))
 
 (define-public ruby-http-parser.rb
@@ -10989,7 +11008,8 @@ Pathname.")
          (add-before 'build 'fix-i18n
            (lambda _
              (substitute* ".gemspec"
-               (("~> 0.7") ">= 0.7"))
+               (("~> 0.7") ">= 0.7")
+               (("~> 1.14") ">= 1.14"))
              #t)))))
     (propagated-inputs
      `(("ruby-addressable" ,ruby-addressable)
@@ -10998,7 +11018,7 @@ Pathname.")
        ("ruby-i18n" ,ruby-i18n)
        ("ruby-jekyll-sass-converter" ,ruby-jekyll-sass-converter)
        ("ruby-jekyll-watch" ,ruby-jekyll-watch)
-       ("ruby-kramdown" ,ruby-kramdown)
+       ("ruby-kramdown" ,ruby-kramdown-parser-gfm)
        ("ruby-liquid" ,ruby-liquid)
        ("ruby-mercenary" ,ruby-mercenary)
        ("ruby-pathutil" ,ruby-pathutil)
@@ -11012,13 +11032,13 @@ Pathname.")
 (define-public ruby-jekyll-paginate-v2
   (package
     (name "ruby-jekyll-paginate-v2")
-    (version "2.0.0")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll-paginate-v2" version))
               (sha256
                (base32
-                "154bfpyml6abxww9868hhyfvxasl8qhsc5zy2q30c7dxaj0igdib"))))
+                "1qzlqhpiqz28624fp0ak76hfy7908w6kpx62v7z43aiwjv0yc6q0"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("jekyll" ,jekyll)))
@@ -11147,6 +11167,29 @@ uniquely identify it.")
      "Sprockets is a Rack-based asset packaging system that concatenates and
 serves JavaScript, CoffeeScript, CSS, LESS, Sass, and SCSS.")
     (home-page "https://github.com/rails/sprockets")
+    (license license:expat)))
+
+(define-public ruby-mustache
+  (package
+    (name "ruby-mustache")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mustache" version))
+       (sha256
+        (base32 "1l0p4wx15mi3wnamfv92ipkia4nsx8qi132c6g51jfdma3fiz2ch"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-simplecov" ,ruby-simplecov)))
+    (synopsis "framework-agnostic way to render logic-free views")
+    (description
+     "Mustache is a framework-agnostic way to render logic-free views.
+Think of Mustache as a replacement for your views.  Instead of views
+consisting of ERB or HAML with random helpers and arbitrary logic,
+your views are broken into two parts: a Ruby class and an HTML
+template.")
+    (home-page "https://github.com/mustache/mustache")
     (license license:expat)))
 
 (define-public ruby-mustermann

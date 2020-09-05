@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,16 +22,59 @@
 (define-module (gnu packages enchant)
   #:use-module (gnu packages)
   #:use-module (gnu packages aspell)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages libreoffice)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages version-control)
   #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix licenses)
   #:use-module (srfi srfi-1))
+
+(define-public nuspell
+  (package
+    (name "nuspell")
+    (version "3.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/nuspell/nuspell.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "0wbb6dwmzlsyy224y0liis0azgzwbjdvcyzc31pw1aw6vbp36na6"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("catch" ,catch-framework2)
+       ("git" ,git-minimal)
+       ("perl" ,perl)
+       ;;FIX-ME: Building with ronn fails.
+       ;;("ronn" ,ronn)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)))
+    (propagated-inputs
+     `(("icu4c" ,icu4c)))
+    (synopsis "Fast and safe spellchecking C++ library")
+    (description "Nuspell is a fast and safe spelling checker software
+program.  It is designed for languages with rich morphology and complex word
+compounding.  Nuspell is written in modern C++ and it supports Hunspell
+dictionaries.")
+    (home-page "https://nuspell.github.io/")
+    (license lgpl3+)))
 
 (define-public enchant
   (package
@@ -51,8 +94,9 @@
                            ;; Tests require a relocatable build.
                            "--enable-relocatable")))
     (inputs
-     `(("aspell" ,aspell)))   ;; Currently, the only supported backend in Guix
-    (propagated-inputs        ;; is aspell. (This information might be old)
+     `(("aspell" ,aspell)
+       ("hunspell" ,hunspell)))
+    (propagated-inputs
      ;; Required by enchant.pc.
      `(("glib" ,glib)))
     (native-inputs

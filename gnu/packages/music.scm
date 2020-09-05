@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -503,7 +504,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "1.0.0-rc1")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -512,7 +513,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ibbdzyk30nj83jrq7py78hwpjgy0lq7ji6gi2pdp1pqzz1mqp0v"))))
+        (base32 "1kwlqfah0yk135i0rzmbbgnqdzxrzg9yslii5asl4ip9x4dc1w3r"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "tests"
@@ -1194,6 +1195,39 @@ be used alone or in concert with Non Mixer and Non Sequencer to form a
 complete studio.")
     (license license:gpl2+)))
 
+(define-public tascam-gtk
+  ;; This commit represents the latest version at the time of this writing.
+  (let ((commit "17b8575ff88dfd2ede0f7ef9c5c5597ab8a00702")
+        (revision "0"))
+    (package
+      (name "tascam-gtk")
+      (version (git-version "0.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/onkelDead/tascam-gtk.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "07k7rccqqg7lnygkh97a200l1i6s1rl92n01v0q6n4257sinir6f"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("liblo" ,liblo)
+         ("gtkmm" ,gtkmm)
+         ("alsa-lib" ,alsa-lib)
+         ("libxmlplusplus" ,libxmlplusplus-2.6)))
+      (native-inputs
+       `(("glib:bin" ,glib "bin")
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/onkelDead/tascam-gtk")
+      (synopsis "GTK+ based application to control Tascam US-16x08 DSP mixer")
+      (description "This is a mixer application to control the Tascam US-16x08
+audio interface.  This device contains about 280 control elements and this
+mixer application aims to provide comfortable access to the DSP effects the
+device supports.")
+      (license license:expat))))
+
 (define-public bsequencer
   (package
     (name "bsequencer")
@@ -1254,7 +1288,7 @@ B.Choppr is the successor of B.Slizr.")
   (package
     (inherit bsequencer)
     (name "bshapr")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method git-fetch)
@@ -1263,8 +1297,7 @@ B.Choppr is the successor of B.Slizr.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0jlq5rjicc4fxlpk869dg0l5bwwz8k9aj2wfk9v89b0qw8l8kaxl"))))
+        (base32 "04zd3a178i2nivg5rjailzqvc5mlnilmhj1ziygmbhshbrywplri"))))
     (synopsis "Beat/envelope shaper LV2 plugin")
     (description "B.Shapr is a beat/envelope shaper LV2 plugin.")
     (home-page "https://github.com/sjaehn/BShapr")
@@ -1468,7 +1501,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.15")
+    (version "0.9.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -1476,7 +1509,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "047y2l7ipzv00ly54f074v6p043xjml7vz0svc7z81bhx74vs0ix"))))
+                "1k5sm6s2d5di5yk0bxwy3nizq9m1ym46b4qz2m45nm3zspkbzybp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1500,7 +1533,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.15")
+    (version "0.9.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -1508,7 +1541,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "108jk8p1sbm99plipf98ssij6dxaip1lmznibg8y2c4x0v2la6ab"))))
+                "1r55575w9r0ifysw9mgxjvv0fszvx8ykjgim3zczf3mb5s9ngavv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1533,7 +1566,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.15")
+    (version "0.9.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -1541,7 +1574,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0r3bz64jqv5j4rqaxkbiqkxdf8n3hlcwjx1p19qfzik1lbwv9nw5"))))
+                "0k5vpjd4wv7h0s3f7gg07a2ksw0b010yvkwmadzzvv2qfb928grm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1566,7 +1599,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.15")
+    (version "0.9.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -1574,7 +1607,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "18ma429kamifcvjmsv0hysxk7qn2r9br4fia929bvfccapck98y1"))))
+                "1f2v60dpja0rnml60g463fjiz0f84v32yjwpvr56z79h1i6fssmv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1912,7 +1945,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.51-0")
+    (version "0.51-1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1920,7 +1953,7 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "0qzv4hjf4h7xx00ihnbl43pxa0fia9qkc8nwgzhqrs12jiljz6ps"))))
+                "0imbha9h96vqa967cbmdj7kkx7zrs054n5w2bjnifxdzws3qbxf6"))))
     (build-system gnu-build-system)
     (arguments
      (let ((wish (string-append "wish" (version-major+minor
@@ -2271,66 +2304,61 @@ capabilities, custom envelopes, effects, etc.")
     (license license:gpl2)))
 
 (define-public yoshimi
-  ;; Release 1.7.1 doesn't build with our version of LV2.  Applying only
-  ;; 86996cbb235f0fe138ae814a6758c2c8ba1c2a38 is not enough.
-  (let ((commit "bfcadc6537dbcb301cd93346f21d36bcbffa36c7")
-        (revision "0"))
-    (package
-      (name "yoshimi")
-      (version (git-version "1.7.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://git.code.sf.net/p/yoshimi/code")
-               (commit commit)))
-         (sha256
-          (base32 "0vhdxj7ky4iyq11r5wj9jwavjih4xvcn2djbrlmwpkdhrzpy6myl"))
-         (file-name (git-file-name name version))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:tests? #f                    ; there are no tests
-         #:configure-flags
-         (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
-                              (assoc-ref %outputs "out") "/share"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'enter-dir
-             (lambda _ (chdir "src") #t))
-           ;; Move SSE compiler optimization flags from generic target to
-           ;; athlon64 and core2 targets, because otherwise the build would fail
-           ;; on non-Intel machines.
-           (add-after 'unpack 'remove-sse-flags-from-generic-target
-             (lambda _
-               (substitute* "src/CMakeLists.txt"
-                 (("-msse -msse2 -mfpmath=sse") "")
-                 (("-march=(athlon64|core2)" flag)
-                  (string-append flag " -msse -msse2 -mfpmath=sse")))
-               #t)))))
-      (inputs
-       `(("boost" ,boost)
-         ("fftwf" ,fftwf)
-         ("alsa-lib" ,alsa-lib)
-         ("jack" ,jack-1)
-         ("fontconfig" ,fontconfig)
-         ("minixml" ,minixml)
-         ("mesa" ,mesa)
-         ("fltk" ,fltk)
-         ("lv2" ,lv2)
-         ("readline" ,readline)
-         ("ncurses" ,ncurses)
-         ("cairo" ,cairo)
-         ("zlib" ,zlib)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)))
-      (home-page "http://yoshimi.sourceforge.net/")
-      (synopsis "Multi-paradigm software synthesizer")
-      (description
-       "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
+  (package
+    (name "yoshimi")
+    (version "1.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/yoshimi/"
+                           (version-major+minor version)
+                           "/yoshimi-" version ".tar.bz2"))
+       (sha256
+        (base32 "1vxrksg199pcgiykq0nsf67ihfk2ny2jmpf6gzdb3nk9iphm7di3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:configure-flags
+       (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
+                            (assoc-ref %outputs "out") "/share"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'enter-dir
+           (lambda _ (chdir "src") #t))
+         ;; Move SSE compiler optimization flags from generic target to
+         ;; athlon64 and core2 targets, because otherwise the build would fail
+         ;; on non-Intel machines.
+         (add-after 'unpack 'remove-sse-flags-from-generic-target
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("-msse -msse2 -mfpmath=sse") "")
+               (("-march=(athlon64|core2)" flag)
+                (string-append flag " -msse -msse2 -mfpmath=sse")))
+             #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("fftwf" ,fftwf)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("fontconfig" ,fontconfig)
+       ("minixml" ,minixml)
+       ("mesa" ,mesa)
+       ("fltk" ,fltk)
+       ("lv2" ,lv2)
+       ("readline" ,readline)
+       ("ncurses" ,ncurses)
+       ("cairo" ,cairo)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://yoshimi.sourceforge.net/")
+    (synopsis "Multi-paradigm software synthesizer")
+    (description
+     "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
 synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
 synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
-      (license license:gpl2))))
+    (license license:gpl2)))
 
 (define-public libgig
   (package
@@ -2538,14 +2566,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.15")
+    (version "0.9.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0k7a6llwrzs07flr9mvzvay9ygc2x64syg8npyabsw5a4d85fwsx"))))
+                "1l19g7cvgb7gfjmaihnd899k5hhxyf4sz22380y830xjfs2fvqxc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -3024,7 +3052,19 @@ websites such as Libre.fm.")
              #t))
          (replace 'check
            (lambda _
-             (invoke "nosetests" "-v"))))))
+             (invoke "nosetests" "-v")))
+         ;; Wrap the executable, so it can find python-gi (aka pygobject) and
+         ;; gstreamer plugins.
+         (add-after 'wrap 'wrap-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/beet"))
+                   (plugins (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                   (types (getenv "GI_TYPELIB_PATH")))
+               (wrap-program prog
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,plugins))
+                 `("GI_TYPELIB_PATH" ":" prefix (,types)))
+               #t))))))
     (native-inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-flask" ,python-flask)
@@ -3045,7 +3085,13 @@ websites such as Libre.fm.")
        ("python-mutagen" ,python-mutagen)
        ("python-pyacoustid" ,python-pyacoustid)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-unidecode" ,python-unidecode)))
+       ("python-unidecode" ,python-unidecode)
+       ;; For plugin replaygain.
+       ("python-pygobject" ,python-pygobject)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gstreamer" ,gstreamer)))
     (home-page "https://beets.io")
     (synopsis "Music organizer")
     (description "The purpose of beets is to get your music collection right
@@ -3175,15 +3221,14 @@ with a number of bugfixes and changes to improve IT playback.")
 (define-public sooperlooper
   (package
     (name "sooperlooper")
-    (version "1.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://essej.net/sooperlooper/sooperlooper-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0n2gdxw1fx8nxxnpzf4sj0kp6k6zi1yq59cbz6qqzcnsnpnvszbs"))
-              (patches (search-patches "sooperlooper-build-with-wx-30.patch"))))
+    (version "1.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://essej.net/sooperlooper/sooperlooper-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1jjvq4aflbyr3nr8b318k1vkad16xfa1jkqn9ckzw4419qc6c1k5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4001,7 +4046,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.4.2")
+    (version "3.5")
     (source
      (origin
        (method git-fetch)
@@ -4010,13 +4055,14 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14a9sg87nx7xca1qfbkplnpbx9pyg9k9vy87dq0g401ag6g6bi66"))
+        (base32 "1s8767imzv9hclpzvvvsqb3iyiv4y2klr6agf95zwym2xafy8p26"))
        (modules '((guix build utils)))
        (snippet
         ;; Un-bundle OpenSSL and remove unused libraries.
         '(begin
            (for-each delete-file-recursively
                      '("thirdparty/freetype"
+                       "thirdparty/google_analytics"
                        "thirdparty/openssl"
                        "thirdparty/portmidi"))
            #t))))
@@ -4687,7 +4733,7 @@ discard bad quality ones.
 (define-public fmit
   (package
     (name "fmit")
-    (version "1.2.13")
+    (version "1.2.14")
     (source (origin
 	      (method git-fetch)
 	      (uri (git-reference
@@ -4696,7 +4742,7 @@ discard bad quality ones.
               (file-name (git-file-name name version))
 	      (sha256
                (base32
-                "1qyskam053pvlap1av80rgp12pzhr92rs88vqs6s0ia3ypnixcc6"))))
+                "1q062pfwz2vr9hbfn29fv54ip3jqfd9r99nhpr8w7mn1csy38azx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -4905,7 +4951,7 @@ and reverb.")
 (define-public lsp-plugins
   (package
     (name "lsp-plugins")
-    (version "1.1.22")
+    (version "1.1.24")
     (source
       (origin
         (method git-fetch)
@@ -4914,7 +4960,7 @@ and reverb.")
                (commit (string-append "lsp-plugins-" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0s0i0kf5nqxxywckg03fds1w7696ly60rnlljzqvp7qfgzps1r6c"))))
+         (base32 "0rzgzkg6wvhjcf664i16nz4v30drgv80s34bhdflcjzx2x7ix5zk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -5019,15 +5065,15 @@ short-time Fourier transform, available as LV2 audio plugin and JACK client.")
 (define-public x42-plugins
   (package
     (name "x42-plugins")
-    (version "20191215")
+    (version "20200714")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "http://gareus.org/misc/x42-plugins/x42-plugins-"
+        (string-append "https://gareus.org/misc/x42-plugins/x42-plugins-"
                        version ".tar.xz"))
        (sha256
-        (base32 "1mwfvhsvc0qgjyiwd8pmmam1mav43lmv39fljhmj9yri558v5g1c"))))
+        (base32 "1av05ykph8x67018hm9zfgh1vk0zi39mvrsxkj6bm4hkarxf0vvl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -5072,7 +5118,7 @@ audio and MIDI plugins that can also run as standalone JACK applications.")
 (define-public zam-plugins
   (package
     (name "zam-plugins")
-    (version "3.12")
+    (version "3.13")
     (source
      (origin
        (method git-fetch)
@@ -5086,7 +5132,7 @@ audio and MIDI plugins that can also run as standalone JACK applications.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0icsbarc9azcp0kjjydmiqn401v60jmf16zdcp4040q8g7bpfmfa"))))
+        (base32 "0bxvssqnnd7bph3w1d6xcmxradv4cqq3wyzyv1a1hfm71a0pdahs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;no "check" target

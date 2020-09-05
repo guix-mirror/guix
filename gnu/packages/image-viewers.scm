@@ -74,7 +74,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "3.4.1")
+    (version "3.5")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -82,14 +82,15 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yvvj1s7ayn0lwils582smwkmckdk0gij5c58g45n4xh981n693q"))))
+                "07jklibpi4ig9pbdrwhllsfffxn2h8xf4ma36qii00w4hb69v3rq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:test-target "test"
        #:make-flags
        (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             "exif=1")))
+             "exif=1"
+             "inotify=1")))
     (native-inputs
      `(("perl" ,perl)
        ("perl-test-command" ,perl-test-command)))

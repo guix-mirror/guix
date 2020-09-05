@@ -39,6 +39,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system linux-module)
   #:use-module (guix build-system python)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
@@ -555,7 +556,7 @@ WireGuard was added to Linux 5.6.")
 (define-public wireguard-tools
   (package
     (name "wireguard-tools")
-    (version "1.0.20200513")
+    (version "1.0.20200827")
     (source
      (origin
        (method git-fetch)
@@ -564,11 +565,11 @@ WireGuard was added to Linux 5.6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1yk8hng0qw2rf76hnawjbdpjssmah88bd5fk20h1c0j1yazlx0a9"))))
+        (base32 "1h351hn531z6z85sx9ya27xjz1jszgn1pkwibacjj49mds15f7gn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              "--directory=src"
              "WITH_BASHCOMPLETION=yes"
              ;; Install the ‘simple and dirty’ helper script wg-quick(8).

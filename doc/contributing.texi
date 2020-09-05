@@ -42,13 +42,14 @@ git clone https://git.savannah.gnu.org/git/guix.git
 
 @cindex authentication, of a Guix checkout
 How do you ensure that you obtained a genuine copy of the repository?
-To do that, run @command{guix git authenticate}, passing if the commit
+To do that, run @command{guix git authenticate}, passing it the commit
 and OpenPGP fingerprint of the @dfn{channel introduction}
 (@pxref{Invoking guix git authenticate}):
 
 @c The commit and fingerprint below must match those of the channel
 @c introduction in '%default-channels'.
 @example
+git fetch origin keyring:keyring
 guix git authenticate 9edb3f66fd807b096b48283debdcddccfea34bad \
   "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"
 @end example

@@ -276,7 +276,9 @@ host	all	all	::1/128 	md5"))
                        (service-extension activation-service-type
                                           postgresql-activation)
                        (service-extension account-service-type
-                                          (const %postgresql-accounts))))
+                                          (const %postgresql-accounts))
+                       (service-extension profile-service-type
+                                          (compose list postgresql-configuration-postgresql))))
                 (default-value (postgresql-configuration))))
 
 (define* (postgresql-service #:key (postgresql postgresql)

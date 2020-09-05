@@ -6,6 +6,7 @@
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -393,3 +394,52 @@ powerful language for representing information.")
     (description "This package provides an rdflib extension adding JSON-LD
 parser and serializer.")
     (license license:bsd-3)))
+
+(define-public python-cfgraph
+  (package
+    (name "python-cfgraph")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "CFGraph" version))
+        (sha256
+         (base32
+          "0x7yz0lvqb6mkhl5fbml27sppmscgpf8v2ism9jzzf0h982ffzxm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-rdflib" ,python-rdflib)))
+    (home-page "https://github.com/hsolbrig/CFGraph")
+    (synopsis "RDF Collections flattener for rdflib")
+    (description
+     "This package contains RDF Collections flattener for @code{rdflib}.")
+    (license license:asl2.0)))
+
+(define-public hdt-cpp
+  (package
+    (name "hdt-cpp")
+    (version "1.3.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/rdfhdt/hdt-cpp")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vsq80jnix6cy78ayag7v8ajyw7h8dqyad1q6xkf2hzz3skvr34z"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("serd" ,serd)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/rdfhdt/hdt-cpp")
+    (synopsis "C++ implementation of the HDT compression format")
+    (description "Header Dictionary Triples (HDT) is a compression format for
+RDF data that can also be queried for Triple Patterns.  This package provides a
+C++ library as well as various command-line tools to to work with HDT.")
+(license license:lgpl2.1+)))

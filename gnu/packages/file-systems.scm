@@ -30,6 +30,7 @@
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system linux-module)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -57,6 +58,8 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
@@ -270,7 +273,7 @@ performance and other characteristics.")
 (define-public exfatprogs
   (package
     (name "exfatprogs")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method git-fetch)
@@ -279,8 +282,7 @@ performance and other characteristics.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1s47qvhr702z5c19wfqz8cwl9ammmincs7a8vjc6p974wnnjg77y"))))
+        (base32 "1braffz1wc4ki3nb42q85l5zg2dl2hwjr64rk27nc85wcsrbavnl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -859,3 +861,61 @@ directory onto a single drive and create FreeDesktop.org Trash specification
 compatible directories.")
       (home-page "https://github.com/trapexit/mergerfs-tools")
       (license license:isc))))
+
+(define-public python-dropbox
+  (package
+    (name "python-dropbox")
+    (version "10.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "dropbox" version))
+        (sha256
+         (base32
+          "137rn9fs1bg1p1khd5lcccfxh8jsx27dh2ix5wwd8cmddbrzdrbd"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; Tests require a network connection.
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-chardet" ,python-chardet)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://www.dropbox.com/developers")
+    (synopsis "Official Dropbox API Client")
+    (description "This package provides a Python SDK for integrating with the
+Dropbox API v2.")
+    (license license:expat)))
+
+(define-public dbxfs
+  (package
+    (name "dbxfs")
+    (version "1.0.43")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "dbxfs" version))
+        (sha256
+         (base32
+          "1f9sy2ax215dxiwszrrcadffjdsmrlxm4kwrbiap9dhxvzm226ks"))
+        (patches (search-patches "dbxfs-remove-sentry-sdk.patch"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests requires safefs
+    (propagated-inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-block-tracing" ,python-block-tracing)
+       ("python-dropbox" ,python-dropbox)
+       ("python-keyring" ,python-keyring)
+       ("python-keyrings.alt" ,python-keyrings.alt)
+       ("python-privy" ,python-privy)
+       ("python-userspacefs" ,python-userspacefs)))
+  (home-page "https://github.com/rianhunter/dbxfs")
+  (synopsis "User-space file system for Dropbox")
+  (description
+   "@code{dbxfs} allows you to mount your Dropbox folder as if it were a
+local filesystem using FUSE.")
+  (license license:gpl3+)))

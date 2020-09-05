@@ -28,6 +28,7 @@
 (define-module (gnu packages photo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix download)
@@ -40,6 +41,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
@@ -465,7 +467,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "3.0.2")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
@@ -473,7 +475,7 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "1yrnkw8c47kmy2x6m1xp69hwyk02xyc8pd9kvcmyj54lzrhzdfka"))))
+        (base32 "035rvqmw386hm0jpi14lf4dnpr5rjkalzjkyprqh42nwi3m86dkf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -482,6 +484,8 @@ photographic equipment.")
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
+             ;; Rawspeed fails to build with GCC due to OpenMP error:
+             ;; "undefined reference to `GOMP_loop_nonmonotonic_dynamic_next'"
              (setenv "CC" "clang") (setenv "CXX" "clang++")
              ;; Darktable looks for opencl-c.h in the LLVM dir. Guix installs
              ;; it to the Clang dir. We fix this by patching CMakeLists.txt.
@@ -501,15 +505,19 @@ photographic equipment.")
                      (string-append (assoc-ref inputs "ilmbase")
                                     "/include/OpenEXR:" (or (getenv "CPATH") "")))
              #t))
-          (add-after 'install 'wrap-program
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (wrap-program (string-append (assoc-ref outputs "out")
-                                           "/bin/darktable")
-                ;; For GtkFileChooserDialog.
-                `("GSETTINGS_SCHEMA_DIR" =
-                  (,(string-append (assoc-ref inputs "gtk+")
-                                   "/share/glib-2.0/schemas"))))
-              #t)))))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/darktable")
+               ;; For GtkFileChooserDialog.
+               `("GSETTINGS_SCHEMA_DIR" =
+                 (,(string-append (assoc-ref inputs "gtk+")
+                                  "/share/glib-2.0/schemas")))
+               ;; For libOpenCL.so.
+               `("LD_LIBRARY_PATH" =
+                 (,(string-append (assoc-ref inputs "ocl-icd")
+                                  "/lib"))))
+             #t)))))
     (native-inputs
      `(("clang" ,clang-9)
        ("desktop-file-utils" ,desktop-file-utils)
@@ -523,36 +531,38 @@ photographic equipment.")
        ("po4a" ,po4a)))
     (inputs
      `(("cairo" ,cairo)
-       ("colord-gtk" ,colord-gtk)
-       ("cups" ,cups)
+       ("colord-gtk" ,colord-gtk) ;optional, for color profile support
+       ("cups" ,cups) ;optional, for printing support
        ("curl" ,curl)
        ("dbus-glib" ,dbus-glib)
        ("exiv2" ,exiv2)
        ("freeimage" ,freeimage)
-       ("gmic" ,gmic)
+       ("gmic" ,gmic) ;optional, for HaldcLUT support
        ("graphicsmagick" ,graphicsmagick)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
        ("ilmbase" ,ilmbase)
-       ("iso-codes" ,iso-codes)
+       ("iso-codes" ,iso-codes) ;optional, for language names in the preferences
        ("json-glib" ,json-glib)
        ("lcms" ,lcms)
-       ("lensfun" ,lensfun)
-       ("libgphoto2" ,libgphoto2)
+       ("lensfun" ,lensfun) ;optional, for the lens distortion plugin
+       ("libgphoto2" ,libgphoto2) ;optional, for camera tethering
+       ("libavif" ,libavif) ;optional, for AVIF support
        ("libjpeg" ,libjpeg-turbo)
        ("libomp" ,libomp)
        ("libpng" ,libpng)
        ("librsvg" ,librsvg)
-       ("libsecret" ,libsecret)
+       ("libsecret" ,libsecret) ;optional, for storing passwords
        ("libsoup" ,libsoup)
        ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)
+       ("libwebp" ,libwebp) ;optional, for WebP support
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("lua" ,lua) ;for plugins
-       ("openexr" ,openexr)
-       ("openjpeg" ,openjpeg)
-       ("osm-gps-map" ,osm-gps-map)
+       ("lua" ,lua) ;optional, for plugins
+       ("ocl-icd" ,ocl-icd) ;optional, for OpenCL support
+       ("openexr" ,openexr) ;optional, for EXR import/export
+       ("openjpeg" ,openjpeg) ;optional, for JPEG2000 export
+       ("osm-gps-map" ,osm-gps-map) ;optional, for geotagging view
        ("pugixml" ,pugixml)
        ("python-jsonschema" ,python-jsonschema)
        ("sqlite" ,sqlite)))
@@ -563,7 +573,7 @@ developer.  It manages your digital negatives in a database, lets you view
 them through a zoomable lighttable and enables you to develop raw images
 and enhance them.")
     ;; See src/is_supported_platform.h for supported platforms.
-    (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
+    (supported-systems '("x86_64-linux" "aarch64-linux"))
     (license (list license:gpl3+ ;; Darktable itself.
                    license:lgpl2.1+)))) ;; Rawspeed library.
 
@@ -609,6 +619,71 @@ interface.  It suits a wide variety of different tasks and users who value a
 more nimble workflow.  Features include basic image editing capabilities,
 paint brushes, image filters, colour adjustments and more advanced features
 such as Batch image processing.")
+    (license license:gpl3+)))
+
+(define-public entangle
+  (package
+    (name "entangle")
+    (version "3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/entangle/entangle")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pdmgxjdb3xlcqsaz7l8qzj5f7g7nwzhsrgid8929bm36d49cgc7"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
+         (add-after 'install 'wrap-gi-python
+           ;; Make GTK find files needed by plugins.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                   (python-path       (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/entangle")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                 `("PYTHONPATH" ":" prefix (,python-path))))
+             #t)))))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("gexiv2" ,gexiv2)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gstreamer" ,gstreamer)
+       ("gtk+" ,gtk+)
+       ("lcms" ,lcms)
+       ("libgphoto2" ,libgphoto2)
+       ("libgudev" ,libgudev)
+       ("libpeas" ,libpeas)
+       ("libraw" ,libraw)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "https://entangle-photo.org/")
+    (synopsis "Camera control and capture")
+    (description
+     "Entangle is an application which uses GTK and libgphoto2 to provide a
+graphical interface for tethered photography with digital cameras.  It
+includes control over camera shooting and configuration settings and 'hands
+off' shooting directly from the controlling computer.")
     (license license:gpl3+)))
 
 (define-public hugin

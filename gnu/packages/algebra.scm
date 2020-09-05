@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
@@ -74,7 +74,7 @@
 (define-public mpfrcx
   (package
    (name "mpfrcx")
-   (version "0.5")
+   (version "0.6")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -82,7 +82,7 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "1s968480ymv6w0rnvfp9mxvx98hvi29fkvw8nk4ggzc6azxgwybs"))))
+              "0gz5rma9al2jrifpknqkcnd9dkf8l05jcxy3s4ghwhd4y3h5dwia"))))
    (build-system gnu-build-system)
    (propagated-inputs
      `(("gmp" ,gmp)
@@ -151,7 +151,12 @@ line applications.")
 (define-public fplll
   (package
     (name "fplll")
-    (version "5.2.1")
+    ;; The most recent version 5.3.3 fails in the configure phase:
+    ;; ./configure: line 12956: syntax error near unexpected token `LIBQD,'
+    ;; ./configure: line 12956: `  PKG_CHECK_MODULES(LIBQD, qd, have_libqd="yes",'
+    ;; The error disappears when adding qd as an input; but this is
+    ;; supposed to be an optional input.
+    (version "5.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -160,7 +165,7 @@ line applications.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "015qmrd7nfaysbv1hbwiprz9g6hnww1y1z1xw8f43ysb7k1b5nbg"))))
+                "00iyz218ywspizjiimrjdcqvdqmrsb2367zyy3vkmypnf9i9l680"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -198,7 +203,7 @@ the real span of the lattice.")
 (define-public python-fpylll
   (package
     (name "python-fpylll")
-    (version "0.4.1")
+    (version "0.5.2")
     (source
      (origin
        ;; Pypi contains and older release, so we use a tagged release from
@@ -210,7 +215,7 @@ the real span of the lattice.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "01x2sqdv0sbjj4g4waj0hj4rcn4bq7h17442xaqwbznym9azmn9w"))))
+         "1a25iibihph626jl4wbs4b77xc4a2c4nfc2ypscf9wpani3dnhjf"))))
     (build-system python-build-system)
     (inputs
      `(("fplll" ,fplll)
@@ -346,7 +351,8 @@ varieties, i.e. Jacobians of hyperelliptic curves.
 It can also be used to compute theta constants at arbitrary
 precision.")
    (license license:gpl3+)
-   (home-page "http://cmh.gforge.inria.fr/")))
+   (home-page
+     "https://gitlab.inria.fr/cmh/cmh#cmh-computation-of-genus-2-class-polynomials")))
 
 (define-public giac
   (package
@@ -440,14 +446,13 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.6.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "http://flintlib.org/flint-"
-                  version ".tar.gz"))
-            (sha256 (base32
-                     "0h08a71kn8347zsqjamqnmrxjpsnnzpmhvxb6d2xmfrcs6nyv2ch"))))
+   (version "2.6.3")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "http://flintlib.org/flint-" version ".tar.gz"))
+      (sha256
+       (base32 "1qrf6hzbbmg7mhkhbb0bab8z2xpdnba5cj4kmmf72lzs0457a6nf"))))
    (build-system gnu-build-system)
    (inputs
     `(("ntl" ,ntl)))
@@ -455,7 +460,7 @@ or text interfaces) or as a C++ library.")
     `(("gmp" ,gmp)
       ("mpfr" ,mpfr))) ; header files from both are included by flint/arith.h
    (arguments
-    `(#:parallel-tests? #f ; seems to be necessary on arm
+    `(#:parallel-tests? #f              ; seems to be necessary on arm
       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'newer-c++
@@ -469,8 +474,8 @@ or text interfaces) or as a C++ library.")
                    (gmp (assoc-ref inputs "gmp"))
                    (mpfr (assoc-ref inputs "mpfr"))
                    (ntl (assoc-ref inputs "ntl")))
-               ;; do not pass "--enable-fast-install", which makes the
-               ;; homebrew configure process fail
+               ;; Do not pass "--enable-fast-install", which makes the
+               ;; homebrew configure process fail.
                (invoke "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--with-gmp=" gmp)
@@ -489,7 +494,7 @@ Operations that can be performed include conversions, arithmetic,
 GCDs, factoring, solving linear systems, and evaluating special
 functions.  In addition, FLINT provides various low-level routines for
 fast arithmetic.")
-   (license license:gpl2+)
+   (license license:lgpl2.1+)
    (home-page "http://flintlib.org/")))
 
 (define-public arb
@@ -1113,17 +1118,17 @@ xtensor provides:
 (define-public gap
   (package
     (name "gap")
-    (version "4.10.2")
+    (version "4.11.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.gap-system.org/pub/gap/gap-"
+       (uri (string-append "https://files.gap-system.org/gap-"
                            (version-major+minor version)
                            "/tar.bz2/gap-"
                            version
                            ".tar.bz2"))
        (sha256
-        (base32 "0cp6ddk0469zzv1m1vair6gm27ic6c5m77ri8rn0znq3gaps6x94"))
+        (base32 "00l6hvy4iggnlrib4vp805sxdm3j7n3hzpv5zs9hbiiavh80l1xz"))
        (modules '((guix build utils) (ice-9 ftw) (srfi srfi-1)))
        (snippet
         '(begin
@@ -1135,41 +1140,46 @@ xtensor provides:
            ;; FIXME: This might be fixed in the next release, see
            ;; https://github.com/gap-system/gap/issues/3292
            (delete-file "tst/testinstall/dir.tst")
-           ;; Delete all packages except for a fixed list.
+           ;; Delete all packages except for a fixed list,
+           ;; given by their names up to version numbers.
            (with-directory-excursion "pkg"
              (for-each delete-file-recursively
-               (lset-difference string=? (scandir ".")
+               (lset-difference
+                 (lambda (all keep) (string-prefix? keep all))
+                 (scandir ".")
                  '("." ".."
                    ;; Necessary packages.
-                   "GAPDoc-1.6.2"
-                   "primgrp-3.3.2"
-                   "SmallGrp-1.3"    ; artistic2.0
-                   "transgrp"        ; artistic2.0 for data,
-                                     ; gpl2 or gpl3 for code
-                   ;; Recommanded package.
-                   "io-4.5.4"        ; gpl3+
+                   "GAPDoc-"
+                   "primgrp-"
+                   "SmallGrp-"   ; artistic2.0
+                   "transgrp"    ; artistic2.0 for data,
+                                 ; gpl2 or gpl3 for code
+                   ;; Recommended package.
+                   "io-"         ; gpl3+
                    ;; Optional packages, searched for at start,
                    ;; and their depedencies.
-                   "alnuth-3.1.0"
-                   "autpgrp-1.10"
-                   "crisp-1.4.4"     ; bsd-2
-                   "ctbllib"       ; gpl3+ according to doc/chap0.txt
-                   "FactInt-1.6.2"
+                   "alnuth-"
+                   "autpgrp-"
+                   "crisp-"      ; bsd-2
+                   "ctbllib"     ; gpl3+, clarified in the next release;
+                                 ; see
+                                 ; http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib/README.md
+                   "FactInt-"
                    "fga"
-                   "irredsol-1.4"    ; bsd-2
-                   "laguna-3.9.2"
-                   "polenta-1.3.8"
-                   "polycyclic-2.14"
-                   "radiroot-2.8"
-                   "resclasses-4.7.1"
-                   "sophus-1.24"
-                   "tomlib-1.2.7"  ; gpl2+, clarified in the git repository
-                                   ; and the next release
-                   "utils-0.59"))))
+                   "irredsol-"   ; bsd-2
+                   "laguna-"
+                   "polenta-"
+                   "polycyclic-"
+                   "radiroot-"
+                   "resclasses-"
+                   "sophus-"
+                   "tomlib-"
+                   "utils-"))))
            #t))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)
+       ("readline" ,readline)
        ("zlib" ,zlib)))
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -1196,15 +1206,14 @@ xtensor provides:
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
-                    (lib (string-append out "/lib"))
                     (prog (string-append bin "/gap"))
                     (prog-real (string-append bin "/.gap-real"))
-                    (share (string-append out "/share/gap"))
-                    (include (string-append out "/include/gap"))
-                    (include-hpc (string-append include "/hpc")))
+                    (share (string-append out "/share/gap")))
                ;; Install only the gap binary; the gac compiler is left
                ;; for maybe later. "Wrap" it in a shell script that calls
                ;; the binary with the correct parameter.
+               ;; The make target install-bin is supposed to do that, but
+               ;; is not currently working.
                (mkdir-p bin)
                (copy-file "gap" prog-real)
                (call-with-output-file prog
@@ -1215,52 +1224,18 @@ xtensor provides:
                            prog-real
                            share)))
                (chmod prog #o755)
-               ;; Install the headers, which are needed by Sage. The
-               ;; Makefile target "install-headers" was available in
-               ;; gap-4.10.0, but has been commented out in gap-4.10.1.
-               (mkdir-p include-hpc)
-               (install-file "gen/config.h" include)
-               (let ((file-name-predicate-without-stat
-                       (lambda (regex)
-                         (cut (file-name-predicate regex) <> #f))))
-                 (with-directory-excursion "src"
-                   (for-each
-                     (cut install-file <> include)
-                     (scandir "."
-                              (file-name-predicate-without-stat ".*\\.h$"))))
-                 (with-directory-excursion "src/hpc"
-                   (for-each
-                     (cut install-file <> include-hpc)
-                     (scandir "."
-                              (file-name-predicate-without-stat ".*\\.h$")))))
-               ;; Install the library, which is needed by Sage. The
-               ;; Makefile target "install-libgap" was available in
-               ;; gap-4.10.0, but has been commented out in gap-4.10.1.
-               ;; Compared to the Makefile, which used libtool, the
-               ;; following approach of copying files and making symlinks
-               ;; is rather pedestrian. There is hope that some later
-               ;; version of gap reinstates and completes the install
-               ;; targets.
-               (invoke "make" "libgap.la")
-               (install-file "libgap.la" lib)
-               (install-file ".libs/libgap.so.0.0.0" lib)
-               (symlink "libgap.so.0.0.0" (string-append lib "/libgap.so")) 
-               (symlink "libgap.so.0.0.0" (string-append lib "/libgap.so.0"))
-               ;; Install a certain number of files and directories to
-               ;; SHARE, where the wrapped shell script expects them.
+               ;; Install the headers and library, which are needed by Sage.
+               (invoke "make" "install-headers")
+               (invoke "make" "install-libgap")
                ;; Remove information on the build directory from sysinfo.gap.
                (substitute* "sysinfo.gap"
                  (("GAP_BIN_DIR=\".*\"") "GAP_BIN_DIR=\"\"")
                  (("GAP_LIB_DIR=\".*\"") "GAP_LIB_DIR=\"\"")
                  (("GAP_CPPFLAGS=\".*\"") "GAP_CPPFLAGS=\"\""))
-               (install-file "sysinfo.gap" share)
-               (copy-recursively "grp" (string-append share "/grp"))
-               (copy-recursively "pkg" (string-append share "/pkg"))
-               ;; The following is not the C library libgap.so, but a
-               ;; library of GAP code.
-               (copy-recursively "lib" (string-append share "/lib"))
-               ;; The gap binary looks for documentation inside SHARE.
-               (copy-recursively "doc" (string-append share "/doc")))
+               (invoke "make" "install-gaproot")
+               ;; Copy the directory of compiled packages; the make target
+               ;; install-pkg is currently empty.
+               (copy-recursively "pkg" (string-append share "/pkg")))
              #t)))))
     (home-page "https://www.gap-system.org/")
     (synopsis

@@ -380,6 +380,8 @@ output port."
                    (with-build-handler
                        (build-notifier #:use-substitutes?
                                        (assoc-ref opts 'substitutes?)
+                                       #:verbosity
+                                       (assoc-ref opts 'verbosity)
                                        #:dry-run?
                                        (assoc-ref opts 'dry-run?))
                      (cond ((assoc-ref opts 'export)

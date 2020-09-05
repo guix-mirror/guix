@@ -513,7 +513,7 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
 (define-public guile-json-1
   (package
     (name "guile-json")
-    (version "1.2.0")
+    (version "1.3.2")
     (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
@@ -521,8 +521,10 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15gnb84d7hpazqhskkf3g9z4r6knw54wfj4ch5270kakz1lp70c9"))))
+                "0m6yzb169r6iz56k3nkncjaiijwi4p0x9ijn1p5ax3s77jklxy9k"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")))   ;to prevent guild warnings
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("guile" ,guile-2.2)))
     (inputs `(("guile" ,guile-2.2)))
@@ -574,14 +576,14 @@ specification.  These are the main features:
   (package
     (inherit guile-json-3)
     (name "guile-json")
-    (version "4.0.1")
+    (version "4.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-json/guile-json-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0f25qak4i57c3x0q9hlrll911l57bb8nz57rjkd02mn2fc2h3730"))))))
+                "0255c7f053z4p9mqzhpxwbfx3y47j9nfvlgnm8xasdclyzmjl9y2"))))))
 
 (define-public guile2.2-json
   (package-for-guile-2.2 guile-json-4))
@@ -777,5 +779,79 @@ manipulate repositories of the Git version control system.")
 
 (define-deprecated-guile3.0-package guile3.0-git)
 
-;;; guile.scm ends here
+(define-public guile-zlib
+  (package
+    (name "guile-zlib")
+    (version "0.0.1")
+    (source
+     (origin
+       ;; XXX: Do not use "git-fetch" method here that would create and
+       ;; endless inclusion loop, because this package is used as an extension
+       ;; in the same method.
+       (method url-fetch)
+       (uri
+        (string-append "https://notabug.org/guile-zlib/guile-zlib/archive/"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1caz6cbl6sg5567nk68z88rshp0m26zmb0a9ry1jkc1ivpk0n47i"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ,@(if (%current-target-system)
+             `(("guile" ,guile-3.0))   ;for 'guild compile' and 'guile-3.0.pc'
+             '())))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("zlib" ,zlib)))
+    (synopsis "Guile bindings to zlib")
+    (description
+     "This package provides Guile bindings for zlib, a lossless
+data-compression library.  The bindings are written in pure Scheme by using
+Guile's foreign function interface.")
+    (home-page "https://notabug.org/guile-zlib/guile-zlib")
+    (license license:gpl3+)))
 
+(define-public guile-lzlib
+  (package
+    (name "guile-lzlib")
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://notabug.org/guile-lzlib/guile-lzlib/archive/"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rdmszn1qix085ci2mddwq5cypipc004fk7arrrkgn9bv39hazza"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ,@(if (%current-target-system)
+             `(("guile" ,guile-3.0))   ;for 'guild compile' and 'guile-3.0.pc'
+             '())))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("lzlib" ,lzlib)))
+    (synopsis "Guile bindings to lzlib")
+    (description
+     "This package provides Guile bindings for lzlib, a C library for
+in-memory LZMA compression and decompression.  The bindings are written in
+pure Scheme by using Guile's foreign function interface.")
+    (home-page "https://notabug.org/guile-lzlib/guile-lzlib")
+    (license license:gpl3+)))
+
+;;; guile.scm ends here

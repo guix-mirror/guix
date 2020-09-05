@@ -56,20 +56,20 @@
 (define-public cfitsio
   (package
     (name "cfitsio")
-    (version "3.47")
+    (version "3.49")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/"
-             name "-" version ".tar.gz"))
+             "cfitsio-" version ".tar.gz"))
        (sha256
-        (base32 "1vzlxnrjckz78p2wf148v2z3krkwnykfqvlj42sz3q711vqid1a1"))))
+        (base32 "1cyl1qksnkl3cq1fzl4dmjvkd6329b57y9iqyv44wjakbh6s4rav"))))
     (build-system gnu-build-system)
     ;; XXX Building with curl currently breaks wcslib.  It doesn't use
     ;; pkg-config and hence won't link with -lcurl.
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths

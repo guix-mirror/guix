@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,6 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
-  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 ftw)
   #:use-module (rnrs io ports)                    ;need 'port-position' etc.
@@ -37,36 +37,35 @@
   #:use-module (guix memoization)
   #:use-module ((guix build utils) #:select (dump-port mkdir-p delete-file-recursively))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
+  #:use-module (guix diagnostics)           ;<location>, &error-location, etc.
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module ((ice-9 iconv) #:prefix iconv:)
   #:use-module (system foreign)
-  #:re-export (memoize)         ; for backwards compatibility
+  #:re-export (<location>                         ;for backwards compatibility
+               location
+               location?
+               location-file
+               location-line
+               location-column
+               source-properties->location
+               location->source-properties
+
+               &error-location
+               error-location?
+               error-location
+
+               &fix-hint
+               fix-hint?
+               condition-fix-hint)
   #:export (strip-keyword-arguments
             default-keyword-arguments
             substitute-keyword-arguments
             ensure-keyword-arguments
 
             current-source-directory
-
-            <location>
-            location
-            location?
-            location-file
-            location-line
-            location-column
-            source-properties->location
-            location->source-properties
-
-            &error-location
-            error-location?
-            error-location
-
-            &fix-hint
-            fix-hint?
-            condition-fix-hint
 
             nix-system->gnu-triplet
             gnu-triplet->nix-system
@@ -84,6 +83,7 @@
             version>?
             version>=?
             version-prefix
+            version-major+minor+point
             version-major+minor
             version-major
             guile-version>?
@@ -208,13 +208,8 @@ buffered data is lost."
 (define (lzip-port proc port . args)
   "Return the lzip port produced by calling PROC (a symbol) on PORT and ARGS.
 Raise an error if lzlib support is missing."
-  (let* ((lzlib       (false-if-exception (resolve-interface '(guix lzlib))))
-         (supported?  (and lzlib
-                           ((module-ref lzlib 'lzlib-available?)))))
-    (if supported?
-        (let ((make-port (module-ref lzlib proc)))
-          (values (make-port port) '()))
-        (error "lzip compression not supported" lzlib))))
+  (let ((make-port (module-ref (resolve-interface '(lzlib)) proc)))
+    (values (make-port port) '())))
 
 (define (decompressed-port compression input)
   "Return an input port where INPUT is decompressed according to COMPRESSION,
@@ -566,6 +561,15 @@ or '= when they denote equal versions."
 For example, (version-prefix \"2.1.47.4.23\" 3) returns \"2.1.47\""
   (string-join (take (string-split version-string #\.) num-parts) "."))
 
+(define (version-major+minor+point version-string)
+  "Return \"major>.<minor>.<point>\", where major, minor and point are the
+major, minor and point version numbers from the version-string.  For example,
+(version-major+minor+point \"6.4.5.2\") returns \"6.4.5\" or
+(version-major+minor+point \"1.19.2-2581-324ca14c3003\") returns \"1.19.2\"."
+  (let* ((3-dot (version-prefix version-string 3))
+         (index (string-index 3-dot #\-)))
+    (or (false-if-exception (substring 3-dot 0 index))
+        3-dot)))
 
 (define (version-major+minor version-string)
   "Return \"<major>.<minor>\", where major and minor are the major and
@@ -833,52 +837,6 @@ be determined."
          ((or ('filename . #f) #f)
           ;; raising an error would upset Geiser users
           #f))))))
-
-;; A source location.
-(define-record-type <location>
-  (make-location file line column)
-  location?
-  (file          location-file)                   ; file name
-  (line          location-line)                   ; 1-indexed line
-  (column        location-column))                ; 0-indexed column
-
-(define (location file line column)
-  "Return the <location> object for the given FILE, LINE, and COLUMN."
-  (and line column file
-       (make-location file line column)))
-
-(define (source-properties->location loc)
-  "Return a location object based on the info in LOC, an alist as returned
-by Guile's `source-properties', `frame-source', `current-source-location',
-etc."
-  ;; In accordance with the GCS, start line and column numbers at 1.  Note
-  ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
-  (match loc
-    ((('line . line) ('column . col) ('filename . file)) ;common case
-     (and file line col
-          (make-location file (+ line 1) col)))
-    (#f
-     #f)
-    (_
-     (let ((file (assq-ref loc 'filename))
-           (line (assq-ref loc 'line))
-           (col  (assq-ref loc 'column)))
-       (location file (and line (+ line 1)) col)))))
-
-(define (location->source-properties loc)
-  "Return the source property association list based on the info in LOC,
-a location object."
-  `((line     . ,(and=> (location-line loc) 1-))
-    (column   . ,(location-column loc))
-    (filename . ,(location-file loc))))
-
-(define-condition-type &error-location &error
-  error-location?
-  (location  error-location))                     ;<location>
-
-(define-condition-type &fix-hint &condition
-  fix-hint?
-  (hint condition-fix-hint))                      ;string
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-progress-reporter 'scheme-indent-function 1)

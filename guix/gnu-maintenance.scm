@@ -36,7 +36,7 @@
   #:use-module (guix records)
   #:use-module (guix upstream)
   #:use-module (guix packages)
-  #:use-module (guix zlib)
+  #:use-module (zlib)
   #:export (gnu-package-name
             gnu-package-mundane-name
             gnu-package-copyright-holder

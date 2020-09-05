@@ -1,0 +1,43 @@
+From 4b4697c8dd66bd2b1e4d6b831bbde46e27d62c46 Mon Sep 17 00:00:00 2001
+From: Justus Winter <teythoon@avior.uberspace.de>
+Date: Tue, 21 Jul 2020 16:10:12 +0200
+Subject: [PATCH 1/2] Unbundle googletest.
+
+---
+ src/tests/CMakeLists.txt          | 2 +-
+ src/tests/gtest-CMakeLists.txt.in | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/tests/CMakeLists.txt b/src/tests/CMakeLists.txt
+index 0a841666..d3c4fbe6 100644
+--- a/src/tests/CMakeLists.txt
++++ b/src/tests/CMakeLists.txt
+@@ -53,7 +53,7 @@ endif()
+ # maintain compiler/linker settings on Windows
+ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+ # add to our build (provides gtest_main target)
+-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
++add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/googletest-src
+                  ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
+                  EXCLUDE_FROM_ALL)
+ 
+diff --git a/src/tests/gtest-CMakeLists.txt.in b/src/tests/gtest-CMakeLists.txt.in
+index a43e8e5d..3cc0ddd5 100644
+--- a/src/tests/gtest-CMakeLists.txt.in
++++ b/src/tests/gtest-CMakeLists.txt.in
+@@ -4,9 +4,9 @@ project(googletest-download NONE)
+ 
+ include(ExternalProject)
+ ExternalProject_Add(googletest
+-  GIT_REPOSITORY    https://github.com/google/googletest.git
+-  GIT_TAG           c43f710
+-  SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/googletest-src"
++#  GIT_REPOSITORY    https://github.com/google/googletest.git
++#  GIT_TAG           c43f710
++  SOURCE_DIR        "${CMAKE_CURRENT_SOURCE_DIR}/googletest-src"
+   BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/googletest-build"
+   CONFIGURE_COMMAND ""
+   BUILD_COMMAND     ""
+-- 
+2.20.1
+

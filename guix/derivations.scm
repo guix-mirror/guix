@@ -26,6 +26,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 binary-ports)
+  #:use-module ((ice-9 textual-ports) #:select (put-char put-string))
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
@@ -561,33 +562,65 @@ things as appropriate and is thus more efficient."
     ((prefix (... ...) last)
      (for-each (lambda (item)
                  (write-item item port)
-                 (display "," port))
+                 (put-char port #\,))
                prefix)
      (write-item last port))))
 
 (define-inlinable (write-list lst write-item port)
   ;; Write LST as a derivation list to PORT, using WRITE-ITEM to write each
   ;; element.
-  (display "[" port)
+  (put-char port #\[)
   (write-sequence lst write-item port)
-  (display "]" port))
+  (put-char port #\]))
 
 (define-inlinable (write-tuple lst write-item port)
   ;; Same, but write LST as a tuple.
-  (display "(" port)
+  (put-char port #\()
   (write-sequence lst write-item port)
-  (display ")" port))
+  (put-char port #\)))
+
+(define %escape-char-set
+  ;; Characters that need to be escaped.
+  (char-set #\" #\\ #\newline #\return #\tab))
+
+(define (escaped-string str)
+  "Escape double quote characters found in STR, if any."
+  (define escape
+    (match-lambda
+      (#\"       "\\\"")
+      (#\\       "\\\\")
+      (#\newline "\\n")
+      (#\return  "\\r")
+      (#\tab     "\\t")))
+
+  (let loop ((str   str)
+             (result '()))
+    (let ((index (string-index str %escape-char-set)))
+      (if index
+          (let ((rest (string-drop str (+ 1 index))))
+            (loop rest
+                  (cons* (escape (string-ref str index))
+                         (string-take str index)
+                         result)))
+          (if (null? result)
+              str
+              (string-concatenate-reverse (cons str result)))))))
 
 (define (write-derivation drv port)
   "Write the ATerm-like serialization of DRV to PORT.  See Section 2.4 of
 Eelco Dolstra's PhD dissertation for an overview of a previous version of
 that form."
 
-  ;; Make sure we're using the faster implementation.
-  (define format simple-format)
+  ;; Use 'put-string', which does less work and is faster than 'display'.
+  ;; Likewise, 'write-escaped-string' is faster than 'write'.
+
+  (define (write-escaped-string str port)
+    (put-char port #\")
+    (put-string port (escaped-string str))
+    (put-char port #\"))
 
   (define (write-string-list lst)
-    (write-list lst write port))
+    (write-list lst write-escaped-string port))
 
   (define (write-output output port)
     (match output
@@ -599,48 +632,47 @@ that form."
                              "")
                          (or (and=> hash bytevector->base16-string)
                              ""))
-                   write
+                   write-escaped-string
                    port))))
 
   (define (write-input input port)
     (match input
       (($ <derivation-input> obj sub-drvs)
-       (display "(\"" port)
+       (put-string port "(\"")
 
        ;; 'derivation/masked-inputs' produces objects that contain a string
        ;; instead of a <derivation>, so we need to account for that.
-       (display (if (derivation? obj)
-                    (derivation-file-name obj)
-                    obj)
-                port)
-       (display "\"," port)
+       (put-string port (if (derivation? obj)
+                            (derivation-file-name obj)
+                            obj))
+       (put-string port "\",")
        (write-string-list sub-drvs)
-       (display ")" port))))
+       (put-char port #\)))))
 
   (define (write-env-var env-var port)
     (match env-var
       ((name . value)
-       (display "(" port)
-       (write name port)
-       (display "," port)
-       (write value port)
-       (display ")" port))))
+       (put-char port #\()
+       (write-escaped-string name port)
+       (put-char port #\,)
+       (write-escaped-string value port)
+       (put-char port #\)))))
 
   ;; Assume all the lists we are writing are already sorted.
   (match drv
     (($ <derivation> outputs inputs sources
         system builder args env-vars)
-     (display "Derive(" port)
+     (put-string port "Derive(")
      (write-list outputs write-output port)
-     (display "," port)
+     (put-char port #\,)
      (write-list inputs write-input port)
-     (display "," port)
+     (put-char port #\,)
      (write-string-list sources)
      (simple-format port ",\"~a\",\"~a\"," system builder)
      (write-string-list args)
-     (display "," port)
+     (put-char port #\,)
      (write-list env-vars write-env-var port)
-     (display ")" port))))
+     (put-char port #\)))))
 
 (define derivation->bytevector
   (lambda (drv)

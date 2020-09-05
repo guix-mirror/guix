@@ -28,6 +28,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -37,8 +38,52 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages video)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
+(define-public zxing-cpp
+  (package
+    (name "zxing-cpp")
+    (version "1.0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/nu-book/zxing-cpp.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "011sq8wcjfxbnd8sj6bf2fgkamlp8gj6q835g61c952npvwsnl71"))))
+    (native-inputs
+     `(("googletest-source" ,(package-source googletest))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:out-of-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-googletest
+           ;; Copy the googletest sources to where the CMake build expects them.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((source (assoc-ref inputs "googletest-source"))
+                   (target "test/unit/googletest-src"))
+               (mkdir-p target)
+               (copy-recursively source target)
+               ;; Disable downloading via ExternalProject.
+               (substitute* "test/unit/CMakeLists.txt.in"
+                (("ExternalProject_Add\\(") "message("))
+               #t)))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "test/unit"
+               (invoke "cmake" ".")
+               (invoke "make")
+               (invoke "./ZXingUnitTest"))
+             #t)))))
+    (synopsis "C++ port of ZXing")
+    (description "ZXing-CPP is a barcode scanning library.")
+    (home-page "https://github.com/nu-book/zxing-cpp")
+    (license license:asl2.0)))
 
 (define-public barcode
   (package

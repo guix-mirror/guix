@@ -556,8 +556,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "68.10.0-guix0-preview1")
-(define %icecat-build-id "20200630000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "68.12.0-guix0-preview1")
+(define %icecat-build-id "20200825000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -579,11 +579,11 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "0azdinwqjfv2q37gqpxmfvzsk86pvsi6cjaq1310zs26gric5j1f"))))
+              "1k17pi4zh9hrvkzbw4rzzw879a15hpvwriylp75wl22rl7r2nsdf"))))
 
-         (upstream-icecat-base-version "68.10.0") ; maybe older than base-version
+         (upstream-icecat-base-version "68.12.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "76dced64ce0e72fe3030dc2f7b22cda8e36b165e")
+         (gnuzilla-commit "15a7c3d991a670b6489d4f432b52a188358f4ca5")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -595,7 +595,7 @@ from forcing GEXP-PROMISE."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "0xcg6h0da63qyv7h575xjrbkzqqcjhwjd45x9h9qmpxiaibi9g3d"))))
+              "0n7p067yay413iy0gzprz0xrdkcxj5f8ywhkcghhhzw1nwajckba"))))
 
          (makeicecat-patch
           (local-file (search-patch "icecat-makeicecat.patch")))
@@ -1115,10 +1115,12 @@ from forcing GEXP-PROMISE."
                     (mesa (assoc-ref inputs "mesa"))
                     (mesa-lib (string-append mesa "/lib"))
                     (pulseaudio (assoc-ref inputs "pulseaudio"))
-                    (pulseaudio-lib (string-append pulseaudio "/lib")))
+                    (pulseaudio-lib (string-append pulseaudio "/lib"))
+                    (libxscrnsaver (assoc-ref inputs "libxscrnsaver"))
+                    (libxscrnsaver-lib (string-append libxscrnsaver "/lib")))
                (wrap-program (car (find-files lib "^icecat$"))
                  `("XDG_DATA_DIRS" prefix (,gtk-share))
-                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib ,mesa-lib)))
+                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib ,mesa-lib ,libxscrnsaver-lib)))
                #t))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
@@ -1137,11 +1139,11 @@ standards of the IceCat project.")
        (cpe-version . ,(first (string-split version #\-)))))))
 
 ;; Update this together with icecat!
-(define %icedove-build-id "20200630000000") ;must be of the form YYYYMMDDhhmmss
+(define %icedove-build-id "20200825000000") ;must be of the form YYYYMMDDhhmmss
 (define-public icedove
   (package
     (name "icedove")
-    (version "68.10.0")
+    (version "68.12.0")
     (source icecat-source)
     (properties
      `((cpe-name . "thunderbird_esr")))
@@ -1427,7 +1429,7 @@ standards of the IceCat project.")
         ;; in the Thunderbird release tarball.  We don't use the release
         ;; tarball because it duplicates the Icecat sources and only adds the
         ;; "comm" directory, which is provided by this repository.
-        ,(let ((changeset "6a7c26eb22bfe18295497c720a73e24b29b0604e"))
+        ,(let ((changeset "b41cdff70b185358d9c4c1d4a36cfad15a24f001"))
            (origin
              (method hg-fetch)
              (uri (hg-reference
@@ -1436,7 +1438,7 @@ standards of the IceCat project.")
              (file-name (string-append "thunderbird-" version "-checkout"))
              (sha256
               (base32
-               "1yd73ig2jmzzq9c3ynqav4kh8jiv31xx7vs518b3w1yvmcpj5xsy")))))
+               "1xvky8p5r41mxdyg9amydy94p51wmmdwdz0zq2vzspr9viixf7xm")))))
        ("autoconf" ,autoconf-2.13)
        ("cargo" ,rust "cargo")
        ("clang" ,clang)

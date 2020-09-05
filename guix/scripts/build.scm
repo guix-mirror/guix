@@ -961,6 +961,8 @@ needed."
 
         (with-build-handler (build-notifier #:use-substitutes?
                                             (assoc-ref opts 'substitutes?)
+                                            #:verbosity
+                                            (assoc-ref opts 'verbosity)
                                             #:dry-run?
                                             (assoc-ref opts 'dry-run?))
           (parameterize ((current-terminal-columns (terminal-columns))

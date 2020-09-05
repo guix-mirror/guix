@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix diagnostics)
   #:use-module (guix discovery)
   #:use-module (guix memoization)
   #:use-module ((guix build utils)
@@ -92,9 +93,8 @@
 (define (search-patch file-name)
   "Search the patch FILE-NAME.  Raise an error if not found."
   (or (search-path (%patch-path) file-name)
-      (raise (condition
-              (&message (message (format #f (G_ "~a: patch not found")
-                                         file-name)))))))
+      (raise (formatted-message (G_ "~a: patch not found")
+                                file-name))))
 
 (define-syntax-rule (search-patches file-name ...)
   "Return the list of absolute file names corresponding to each
@@ -381,39 +381,59 @@ reducing the memory footprint."
   (define cache-file
     (string-append directory %package-cache-file))
 
-  (define (expand-cache module symbol variable result+seen)
-    (match (false-if-exception (variable-ref variable))
-      ((? package? package)
-       (match result+seen
-         ((result . seen)
-          (if (or (vhash-assq package seen)
-                  (hidden-package? package))
-              (cons result seen)
-              (cons (cons `#(,(package-name package)
-                             ,(package-version package)
-                             ,(module-name module)
-                             ,symbol
-                             ,(package-outputs package)
-                             ,(->bool (supported-package? package))
-                             ,(->bool (package-superseded package))
-                             ,@(let ((loc (package-location package)))
-                                 (if loc
-                                     `(,(location-file loc)
-                                       ,(location-line loc)
-                                       ,(location-column loc))
-                                     '(#f #f #f))))
-                          result)
-                    (vhash-consq package #t seen))))))
-      (_
-       result+seen)))
+  (define expand-cache
+    (match-lambda*
+      (((module symbol variable) (result . seen))
+       (let ((package (variable-ref variable)))
+         (if (or (vhash-assq package seen)
+                 (hidden-package? package))
+             (cons result seen)
+             (cons (cons `#(,(package-name package)
+                            ,(package-version package)
+                            ,(module-name module)
+                            ,symbol
+                            ,(package-outputs package)
+                            ,(->bool (supported-package? package))
+                            ,(->bool (package-superseded package))
+                            ,@(let ((loc (package-location package)))
+                                (if loc
+                                    `(,(location-file loc)
+                                      ,(location-line loc)
+                                      ,(location-column loc))
+                                    '(#f #f #f))))
+                         result)
+                   (vhash-consq package #t seen)))))))
 
-  (define exp
-    (first
-     (fold-module-public-variables* expand-cache
-                                    (cons '() vlist-null)
+  (define entry-key
+    (match-lambda
+      ((module symbol variable)
+       (let ((value (variable-ref variable)))
+         (string-append (package-name value) (package-version value)
+                        (object->string module)
+                        (symbol->string symbol))))))
+
+  (define (entry<? a b)
+    (string<? (entry-key a) (entry-key b)))
+
+  (define variables
+    ;; First sort variables so that 'expand-cache' later dismisses
+    ;; already-seen package objects in a deterministic fashion.
+    (sort
+     (fold-module-public-variables* (lambda (module symbol variable lst)
+                                      (let ((value (false-if-exception
+                                                    (variable-ref variable))))
+                                        (if (package? value)
+                                            (cons (list module symbol variable)
+                                                  lst)
+                                            lst)))
+                                    '()
                                     (all-modules (%package-module-path)
                                                  #:warn
-                                                 warn-about-load-error))))
+                                                 warn-about-load-error))
+     entry<?))
+
+  (define exp
+    (first (fold expand-cache (cons '() vlist-null) variables)))
 
   (mkdir-p (dirname cache-file))
   (call-with-output-file cache-file

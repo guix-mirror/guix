@@ -139,7 +139,7 @@
    message-text
    message-data
    (or location
-       (package-field-location package field)
+       (and field (package-field-location package field))
        (package-location package))))
 
 (define-syntax make-warning
@@ -668,7 +668,12 @@ patch could not be found."
               ;; Use %make-warning, as condition-mesasge is already
               ;; translated.
               (%make-warning package (condition-message c)
-                             #:field 'patch-file-names))))
+                             #:field 'patch-file-names)))
+            ((formatted-message? c)
+             (list (%make-warning package
+                                  (apply format #f
+                                         (G_ (formatted-message-string c))
+                                         (formatted-message-arguments c))))))
     (define patches
       (match (package-source package)
         ((? origin? origin) (origin-patches origin))
@@ -789,6 +794,9 @@ descriptions maintained upstream."
            (#t
             ;; We found a working URL, so stop right away.
             '())
+           (#f
+            ;; Unsupported URL or other error, skip.
+            (loop rest warnings))
            ((? lint-warning? warning)
             (loop rest (cons warning warnings))))))))
 
@@ -955,7 +963,14 @@ descriptions maintained upstream."
                    (make-warning package
                                  (G_ "failed to create ~a derivation: ~a")
                                  (list system
-                                       (condition-message c)))))
+                                       (condition-message c))))
+                  ((formatted-message? c)
+                   (let ((str (apply format #f
+                                     (formatted-message-string c)
+                                     (formatted-message-arguments c))))
+                     (make-warning package
+                                   (G_ "failed to create ~a derivation: ~a")
+                                   (list system str)))))
           (parameterize ((%graft? #f))
             (package-derivation store package system #:graft? #f)
 
@@ -1340,12 +1355,20 @@ them for PACKAGE."
   "Check the formatting of the source code of PACKAGE."
   (let ((location (package-location package)))
     (if location
-        (and=> (search-path %load-path (location-file location))
-               (lambda (file)
-                 ;; Report issues starting from the line before the 'package'
-                 ;; form, which usually contains the 'define' form.
-                 (report-formatting-issues package file
-                                           (- (location-line location) 1))))
+        ;; Report issues starting from the line before the 'package'
+        ;; form, which usually contains the 'define' form.
+        (let ((line (- (location-line location) 1)))
+          (match (search-path %load-path (location-file location))
+            ((? string? file)
+             (report-formatting-issues package file line))
+            (#f
+             ;; It could be that LOCATION lists a "true" relative file
+             ;; name--i.e., not relative to an element of %LOAD-PATH.
+             (let ((file (location-file location)))
+               (if (file-exists? file)
+                   (report-formatting-issues package file line)
+                   (list (make-warning package
+                                       (G_ "source file not found"))))))))
         '())))
 
 

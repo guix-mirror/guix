@@ -36,7 +36,7 @@
 (define-public java-snappy
   (package
     (name "java-snappy")
-    (version "1.1.7.3")
+    (version "1.1.7.5")
     (source
      (origin
        (method git-fetch)
@@ -44,7 +44,7 @@
              (url "https://github.com/xerial/snappy-java")
              (commit version)))
        (sha256
-        (base32 "07c145w1kv8g7dbwpy5xss142il7zr0qq78p2ih76azgl97n5cba"))
+        (base32 "0894zyasrmbi268d1ky9db16wrnc6x8b9ilq0b5paaxi2pwgjlrp"))
        (file-name (git-file-name name version))))
     (build-system ant-build-system)
     (arguments

@@ -102,13 +102,6 @@ a specific step, or restart the installer."))
                             #:key (users '()))
   (clear-screen)
   (newt-suspend)
-  ;; XXX: Force loading 'bold' font files before mouting the
-  ;; cow-store. Otherwise, if the file is loaded by kmscon after the cow-store
-  ;; in mounted, it will be necessary to kill kmscon to umount to cow-store.
-  (display
-   (colorize-string
-    (format #f (G_ "Installing Guix System ...~%"))
-    (color BOLD)))
   (let ((install-ok? (install-system locale #:users users)))
     (newt-resume)
     install-ok?))

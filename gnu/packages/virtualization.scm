@@ -510,7 +510,11 @@ server and embedded PowerPC, and S390 guests.")
                (("\\$\\(GHC\\)")
                 "$(GHC) -package-db=../package.conf.d"))
              #t))
-
+         (add-after 'configure 'make-ghc-use-shared-libraries
+           (lambda _
+             (substitute* "Makefile"
+               (("HFLAGS =") "HFLAGS = -dynamic -fPIC"))
+             #t))
          (add-after 'configure 'fix-installation-directories
            (lambda _
              (substitute* "Makefile"
@@ -1991,14 +1995,14 @@ administrators and developers in managing the database.")
 (define-public osinfo-db
   (package
     (name "osinfo-db")
-    (version "20200529")
+    (version "20200813")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0mbrf9j5wmjhc6jixvhp4jqyxixh1717lqrmzmipdg99xnzba81n"))))
+                "127lr4kvdy2b2lil7i0gbbxcf8vap0r6hxhnbmms4p7h2h0sdgri"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

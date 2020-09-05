@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -50,6 +50,7 @@
   #:use-module (gnu packages video)               ;ffmpeg
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -160,14 +161,16 @@ a highly stable and efficient implementation.")
 (define-public taglib
   (package
     (name "taglib")
-    (version "1.11.1")
+    (version "1.12-beta-1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://taglib.github.io/releases/taglib-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/taglib/taglib")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ssjcdjv4qf9liph5ry1kngam1y7zp8fzr9xv4wzzrma22kabldn"))))
+                "1mp6w2ikniw8w6d5wr0h20j0ijg8jw7s9dli5a8k9znpznvxpym4"))))
     (build-system cmake-build-system)
     (arguments
       '(#:tests? #f ; Tests are not ran with BUILD_SHARED_LIBS on.
@@ -310,7 +313,7 @@ This package contains the binary.")
 (define-public mpg123
   (package
     (name "mpg123")
-    (version "1.26.1")
+    (version "1.26.3")
     (source
      (origin
        (method url-fetch)
@@ -320,7 +323,7 @@ This package contains the binary.")
                    "https://www.mpg123.org/download/mpg123-"
                    version ".tar.bz2")))
        (sha256
-        (base32 "0cp01wdy77ggzqzzasxd5jd9iypcly5m4c89idc9mpgknyd65mkl"))))
+        (base32 "0vkcfdx0mqq6lmpczsmpa2jsb0s6dryx3i7gvr32i3w9b9w9ij9h"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-default-audio=pulse")))
     (native-inputs

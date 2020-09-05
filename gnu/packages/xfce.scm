@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,9 +98,9 @@
     (version "4.14.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
-                                  (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  "libxfce4util/" (version-major+minor version)
+                                  "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "093338faqqsrlc8dkmzr7qv411ysxczg1wlg7s3gvhrfk6vpkb9j"))))
@@ -282,7 +283,7 @@ merging features essential for loading menus modified with menu editors.")
 (define-public tumbler
   (package
     (name "tumbler")
-    (version "0.2.8")
+    (version "0.2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -290,7 +291,7 @@ merging features essential for loading menus modified with menu editors.")
                                   "tumbler-" version ".tar.bz2"))
               (sha256
                (base32
-                "15iyx4xk6v3vk8272c848y8rj4sq43khlqxndnai0w5mvsivk689"))))
+                "1dh7h0jcbf8brvv9vwq4amnk6zgldl2ipdq3clzsx9p50dpr0235"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -478,7 +479,7 @@ keys for controlling the audio volume.")
 (define-public xfce4-whiskermenu-plugin
   (package
     (name "xfce4-whiskermenu-plugin")
-    (version "2.4.3")
+    (version "2.4.6")
     (source
      (origin
        (method url-fetch)
@@ -486,7 +487,7 @@ keys for controlling the audio volume.")
                            "xfce4-whiskermenu-plugin/" (version-major+minor version) "/"
                            "xfce4-whiskermenu-plugin-" version ".tar.bz2"))
        (sha256
-        (base32 "1w2zvqr0g6miliv3nb0shljfawwc1brdn2fyz4kvfg7b3klyxyir"))))
+        (base32 "0i2pn8852x6zvlys4610knscscyjpha6wjzy7rljixbxr26d6x49"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -724,7 +725,7 @@ and import the new pictures from your camera.")
 (define-public xfwm4
   (package
     (name "xfwm4")
-    (version "4.14.2")
+    (version "4.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -732,7 +733,7 @@ and import the new pictures from your camera.")
                                   "xfwm4-" version ".tar.bz2"))
               (sha256
                (base32
-                "14pxiymg0hpg3yijbjv5w6259pra4rqq79b7a6mvd8wn4ls40nxi"))))
+                "1gw3fbiwraylarl1bqbvfh7nxlss5w8w0im5ahfg3a9mkrdfr6w2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -815,7 +816,7 @@ devices and folders.")
 (define-public xfce4-terminal
   (package
     (name "xfce4-terminal")
-    (version "0.8.8")
+    (version "0.8.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/" name "/"
@@ -823,7 +824,7 @@ devices and folders.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1zc7hkq77ajia099wxgh4wdvwifcg2zkcz5d2xsf1zm0sdh6mflg"))))
+                "1szfmvx4gbwcqag7fnlqh96i9cmvs6xm1yrdbnlzh3imdpw3p8lv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1033,7 +1034,7 @@ several different time zones.")
 (define-public xfce4-notifyd
   (package
     (name "xfce4-notifyd")
-    (version "0.4.4")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1041,7 +1042,7 @@ several different time zones.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0m8vlbwdxiw9nmimaj5np9l5qm784gxpkdvc881k0hjcz6n72189"))))
+                "1d49l2vdz4hb2c14ai5p81wz7vikh9g3ffz0gmm2kgw9kjcp8llv"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1812,7 +1813,7 @@ freedesktop.org specification.")
 (define-public xfce4-stopwatch-plugin
   (package
    (name "xfce4-stopwatch-plugin")
-   (version "0.3.1")
+   (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1821,11 +1822,8 @@ freedesktop.org specification.")
                                   "/xfce4-stopwatch-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "07dadvgivly44w7qj74i2w60nk01h8567paxrli8vzmhb3p6xi2h"))))
+                "0jfr0ykn97hfngh0hd2wrs9rxswzxaxjv93g6csdp8hnij649nm3"))))
     (build-system gnu-build-system)
-    (arguments
-     ;; test fails in po/ directory
-     `(#:tests? #f))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -1869,7 +1867,7 @@ swap space and the system uptime in the Xfce4 panel.")
 (define-public xfce4-time-out-plugin
   (package
    (name "xfce4-time-out-plugin")
-   (version "1.1.0")
+   (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1878,7 +1876,7 @@ swap space and the system uptime in the Xfce4 panel.")
                                   "/xfce4-time-out-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "068a8ck08g4g1msbr7hd5zzp6lsq2a1ry1r472x0rmbna2im2jpf"))))
+                "07d3vddzrl6p6kg3qs4rd8qk57ghf33sk9sh73gsx2hxfnwbwk8r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1899,7 +1897,7 @@ time.")
 (define-public xfce4-timer-plugin
   (package
    (name "xfce4-timer-plugin")
-   (version "1.7.0")
+   (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1908,7 +1906,7 @@ time.")
                                   "/xfce4-timer-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "16vypwwjwfk7nn4n16rfgn0z78jqrmbgxmc1r46269lrwd1m6kif"))))
+                "1qr4m3n2l3rvsizsr3h7fyfajszfalqm7rhvjx2yjj8r3f8x4ljb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

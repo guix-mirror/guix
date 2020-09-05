@@ -265,6 +265,26 @@ logic, also known as grey logic.")
      "Scikit-image is a collection of algorithms for image processing.")
     (license license:bsd-3)))
 
+(define-public python-sgp4
+  (package
+    (name "python-sgp4")
+    (version "2.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sgp4" version))
+       (sha256
+        (base32 "0dncp9i5b6afkg7f8mj9j0qzsp008b8v73yc0qkmizhpns7mvwvx"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/brandon-rhodes/python-sgp4")
+    (synopsis "Track earth satellite TLE orbits using SGP4")
+    (description
+     "This package provides a Python implementation of the most recent version
+of the SGP4 satellite tracking algorithm.")
+    (license license:expat)))
+
 (define-public python-pandas
   (package
     (name "python-pandas")
@@ -388,6 +408,36 @@ doing practical, real world data analysis in Python.")
                       (("if 'NULL byte' in msg:")
                        "if 'NULL byte' in msg or 'line contains NUL' in msg:"))
                     #t)))))))
+
+(define-public python-bottleneck
+  (package
+    (name "python-bottleneck")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Bottleneck" version))
+       (sha256
+        (base32 "0wz5320jx3n4q2nsvwvc7cpi66b46qbals9v53m955rmcq5ry5r0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "setup.py" "pytest"))))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/pydata/bottleneck")
+    (synopsis "Fast NumPy array functions written in C")
+    (description
+     "Bottleneck is a collection of fast, NaN-aware NumPy array functions
+written in C.")
+    (license license:bsd-2)))
 
 (define-public python-xarray
   (package

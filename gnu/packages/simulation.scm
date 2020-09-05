@@ -19,6 +19,7 @@
 (define-module (gnu packages simulation)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
@@ -47,6 +48,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
+  #:use-module (guix svn-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -724,3 +726,73 @@ problems that can be solved using the Finite Element Method (FEM).
 within the FEniCS project.  It provides the python user interface to the
 FEniCS core components and external libraries.")
     (license license:lgpl3+)))
+
+(define-public fullswof-2d
+  (let ((revision 505)
+        (release "1.09.01"))
+    (package
+      (name "fullswof-2d")
+      (version release)
+      (source (origin
+               (method svn-fetch)
+               (uri (svn-reference
+                     (url (string-append "https://subversion.renater.fr/"
+                                         "anonscm/svn/fullswof-2d/tags/"
+                                         "release-" version))
+                     (revision revision)))
+               (file-name (string-append "fullswof-2d-" version "-checkout"))
+               (sha256
+                (base32
+                 "16v08dx7h7n4wyddzbwimazwyj74ynis12mpjfkay4243npy44b8"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("inetutils" ,inetutils))) ; for 'hostname', used in the check phase
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)     ; no configure script
+           (add-after 'build 'build-tools
+             (lambda _
+               (with-directory-excursion "Tools/ConvertFormat"
+                 (invoke "make" "../../bin/asc2xyz")
+                 (invoke "make" "../../bin/xyz2asc"))
+               (with-directory-excursion "Tools/ExtractWindow"
+                 (invoke "make" "../../bin/cropxyz"))
+               #t))
+           (replace 'check         ; no check target
+             (lambda _
+               (invoke "make" "benchref")))
+           (replace 'install       ; no install target
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (doc (string-append
+                            out "/share/doc/" ,name "-" ,version))
+                      (examples (string-append doc "/Examples")))
+                 (with-directory-excursion "bin"
+                   (for-each (lambda (binary) (install-file binary bin))
+                             (list "asc2xyz" "xyz2asc" "cropxyz"
+                                   "FullSWOF_2D")))
+                 (with-directory-excursion "doc"
+                   (for-each (lambda (pdf) (install-file pdf doc))
+                             (list "Documentation.pdf" "refman.pdf")))
+                 (with-directory-excursion "Tools"
+                   (for-each (lambda (dir)
+                               (copy-file
+                                (string-append dir "/README.txt")
+                                (string-append doc "/README_" dir ".txt")))
+                             (list "ConvertFormat" "ExtractWindow")))
+                 (copy-recursively "Examples" examples)
+                 #t))))))
+      (home-page "https://www.idpoisson.fr/fullswof/")
+      (synopsis "Two dimensional flow solver for flood modelling")
+      (description "@code{FullSWOF_2d} is a numerical tool for solving
+the shallow water equations on structured grids.  The name FullSWOF
+refers to the Full form of the Shallow Water equations for Overland
+Flow.  The discretized system of equations is solved using the finite
+volume method.  A choice of shock-capturing methods is available to
+locate the transition boundaries between the wet areas and the dry
+areas in the model.  A semi-implicit method is used to advance the
+solution in time.  The tool is typically applied to the modelling of
+river flooding.")
+      (license license:cecill))))

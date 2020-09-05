@@ -100,7 +100,7 @@
         ("rust-parity-tokio-ipc" ,rust-parity-tokio-ipc-0.4)
         ("rust-percent-encoding" ,rust-percent-encoding-2.1)
         ("rust-prettytable-rs" ,rust-prettytable-rs-0.8)
-        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-regex" ,rust-regex-1)

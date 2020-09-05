@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Boris A. Dekshteyn <harlequin78@gmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
+;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
@@ -116,7 +118,7 @@
 (define-public bspwm
   (package
     (name "bspwm")
-    (version "0.9.9")
+    (version "0.9.10")
     (source
      (origin
        (method git-fetch)
@@ -125,7 +127,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1i7crmljk1vra1r6alxvj6lqqailjjcv0llyg7a0gm23rbv4a42g"))))
+        (base32 "0qlv7b4c2mmjfd65y100d11x8iqyg5f6lfiws3cgmpjidhdygnxc"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
@@ -270,14 +272,14 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.18.1")
+    (version "4.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0z709cianlzw0x0qwq4361347354xd9ckj1v7vjvhb1zh3x91gws"))))
+                "030jym6b8b07yf4y6pb806hg8k77zsprv569gy0r72rh5zb1g1mj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -340,7 +342,7 @@ many programming languages.")
 (define-public i3-gaps
   (package (inherit i3-wm)
            (name "i3-gaps")
-           (version "4.18")
+           (version "4.18.2")
            (source (origin
                      (method url-fetch)
                      (uri (string-append
@@ -348,7 +350,7 @@ many programming languages.")
                            version "/i3-" version ".tar.bz2"))
                      (sha256
                       (base32
-                       "0id4qm9a7kc5yawff85blmph4zbizhb6ka88aqm10wrpfsknri3j"))))
+                       "0lz08wf4b0yprzqsmymn94kiyg885dcwmh0p64v2rnf52s165g2g"))))
            (home-page "https://github.com/Airblader/i3")
            (synopsis "Tiling window manager with gaps")
            (description "i3-gaps is a fork of i3wm, a tiling window manager
@@ -653,7 +655,8 @@ desktop environment.")
                                   "xmonad-" version ".tar.gz"))
               (sha256
                (base32
-                "0a7rh21k9y6g8fwkggxdxjns2grvvsd5hi2ls4klmqz5xvk4hyaa"))))
+                "0a7rh21k9y6g8fwkggxdxjns2grvvsd5hi2ls4klmqz5xvk4hyaa"))
+              (patches (search-patches "xmonad-dynamic-linking.patch"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
@@ -740,6 +743,29 @@ tiled on several screens.")
 Haskell.  It was originally designed to be used together with Xmonad, but it
 is also usable with any other window manager.  While xmobar is written in
 Haskell, no knowledge of the language is required to install and use it.")
+    (license license:bsd-3)))
+
+(define-public yeganesh
+  (package
+    (name "yeganesh")
+    (version "2.4")
+    (source
+     (origin
+
+       (method url-fetch)
+       (uri (string-append "http://dmwit.com/yeganesh/yeganesh-" version ".tar.gz"))
+       (sha256
+        (base32 "04djfyjab3c5y9z9x8zd0xcx0jyy35zq7cl9ddr4ppf6k5ky6iky"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-strict" ,ghc-strict)
+       ("ghc-xdg-basedir" ,ghc-xdg-basedir)))
+    (home-page "http://dmwit.com/yeganesh/")
+    (synopsis "Small wrapper around dmenu")
+    (description "@code{yeganesh} is a small wrapper around demnu.  Like
+dmenu, it accepts input on stdin and writes the chosen result on stdout.
+Unlike dmenu, it mangles the input before it presents its choices.  In
+particular, it displays commonly-chosen options before uncommon ones.")
     (license license:bsd-3)))
 
 (define-public ghc-xmonad-contrib
@@ -1488,7 +1514,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.9.1")
+    (version "0.9.3")
     (source
      (origin
        (method git-fetch)
@@ -1497,11 +1523,8 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0drlv8im5phz39jxp3gxkc40b6f85bb3piff2v3hmnfzh7ib915s"))))
+        (base32 "0ks719khhg2zwpyiwa2079i6962qcxpapm28hmr4ckpsp2n659ck"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "-Dout=" (assoc-ref %outputs "out")))))
     (inputs `(("date" ,date)
               ("fmt" ,fmt)
               ("gtk-layer-shell" ,gtk-layer-shell)
@@ -1514,9 +1537,12 @@ modules for building a Wayland compositor.")
               ("pulseaudio" ,pulseaudio)
               ("spdlog" ,spdlog)
               ("wayland" ,wayland)))
-    (native-inputs `(("glib:bin" ,glib "bin")
-                     ("pkg-config" ,pkg-config)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (native-inputs
+     `(("gcc" ,gcc-8)                   ; for #include <filesystem>
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)
+       ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/Alexays/Waybar")
     (synopsis "Wayland bar for Sway and Wlroots based compositors")
     (description "Waybar is a highly customisable Wayland bar for Sway and
@@ -1892,3 +1918,124 @@ bar entirely based on XCB.  Provides full UTF-8 support, basic
 formatting, RandR and Xinerama support and EWMH compliance without
 wasting your precious memory.")
       (license license:x11))))
+
+(define-public xclickroot
+  (let ((commit "309fd17174dba4149b5ea66654c6fd02cfcf7c9a")
+        (revision "1"))
+    (package
+      (name "xclickroot")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/phillbush/xclickroot")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0fjqkg3wnyks0my1vrzhxfjicsfy8xwnijaazmpz6mhilcqkpvnd"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("libx11" ,libx11)))
+      (arguments
+       `(#:tests? #f ;no test suite
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target))
+               (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (home-page "https://github.com/phillbush/xclickroot")
+      (synopsis "Run a command when a mouse button is pressed on the root window")
+      (description "@code{xclickroot} runs a command every time a given mouse
+button is pressed on the root window.")
+      (license license:public-domain))))
+
+(define-public xmenu
+  (package
+    (name "xmenu")
+    (version "3.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/phillbush/xmenu")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1sw9l87fh03jp03a2v7rhgpyx29yg2x9blzfzp40jwad2whs7m7n"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("freetype" ,freetype)
+       ("imlib2" ,imlib2)))
+    (arguments
+     `(#:tests? #f ;no test suite
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output)
+             (string-append "CFLAGS="
+                            "-I" (assoc-ref %build-inputs "freetype")
+                            "/include/freetype2"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/phillbush/xmenu")
+    (synopsis "Menu utility for X")
+    (description "@code{xmenu} receives a menu specification in stdin, shows
+a menu for the user to select one of the options, and outputs the option
+selected to stdout.  It can be controlled both via mouse and via keyboard.")
+    (license license:public-domain)))
+
+(define-public idesk
+  (package
+    (name "idesk")
+    (version "0.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/idesk/idesk/idesk-" version
+             "/idesk-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1lxk2yvgysxwl514zc82lwr1dwc8cd62slgr5lzdhjbdrxfymdyl"))
+       (modules '((guix build utils)
+                  (ice-9 format)))
+       (snippet
+        '(let* ((file     "src/DesktopConfig.cpp")
+                (template (string-append file ".XXXXXX"))
+                (out      (mkstemp! template))
+                (st       (stat file))
+                (mode     (stat:mode st)))
+           (call-with-ascii-input-file file
+             (lambda (p)
+               (format out "~{~a~%~}" '("#include <unistd.h>"
+                                        "#include <sys/stat.h>"
+                                        "#include <sys/types.h>"))
+               (dump-port p out)
+               (close out)
+               (chmod template mode)
+               (rename-file template file)
+               #t))))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("libxpm" ,libxpm)
+       ("libpng" ,libpng)
+       ("freetype" ,freetype)
+       ("imlib2" ,imlib2)
+       ("sed" ,sed)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:tests? #f)) ;no test suite
+    (home-page "https://sourceforge.net/projects/idesk/")
+    (synopsis "Add icons on X desktop and set background image for wallpaper")
+    (description "Idesk is program that draws desktop icons.  Each icon will
+execute a shell command on a configurable action.  The icons can be moved on
+the desktop by dragging them, and the icons will remember their positions on
+start-up.")
+    (license license:bsd-3)))

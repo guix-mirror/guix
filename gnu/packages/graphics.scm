@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2019, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
@@ -47,24 +47,35 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnunet)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
@@ -80,18 +91,230 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
+  #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public eglexternalplatform
+  (package
+    (name "eglexternalplatform")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/NVIDIA/eglexternalplatform.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "0lr5s2xa1zn220ghmbsiwgmx77l156wk54c7hybia0xpr9yr2nhb"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-pkgconfig
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "eglexternalplatform.pc"
+               (("/usr")
+                (assoc-ref outputs "out")))
+             #t))
+         (add-after 'install 'revise
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/include/EGL"))
+               (rename-file
+                (string-append out "/interface")
+                (string-append out "/include/EGL"))
+               (mkdir-p (string-append out "/share/pkgconfig"))
+               (rename-file
+                (string-append out "/eglexternalplatform.pc")
+                (string-append out "/share/pkgconfig/eglexternalplatform.pc"))
+               (for-each delete-file-recursively
+                         (list
+                          (string-append out "/samples")
+                          (string-append out "/COPYING")
+                          (string-append out "/README.md"))))
+             #t)))))
+    (synopsis "EGL External Platform interface")
+    (description "EGLExternalPlatform is an specification of the EGL External
+Platform interface for writing EGL platforms and their interactions with modern
+window systems on top of existing low-level EGL platform implementations.  This
+keeps window system implementation specifics out of EGL drivers by using
+application-facing EGL functions.")
+    (home-page "https://github.com/NVIDIA/eglexternalplatform")
+    (license license:expat)))
+
+(define-public egl-wayland
+  (package
+    (name "egl-wayland")
+    (version "1.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/NVIDIA/egl-wayland.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "09r6a69z75j3hb9751g3ap4gm1xn71aw3j7z0c7jns292cnaa76n"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("wayland" ,wayland)))
+    (propagated-inputs
+     `(("eglexternalplatform" ,eglexternalplatform)))
+    (synopsis "EGLStream-based Wayland external platform")
+    (description "EGL-Wayland is an implementation of a EGL External Platform
+library to add client-side Wayland support to EGL on top of EGLDevice and
+EGLStream families of extensions.")
+    (home-page "https://github.com/NVIDIA/egl-wayland")
+    (license license:expat)))
+
+(define-public mmm
+  (package
+    (name "mmm")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hodefoting/mmm.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1xmcv6rwinqsbr863rgl9005h2jlmd7k2qrwsc1h4fb8r61ykpjl"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("luajit" ,luajit)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("sdl" ,sdl)
+       ("sdl2" ,sdl2)))
+    (synopsis "Memory Mapped Machine")
+    (description "MMM is a shared memory protocol for virtualising access to
+framebuffer graphics, audio output and input event.")
+    (home-page "https://github.com/hodefoting/mrg")
+    (license license:isc)))
+
+(define-public directfb
+  (package
+    (name "directfb")
+    (version "1.7.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/deniskropp/DirectFB.git")
+         (commit "DIRECTFB_1_7_7")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0bs3yzb7hy3mgydrj8ycg7pllrd2b6j0gxj596inyr7ihssr3i0y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-configure-during-bootstrap
+           (lambda _
+             (substitute* "autogen.sh"
+               (("^.*\\$srcdir/configure.*") ""))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("ffmpeg" ,ffmpeg)
+       ("freetype" ,freetype)
+       ("glu" ,glu)
+       ("gstreamer" ,gstreamer)
+       ("imlib2" ,imlib2)
+       ("jasper" ,jasper)
+       ("jpeg" ,libjpeg-turbo)
+       ("libcddb" ,libcddb)
+       ("libdrm" ,libdrm)
+       ("libtimidity" ,libtimidity)
+       ("linux-headers" ,linux-libre-headers)
+       ("mad" ,libmad)
+       ("mng" ,libmng)
+       ("mpeg2" ,libmpeg2)
+       ("mpeg3" ,libmpeg3)
+       ("opengl" ,mesa)
+       ("png" ,libpng)
+       ("sdl" ,sdl)
+       ("svg" ,librsvg)
+       ("tiff" ,libtiff)
+       ("tslib" ,tslib)
+       ("vdpau" ,libvdpau)
+       ("vorbisfile" ,libvorbis)
+       ("wayland" ,wayland)
+       ("webp" ,libwebp)
+       ("x11" ,libx11)
+       ("xcomposite" ,libxcomposite)
+       ("xext" ,libxext)
+       ("xproto" ,xorgproto)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("flux" ,flux)))
+    (synopsis "DFB Graphics Library")
+    (description "DirectFB is a graphics library which was designed with embedded
+systems in mind.  It offers maximum hardware accelerated performance at a
+minimum of resource usage and overhead.")
+    (home-page "http://www.directfb.org/")
+    (license license:lgpl2.1+)))
+
+(define-public flux
+  (package
+    (name "flux")
+    (version "1.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/deniskropp/flux.git")
+         (commit "e45758a")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11f3ypg0sdq5kj69zgz6kih1yrzgm48r16spyvzwvlswng147410"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Interface description language")
+    (description "Flux is an interface description language used by DirectFB.
+Fluxcomp compiles .flux files to .cpp or .c files.")
+    (home-page "http://www.directfb.org/")
+    (license license:lgpl2.1+))) ; Same as DirectFB
 
 (define-public fox
   (package
@@ -206,14 +429,14 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
 (define-public blender
   (package
     (name "blender")
-    (version "2.83.3")
+    (version "2.83.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "18m27abp4j3xv48dr6ddr2mqcvx2vkjffr487z90059yv9k0yh2p"))))
+                "0xyawly00a59hfdb6b7va84k5fhcv2mxnzd77vs22bzi9y7sap43"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -266,6 +489,7 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
        ("libx11" ,libx11)
        ("libxi" ,libxi)
        ("libxrender" ,libxrender)
+       ("opencolorio" ,opencolorio)
        ("openimageio" ,openimageio)
        ("openexr" ,openexr)
        ("opensubdiv" ,opensubdiv)
@@ -292,6 +516,102 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
 the 3D pipeline—modeling, rigging, animation, simulation, rendering,
 compositing and motion tracking, even video editing and game creation.  The
 application can be customized via its API for Python scripting.")
+    (license license:gpl2+)))
+
+(define-public blender-2.79
+  (package
+    (name "blender")
+    (version "2.79b")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.blender.org/source/"
+                                  "blender-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1g4kcdqmf67srzhi3hkdnr4z1ph4h9sza1pahz38mrj998q4r52c"))
+              (patches (search-patches "blender-2.79-newer-ffmpeg.patch"
+                                       "blender-2.79-oiio2.patch"
+                                       ;; The following patches may be
+                                       ;; needed when the default GCC is
+                                       ;; updated:
+                                       ;;   "blender-2.79-gcc8.patch"
+                                       ;;   "blender-2.79-gcc9.patch"
+                                       "blender-2.79-python-3.7-fix.patch"
+                                       "blender-2.79-python-3.8-fix.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+      (let ((python-version (version-major+minor (package-version python))))
+       `(;; Test files are very large and not included in the release tarball.
+         #:tests? #f
+         #:configure-flags
+         (list "-DWITH_CODEC_FFMPEG=ON"
+               "-DWITH_CODEC_SNDFILE=ON"
+               "-DWITH_CYCLES=ON"
+               "-DWITH_DOC_MANPAGE=ON"
+               "-DWITH_FFTW3=ON"
+               "-DWITH_GAMEENGINE=ON"
+               "-DWITH_IMAGE_OPENJPEG=ON"
+               "-DWITH_INPUT_NDOF=ON"
+               "-DWITH_INSTALL_PORTABLE=OFF"
+               "-DWITH_JACK=ON"
+               "-DWITH_MOD_OCEANSIM=ON"
+               "-DWITH_PLAYER=ON"
+               "-DWITH_PYTHON_INSTALL=OFF"
+               "-DWITH_PYTHON_INSTALL=OFF"
+               "-DWITH_SYSTEM_OPENJPEG=ON"
+               (string-append "-DPYTHON_LIBRARY=python" ,python-version)
+               (string-append "-DPYTHON_LIBPATH=" (assoc-ref %build-inputs "python")
+                              "/lib")
+               (string-append "-DPYTHON_INCLUDE_DIR=" (assoc-ref %build-inputs "python")
+                              "/include/python" ,python-version)
+               (string-append "-DPYTHON_VERSION=" ,python-version))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-broken-import
+             (lambda _
+               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
+                 (("import encode_bin") "from . import encode_bin"))
+               #t))
+           (add-after 'set-paths 'add-ilmbase-include-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; OpenEXR propagates ilmbase, but its include files do not appear
+               ;; in the CPATH, so we need to add "$ilmbase/include/OpenEXR/" to
+               ;; the CPATH to satisfy the dependency on "half.h".
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "ilmbase")
+                                      "/include/OpenEXR"
+                                      ":" (or (getenv "CPATH") "")))
+               #t))))))
+    (inputs
+     `(("boost" ,boost)
+       ("jemalloc" ,jemalloc)
+       ("libx11" ,libx11)
+       ("openimageio" ,openimageio)
+       ("openexr" ,openexr)
+       ("ilmbase" ,ilmbase)
+       ("openjpeg" ,openjpeg)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("ffmpeg" ,ffmpeg)
+       ("fftw" ,fftw)
+       ("jack" ,jack-1)
+       ("libsndfile" ,libsndfile)
+       ("freetype" ,freetype)
+       ("glew" ,glew)
+       ("openal" ,openal)
+       ("python" ,python)
+       ("zlib" ,zlib)))
+    (home-page "https://blender.org/")
+    (synopsis "3D graphics creation suite")
+    (description
+     "Blender is a 3D graphics creation suite.  It supports the entirety of
+the 3D pipeline—modeling, rigging, animation, simulation, rendering,
+compositing and motion tracking, even video editing and game creation.  The
+application can be customized via its API for Python scripting.
+
+NOTE: This older version of Blender is the last release that does not require
+OpenGL 3.  It is retained for use with older computers.")
     (license license:gpl2+)))
 
 (define-public assimp
@@ -389,8 +709,8 @@ exception-handling library.")
 
 (define-public lib2geom
   ;; Use the latest master commit, as the 1.0 release suffer build problems.
-  (let ((revision "1")
-        (commit "42e119d94934a9514c61571cfb6b4af503ece082"))
+  (let ((revision "3")
+        (commit "17e0d21f0afc8489656f9184bff7ad024a42394a"))
     (package
       (name "lib2geom")
       (version (git-version "1.0" revision commit))
@@ -402,13 +722,11 @@ exception-handling library.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "195rs0kdbs8w62irha1nwy83bccz04wglmk578qrj1mky7fc4rjv"))
+                  "0waskrmdrrdjw8pr5cvlkrxywgf376viggpc2jzdqxxpy2k78fpr"))
                 (patches
-                 ;; Patches submitted to upstream (see:
-                 ;; https://gitlab.com/inkscape/lib2geom/merge_requests/17,
+                 ;; Patch submitted to upstream (see:
                  ;; https://gitlab.com/inkscape/lib2geom/-/merge_requests/32).
-                 (search-patches "lib2geom-enable-assertions.patch"
-                                 "lib2geom-fix-tests.patch"))
+                 (search-patches "lib2geom-fix-tests.patch"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
@@ -506,7 +824,7 @@ other vector formats such as:
 (define-public ogre
   (package
     (name "ogre")
-    (version "1.12.5")
+    (version "1.12.6")
     (source
      (origin
        (method git-fetch)
@@ -516,7 +834,7 @@ other vector formats such as:
              (recursive? #t)))          ;for Dear ImGui submodule
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sx0jsw4kmb4ycf62bgx3ygwv8k1cgjx52y47d7dk07z6gk6wpyj"))))
+        (base32 "1ap3krrl55hswv1n2r3ijf3xrb3kf9dnqvwyrc0fgnc7j7vd45sk"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
@@ -624,7 +942,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
 (define-public openimageio
   (package
     (name "openimageio")
-    (version "1.8.17")
+    (version "2.0.13")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -633,7 +951,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zq34szprgkrrayg5sl3whrsx2l6lr8nw4hdrnwv2qhn70jbi2w2"))))
+                "0czcls82v71wkw1syib16ncg7463hx0py0xclycsiv4w6i3wlkzz"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
@@ -650,7 +968,9 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
        ("giflib" ,giflib)
        ("openexr" ,openexr)
        ("ilmbase" ,ilmbase)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
+       ("pybind11" ,pybind11)
+       ("robin-map" ,robin-map)
        ("zlib" ,zlib)))
     (synopsis "C++ library for reading and writing images")
     (description
@@ -1332,3 +1652,60 @@ and PC Engine formats")
 the graphics formats of the SNES, Game Boy Color and PC Engine game consoles.
 Automated palette selection is supported.")
     (license license:expat)))
+
+(define-public drawpile
+  ;; This commit fix building with libmicrohttpd>=0.71.
+  (let ((commit "ed1a75deb113da2d1df91a28f557509c4897130e")
+        (revision "1"))
+    (package
+      (name "drawpile")
+      (version (string-append "2.1.17-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/drawpile/Drawpile")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1y21h1hk9ipkjvhjgas0c5hkjyan92vsxbxrn60c906hzqln2fr1"))))
+      (build-system qt-build-system)
+      (arguments
+       '(#:configure-flags
+         (list "-DTESTS=ON" "-DTOOLS=ON" "-DKIS_TABLET=ON")))
+      (native-inputs
+       `(("extra-cmake-modules" ,extra-cmake-modules)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("giflib" ,giflib)
+         ("karchive" ,karchive)
+         ("kdnssd" ,kdnssd)
+         ("libmicrohttpd" ,libmicrohttpd)
+         ("libsodium" ,libsodium)
+         ("libvpx" ,libvpx)
+         ("libxi" ,libxi)
+         ;; ("miniupnpc" ,miniupnpc) ;segfaults for some reason
+         ("qtbase" ,qtbase)
+         ("qtkeychain" ,qtkeychain)
+         ("qtmultimedia" ,qtmultimedia)
+         ("qtsvg" ,qtsvg)
+         ("qtx11extras" ,qtx11extras)))
+      (home-page "https://drawpile.net")
+      (synopsis "Collaborative drawing program")
+      (description "Drawpile is a drawing program that allows share the canvas
+with other users in real time.
+
+Some feature highlights:
+@itemize
+@item Shared canvas using the built-in server or a dedicated server
+@item Record, play back and export drawing sessions
+@item Simple animation support
+@item Layers and blending modes
+@item Text layers
+@item Supports pressure sensitive Wacom tablets
+@item Built-in chat
+@item Supports OpenRaster file format
+@item Encrypted connections using SSL
+@item Automatic port forwarding with UPnP
+@end itemize\n")
+      (license license:gpl3+))))

@@ -334,7 +334,7 @@
      (check-patch-file-names pkg))))
 
 (test-equal "patches: not found"
-  "this-patch-does-not-exist!: patch not found"
+  "this-patch-does-not-exist!: patch not found\n"
   (single-lint-warning-message
    (let ((pkg (dummy-package
                "x"

@@ -1,0 +1,45 @@
+Description: fix FTBFS with GCC 4.3. (Closes: #417355)
+Author: Martin Michlmayr <tbm@cyrius.com>
+Last-Update: 2007-04-02
+
+Description: add a missing include. (Closes: #441557)
+Author: Brian M. Carlson <sandals@crustytoothpaste.ath.cx>
+Last-Update: 2007-12-29
+
+Index: libofa-0.9.3/lib/signal_op.cpp
+===================================================================
+--- libofa-0.9.3.orig/lib/signal_op.cpp
++++ libofa-0.9.3/lib/signal_op.cpp
+@@ -12,6 +12,7 @@
+ // DATE CREATED: 1/12/06
+ 
+ 
++#include <cstdlib>
+ #include <math.h>
+ #include "signal_op.h"
+ #include "AFLIB/aflibConverter.h"
+Index: libofa-0.9.3/examples/example.cpp
+===================================================================
+--- libofa-0.9.3.orig/examples/example.cpp
++++ libofa-0.9.3/examples/example.cpp
+@@ -8,6 +8,8 @@
+ -------------------------------------------------------------------*/
+ 
+ #include "protocol.h"
++#include <cctype>
++#include <string.h>
+ 
+ AudioData* loadWaveFile(char *file);
+ AudioData* loadDataUsingLAME(char *file);
+Index: libofa-0.9.3/examples/protocol.cpp
+===================================================================
+--- libofa-0.9.3.orig/examples/protocol.cpp
++++ libofa-0.9.3/examples/protocol.cpp
+@@ -8,6 +8,7 @@
+ -------------------------------------------------------------------*/
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <cstring>
+ #include <string>
+ #include <map>
+ #include <expat.h>

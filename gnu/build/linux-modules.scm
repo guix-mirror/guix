@@ -24,6 +24,7 @@
   #:use-module (guix build syscalls)
   #:use-module ((guix build utils) #:select (find-files invoke))
   #:use-module (guix build union)
+  #:autoload   (zlib) (call-with-gzip-input-port)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
@@ -94,10 +95,28 @@ string list."
     (cons (string->symbol (string-take str =))
           (string-drop str (+ 1 =)))))
 
+;; Matches kernel modules, without compression, with GZIP compression or with
+;; XZ compression.
+(define module-regex "\\.ko(\\.gz|\\.xz)?$")
+
 (define (modinfo-section-contents file)
   "Return the contents of the '.modinfo' section of FILE as a list of
 key/value pairs.."
-  (let* ((bv      (call-with-input-file file get-bytevector-all))
+  (define (get-bytevector file)
+    (cond
+     ((string-suffix? ".ko.gz" file)
+      (let ((port (open-file file "r0")))
+        (dynamic-wind
+          (lambda ()
+            #t)
+          (lambda ()
+            (call-with-gzip-input-port port get-bytevector-all))
+          (lambda ()
+            (close-port port)))))
+     (else
+      (call-with-input-file file get-bytevector-all))))
+
+  (let* ((bv      (get-bytevector file))
          (elf     (parse-elf bv))
          (section (elf-section-by-name elf ".modinfo"))
          (modinfo (section-contents elf section)))
@@ -110,7 +129,7 @@ key/value pairs.."
 (define (module-formal-name file)
   "Return the module name of FILE as it appears in its info section.  Usually
 the module name is the same as the base name of FILE, modulo hyphens and minus
-the \".ko\" extension."
+the \".ko[.gz|.xz]\" extension."
   (match (assq 'name (modinfo-section-contents file))
     (('name . name) name)
     (#f #f)))
@@ -171,14 +190,25 @@ modules that can be postloaded, of the soft dependencies of module FILE."
                  (_ #f))
                 (modinfo-section-contents file))))
 
-(define dot-ko
-  (cut string-append <> ".ko"))
+(define (strip-extension filename)
+  (let ((extension (string-index filename #\.)))
+    (if extension
+        (string-take filename extension)
+        filename)))
 
-(define (ensure-dot-ko name)
-  "Return NAME with a '.ko' prefix appended, unless it already has it."
-  (if (string-suffix? ".ko" name)
+(define (dot-ko name compression)
+  (let ((suffix (match compression
+                  ('xz   ".ko.xz")
+                  ('gzip ".ko.gz")
+                  (else  ".ko"))))
+    (string-append name suffix)))
+
+(define (ensure-dot-ko name compression)
+  "Return NAME with a '.ko[.gz|.xz]' suffix appended, unless it already has
+it."
+  (if (string-contains name ".ko")
       name
-      (dot-ko name)))
+      (dot-ko name compression)))
 
 (define (normalize-module-name module)
   "Return the \"canonical\" name for MODULE, replacing hyphens with
@@ -191,9 +221,9 @@ underscores."
               module))
 
 (define (file-name->module-name file)
-  "Return the module name corresponding to FILE, stripping the trailing '.ko'
-and normalizing it."
-  (normalize-module-name (basename file ".ko")))
+  "Return the module name corresponding to FILE, stripping the trailing
+'.ko[.gz|.xz]' and normalizing it."
+  (normalize-module-name (strip-extension (basename file))))
 
 (define (find-module-file directory module)
   "Lookup module NAME under DIRECTORY, and return its absolute file name.
@@ -208,19 +238,19 @@ whereas file names often, but not always, use hyphens.  Examples:
     ;; List of possible file names.  XXX: It would of course be cleaner to
     ;; have a database that maps module names to file names and vice versa,
     ;; but everyone seems to be doing hacks like this one.  Oh well!
-    (map ensure-dot-ko
-         (delete-duplicates
-          (list module
-                (normalize-module-name module)
-                (string-map (lambda (chr) ;converse of 'normalize-module-name'
-                              (case chr
-                                ((#\_) #\-)
-                                (else chr)))
-                            module)))))
+    (delete-duplicates
+     (list module
+           (normalize-module-name module)
+           (string-map (lambda (chr) ;converse of 'normalize-module-name'
+                         (case chr
+                           ((#\_) #\-)
+                           (else chr)))
+                       module))))
 
   (match (find-files directory
                      (lambda (file stat)
-                       (member (basename file) names)))
+                       (member (strip-extension
+                                (basename file)) names)))
     ((file)
      file)
     (()
@@ -290,8 +320,8 @@ not a file name."
                              (recursive? #t)
                              (lookup-module dot-ko)
                              (black-list (module-black-list)))
-  "Load Linux module from FILE, the name of a '.ko' file; return true on
-success, false otherwise.  When RECURSIVE? is true, load its dependencies
+  "Load Linux module from FILE, the name of a '.ko[.gz|.xz]' file; return true
+on success, false otherwise.  When RECURSIVE? is true, load its dependencies
 first (à la 'modprobe'.)  The actual files containing modules depended on are
 obtained by calling LOOKUP-MODULE with the module name.  Modules whose name
 appears in BLACK-LIST are not loaded."
@@ -523,16 +553,29 @@ are required to access DEVICE."
 ;;; Module databases.
 ;;;
 
-(define (module-name->file-name/guess directory name)
+(define* (module-name->file-name/guess directory name
+                                       #:key compression)
   "Guess the file name corresponding to NAME, a module name.  That doesn't
 always work because sometimes underscores in NAME map to hyphens (e.g.,
-\"input-leds.ko\"), sometimes not (e.g., \"mac_hid.ko\")."
-  (string-append directory "/" (ensure-dot-ko name)))
+\"input-leds.ko\"), sometimes not (e.g., \"mac_hid.ko\").  If the module is
+compressed then COMPRESSED can be set to 'xz or 'gzip, depending on the
+compression type."
+  (string-append directory "/" (ensure-dot-ko name compression)))
 
 (define (module-name-lookup directory)
   "Return a one argument procedure that takes a module name (e.g.,
 \"input_leds\") and returns its absolute file name (e.g.,
 \"/.../input-leds.ko\")."
+  (define (guess-file-name name)
+    (let ((names (list
+                  (module-name->file-name/guess directory name)
+                  (module-name->file-name/guess directory name
+                                                #:compression 'xz)
+                  (module-name->file-name/guess directory name
+                                                #:compression 'gzip))))
+      (or (find file-exists? names)
+          (first names))))
+
   (catch 'system-error
     (lambda ()
       (define mapping
@@ -541,23 +584,23 @@ always work because sometimes underscores in NAME map to hyphens (e.g.,
 
       (lambda (name)
         (or (assoc-ref mapping name)
-            (module-name->file-name/guess directory name))))
+            (guess-file-name name))))
     (lambda args
       (if (= ENOENT (system-error-errno args))
-          (cut module-name->file-name/guess directory <>)
+          (cut guess-file-name <>)
           (apply throw args)))))
 
 (define (write-module-name-database directory)
   "Write a database that maps \"module names\" as they appear in the relevant
-ELF section of '.ko' files, to actual file names.  This format is
+ELF section of '.ko[.gz|.xz]' files, to actual file names.  This format is
 Guix-specific.  It aims to deal with inconsistent naming, in particular
 hyphens vs. underscores."
   (define mapping
     (map (lambda (file)
            (match (module-formal-name file)
-             (#f   (cons (basename file ".ko") file))
+             (#f   (cons (strip-extension (basename file)) file))
              (name (cons name file))))
-         (find-files directory "\\.ko$")))
+         (find-files directory module-regex)))
 
   (call-with-output-file (string-append directory "/modules.name")
     (lambda (port)
@@ -569,12 +612,12 @@ hyphens vs. underscores."
       (pretty-print mapping port))))
 
 (define (write-module-alias-database directory)
-  "Traverse the '.ko' files in DIRECTORY and create the corresponding
+  "Traverse the '.ko[.gz|.xz]' files in DIRECTORY and create the corresponding
 'modules.alias' file."
   (define aliases
     (map (lambda (file)
            (cons (file-name->module-name file) (module-aliases file)))
-         (find-files directory "\\.ko$")))
+         (find-files directory module-regex)))
 
   (call-with-output-file (string-append directory "/modules.alias")
     (lambda (port)
@@ -616,7 +659,7 @@ are found, return a tuple (DEVNAME TYPE MAJOR MINOR), otherwise return #f."
   (char-set-complement (char-set #\-)))
 
 (define (write-module-device-database directory)
-  "Traverse the '.ko' files in DIRECTORY and create the corresponding
+  "Traverse the '.ko[.gz|.xz]' files in DIRECTORY and create the corresponding
 'modules.devname' file.  This file contains information about modules that can
 be loaded on-demand, such as file system modules."
   (define aliases
@@ -624,7 +667,7 @@ be loaded on-demand, such as file system modules."
                   (match (aliases->device-tuple (module-aliases file))
                     (#f #f)
                     (tuple (cons (file-name->module-name file) tuple))))
-                (find-files directory "\\.ko$")))
+                (find-files directory module-regex)))
 
   (call-with-output-file (string-append directory "/modules.devname")
     (lambda (port)

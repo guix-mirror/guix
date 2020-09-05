@@ -1,0 +1,27 @@
+Description: ftbfs with GCC-4.7. (Closes: #667250)
+Author: Matthias Klose <doko@debian.org>
+Last-Update: 2012-04-17
+Index: libofa-0.9.3/examples/uselame.cpp
+===================================================================
+--- libofa-0.9.3.orig/examples/uselame.cpp
++++ libofa-0.9.3/examples/uselame.cpp
+@@ -11,6 +11,7 @@
+ #include "windows.h"
+ #else
+ #include <sys/wait.h>
++#include <unistd.h>
+ #endif
+ 
+ AudioData *loadWaveFile(char *file);
+Index: libofa-0.9.3/examples/wavefile.cpp
+===================================================================
+--- libofa-0.9.3.orig/examples/wavefile.cpp
++++ libofa-0.9.3/examples/wavefile.cpp
+@@ -11,6 +11,7 @@
+ #include "io.h"
+ #endif
+ #include <fcntl.h>
++#include <unistd.h>
+ 
+ static bool readBytes(int fd, unsigned char *buf, int size) {
+     int ct = 0;

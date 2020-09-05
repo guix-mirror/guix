@@ -34,8 +34,10 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix memoization)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
                            . hyphen-package-name->name+version)

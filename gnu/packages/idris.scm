@@ -90,6 +90,11 @@
              "-fFFI" "-fGMP")
        #:phases
        (modify-phases %standard-phases
+         ;; This allows us to call the 'idris' binary before installing.
+         (add-after 'unpack 'set-ld-library-path
+           (lambda _
+             (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/dist/build"))
+             #t))
          (add-after 'unpack 'update-constraints
            (lambda _
              (substitute* "idris.cabal"
@@ -116,7 +121,18 @@
                (setenv "TASTY_NUM_THREADS" (number->string (parallel-job-count)))
                (setenv "IDRIS_CC" "gcc") ;Needed for creating executables
                (setenv "PATH" (string-append out "/bin:" (getenv "PATH")))
-               (apply (assoc-ref %standard-phases 'check) args)))))))
+               (apply (assoc-ref %standard-phases 'check) args))))
+         (add-before 'check 'restore-libidris_rts
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The Haskell build system moves this library to the
+             ;; "static" output.  Idris only knows how to find it in the
+             ;; "out" output, so we restore it here.
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static"))
+                   (filename "/lib/idris/rts/libidris_rts.a"))
+               (rename-file (string-append static filename)
+                            (string-append out filename))
+               #t))))))
     (native-search-paths
      (list (search-path-specification
             (variable "IDRIS_LIBRARY_PATH")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,7 @@
   "Return the extension of the archive e.g. '.tar.gz' given a URL, or
 false if none is recognized"
   (find (lambda (x) (string-suffix? x url))
-        (list ".tar.gz" ".tar.bz2" ".tar.xz"
+        (list ".orig.tar.gz" ".tar.gz" ".tar.bz2" ".tar.xz"
               ".zip" ".tar" ".tgz" ".tbz" ".love")))
 
 (define (updated-launchpad-url old-package new-version)
@@ -46,15 +46,35 @@ false if none is recognized"
                (version (package-version old-package))
                (repo (launchpad-repository url)))
            (cond
-            ((and
-              (>= (length (string-split version #\.)) 2)
-              (string=? (string-append "https://launchpad.net/"
-                                       repo "/" (version-major+minor version)
-                                       "/" version "/+download/" repo "-" version ext)
-                        url))
+            ((< (length (string-split version #\.)) 2) #f)
+            ((string=? (string-append "https://launchpad.net/"
+                                      repo "/" (version-major+minor version)
+                                      "/" version "/+download/" repo "-" version ext)
+                       url)
              (string-append "https://launchpad.net/"
                             repo "/" (version-major+minor new-version)
                             "/" new-version "/+download/" repo "-" new-version ext))
+            ((string=? (string-append "https://launchpad.net/"
+                                      repo "/" (version-major+minor version)
+                                      "/" version "/+download/" repo "_" version ext)
+                       url)
+             (string-append "https://launchpad.net/"
+                            repo "/" (version-major+minor new-version)
+                            "/" new-version "/+download/" repo "-" new-version ext))
+            ((string=? (string-append "https://launchpad.net/"
+                                      repo "/trunk/" version "/+download/"
+                                      repo "-" version ext)
+                       url)
+             (string-append "https://launchpad.net/"
+                            repo "/trunk/" new-version
+                            "/+download/" repo "-" new-version ext))
+            ((string=? (string-append "https://launchpad.net/"
+                                      repo "/trunk/" version "/+download/"
+                                      repo "_" version ext)
+                       url)
+             (string-append "https://launchpad.net/"
+                            repo "/trunk/" new-version
+                            "/+download/" repo "_" new-version ext))
             (#t #f))))) ; Some URLs are not recognised.
 
   (match (package-source old-package)
@@ -66,7 +86,7 @@ false if none is recognized"
               ((? string?)
                (updated-url source-uri))
               ((source-uri ...)
-               (find updated-url source-uri))))))
+               (any updated-url source-uri))))))
     (_ #f)))
 
 (define (launchpad-package? package)

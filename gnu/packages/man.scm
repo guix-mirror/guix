@@ -25,11 +25,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages man)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ruby)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
@@ -37,12 +38,70 @@
   #:use-module (gnu packages less)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages xml))
+
+(define-public xmltoman
+  (package
+    (name "xmltoman")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/xmltoman/files/"
+                       "xmltoman/xmltoman-" version ".tar.gz/xmltoman-"
+                       version ".tar.gz/download"))
+       (sha256
+        (base32 "1c0lvzr7kdy63wbn1jv6s126ds7add3pxqb0vlxd3v5a2sir91wl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests
+       #:make-flags
+       (list
+        (string-append "PREFIX="
+                       (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (propagated-inputs
+     `(("perl" ,perl)
+       ("perl-xml-parser" ,perl-xml-parser)))
+    (synopsis "XML to Man converter")
+    (description "XMLtoMan and XMLMantoHTML are two small scripts to convert xml
+to man pages in groff format or html.  It features the usual man page items such
+as description, options, see also, etc.")
+    (home-page "http://xmltoman.sourceforge.net/")
+    (license license:gpl2+)))
+
+(define-public ronn
+  (package
+    (name "ronn")
+    (version "0.7.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/rtomayko/ronn.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "0fkniz7j1jp8v3i05m6hks3nsh6rzvjfi0ichpi7h4gwk5byxb94"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                   ; Library hpricot not available
+    (synopsis "Manual authoring tool")
+    (description "Ronn builds manuals.  It converts simple, human readable
+textfiles to roff for terminal display, and also to HTML for the web.")
+    (home-page "https://rtomayko.github.io/ronn/")
+    (license license:expat)))
 
 (define-public libpipeline
   (package
     (name "libpipeline")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -50,14 +109,14 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "1ysrn22ixd4nmggy6f7qcsm7waadmlbg2i0n9mh6g7dfq54wcngx"))))
+                "1c5dl017xil2ssb6a5vg927bnsbc9vymfgi9ahvqbb8gypx0igsx"))))
     (build-system gnu-build-system)
     (home-page "http://libpipeline.nongnu.org/")
     (synopsis "C library for manipulating pipelines of subprocesses")
     (description
      "libpipeline is a C library for manipulating pipelines of subprocesses in
 a flexible and convenient way.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public man-db
   (package
@@ -159,12 +218,12 @@ a flexible and convenient way.")
      "Man-db is an implementation of the standard Unix documentation system
 accessed using the man command.  It uses a Berkeley DB database in place of
 the traditional flat-text whatis databases.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "5.07")
+    (version "5.08")
     (source
      (origin
        (method url-fetch)
@@ -174,7 +233,7 @@ the traditional flat-text whatis databases.")
               (string-append "mirror://kernel.org/linux/docs/man-pages/Archive/"
                              "man-pages-" version ".tar.xz")))
        (sha256
-        (base32 "13b3q7c67r0wkla4pdihl1qh09k67ms2z5jgzfqgpdqqy6mgziwd"))))
+        (base32 "1xzp3f6wvw3wplk1a1x09zfv0jp0pdc9wh95czndh3h8z0qwv9yf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -195,7 +254,7 @@ the traditional flat-text whatis databases.")
 Linux kernel and C library interfaces employed by user-space programs.")
 
     ;; Each man page has its own license; some are GPLv2+, some are MIT/X11.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public help2man
   (package
@@ -226,7 +285,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
      "GNU help2man is a program that converts the output of standard
 \"--help\" and \"--version\" command-line arguments into a manual page
 automatically.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public scdoc
   (package
@@ -253,7 +312,7 @@ automatically.")
    (description "scdoc is a simple man page generator written for POSIX systems
 in C99.")
    ;; MIT license, see /share/doc/scdoc-1.6.0/COPYING.
-   (license expat)))
+   (license license:expat)))
 
 (define-public txt2man
   (package
@@ -279,4 +338,4 @@ in C99.")
     (home-page "https://github.com/mvertes/txt2man")
     (synopsis "Convert text to man page")
     (description "Txt2man converts flat ASCII text to man page format.")
-    (license gpl2+)))
+    (license license:gpl2+)))

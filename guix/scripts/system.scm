@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -271,28 +272,33 @@ expression in %STORE-MONAD."
 
 (define (report-shepherd-error error)
   "Report ERROR, a '&shepherd-error' error condition object."
-  (cond ((service-not-found-error? error)
-         (report-error (G_ "service '~a' could not be found~%")
-                       (service-not-found-error-service error)))
-        ((action-not-found-error? error)
-         (report-error (G_ "service '~a' does not have an action '~a'~%")
-                       (action-not-found-error-service error)
-                       (action-not-found-error-action error)))
-        ((action-exception-error? error)
-         (report-error (G_ "exception caught while executing '~a' \
+  (when error
+    (cond ((service-not-found-error? error)
+           (warning (G_ "service '~a' could not be found~%")
+                    (service-not-found-error-service error)))
+          ((action-not-found-error? error)
+           (warning (G_ "service '~a' does not have an action '~a'~%")
+                    (action-not-found-error-service error)
+                    (action-not-found-error-action error)))
+          ((action-exception-error? error)
+           (warning (G_ "exception caught while executing '~a' \
 on service '~a':~%")
-                       (action-exception-error-action error)
-                       (action-exception-error-service error))
-         (print-exception (current-error-port) #f
-                          (action-exception-error-key error)
-                          (action-exception-error-arguments error)))
-        ((unknown-shepherd-error? error)
-         (report-error (G_ "something went wrong: ~s~%")
-                       (unknown-shepherd-error-sexp error)))
-        ((shepherd-error? error)
-         (report-error (G_ "shepherd error~%")))
-        ((not error)                              ;not an error
-         #t)))
+                    (action-exception-error-action error)
+                    (action-exception-error-service error))
+           (print-exception (current-error-port) #f
+                            (action-exception-error-key error)
+                            (action-exception-error-arguments error)))
+          ((unknown-shepherd-error? error)
+           (warning (G_ "something went wrong: ~s~%")
+                    (unknown-shepherd-error-sexp error)))
+          ((shepherd-error? error)
+           (warning (G_ "shepherd error~%"))))
+
+    ;; Don't leave users out in the cold and explain what that means and what
+    ;; they can do.
+    (warning (G_ "some services could not be upgraded~%"))
+    (display-hint (G_ "To allow changes to all the system services to take
+effect, you will need to reboot."))))
 
 (define-syntax-rule (unless-file-not-found exp)
   (catch 'system-error
@@ -565,16 +571,14 @@ any, are available.  Raise an error if they're not."
   (define fail? #f)
 
   (define (file-system-location* fs)
-    (location->string
-     (source-properties->location
-      (file-system-location fs))))
+    (and=> (file-system-location fs)
+           source-properties->location))
 
   (let-syntax ((error (syntax-rules ()
                         ((_ args ...)
                          (begin
                            (set! fail? #t)
-                           (format (current-error-port)
-                                   args ...))))))
+                           (report-error args ...))))))
     (for-each (lambda (fs)
                 (catch 'system-error
                   (lambda ()
@@ -582,9 +586,9 @@ any, are available.  Raise an error if they're not."
                   (lambda args
                     (let ((errno  (system-error-errno args))
                           (device (file-system-device fs)))
-                      (error (G_ "~a: error: device '~a' not found: ~a~%")
-                             (file-system-location* fs) device
-                             (strerror errno))
+                      (error (file-system-location* fs)
+                             (G_ "device '~a' not found: ~a~%")
+                             device (strerror errno))
                       (unless (string-prefix? "/" device)
                         (display-hint (format #f (G_ "If '~a' is a file system
 label, write @code{(file-system-label ~s)} in your @code{device} field.")
@@ -594,13 +598,14 @@ label, write @code{(file-system-label ~s)} in your @code{device} field.")
                 (let ((label (file-system-label->string
                               (file-system-device fs))))
                   (unless (find-partition-by-label label)
-                    (error (G_ "~a: error: file system with label '~a' not found~%")
-                           (file-system-location* fs) label))))
+                    (error (file-system-location* fs)
+                           (G_ "file system with label '~a' not found~%")
+                           label))))
               labeled)
     (for-each (lambda (fs)
                 (unless (find-partition-by-uuid (file-system-device fs))
-                  (error (G_ "~a: error: file system with UUID '~a' not found~%")
-                         (file-system-location* fs)
+                  (error (file-system-location* fs)
+                         (G_ "file system with UUID '~a' not found~%")
                          (uuid->string (file-system-device fs)))))
               uuid)
 
@@ -663,7 +668,7 @@ checking this by themselves in their 'check' procedure."
 (define* (system-derivation-for-action os base-image action
                                        #:key image-size file-system-type
                                        full-boot? container-shared-network?
-                                       mappings)
+                                       mappings label)
   "Return as a monadic value the derivation for OS according to ACTION."
   (case action
     ((build init reconfigure)
@@ -687,7 +692,7 @@ checking this by themselves in their 'check' procedure."
      (lower-object
       (system-image
        (image
-        (inherit base-image)
+        (inherit (if label (image-with-label base-image label) base-image))
         (size image-size)
         (operating-system os)))))
     ((docker-image)
@@ -742,7 +747,7 @@ and TARGET arguments."
                          install-bootloader?
                          dry-run? derivations-only?
                          use-substitutes? bootloader-target target
-                         image-size file-system-type full-boot?
+                         image-size file-system-type full-boot? label
                          container-shared-network?
                          (mappings '())
                          (gc-root #f))
@@ -796,6 +801,7 @@ static checks."
       ((target*   (current-target-system))
        (image ->  (find-image file-system-type target*))
        (sys       (system-derivation-for-action os image action
+                                                #:label label
                                                 #:file-system-type file-system-type
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
@@ -836,7 +842,9 @@ static checks."
                  (upgrade-shepherd-services local-eval os)
                  (return (format #t (G_ "\
 To complete the upgrade, run 'herd restart SERVICE' to stop,
-upgrade, and restart each service that was not automatically restarted.\n"))))))
+upgrade, and restart each service that was not automatically restarted.\n")))
+                 (return (format #t (G_ "\
+Run 'herd status' to view the list of services on your system.\n"))))))
             ((init)
              (newline)
              (format #t (G_ "initializing operating system under '~a'...~%")
@@ -944,6 +952,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
       --no-bootloader    for 'init', do not install a bootloader"))
   (display (G_ "
+      --label=LABEL      for 'disk-image', label disk image with LABEL"))
+  (display (G_ "
       --save-provenance  save provenance information"))
   (display (G_ "
       --share=SPEC       for 'vm', share host file system according to SPEC"))
@@ -1009,6 +1019,9 @@ Some ACTIONS support additional ARGS.\n"))
          (option '("no-bootloader" "no-grub") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'install-bootloader? #f result)))
+         (option '("label") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'label arg result)))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
@@ -1066,7 +1079,14 @@ Some ACTIONS support additional ARGS.\n"))
     (validate-reconfigure . ,ensure-forward-reconfigure)
     (file-system-type . "ext4")
     (image-size . guess)
-    (install-bootloader? . #t)))
+    (install-bootloader? . #t)
+    (label . #f)))
+
+(define (verbosity-level opts)
+  "Return the verbosity level based on OPTS, the alist of parsed options."
+  (or (assoc-ref opts 'verbosity)
+      (if (eq? (assoc-ref opts 'action) 'build)
+          2 1)))
 
 
 ;;;
@@ -1114,6 +1134,7 @@ resulting from command-line parsing."
 
          (dry?        (assoc-ref opts 'dry-run?))
          (bootloader? (assoc-ref opts 'install-bootloader?))
+         (label       (assoc-ref opts 'label))
          (target-file (match args
                         ((first second) second)
                         (_ #f)))
@@ -1127,6 +1148,8 @@ resulting from command-line parsing."
 
       (with-build-handler (build-notifier #:use-substitutes?
                                           (assoc-ref opts 'substitutes?)
+                                          #:verbosity
+                                          (verbosity-level opts)
                                           #:dry-run?
                                           (assoc-ref opts 'dry-run?))
         (run-with-store store
@@ -1162,6 +1185,7 @@ resulting from command-line parsing."
                                                         (_ #f))
                                                       opts)
                                #:install-bootloader? bootloader?
+                               #:label label
                                #:target target-file
                                #:bootloader-target bootloader-target
                                #:gc-root (assoc-ref opts 'gc-root)))))
@@ -1283,8 +1307,7 @@ argument list and OPTS is the option alist."
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
       (parameterize ((%graft? (assoc-ref opts 'graft?)))
-        (with-status-verbosity (or (assoc-ref opts 'verbosity)
-                                   (if (eq? command 'build) 2 1))
+        (with-status-verbosity (verbosity-level opts)
           (process-command command args opts))))))
 
 ;;; Local Variables:

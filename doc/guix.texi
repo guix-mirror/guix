@@ -144,6 +144,7 @@ Project}.
 * Introduction::                What is Guix about?
 * Installation::                Installing Guix.
 * System Installation::         Installing the whole operating system.
+* Getting Started::             Your first steps.
 * Package Management::          Package installation, upgrade, etc.
 * Development::                 Guix-aided software development.
 * Programming Interface::       Using Guix in Scheme.
@@ -195,6 +196,8 @@ System Installation
 * After System Installation::   When installation succeeded.
 * Installing Guix in a VM::     Guix System playground.
 * Building the Installation Image::  How this comes to be.
+
+Getting Started
 
 Manual Installation
 
@@ -562,6 +565,9 @@ wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh
 chmod +x guix-install.sh
 ./guix-install.sh
 @end example
+
+When you're done, @pxref{Application Setup} for extra configuration you
+might need, and @ref{Getting Started} for your first steps!
 @end quotation
 
 Installing goes along these lines:
@@ -778,12 +784,13 @@ Guile,, gnutls-guile, GnuTLS-Guile});
 @item
 @uref{https://notabug.org/guile-sqlite3/guile-sqlite3, Guile-SQLite3}, version 0.1.0
 or later;
+@item @uref{https://notabug.org/guile-zlib/guile-zlib, Guile-zlib};
+@item @uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib};
 @item
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
 2017 or later;
 @item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON} 3.x;
-@item @url{https://zlib.net, zlib};
 @item @url{https://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
@@ -1042,29 +1049,31 @@ When desired, the build daemon can @dfn{offload} derivation builds to
 other machines running Guix, using the @code{offload} @dfn{build
 hook}@footnote{This feature is available only when
 @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH} is
-present.}.  When that
-feature is enabled, a list of user-specified build machines is read from
-@file{/etc/guix/machines.scm}; every time a build is requested, for
-instance via @code{guix build}, the daemon attempts to offload it to one
-of the machines that satisfy the constraints of the derivation, in
-particular its system type---e.g., @file{x86_64-linux}.  Missing
-prerequisites for the build are copied over SSH to the target machine,
-which then proceeds with the build; upon success the output(s) of the
-build are copied back to the initial machine.
+present.}.  When that feature is enabled, a list of user-specified build
+machines is read from @file{/etc/guix/machines.scm}; every time a build
+is requested, for instance via @code{guix build}, the daemon attempts to
+offload it to one of the machines that satisfy the constraints of the
+derivation, in particular its system types---e.g., @code{x86_64-linux}.
+A single machine can have multiple system types, either because its
+architecture natively supports it, via emulation (@pxref{Transparent
+Emulation with QEMU}), or both.  Missing prerequisites for the build are
+copied over SSH to the target machine, which then proceeds with the
+build; upon success the output(s) of the build are copied back to the
+initial machine.
 
 The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @lisp
 (list (build-machine
         (name "eightysix.example.org")
-        (system "x86_64-linux")
+        (systems (list "x86_64-linux" "i686-linux"))
         (host-key "ssh-ed25519 AAAAC3Nza@dots{}")
         (user "bob")
         (speed 2.))     ;incredibly fast!
 
       (build-machine
         (name "armeight.example.org")
-        (system "aarch64-linux")
+        (systems (list "aarch64-linux"))
         (host-key "ssh-rsa AAAAB3Nza@dots{}")
         (user "alice")
         (private-key
@@ -1074,8 +1083,8 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @noindent
 In the example above we specify a list of two build machines, one for
-the @code{x86_64} architecture and one for the @code{aarch64}
-architecture.
+the @code{x86_64} and @code{i686} architectures and one for the
+@code{aarch64} architecture.
 
 In fact, this file is---not surprisingly!---a Scheme file that is
 evaluated when the @code{offload} hook is started.  Its return value
@@ -1095,8 +1104,9 @@ builds.  The important fields are:
 @item name
 The host name of the remote machine.
 
-@item system
-The system type of the remote machine---e.g., @code{"x86_64-linux"}.
+@item systems
+The system types the remote machine supports---e.g., @code{(list
+"x86_64-linux" "i686-linux")}.
 
 @item user
 The user account to use when connecting to the remote machine over SSH.
@@ -2472,7 +2482,8 @@ as.  This means that if you choose to use @command{guix system reconfigure} in
 root's login shell, you'll need to @command{guix pull} separately.
 @end quotation
 
-Join us on @code{#guix} on the Freenode IRC network or on
+Now, @pxref{Getting Started}, and
+join us on @code{#guix} on the Freenode IRC network or on
 @email{guix-devel@@gnu.org} to share your experience!
 
 
@@ -2560,6 +2571,210 @@ guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-wit
 board, a list of possible boards will be printed.
 
 @c *********************************************************************
+@node Getting Started
+@chapter Getting Started
+
+Presumably, you've reached this section because either you have
+installed Guix on top of another distribution (@pxref{Installation}), or
+you've installed the standalone Guix System (@pxref{System
+Installation}).  It's time for you to get started using Guix and this
+section aims to help you do that and give you a feel of what it's like.
+
+Guix is about installing software, so probably the first thing you'll
+want to do is to actually look for software.  Let's say you're looking
+for a text editor, you can run:
+
+@example
+guix search text editor
+@end example
+
+This command shows you a number of matching @dfn{packages}, each time
+showing the package's name, version, a description, and additional info.
+Once you've found out the one you want to use, let's say Emacs (ah ha!),
+you can go ahead and install it (run this command as a regular user,
+@emph{no need for root privileges}!):
+
+@example
+guix install emacs
+@end example
+
+You've installed your first package, congrats!  In the process, you've
+probably noticed that Guix downloaded pre-built binaries; or, if you
+explicitly chose to @emph{not} use pre-built binaries, then probably
+Guix is still building software (@pxref{Substitutes}, for more info).
+
+Unless you're using Guix System, the @command{guix install} command must
+have printed this hint:
+
+@example
+hint: Consider setting the necessary environment variables by running:
+
+     GUIX_PROFILE="$HOME/.guix-profile"
+     . "$GUIX_PROFILE/etc/profile"
+
+Alternately, see `guix package --search-paths -p "$HOME/.guix-profile"'.
+@end example
+
+Indeed, you must now tell your shell where @command{emacs} and other
+programs installed with Guix are to be found.  Pasting the two lines
+above will do just that: it will add
+@code{$HOME/.guix-profile/bin}---which is where the installed package
+is---to the @code{PATH} environment variable.  You can paste these two
+lines in your shell so they take effect right away, but more importantly
+you should add them to @file{~/.bash_profile} (or equivalent file if you
+do not use Bash) so that environment variables are set next time you
+spawn a shell.  You only need to do this once and other search paths
+environment variables will be taken care of similarly---e.g., if you
+eventually install @code{python} and Python libraries, @code{PYTHONPATH}
+will be defined.
+
+You can go on installing packages at your will.  To list installed
+packages, run:
+
+@example
+guix package --list-installed
+@end example
+
+To remove a package, you would unsurprisingly run @command{guix remove}.
+A distinguishing feature is the ability to @dfn{roll back} any operation
+you made---installation, removal, upgrade---by simply typing:
+
+@example
+guix package --roll-back
+@end example
+
+This is because each operation is in fact a @dfn{transaction} that
+creates a new @dfn{generation}.  These generations and the difference
+between them can be displayed by running:
+
+@example
+guix package --list-generations
+@end example
+
+Now you know the basics of package management!
+
+@quotation Going further
+@xref{Package Management}, for more about package management.  You may
+like @dfn{declarative} package management with @command{guix package
+--manifest}, managing separate @dfn{profiles} with @option{--profile},
+deleting old generations, collecting garbage, and other nifty features
+that will come in handy as you become more familiar with Guix.  If you
+are a developer, @pxref{Development} for additional tools.  And if
+you're curious, @pxref{Features}, to peek under the hood.
+@end quotation
+
+Once you've installed a set of packages, you will want to periodically
+@emph{upgrade} them to the latest and greatest version.  To do that, you
+will first pull the latest revision of Guix and its package collection:
+
+@example
+guix pull
+@end example
+
+The end result is a new @command{guix} command, under
+@file{~/.config/guix/current/bin}.  Unless you're on Guix System, the
+first time you run @command{guix pull}, be sure to follow the hint that
+the command prints and, similar to what we saw above, paste these two
+lines in your terminal and @file{.bash_profile}:
+
+@example
+GUIX_PROFILE="$HOME/.config/guix/current/etc/profile"
+. "$GUIX_PROFILE/etc/profile"
+@end example
+
+@noindent
+You must also instruct your shell to point to this new @command{guix}:
+
+@example
+hash guix
+@end example
+
+At this point, you're running a brand new Guix.  You can thus go ahead
+and actually upgrade all the packages you previously installed:
+
+@example
+guix upgrade
+@end example
+
+As you run this command, you will see that binaries are downloaded (or
+perhaps some packages are built), and eventually you end up with the
+upgraded packages.  Should one of these upgraded packages not be to your
+liking, remember you can always roll back!
+
+You can display the exact revision of Guix you're currently using by
+running:
+
+@example
+guix describe
+@end example
+
+The information it displays is @emph{all it takes to reproduce the exact
+same Guix}, be it at a different point in time or on a different
+machine.
+
+@quotation Going further
+@xref{Invoking guix pull}, for more information.  @xref{Channels}, on
+how to specify additional @dfn{channels} to pull packages from, how to
+replicate Guix, and more.  You may also find @command{time-machine}
+handy (@pxref{Invoking guix time-machine}).
+@end quotation
+
+If you installed Guix System, one of the first things you'll want to do
+is to upgrade your system.  Once you've run @command{guix pull} to get
+the latest Guix, you can upgrade the system like this:
+
+@example
+sudo guix system reconfigure /etc/config.scm
+@end example
+
+Upon completion, the system runs the latest versions of its software
+packages.  When you eventually reboot, you'll notice a sub-menu in the
+bootloader that reads ``Old system generations'': it's what allows you
+to boot @emph{an older generation of your system}, should the latest
+generation be ``broken'' or otherwise unsatisfying.  Just like for
+packages, you can always @emph{roll back} to a previous generation
+@emph{of the whole system}:
+
+@example
+sudo guix system roll-back
+@end example
+
+There are many things you'll probably want to tweak on your system:
+adding new user accounts, adding new system services, fiddling with the
+configuration of those services, etc.  The system configuration is
+@emph{entirely} described in the @file{/etc/config.scm} file.
+@xref{Using the Configuration System}, to learn how to change it.
+
+Now you know enough to get started!
+
+@quotation Resources
+The rest of this manual provides a reference for all things Guix.  Here
+are some additional resources you may find useful:
+
+@itemize
+@item
+@xref{Top,,, guix-cookbook, The GNU Guix Cookbook}, for a list of
+``how-to'' style of recipes for a variety of applications.
+
+@item
+The @uref{https://guix.gnu.org/guix-refcard.pdf, GNU Guix Reference
+Card} lists in two pages most of the commands and options you'll ever
+need.
+
+@item
+The web site contains @uref{https://guix.gnu.org/en/videos/,
+instructional videos} covering topics such as everyday use of Guix, how
+to get help, and how to become a contributor.
+
+@item
+@xref{Documentation}, to learn how to access documentation on your
+computer.
+@end itemize
+
+We hope you will enjoy Guix as much as the community enjoys building it!
+@end quotation
+
+@c *********************************************************************
 @node Package Management
 @chapter Package Management
 
@@ -2597,6 +2812,10 @@ guix install emacs-guix
 
 @node Features
 @section Features
+
+Here we assume you've already made your first steps with Guix
+(@pxref{Getting Started}) and would like to get an overview about what's
+going on under the hood.
 
 When using Guix, each package ends up in the @dfn{package store}, in its
 own directory---something that resembles
@@ -4358,6 +4577,12 @@ something like this:
          (body (en "Don't miss the @@code@{hello@} package!"))))
 @end lisp
 
+While the news file is using the Scheme syntax, avoid naming it with a
+@file{.scm} extension or else it will get picked up when building the
+channel and yield an error since it is not a valid module.
+Alternatively, you can move the channel module to a subdirectory and
+store the news file in another directory.
+
 The file consists of a list of @dfn{news entries}.  Each entry is
 associated with a commit or tag: it describes changes made in this
 commit, possibly in preceding commits as well.  Users see entries only
@@ -4376,7 +4601,7 @@ you write news entries in English first, the command below creates a PO
 file containing the strings to translate:
 
 @example
-xgettext -o news.po -l scheme -ken etc/news.scm
+xgettext -o news.po -l scheme -ken etc/news.txt
 @end example
 
 To sum up, yes, you could use your channel as a blog.  But beware, this
@@ -8317,10 +8542,12 @@ This is the declarative counterpart of @code{text-file}.
 @end deffn
 
 @deffn {Scheme Procedure} computed-file @var{name} @var{gexp} @
-          [#:options '(#:local-build? #t)]
+          [#:local-build? #t]
+          [#:options '()]
 Return an object representing the store item @var{name}, a file or
-directory computed by @var{gexp}.  @var{options}
-is a list of additional arguments to pass to @code{gexp->derivation}.
+directory computed by @var{gexp}.  When @var{local-build?} is true (the
+default), the derivation is built locally.  @var{options} is a list of
+additional arguments to pass to @code{gexp->derivation}.
 
 This is the declarative counterpart of @code{gexp->derivation}.
 @end deffn
@@ -11938,7 +12165,7 @@ If the @code{users} list lacks a user account with UID@tie{}0, a
 ``root'' account with UID@tie{}0 is automatically added.
 
 @item @code{skeletons} (default: @code{(default-skeletons)})
-A list target file name/file-like object tuples (@pxref{G-Expressions,
+A list of target file name/file-like object tuples (@pxref{G-Expressions,
 file-like objects}).  These are the skeleton files that will be added to
 the home directory of newly-created user accounts.
 
@@ -11956,8 +12183,15 @@ A string denoting the contents of the @file{/etc/issue} file, which is
 displayed when users log in on a text console.
 
 @item @code{packages} (default: @code{%base-packages})
-The set of packages installed in the global profile, which is accessible
-at @file{/run/current-system/profile}.
+A list of packages to be installed in the global profile, which is accessible
+at @file{/run/current-system/profile}.  Each element is either a package
+variable or a package/output tuple.  Here's a simple example of both:
+
+@lisp
+(cons* git                     ; the default "out" output
+       (list git "send-email") ; another output of git
+       %base-packages)         ; the default set
+@end lisp
 
 The default set includes core utilities and it is good practice to
 install non-core utilities in user profiles (@pxref{Invoking guix
@@ -12159,6 +12393,12 @@ errors before being mounted.
 @item @code{create-mount-point?} (default: @code{#f})
 When true, the mount point is created if it does not exist yet.
 
+@item @code{mount-may-fail?} (default: @code{#f})
+When true, this indicates that mounting this file system can fail but
+that should not be considered an error.  This is useful in unusual
+cases; an example of this is @code{efivarfs}, a file system that can
+only be mounted on EFI/UEFI systems.
+
 @item @code{dependencies} (default: @code{'()})
 This is a list of @code{<file-system>} or @code{<mapped-device>} objects
 representing file systems that must be mounted or mapped devices that
@@ -12172,6 +12412,19 @@ Another example is a file system that depends on a mapped device, for
 example for an encrypted partition (@pxref{Mapped Devices}).
 @end table
 @end deftp
+
+@deffn {Scheme Procedure} file-system-label @var{str}
+This procedure returns an opaque file system label from @var{str}, a
+string:
+
+@lisp
+(file-system-label "home")
+@result{} #<file-system-label "home">
+@end lisp
+
+File system labels are used to refer to file systems by label rather
+than by device name.  See above for examples.
+@end deffn
 
 The @code{(gnu system file-systems)} exports the following useful
 variables.
@@ -12218,6 +12471,29 @@ The @code{fusectl} file system, which allows unprivileged users to mount
 and unmount user-space FUSE file systems.  This requires the
 @code{fuse.ko} kernel module to be loaded.
 @end defvr
+
+The @code{(gnu system uuid)} module provides tools to deal with file
+system ``unique identifiers'' (UUIDs).
+
+@deffn {Scheme Procedure} uuid @var{str} [@var{type}]
+Return an opaque UUID (unique identifier) object of the given @var{type}
+(a symbol) by parsing @var{str} (a string):
+
+@lisp
+(uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")
+@result{} #<<uuid> type: dce bv: @dots{}>
+
+(uuid "1234-ABCD" 'fat)
+@result{} #<<uuid> type: fat bv: @dots{}>
+@end lisp
+
+@var{type} may be one of @code{dce}, @code{iso9660}, @code{fat},
+@code{ntfs}, or one of the commonly found synonyms for these.
+
+UUIDs are another way to unambiguously refer to file systems in
+operating system configuration.  See the examples above.
+@end deffn
+
 
 @node Btrfs file system
 @subsection Btrfs file system
@@ -12926,6 +13202,7 @@ declaration.
 * Scheduled Job Execution::     The mcron service.
 * Log Rotation::                The rottlog service.
 * Networking Services::         Network setup, SSH daemon, etc.
+* Unattended Upgrades::         Automated system upgrades.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
@@ -15142,7 +15419,7 @@ a positive integer, ports @var{n} and @var{n}+1 are used for
 monitoring the connection, such that port @var{n} is the base
 monitoring port and @code{n+1} is the echo port.  When set to
 @code{"@var{n}:@var{m}"} where @var{n} and @var{m} are positive
-integers, the ports @var{n} and @var{n}+1 are used for monitoring the
+integers, the ports @var{n} and @var{m} are used for monitoring the
 connection, such that port @var{n} is the base monitoring port and
 @var{m} is the echo port.
 
@@ -15295,6 +15572,140 @@ is @code{proto:kitename:host:port:secret}.
 Extra configuration file to read, which you are expected to create manually.
 Use this to add additional options and manage shared secrets out-of-band.
 
+@end table
+@end deftp
+
+@node Unattended Upgrades
+@subsection Unattended Upgrades
+
+@cindex unattended upgrades
+@cindex upgrades, unattended
+Guix provides a service to perform @emph{unattended upgrades}:
+periodically, the system automatically reconfigures itself from the
+latest Guix.  Guix System has several properties that make unattended
+upgrades safe:
+
+@itemize
+@item
+upgrades are transactional (either the upgrade succeeds or it fails, but
+you cannot end up with an ``in-between'' system state);
+@item
+the upgrade log is kept---you can view it with @command{guix system
+list-generations}---and you can roll back to any previous generation,
+should the upgraded system fail to behave as intended;
+@item
+channel code is authenticated so you know you can only run genuine code
+(@pxref{Channels});
+@item
+@command{guix system reconfigure} prevents downgrades, which makes it
+immune to @dfn{downgrade attacks}.
+@end itemize
+
+To set up unattended upgrades, add an instance of
+@code{unattended-upgrade-service-type} like the one below to the list of
+your operating system services:
+
+@lisp
+(service unattended-upgrade-service-type)
+@end lisp
+
+The defaults above set up weekly upgrades: every Sunday at midnight.
+You do not need to provide the operating system configuration file: it
+uses @file{/run/current-system/configuration.scm}, which ensures it
+always uses your latest configuration---@pxref{provenance-service-type},
+for more information about this file.
+
+There are several things that can be configured, in particular the
+periodicity and services (daemons) to be restarted upon completion.
+When the upgrade is successful, the service takes care of deleting
+system generations older that some threshold, as per @command{guix
+system delete-generations}.  See the reference below for details.
+
+To ensure that upgrades are actually happening, you can run
+@command{guix system describe}.  To investigate upgrade failures, visit
+the unattended upgrade log file (see below).
+
+@defvr {Scheme Variable} unattended-upgrade-service-type
+This is the service type for unattended upgrades.  It sets up an mcron
+job (@pxref{Scheduled Job Execution}) that runs @command{guix system
+reconfigure} from the latest version of the specified channels.
+
+Its value must be a @code{unattended-upgrade-configuration} record (see
+below).
+@end defvr
+
+@deftp {Data Type} unattended-upgrade-configuration
+This data type represents the configuration of the unattended upgrade
+service.  The following fields are available:
+
+@table @asis
+@item @code{schedule} (default: @code{"30 01 * * 0"})
+This is the schedule of upgrades, expressed as a gexp containing an
+mcron job schedule (@pxref{Guile Syntax, mcron job specifications,,
+mcron, GNU@tie{}mcron}).
+
+@item @code{channels} (default: @code{#~%default-channels})
+This gexp specifies the channels to use for the upgrade
+(@pxref{Channels}).  By default, the tip of the official @code{guix}
+channel is used.
+
+@item @code{operating-system-file} (default: @code{"/run/current-system/configuration.scm"})
+This field specifies the operating system configuration file to use.
+The default is to reuse the config file of the current configuration.
+
+There are cases, though, where referring to
+@file{/run/current-system/configuration.scm} is not enough, for instance
+because that file refers to extra files (SSH public keys, extra
+configuration files, etc.) @i{via} @code{local-file} and similar
+constructs.  For those cases, we recommend something along these lines:
+
+@lisp
+(unattended-upgrade-configuration
+  (operating-system-file
+    (file-append (local-file "." "config-dir" #:recursive? #t)
+                 "/config.scm")))
+@end lisp
+
+The effect here is to import all of the current directory into the
+store, and to refer to @file{config.scm} within that directory.
+Therefore, uses of @code{local-file} within @file{config.scm} will work
+as expected.  @xref{G-Expressions}, for information about
+@code{local-file} and @code{file-append}.
+
+@item @code{services-to-restart} (default: @code{'(mcron)})
+This field specifies the Shepherd services to restart when the upgrade
+completes.
+
+Those services are restarted right away upon completion, as with
+@command{herd restart}, which ensures that the latest version is
+running---remember that by default @command{guix system reconfigure}
+only restarts services that are not currently running, which is
+conservative: it minimizes disruption but leaves outdated services
+running.
+
+By default, the @code{mcron} service is restarted.  This ensures that
+the latest version of the unattended upgrade job will be used next time.
+
+@item @code{system-expiration} (default: @code{(* 3 30 24 3600)})
+This is the expiration time in seconds for system generations.  System
+generations older that this amount of time are deleted with
+@command{guix system delete-generations} when an upgrade completes.
+
+@quotation Note
+The unattended upgrade service does not run the garbage collector.  You
+will probably want to set up your own mcron job to run @command{guix gc}
+periodically.
+@end quotation
+
+@item @code{maximum-duration} (default: @code{3600})
+Maximum duration in seconds for the upgrade; past that time, the upgrade
+aborts.
+
+This is primarily useful to ensure the upgrade does not end up
+rebuilding or re-downloading ``the world''.
+
+@item @code{log-file} (default: @code{"/var/log/unattended-upgrade.log"})
+File where unattended upgrades are logged.
 @end table
 @end deftp
 
@@ -17141,6 +17552,24 @@ server.
 The PostgreSQL daemon loads its runtime configuration from @var{config-file},
 creates a database cluster with @var{locale} as the default
 locale, stored in @var{data-directory}.  It then listens on @var{port}.
+
+If the services fails to start, it may be due to an incompatible
+cluster already present in @var{data-directory}.  Adjust it (or, if you
+don't need the cluster anymore, delete @var{data-directory}), then
+restart the service.
+
+Peer authentication is used by default and the @code{postgres} user
+account has no shell, which prevents the direct execution of @code{psql}
+commands as this user.  To use @code{psql}, you can temporarily log in
+as @code{postgres} using a shell, create a PostgreSQL superuser with the
+same name as one of the system users and then create the associated
+database.
+
+@example
+sudo -u postgres -s /bin/sh
+createuser --interactive
+createdb $MY_USER_LOGIN      # Replace appropriately.
+@end example
 
 @cindex postgresql extension-packages
 Additional extensions are loaded from packages listed in
@@ -23508,16 +23937,16 @@ source is detected.  More information can be found at
 @uref{https://linrunner.de/en/tlp/tlp.html, TLP home page}.
 
 @deffn {Scheme Variable} tlp-service-type
-The service type for the TLP tool.  Its value should be a valid
-TLP configuration (see below).  To use the default settings, simply
-write:
+The service type for the TLP tool.  The default settings are optimised
+for battery life on most systems, but you can tweak them to your heart's
+content by adding a valid @code{tlp-configuration}:
 @lisp
-(service tlp-service-type)
+(service tlp-service-type
+         (tlp-configuration
+          (cpu-scaling-governor-on-ac (list "performance"))
+          (sched-powersave-on-bat? #t)))
 @end lisp
 @end deffn
-
-By default TLP does not need much configuration but most TLP parameters
-can be tweaked using @code{tlp-configuration}.
 
 Each parameter definition is preceded by its type; for example,
 @samp{boolean foo} indicates that the @code{foo} parameter
@@ -24852,7 +25281,7 @@ Maximum number of backup files to keep.
 Defaults to @samp{3}
 
 @end deftypevr
-
+@node Transparent Emulation with QEMU
 @subsubheading Transparent Emulation with QEMU
 
 @cindex emulation
@@ -24943,6 +25372,7 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 
 @cindex @code{hurd}
 @cindex the Hurd
+@cindex childhurd
 
 Service @code{hurd-vm} provides support for running GNU/Hurd in a
 virtual machine (VM), a so-called ``Childhurd''.  The virtual machine is
@@ -25015,14 +25445,40 @@ By default, it produces
 @lisp
 '("--device" "rtl8139,netdev=net0"
   "--netdev" "user,id=net0\
+              ,hostfwd=tcp:127.0.0.1:<secrets-port>-:1004\
               ,hostfwd=tcp:127.0.0.1:<ssh-port>-:2222\
               ,hostfwd=tcp:127.0.0.1:<vnc-port>-:5900")
 @end lisp
 with forwarded ports
 @example
+<ssh-port>: @code{(+ 11004 (* 1000 @var{ID}))}
 <ssh-port>: @code{(+ 10022 (* 1000 @var{ID}))}
 <vnc-port>: @code{(+ 15900 (* 1000 @var{ID}))}
 @end example
+
+@item @code{secret-root} (default: @file{/etc/childhurd})
+The root directory with out-of-band secrets to be installed into the
+childhurd once it runs.  Childhurds are volatile which means that on
+every startup, secrets such as the SSH host keys and Guix signing key
+are recreated.
+
+If the @file{/etc/childhurd} directory does not exist, the
+@code{secret-service} running in the Childhurd will be sent an empty
+list of secrets.
+
+Typical use to populate @file{"/etc/childhurd"} with a tree of
+non-volatile secrets, like so
+
+@example
+/etc/childhurd/etc/guix/signing-key.pub
+/etc/childhurd/etc/guix/signing-key.sec
+/etc/childhurd/etc/ssh/ssh_host_ed25519_key
+/etc/childhurd/etc/ssh/ssh_host_ecdsa_key
+/etc/childhurd/etc/ssh/ssh_host_ed25519_key.pub
+/etc/childhurd/etc/ssh/ssh_host_ecdsa_key.pub
+@end example
+
+to be sent to the Childhurd, including permissions.
 
 @end table
 @end deftp
@@ -25455,7 +25911,7 @@ When true, the daemon performs additional logging for debugging purposes.
 @defvr {Scheme Variable} ganeti-luxid-service-type
 @command{ganeti-luxid} is a daemon used to answer queries related to the
 configuration and the current live state of a Ganeti cluster.  Additionally,
-it is the authorative daemon for the Ganeti job queue.   Jobs can be
+it is the authoritative daemon for the Ganeti job queue.   Jobs can be
 submitted via this daemon and it schedules and starts them.
 
 It takes a @code{ganeti-luxid-configuration} object.
@@ -27147,6 +27603,51 @@ parameters, can be done as follow:
 @end lisp
 @end deffn
 
+@cindex zram
+@cindex compressed swap
+@cindex Compressed RAM-based block devices
+@subsubheading Zram Device Service
+
+The Zram device service provides a compressed swap device in system
+memory.  The Linux Kernel documentation has more information about
+@uref{https://www.kernel.org/doc/html/latest/admin-guide/blockdev/zram.html,zram}
+devices.
+
+@deffn {Scheme Variable} zram-device-service-type
+This service creates the zram block device, formats it as swap and
+enables it as a swap device.  The service's value is a
+@code{zram-device-configuration} record.
+
+@deftp {Data Type} zram-device-configuration
+This is the data type representing the configuration for the zram-device
+service.
+
+@table @asis
+@item @code{size} (default @var{"1G"})
+This is the amount of space you wish to provide for the zram device.  It
+accepts a string and can be a number of bytes or use a suffix, eg.:
+@var{"512M"} or @var{1024000}.
+@item @code{compression-algorithm} (default @var{'lzo})
+This is the compression algorithm you wish to use.  It is difficult to
+list all the possible compression options, but common ones supported by
+Guix's Linux Libre Kernel include @var{'lzo}, @var{'lz4} and @var{'zstd}.
+@item @code{memory-limit} (default @var{0})
+This is the maximum amount of memory which the zram device can use.
+Setting it to '0' disables the limit.  While it is generally expected
+that compression will be 2:1, it is possible that uncompressable data
+can be written to swap and this is a method to limit how much memory can
+be used.  It accepts a string and can be a number of bytes or use a
+suffix, eg.: @var{"2G"}.
+@item @code{priority} (default @var{-1})
+This is the priority of the swap device created from the zram device.
+@code{swapon} accepts values between -1 and 32767, with higher values
+indicating higher priority.  Higher priority swap will generally be used
+first.
+@end table
+
+@end deftp
+@end deffn
+
 @node Hurd Services
 @subsection Hurd Services
 
@@ -27466,6 +27967,9 @@ Enable or disable the use of the Docker user-land networking proxy.
 @item @code{debug?} (default @code{#f})
 Enable or disable debug output.
 
+@item @code{enable-iptables?} (default @code{#t})
+Enable or disable the addition of iptables rules.
+
 @end table
 @end deftp
 
@@ -27500,10 +28004,12 @@ Network access
 @command{auditctl} from the @code{audit} package can be used in order
 to add or remove events to be tracked (until the next reboot).
 In order to permanently track events, put the command line arguments
-of auditctl into @file{/etc/audit/audit.rules}.
+of auditctl into a file called @code{audit.rules} in the configuration
+directory (see below).
 @command{aureport} from the @code{audit} package can be used in order
 to view a report of all recorded events.
-The audit daemon usually logs into the directory @file{/var/log/audit}.
+The audit daemon by default logs into the file
+@file{/var/log/audit.log}.
 
 @end defvr
 
@@ -27514,6 +28020,11 @@ This is the data type representing the configuration of auditd.
 
 @item @code{audit} (default: @code{audit})
 The audit package to use.
+
+@item @code{configuration-directory} (default: @code{%default-auditd-configuration-directory})
+The directory containing the configuration file for the audit package, which
+must be named @code{auditd.conf}, and optionally some audit rules to
+instantiate on startup.
 
 @end table
 @end deftp
@@ -27561,7 +28072,7 @@ The common way to create this file is as follows:
        (app       (string-append out "/bin/" ,name))
        (Rbin      (string-append (assoc-ref %build-inputs "r-min")
                                  "/bin/Rscript")))
-@dots{}
+  ;; @dots{}
   (mkdir-p (string-append out "/bin"))
   (call-with-output-file app
     (lambda (port)
@@ -27570,8 +28081,7 @@ The common way to create this file is as follows:
 library(shiny)
 setwd(\"~a\")
 runApp(launch.browser=0, port=4202)~%\n"
-      Rbin targetdir)))
-@dots{}
+      Rbin targetdir))))
 @end lisp
 
 @end table
@@ -27637,6 +28147,9 @@ This is a list of strings or objects appended to the
 This is a list of strings or objects appended to the configuration file.
 It is used to pass extra text to be added verbatim to the configuration
 file.
+
+@item @code{extra-options} (default: @code{'()})
+Extra command line options for @code{nix-service-type}.
 @end table
 @end deftp
 
@@ -28602,7 +29115,9 @@ the @option{--image-size} option is ignored in the case of
 @code{docker-image}.
 
 You can specify the root file system type by using the
-@option{--file-system-type} option.  It defaults to @code{ext4}.
+@option{--file-system-type} option.  It defaults to @code{ext4}.  When its
+value is @code{iso9660}, the @option{--label} option can be used to specify
+a volume ID with @code{disk-image}.
 
 When using @code{vm-image}, the returned image is in qcow2 format, which
 the QEMU emulator can efficiently use. @xref{Running Guix in a VM},
@@ -29030,6 +29545,16 @@ When @code{host-key} is @code{#f}, the server is authenticated against
 the @file{~/.ssh/known_hosts} file, just like the OpenSSH @command{ssh}
 client does.
 
+@item @code{allow-downgrades?} (default: @code{#f})
+Whether to allow potential downgrades.
+
+Like @command{guix system reconfigure}, @command{guix deploy} compares
+the channel commits currently deployed on the remote host (as returned
+by @command{guix system describe}) to those currently in use (as
+returned by @command{guix describe}) to determine whether commits
+currently in use are descendants of those deployed.  When this is not
+the case and @code{allow-downgrades?} is false, it raises an error.
+This ensures you do not accidentally downgrade remote machines.
 @end table
 @end deftp
 
@@ -29526,6 +30051,23 @@ calls it, passing it the initial value of the service as the first
 argument and the result of applying @code{compose} to the extension
 values as the second argument.  It must return a value that is a valid
 parameter value for the service instance.
+
+@item @code{description}
+This is a string, possibly using Texinfo markup, describing in a couple
+of sentences what the service is about.  This string allows users to
+find about the service through @command{guix system search}
+(@pxref{Invoking guix system}).
+
+@item @code{default-value} (default: @code{&no-default-value})
+The default value associated for instances of this service type.  This
+allows users to use the @code{service} form without its second argument:
+
+@lisp
+(service @var{type})
+@end lisp
+
+The returned service in this case has the default value specified by
+@var{type}.
 @end table
 
 @xref{Service Types and Services}, for examples.
@@ -29615,6 +30157,7 @@ extend it by passing it lists of packages to add to the system profile.
 @end defvr
 
 @cindex provenance tracking, of the operating system
+@anchor{provenance-service-type}
 @defvr {Scheme Variable} provenance-service-type
 This is the type of the service that records @dfn{provenance meta-data}
 in the system itself.  It creates several files under

@@ -35,8 +35,8 @@
   #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (gcrypt pk-crypto)
   #:use-module ((guix pki) #:select (%public-key-file %private-key-file))
-  #:use-module (guix zlib)
-  #:use-module (guix lzlib)
+  #:use-module (zlib)
+  #:use-module (lzlib)
   #:use-module (web uri)
   #:use-module (web client)
   #:use-module (web response)
@@ -204,8 +204,6 @@ References: ~%"
        (call-with-input-string nar (cut restore-file <> temp)))
      (call-with-input-file temp read-string))))
 
-(unless (zlib-available?)
-  (test-skip 1))
 (test-equal "/nar/gzip/*"
   "bar"
   (call-with-temporary-output-file
@@ -217,8 +215,6 @@ References: ~%"
          (cut restore-file <> temp)))
      (call-with-input-file temp read-string))))
 
-(unless (zlib-available?)
-  (test-skip 1))
 (test-equal "/nar/gzip/* is really gzip"
   %gzip-magic-bytes
   ;; Since 'gzdopen' (aka. 'call-with-gzip-input-port') transparently reads
@@ -229,8 +225,6 @@ References: ~%"
                (string-append "/nar/gzip/" (basename %item))))))
     (get-bytevector-n nar (bytevector-length %gzip-magic-bytes))))
 
-(unless (lzlib-available?)
-  (test-skip 1))
 (test-equal "/nar/lzip/*"
   "bar"
   (call-with-temporary-output-file
@@ -242,8 +236,6 @@ References: ~%"
          (cut restore-file <> temp)))
      (call-with-input-file temp read-string))))
 
-(unless (zlib-available?)
-  (test-skip 1))
 (test-equal "/*.narinfo with compression"
   `(("StorePath" . ,%item)
     ("URL" . ,(string-append "nar/gzip/" (basename %item)))
@@ -264,8 +256,6 @@ References: ~%"
                   (_ #f)))
               (recutils->alist body)))))
 
-(unless (lzlib-available?)
-  (test-skip 1))
 (test-equal "/*.narinfo with lzip compression"
   `(("StorePath" . ,%item)
     ("URL" . ,(string-append "nar/lzip/" (basename %item)))
@@ -286,8 +276,6 @@ References: ~%"
                   (_ #f)))
               (recutils->alist body)))))
 
-(unless (zlib-available?)
-  (test-skip 1))
 (test-equal "/*.narinfo for a compressed file"
   '("none" "nar")          ;compression-less nar
   ;; Assume 'guix publish -C' is already running on port 6799.
@@ -300,8 +288,6 @@ References: ~%"
     (list (assoc-ref info "Compression")
           (dirname (assoc-ref info "URL")))))
 
-(unless (and (zlib-available?) (lzlib-available?))
-  (test-skip 1))
 (test-equal "/*.narinfo with lzip + gzip"
   `((("StorePath" . ,%item)
      ("URL" . ,(string-append "nar/gzip/" (basename %item)))
@@ -411,8 +397,6 @@ References: ~%"
                               (call-with-input-string "" port-sha256))))))
     (response-code (http-get uri))))
 
-(unless (zlib-available?)
-  (test-skip 1))
 (test-equal "with cache"
   (list #t
         `(("StorePath" . ,%item)
@@ -469,8 +453,6 @@ References: ~%"
                          (stat:size (stat nar)))
                       (response-code uncompressed)))))))))
 
-(unless (and (zlib-available?) (lzlib-available?))
-  (test-skip 1))
 (test-equal "with cache, lzip + gzip"
   '(200 200 404)
   (call-with-temporary-directory
@@ -515,8 +497,6 @@ References: ~%"
                       (response-code
                        (http-get uncompressed))))))))))
 
-(unless (zlib-available?)
-  (test-skip 1))
 (let ((item (add-text-to-store %store "fake-compressed-thing.tar.gz"
                                (random-text))))
   (test-equal "with cache, uncompressed"
@@ -596,9 +576,7 @@ References: ~%"
               (item     (add-text-to-store %store "random" (random-text)))
               (part     (store-path-hash-part item))
               (url      (string-append base part ".narinfo"))
-              (cached   (string-append cache
-                                       (if (zlib-available?)
-                                           "/gzip/" "/none/")
+              (cached   (string-append cache "/gzip/"
                                        (basename item)
                                        ".narinfo"))
               (response (http-get url)))

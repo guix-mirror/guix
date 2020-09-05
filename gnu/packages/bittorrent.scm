@@ -375,17 +375,16 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.2.7")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "https://github.com/arvidn/libtorrent/releases/download/libtorrent_"
-                (string-join (string-split version #\.) "_")
-                "/libtorrent-rasterbar-" version ".tar.gz"))
-              (sha256
-               (base32
-                "001g35janbxi20c7jzsf3ii9mkagz4kdsp7f3sz5r0n0cng0c05w"))))
+    (version "1.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/arvidn/libtorrent/"
+                       "releases/download/libtorrent-" version "/"
+                       "libtorrent-rasterbar-" version ".tar.gz"))
+       (sha256
+        (base32 "1phn4klzvfzvidv5g566pnrrxj8l0givpy6s4r17d45wznqxc006"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -402,9 +401,9 @@ and will take advantage of multiple processor cores where possible.")
     (native-inputs `(("python" ,python-wrapper)
                      ("pkg-config" ,pkg-config)))
     (home-page "https://www.libtorrent.org/")
-    (synopsis "Feature complete BitTorrent implementation")
+    (synopsis "Feature-complete BitTorrent implementation")
     (description
-     "libtorrent-rasterbar is a feature complete C++ BitTorrent implementation
+     "libtorrent-rasterbar is a feature-complete C++ BitTorrent implementation
 focusing on efficiency and scalability.  It runs on embedded devices as well as
 desktops.")
     (license l:bsd-2)))

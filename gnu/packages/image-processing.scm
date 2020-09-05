@@ -4,12 +4,13 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -67,6 +69,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -163,6 +166,78 @@ without compromising the original code base and it makes use of a wide variety
 of external libraries that provide additional functionality.")
     (license license:gpl3+)))
 
+(define-public opencolorio
+  (package
+    (name "opencolorio")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AcademySoftwareFoundation/OpenColorIO")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "12srvxca51czpfjl0gabpidj9n84mw78ivxy5w75qhq2mmc798sb"))
+       (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           ;; Remove bundled tarballs, patches, and .jars(!).  XXX: Upstream
+           ;; claims to have fixed USE_EXTERNAL_YAML, but it still fails with:
+           ;; https://github.com/AcademySoftwareFoundation/OpenColorIO/issues/517
+           ;; When removing it, also remove it from the licence field comment.
+           (for-each delete-file-recursively
+                     (filter
+                      (lambda (full-name)
+                        (let ((file (basename full-name)))
+                          (not (or (string-prefix? "yaml-cpp-0.3" file)
+                                   (string=? "unittest.h" file)))))
+                      (find-files "ext" ".*")))
+
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCMAKE_CXX_FLAGS="
+                            "-Wno-error=deprecated-declarations "
+                            "-Wno-error=unused-function")
+             "-DOCIO_BUILD_STATIC=OFF"
+             ;; "-DUSE_EXTERNAL_YAML=ON"
+             "-DUSE_EXTERNAL_TINYXML=ON"
+             "-DUSE_EXTERNAL_LCMS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test-suite
+           (lambda _
+             (substitute* "src/core_tests/CMakeLists.txt"
+               (("/bin/sh") (which "bash")))
+             #t)))))
+    (native-inputs
+     `(("git" ,git)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     ;; XXX Adding freeglut, glew, ilmbase, mesa, and openimageio for
+     ;; ocioconvert fails: error: conflicting declaration ?typedef void
+     ;; (* PFNGLGETFRAGMENTMATERIALFVSGIXPROC)(GLenum, GLenum, GLfloat*)
+     `(("lcms" ,lcms)
+       ("openexr" ,openexr)
+       ("tinyxml" ,tinyxml)))
+    (home-page "https://opencolorio.org")
+    (synopsis "Color management for visual effects and animation")
+    (description
+     "OpenColorIO, or OCIO, is a complete color management solution geared
+towards motion picture production, with an emphasis on visual effects and
+computer animation.  It provides a straightforward and consistent user
+experience across all supporting applications while allowing for sophisticated
+back-end configuration options suitable for high-end production usage.
+
+OCIO is compatible with the @acronym{ACES, Academy Color Encoding
+Specification} and is @acronym{LUT, look-up table}-format agnostic, supporting
+many popular formats.")
+    (license (list license:expat        ; docs/ociotheme/static, ext/yaml-cpp-*
+                   license:zlib         ; src/core/md5
+                   license:bsd-3))))    ; the rest
+
 (define-public vtk
   (package
     (name "vtk")
@@ -249,6 +324,8 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
               (sha256
                (base32
                 "06bc61r8myym4s8im10brdjfg4wxkrvsbhhl7vr1msdan2xddzi3"))
+              (patches
+               (search-patches "opencv-fix-build-of-grfmt_jpeg2000.cpp.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -491,14 +568,14 @@ due to its architecture which automatically parallelises the image workflows.")
 (define-public gmic
   (package
     (name "gmic")
-    (version "2.9.1")
+    (version "2.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gmic.eu/files/source/gmic_"
                            version ".tar.gz"))
        (sha256
-        (base32 "13axx7nwchn6ysgpvlw3fib474q4nrwv3qn20g3q03ldid0xvjah"))))
+        (base32 "14acph914a8lp6qqfmp319ggqjg3i3hmalmnpk3mp07m7vpv2p9q"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;there are no tests
@@ -879,3 +956,62 @@ pipeline, along with supporting a manual segmentation toolbox.  ITK-SNAP has a
 full-featured UI aimed at clinical researchers.")
     ;; This includes the submodules greedy and c3d.
     (license license:gpl3+)))
+
+(define-public metapixel
+  ;; Follow stable branch.
+  (let ((commit "98ee9daa093b6c334941242e63f90b1c2876eb4f"))
+    (package
+      (name "metapixel")
+      (version (git-version "1.0.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/schani/metapixel")
+               (commit commit)
+               ;; TODO: Package rwimg and lispreader?
+               (recursive? #t)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r7n3a6bvcxkbpda4mwmrpicii09iql5z69nkjqygkwxw7ny3309"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("giflib" ,giflib)
+         ("libjpeg" ,libjpeg-turbo)
+         ("libpng" ,libpng)
+         ("perl" ,perl)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("docbook-xml" ,docbook-xml)
+         ("docbook-xsl" ,docbook-xsl)
+         ("xsltproc" ,libxslt)))
+      (arguments
+       `(#:tests? #f                    ; No tests.
+         #:make-flags (list
+                       (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                       (string-append "MANPAGE_XSL="
+                                      (assoc-ref %build-inputs "docbook-xsl")
+                                      "/xml/xsl/docbook-xsl-*/manpages/docbook.xsl"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'install 'make-local-docbook-xml
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "metapixel.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/docbookx.dtd")))
+               #t))
+           (add-before 'install 'fix-directory-creation
+             (lambda* (#:key outputs #:allow-other-keys)
+               (mkdir-p (string-append (assoc-ref outputs "out") "/share/man/man1"))
+               #t)))))
+      (home-page "https://www.complang.tuwien.ac.at/schani/metapixel/")
+      (synopsis "Photomosaics generator")
+      (description "Metapixel is a program for generating photomosaics.  It can
+generate classical photomosaics, in which the source image is viewed as a
+matrix of equally sized rectangles for each of which a matching image is
+substitued, as well as collage-style photomosaics, in which rectangular parts
+of the source image at arbitrary positions (i.e. not aligned to a matrix) are
+substituted by matching images.")
+      (license license:gpl2))))

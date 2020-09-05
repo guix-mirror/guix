@@ -79,6 +79,11 @@
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
+         ;; This allows us to call the 'agda' binary before installing.
+         (add-after 'unpack 'set-ld-library-path
+           (lambda _
+             (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/dist/build"))
+             #t))
          ;; FIXME: This is a copy of the standard configure phase with a tiny
          ;; difference: this package needs the -package-db flag to be passed
          ;; to "runhaskell" in addition to the "configure" action, because
@@ -90,30 +95,25 @@
                      #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (name-version (strip-store-file-name out))
-                    (input-dirs (match inputs
-                                  (((_ . dir) ...)
-                                   dir)
-                                  (_ '())))
                     (ghc-path (getenv "GHC_PACKAGE_PATH"))
-                    (params (append `(,(string-append "--prefix=" out))
-                                    `(,(string-append "--libdir=" out "/lib"))
-                                    `(,(string-append "--bindir=" out "/bin"))
-                                    `(,(string-append
-                                        "--docdir=" out
-                                        "/share/doc/" name-version))
-                                    '("--libsubdir=$compiler/$pkg-$version")
-                                    '("--package-db=../package.conf.d")
-                                    '("--global")
-                                    `(,@(map
-                                         (cut string-append "--extra-include-dirs=" <>)
-                                         (search-path-as-list '("include") input-dirs)))
-                                    `(,@(map
-                                         (cut string-append "--extra-lib-dirs=" <>)
-                                         (search-path-as-list '("lib") input-dirs)))
-                                    (if tests?
-                                        '("--enable-tests")
-                                        '())
-                                    configure-flags)))
+                    (params
+                     `(,(string-append "--prefix=" out)
+                       ,(string-append "--libdir=" out "/lib")
+                       ,(string-append "--docdir=" out
+                                       "/share/doc/" name-version)
+                       "--libsubdir=$compiler/$pkg-$version"
+                       "--package-db=../package.conf.d"
+                       "--global"
+                       ,@(if tests?
+                             '("--enable-tests")
+                             '())
+                       ;; Build and link with shared libraries
+                       "--enable-shared"
+                       "--enable-executable-dynamic"
+                       "--ghc-option=-fPIC"
+                       ,(string-append "--ghc-option=-optl=-Wl,-rpath=" out
+                                       "/lib/$compiler/$pkg-$version")
+                       ,@configure-flags)))
                (unsetenv "GHC_PACKAGE_PATH")
                (apply invoke "runhaskell" "-package-db=../package.conf.d"
                       "Setup.hs" "configure" params)

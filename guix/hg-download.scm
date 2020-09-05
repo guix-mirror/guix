@@ -60,35 +60,26 @@
   "Return a fixed-output derivation that fetches REF, a <hg-reference>
 object.  The output is expected to have recursive hash HASH of type
 HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
-  (define zlib
-    (module-ref (resolve-interface '(gnu packages compression)) 'zlib))
-
-  (define config.scm
-    (scheme-file "config.scm"
-                 #~(begin
-                     (define-module (guix config)
-                       #:export (%libz))
-
-                     (define %libz
-                       #+(file-append zlib "/lib/libz")))))
+  (define guile-zlib
+    (module-ref (resolve-interface '(gnu packages guile)) 'guile-zlib))
 
   (define modules
-    (cons `((guix config) => ,config.scm)
-          (delete '(guix config)
-                  (source-module-closure '((guix build hg)
-                                           (guix build download-nar))))))
+    (delete '(guix config)
+            (source-module-closure '((guix build hg)
+                                     (guix build download-nar)))))
 
   (define build
     (with-imported-modules modules
-      #~(begin
-          (use-modules (guix build hg)
-                       (guix build download-nar))
+      (with-extensions (list guile-zlib)
+        #~(begin
+            (use-modules (guix build hg)
+                         (guix build download-nar))
 
-          (or (hg-fetch '#$(hg-reference-url ref)
-                        '#$(hg-reference-changeset ref)
-                        #$output
-                        #:hg-command (string-append #+hg "/bin/hg"))
-              (download-nar #$output)))))
+            (or (hg-fetch '#$(hg-reference-url ref)
+                          '#$(hg-reference-changeset ref)
+                          #$output
+                          #:hg-command (string-append #+hg "/bin/hg"))
+                (download-nar #$output))))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "hg-checkout") build

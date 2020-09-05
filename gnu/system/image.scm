@@ -63,7 +63,8 @@
             iso9660-image
 
             find-image
-            system-image))
+            system-image
+            image-with-label))
 
 
 ;;;
@@ -403,6 +404,20 @@ used in the image. "
     (computed-file name builder
                    #:options `(#:references-graphs ,inputs
                                #:substitutable? ,substitutable?))))
+
+(define (image-with-label base-image label)
+  "The volume ID of an ISO is the label of the first partition.  This procedure
+returns an image record where the first partition's label is set to <label>."
+  (image
+    (inherit base-image)
+    (partitions
+      (match (image-partitions base-image)
+        ((boot others ...)
+         (cons
+           (partition
+             (inherit boot)
+             (label label))
+           others))))))
 
 
 ;;

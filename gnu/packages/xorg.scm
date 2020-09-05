@@ -1,12 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -16,7 +16,7 @@
 ;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
@@ -528,10 +528,10 @@ Resources file.")
 (define-public font-alias
   (package
     (name "font-alias")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (xorg-font-origin
              name version
-             "16ic8wfwwr3jicaml7b5a0sk6plcgc1kg84w02881yhwmqm3nicb"))
+             "0xjjjindczv3g7m1597l0x19zz75xy70wh5garghz61fpzl1l4gk"))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -701,10 +701,10 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
 (define-public font-misc-ethiopic
   (package
     (name "font-misc-ethiopic")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (xorg-font-origin
              name version
-             "19cq7iq0pfad0nc2v28n681fdq3fcw1l1hzaq0wpkgpx7bc1zjsk"))
+             "1q2azkdwc4x3kh53xclwpf9q654k70lhiyns1cjq594wvxnhz339"))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -2703,14 +2703,14 @@ as USB mice.")
 (define-public xf86-video-amdgpu
   (package
     (name "xf86-video-amdgpu")
-    (version "19.0.1")
+    (version "19.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/driver/"
                            "xf86-video-amdgpu-" version ".tar.bz2"))
        (sha256
-        (base32 "1mf6s7i423b2xyl469kwnakrpp5fr41sm8hh7vli5jxdd8crg8da"))))
+        (base32 "0pgy4ihnja0vm8504qw7qxh3pdpa3p9k6967nz15m6b1mvha83jg"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2770,20 +2770,19 @@ X server.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "19.0.1")
+    (version "19.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/driver/"
                            "xf86-video-ati-" version ".tar.bz2"))
        (sha256
-        (base32 "1c31g5q5p3nk9nscwikh1vvfnhdwsxiw7j8v678nlm34hrfh3djw"))))
+        (base32 "0j9w4axsqlycv4v14g53xyhkm9h7d27b2fcv9lrzb9gf54b5m7v5"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (arguments `(#:configure-flags `("--disable-glamor"))) ; TODO: Enable glamor
     (home-page "https://www.x.org/wiki/")
     (synopsis "ATI Radeon video driver for X server")
     (description
@@ -2909,18 +2908,14 @@ It supports a variety of Adreno graphics chipsets.")
 (define-public xf86-video-geode
   (package
     (name "xf86-video-geode")
-    (version "2.11.19")
+    (version "2.11.20")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-geode-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-           "0zn9gb49grds5mcs1dlrx241k2w1sgqmx4i5x7v6159xxqhlqsf6"))
-        (patches (search-patches "xf86-video-geode-glibc-2.20.patch"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/driver/xf86-video-geode-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "0r2dz0agg0k5wrqdbicji6mh6svzyl0xgqk76hpcfdlzn2zx15zl"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -3357,7 +3352,7 @@ Xorg X server.")
 (define-public xf86-video-sis
   (package
     (name "xf86-video-sis")
-    (version "0.10.9")
+    (version "0.12.0")
     (source
       (origin
         (method url-fetch)
@@ -3365,16 +3360,15 @@ Xorg X server.")
                "mirror://xorg/individual/driver/xf86-video-sis-"
                version
                ".tar.bz2"))
-        (patches (search-patches "xf86-video-sis-xorg-compat.patch"))
         (sha256
-          (base32
-           "03f1abjjf68y8y1iz768rn95va9d33wmbwfbsqrgl6k0gi0bf9jj"))))
+         (base32
+          "0nrs6cjldlhakx5987fiiggjrlzilsbdc7l9pz22x1iwslbkz78i"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Sis video driver for X server")
     (description
@@ -5316,6 +5310,7 @@ over Xlib, including:
   (package
     (name "xorg-server")
     (version "1.20.8")
+    (replacement xorg-server/fixed)
     (source
       (origin
         (method url-fetch)
@@ -5439,6 +5434,19 @@ communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
 
+(define xorg-server/fixed  ; security fixes
+  (package
+    (inherit xorg-server)
+    (version "1.20.9")
+    (source
+     (origin
+       (inherit (package-source xorg-server))
+       (uri (string-append "mirror://xorg/individual/xserver/"
+                           "xorg-server-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2"))))))
+
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
 ;; packages with the same name and version.
@@ -5448,8 +5456,7 @@ draggable titlebars and borders.")
      (inherit xorg-server))))
 
 (define-public xorg-server-xwayland
-  (package
-    (inherit xorg-server)
+  (package/inherit xorg-server
     (name "xorg-server-xwayland")
     (inputs
      `(("wayland" ,wayland)
@@ -5472,6 +5479,7 @@ draggable titlebars and borders.")
   (package
     (name "libx11")
     (version "1.6.9")
+    (replacement libx11/fixed)
     (source
       (origin
         (method url-fetch)
@@ -5508,6 +5516,19 @@ draggable titlebars and borders.")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
+
+(define libx11/fixed  ; Fixes CVE-2020-14344
+  (package
+    (inherit libx11)
+    (version "1.6.A")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/lib/libX11-1.6.10.tar.bz2"))
+        (sha256
+          (base32
+            "09k2pqmqbn2m1bpgl7jfxyqxaaxsnzbnp2bp8ycmqldqi5ln4j5g"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 
@@ -6069,7 +6090,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "353")
+    (version "359")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -6079,7 +6100,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                                    "xterm-" version ".tgz")))
               (sha256
                (base32
-                "0s5pkfn4r8iy09s1q1y78zhnr9f3sm6wgbqir7azaqggkppd68g5"))))
+                "0lcjifz027j99zf2dnms0h43xp5zznxr39safrpyarv59jlmdjii"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -6097,6 +6118,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
        ("libICE" ,libice)
        ("libSM" ,libsm)
        ("libX11" ,libx11)
+       ("libXcursor" ,libxcursor)
        ("libXext" ,libxext)
        ("libXt" ,libxt)
        ("xorgproto" ,xorgproto)
@@ -6262,15 +6284,14 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "4.0.2")
+    (version "4.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.xpra.org/src/xpra-"
                            version ".tar.xz"))
        (sha256
-        (base32
-         "1cs39jzi59hkl421xmhi549ndmdfzkg0ap45f4nlsn9zr9zwmp3x"))
+        (base32 "05afdspf51fbya6jg6971i3ddqn8p4mg3v3aaqyi3chx4q1807rp"))
        (patches (search-patches "xpra-4.0.1-systemd-run.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
@@ -6550,46 +6571,32 @@ cursor to any point on the screen with a few key strokes.  It also simulates
 mouse click.  You can do everything mouse can do with a keyboard.")
     (license license:bsd-3)))
 
-(define-public transset-df
+(define-public transset
   (package
-    (name "transset-df")
-    (version "6")
+    (name "transset")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://forchheimer.se/" name "/" name "-" version
-                                  ".tar.gz"))
+              (uri (string-append "https://www.x.org/releases/individual/app/"
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vnykwwrv75miigbhmcwxniw8xnhsdyzhqydip2m9crxi2lwhqs5"))))
+                "0rya202y87dwl35jnmq8hs3arzdrv5z4vf1xmi0py4rnmhdpszaw"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'setenv
-           (lambda _
-             (setenv "CC" (which "gcc"))
-             #t))
-         (delete 'configure)
-         (delete 'check)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (install-file "transset-df" bin)
-               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs `(("libxcomposite" ,libxcomposite)
-              ("libxdamager" ,libxdamage)
+              ("libxdamage" ,libxdamage)
               ("libxrender" ,libxrender)))
     (synopsis "Set the transparency of X11 windows")
-    (description "The @command{transset-df} command allows you to set the
-opacity of X11 windows.  This patched version of X.Org's @command{transset}
-adds functionality, including: selecting window by clicking (as transset),
-selecting windows by pointing select actual focused X11 window, selecting by
-window name or id, forcing toggle, increase or decrease opacity.")
-    (home-page "https://forchheimer.se/transset-df/")
+    (description "@command{transset} is a simple program for X servers
+supporting the XFIXES, DAMAGE, and COMPOSITE extensions.  It lets the
+user set the transparency on a window.")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/transset")
     (license license:x11)))
+
+(define-public transset-df
+  (deprecated-package "transset-df" transset))
 
 (define-public bdfresize
   (package
@@ -6761,3 +6768,33 @@ that Make knows which object files must be recompiled when a dependency has
 changed.")
     (home-page "https://gitlab.freedesktop.org/xorg/util/gccmakedep")
     (license license:x11)))
+
+(define-public xdialog
+  (package
+    (name "xdialog")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://xdialog.free.fr/Xdialog-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "16jqparb33lfq4cvd9l3jgd7fq86fk9gv2ixc8vgqibid6cnhi0x"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gettext" ,gettext-minimal)
+       ("gtk" ,gtk+-2)))
+    (arguments
+     `(#:configure-flags '("--with-gtk2")))
+    (build-system gnu-build-system)
+    (home-page "http://xdialog.free.fr/")
+    (synopsis "Convert a terminal program into a program with an X interface")
+    (description "X11 replacement for the text util dialog Xdialog is designed
+to be a drop-in replacement for the dialog and cdialog programs.  It converts
+any terminal-based program into a program with an X interface.  The dialogs
+are easier to see and use, and Xdialog adds more functionality such as a help
+button and box, a treeview, an editbox, file and directory selectors, a range
+box, and a calendar.  It uses GTK+, and will match your desktop theme.")
+    (license license:gpl2+)))

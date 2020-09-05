@@ -1,12 +1,14 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +31,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -125,6 +128,256 @@ detect the absence of a cassette file and once again record all HTTP
 interactions, which will update them to correspond to the new API.")
     (license license:expat)))
 
+(define-public python-pytest-ordering
+  (package
+    (name "python-pytest-ordering")
+    (version "0.6")
+    (source
+     (origin
+       ;; No tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ftobia/pytest-ordering")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14msj5gyqza0gk3x7h1ivmjrwza82v84cj7jx3ks0fw9lpin7pjq"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k"
+                     ;; This test fails because of a type mismatch of an
+                     ;; argument passed to @code{pytest.main}.
+                     "not test_run_marker_registered"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/ftobia/pytest-ordering")
+    (synopsis "Pytest plugin to run your tests in a specific order")
+    (description
+     "This plugin defines Pytest markers to ensure that some tests, or groups
+of tests run in a specific order.")
+    (license license:expat)))
+
+(define-public python-pytest-arraydiff
+  (package
+    (name "python-pytest-arraydiff")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-arraydiff" version))
+       (sha256
+        (base32 "05bcvhh2ycxa35znl8b3l9vkcmx7vwm5c3fpakbpw46c7vsn4bfy"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests require python-astropy, which itself requires this package.
+     ;; Disable tests to avoid the circular dependency problem.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/astropy/pytest-arraydiff")
+    (synopsis "Pytest plugin to help with comparing array output from tests")
+    (description
+     "This is a py.test plugin to facilitate the generation and comparison of
+data arrays produced during tests, in particular in cases where the arrays
+are too large to conveniently hard-code them in the tests.")
+    (license license:bsd-3)))
+
+(define-public python-pytest-doctestplus
+  (package
+    (name "python-pytest-doctestplus")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-doctestplus" version))
+       (sha256
+        (base32 "1ai9kvd7xbq2jg2h8gmkb8lqzyrxvdh4zg3vxndg149iwd1hyi7d"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/astropy/pytest-doctestplus")
+    (synopsis "Pytest plugin with advanced doctest features")
+    (description
+     "This package contains a plugin for the Pytest framework that provides
+advanced doctest support and enables the testing of reStructuredText files.")
+    (license license:bsd-3)))
+
+(define-public python-pytest-filter-subpackage
+  (package
+    (name "python-pytest-filter-subpackage")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-filter-subpackage" version))
+       (sha256
+        (base32 "1s4s2kd31yc65rfvl4xhy8xx806xhy59kc7668h6b6wq88xgrn5p"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; One test is failing. There's an issue reported upstream. See
+       ;; https://github.com/astropy/pytest-filter-subpackage/issues/3.
+       ;; Disable it for now.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k" "not test_with_rst"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-doctestplus"
+        ,python-pytest-doctestplus)))
+    (home-page "https://github.com/astropy/pytest-filter-subpackage")
+    (synopsis "Pytest plugin for filtering based on sub-packages")
+    (description
+     "This package contains a simple plugin for the pytest framework that
+provides a shortcut to testing all code and documentation for a given
+sub-package.")
+    (license license:bsd-3)))
+
+(define-public python-pytest-openfiles
+  (package
+    (name "python-pytest-openfiles")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-openfiles" version))
+       (sha256
+        (base32 "0n0a7fdc9m86360y96l23fvdmd6rw04bl6h5xqgl9qxfv08jk70p"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-psutil" ,python-psutil)))
+    (home-page "https://github.com/astropy/pytest-openfiles")
+    (synopsis "Pytest plugin for detecting inadvertent open file handles")
+    (description
+     "This package provides a plugin for the pytest framework that allows
+developers to detect whether any file handles or other file-like objects
+were inadvertently left open at the end of a unit test.")
+    (license license:bsd-3)))
+
+(define-public python-pytest-remotedata
+  (package
+    (name "python-pytest-remotedata")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-remotedata" version))
+       (sha256
+        (base32 "1h6g6shib6z07azf12rnsa053470ggbd7hy3bnbw8nf3nza5h372"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k"
+                     (string-append
+                      ;; These tests require internet access. Disable them.
+                      "not test_default_behavior"
+                      " and not test_strict_with_decorator")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/astropy/pytest-remotedata")
+    (synopsis "Pytest plugin for controlling remote data access")
+    (description
+     "This package provides a plugin for the Pytest framework that allows
+developers to control unit tests that require access to data from the
+internet.")
+    (license license:bsd-3)))
+
+(define-public python-pytest-mpl
+  (package
+    (name "python-pytest-mpl")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-mpl" version))
+       (sha256
+        (base32 "1km202c1s5kcn52fx0266p06qb34va3warcby594dh6vixxa9i96"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/matplotlib/pytest-mpl")
+    (synopsis "Pytest plugin to help with testing figures output from Matplotlib")
+    (description
+     "This is a plugin to facilitate image comparison for Matplotlib figures
+in Pytest.")
+    (license license:bsd-3)))
+
+(define-public python-covdefaults
+  (package
+    (name "python-covdefaults")
+    (version "1.1.0")
+    (source
+     (origin
+       ;; The PyPI tarball does not include tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asottile/covdefaults")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11a24c0wzv01n55fy4kdpnyqna4m9k0mp58kmhiaks34xw4k37hq"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/asottile/covdefaults")
+    (synopsis "Coverage plugin to provide opinionated default settings")
+    (description
+     "Covdefaults is a coverage plugin to provide opinionated default
+ settings.")
+    (license license:expat)))
+
 (define-public python-pytest-vcr
   ;; This commit fixes integration with pytest-5
   (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
@@ -182,6 +435,39 @@ interactions, which will update them to correspond to the new API.")
      "This package provides a pytest plugin that checks the long description
 of the project to ensure it renders properly.")
     (license license:expat)))
+
+(define-public python-pytest-trio
+  (package
+    (name "python-pytest-trio")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-trio" version))
+       (sha256
+        (base32 "1zm8didm9h5jkqhghl9bvqs7kr7sjci282c7grhk6yhpzn8a9w4v"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-W" "error" "-ra" "-v" "--pyargs"
+                     "pytest_trio" "--verbose" "--cov"))))))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (propagated-inputs
+     `(("python-trio" ,python-trio)))
+    (home-page "https://github.com/python-trio/pytest-trio")
+    (synopsis "Pytest plugin for trio")
+    (description
+     "This is a pytest plugin to help you test projects that use Trio, a
+friendly library for concurrency and async I/O in Python.")
+    ;; Either license applies.
+    (license (list license:expat license:asl2.0))))
 
 (define-public python-pytest-flake8
   (package
@@ -433,6 +719,53 @@ service processes for your tests with pytest.")
     (description "This package provides a pytest plugin for aiohttp support.")
     (license license:asl2.0)))
 
+(define-public python-nbval
+  (package
+    (name "python-nbval")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nbval" version))
+       (sha256
+        (base32 "0h3xrnw0mj1srigrx2rfnd73h8s0xjycclmjs0vx7qkfyqpcvvyg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-test
+           (lambda _
+             ;; This test fails because of a mismatch in the output of LaTeX
+             ;; equation environments.  Seems OK to skip.
+             (delete-file "tests/ipynb-test-samples/test-latex-pass-correctouput.ipynb")
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "-k"
+                     (string-append
+                     ;; This only works with Pytest < 5.
+                      "not nbdime_reporter"
+                     ;; https://github.com/computationalmodelling/nbval/pull/148.
+                      " and not test_timeouts")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sympy" ,python-sympy)))
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-nbformat" ,python-nbformat)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/computationalmodelling/nbval")
+    (synopsis "Pytest plugin to validate Jupyter notebooks")
+    (description
+     "This plugin adds functionality to Pytest to recognise and collect Jupyter
+notebooks.  The intended purpose of the tests is to determine whether execution
+of the stored inputs match the stored outputs of the @file{.ipynb} file.  Whilst
+also ensuring that the notebooks are running without errors.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-flask
   (package
     (name "python-pytest-flask")
@@ -454,6 +787,26 @@ service processes for your tests with pytest.")
     (synopsis "Pytest fixtures to test Flask applications")
     (description
      "This pytest plugin provides fixtures to simplify Flask app testing.")
+    (license license:expat)))
+
+(define-public python-pytest-env
+  (package
+    (name "python-pytest-env")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-env" version))
+       (sha256
+        (base32 "1hl0ln0cicdid4qjk7mv90lw9xkb0v71dlj7q7rn89vzxxm9b53y"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/MobileDynasty/pytest-env")
+    (synopsis "Pytest plugin that allows you to add environment variables")
+    (description
+     "This is a @code{py.test} plugin that enables you to set environment
+variables in the @file{pytest.ini} file.")
     (license license:expat)))
 
 (define-public python-codacy-coverage
@@ -534,3 +887,72 @@ it, the declaration of a name's public export semantics are not separated from
 the implementation of that name.")
     (license (list license:asl2.0
                    license:lgpl3))))    ; only for setup_helpers.py
+
+(define-public python-mypy-extensions
+  (package
+    (name "python-mypy-extensions")
+    (version "0.4.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mypy_extensions" version))
+        (sha256
+         (base32
+          "1a04qsk8hd1lqns8w1j7cr0vmvbhg450di5k1i16kqxkbf7q30id"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)); no tests
+    (home-page "https://github.com/python/mypy_extensions")
+    (synopsis "Experimental extensions for MyPy")
+    (description "The @code{python-mypy-extensions} module defines
+experimental extensions to the standard @code{typing} module that are
+supported by the MyPy typechecker.")
+    (license license:expat)))
+
+(define-public python-mypy
+  (package
+    (name "python-mypy")
+    (version "0.782")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mypy" version))
+        (sha256
+         (base32
+          "030kn709515452n6gy2i1d9fg6fyrkmdz228lfpmbslybsld9xzg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./runtests.py")
+             #t)))))
+    (native-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-flake8" ,python-flake8)
+       ("python-flake8-bugbear" ,python-flake8-bugbear)
+       ("python-flake8-pyi" ,python-flake8-pyi)
+       ("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-lxml" ,python-lxml)
+       ("python-psutil" ,python-psutil)
+       ("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-forked" ,python-pytest-forked)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-virtualenv" ,python-virtualenv)))
+    (propagated-inputs
+     `(("python-mypy-extensions" ,python-mypy-extensions)
+       ("python-typing-extensions" ,python-typing-extensions)
+       ("python-typed-ast" ,python-typed-ast)))
+    (home-page "http://www.mypy-lang.org/")
+    (synopsis "Static type checker for Python")
+    (description "Mypy is an optional static type checker for Python that aims
+to combine the benefits of dynamic (or 'duck') typing and static typing.  Mypy combines
+the expressive power and convenience of Python with a powerful type system and
+compile-time type checking.  Mypy type checks standard Python programs; run them using
+any Python VM with basically no runtime overhead.")
+    ;; Most of the code is under MIT license; Some files are under Python Software
+    ;; Foundation License version 2: stdlib-samples/*, mypyc/lib-rt/pythonsupport.h and
+    ;; mypyc/lib-rt/getargs.c
+    (license (list license:expat license:psfl))))

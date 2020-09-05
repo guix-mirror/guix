@@ -90,7 +90,8 @@ fundamental object types for C.")
               (sha256
                (base32
                 "1h6hwibaf3xa2w6qpzjiiywmfj6zkgbz4r2isf3gd0xm6vq7n6if"))
-              (patches (search-patches "sssd-fix-samba.patch"))))
+              (patches (search-patches "sssd-fix-samba.patch"
+                                       "sssd-system-directories.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -103,7 +104,10 @@ fundamental object types for C.")
              ;; online DTDs.
              "XMLLINT_FLAGS = --catalogs --nonet --noent --xinclude --noout")
        #:configure-flags
-       (list "--disable-cifs-idmap-plugin"
+       (list "--localstatedir=/var" ;for /var/lib/sss, /var/run/sssd.pid, etc.
+             "--sysconfdir=/etc"    ;/etc/sssd
+
+             "--disable-cifs-idmap-plugin"
              "--without-nfsv4-idmapd-plugin"
              "--without-python2-bindings"
              "--without-python3-bindings"

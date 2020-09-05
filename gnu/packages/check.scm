@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,10 +76,61 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial))
+
+(define-public pedansee
+  (package
+    (name "pedansee")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.flyn.org/projects/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lsg791x6n95pxg6vif8qfc46nqcamhjq3g0dl5xqf6imy7n3acd"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("clang" ,clang)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("glib" ,glib)))
+    (synopsis "Code checker for C")
+    (description "Pedansee checks C source files for compliance with a particular
+programming style.  The style is currently defined by the pedansee source code
+in the form of functions which walk each source file’s syntax tree.  You can
+modify some aspects of this style through the use of regular expressions.")
+    (home-page "https://www.flyn.org/projects/pedansee/")
+    (license license:gpl3+)))
+
+(define-public mutest
+  (package
+    (name "mutest")
+    (version "0.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/ebassi/mutest.git")
+         (commit "e6246c9")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gdqwq6fvk06wld4rhnw5752hahrvhd69zrci045x25rwx90x26q"))))
+    (build-system meson-build-system)
+    (synopsis "Small C testing library")
+    (description "Mutest aims to be a small unit testing library for C projects,
+with an API heavily modelled on high level Behavior-Driver Development frameworks
+like Jasmine or Mocha.")
+    (home-page "https://ebassi.github.io/mutest/mutest.md.html")
+    (license license:expat)))
 
 (define-public check
   (package
@@ -297,7 +349,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
 (define-public catch-framework2
   (package
     (name "catch2")
-    (version "2.1.2")
+    (version "2.13.0")
     (home-page "https://github.com/catchorg/Catch2")
     (source (origin
               (method git-fetch)
@@ -307,7 +359,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14vcckqmbydjsg40ngi6iv999zimysh2l7fmrqj1d7xl990qz233"))))
+                "0i4w0c9280a5fyi00mvvf13wlnfzyifr487n1iyr30zvvj5s5f1h"))))
     (build-system cmake-build-system)
     (inputs
      `(("python" ,python-wrapper)))
@@ -1836,6 +1888,18 @@ seamlessly into your existing Python unit testing work flow.")
     (license license:mpl2.0)
     (properties `((python2-variant . ,(delay python2-hypothesis))))))
 
+(define-public python-hypothesis-5.23
+  (package
+    (inherit python-hypothesis)
+    (version "5.23.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "hypothesis" version))
+              (sha256
+               (base32
+                "0sy1v6nyxg4rjcf3rlr8nalb7wqd9nccpb2lzkchbj5an13ysf1h"))))
+    (home-page "https://github.com/HypothesisWorks/hypothesis")))
+
 ;; This is the last version of Hypothesis that supports Python 2.
 (define-public python2-hypothesis
   (let ((hypothesis (package-with-python2
@@ -1851,6 +1915,29 @@ seamlessly into your existing Python unit testing work flow.")
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs hypothesis))))))
+
+(define-public python-hypothesmith
+  (package
+    (name "python-hypothesmith")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hypothesmith" version))
+       (sha256
+        (base32
+         "09331sspknv459xcyn1k0lx5flqlc6gmnwp9370pfvg4kg1zmss6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-hypothesis" ,python-hypothesis-5.23)
+       ("python-lark-parser" ,python-lark-parser)
+       ("python-libcst" ,python-libcst)))
+    (home-page "https://github.com/Zac-HD/hypothesmith")
+    (synopsis "Strategies for generating Python programs")
+    (description
+     "This package contains hypothesis strategies for generating Python
+programs, something like CSmith, a random generator of C programs.")
+    (license license:mpl2.0)))
 
 (define-public python-lit
   (package
@@ -1910,13 +1997,13 @@ failures.")
 (define-public python-pytest-flakes
   (package
     (name "python-pytest-flakes")
-    (version "4.0.0")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest-flakes" version))
               (sha256
                (base32
-                "0hyind0gb950v9kfy0v97x66fb33slbqmxhrjvgbvsv0ayzn869l"))))
+                "0045h3hnrkn2jwr42jgy2j98npx4amwr6wxzi9j0nppaqz33l49p"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2606,7 +2693,7 @@ provides a simple way to achieve this.")
 (define-public umockdev
   (package
     (name "umockdev")
-    (version "0.14.1")
+    (version "0.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinpitt/umockdev/"
@@ -2614,7 +2701,7 @@ provides a simple way to achieve this.")
                                   "umockdev-" version ".tar.xz"))
               (sha256
                (base32
-                "1g78jcrvb7yyh0q5kv5409wjqf8nlfqnw1rknm3a247mcx317dpz"))))
+                "1nh6xsssmssmk0lxp9c9dmq3wzlpbpkg77nmmd09csbpybibgxfp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

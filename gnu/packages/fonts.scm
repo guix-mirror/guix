@@ -858,6 +858,7 @@ It contains the following fonts and styles:
        ("woff-tools" ,woff-tools)
        ("fontforge" ,fontforge)
        ("woff2" ,woff2)
+       ("woff2:bin" ,woff2 "bin")
        ("zip" ,zip)))
     (arguments
      `(#:tests? #f                 ;test target intended for visual inspection

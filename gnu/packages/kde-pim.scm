@@ -154,7 +154,7 @@ programs.")
        ("qtbase" ,qtbase)))
     (arguments
      `(#:tests? #f))  ;; TODO: 1/1 test fails
-    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
+    (home-page "https://api.kde.org/kdepim/akonadi/html/index.html")
     (synopsis "Library providing calendar helpers for Akonadi items")
     (description "This library manages calendar specific actions for
 collection and item views.")
@@ -199,7 +199,7 @@ collection and item views.")
        ("qtbase" ,qtbase)
        ("solid" ,solid)
        ("sonnet" ,sonnet)))
-    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
+    (home-page "https://api.kde.org/kdepim/akonadi/html/index.html")
     (synopsis "Akonadi contacts access library")
     (description "Akonadi Contacts is a library that effectively bridges the
 type-agnostic API of the Akonadi client libraries and the domain-specific
@@ -241,7 +241,7 @@ to list and filter contacts.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
        ("qtbase" ,qtbase)))
-    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
+    (home-page "https://api.kde.org/kdepim/akonadi/html/index.html")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -284,7 +284,7 @@ with emails through Akonadi easier.")
        ("ki18n" ,ki18n)
        ("kmime" ,kmime)
        ("qtbase" ,qtbase)))
-    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
+    (home-page "https://api.kde.org/kdepim/akonadi/html/index.html")
     (synopsis "Akonadi notes access library")
     (description "Akonadi Notes is a library that effectively bridges the
 type-agnostic API of the Akonadi client libraries and the domain-specific
@@ -341,7 +341,7 @@ wrapping notes into KMime::Message objects.")
                   (replace 'check
                     (lambda _
                       (invoke "dbus-launch" "ctest"))))))
-    (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
+    (home-page "https://api.kde.org/kdepim/akonadi/html/index.html")
     (synopsis "Akonadi search library")
     (description "This package provides a library used to search in the
 Akonadi PIM data server.  It uses Xapian for indexing and querying.")
