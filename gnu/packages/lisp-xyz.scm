@@ -13434,6 +13434,18 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
          ("swank" ,cl-slime-swank)
          ("zpb-ttf" ,cl-zpb-ttf))))))
 
+(define-public sbcl-mcclim-test-util
+  (package
+    (inherit sbcl-clim-lisp)
+    (name "sbcl-mcclim-test-util")
+    (inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("mcclim" ,sbcl-mcclim)
+       ("swank" ,cl-slime-swank))) ; For drei-mcclim
+    (arguments
+     '(#:asd-file "mcclim.asd"
+       #:asd-system-name "mcclim/test-util"))))
+
 (define-public sbcl-cl-inflector
   (let ((commit "f1ab16919ccce3bd82a0042677d9616dde2034fe")
         (revision "1"))
