@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Robin Templeton <robin@igalia.com>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,8 +65,8 @@ PHP.")
       (license (list license:asl2.0 license:expat)))))
 
 (define-public arcanist
-  (let ((commit "45a8d22c74a62624e69f5cd6ce901c9ab2658904")
-        (revision "1"))
+  (let ((commit "ceb082ef6b2919d76a90d4a53ca84f5b1e0c2c06")
+        (revision "2"))
     (package
       (name "arcanist")
       (version (git-version "0.0.0" revision commit))
@@ -77,8 +78,9 @@ PHP.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "13vswhqy9sap6841y93j4mj71dl27vhcivcn3rzyi0cchkhg2ac9"))))
+                  "16590nywh3cpm2yq4igw3nfa8g84kwza215mrnqr2k6b2cqzjak3"))))
       (build-system gnu-build-system)
+      ;; TODO: Unbundle jsonlint
       (arguments
        '(#:tests? #f
          #:phases
@@ -86,22 +88,20 @@ PHP.")
            (delete 'configure)
            (delete 'build)
            (replace 'install
-             (lambda _
-               (let ((bin (string-append %output "/bin"))
-                     (lib (string-append %output "/lib/arcanist")))
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (lib (string-append out "/lib/arcanist")))
                  (mkdir-p lib)
                  (copy-recursively "." lib)
                  (mkdir-p bin)
                  (symlink (string-append lib "/bin/arc")
                           (string-append bin "/arc"))
                  (wrap-program (string-append bin "/arc")
-                   `("ARC_PHUTIL_PATH" =
-                     (,(string-append (assoc-ref %build-inputs "libphutil")
-                                      "/lib/libphutil")))
                    `("PATH" ":" prefix
                      (,@(map (lambda (i)
                                (string-append (assoc-ref %build-inputs i) "/bin"))
-                             '("git" "mercurial" "subversion"))))))
+                             '("php" "git" "mercurial" "subversion"))))))
                #t))
            (add-before 'reset-gzip-timestamps 'make-compressed-files-writable
              (lambda _
@@ -110,7 +110,6 @@ PHP.")
                #t)))))
       (inputs
        `(("php" ,php)
-         ("libphutil" ,libphutil)
          ("git" ,git)
          ("mercurial" ,mercurial)
          ("subversion" ,subversion)))
@@ -121,4 +120,5 @@ PHP.")
 development service.  It allows you to interact with Phabricator installs to
 send code for review, download patches, transfer files, view status, make API
 calls, and various other things.")
-      (license license:asl2.0))))
+      ;; Bundled libraries are expat-licensed.
+      (license (list license:asl2.0 license:expat)))))
