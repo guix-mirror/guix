@@ -6480,7 +6480,7 @@ regexp that matches all known keywords.")
 (define-public emacs-perspective
   (package
     (name "emacs-perspective")
-    (version "2.10")
+    (version "2.11")
     (source
      (origin
        (method git-fetch)
@@ -6490,7 +6490,7 @@ regexp that matches all known keywords.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1xfcm69nd6f9chwlqfz5vd8nnyl5mwharxjrn1m515568dqrk62x"))))
+         "0nka5z6226r174ligja023qx2bb1pfyjbanafxprbyxkr17b2794"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
