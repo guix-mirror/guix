@@ -25,45 +25,6 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
-(define-public libphutil
-  (let ((commit "b29d76e1709ef018cc5edc7c03033fd9fdebc578")
-        (revision "1"))
-    (package
-      (name "libphutil")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/phacility/libphutil")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "06j84721r9r8624fmil62b5crs2qs0v6rr3cvv2zvkvwhxwrwv1l"))))
-      (build-system gnu-build-system)
-      ;; TODO: Unbundle jsonlint and porter-stemmer.
-      (arguments
-       '(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (lambda _
-               (let ((lib (string-append %output "/lib/libphutil")))
-                 (mkdir-p lib)
-                 (copy-recursively "." lib))
-               #t)))))
-      (inputs
-       `(("php" ,php)))
-      (home-page "https://github.com/phacility/libphutil")
-      (synopsis "PHP utility library")
-      (description
-       "@code{libphutil} is a collection of utility classes and functions for
-PHP.")
-      ;; Bundled libraries are expat-licensed.
-      (license (list license:asl2.0 license:expat)))))
-
 (define-public arcanist
   (let ((commit "ceb082ef6b2919d76a90d4a53ca84f5b1e0c2c06")
         (revision "2"))
@@ -122,3 +83,6 @@ send code for review, download patches, transfer files, view status, make API
 calls, and various other things.")
       ;; Bundled libraries are expat-licensed.
       (license (list license:asl2.0 license:expat)))))
+
+(define-public libphutil
+  (deprecated-package "libphutil" arcanist))
