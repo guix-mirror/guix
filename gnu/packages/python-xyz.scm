@@ -8181,6 +8181,24 @@ expressions after the entire file has been read.  This enables support for
 first-class forward references that stub files use.")
     (license license:expat)))
 
+(define-public python-flake8-pie
+  (package
+    (name "python-flake8-pie")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8-pie" version))
+       (sha256
+        (base32 "0kgipl5gljlp7aa7ykx15pswpzkd0d0qiznihb2z0d9a73181dyd"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/sbdchd/flake8-pie")
+    (synopsis "Flake8 extension that implements lints")
+    (description
+     "This package provides a flake8 extension that implements miscellaneous
+lints.")
+    (license license:bsd-2)))
+
 (define-public python-mistune
   (package
     (name "python-mistune")
