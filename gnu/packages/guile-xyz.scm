@@ -853,6 +853,36 @@ Vicare Scheme and IronScheme.  Right now it contains:
 @end itemize\n")
     (license license:bsd-3)))
 
+(define-public guile-prometheus
+  (let ((commit "cbc6e1b03512443a03d66414c426adb8470b5f2b")
+        (revision "0"))
+    (package
+    (name "guile-prometheus")
+    (version (git-version "0" revision commit))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.cbaines.net/git/guile/prometheus")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1k1qg4ia87w2ipnf8cpikdc67lxi5bmahkhgk2x0i9ibdyvqb7np"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://git.cbaines.net/guile/prometheus")
+    (synopsis "Prometheus client library for Guile")
+    (description
+     "This Guile library provides instrumentation code intended to be used
+with the Prometheus time series service.  Counter, gauge and histogram metric
+types are supported.")
+    (license license:gpl3+))))
+
 (define-public guile2.2-pfds
   (package
     (inherit guile-pfds)
