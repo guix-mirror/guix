@@ -520,12 +520,12 @@ fi~%"))))
    (configuration-file "/boot/grub/grub.cfg")
    (configuration-file-generator grub-configuration-file)))
 
-(define* grub-minimal-bootloader
+(define grub-minimal-bootloader
   (bootloader
    (inherit grub-bootloader)
    (package grub-minimal)))
 
-(define* grub-efi-bootloader
+(define grub-efi-bootloader
   (bootloader
    (inherit grub-bootloader)
    (installer install-grub-efi)
@@ -533,7 +533,7 @@ fi~%"))))
    (name 'grub-efi)
    (package grub-efi)))
 
-(define* grub-mkrescue-bootloader
+(define grub-mkrescue-bootloader
   (bootloader
    (inherit grub-efi-bootloader)
    (package grub-hybrid)))
