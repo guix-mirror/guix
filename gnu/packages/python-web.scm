@@ -4044,6 +4044,55 @@ and fairly speedy.")
      "@code{httptools} is a Python binding for the nodejs HTTP parser.")
     (license license:expat)))
 
+(define-public python-uvicorn
+  (package
+    (name "python-uvicorn")
+    (version "0.11.8")
+    (source
+     (origin
+       ;; PyPI tarball has no tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/encode/uvicorn")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00iidg5ysp7k00bw3kmkvr8mghnh4jdi0p2ryiarhryf8wz2r3fy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-codecov" ,python-codecov)
+       ("python-flake8" ,python-flake8)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-requests" ,python-requests)))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-h11" ,python-h11)
+       ("python-httptools" ,python-httptools)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-uvloop" ,python-uvloop)
+       ("python-watchgod" ,python-watchgod)
+       ("python-websockets" ,python-websockets)
+       ("python-wsproto" ,python-wsproto)))
+    (home-page "https://github.com/encode/uvicorn")
+    (synopsis "Fast ASGI server implementation")
+    (description
+     "@code{uvicorn} is a fast ASGI server implementation, using @code{uvloop}
+and @code{httptools}.  It currently supports HTTP/1.1 and WebSockets.  Support
+for HTTP/2 is planned.")
+    (license license:bsd-3)))
+
 (define-public python-translation-finder
   (package
     (name "python-translation-finder")
