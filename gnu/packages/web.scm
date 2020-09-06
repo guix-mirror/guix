@@ -1675,7 +1675,7 @@ minimum to provide high performance operation.")
   (package
     (name "libsass")
     ;; When updating, check whether sassc/libsass-3.5 is still needed.
-    (version "3.6.3")
+    (version "3.6.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1684,7 +1684,7 @@ minimum to provide high performance operation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vn0q343d1vxz5q0xb6f9dzjah8z6j0s6x0lwvwdd55xa8z7rsnh"))))
+                "0r8lfqvr3rjhjd8r036zd1wc9q17gyiskppcw9m13jks9an7xp4j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
