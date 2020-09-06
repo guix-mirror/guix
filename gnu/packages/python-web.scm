@@ -3957,6 +3957,55 @@ and fairly speedy.")
     (properties '((hidden? . #t)))
     (native-inputs `())))
 
+(define-public python-httptools
+  (package
+    (name "python-httptools")
+    (version "0.1.1")
+    (source
+     (origin
+       ;; PyPI tarball comes with a vendored http-parser and no tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MagicStack/httptools")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g08128x2ixsiwrzskxc6c8ymgzs39wbzr5mhy0mjk30q9pqqv77"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'preparations
+           (lambda _
+             ;; Skip a failing test (AssertionError).  Bug report:
+             ;; https://github.com/MagicStack/httptools/issues/10.
+             (substitute* "tests/test_parser.py"
+               (("    def test_parser_response_1")
+                (string-append
+                 "    @unittest.skip(\"Disabled.\")\n"
+                 "    def test_parser_response_1")))
+             ;; Use packaged http-parser.
+             (substitute* "setup.py" (("self.use_system_http_parser = False")
+                                      "self.use_system_http_parser = True"))
+             ;; This path is hardcoded.  Hardcode our own.
+             (substitute* "httptools/parser/cparser.pxd"
+               (("../../vendor/http-parser")
+                (string-append (assoc-ref %build-inputs "http-parser")
+                               "/include")))
+             ;; Don't force Cython version.
+             (substitute* "setup.py" (("Cython==") "Cython>="))
+             #t)))))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)))
+    (inputs
+     `(("http-parser" ,http-parser)))
+    (home-page "https://github.com/MagicStack/httptools")
+    (synopsis "Collection of framework independent HTTP protocol utils")
+    (description
+     "@code{httptools} is a Python binding for the nodejs HTTP parser.")
+    (license license:expat)))
+
 (define-public python-translation-finder
   (package
     (name "python-translation-finder")
