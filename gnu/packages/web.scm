@@ -196,7 +196,7 @@ and its related documentation.")
 (define-public mod-wsgi
   (package
     (name "mod-wsgi")
-    (version "4.5.22")
+    (version "4.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -205,7 +205,7 @@ and its related documentation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q90xw2cbhka5gcd6yc69iir73x4gm7fm75qpkins2ryfl6w1q3f"))))
+                "1savh6h3qds20mwn1nqasmqzcp57pdhfc9v4b4k78d6q28y0r17s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                 ; TODO: can't figure out if there are tests
