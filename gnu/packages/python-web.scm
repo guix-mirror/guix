@@ -68,6 +68,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -3886,6 +3887,43 @@ Unlike the Python package @code{cssselect}, it does not translate selectors to
 XPath and therefore does not have all the correctness corner cases that are
 hard or impossible to fix in cssselect.")
     (license license:bsd-3)))
+
+(define-public python-uvloop
+  (package
+    (name "python-uvloop")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "uvloop" version))
+       (sha256
+        (base32 "07j678z9gf41j98w72ysrnb5sa41pl5yxd7ib17lcwfxqz0cjfhj"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f ;FIXME: tests hang and with some errors in the way
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'preparations
+           (lambda _
+             ;; Use packaged libuv.
+             (substitute* "setup.py" (("self.use_system_libuv = False")
+                                      "self.use_system_libuv = True"))
+             #t)))))
+    (native-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-cython" ,python-cython)
+       ("python-flake8" ,python-flake8)
+       ("python-psutil" ,python-psutil)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-twine" ,python-twine)))
+    (inputs
+     `(("libuv" ,libuv)))
+    (home-page "https://github.com/MagicStack/uvloop")
+    (synopsis "Fast implementation of asyncio event loop on top of libuv")
+    (description
+     "@code{uvloop} is a fast, drop-in replacement of the built-in asyncio
+event loop.  It is implemented in Cython and uses libuv under the hood.")
+    (license license:expat)))
 
 (define-public gunicorn
   (package
