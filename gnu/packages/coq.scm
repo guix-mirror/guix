@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,11 +97,18 @@
          (add-after 'install 'remove-duplicate
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
+                    (bin (string-append out "/bin"))
+                    (coqtop (string-append bin "/coqtop"))
+                    (coqidetop (string-append bin "/coqidetop"))
+                    (coqtop.opt (string-append coqtop ".opt"))
+                    (coqidetop.opt (string-append coqidetop ".opt")))
                ;; These files are exact copies without `.opt` extension.
                ;; Removing these saves 35 MiB in the resulting package.
-               (delete-file (string-append bin "/coqtop.opt"))
-               (delete-file (string-append bin "/coqidetop.opt")))
+               ;; Unfortunately, completely deleting them breaks coqide.
+               (delete-file coqtop.opt)
+               (delete-file coqidetop.opt)
+               (symlink coqtop coqtop.opt)
+               (symlink coqidetop coqidetop.opt))
              #t))
          (add-after 'install 'install-ide
            (lambda* (#:key outputs #:allow-other-keys)
