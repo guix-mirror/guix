@@ -504,7 +504,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)
@@ -513,7 +513,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kwlqfah0yk135i0rzmbbgnqdzxrzg9yslii5asl4ip9x4dc1w3r"))))
+        (base32 "0snljpvbcgikhz610c325dgvayi0k512p3bglck9vvi90wsqx7l1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "tests"
