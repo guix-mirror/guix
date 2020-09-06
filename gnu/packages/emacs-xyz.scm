@@ -2078,7 +2078,7 @@ Lock key.")
 (define-public emacs-chronometrist
   (package
     (name "emacs-chronometrist")
-    (version "0.5.3")
+    (version "0.5.5")
     (source
      (origin
        (method git-fetch)
@@ -2087,7 +2087,7 @@ Lock key.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jz35972m372kx9x8mgf42zhzdw2w9wv2ri52chfb2fin4bh1biy"))))
+        (base32 "1zccyfpgq68ixrcl8jq2r38165ngkqrb42y2hkyab6gxhvh4wkpl"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -2111,7 +2111,8 @@ Lock key.")
                                   (find-files "." "\\.md$")))))
              #t)))))
     (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
+     `(("emacs-anaphora" ,emacs-anaphora)
+       ("emacs-dash" ,emacs-dash)
        ("emacs-s" ,emacs-s)
        ("emacs-ts" ,emacs-ts)))
     (home-page "https://github.com/contrapunctus-1/chronometrist")
