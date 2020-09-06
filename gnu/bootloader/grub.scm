@@ -506,6 +506,10 @@ fi~%"))))
 ;;;
 ;;; Bootloader definitions.
 ;;;
+;;; For all these grub-bootloader variables the path to /boot/grub/grub.cfg
+;;; is fixed.  Inheriting and overwriting the field 'configuration-file' will
+;;; break 'guix system delete-generations', 'guix system switch-generation',
+;;; and 'guix system roll-back'.
 
 (define grub-bootloader
   (bootloader
