@@ -73,6 +73,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
@@ -4378,6 +4379,93 @@ Some things HTTP Core does do:
 @item Async backend support for asyncio and trio.
 @item Automatic connection pooling.
 @item HTTP(S) proxy support.
+@end itemize")
+    (license license:bsd-3)))
+
+(define-public python-httpx
+  (package
+    (name "python-httpx")
+    (version "0.14.3")
+    (source
+     (origin
+       ;; PyPI tarball does not contain tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/encode/httpx")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mn8gqkgaij3s2pbwgrih20iq34f3f82dfvypaw3nnh7n63vna43"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv" "-k"
+                     ;; This test tries to open an outgoing connection.
+                     "not test_connect_timeout[asyncio]"))))))
+    (native-inputs
+     `(("python-autoflake" ,python-autoflake)
+       ("python-black" ,python-black)
+       ("python-cryptography" ,python-cryptography)
+       ("python-flake8" ,python-flake8)
+       ("python-flake8-bugbear" ,python-flake8-bugbear)
+       ("python-flake8-pie" ,python-flake8-pie)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-pytest-trio" ,python-pytest-trio)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-trio" ,python-trio)
+       ("python-trio-typing" ,python-trio-typing)
+       ("python-trustme" ,python-trustme)
+       ("python-uvicorn" ,python-uvicorn)))
+    (propagated-inputs
+     `(("python-brotli" ,python-brotli)
+       ("python-certifi" ,python-certifi)
+       ("python-chardet" ,python-chardet)
+       ("python-httpcore" ,python-httpcore)
+       ("python-idna" ,python-idna)
+       ("python-rfc3986" ,python-rfc3986)
+       ("python-sniffio" ,python-sniffio)))
+    (home-page "https://github.com/encode/httpx")
+    (synopsis "HTTP client for Python")
+    (description
+     "HTTPX is a fully featured HTTP client for Python 3, which provides sync
+and async APIs, and support for both HTTP/1.1 and HTTP/2.
+
+HTTPX builds on the well-established usability of requests, and gives you:
+
+@itemize
+@item A broadly requests-compatible API.
+@item Standard synchronous interface, but with async support if you need it.
+@item HTTP/1.1 and HTTP/2 support.
+@item Ability to make requests directly to WSGI applications or ASGI applications.
+@item Strict timeouts everywhere.
+@item Fully type annotated.
+@item 99% test coverage.
+@end itemize
+
+Plus all the standard features of requests:
+
+@itemize
+@item International Domains and URLs
+@item Keep-Alive & Connection Pooling
+@item Sessions with Cookie Persistence
+@item Browser-style SSL Verification
+@item Basic/Digest Authentication
+@item Elegant Key/Value Cookies
+@item Automatic Decompression
+@item Automatic Content Decoding
+@item Unicode Response Bodies
+@item Multipart File Uploads
+@item HTTP(S) Proxy Support
+@item Connection Timeouts
+@item Streaming Downloads
+@item .netrc Support
+@item Chunked Requests
 @end itemize")
     (license license:bsd-3)))
 
