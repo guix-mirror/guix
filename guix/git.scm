@@ -39,6 +39,7 @@
   #:export (%repository-cache-directory
             honor-system-x509-certificates!
 
+            url-cache-directory
             with-repository
             with-git-error-handling
             false-if-git-not-found
