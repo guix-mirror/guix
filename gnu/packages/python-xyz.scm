@@ -19259,6 +19259,54 @@ programs that do multiple things at the same time with parallelized I/O.")
     ;; Either license applies.
     (license (list license:expat license:asl2.0))))
 
+(define-public python-trio-typing
+  (package
+    (name "python-trio-typing")
+    (version "0.5.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "trio-typing" version))
+      (sha256
+       (base32 "1yvlj4vf3wyvp16dw6vyfm4i2idm8lvdc3fvjhi6mhm62zv7s07j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-mypy" ,python-mypy)
+       ("python-mypy-extensions"
+        ,python-mypy-extensions)
+       ("python-trio" ,python-trio)
+       ("python-typing-extensions"
+        ,python-typing-extensions)))
+    (home-page "https://github.com/python-trio/trio-typing")
+    (synopsis "Static type checking support for Trio and related projects")
+    (description
+     "This package provides:
+
+@itemize
+@item PEP 561 typing stubs packages for the Trio project packages:
+
+@itemize
+@item trio (@code{trio-stubs})
+@item outcome (@code{outcome-stubs})
+@item async_generator (@code{async_generator-stubs})
+@end itemize
+
+@item A package @code{trio_typing} containing types that Trio programs often
+want to refer to (@code{AsyncGenerator[Y, S]} and @code{TaskStatus[T])} and
+a mypy plugin that smooths over some limitations in the basic type hints.
+@end itemize")
+    ;; Either license applies.
+    (license (list license:expat license:asl2.0))))
+
 (define-public python-humanize
   (package
     (name "python-humanize")
