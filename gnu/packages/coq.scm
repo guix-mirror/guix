@@ -553,11 +553,11 @@ uses Ltac to synthesize the substitution operation.")
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/mattam82/Coq-Equations")
-                    (commit (string-append "v" version "-8.10"))))
+                    (commit (string-append "v" version "-8.10-2"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "023q5dww3drw35dm9bi9p9d0wrj9k7vax7hfdsprf8l340pb4s0k"))))
+                "0j3z4l5nrbyi9zbbyqkc6kassjanwld2188mwmrbqspaypm2ys68"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml"  ,ocaml)
