@@ -8199,6 +8199,30 @@ first-class forward references that stub files use.")
 lints.")
     (license license:bsd-2)))
 
+(define-public python-autoflake
+  (package
+    (name "python-autoflake")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "autoflake" version))
+       (sha256
+        (base32 "0nzr057dbmgprp4a52ymafdkdd5zp2wcqf42913xc7hhvvdbj338"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyflakes" ,python-pyflakes)))
+    (home-page "https://github.com/myint/autoflake")
+    (synopsis "Removes unused imports and unused variables")
+    (description
+     "@code{autoflake} removes unused imports and unused variables from Python
+code as reported by @code{pyflakes}.
+
+By default, it only removes unused imports for modules that are part of the
+standard library.  Removal of unused variables is also disabled by default.
+It also removes useless @code{pass} statements.")
+    (license license:expat)))
+
 (define-public python-mistune
   (package
     (name "python-mistune")
