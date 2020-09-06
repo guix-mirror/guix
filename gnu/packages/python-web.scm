@@ -4306,6 +4306,81 @@ and serve updated contents upon changes to the directory.")
 @acronym{TLS, Transport Layer Security} support.")
     (license license:bsd-2)))
 
+(define-public python-httpcore
+  (package
+    (name "python-httpcore")
+    (version "0.10.2")
+    (source
+     (origin
+       ;; PyPI tarball does not contain tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/encode/httpcore")
+             (commit  version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00gn8nfv814rg6fj7xv97mrra3fvx6fzjcgx9y051ihm6hxljdsi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-unavailable-tests
+           (lambda _
+             ;; These tests require 'mitmproxy' which is not packaged.
+             (for-each (lambda (f)
+                         (delete-file f))
+                       '("tests/conftest.py"
+                         "tests/sync_tests/test_interfaces.py"
+                         "tests/async_tests/test_interfaces.py"))
+             #t))
+         (add-after 'remove-unavailable-tests 'force-h11-version
+           ;; Allow build with h11 >= 0.10.
+           (lambda _
+             (substitute* "setup.py" (("h11>=0.8,<0.10") "h11"))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "--cov=httpcore"
+                     "--cov=tests" "tests"))))))
+    (native-inputs
+     `(;; ("mitmproxy" ,mitmproxy) ;; TODO: Package this.
+       ("python-autoflake" ,python-autoflake)
+       ("python-flake8" ,python-flake8)
+       ("python-flake8-bugbear" ,python-flake8-bugbear)
+       ("python-flake8-pie" ,python-flake8-pie)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-trio" ,python-pytest-trio)
+       ("python-uvicorn" ,python-uvicorn)
+       ("python-trustme" ,python-trustme)))
+    (propagated-inputs
+     `(("python-h11" ,python-h11)
+       ("python-h2" ,python-h2)
+       ("python-sniffio" ,python-sniffio)
+       ("python-trio" ,python-trio)
+       ("python-trio-typing" ,python-trio-typing)))
+    (home-page "https://github.com/encode/httpcore")
+    (synopsis "Minimal, low-level HTTP client")
+    (description
+     "HTTP Core provides a minimal and low-level HTTP client, which does one
+thing only: send HTTP requests.
+
+Some things HTTP Core does do:
+
+@itemize
+@item Sending HTTP requests.
+@item Provides both sync and async interfaces.
+@item Supports HTTP/1.1 and HTTP/2.
+@item Async backend support for asyncio and trio.
+@item Automatic connection pooling.
+@item HTTP(S) proxy support.
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public python-websockets
   (package
     (name "python-websockets")
