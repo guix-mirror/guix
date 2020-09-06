@@ -12,7 +12,7 @@
 ;;; Copyright © 2019, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Brian Leung <bkleung89@gmail.com>
 ;;;
@@ -627,7 +627,7 @@ and mIRC chat codes.")
 (define-public kmonad
   (package
     (name "kmonad")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -636,7 +636,7 @@ and mIRC chat codes.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1g40nkpldih6h1rlxjx5yf9iavr3qs1f2b6j0gd8135p5hkg8d8n"))))
+        (base32 "064gnzzcm6fnxfiildbjmgbdxkhqvp61zrl6qhkl1pgbn27j1mll"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
@@ -661,7 +661,7 @@ and mIRC chat codes.")
                     (doc (string-append out "/share/doc/kmonad-" ,version)))
                (install-file "README.md" doc)
                (copy-recursively "doc" doc)
-               (copy-recursively "example" (string-append doc "/example"))
+               (copy-recursively "keymap" (string-append doc "/keymap"))
                #t))))))
     (inputs
      `(("ghc-cereal" ,ghc-cereal)
@@ -670,6 +670,8 @@ and mIRC chat codes.")
        ("ghc-lens" ,ghc-lens)
        ("ghc-megaparsec" ,ghc-megaparsec)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-rio" ,ghc-rio)
        ("ghc-unagi-chan" ,ghc-unagi-chan)
        ("ghc-unliftio" ,ghc-unliftio)
        ("ghc-unordered-containers" ,ghc-unordered-containers)))
