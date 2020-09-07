@@ -1444,7 +1444,7 @@ control to Git repositories.")
 (define-public pre-commit
   (package
     (name "pre-commit")
-    (version "2.6.0")
+    (version "2.7.1")
     (source
      (origin
        ;; No tests in the PyPI tarball.
@@ -1454,7 +1454,7 @@ control to Git repositories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "144hcnz8vz07nkx7hk8a3ac822186ardwxa8jnl6s8qvm5ip92f2"))))
+        (base32 "0n7qby5a4yz3s02nqcp5js6jg9wrd0x7msblxwb1883ds4b2b71a"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1490,7 +1490,7 @@ control to Git repositories.")
                       " and not test_run_a_ruby_hook"
                       " and not test_run_ruby_hook_with_disable_shared_gems"
                       " and not test_run_versioned_ruby_hook"
-                      ;; Disable Cargo tests
+                      ;; Disable Cargo tests.
                       " and not test_additional_rust_cli_dependencies_installed"
                       " and not test_additional_rust_lib_dependencies_installed"
                       " and not test_local_rust_additional_dependencies"
@@ -1517,14 +1517,14 @@ control to Git repositories.")
                       " and not test_too_new_version"
                       " and not test_try_repo_uncommitted_changes"
                       " and not test_versions_ok"
-                      ;; This test tries to activate a virtualenv
+                      ;; This test tries to activate a virtualenv.
                       " and not test_healthy_venv_creator"
                       ;; Fatal error: Not a Git repository.
                       " and not test_all_cmds"
                       " and not test_try_repo"
-                      ;; No module named 'pip._internal.cli.main'
+                      ;; No module named 'pip._internal.cli.main'.
                       " and not test_additional_dependencies_roll_forward"
-                      ; Assertion errors
+                      ;; Assertion errors.
                       " and not test_install_existing_hooks_no_overwrite"
                       " and not test_uninstall_restores_legacy_hooks"))))
          (add-before 'reset-gzip-timestamps 'make-files-writable
@@ -1536,7 +1536,7 @@ control to Git repositories.")
                          (find-files out "\\.gz$"))
                #t))))))
     (native-inputs
-     `(("git" ,git)
+     `(("git" ,git-minimal)
        ("python-pytest" ,python-pytest)))
     (inputs
      `(("python-cfgv" ,python-cfgv)
