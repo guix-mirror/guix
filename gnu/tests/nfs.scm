@@ -264,13 +264,13 @@
 directories can be mounted.")
    (value (run-nfs-server-test))))
 
+
 (define (run-nfs-root-fs-test)
   "Run a test of an OS mounting its root file system via NFS."
   (define nfs-root-server-os
     (marionette-operating-system
      (operating-system
        (inherit %nfs-os)
-       (file-systems %base-file-systems)
        (services
          (modify-services (operating-system-user-services %nfs-os)
            (nfs-service-type
@@ -315,13 +315,15 @@ directories can be mounted.")
           (mkdir #$output)
           (chdir #$output)
 
-          (test-begin "start-nfs-root-server")
+          (test-begin "start-nfs-boot-test")
           (marionette-eval
            '(begin
               (use-modules (gnu services herd))
-
               (current-output-port
                (open-file "/dev/console" "w0"))
+              ;; FIXME: Instead statfs "/" and "/export" and wait until they
+              ;; are different file systems.
+              (sleep 10)
               (chmod "/export" #o777)
               (symlink "/gnu" "/export/gnu")
               (start-service 'nscd)
@@ -333,23 +335,30 @@ directories can be mounted.")
           (test-assert "nfs services are running"
            (wait-for-file "/var/run/rpc.statd.pid" server-marionette))
 
-          (test-begin "boot-nfs-root-client")
           (marionette-eval
            '(begin
               (use-modules (gnu services herd))
+              (use-modules (rnrs io ports))
 
               (current-output-port
                (open-file "/dev/console" "w0"))
-               (with-output-to-file "/var/run/mounts"
-                (lambda () (system* "mount")))
-               (chmod "/var/run/mounts" #o777))
+              (let ((content (call-with-input-file "/proc/mounts" get-string-all)))
+                (call-with-output-file "/mounts.new"
+                  (lambda (port)
+                    (display content port))))
+              (chmod "/mounts.new" #o777)
+              (rename-file "/mounts.new" "/mounts"))
            client-marionette)
 
           (test-assert "nfs-root-client booted")
+
+          (test-assert "nfs client deposited file"
+           (wait-for-file "/export/mounts" server-marionette))
           (marionette-eval
            '(begin
-              (and (file-exists? "/export/var/run/mounts")
-                   (system* "cat" "/export/var/run/mounts")))
+              (current-output-port
+               (open-file "/dev/console" "w0"))
+              (call-with-input-file "/export/mounts" display))
            server-marionette)
 
           (test-end)
