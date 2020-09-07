@@ -298,7 +298,10 @@ interface to the Tk widget system.")
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DATA_DIRS")
-            (files '("share")))))
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc")))))
     (home-page "http://ecls.sourceforge.net/")
     (synopsis "Embeddable Common Lisp")
     (description "ECL is an implementation of the Common Lisp language as
@@ -546,7 +549,10 @@ an interpreter, a compiler, a debugger, and much more.")
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DATA_DIRS")
-            (files '("share")))))
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc")))))
     (home-page "http://www.sbcl.org/")
     (synopsis "Common Lisp implementation")
     (description "Steel Bank Common Lisp (SBCL) is a high performance Common
