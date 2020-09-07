@@ -14093,7 +14093,7 @@ can begin writing unit tests as soon as the project is generated.")
                (for-each delete-file
                          '("README.v1.markdown" "caveman.asd" "caveman-test.asd")))))
          ;; TODO: Tests fail with:
-         ;; writing /gnu/store/j4l1k28yq47qbg074b4yf1b7wnccg8j1-sbcl-caveman-2.4.0-1.faa5f7e/share/common-lisp/sbcl-source/caveman2/v2/t/tmp/myapp573/tests/myapp573.lisp
+         ;; writing /gnu/store/...-sbcl-caveman-2.4.0-1.faa5f7e/share/common-lisp/sbcl-source/caveman2/v2/t/tmp/myapp573/tests/myapp573.lisp
          ;; While evaluating the form starting at line 38, column 0
          ;;   of #P"/tmp/guix-build-sbcl-caveman-2.4.0-1.faa5f7e.drv-0/source/v2/t/caveman.lisp":
          ;; Unhandled ASDF/FIND-COMPONENT:MISSING-COMPONENT in thread #<SB-THREAD:THREAD "main thread" RUNNING
