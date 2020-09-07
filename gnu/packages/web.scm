@@ -4455,8 +4455,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "ab68b0fdb3efe68f1962b7b9698ffc225abfeabb")
-        (revision "20"))
+  (let ((commit "c596a1c6a90bb2fe07da5339b8dc832b81d94194")
+        (revision "21"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4468,7 +4468,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0imbkrm46ykjip81cbf14gc6hqlgi79fnwvsjxbhkd2wq3c1nrjg"))))
+                  "09gn2imhh3aqkzray0xgkz7slriy567inh5lpkxm74bgmx862g3g"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4531,6 +4531,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          ("guile-fibers" ,guile3.0-fibers)
          ("guile-json" ,guile3.0-json)
          ("guile-email" ,guile3.0-email)
+         ("guile-prometheus" ,guile-prometheus)
          ("guile-squee" ,guile3.0-squee)
          ("ephemeralpg" ,ephemeralpg)
          ("util-linux" ,util-linux)
