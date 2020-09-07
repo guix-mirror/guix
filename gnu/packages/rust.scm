@@ -1317,5 +1317,9 @@ move around."
                      (string-append "#[ignore] " all)))
                  #t)))))))))
 
+(define-public rust-1.46
+  (rust-bootstrapped-package rust-1.45 "1.46.0"
+    "0a17jby2pd050s24cy4dfc0gzvgcl585v3vvyfilniyvjrqknsid"))
+
 ;; TODO(staging): Bump this variable to the latest packaged rust.
 (define-public rust rust-1.39)
