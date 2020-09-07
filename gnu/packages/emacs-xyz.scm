@@ -3209,6 +3209,29 @@ project.
 This package also includes relevant snippets for yasnippet.")
       (license license:expat))))
 
+(define-public emacs-gdscript-mode
+  (package
+    (name "emacs-gdscript-mode")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/godotengine/emacs-gdscript-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02by4bvdayldbjlz6jkp36m5rgcy2h5bwhqx2cj7wma6xf6cw3lf"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/godotengine/emacs-gdscript-mode")
+    (synopsis "GDScript support and syntax highlighting in Emacs")
+    (description
+     "This package adds support for the GDScript programming language from the
+Godot game engine in Emacs. It features all the essentials, e.g., syntax
+highlighting, code folding, indentation, automatic pairing, auto-completion,
+and code formatting.")
+    (license license:gpl3+)))
+
 (define-public emacs-el-mock
   (package
     (name "emacs-el-mock")
