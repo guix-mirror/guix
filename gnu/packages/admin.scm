@@ -514,7 +514,7 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method git-fetch)
@@ -522,7 +522,7 @@ or via the @code{facter} Ruby library.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "096gdnpaszs5rfp7qj8npi2jkvdqpp8mznn89f97ykrg6pgagwq4"))
+        (base32 "0kjlphdvwwbj91kk91s4ksc954d3c2bznddzx2223jmb1bn9rcsa"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
