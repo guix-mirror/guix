@@ -3108,16 +3108,16 @@ perform geometrical transforms on JPEG images.")
 (define-public nomad
   (package
     (name "nomad")
-    (version "0.2.0-alpha")
+    (version "0.2.0-alpha-100-g6a565d3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://git.savannah.gnu.org/git/nomad.git")
+                    (url "https://git.savannah.gnu.org/git/nomad.git/")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1z2z5x37v1qrk2vb8qlz2yj030iirzzd0maa9fjxzlqkrg6krbaj"))))
+                "0anmprm63a88kii251rl296v1g4iq62r6n4nssx5jbc0hzkknanz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3128,36 +3128,35 @@ perform geometrical transforms on JPEG images.")
        ("guile" ,guile-2.2)
        ("glib:bin" ,glib "bin")
        ("texinfo" ,texinfo)
+       ("gettext" ,gnu-gettext)
        ("perl" ,perl)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(;; Guile
+       ("guile" ,guile-2.2)
        ("guile-lib" ,guile2.2-lib)
        ("guile-readline" ,guile2.2-readline)
        ("guile-gcrypt" ,guile2.2-gcrypt)
        ("gnutls" ,gnutls)
+       ("g-golf" ,g-golf)
        ("shroud" ,shroud)
        ("emacsy" ,emacsy-minimal)
+       ;; Gtk
        ("glib" ,glib)
        ("dbus-glib" ,dbus-glib)
+       ("glib-networking" ,glib-networking)
        ("gtk+" ,gtk+)
        ("gtk+:bin" ,gtk+ "bin")
-       ("gtksourceview" ,gtksourceview)
        ("webkitgtk" ,webkitgtk)
-       ("g-golf" ,g-golf)
-       ("xorg-server" ,xorg-server)))
-    (propagated-inputs
-     `(("glib" ,glib)
-       ("glib-networking" ,glib-networking)
+       ("gtksourceview" ,gtksourceview)
+       ("vte" ,vte)
+       ;; Gstreamer
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-bad" ,gst-plugins-bad)
        ("gst-plugins-ugly" ,gst-plugins-ugly)
-       ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
-       ("vte" ,vte)
-       ("webkitgtk" ,webkitgtk)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+       ;; Util
+       ("xorg-server" ,xorg-server)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -3175,49 +3174,40 @@ perform geometrical transforms on JPEG images.")
              #t))
          (add-after 'install 'wrap-binaries
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (gio-deps (map (cut assoc-ref inputs <>)
-                                   '("glib-networking"
-                                     "glib"
-                                     "gstreamer"
-                                     "gst-plugins-base"
-                                     "gst-plugins-good"
-                                     "gst-plugins-bad"
-                                     "gst-plugins-ugly")))
-                    (gio-mod-path (map (cut string-append <>
-                                            "/lib/gio/modules")
-                                       gio-deps))
-                    (effective (read-line (open-pipe*
-                                           OPEN_READ
-                                           "guile" "-c"
-                                           "(display (effective-version))")))
-                    (deps (map (cut assoc-ref inputs <>)
-                               '("emacsy" "guile-lib" "guile-readline"
-                                 "g-golf" "shroud")))
-                    (scm-path (map (cut string-append <>
-                                        "/share/guile/site/" effective)
-                                   `(,out ,@deps)))
-                    (go-path (map (cut string-append <>
-                                       "/lib/guile/" effective "/site-ccache")
-                                  `(,out ,@deps)))
-                    (progs (map (cut string-append out "/bin/" <>)
-                                '("nomad"))))
-               (map (cut wrap-program <>
-                         `("GIO_EXTRA_MODULES" ":" prefix ,gio-mod-path)
-                         `("GUILE_LOAD_PATH" ":" prefix ,scm-path)
-                         `("GUILE_LOAD_COMPILED_PATH" ":"
-                           prefix ,go-path))
-                    progs)
+             (let* ((out        (assoc-ref outputs "out"))
+                    (effective  (read-line (open-pipe*
+                                            OPEN_READ
+                                            "guile" "-c"
+                                            "(display (effective-version))")))
+                    (gst-plugins (map (lambda (i)
+                                        (string-append (assoc-ref inputs i)
+                                                       "/lib/gstreamer-1.0"))
+                                      `("gstreamer"
+                                        "gst-plugins-base"
+                                        "gst-plugins-good"
+                                        "gst-plugins-bad"
+                                        "gst-plugins-ugly")))
+                    (out-append (lambda (. args)
+                                  (apply string-append out args)))
+                    (gi-path    (out-append "/lib/girepository-1.0"))
+                    (load-path  (out-append "/share/guile/site/" effective))
+                    (comp-path  (out-append "/lib/guile/"
+                                            effective "/site-ccache"))
+                    (ext-path   (out-append "/libexec/nomad")))
+               (wrap-program (string-append out "/bin/nomad")
+                 `("GUILE_LOAD_PATH" ":" prefix
+                   (,load-path
+                    ,(getenv "GUILE_LOAD_PATH")))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                   (,comp-path
+                    ,(getenv "GUILE_LOAD_COMPILED_PATH")))
+                 `("GI_TYPELIB_PATH" ":" prefix
+                   (,gi-path ,(getenv "GI_TYPELIB_PATH")))
+                 `("GIO_EXTRA_MODULES" ":" prefix
+                   (,(getenv "GIO_EXTRA_MODULES")))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix ,gst-plugins)
+                 `("NOMAD_WEB_EXTENSION_DIR" ":" prefix (,ext-path)))
                #t))))))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "GI_TYPELIB_PATH")
-            (separator ":")
-            (files '("lib/girepository-1.0")))
-           (search-path-specification
-            (variable "NOMAD_WEB_EXTENSION_DIR")
-            (separator ":")
-            (files '("libexec/nomad")))))
     (home-page "https://savannah.nongnu.org/projects/nomad/")
     (synopsis "Extensible Web Browser in Guile Scheme")
     (description "Nomad is a Emacs-like web browser that consists of a modular
