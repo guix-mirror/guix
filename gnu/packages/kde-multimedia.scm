@@ -355,7 +355,7 @@ This package is part of the KDE multimedia module.")
        ("libiconv" ,libiconv)
        ("libkcddb" ,libkcddb)
        ("libmad" ,libmad)
-       ("libmpcdec" ,libmpcdec) ;; FIXME: why does cmake not find this?
+       ("libmpcdec" ,libmpcdec)
        ;;("libmusicbrainz" ,libmusicbrainz) ; wants old version 2
        ("libsamplerate" ,libsamplerate)
        ("libsndfile" ,libsndfile)
@@ -366,7 +366,8 @@ This package is part of the KDE multimedia module.")
        ("shared-mime-info" ,shared-mime-info)
        ("solid" ,solid)
        ("sox" ,sox)
-       ("taglib" ,taglib)))
+       ("taglib" ,taglib)
+       ("zlib" ,zlib)))
     (home-page "https://kde.org/applications/multimedia/org.kde.k3b")
     (synopsis "Sophisticated CD/DVD burning application")
     (description "K3b is CD-writing software which intends to be feature-rich
