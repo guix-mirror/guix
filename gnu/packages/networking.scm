@@ -3762,3 +3762,28 @@ hashcash stamps efficiently.
 This package contains a command-line tool for computing and verifying hashcash
 stamps.")
     (license license:public-domain)))
+
+(define-public nbd
+  (package
+    (name "nbd")
+    (version "3.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/nbd/nbd/3.20/nbd-" version
+                            ".tar.xz"))
+        (sha256
+         (base32
+          "1kfnyx52nna2mnw264njk1dl2zc8m78sz031yp65mbmpi99v7qg0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (home-page "https://nbd.sourceforge.io/")
+    (synopsis "NBD client and server")
+    (description "This package provides the NBD (Network Block Devices)
+client and server.  It allows you to use remote block devices over a TCP/IP
+network.")
+    (license license:gpl2)))
