@@ -469,9 +469,10 @@ upon error."
 
   (define (device-string->file-system-device device-string)
     ;; The "--root=SPEC" kernel command-line option always provides a
-    ;; string, but the string can represent a device, a UUID, or a
-    ;; label.  So check for all three.
+    ;; string, but the string can represent a device, an nfs-root, a UUID, or a
+    ;; label.  So check for all four.
     (cond ((string-prefix? "/" device-string) device-string)
+          ((string-contains device-string ":/") device-string) ; nfs-root
           ((uuid device-string) => identity)
           (else (file-system-label device-string))))
 

@@ -675,7 +675,8 @@ were found."
 
 (define (canonicalize-device-spec spec)
   "Return the device name corresponding to SPEC, which can be a <uuid>, a
-<file-system-label>, or a string (typically a /dev file name)."
+<file-system-label>, or a string (typically a /dev file name or an nfs-root
+containing ':/')."
   (define max-trials
     ;; Number of times we retry partition label resolution, 1 second per
     ;; trial.  Note: somebody reported a delay of 16 seconds (!) before their
