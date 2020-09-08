@@ -169,7 +169,6 @@
        ("automake" ,automake)
        ;;; Note: cramfs is obsolete.
        ("dtc" ,dtc) ; for the tests
-       ("fdisk" ,fdisk) ; for the tests
        ("pkg-config" ,pkg-config)
        ("util-linux" ,util-linux))) ; for the tests
     (inputs
