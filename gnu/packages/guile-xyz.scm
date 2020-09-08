@@ -3959,3 +3959,49 @@ code and object formats; for all architectures.  Here you'll find libraries
 for working with binary code: assembly, disassembly, instruction tables,
 object formats and related areas.")
     (license license:expat)))
+
+(define-public guile-laesare
+  (package
+    (name "guile-laesare")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/weinholt/laesare")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15q619gzw717r8r1ql23zfdaibpnp9qqs96032vdc3rj74msxc92"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
+       #:modules ((guix build guile-build-system)
+                  (guix build utils)
+                  (srfi srfi-26)
+                  (ice-9 ftw))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'move-sls-files
+                    (lambda _
+                      ;; Move files under a laesare directory to reflect
+                      ;; the module hierarchy.
+                      (define dst-folder "laesare")
+                      (define (target file)
+                        (string-append dst-folder "/" file))
+                      (define files
+                        (scandir "." (negate (cut member <> '("." "..")))))
+                      (mkdir dst-folder)
+                      (for-each (lambda (file)
+                                  (rename-file file (target file)))
+                                files)
+                      #t)))))
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://github.com/weinholt/laesare")
+    (synopsis "R6RS Scheme library that provides a reader")
+    (description
+     "This is an R6RS Scheme library that provides a reader with some extra
+features not found in the standard read procedure such as a compatible mode
+with support for other RnRS standards and a tolerant mode that continues on
+errors.")
+    (license license:expat)))
