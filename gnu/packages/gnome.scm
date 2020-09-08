@@ -10508,7 +10508,7 @@ advanced image management tool")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       '("-Dglade_catalog=disabled"
+       '("-Dglade_catalog=enabled"
          "-Dgtk_doc=true")
        #:phases
        (modify-phases %standard-phases
@@ -10519,7 +10519,9 @@ advanced image management tool")
              (setenv "DISPLAY" ":1")
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)))
+     `(("gtk+" ,gtk+)
+       ("glade" ,glade3)
+       ("libxml2" ,libxml2)))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-scanner
@@ -10550,7 +10552,11 @@ for usage on small and big screens.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "libhandy" version))
        (sha256
-        (base32 "1y23k623sjkldfrdiwfarpchg5mg58smcy1pkgnwfwca15wm1ra5"))))))
+        (base32 "1y23k623sjkldfrdiwfarpchg5mg58smcy1pkgnwfwca15wm1ra5"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments libhandy)
+       ((#:configure-flags flags)
+        '(list "-Dglade_catalog=disabled" "-Dgtk_doc=true"))))))
 
 (define-public libgit2-glib
   (package
