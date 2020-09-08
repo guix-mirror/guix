@@ -50,7 +50,9 @@
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "15jmh17lvm3jw9c92bjarly7iwhmnfl322d91mprfv10ppb9ip54"))))
+                "15jmh17lvm3jw9c92bjarly7iwhmnfl322d91mprfv10ppb9ip54"))
+              ;; will be shipped with release 14
+              (patches (search-patches "genimage-signedness.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
