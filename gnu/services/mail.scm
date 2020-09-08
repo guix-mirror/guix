@@ -364,7 +364,13 @@ a means for clients to set and retrieve per-mailbox, per-user metadata
 and annotations over IMAP.
 
 If this is @samp{#t}, you must also specify a dictionary @i{via} the
-@code{mail-attribute-dict} setting."))
+@code{mail-attribute-dict} setting.")
+  (managesieve-notify-capability
+   (space-separated-string-list '())
+   "Which NOTIFY capabilities to report to clients that first connect to
+the ManageSieve service, before authentication.  These may differ from the
+capabilities offered to authenticated users.  If this field is left empty,
+report what the Sieve interpreter supports by default."))
 
 (define (serialize-protocol-configuration field-name val)
   (format #t "protocol ~a {\n" (protocol-configuration-name val))
