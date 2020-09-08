@@ -9604,13 +9604,13 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update it as
     ;; well.
-    (version "9.3.7")
+    (version "9.3.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
        (sha256
-        (base32 "134idizw83g30j3px1kjiwx2bjvnjqar2hai4mgrdl0jzfpgw31f"))))
+        (base32 "1az00pi9rw3ibx4061jyqr6ll27kvs99yvd7nk5dckjh0ajd0gni"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
