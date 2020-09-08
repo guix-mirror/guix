@@ -36,6 +36,7 @@
 # Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 # Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 # Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+# Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 #
 # This file is part of GNU Guix.
 #
@@ -342,6 +343,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/lout.scm				\
   %D%/packages/logging.scm			\
   %D%/packages/logo.scm				\
+  %D%/packages/loko.scm				\
   %D%/packages/lolcode.scm                      \
   %D%/packages/lsof.scm				\
   %D%/packages/lua.scm				\
