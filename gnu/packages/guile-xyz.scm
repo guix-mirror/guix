@@ -3911,3 +3911,51 @@ more objects or strings, represented by a Json object or an IRI.")
      "This is an R6RS library for working with packed byte structures.  It is
 similar to struct in Python or pack and unpack in Perl.")
     (license license:expat)))
+
+(define-public guile-machine-code
+  (package
+    (name "guile-machine-code")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/weinholt/machine-code")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wzj3caj2jypzyjqfkfqkvr3kkbjabsnhldv9kvnx9w9qnria5yd"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
+       #:modules ((guix build guile-build-system)
+                  (guix build utils)
+                  (srfi srfi-26)
+                  (ice-9 ftw))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'move-sls-files
+                    (lambda _
+                      ;; Move files under a struct/ directory to reflect the
+                      ;; module hierarchy.
+                      (define dst-folder "machine-code")
+                      (define (target file)
+                        (string-append dst-folder "/" file))
+                      (define files
+                        (scandir "." (negate (cut member <> '("." "..")))))
+                      (mkdir dst-folder)
+                      (for-each (lambda (file)
+                                  (rename-file file (target file)))
+                                files)
+                      #t)))))
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     `(("guile-struct-pack" ,guile-struct-pack)))
+    (home-page "https://github.com/weinholt/machine-code")
+    (synopsis "Tools that relate to machine code and object formats")
+    (description
+     "This project is about the development of tools that relate to machine
+code and object formats; for all architectures.  Here you'll find libraries
+for working with binary code: assembly, disassembly, instruction tables,
+object formats and related areas.")
+    (license license:expat)))
