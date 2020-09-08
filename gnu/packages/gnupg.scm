@@ -868,6 +868,8 @@ enter a passphrase when required by @code{gpg} or other software.")))
   (package
     (inherit pinentry-tty)
     (name "pinentry-gtk2")
+    (arguments
+     `(#:configure-flags '("--enable-fallback-curses")))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("glib" ,glib)
@@ -886,7 +888,8 @@ passphrase when @code{gpg} is run and needs it.")))
        ("glib" ,glib)
        ,@(package-inputs pinentry-tty)))
     (arguments
-     `(#:configure-flags '("--enable-pinentry-gnome3")))
+     `(#:configure-flags '("--enable-pinentry-gnome3"
+                           "--enable-fallback-curses")))
     (description
      "Pinentry provides a console and a GUI designed for use with GNOME@tie{}3
 that allows users to enter a passphrase when required by @code{gpg} or other
@@ -896,6 +899,8 @@ software.")))
   (package
     (inherit pinentry-tty)
     (name "pinentry-qt")
+    (arguments
+     `(#:configure-flags '("--enable-fallback-curses")))
     (inputs
      `(("qtbase" ,qtbase)
        ,@(package-inputs pinentry-tty)))
@@ -912,7 +917,8 @@ passphrase when @code{gpg} is run and needs it.")))
         (inherit (package-source pinentry-tty))
         (patches (search-patches "pinentry-efl.patch"))))
     (arguments
-     '(#:configure-flags '("--enable-pinentry-efl")
+     '(#:configure-flags '("--enable-pinentry-efl"
+                           "--enable-fallback-curses")
        #:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
