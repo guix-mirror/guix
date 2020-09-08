@@ -20768,6 +20768,17 @@ could allow a user to delete others' mailboxes, or @code{ln -s
 @samp{""}.
 @end deftypevr
 
+@deftypevr {@code{dovecot-configuration} parameter} string mail-attribute-dict
+The location of a dictionary used to store @code{IMAP METADATA}
+as defined by @uref{https://tools.ietf.org/html/rfc5464, RFC@tie{}5464}.
+
+The IMAP METADATA commands are available only if the ``imap''
+protocol configuration's @code{imap-metadata?} field is @samp{#t}.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-full-filesystem-access?
 Allow full file system access to clients.  There's no access checks
 other than what the operating system does for the active UID/GID@.  It

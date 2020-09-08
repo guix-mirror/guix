@@ -1133,6 +1133,14 @@ disabled.")
 @samp{mdbox-rotate-size}.  This setting currently works only in Linux
 with some file systems (ext4, xfs).")
 
+  (mail-attribute-dict
+   (string "")
+   "The location of a dictionary used to store @code{IMAP METADATA}
+as defined by @uref{https://tools.ietf.org/html/rfc5464, RFC@tie{}5464}.
+
+The IMAP METADATA commands are available only if the ``imap''
+protocol configuration's @code{imap-metadata?} field is @samp{#t}.")
+
   (mail-attachment-dir
    (string "")
    "sdbox and mdbox support saving mail attachments to external files,
