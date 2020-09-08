@@ -4990,7 +4990,13 @@ what you should use in this case (@pxref{Invoking guix copy}).
 
 @cindex nar, archive format
 @cindex normalized archive (nar)
-Archives are stored in the ``normalized archive'' or ``nar'' format, which is
+@cindex nar bundle, archive format
+Each store item is written in the @dfn{normalized archive} or @dfn{nar}
+format (described below), and the output of @command{guix archive
+--export} (and input of @command{guix archive --import}) is a @dfn{nar
+bundle}.
+
+The nar format is
 comparable in spirit to `tar', but with differences
 that make it more appropriate for our purposes.  First, rather than
 recording all Unix metadata for each file, the nar format only mentions
@@ -4999,6 +5005,10 @@ and owner/group are dismissed.  Second, the order in which directory
 entries are stored always follows the order of file names according to
 the C locale collation order.  This makes archive production fully
 deterministic.
+
+That nar bundle format is essentially the concatenation of zero or more
+nars along with metadata for each store item it contains: its file name,
+references, corresponding derivation, and a digital signature.
 
 When exporting, the daemon digitally signs the contents of the archive,
 and that digital signature is appended.  When importing, the daemon
