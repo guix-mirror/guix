@@ -1453,6 +1453,7 @@ facilities for checking incoming mail.")
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var"
+                           "--with-moduledir=/etc/dovecot/modules"
                            "--with-sqlite"  ; not auto-detected
                            "--with-lucene") ; not auto-detected
        #:phases
@@ -1471,9 +1472,13 @@ facilities for checking incoming mail.")
                (("cat") (which "cat")))
              #t))
          (replace 'install
-           (lambda* (#:key make-flags #:allow-other-keys)
+           (lambda* (#:key outputs make-flags #:allow-other-keys)
+             ;; The .la files don't like having the moduledir moved.
+             (for-each delete-file (find-files "." "\\.la"))
              ;; Simple hack to avoid installing a trivial README in /etc.
              (apply invoke "make" "install" "sysconfdir=/tmp/bogus"
+                    (string-append "moduledir=" (assoc-ref outputs "out")
+                                   "/lib/dovecot")
                     make-flags))))))
     (home-page "https://www.dovecot.org")
     (synopsis "Secure POP3/IMAP server")
