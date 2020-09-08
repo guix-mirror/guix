@@ -2919,7 +2919,13 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
     (description "Glade is a rapid application development (RAD) tool to
 enable quick & easy development of user interfaces for the GTK+ toolkit and
 the GNOME desktop environment.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.0+)
+    (native-search-paths (list (search-path-specification
+                                (variable "GLADE_CATALOG_SEARCH_PATH")
+                                (files '("share/glade/catalogs")))
+                               (search-path-specification
+                                (variable "GLADE_MODULE_SEARCH_PATH")
+                                (files '("lib/glade/modules")))))))
 
 (define-public libcroco
   (package
