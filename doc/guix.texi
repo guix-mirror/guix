@@ -20092,6 +20092,16 @@ report what the Sieve interpreter supports by default.
 Defaults to @samp{()}.
 @end deftypevr
 
+@deftypevr {@code{protocol-configuration} parameter} space-separated-string-list managesieve-sieve-capability
+Which SIEVE capabilities to report to clients that first connect to
+the ManageSieve service, before authentication.  These may differ from the
+capabilities offered to authenticated users.  If this field is left empty,
+report what the Sieve interpreter supports by default.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
 @deftypevr {@code{protocol-configuration} parameter} space-separated-string-list mail-plugins
 Space separated list of plugins to load.
 @end deftypevr

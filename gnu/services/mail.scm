@@ -370,6 +370,12 @@ If this is @samp{#t}, you must also specify a dictionary @i{via} the
    "Which NOTIFY capabilities to report to clients that first connect to
 the ManageSieve service, before authentication.  These may differ from the
 capabilities offered to authenticated users.  If this field is left empty,
+report what the Sieve interpreter supports by default.")
+  (managesieve-sieve-capability
+   (space-separated-string-list '())
+   "Which SIEVE capabilities to report to clients that first connect to
+the ManageSieve service, before authentication.  These may differ from the
+capabilities offered to authenticated users.  If this field is left empty,
 report what the Sieve interpreter supports by default."))
 
 (define (serialize-protocol-configuration field-name val)
