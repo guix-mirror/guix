@@ -596,7 +596,7 @@ kernel.")
 (define-public coq-stdpp
   (package
     (name "coq-stdpp")
-    (version "1.2.1")
+    (version "1.4.0")
     (synopsis "Alternative Coq standard library std++")
     (source (origin
               (method git-fetch)
@@ -606,7 +606,7 @@ kernel.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lczybg1jq9drbi8nzrlb0k199x4n07aawjwfzrl3qqc0w8kmvdz"))))
+                "1m6c7ibwc99jd4cv14v3r327spnfvdf3x2mnq51f9rz99rffk68r"))))
     (build-system gnu-build-system)
     (inputs
      `(("coq" ,coq)))
