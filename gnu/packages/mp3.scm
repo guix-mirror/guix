@@ -182,9 +182,9 @@ a highly stable and efficient implementation.")
                        ;; flag for zlib.
                        (substitute* "CMakeLists.txt"
                          (("set\\(ZLIB_LIBRARIES_FLAGS -lz\\)")
-                          (string-append "set(ZLIB_LIBRARIES_FLAGS -L"
+                          (string-append "set(ZLIB_LIBRARIES_FLAGS \"-L"
                                          (assoc-ref inputs "zlib")
-                                         " -lz)")))
+                                         "/lib -lz\")")))
                        #t)))))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://taglib.org")
