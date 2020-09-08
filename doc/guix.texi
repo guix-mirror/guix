@@ -20070,6 +20070,19 @@ This is used by imap (for shared users) and lda.
 It defaults to @samp{"/var/run/dovecot/auth-userdb"}.
 @end deftypevr
 
+@deftypevr {@code{protocol-configuration} parameter} boolean imap-metadata?
+Whether to enable the @code{IMAP METADATA} extension as defined in
+@uref{https://tools.ietf.org/html/rfc5464,RFC@tie{}5464}, which provides
+a means for clients to set and retrieve per-mailbox, per-user metadata
+and annotations over IMAP.
+
+If this is @samp{#t}, you must also specify a dictionary @i{via} the
+@code{mail-attribute-dict} setting.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
 @deftypevr {@code{protocol-configuration} parameter} space-separated-string-list mail-plugins
 Space separated list of plugins to load.
 @end deftypevr

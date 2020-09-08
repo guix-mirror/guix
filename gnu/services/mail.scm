@@ -355,7 +355,16 @@ This is used by imap (for shared users) and lda.")
   (mail-max-userip-connections
    (non-negative-integer 10)
    "Maximum number of IMAP connections allowed for a user from each IP
-address.  NOTE: The username is compared case-sensitively."))
+address.  NOTE: The username is compared case-sensitively.")
+  (imap-metadata?
+   (boolean #f)
+   "Whether to enable the @code{IMAP METADATA} extension as defined in
+@uref{https://tools.ietf.org/html/rfc5464, RFC@tie{}5464}, which provides
+a means for clients to set and retrieve per-mailbox, per-user metadata
+and annotations over IMAP.
+
+If this is @samp{#t}, you must also specify a dictionary @i{via} the
+@code{mail-attribute-dict} setting."))
 
 (define (serialize-protocol-configuration field-name val)
   (format #t "protocol ~a {\n" (protocol-configuration-name val))
