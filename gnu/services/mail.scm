@@ -99,7 +99,9 @@
                   (and (string? x) (not (string-index x #\space))))
                 val)))
 (define (serialize-space-separated-string-list field-name val)
-  (serialize-field field-name (string-join val " ")))
+  (match val
+    (() #f)
+    (_ (serialize-field field-name (string-join val " ")))))
 
 (define (comma-separated-string-list? val)
   (and (list? val)
