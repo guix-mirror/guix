@@ -339,18 +339,18 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20200810")
+    (version "8.20200908")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "1wy6ckcf5f6m94gakg1504h1zryail3mmj85sglq03s45vawjcg6"))))
+        (base32 "1113inl10f4m0699ba2zglaqlfqvwhqjkqg6r6m1d5rqv5brswb1"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
-       '("--flags=-Android -Assistant -Pairing -Webapp -WebDAV")
+       '("--flags=-Android -Assistant -Pairing -Webapp")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-shell-for-tests
@@ -448,6 +448,7 @@ to @code{cabal repl}).")
        ("ghc-crypto-api" ,ghc-crypto-api)
        ("ghc-cryptonite" ,ghc-cryptonite)
        ("ghc-data-default" ,ghc-data-default)
+       ("ghc-dav" ,ghc-dav)
        ("ghc-disk-free-space" ,ghc-disk-free-space)
        ("ghc-dlist" ,ghc-dlist)
        ("ghc-edit-distance" ,ghc-edit-distance)
