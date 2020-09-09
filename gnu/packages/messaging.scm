@@ -593,14 +593,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hb1v167aa6gv5bcwz352l6b8gnd74ymjw92y4x882l099hzg59i"))))
+                "03fyi0j44zcanj1rsdx93hkdskwfvhbywjiwd17f9q1a7yp8l8zz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
