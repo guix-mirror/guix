@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -1811,15 +1811,16 @@ Every puzzle has a complete solution, although there may be more than one.")
 (define-public retux
   (package
     (name "retux")
-    (version "1.3.6")
+    (version "1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/retux/"
+              (uri (string-append "https://github.com/retux-game/retux/"
+                                  "releases/download/v"
                                   (version-major+minor version) "/retux-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "01bidh4zisjp3nc436x0g85v60dvwb3ig37i7y01sa71j8fm4fmb"))))
+                "1hxy1pvlxhk0ci3wh2i3mmr82faqdjnnxsiwwr5gcr93nfnw9w5f"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -1831,28 +1832,22 @@ Every puzzle has a complete solution, although there may be more than one.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (bin    (string-append out "/bin"))
-                    (data   (string-append out "/share/retux"))
-                    (doc    (string-append out "/share/doc/retux")))
+                    (data   (string-append out "/share/retux")))
                (mkdir-p bin)
 
                (substitute* "retux.py"
                  ;; Use the correct data directory.
                  (("os\\.path\\.join\\(os\\.path\\.dirname\\(__file__\\), \"data\"\\),")
-                  (string-append "\"" data "\","))
-                 ;; Use Python 3 so the patch-shebangs phase works properly.
-                 ((".*python2.*") "#!/usr/bin/python3"))
+                  (string-append "\"" data "\",")))
 
                (copy-file "retux.py" (string-append bin "/retux"))
-
                (copy-recursively "data" data)
-
-               (install-file "COPYING" doc)
                #t))))))
     (inputs
      `(("python-sge-pygame" ,python-sge-pygame)
        ("python-six" ,python-six)
        ("python-xsge" ,python-xsge)))
-    (home-page "http://retux.nongnu.org")
+    (home-page "https://retux-game.github.io/")
     (synopsis "Action platformer game")
     (description
      "ReTux is an action platformer loosely inspired by the Mario games,
