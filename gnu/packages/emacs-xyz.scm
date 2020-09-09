@@ -2134,7 +2134,7 @@ Its features are:
 (define-public emacs-direnv
   (package
     (name "emacs-direnv")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -2143,8 +2143,7 @@ Its features are:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "005ibyzsx1fdyrl5iyhqpb1bg83mphzahq7zvw58x00syyqi2z49"))))
+        (base32 "0xkqn4604k2imas6azy1www56br8ls4iv9a44pxcd8h94j1fp44d"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("dash" ,emacs-dash)
