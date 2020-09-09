@@ -177,6 +177,7 @@ This package contains GUI widgets for baloo.")
          ("qtquickcontrols" ,qtquickcontrols)
          ("qtquickcontrols2" ,qtquickcontrols2)
          ("kiconthemes" ,kiconthemes)
+         ("breeze" ,breeze)
          ("qtgraphicaleffects" ,qtgraphicaleffects)
          ("kplotting" ,kplotting)))
       (arguments
@@ -192,10 +193,13 @@ This package contains GUI widgets for baloo.")
                       (qtdeclarative (assoc-ref inputs "qtdeclarative"))
                       (frei0r (assoc-ref inputs "frei0r-plugins"))
                       (ffmpeg (assoc-ref inputs "ffmpeg"))
+                      (breeze (assoc-ref inputs "breeze"))
                       (qml "/lib/qt5/qml"))
                  (wrap-program (string-append out "/bin/kdenlive")
                    `("PATH" ":" prefix
                      ,(list (string-append ffmpeg "/bin")))
+                   `("XDG_DATA_DIRS" ":" prefix
+                     ,(list (string-append breeze "/share")))
                    `("QT_PLUGIN_PATH" ":" prefix
                      ,(map (lambda (label)
                              (string-append (assoc-ref inputs label)
