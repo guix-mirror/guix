@@ -11942,7 +11942,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.4.0")
+    (version "3.5.0")
     (source
      (origin
        (method git-fetch)
@@ -11951,7 +11951,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ahgb7dqdc75farkl0fg0a6hvx2067gdvjq99cd3z2dz56km0p05"))))
+        (base32 "13lgjsm9pwgjsxg7lzc1c9sw2bzssxikfj6grnshqfll8kz8yr4r"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
