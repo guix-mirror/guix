@@ -9658,7 +9658,7 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20200908")
+    (version "20200907")
     (source
      (origin
        (method url-fetch)
