@@ -1933,6 +1933,32 @@ of space-time series.  The @code{pastecs} library is a PNEC-Art4 and IFREMER
 initiative to bring PASSTEC 2000 functionalities to R.")
    (license license:gpl2+)))
 
+(define-public r-partykit
+  (package
+   (name "r-partykit")
+   (version "1.2-9")
+   (source (origin
+             (method url-fetch)
+             (uri (cran-uri "partykit" version))
+             (sha256
+              (base32
+               "18nc6vvj1cy8ly2hqixg544sbg8vbpzwsr1cdlzrqfykd0pzgkvf"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-formula" ,r-formula)
+      ("r-inum" ,r-inum)
+      ("r-libcoin" ,r-libcoin)
+      ("r-mvtnorm" ,r-mvtnorm)
+      ("r-rpart" ,r-rpart)
+      ("r-survival" ,r-survival)))
+   (home-page "http://partykit.R-Forge.R-project.org/partykit")
+   (synopsis "Toolkit for recursive partytioning")
+   (description
+    "This package provides a toolkit with infrastructure for representing,
+summarizing, and visualizing tree-structured regression and classification
+models.")
+   (license license:gpl2+)))
+
 (define-public r-plogr
   (package
     (name "r-plogr")
