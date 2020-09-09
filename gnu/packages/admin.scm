@@ -2081,7 +2081,7 @@ track changes in important system configuration files.")
 (define-public libcap-ng
   (package
     (name "libcap-ng")
-    (version "0.7.11")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2089,7 +2089,7 @@ track changes in important system configuration files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1s8akhnnazk0b5c6z5i3x54rjb26p8pz2wdl1m21ml3231qmr0c5"))))
+                "08cy59iassiwbmfxa5v0kb374r80290vv32f5q1mnip11av26kgi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
