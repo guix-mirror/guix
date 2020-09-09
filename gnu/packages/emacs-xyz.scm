@@ -118,6 +118,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dictionaries)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
@@ -2479,13 +2480,30 @@ filters, new key bindings and faces.  It can be enabled by
        (sha256
         (base32 "0njgyx09q225hliacsnjk8wallg5i6xkz6bj501pb05nwqfbvfk7"))))
     (build-system emacs-build-system)
+    (inputs `(("djview" ,djview)
+              ("djvulibre" ,djvulibre)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((file "djvu.el")
+                   (djview (assoc-ref inputs "djview"))
+                   (djvulibre (assoc-ref inputs "djvulibre")))
+               ;; Specify the absolute executable locations.
+               (chmod file #o644)
+               (substitute* file
+                 (("\"djvused\"") (string-append "\"" djvulibre "/bin/djvused\""))
+                 (("\"djvm\"") (string-append "\"" djvulibre "/bin/djvm\""))
+                 (("\"ddjvu\"") (string-append "\"" djvulibre "/bin/ddjvu\"")))
+               (emacs-substitute-variables file
+                 ("djvu-djview-command" (string-append djview "/bin/djview"))))
+             #t)))))
     (home-page "http://elpa.gnu.org/packages/djvu.html")
     (synopsis "Edit and view Djvu files via djvused")
     (description
      "This package is a front end for the command-line program djvused from
-DjVuLibre, see @url{http://djvu.sourceforge.net/}.  It assumes you have the
-programs @command{djvused}, @command{djview}, @command{ddjvu}, and
-@command{djvm} installed.")
+DjVuLibre, see @url{http://djvu.sourceforge.net/}.")
     (license license:gpl3+)))
 
 (define-public emacs-pabbrev
