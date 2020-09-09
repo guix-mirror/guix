@@ -3382,8 +3382,9 @@ keep pressing the key until it selects what you want.  There's also
          ;; byte-compilation is finished
          #:parallel-tests? #f))
       (home-page "https://github.com/lastquestion/explain-pause-mode")
-      (synopsis "Provides a top like interface to determine why Emacs paused")
-      (description "Monitors Emacs function calls and records their execution
+      (synopsis "Top-like interface to determine why Emacs paused")
+      (description
+       "This package monitors Emacs function calls and records their execution
 time.  This information can be reviewed to determine what is causing the user
 interface to pause.")
       (license license:gpl3+))))
