@@ -4641,6 +4641,30 @@ automatically.")
 supports arbitrary vertex/edge/graph attributes.")
     (license license:gpl2+)))
 
+(define-public r-stabs
+  (package
+  (name "r-stabs")
+  (version "0.6-3")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (cran-uri "stabs" version))
+      (sha256
+        (base32
+          "17sa0sjxf6h7gx1ga1pxhv17yrz3qisaivbf5cbc3asvshhswqg9"))))
+  (build-system r-build-system)
+  (home-page "https://github.com/hofnerb/stabs")
+  (synopsis "Stability selection with error control")
+  (description
+    "This package provides resampling procedures to assess the stability of
+selected variables with additional finite sample error control for
+high-dimensional variable selection procedures such as Lasso or boosting.
+Both, standard stability selection (Meinshausen & Buhlmann, 2010) and
+complementary pairs stability selection with improved error bounds
+(Shah & Samworth, 2013) are implemented.  The package can be combined with
+arbitrary user specified variable selection approaches.")
+  (license license:gpl2)))
+
 (define-public r-statnet-common
   (package
     (name "r-statnet-common")
