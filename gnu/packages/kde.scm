@@ -142,7 +142,7 @@ This package contains GUI widgets for baloo.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://anongit.kde.org/kdenlive.git")
+               (url "https://invent.kde.org/multimedia/kdenlive")
                (commit (string-append "v" version))))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
