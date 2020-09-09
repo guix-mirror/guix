@@ -3724,6 +3724,36 @@ algorithm.  The interface of @code{ucminf} is designed for easy interchange
 with the package @code{optim}.")
     (license license:gpl2+)))
 
+(define-public r-useful
+  (package
+   (name "r-useful")
+   (version "1.2.6")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "useful" version))
+            (sha256
+             (base32
+              "0n50v1q75k518sq23id14jphwla35q4sasahrnrnllwrachl67v1"))))
+   (properties `((upstream-name . "useful")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-assertthat" ,r-assertthat)
+      ("r-dplyr" ,r-dplyr)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-magrittr" ,r-magrittr)
+      ("r-matrix" ,r-matrix)
+      ("r-plyr" ,r-plyr)
+      ("r-purrr" ,r-purrr)
+      ("r-scales" ,r-scales)))
+   (home-page "https://github.com/jaredlander/useful")
+   (synopsis "A Collection of Handy, Useful Functions")
+   (description "This package provides a set of little functions that have been
+found useful to do little odds and ends such as plotting the results of K-means
+clustering, substituting special text characters, viewing parts of a
+@code{data.frame}, constructing formulas from text and building design and
+response matrices.")
+   (license license:bsd-3)))
+
 (define-public r-ordinal
   (package
     (name "r-ordinal")
