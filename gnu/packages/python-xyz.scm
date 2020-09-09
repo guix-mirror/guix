@@ -9379,10 +9379,14 @@ Python's @code{ctypes} foreign function interface (FFI).")
     (native-inputs (if (%current-target-system)
                        `(("self" ,this-package))
                        '()))
-    (synopsis "Python bindings to the libmagic file type guesser.  Note that
-this module and the python-magic module both provide a \"magic.py\" file;
-these two modules, which are different and were developed separately, both
-serve the same purpose: provide Python bindings for libmagic.")))
+    (synopsis "Python bindings to the libmagic file type guesser")
+    (description "This package provides Python bindings to the libmagic file
+type guesser.
+
+Note that this module and the @code{python-magic} module both provide a
+@file{magic.py} file; these two modules, which are different and were
+developed separately, both serve the same purpose: provide Python bindings for
+libmagic.")))
 
 (define-public python2-file
   (package-with-python2 python-file))
