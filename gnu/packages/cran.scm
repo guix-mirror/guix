@@ -520,6 +520,35 @@ functions are simplified but can be faster or have other advantages.")
 objects.")
     (license license:gpl3)))
 
+(define-public r-mboost
+  (package
+   (name "r-mboost")
+   (version "2.9-3")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "mboost" version))
+            (sha256
+             (base32
+              "1qp5c43kc0939sss5w3hhn794lbi69wgfsa31sq4c8vzh35pjqmf"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-lattice" ,r-lattice)
+      ("r-matrix" ,r-matrix)
+      ("r-nnls" ,r-nnls)
+      ("r-partykit" ,r-partykit)
+      ("r-quadprog" ,r-quadprog)
+      ("r-stabs" ,r-stabs)
+      ("r-survival" ,r-survival)))
+   (home-page "https://github.com/boost-R/mboost")
+   (synopsis "Model-based boosting")
+   (description
+    "This package provides a functional gradient descent algorithm (boosting)
+for optimizing general risk functions utilizing component-wise (penalised)
+least squares estimates or regression trees as base-learners for fitting
+generalized linear, additive and interaction models to potentially
+high-dimensional data.")
+   (license license:gpl2)))
+
 (define-public r-sys
   (package
     (name "r-sys")
