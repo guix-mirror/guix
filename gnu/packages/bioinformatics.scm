@@ -7808,6 +7808,32 @@ and the assessment of differential expression.  The analysis methods apply to
 different technologies, including microarrays, RNA-seq, and quantitative PCR.")
     (license license:gpl2+)))
 
+(define-public r-loomr
+  (package
+   (name "r-loomr")
+   (version "0.2.0-beta")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/mojaveazure/loomR/archive/"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "1grchjgiky5siifkl9hmj6v0sf7q2by62rfdj2k8s2zhmrpgb0yw"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-hdf5r" ,r-hdf5r)
+      ("r-r6" ,r-r6)
+      ("r-iterators" ,r-iterators)
+      ("r-itertools" ,r-itertools)
+      ("r-matrix" ,r-matrix)))
+   (home-page "http://loompy.org")
+   (synopsis "R interface for loom files")
+   (description "This package provides an interface for the single-cell
+RNAseq-oriented loom format.  Loom files are an HDF5-based format for storing
+and interacting with large single-cell RNAseq datasets.")
+   (license license:gpl3)))
+
 (define-public r-xvector
   (package
     (name "r-xvector")
