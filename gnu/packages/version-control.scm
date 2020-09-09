@@ -1553,40 +1553,17 @@ specify a list of hooks you want and pre-commit manages the installation and
 execution of any hook written in any language before every commit.")
     (license license:expat)))
 
-(define (mercurial-patch name revision hash)
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://www.mercurial-scm.org/repo/hg/raw-rev/" revision))
-    (file-name (string-append "mercurial-" name ".patch"))
-    (sha256 (base32 hash))))
-
-(define %mercurial-patches
-  (list
-   ;; These three patches fixes compatibility with the updated gzip module
-   ;; in Python 3.8.2: <https://bz.mercurial-scm.org/show_bug.cgi?id=6284>.
-   (mercurial-patch "python-mtime" "6c36a521572edf3a79ee567b118469b3192037cc"
-                    "0bmm7y40r8s081ws2sjvn1v8kvyfan4a97jl0fhdh7yc2pzxlzqq")
-   (mercurial-patch "indent-gzip" "a23b859ad17dd0a5b9bb37846b69b5e30f99c44c"
-                    "1spscv9dgqv38m7h1liki93ax6w97gxayg17fr7wr6acjdfccpr9")
-   (mercurial-patch "python-gzip" "b7ca03dff14c63d64ad7bfa36a2d0a36a6b62253"
-                    "0p88ffhx0kk21ssrsb156ffhpcb7g8mkwwkmq49qpmbm5ag2paf0")
-   ;; This fixes an incompatibility with os.isfile in Python 3.8:
-   ;; <https://bz.mercurial-scm.org/show_bug.cgi?id=6287>.
-   (mercurial-patch "os-isfile" "6a8738dc4a019da4c9df5c26961aa09d45ce1c68"
-                    "0lr069m12kzrkmr1pmhaxg5lxmdwxabsza61qp1i1q70g7sy8lvy")))
-
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "5.3.1")
+    (version "5.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
-             (patches %mercurial-patches)
              (sha256
               (base32
-               "1nbjpzjrzgql4hrvslpxwbcgn885ikq6ba1yb4w6p78rw9nzkhgp"))))
+               "0x08yjs26j88kh1bvl2g3r24lnfc023ry3i1cxfq6haray6sv5ag"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1614,6 +1591,13 @@ execution of any hook written in any language before every commit.")
                            ;; FIXME: Why does this fail in the build container, but
                            ;; not in 'guix environment -C' (even without /bin/sh)?
                            "test-nointerrupt.t"
+
+                           ;; FIXME: This gets killed but does not receive an interrupt.
+                           "test-commandserver.t"
+
+                           ;; Only works when run in a hg-repo, not in an
+                           ;; extracted tarball
+                           "test-doctest.py"
 
                            ;; TODO: the fqaddr() call fails in the build
                            ;; container, causing these server tests to fail.
