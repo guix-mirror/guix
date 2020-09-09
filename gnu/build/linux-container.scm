@@ -243,8 +243,8 @@ that host UIDs (respectively GIDs) map to in the namespace."
              (match (read child)
                ('ready
                 (purify-environment)
-                (when (and (not (null? mounts))
-                           (memq 'mnt namespaces))
+                (when (and (memq 'mnt namespaces)
+                           (not (string=? root "/")))
                   (catch #t
                     (lambda ()
                       (mount-file-systems root mounts
