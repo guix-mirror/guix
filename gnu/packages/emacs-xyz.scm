@@ -8945,8 +8945,8 @@ file.")
       (license license:gpl3+))))
 
 (define-public emacs-sly-macrostep
-  (let ((commit "be2d24545092d164be1a91031d8881afd29c9ec0")
-        (revision "1"))
+  (let ((commit "5113e4e926cd752b1d0bcc1508b3ebad5def5fad")
+        (revision "2"))
     (package
       (name "emacs-sly-macrostep")
       (version (git-version "0.1" revision commit))
@@ -8960,7 +8960,7 @@ file.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0v8m3zkccpqd2l8m9340y672l2mm3mrry8422nva5kfvpcwdayqb"))))
+           "1nxf28gn4f3n0wnv7nb5sgl36fz175y470zs9hig4kq8cp0yal0r"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-sly" ,emacs-sly)
