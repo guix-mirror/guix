@@ -5250,7 +5250,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
 (define-public geonkick
   (package
     (name "geonkick")
-    (version "1.10.0")
+    (version "2.3.7")
     (source
      (origin
        (method git-fetch)
@@ -5260,7 +5260,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1a59wnm4035kjhs66hihlkiv45p3ffb2yaj1awvyyi5f0lds5zvh"))))
+         "1wdcbwiyy6i5agq5lffkyilyc8mv1cc4mp9h0nybn240vb2flqc2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests included
@@ -5279,6 +5279,8 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
        ("rapidjson" ,rapidjson)))
     (native-inputs
      `(("lv2" ,lv2)
+       ;; Fails with default gcc (#include <filesystem> not found).
+       ("gcc" ,gcc-9)
        ("pkg-config" ,pkg-config)
        ("sord" ,sord)))
     (synopsis "Percussion synthesizer")
