@@ -4989,7 +4989,7 @@ applications.")
 (define-public sherlock-lv2
   (package
     (name "sherlock-lv2")
-    (version "0.20.0")
+    (version "0.24.0")
     (source
      (origin
        (method url-fetch)
@@ -4999,10 +4999,11 @@ applications.")
              version ".tar.xz"))
        (sha256
         (base32
-         "1c5xajpss9h8lbyx160bbzg8va50n2d74qwnxig9sf468rzmha1y"))))
+         "08gjfx7vrsx9zvj04j8cr3vscxmq6jr2hbdi6dfgp1l1dnnpxsgq"))))
     (build-system meson-build-system)
     (inputs
-     `(("libx11" ,libx11)
+     `(("glu" ,glu)
+       ("libx11" ,libx11)
        ("mesa" ,mesa)
        ("sratom" ,sratom)))
     (native-inputs
