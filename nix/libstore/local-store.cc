@@ -1238,6 +1238,34 @@ static std::string runAuthenticationProgram(const Strings & args)
     return runProgram(settings.guixProgram, false, fullArgs);
 }
 
+/* Sign HASH with the key stored in file SECRETKEY.  Return the signature as a
+   string, or raise an exception upon error.  */
+static std::string signHash(const string &secretKey, const Hash &hash)
+{
+    Strings args;
+    args.push_back("sign");
+    args.push_back(secretKey);
+    args.push_back(printHash(hash));
+
+    return runAuthenticationProgram(args);
+}
+
+/* Verify SIGNATURE and return the base16-encoded hash over which it was
+   computed.  */
+static std::string verifySignature(const string &signature)
+{
+    Path tmpDir = createTempDir("", "guix", true, true, 0700);
+    AutoDelete delTmp(tmpDir);
+
+    Path sigFile = tmpDir + "/sig";
+    writeFile(sigFile, signature);
+
+    Strings args;
+    args.push_back("verify");
+    args.push_back(sigFile);
+    return runAuthenticationProgram(args);
+}
+
 void LocalStore::exportPath(const Path & path, bool sign,
     Sink & sink)
 {
@@ -1280,12 +1308,7 @@ void LocalStore::exportPath(const Path & path, bool sign,
         Path secretKey = settings.nixConfDir + "/signing-key.sec";
         checkSecrecy(secretKey);
 
-        Strings args;
-        args.push_back("sign");
-        args.push_back(secretKey);
-        args.push_back(printHash(hash));
-
-        string signature = runAuthenticationProgram(args);
+	string signature = signHash(secretKey, hash);
 
         writeString(signature, hashAndWriteSink);
 
@@ -1364,13 +1387,7 @@ Path LocalStore::importPath(bool requireSignature, Source & source)
         string signature = readString(hashAndReadSource);
 
         if (requireSignature) {
-            Path sigFile = tmpDir + "/sig";
-            writeFile(sigFile, signature);
-
-            Strings args;
-            args.push_back("verify");
-            args.push_back(sigFile);
-            string hash2 = runAuthenticationProgram(args);
+	    string hash2 = verifySignature(signature);
 
             /* Note: runProgram() throws an exception if the signature
                is invalid. */
