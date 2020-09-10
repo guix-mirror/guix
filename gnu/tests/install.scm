@@ -1317,10 +1317,11 @@ build (current-guix) and then store a couple of full system images.")
                                   marionette
                                   #:desktop? desktop?
                                   #:encrypted? encrypted?))))
-         (command (qemu-command/writable-image image)))
+         (command (qemu-command/writable-image image #:memory-size 512)))
       (run-basic-test target-os command name
                       #:initialization (and encrypted? enter-luks-passphrase)
-                      #:root-password %root-password)))))
+                      #:root-password %root-password
+                      #:desktop? desktop?)))))
 
 (define %test-gui-installed-os
   (guided-installation-test
