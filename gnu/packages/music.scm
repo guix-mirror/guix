@@ -1410,46 +1410,42 @@ your own lessons.")
     (license license:gpl3+)))
 
 (define-public powertabeditor
-  ;; This commit is after the switch from catch2 to doctest; I couldn't build
-  ;; powertabeditor with catch2.
-  (let ((commit "c5d39b25b75bf87ec693a3ac5018823b1d87f277")
-        (revision "1"))
-    (package
-      (name "powertabeditor")
-      (version (git-version "2.0.0-alpha12" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/powertab/powertabeditor")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "16qhqfvk14bp7s8cwr8ds8zfd80pq603d7aymr7967pnb49kic5z"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (replace 'check (lambda _ (invoke "bin/pte_tests"))))))
-      (inputs
-       `(("alsa-lib" ,alsa-lib)
-         ("boost" ,boost)
-         ("minizip" ,minizip)
-         ("pugixml" ,pugixml)
-         ("qtbase" ,qtbase)
-         ("rapidjson" ,rapidjson)
-         ("rtmidi" ,rtmidi)
-         ("timidity" ,timidity++)
-         ("zlib" ,zlib)))
-      (native-inputs
-       `(("doctest" ,doctest)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/powertab/powertabedito")
-      (synopsis "Guitar tablature editor")
-      (description
-       "Power Tab Editor 2.0 is the successor to the famous original Power Tab
+  (package
+    (name "powertabeditor")
+    (version "2.0.0-alpha13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/powertab/powertabeditor")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12il5xzgg53ick5k4ivvvqdagld5pgigiiz6s829kkdaymqr7vx5"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _ (invoke "bin/pte_tests"))))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("minizip" ,minizip)
+       ("pugixml" ,pugixml)
+       ("qtbase" ,qtbase)
+       ("rapidjson" ,rapidjson)
+       ("rtmidi" ,rtmidi)
+       ("timidity" ,timidity++)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("doctest" ,doctest)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/powertab/powertabedito")
+    (synopsis "Guitar tablature editor")
+    (description
+     "Power Tab Editor 2.0 is the successor to the famous original Power Tab
 Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public jalv-select
   (package
