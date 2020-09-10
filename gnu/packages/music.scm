@@ -5019,6 +5019,49 @@ and debugging of event signal flows inside plugin graphs.")
     (home-page "https://open-music-kontrollers.ch/lv2/sherlock/")
     (license license:artistic2.0)))
 
+(define-public foo-yc20
+  (package
+    (name "foo-yc20")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sampov2/foo-yc20/releases/download/"
+                           version "/foo-yc20-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1drzfyr7mzb58pdv0gsqkg6ds6kbgp6g25rrv1yya1611cljgvjh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f  ; no automated test
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "Makefile"
+               (("-mtune=native") "")
+               (("-march=native") ""))
+             #t)))))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("cairo" ,cairo)
+       ("gtk" ,gtk+-2)))
+    (native-inputs
+     `(("faust" ,faust)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://foo-yc20.codeforcode.com/")
+    (synopsis "Implementation of Yamaha YC-20 combo organ from 1969")
+    (description "This is a Faust implementation of a 1969 designed Yamaha
+combo organ, the YC-20.  This package provides an LV2 plugin and a standalone
+version.  Processing for the organ is based on original schematics and
+measurements from a working specimen.  This instrument simulates the circutry
+as a whole to realisticly reproduce the features and flaws of the real deal.")
+    ;; Note that after 1.3.0 the license was changed.
+    (license license:gpl3+)))
+
 (define-public spectacle-analyzer
   (package
     (name "spectacle-analyzer")
