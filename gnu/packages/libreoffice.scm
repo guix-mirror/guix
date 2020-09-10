@@ -762,14 +762,14 @@ from the old StarOffice (.sdc, .sdw, ...).")
 (define-public libwps
   (package
     (name "libwps")
-    (version "0.4.10")
+    (version "0.4.12")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           name "-" version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "1ji9zd4wxmas03g8jyx0ih0amrqfazm5874a2v9rd7va50sf088l"))))
+               "1nsfacqp5sfkyayw7q0wp68lidksd1wjdix8qmsbf0vdl19gn6p2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
