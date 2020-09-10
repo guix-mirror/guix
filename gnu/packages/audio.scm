@@ -4467,7 +4467,7 @@ supports both of ID3v1/v2 and APEv2 tags.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "0.8.1")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -4476,7 +4476,7 @@ supports both of ID3v1/v2 and APEv2 tags.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17kv2jc4jvn3sdicz3sf8dnf25wbvv7ijzkr0mm0sbrrjz6vrwz0"))))
+        (base32 "1m2db7c791fi33snkjwnvlxapmf879g5r8azlkx7sr6vp2s0jq2k"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
