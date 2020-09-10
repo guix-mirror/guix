@@ -19,6 +19,19 @@
 # Bash completion for Guix commands.
 
 declare _guix_available_packages
+declare _guix_commands
+
+_guix_complete_command ()
+{
+    local word_at_point="${COMP_WORDS[$COMP_CWORD]}"
+    if [ -z "$_guix_commands" ]
+    then
+	# Cache the list of commands to speed things up.
+	_guix_commands="$(guix --help 2> /dev/null \
+                                     | grep '^  ' | cut -c 2-)"
+    fi
+    COMPREPLY=($(compgen -W "$_guix_commands" -- "$word_at_point"))
+}
 
 _guix_complete_subcommand ()
 {
@@ -146,19 +159,6 @@ _guix_complete_pid ()
     COMPREPLY=($(compgen -W "$pids" -- "$1"))
 }
 
-declare _guix_subcommands
-
-_guix_complete_subcommand ()
-{
-    if [ -z "$_guix_subcommands" ]
-    then
-	# Cache the list of subcommands to speed things up.
-	_guix_subcommands="$(guix --help 2> /dev/null \
-                                     | grep '^  ' | cut -c 2-)"
-    fi
-    COMPREPLY=($(compgen -W "$_guix_subcommands" -- "$word_at_point"))
-}
-
 _guix_complete ()
 {
     local word_count=${#COMP_WORDS[*]}
@@ -176,7 +176,7 @@ _guix_complete ()
 
     case $COMP_CWORD in
 	1)
-	    _guix_complete_subcommand
+	    _guix_complete_command
 	    ;;
 	*)
 	    if _guix_is_command "package"
@@ -251,7 +251,7 @@ _guix_complete ()
                 then
                     _guix_complete_file
 		else
-		    _guix_complete_subcommand
+		    _guix_complete_command
                 fi
 	    elif _guix_is_command "container"
 	    then
