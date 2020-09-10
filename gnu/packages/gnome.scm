@@ -11797,6 +11797,13 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
                 (string-append (assoc-ref inputs "python-pygobject")
                                "/lib")))
              #t))
+         (add-after 'configure 'fix-ninja
+           (lambda _
+             ;; #43296: meson(?) incorrectly assumes we want to link
+             ;;         this PIE against a static libselinux.
+             (substitute* "build.ninja"
+               (("libselinux\\.a") "libselinux.so"))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              (system "Xvfb :1 &")
