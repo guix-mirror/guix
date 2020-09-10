@@ -7519,3 +7519,30 @@ tracing (uprobes), and tracepoints.  The bpftrace language is inspired by awk
 and C, and predecessor tracers such as DTrace and SystemTap.  bpftrace was
 created by Alastair Robertson.")
     (license license:asl2.0)))
+
+(define-public ttyebus-linux-module
+  (let ((revision "0")
+        (commit "fe4332a2281cf79804ef4d8516aa848ca1c58d1f"))
+    (package
+      (name "ttyebus-linux-module")
+      (version (git-version "1.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eBUS/ttyebus.git")
+               (commit "fe4332a2281cf79804ef4d8516aa848ca1c58d1f")))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1i66xjs9vln5cca6wx7aiiw7jihrlsk9hjdqyczp36fvm1b1bani"))))
+      (supported-systems '("armhf-linux" "aarch64-linux"))
+      (build-system linux-module-build-system)
+      (arguments
+       `(#:tests? #f))
+      (home-page "https://github.com/eBUS/ttyebus")
+      (synopsis "Low-latency Raspberry Pi UART driver")
+      (description "This package provides a Linux kernel module that will
+provide a serial device @code{/dev/ttyebus} with almost no latency upon
+receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
+      (license license:gpl3+))))
