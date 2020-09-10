@@ -321,7 +321,18 @@ streams which are similar to string streams.")
        (sha256
         (base32 "0dwvr29diqzcg5n6jvbk2rnd90i05l7n828hhw99khmqd0kz7xsi"))))
     (build-system asdf-build-system/sbcl)
-    (native-inputs `(("flexi-streams" ,sbcl-flexi-streams)))
+    (native-inputs
+     `(("flexi-streams" ,sbcl-flexi-streams)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-ppcre-unicode
+           ;; cl-ppcre and cl-ppcre-unicode are put in different packages
+           ;; to work around the circular dependency between edicl/cl-ppcre
+           ;; and edicl/cl-unicode.
+           (lambda _
+             (delete-file "cl-ppcre-unicode.asd")
+             #t)))))
     (synopsis "Portable regular expression library for Common Lisp")
     (description "CL-PPCRE is a portable regular expression library for Common
 Lisp, which is compatible with perl.  It is pretty fast, thread-safe, and
@@ -335,9 +346,9 @@ compatible with ANSI-compliant Common Lisp implementations.")
 (define-public ecl-cl-ppcre
   (sbcl-package->ecl-package sbcl-cl-ppcre))
 
-(define sbcl-cl-unicode-base
+(define-public sbcl-cl-unicode
   (package
-    (name "sbcl-cl-unicode-base")
+    (name "sbcl-cl-unicode")
     (version "0.1.6")
     (source (origin
               (method git-fetch)
@@ -349,9 +360,8 @@ compatible with ANSI-compliant Common Lisp implementations.")
                (base32
                 "0ykx2s9lqfl74p1px0ik3l2izd1fc9jd1b4ra68s5x34rvjy0hza"))))
     (build-system asdf-build-system/sbcl)
-    (arguments
-     '(#:asd-file "cl-unicode.asd"
-       #:asd-system-name "cl-unicode/base"))
+    (native-inputs
+     `(("flexi-streams" ,sbcl-flexi-streams)))
     (inputs
      `(("cl-ppcre" ,sbcl-cl-ppcre)))
     (home-page "http://weitz.de/cl-unicode/")
@@ -361,22 +371,32 @@ is compatible with perl.  It is pretty fast, thread-safe, and compatible with
 ANSI-compliant Common Lisp implementations.")
     (license license:bsd-2)))
 
-(define-public sbcl-cl-unicode
-  (package
-    (inherit sbcl-cl-unicode-base)
-    (name "sbcl-cl-unicode")
-    (inputs
-     `(("cl-unicode/base" ,sbcl-cl-unicode-base)
-       ,@(package-inputs sbcl-cl-unicode-base)))
-    (native-inputs
-     `(("flexi-streams" ,sbcl-flexi-streams)))
-    (arguments '())))
-
 (define-public ecl-cl-unicode
   (sbcl-package->ecl-package sbcl-cl-unicode))
 
 (define-public cl-unicode
   (sbcl-package->cl-source-package sbcl-cl-unicode))
+
+(define-public sbcl-cl-ppcre-unicode
+  (package (inherit sbcl-cl-ppcre)
+    (name "sbcl-cl-ppcre-unicode")
+    (inputs
+     `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+       ("sbcl-cl-unicode" ,sbcl-cl-unicode)))
+    (arguments
+     `(#:tests? #f ; tests fail with "Component :CL-PPCRE-TEST not found"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-ppcre
+           ;; cl-ppcre and cl-ppcre-unicode are put in different packages
+           ;; to work around the circular dependency between edicl/cl-ppcre
+           ;; and edicl/cl-unicode.
+           (lambda _
+             (delete-file "cl-ppcre.asd")
+             #t)))))))
+
+(define-public ecl-cl-ppcre-unicode
+  (sbcl-package->ecl-package sbcl-cl-ppcre-unicode))
 
 (define-public sbcl-zpb-ttf
   (package
@@ -407,9 +427,9 @@ file.")
 (define-public cl-zpb-ttf
   (sbcl-package->cl-source-package sbcl-zpb-ttf))
 
-(define-public sbcl-cl-aa
+(define-public sbcl-cl-vectors
   (package
-    (name "sbcl-cl-aa")
+    (name "sbcl-cl-vectors")
     (version "0.1.5")
     (source
      (origin
@@ -420,67 +440,21 @@ file.")
         (base32
          "04lhwi0kq8pkwhgd885pk80m1cp9sfvjjn5zj70s1dnckibhdmqh"))))
     (build-system asdf-build-system/sbcl)
-    (arguments '(#:asd-file "cl-aa.asd"))
+    (inputs
+     `(("zpb-ttf" ,sbcl-zpb-ttf)))
+    (arguments
+     '(#:asd-files '("cl-vectors.asd"
+                     "cl-aa.asd"
+                     "cl-paths.asd"
+                     "cl-paths-ttf.asd")
+       #:asd-systems '("cl-vectors"
+                       "cl-paths-ttf")))
     (home-page "http://projects.tuxee.net/cl-vectors/")
-    (synopsis "Polygon rasterizer")
-    (description
-     "This is a Common Lisp library implementing the AA polygon rasterization
-algorithm from the @url{http://antigrain.com, Antigrain} project.")
-    (license license:expat)))
-
-(define-public ecl-cl-aa
-  (sbcl-package->ecl-package sbcl-cl-aa))
-
-(define-public cl-aa
-  (sbcl-package->cl-source-package sbcl-cl-aa))
-
-(define-public sbcl-cl-paths
-  (package
-    (inherit sbcl-cl-aa)
-    (name "sbcl-cl-paths")
-    (arguments '(#:asd-file "cl-paths.asd"))
-    (synopsis "Facilities to create and manipulate vectorial paths")
-    (description
-     "This package provides facilities to create and manipulate vectorial
-paths.")))
-
-(define-public ecl-cl-paths
-  (sbcl-package->ecl-package sbcl-cl-paths))
-
-(define-public cl-paths
-  (sbcl-package->cl-source-package sbcl-cl-paths))
-
-(define-public sbcl-cl-paths-ttf
-  (package
-    (inherit sbcl-cl-aa)
-    (name "sbcl-cl-paths-ttf")
-    (arguments '(#:asd-file "cl-paths-ttf.asd"))
-    (inputs
-     `(("cl-paths" ,sbcl-cl-paths)
-       ("zpb-ttf" ,sbcl-zpb-ttf)))
-    (synopsis "Facilities to create and manipulate vectorial paths")
-    (description
-     "This package provides facilities to create and manipulate vectorial
-paths.")))
-
-(define-public ecl-cl-paths-ttf
-  (sbcl-package->ecl-package sbcl-cl-paths-ttf))
-
-(define-public cl-paths-ttf
-  (sbcl-package->cl-source-package sbcl-cl-paths-ttf))
-
-(define-public sbcl-cl-vectors
-  (package
-    (inherit sbcl-cl-aa)
-    (name "sbcl-cl-vectors")
-    (arguments '(#:asd-file "cl-vectors.asd"))
-    (inputs
-     `(("cl-aa" ,sbcl-cl-aa)
-       ("cl-paths" ,sbcl-cl-paths)))
     (synopsis "Create, transform and render anti-aliased vectorial paths")
     (description
      "This is a pure Common Lisp library to create, transform and render
-anti-aliased vectorial paths.")))
+anti-aliased vectorial paths.")
+    (license license:expat)))
 
 (define-public ecl-cl-vectors
   (sbcl-package->ecl-package sbcl-cl-vectors))
@@ -508,7 +482,6 @@ anti-aliased vectorial paths.")))
       (build-system asdf-build-system/sbcl)
       (arguments
        '(#:tests? #f           ; spatial-trees.test requires spatial-trees.nns
-         #:asd-file "spatial-trees.asd"
          #:test-asd-file "spatial-trees.test.asd"))
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
@@ -650,7 +623,6 @@ from other CLXes around the net.")
        `(("clx" ,sbcl-clx)
          ("zpb-ttf" ,sbcl-zpb-ttf)
          ("cl-vectors" ,sbcl-cl-vectors)
-         ("cl-paths-ttf" ,sbcl-cl-paths-ttf)
          ("cl-fad" ,sbcl-cl-fad)
          ("cl-store" ,sbcl-cl-store)
          ("trivial-features" ,sbcl-trivial-features)))
@@ -660,30 +632,13 @@ from other CLXes around the net.")
 antialiased TrueType font rendering using CLX and XRender extension.")
       (license license:expat))))
 
-(define-public sbcl-cl-ppcre-unicode
-  (package (inherit sbcl-cl-ppcre)
-    (name "sbcl-cl-ppcre-unicode")
-    (arguments
-     `(#:tests? #f ; tests fail with "Component :CL-PPCRE-TEST not found"
-       #:asd-file "cl-ppcre-unicode.asd"))
-    (inputs
-     `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
-       ("sbcl-cl-unicode" ,sbcl-cl-unicode)))))
-
-(define-public ecl-cl-ppcre-unicode
-  (sbcl-package->ecl-package sbcl-cl-ppcre-unicode))
-
-;; The slynk that users expect to install includes all of slynk's contrib
-;; modules.  Therefore, we build the base module and all contribs first; then
-;; we expose the union of these as `sbcl-slynk'.  The following variable
-;; describes the base module.
-(define sbcl-slynk-boot0
+(define-public sbcl-slynk
   (let ((revision "3")
         ;; Update together with emacs-sly.
         (commit "6a2f543cb21f14104c2253af5a1427b884a987ae"))
     (package
-      (name "sbcl-slynk-boot0")
-      (version (string-append "1.0.0-beta-" revision "." (string-take commit 7)))
+      (name "sbcl-slynk")
+      (version (git-version "1.0.0-beta" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -693,7 +648,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
            (commit commit)))
          (sha256
           (base32 "0wbpg9p9yg2hd62l15pvy50fk3hndq5zzyqlyyf04g368s895144"))
-         (file-name (string-append "slynk-" version "-checkout"))
+         (file-name (git-file-name "slynk" version))
          (modules '((guix build utils)
                     (ice-9 ftw)))
          (snippet
@@ -724,9 +679,41 @@ antialiased TrueType font rendering using CLX and XRender extension.")
                        (scandir "slynk"))
              #t))))
       (build-system asdf-build-system/sbcl)
+      (outputs '("out" "image"))
       (arguments
        `(#:tests? #f ; No test suite
-         #:asd-system-name "slynk"))
+         #:asd-files '("slynk.asd")
+         #:asd-systems '("slynk"
+                         "slynk/arglists"
+                         "slynk/util"
+                         "slynk/fancy-inspector"
+                         "slynk/package-fu"
+                         "slynk/mrepl"
+                         "slynk/trace-dialog"
+                         "slynk/profiler"
+                         "slynk/stickers"
+                         "slynk/indentation"
+                         "slynk/retro")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'create-asdf-configuration 'build-image
+             (lambda* (#:key outputs #:allow-other-keys)
+               (build-image (string-append
+                             (assoc-ref %outputs "image")
+                             "/bin/slynk")
+                            %outputs
+                            #:dependencies '("slynk"
+                                             "slynk/arglists"
+                                             "slynk/util"
+                                             "slynk/fancy-inspector"
+                                             "slynk/package-fu"
+                                             "slynk/mrepl"
+                                             "slynk/trace-dialog"
+                                             "slynk/profiler"
+                                             "slynk/stickers"
+                                             "slynk/indentation"
+                                             "slynk/retro"))
+               #t)))))
       (synopsis "Common Lisp IDE for Emacs")
       (description "SLY is a fork of SLIME, an IDE backend for Common Lisp.
 It also features a completely redesigned REPL based on Emacs's own
@@ -739,192 +726,8 @@ multiple inspectors with independent history.")
 
 (define-public cl-slynk
   (package
-    (inherit (sbcl-package->cl-source-package sbcl-slynk-boot0))
+    (inherit (sbcl-package->cl-source-package sbcl-slynk))
     (name "cl-slynk")))
-
-(define ecl-slynk-boot0
-  (sbcl-package->ecl-package sbcl-slynk-boot0))
-
-(define sbcl-slynk-arglists
-  (package
-    (inherit sbcl-slynk-boot0)
-    (name "sbcl-slynk-arglists")
-    (inputs `(("slynk" ,sbcl-slynk-boot0)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-boot0)
-       ((#:asd-file _ "") "slynk.asd")
-       ((#:asd-system-name _ #f) "slynk/arglists")))))
-
-(define ecl-slynk-arglists
-  (sbcl-package->ecl-package sbcl-slynk-arglists))
-
-(define sbcl-slynk-util
-  (package
-    (inherit sbcl-slynk-boot0)
-    (name "sbcl-slynk-util")
-    (inputs `(("slynk" ,sbcl-slynk-boot0)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-boot0)
-       ((#:asd-file _ "") "slynk.asd")
-       ((#:asd-system-name _ #f) "slynk/util")))))
-
-(define ecl-slynk-util
-  (sbcl-package->ecl-package sbcl-slynk-util))
-
-(define sbcl-slynk-fancy-inspector
-  (package
-    (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-fancy-inspector")
-    (inputs `(("slynk-util" ,sbcl-slynk-util)
-              ,@(package-inputs sbcl-slynk-arglists)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
-       ((#:asd-system-name _ #f) "slynk/fancy-inspector")))))
-
-(define ecl-slynk-fancy-inspector
-  (sbcl-package->ecl-package sbcl-slynk-fancy-inspector))
-
-(define sbcl-slynk-package-fu
-  (package
-    (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-package-fu")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
-       ((#:asd-system-name _ #f) "slynk/package-fu")))))
-
-(define ecl-slynk-package-fu
-  (sbcl-package->ecl-package sbcl-slynk-package-fu))
-
-(define sbcl-slynk-mrepl
-  (package
-    (inherit sbcl-slynk-fancy-inspector)
-    (name "sbcl-slynk-mrepl")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
-       ((#:asd-system-name _ #f) "slynk/mrepl")))))
-
-(define ecl-slynk-mrepl
-  (sbcl-package->ecl-package sbcl-slynk-mrepl))
-
-(define sbcl-slynk-trace-dialog
-  (package
-    (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-trace-dialog")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
-       ((#:asd-system-name _ #f) "slynk/trace-dialog")))))
-
-(define ecl-slynk-trace-dialog
-  (sbcl-package->ecl-package sbcl-slynk-trace-dialog))
-
-(define sbcl-slynk-profiler
-  (package
-    (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-profiler")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
-       ((#:asd-system-name _ #f) "slynk/profiler")))))
-
-(define ecl-slynk-profiler
-  (sbcl-package->ecl-package sbcl-slynk-profiler))
-
-(define sbcl-slynk-stickers
-  (package
-    (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-stickers")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
-       ((#:asd-system-name _ #f) "slynk/stickers")))))
-
-(define ecl-slynk-stickers
-  (sbcl-package->ecl-package sbcl-slynk-stickers))
-
-(define sbcl-slynk-indentation
-  (package
-    (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-indentation")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
-       ((#:asd-system-name _ #f) "slynk/indentation")))))
-
-(define ecl-slynk-indentation
-  (sbcl-package->ecl-package sbcl-slynk-indentation))
-
-(define sbcl-slynk-retro
-  (package
-    (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-retro")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
-       ((#:asd-system-name _ #f) "slynk/retro")))))
-
-(define ecl-slynk-retro
-  (sbcl-package->ecl-package sbcl-slynk-retro))
-
-(define slynk-systems
-  '("slynk"
-    "slynk-util"
-    "slynk-arglists"
-    "slynk-fancy-inspector"
-    "slynk-package-fu"
-    "slynk-mrepl"
-    "slynk-profiler"
-    "slynk-trace-dialog"
-    "slynk-stickers"
-    "slynk-indentation"
-    "slynk-retro"))
-
-(define-public sbcl-slynk
-  (package
-    (inherit sbcl-slynk-boot0)
-    (name "sbcl-slynk")
-    (inputs
-     `(("slynk" ,sbcl-slynk-boot0)
-       ("slynk-util" ,sbcl-slynk-util)
-       ("slynk-arglists" ,sbcl-slynk-arglists)
-       ("slynk-fancy-inspector" ,sbcl-slynk-fancy-inspector)
-       ("slynk-package-fu" ,sbcl-slynk-package-fu)
-       ("slynk-mrepl" ,sbcl-slynk-mrepl)
-       ("slynk-profiler" ,sbcl-slynk-profiler)
-       ("slynk-trace-dialog" ,sbcl-slynk-trace-dialog)
-       ("slynk-stickers" ,sbcl-slynk-stickers)
-       ("slynk-indentation" ,sbcl-slynk-indentation)
-       ("slynk-retro" ,sbcl-slynk-retro)))
-    (native-inputs `(("sbcl" ,sbcl)))
-    (build-system trivial-build-system)
-    (source #f)
-    (outputs '("out" "image"))
-    (arguments
-     `(#:modules ((guix build union)
-                  (guix build utils)
-                  (guix build lisp-utils))
-       #:builder
-       (begin
-         (use-modules (ice-9 match)
-                      (srfi srfi-1)
-                      (guix build union)
-                      (guix build lisp-utils))
-
-         (union-build
-          (assoc-ref %outputs "out")
-          (filter-map
-           (match-lambda
-             ((name . path)
-              (if (string-prefix? "slynk" name) path #f)))
-           %build-inputs))
-
-         (prepend-to-source-registry
-          (string-append (assoc-ref %outputs "out") "//"))
-
-         (parameterize ((%lisp-type "sbcl")
-                        (%lisp (string-append (assoc-ref %build-inputs "sbcl")
-                                              "/bin/sbcl")))
-           (build-image (string-append
-                         (assoc-ref %outputs "image")
-                         "/bin/slynk")
-                        %outputs
-                        #:dependencies ',slynk-systems))
-         #t)))))
 
 (define-public ecl-slynk
   (package
@@ -1095,9 +898,14 @@ compressor.  It works on data produced by @code{parse-js} to generate a
          (with-output-to-file script
            (lambda _
              (format #t "#!~a/bin/sbcl --script
+
  (require :asdf)
- (push (truename \"~a/lib/sbcl\") asdf:*central-registry*)"
+ (asdf:initialize-source-registry
+  #p\"~a/etc/common-lisp/source-registry.conf.d/\")
+ (asdf:initialize-output-translations
+  #p\"~a/etc/common-lisp/asdf-output-translations.conf.d/\")"
                      (assoc-ref %build-inputs "sbcl")
+                     (assoc-ref %build-inputs "sbcl-cl-uglify-js")
                      (assoc-ref %build-inputs "sbcl-cl-uglify-js"))
              ;; FIXME: cannot use progn here because otherwise it fails to
              ;; find cl-uglify-js.
@@ -1293,8 +1101,8 @@ GNU libiconv, but completely written in Common Lisp.")
        (file-name (string-append "cl-yacc-" version "-checkout"))))
     (build-system asdf-build-system/sbcl)
     (arguments
-     `(#:asd-file "yacc.asd"
-       #:asd-system-name "yacc"))
+     `(#:asd-files '("yacc.asd")
+       #:asd-systems '("yacc")))
     (synopsis "LALR(1) parser generator for Common Lisp, similar in spirit to Yacc")
     (description
      "CL-Yacc is a LALR(1) parser generator for Common Lisp, similar in spirit
@@ -1569,9 +1377,13 @@ C, C++, Java, Python, Erlang, Haskell, Objective-C, Diff, Webkit.")
       (arguments
        ;; FIXME: We need to specify the name because the build-system thinks
        ;; "3" is a version marker.
-       `(#:asd-system-name "3bmd"))
+       `(#:asd-files '("3bmd.asd"
+                       "3bmd-ext-code-blocks.asd")
+         #:asd-systems '("3bmd"
+                         "3bmd-ext-code-blocks")))
       (inputs
-       `(("esrap" ,sbcl-esrap)
+       `(("colorize" ,sbcl-colorize)
+         ("esrap" ,sbcl-esrap)
          ("split-sequence" ,sbcl-split-sequence)))
       (synopsis "Markdown processor in Command Lisp using esrap parser")
       (description
@@ -1585,29 +1397,6 @@ parsing, and grammar based on @command{peg-markdown}.")
 
 (define-public ecl-3bmd
   (sbcl-package->ecl-package sbcl-3bmd))
-
-(define-public sbcl-3bmd-ext-code-blocks
-  (let ((commit "192ea13435b605a96ef607df51317056914cabbd"))
-    (package
-      (inherit sbcl-3bmd)
-      (name "sbcl-3bmd-ext-code-blocks")
-      (arguments
-       `(#:asd-system-name "3bmd-ext-code-blocks"
-         #:asd-file "3bmd-ext-code-blocks.asd"))
-      (inputs
-       `(("3bmd" ,sbcl-3bmd)
-         ("colorize" ,sbcl-colorize)))
-      (synopsis "3bmd extension which adds support for GitHub-style fenced
-code blocks")
-      (description
-       "3bmd extension which adds support for GitHub-style fenced code blocks,
-with @command{colorize} support."))))
-
-(define-public cl-3bmd-ext-code-blocks
-  (sbcl-package->cl-source-package sbcl-3bmd-ext-code-blocks))
-
-(define-public ecl-3bmd-ext-code-blocks
-  (sbcl-package->ecl-package sbcl-3bmd-ext-code-blocks))
 
 (define-public sbcl-cl-fad
   (package
@@ -1810,19 +1599,13 @@ writing code that contains string literals that contain code themselves.")
 (define-public ecl-pythonic-string-reader
   (sbcl-package->ecl-package sbcl-pythonic-string-reader))
 
-;; SLIME does not have a ASDF system definition to build all of Swank.  As a
-;; result, the asdf-build-system/sbcl will produce an almost empty package.
-;; Some work was done to fix this at
-;; https://github.com/sionescu/slime/tree/swank-asdf but it was never merged
-;; and is now lagging behind.  Building SBCL fasls might not be worth the
-;; hassle, so let's just ship the source then.
-(define-public cl-slime-swank
+(define-public sbcl-slime-swank
   (package
-    (name "cl-slime-swank")
+    (name "sbcl-slime-swank")
     (version "2.24")
     (source
      (origin
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (git-file-name "slime-swank" version))
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/slime/slime/")
@@ -1830,7 +1613,10 @@ writing code that contains string literals that contain code themselves.")
        (sha256
         (base32
          "0js24x42m7b5iymb4rxz501dff19vav5pywnzv50b673rbkaaqvh"))))
-    (build-system asdf-build-system/source)
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     '(#:asd-files '("swank.asd")
+       #:asd-systems '("swank")))
     (home-page "https://github.com/slime/slime")
     (synopsis "Common Lisp Swank server")
     (description
@@ -1839,8 +1625,11 @@ processes that doesn't run under Emacs.  Lisp processes created by
 @command{M-x slime} automatically start the server.")
     (license (list license:gpl2+ license:public-domain))))
 
-(define-public sbcl-slime-swank
-  (deprecated-package "sbcl-slime-swank" cl-slime-swank))
+(define-public cl-slime-swank
+  (sbcl-package->cl-source-package sbcl-slime-swank))
+
+(define-public ecl-slime-swank
+  (sbcl-package->ecl-package sbcl-slime-swank))
 
 (define-public sbcl-mgl-pax
   (let ((commit "818448418d6b9de74620f606f5b23033c6082769"))
@@ -1860,16 +1649,12 @@ processes that doesn't run under Emacs.  Lisp processes created by
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("3bmd" ,sbcl-3bmd)
-         ("3bmd-ext-code-blocks" ,sbcl-3bmd-ext-code-blocks)
          ("babel" ,sbcl-babel)
          ("cl-fad" ,sbcl-cl-fad)
          ("ironclad" ,sbcl-ironclad)
          ("named-readtables" ,sbcl-named-readtables)
-         ("pythonic-string-reader" ,sbcl-pythonic-string-reader)))
-      (propagated-inputs
-       ;; Packages having mgl-pax as input complain that it can't find
-       ;; swank if we put it in inputs, so let's put it in propageted-inputs.
-       `(("swank" ,cl-slime-swank)))
+         ("pythonic-string-reader" ,sbcl-pythonic-string-reader)
+         ("swank" ,sbcl-slime-swank)))
       (synopsis "Exploratory programming environment and documentation generator")
       (description
        "PAX provides an extremely poor man's Explorable Programming
@@ -2116,10 +1901,10 @@ named color.")
 (define-public ecl-cl-ansi-text
   (sbcl-package->ecl-package sbcl-cl-ansi-text))
 
-(define-public sbcl-prove-asdf
+(define-public sbcl-prove
   (let ((commit "4f9122bd393e63c5c70c1fba23070622317cfaa0"))
     (package
-      (name "sbcl-prove-asdf")
+      (name "sbcl-prove")
       (version (git-version "1.0.0" "1" commit))
       (source
        (origin
@@ -2132,35 +1917,16 @@ named color.")
            "07sbfw459z8bbjvx1qlmfa8qk2mvbjnnzi2mi0x72blaj8bkl4vc"))
          (file-name (git-file-name "prove" version))))
       (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-ansi-text" ,sbcl-cl-ansi-text)))
       (arguments
-       `(#:asd-file "prove-asdf.asd"))
-      (synopsis "Test requirement for the Common Lisp 'prove' library")
+       `(#:asd-files '("prove.asd"
+                       "prove-asdf.asd")))
+      (synopsis "Yet another unit testing framework for Common Lisp")
       (description
-       "Test requirement for the Common Lisp @command{prove} library.")
-      (home-page "https://github.com/fukamachi/prove")
-      (license license:expat))))
-
-(define-public cl-prove-asdf
-  (sbcl-package->cl-source-package sbcl-prove-asdf))
-
-(define-public ecl-prove-asdf
-  (sbcl-package->ecl-package sbcl-prove-asdf))
-
-(define-public sbcl-prove
-  (package
-    (inherit sbcl-prove-asdf)
-    (name "sbcl-prove")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ppcre" ,sbcl-cl-ppcre)
-       ("cl-ansi-text" ,sbcl-cl-ansi-text)))
-    (native-inputs
-     `(("prove-asdf" ,sbcl-prove-asdf)))
-    (arguments
-     `(#:asd-file "prove.asd"))
-    (synopsis "Yet another unit testing framework for Common Lisp")
-    (description
-     "This project was originally called @command{cl-test-more}.
+       "This project was originally called @command{cl-test-more}.
 @command{prove} is yet another unit testing framework for Common Lisp.  The
 advantages of @command{prove} are:
 
@@ -2170,7 +1936,9 @@ advantages of @command{prove} are:
 @item Extensible test reporters
 @item Colorizes the report if it's available (note for SLIME)
 @item Reports test durations
-@end itemize\n")))
+@end itemize\n")
+      (home-page "https://github.com/fukamachi/prove")
+      (license license:expat))))
 
 (define-public cl-prove
   (sbcl-package->cl-source-package sbcl-prove))
@@ -2198,8 +1966,7 @@ advantages of @command{prove} are:
        `(("alexandria" ,sbcl-alexandria)
          ("babel" ,sbcl-babel)))
       (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)))
+       `(("prove" ,sbcl-prove)))
       (arguments
        ;; TODO: Tests don't find "proc-parse-test", why?
        `(#:tests? #f))
@@ -2237,8 +2004,7 @@ pattern-matching-like, but a char-by-char procedural parser.")
        `(("alexandria" ,sbcl-alexandria)
          ("babel" ,sbcl-babel)))
       (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)))
+       `(("prove" ,sbcl-prove)))
       (arguments
        ;; TODO: Tests don't find "proc-parse-test", why?
        `(#:tests? #f))
@@ -2255,12 +2021,12 @@ values from a string in Common Lisp.")
 (define-public ecl-parse-float
   (sbcl-package->ecl-package sbcl-parse-float))
 
-(define-public sbcl-ascii-strings
+(define-public sbcl-cl-string-match
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
     (package
-      (name "sbcl-ascii-strings")
-      (version (string-append "0-" revision "." (string-take changeset 7)))
+      (name "sbcl-cl-string-match")
+      (version (git-version "0" revision changeset))
       (source
        (origin
          (method hg-fetch)
@@ -2274,68 +2040,30 @@ values from a string in Common Lisp.")
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
-         ("babel" ,sbcl-babel)))
+         ("babel" ,sbcl-babel)
+         ("iterate" ,sbcl-iterate)
+         ("jpl-queues" ,sbcl-jpl-queues)
+         ("jpl-util" ,sbcl-jpl-util)
+         ("mgl-pax" ,sbcl-mgl-pax)
+         ("parse-float" ,sbcl-parse-float)
+         ("proc-parse" ,sbcl-proc-parse)
+         ("yacc" ,sbcl-cl-yacc)))
+      ;; TODO: Tests are not evaluated properly.
+      (native-inputs
+       ;; For testing:
+       `(("lisp-unit" ,sbcl-lisp-unit)))
       (arguments
-       `(#:asd-file "ascii-strings.asd"))
-      (synopsis "Operations on ASCII strings")
+       `(#:tests? #f
+         #:asd-files '("cl-string-match.asd"
+                       "ascii-strings.asd"
+                       "simple-scanf.asd")))
+      (synopsis "Set of utilities to manipulate strings in Common Lisp")
       (description
-       "Operations on ASCII strings.  Essentially this can be any kind of
-single-byte encoded strings.")
+       "@command{cl-strings} is a small, portable, dependency-free set of
+utilities that make it even easier to manipulate text in Common Lisp.  It has
+100% test coverage and works at least on sbcl, ecl, ccl, abcl and clisp.")
       (home-page "https://bitbucket.org/vityok/cl-string-match/")
       (license license:bsd-3))))
-
-(define-public cl-ascii-strings
-  (sbcl-package->cl-source-package sbcl-ascii-strings))
-
-(define-public ecl-ascii-strings
-  (sbcl-package->ecl-package sbcl-ascii-strings))
-
-(define-public sbcl-simple-scanf
-  (package
-    (inherit sbcl-ascii-strings)
-    (name "sbcl-simple-scanf")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("iterate" ,sbcl-iterate)
-       ("proc-parse" ,sbcl-proc-parse)
-       ("parse-float" ,sbcl-parse-float)))
-    (arguments
-     `(#:asd-file "simple-scanf.asd"))
-    (synopsis "Simple scanf-like functionality implementation")
-    (description
-     "A simple scanf-like functionality implementation.")))
-
-(define-public cl-simple-scanf
-  (sbcl-package->cl-source-package sbcl-simple-scanf))
-
-(define-public ecl-simple-scanf
-  (sbcl-package->ecl-package sbcl-simple-scanf))
-
-(define-public sbcl-cl-string-match
-  (package
-    (inherit sbcl-ascii-strings)
-    (name "sbcl-cl-string-match")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("ascii-strings" ,sbcl-ascii-strings)
-       ("yacc" ,sbcl-cl-yacc)
-       ("jpl-util" ,sbcl-jpl-util)
-       ("jpl-queues" ,sbcl-jpl-queues)
-       ("mgl-pax" ,sbcl-mgl-pax)
-       ("iterate" ,sbcl-iterate)))
-    ;; TODO: Tests are not evaluated properly.
-    (native-inputs
-     ;; For testing:
-     `(("lisp-unit" ,sbcl-lisp-unit)
-       ("simple-scanf" ,sbcl-simple-scanf)))
-    (arguments
-     `(#:tests? #f
-       #:asd-file "cl-string-match.asd"))
-    (synopsis "Portable, dependency-free set of utilities to manipulate strings in Common Lisp")
-    (description
-     "@command{cl-strings} is a small, portable, dependency-free set of
-utilities that make it even easier to manipulate text in Common Lisp.  It has
-100% test coverage and works at least on sbcl, ecl, ccl, abcl and clisp.")))
 
 (define-public cl-string-match
   (sbcl-package->cl-source-package sbcl-cl-string-match))
@@ -2419,6 +2147,19 @@ Lisp programs.  It parses URI according to the RFC 2396 specification.")
           (base32
            "0wdhfnzi4v6d97pggzj2aw55si94w4327br94jrmyvwf351wqjvv"))))
       (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)))
+      (arguments
+       '(#:asd-files '("queues.asd"
+                       "queues.simple-queue.asd"
+                       "queues.simple-cqueue.asd"
+                       "queues.priority-queue.asd"
+                       "queues.priority-cqueue.asd")
+         #:asd-systems '("queues"
+                         "queues.simple-queue"
+                         "queues.simple-cqueue"
+                         "queues.priority-queue"
+                         "queues.priority-cqueue")))
       (home-page "https://github.com/oconnore/queues")
       (synopsis "Common Lisp queue library")
       (description
@@ -2432,93 +2173,9 @@ non-consing thread safe queues and fibonacci priority queues.")
 (define-public ecl-queues
   (sbcl-package->ecl-package sbcl-queues))
 
-(define-public sbcl-queues.simple-queue
+(define-public sbcl-cffi
   (package
-    (inherit sbcl-queues)
-    (name "sbcl-queues.simple-queue")
-    (inputs
-     `(("sbcl-queues" ,sbcl-queues)))
-    (arguments
-     `(#:asd-file "queues.simple-queue.asd"))
-    (synopsis "Simple queue implementation")
-    (description
-     "This is a simple queue library for Common Lisp with features such as
-non-consing thread safe queues and fibonacci priority queues.")
-    (license license:expat)))
-
-(define-public cl-queues.simple-queue
-  (sbcl-package->cl-source-package sbcl-queues.simple-queue))
-
-(define-public ecl-queues.simple-queue
-  (sbcl-package->ecl-package sbcl-queues.simple-queue))
-
-(define-public sbcl-queues.simple-cqueue
-  (package
-    (inherit sbcl-queues)
-    (name "sbcl-queues.simple-cqueue")
-    (inputs
-     `(("sbcl-queues" ,sbcl-queues)
-       ("sbcl-queues.simple-queue" ,sbcl-queues.simple-queue)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)))
-    (arguments
-     `(#:asd-file "queues.simple-cqueue.asd"))
-    (synopsis "Thread safe queue implementation")
-    (description
-     "This is a simple queue library for Common Lisp with features such as
-non-consing thread safe queues and fibonacci priority queues.")
-    (license license:expat)))
-
-(define-public cl-queues.simple-cqueue
-  (sbcl-package->cl-source-package sbcl-queues.simple-cqueue))
-
-(define-public ecl-queues.simple-cqueue
-  (sbcl-package->ecl-package sbcl-queues.simple-cqueue))
-
-(define-public sbcl-queues.priority-queue
-  (package
-    (inherit sbcl-queues)
-    (name "sbcl-queues.priority-queue")
-    (inputs
-     `(("sbcl-queues" ,sbcl-queues)))
-    (arguments
-     `(#:asd-file "queues.priority-queue.asd"))
-    (synopsis "Priority queue (Fibonacci) implementation")
-    (description
-     "This is a simple queue library for Common Lisp with features such as
-non-consing thread safe queues and fibonacci priority queues.")
-    (license license:expat)))
-
-(define-public cl-queues.priority-queue
-  (sbcl-package->cl-source-package sbcl-queues.priority-queue))
-
-(define-public ecl-queues.priority-queue
-  (sbcl-package->ecl-package sbcl-queues.priority-queue))
-
-(define-public sbcl-queues.priority-cqueue
-  (package
-    (inherit sbcl-queues)
-    (name "sbcl-queues.priority-cqueue")
-    (inputs
-     `(("sbcl-queues" ,sbcl-queues)
-       ("sbcl-queues.priority-queue" ,sbcl-queues.priority-queue)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)))
-    (arguments
-     `(#:asd-file "queues.priority-cqueue.asd"))
-    (synopsis "Thread safe fibonacci priority queue implementation")
-    (description
-     "This is a simple queue library for Common Lisp with features such as
-non-consing thread safe queues and fibonacci priority queues.")
-    (license license:expat)))
-
-(define-public cl-queues.priority-cqueue
-  (sbcl-package->cl-source-package sbcl-queues.priority-cqueue))
-
-(define-public ecl-queues.priority-cqueue
-  (sbcl-package->ecl-package sbcl-queues.priority-cqueue))
-
-(define sbcl-cffi-bootstrap
-  (package
-    (name "sbcl-cffi-bootstrap")
+    (name "sbcl-cffi")
     (version "0.21.0")
     (source
      (origin
@@ -2531,12 +2188,14 @@ non-consing thread safe queues and fibonacci priority queues.")
         (base32 "1qalargz9bhp850qv60ffwpdqi4xirzar4l3g6qcg8yc6xqf2cjk"))))
     (build-system asdf-build-system/sbcl)
     (inputs
-     `(("libffi" ,libffi)
-       ("alexandria" ,sbcl-alexandria)
+     `(("alexandria" ,sbcl-alexandria)
        ("babel" ,sbcl-babel)
+       ("libffi" ,libffi)
        ("trivial-features" ,sbcl-trivial-features)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("pkg-config" ,pkg-config)
+       ("rt" ,sbcl-rt)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -2547,9 +2206,21 @@ non-consing thread safe queues and fibonacci priority queues.")
                                      (assoc-ref inputs "libffi")
                                      "/lib/" all)))
              (substitute* "toolchain/c-toolchain.lisp"
-               (("\"cc\"") (format #f "~S" (which "gcc")))))))
-       #:asd-system-name "cffi"
-       #:tests? #f))
+               (("\"cc\"") (format #f "~S" (which "gcc"))))))
+         (add-after 'build 'install-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "grovel/common.h"
+                           (string-append
+                            (assoc-ref outputs "out")
+                            "/include/grovel")))))
+       #:asd-files '("cffi.asd"
+                     "cffi-toolchain.asd"
+                     "cffi-grovel.asd"
+                     "cffi-libffi.asd"
+                     "cffi-uffi-compat.asd")
+       #:asd-systems '("cffi"
+                       "cffi-libffi"
+                       "cffi-uffi-compat")))
     (home-page "https://common-lisp.net/project/cffi/")
     (synopsis "Common Foreign Function Interface for Common Lisp")
     (description "The Common Foreign Function Interface (CFFI)
@@ -2559,75 +2230,11 @@ in the CFFI-SYS package, and a portable frontend in the CFFI
 package.")
     (license license:expat)))
 
-(define-public sbcl-cffi-toolchain
-  (package
-    (inherit sbcl-cffi-bootstrap)
-    (name "sbcl-cffi-toolchain")
-    (inputs
-     `(("libffi" ,libffi)
-       ("sbcl-cffi" ,sbcl-cffi-bootstrap)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cffi-bootstrap)
-       ((#:asd-system-name _) #f)
-       ((#:tests? _) #t)))))
-
-(define-public sbcl-cffi-libffi
-  (package
-    (inherit sbcl-cffi-toolchain)
-    (name "sbcl-cffi-libffi")
-    (inputs
-     `(("cffi" ,sbcl-cffi-bootstrap)
-       ("cffi-grovel" ,sbcl-cffi-grovel)
-       ("trivial-features" ,sbcl-trivial-features)
-       ("libffi" ,libffi)))))
-
-(define-public sbcl-cffi-grovel
-  (package
-    (inherit sbcl-cffi-toolchain)
-    (name "sbcl-cffi-grovel")
-    (inputs
-     `(("libffi" ,libffi)
-       ("cffi" ,sbcl-cffi-bootstrap)
-       ("cffi-toolchain" ,sbcl-cffi-toolchain)
-       ("alexandria" ,sbcl-alexandria)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cffi-toolchain)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'build 'install-headers
-             (lambda* (#:key outputs #:allow-other-keys)
-               (install-file "grovel/common.h"
-                             (string-append
-                              (assoc-ref outputs "out")
-                              "/include/grovel"))))))))))
-
-(define-public sbcl-cffi
-  (package
-    (inherit sbcl-cffi-toolchain)
-    (name "sbcl-cffi")
-    (inputs (package-inputs sbcl-cffi-bootstrap))
-    (native-inputs
-     `(("cffi-grovel" ,sbcl-cffi-grovel)
-       ("cffi-libffi" ,sbcl-cffi-libffi)
-       ("rt" ,sbcl-rt)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ,@(package-native-inputs sbcl-cffi-bootstrap)))))
-
 (define-public cl-cffi
   (sbcl-package->cl-source-package sbcl-cffi))
 
-(define-public sbcl-cffi-uffi-compat
-  (package
-    (inherit sbcl-cffi-toolchain)
-    (name "sbcl-cffi-uffi-compat")
-    (native-inputs
-     `(,@(package-inputs sbcl-cffi-bootstrap))) ; For fix-paths phase
-    (inputs
-     `(("cffi" ,sbcl-cffi)))
-    (synopsis "UFFI Compatibility Layer for CFFI")))
-
-(define-public cl-cffi-uffi-compat
-  (sbcl-package->cl-source-package sbcl-cffi-uffi-compat))
+(define-public ecl-cffi
+  (sbcl-package->ecl-package sbcl-cffi))
 
 (define-public sbcl-cl-sqlite
   (package
@@ -2652,8 +2259,8 @@ package.")
      `(("fiveam" ,sbcl-fiveam)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)))
     (arguments
-     `(#:asd-file "sqlite.asd"
-       #:asd-system-name "sqlite"
+     `(#:asd-files '("sqlite.asd")
+       #:asd-systems '("sqlite")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
@@ -2856,10 +2463,10 @@ Lisp implementations.")
 (define-public ecl-closer-mop
   (sbcl-package->ecl-package sbcl-closer-mop))
 
-(define sbcl-cl-cffi-gtk-boot0
+(define-public sbcl-cl-cffi-gtk
   (let ((commit "412d17214e092220c65a5660f5cbbd9cb69b8fe4"))
     (package
-      (name "sbcl-cl-cffi-gtk-boot0")
+      (name "sbcl-cl-cffi-gtk")
       (version (git-version "0.11.2" "1" commit))
       (source
        (origin
@@ -2872,17 +2479,35 @@ Lisp implementations.")
           (base32
            "0n997yhcnzk048nalx8ys62ja2ac8iv4mbn3mb55iapl0321hghn"))))
       (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
       (inputs
-       `(("iterate" ,sbcl-iterate)
-         ("cffi" ,sbcl-cffi)
-         ("trivial-features" ,sbcl-trivial-features)
-         ("glib" ,glib)
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
          ("cairo" ,cairo)
-         ("pango" ,pango)
+         ("cffi" ,sbcl-cffi)
+         ("closer-mop" ,sbcl-closer-mop)
          ("gdk-pixbuf" ,gdk-pixbuf)
-         ("gtk" ,gtk+)))
+         ("glib" ,glib)
+         ("gtk" ,gtk+)
+         ("iterate" ,sbcl-iterate)
+         ("pango" ,pango)
+         ("trivial-features" ,sbcl-trivial-features)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
       (arguments
-       `(#:phases
+       `(#:asd-files '("gtk/cl-cffi-gtk.asd"
+                       "glib/cl-cffi-gtk-glib.asd"
+                       "gobject/cl-cffi-gtk-gobject.asd"
+                       "gio/cl-cffi-gtk-gio.asd"
+                       "cairo/cl-cffi-gtk-cairo.asd"
+                       "pango/cl-cffi-gtk-pango.asd"
+                       "gdk-pixbuf/cl-cffi-gtk-gdk-pixbuf.asd"
+                       "gdk/cl-cffi-gtk-gdk.asd")
+         #:asd-systems '("cl-cffi-gtk")
+         #:test-asd-file "test/cl-cffi-gtk-test.asd"
+         ;; TODO: Tests fail with memory fault.
+         ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
+         #:tests? #f
+         #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs #:allow-other-keys)
@@ -2917,220 +2542,6 @@ Lisp implementations.")
 is a library for creating graphical user interfaces.")
       (license license:lgpl3))))
 
-(define-public sbcl-cl-cffi-gtk-glib
-  (package
-    (inherit sbcl-cl-cffi-gtk-boot0)
-    (name "sbcl-cl-cffi-gtk-glib")
-    (inputs
-     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
-       ((#:asd-file _ "") "glib/cl-cffi-gtk-glib.asd")))))
-
-(define-public sbcl-cl-cffi-gtk-gobject
-  (package
-    (inherit sbcl-cl-cffi-gtk-boot0)
-    (name "sbcl-cl-cffi-gtk-gobject")
-    (inputs
-     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
-       ("trivial-garbage" ,sbcl-trivial-garbage)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("closer-mop" ,sbcl-closer-mop)
-       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
-       ((#:asd-file _ "") "gobject/cl-cffi-gtk-gobject.asd")
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'link-source
-             ;; Since source is particularly heavy (16MiB+), let's reuse it
-             ;; across the different components of cl-ffi-gtk.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                                 "/share/common-lisp/sbcl-source/"
-                                                 "cl-cffi-gtk-glib"))
-                     (out-source (string-append (assoc-ref outputs "out")
-                                                "/share/common-lisp/sbcl-source/"
-                                                "cl-cffi-gtk-gobject")))
-                 (delete-file-recursively out-source)
-                 (symlink glib-source out-source)
-                 #t)))))))))
-
-(define-public sbcl-cl-cffi-gtk-gio
-  (package
-    (inherit sbcl-cl-cffi-gtk-boot0)
-    (name "sbcl-cl-cffi-gtk-gio")
-    (inputs
-     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
-       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
-       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
-       ((#:asd-file _ "") "gio/cl-cffi-gtk-gio.asd")
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'link-source
-             ;; Since source is particularly heavy (16MiB+), let's reuse it
-             ;; across the different components of cl-ffi-gtk.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                                 "/share/common-lisp/sbcl-source/"
-                                                 "cl-cffi-gtk-glib"))
-                     (out-source (string-append (assoc-ref outputs "out")
-                                                "/share/common-lisp/sbcl-source/"
-                                                "cl-cffi-gtk-gio")))
-                 (delete-file-recursively out-source)
-                 (symlink glib-source out-source)
-                 #t)))))))))
-
-(define-public sbcl-cl-cffi-gtk-cairo
-  (package
-    (inherit sbcl-cl-cffi-gtk-boot0)
-    (name "sbcl-cl-cffi-gtk-cairo")
-    (inputs
-     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
-       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
-       ((#:asd-file _ "") "cairo/cl-cffi-gtk-cairo.asd")
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'link-source
-             ;; Since source is particularly heavy (16MiB+), let's reuse it
-             ;; across the different components of cl-ffi-gtk.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                                 "/share/common-lisp/sbcl-source/"
-                                                 "cl-cffi-gtk-glib"))
-                     (out-source (string-append (assoc-ref outputs "out")
-                                                "/share/common-lisp/sbcl-source/"
-                                                "cl-cffi-gtk-cairo")))
-                 (delete-file-recursively out-source)
-                 (symlink glib-source out-source)
-                 #t)))))))))
-
-(define-public sbcl-cl-cffi-gtk-pango
-  (package
-    (inherit sbcl-cl-cffi-gtk-boot0)
-    (name "sbcl-cl-cffi-gtk-pango")
-    (inputs
-     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
-       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
-       ("cl-cffi-gtk-cairo" ,sbcl-cl-cffi-gtk-cairo)
-       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
-       ((#:asd-file _ "") "pango/cl-cffi-gtk-pango.asd")
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'link-source
-             ;; Since source is particularly heavy (16MiB+), let's reuse it
-             ;; across the different components of cl-ffi-gtk.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                                 "/share/common-lisp/sbcl-source/"
-                                                 "cl-cffi-gtk-glib"))
-                     (out-source (string-append (assoc-ref outputs "out")
-                                                "/share/common-lisp/sbcl-source/"
-                                                "cl-cffi-gtk-pango")))
-                 (delete-file-recursively out-source)
-                 (symlink glib-source out-source)
-                 #t)))))))))
-
-(define-public sbcl-cl-cffi-gtk-gdk-pixbuf
-  (package
-    (inherit sbcl-cl-cffi-gtk-boot0)
-    (name "sbcl-cl-cffi-gtk-gdk-pixbuf")
-    (inputs
-     `(("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
-       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
-       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
-       ((#:asd-file _ "") "gdk-pixbuf/cl-cffi-gtk-gdk-pixbuf.asd")
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'link-source
-             ;; Since source is particularly heavy (16MiB+), let's reuse it
-             ;; across the different components of cl-ffi-gtk.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                                 "/share/common-lisp/sbcl-source/"
-                                                 "cl-cffi-gtk-glib"))
-                     (out-source (string-append (assoc-ref outputs "out")
-                                                "/share/common-lisp/sbcl-source/"
-                                                "cl-cffi-gtk-gdk-pixbuf")))
-                 (delete-file-recursively out-source)
-                 (symlink glib-source out-source)
-                 #t)))))))))
-
-(define-public sbcl-cl-cffi-gtk-gdk
-  (package
-    (inherit sbcl-cl-cffi-gtk-boot0)
-    (name "sbcl-cl-cffi-gtk-gdk")
-    (inputs
-     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
-       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
-       ("cl-cffi-gtk-gio" ,sbcl-cl-cffi-gtk-gio)
-       ("cl-cffi-gtk-gdk-pixbuf" ,sbcl-cl-cffi-gtk-gdk-pixbuf)
-       ("cl-cffi-gtk-cairo" ,sbcl-cl-cffi-gtk-cairo)
-       ("cl-cffi-gtk-pango" ,sbcl-cl-cffi-gtk-pango)
-       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
-       ((#:asd-file _ "") "gdk/cl-cffi-gtk-gdk.asd")
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'link-source
-             ;; Since source is particularly heavy (16MiB+), let's reuse it
-             ;; across the different components of cl-ffi-gtk.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                                 "/share/common-lisp/sbcl-source/"
-                                                 "cl-cffi-gtk-glib"))
-                     (out-source (string-append (assoc-ref outputs "out")
-                                                "/share/common-lisp/sbcl-source/"
-                                                "cl-cffi-gtk-gdk")))
-                 (delete-file-recursively out-source)
-                 (symlink glib-source out-source)
-                 #t)))))))))
-
-(define-public sbcl-cl-cffi-gtk
-  (package
-    (inherit sbcl-cl-cffi-gtk-boot0)
-    (name "sbcl-cl-cffi-gtk")
-    (inputs
-     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
-       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
-       ("cl-cffi-gtk-gio" ,sbcl-cl-cffi-gtk-gio)
-       ("cl-cffi-gtk-gdk" ,sbcl-cl-cffi-gtk-gdk)
-       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
-       ((#:asd-file _ "") "gtk/cl-cffi-gtk.asd")
-       ((#:test-asd-file _ "") "test/cl-cffi-gtk-test.asd")
-       ;; TODO: Tests fail with memory fault.
-       ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
-       ((#:tests? _ #f) #f)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'link-source
-             ;; Since source is particularly heavy (16MiB+), let's reuse it
-             ;; across the different components of cl-ffi-gtk.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                                 "/share/common-lisp/sbcl-source/"
-                                                 "cl-cffi-gtk-glib"))
-                     (out-source (string-append (assoc-ref outputs "out")
-                                                "/share/common-lisp/sbcl-source/"
-                                                "cl-cffi-gtk")))
-                 (delete-file-recursively out-source)
-                 (symlink glib-source out-source)
-                 #t)))))))))
-
 (define-public cl-cffi-gtk
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
 
@@ -3155,8 +2566,8 @@ is a library for creating graphical user interfaces.")
          ("cl-cffi-gtk" ,sbcl-cl-cffi-gtk)
          ("webkitgtk" ,webkitgtk)))
       (arguments
-       `(#:asd-file "webkit2/cl-webkit2.asd"
-         #:asd-system-name "cl-webkit2"
+       `(#:asd-files '("webkit2/cl-webkit2.asd")
+         #:asd-systems '("cl-webkit2")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
@@ -3328,14 +2739,12 @@ Lisp (from GBBopen project).")
 (define-public cl-portable-threads
   (sbcl-package->cl-source-package sbcl-portable-threads))
 
-(define-public ecl-portable-threada
+(define-public ecl-portable-threads
   (sbcl-package->ecl-package sbcl-portable-threads))
 
-(define sbcl-usocket-boot0
-  ;; usocket's test rely on usocket-server which depends on usocket itself.
-  ;; We break this cyclic dependency with -boot0 that packages usocket.
+(define-public sbcl-usocket
   (package
-    (name "sbcl-usocket-boot0")
+    (name "sbcl-usocket")
     (version "0.8.3")
     (source
      (origin
@@ -3348,47 +2757,24 @@ Lisp (from GBBopen project).")
         (base32
          "0x746wr2324l6bn7skqzgkzcbj5kd0zp2ck0c8rldrw0rzabg826"))))
     (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("rt" ,sbcl-rt)))
     (inputs
-     `(("split-sequence" ,sbcl-split-sequence)))
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("split-sequence" ,sbcl-split-sequence)))
     (arguments
-     `(#:tests? #f
-       #:asd-system-name "usocket"))
+     `(#:tests? #f ; FIXME: Tests need network access?
+       #:asd-files '("usocket.asd"
+                     "usocket-server.asd")
+       #:asd-systems '("usocket"
+                       "usocket-server")))
     (home-page "https://common-lisp.net/project/usocket/")
-    (synopsis "Universal socket library for Common Lisp (server side)")
+    (synopsis "Universal socket library for Common Lisp")
     (description
      "This library strives to provide a portable TCP/IP and UDP/IP socket
 interface for as many Common Lisp implementations as possible, while keeping
 the abstraction and portability layer as thin as possible.")
     (license license:expat)))
-
-(define-public sbcl-usocket-server
-  (package
-    (inherit sbcl-usocket-boot0)
-    (name "sbcl-usocket-server")
-    (inputs
-     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("usocket" ,sbcl-usocket-boot0)))
-    (arguments
-     '(#:asd-system-name "usocket-server"))
-    (synopsis "Universal socket library for Common Lisp (server side)")))
-
-(define-public cl-usocket-server
-  (sbcl-package->cl-source-package sbcl-usocket-server))
-
-(define-public ecl-socket-server
-  (sbcl-package->ecl-package sbcl-usocket-server))
-
-(define-public sbcl-usocket
-  (package
-    (inherit sbcl-usocket-boot0)
-    (name "sbcl-usocket")
-    (arguments
-     ;; FIXME: Tests need network access?
-     `(#:tests? #f))
-    (native-inputs
-     ;; Testing only.
-     `(("usocket-server" ,sbcl-usocket-server)
-       ("rt" ,sbcl-rt)))))
 
 (define-public cl-usocket
   (sbcl-package->cl-source-package sbcl-usocket))
@@ -3924,34 +3310,6 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 (define-public cl-trivial-types
   (sbcl-package->cl-source-package sbcl-trivial-types))
 
-(define-public sbcl-cl-syntax
-  (package
-    (name "sbcl-cl-syntax")
-    (version "0.0.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/m2ym/cl-syntax")
-             (commit "03f0c329bbd55b8622c37161e6278366525e2ccc")))
-       (file-name (git-file-name "cl-syntax" version))
-       (sha256
-        (base32 "17ran8xp77asagl31xv8w819wafh6whwfc9p6dgx22ca537gyl4y"))))
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     '(#:asd-file "cl-syntax.asd"
-       #:asd-system-name "cl-syntax"))
-    (inputs `(("sbcl-trivial-types" ,sbcl-trivial-types)
-              ("sbcl-named-readtables" ,sbcl-named-readtables)))
-    (home-page "https://github.com/m2ym/cl-syntax")
-    (synopsis "Reader Syntax Coventions for Common Lisp and SLIME")
-    (description
-     "CL-SYNTAX provides Reader Syntax Coventions for Common Lisp and SLIME.")
-    (license license:llgpl)))
-
-(define-public cl-syntax
-  (sbcl-package->cl-source-package sbcl-cl-syntax))
-
 (define-public sbcl-cl-annot
   (let ((commit "c99e69c15d935eabc671b483349a406e0da9518d")
         (revision "1"))
@@ -3968,9 +3326,6 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
          (sha256
           (base32 "1wq1gs9jjd5m6iwrv06c2d7i5dvqsfjcljgbspfbc93cg5xahk4n"))))
       (build-system asdf-build-system/sbcl)
-    (arguments
-     '(#:asd-file "cl-annot.asd"
-       #:asd-system-name "cl-annot"))
       (inputs
        `(("sbcl-alexandria" ,sbcl-alexandria)))
       (home-page "https://github.com/m2ym/cl-annot")
@@ -3982,41 +3337,40 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 (define-public cl-annot
   (sbcl-package->cl-source-package sbcl-cl-annot))
 
-(define-public sbcl-cl-syntax-annot
+(define-public sbcl-cl-syntax
   (package
-    (inherit sbcl-cl-syntax)
-    (name "sbcl-cl-syntax-annot")
-    (arguments
-     '(#:asd-file "cl-syntax-annot.asd"
-       #:asd-system-name "cl-syntax-annot"))
+    (name "sbcl-cl-syntax")
+    (version "0.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/m2ym/cl-syntax")
+             (commit "03f0c329bbd55b8622c37161e6278366525e2ccc")))
+       (file-name (git-file-name "cl-syntax" version))
+       (sha256
+        (base32 "17ran8xp77asagl31xv8w819wafh6whwfc9p6dgx22ca537gyl4y"))))
+    (build-system asdf-build-system/sbcl)
     (inputs
-     `(("sbcl-cl-syntax" ,sbcl-cl-syntax)
-       ("sbcl-cl-annot" ,sbcl-cl-annot)))
-    (synopsis "Common Lisp reader Syntax for cl-annot")
-    (description
-     "CL-SYNTAX provides reader syntax coventions for Common Lisp and
-@code{cl-annot}.")))
-
-(define-public cl-syntax-annot
-  (sbcl-package->cl-source-package sbcl-cl-syntax-annot))
-
-(define-public sbcl-cl-syntax-interpol
-  (package
-    (inherit sbcl-cl-syntax)
-    (name "sbcl-cl-syntax-interpol")
+     `(("cl-annot" ,sbcl-cl-annot)
+       ("cl-interpol" ,sbcl-cl-interpol)
+       ("named-readtables" ,sbcl-named-readtables)
+       ("trivial-types" ,sbcl-trivial-types)))
     (arguments
-     '(#:asd-file "cl-syntax-interpol.asd"
-       #:asd-system-name "cl-syntax-interpol"))
-    (inputs
-     `(("sbcl-cl-syntax" ,sbcl-cl-syntax)
-       ("sbcl-cl-interpol" ,sbcl-cl-interpol)))
-    (synopsis "Common Lisp reader Syntax for cl-interpol")
+     '(#:asd-files '("cl-syntax.asd"
+                     "cl-syntax-annot.asd"
+                     "cl-syntax-interpol.asd")
+       #:asd-systems '("cl-syntax"
+                       "cl-syntax-annot"
+                       "cl-syntax-interpol")))
+    (home-page "https://github.com/m2ym/cl-syntax")
+    (synopsis "Reader Syntax Coventions for Common Lisp and SLIME")
     (description
-     "CL-SYNTAX provides reader syntax coventions for Common Lisp and
-@code{cl-interpol}.")))
+     "CL-SYNTAX provides Reader Syntax Coventions for Common Lisp and SLIME.")
+    (license license:llgpl)))
 
-(define-public cl-syntax-interpol
-  (sbcl-package->cl-source-package sbcl-cl-syntax-interpol))
+(define-public cl-syntax
+  (sbcl-package->cl-source-package sbcl-cl-syntax))
 
 (define-public sbcl-cl-utilities
   (let ((commit "dce2d2f6387091ea90357a130fa6d13a6776884b")
@@ -4035,8 +3389,8 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
           (base32 "1r46v730yf96nk2vb24qmagv9x96xvd08abqwhf02ghgydv1a7z2"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       '(#:asd-file "cl-utilities.asd"
-         #:asd-system-name "cl-utilities"
+       '(#:asd-files '("cl-utilities.asd")
+         #:asd-systems '("cl-utilities")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
@@ -4105,8 +3459,7 @@ addition, removal, and random selection.")
        ;; Tests fail with: Component QURI-ASD::QURI-TEST not found,
        ;; required by #<SYSTEM "quri">. Why?
        '(#:tests? #f))
-      (native-inputs `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-                       ("sbcl-prove" ,sbcl-prove)))
+      (native-inputs `(("sbcl-prove" ,sbcl-prove)))
       (inputs `(("sbcl-babel" ,sbcl-babel)
                 ("sbcl-split-sequence" ,sbcl-split-sequence)
                 ("sbcl-cl-utilities" ,sbcl-cl-utilities)
@@ -4142,8 +3495,7 @@ Lisp. It is intended to be a replacement of PURI.")
       ;; by #<SYSTEM "myway">. Why?
       '(#:tests? #f))
      (native-inputs
-      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-        ("sbcl-prove" ,sbcl-prove)))
+      `(("sbcl-prove" ,sbcl-prove)))
      (inputs
       `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
         ("sbcl-quri" ,sbcl-quri)
@@ -4177,8 +3529,7 @@ Lisp. It is intended to be a replacement of PURI.")
       ;; required by #<SYSTEM "xsubseq">. Why?
       '(#:tests? #f))
      (native-inputs
-      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-        ("sbcl-prove" ,sbcl-prove)))
+      `(("sbcl-prove" ,sbcl-prove)))
      (home-page "https://github.com/fukamachi/xsubseq")
      (synopsis "Efficient way to use \"subseq\"s in Common Lisp")
      (description
@@ -4210,8 +3561,7 @@ effieiently.")
        ;; found, required by #<SYSTEM "smart-buffer">. Why?
        `(#:tests? #f))
       (native-inputs
-       `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-         ("sbcl-prove" ,sbcl-prove)))
+       `(("sbcl-prove" ,sbcl-prove)))
       (inputs
        `(("sbcl-xsubseq" ,sbcl-xsubseq)
          ("sbcl-flexi-streams" ,sbcl-flexi-streams)))
@@ -4246,9 +3596,8 @@ depending on content size.")
        ;; required by #<SYSTEM "fast-http">. Why?
        `(#:tests? #f))
       (native-inputs
-       `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-         ("sbcl-prove" ,sbcl-prove)
-         ("cl-syntax-interpol" ,sbcl-cl-syntax-interpol)))
+       `(("sbcl-prove" ,sbcl-prove)
+         ("cl-syntax" ,sbcl-cl-syntax)))
       (inputs
        `(("sbcl-alexandria" ,sbcl-alexandria)
          ("sbcl-proc-parse" ,sbcl-proc-parse)
@@ -4282,8 +3631,7 @@ Lisp.")
     (native-inputs
      `(("sbcl-fiveam" ,sbcl-fiveam)))
     (inputs
-     `(("sbcl-cffi-grovel" ,sbcl-cffi-grovel)
-       ("sbcl-cffi" ,sbcl-cffi)))
+     `(("sbcl-cffi" ,sbcl-cffi)))
     (build-system asdf-build-system/sbcl)
     (home-page "https://github.com/sionescu/static-vectors")
     (synopsis "Allocate SIMPLE-ARRAYs in static memory")
@@ -4423,11 +3771,9 @@ streams (though primarily the former, while wrapping the latter).")
       ;; required by #<SYSTEM "jonathan">. Why?
       `(#:tests? #f))
      (native-inputs
-      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-        ("sbcl-prove" ,sbcl-prove)))
+      `(("sbcl-prove" ,sbcl-prove)))
      (inputs
       `(("sbcl-cl-syntax" ,sbcl-cl-syntax)
-        ("sbcl-cl-syntax-annot" ,sbcl-cl-syntax-annot)
         ("sbcl-fast-io" ,sbcl-fast-io)
         ("sbcl-proc-parse" ,sbcl-proc-parse)
         ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)))
@@ -4463,8 +3809,7 @@ CCL.")
       ;; found, required by #<SYSTEM "http-body">. Why?
       `(#:tests? #f))
      (native-inputs
-      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-        ("sbcl-prove" ,sbcl-prove)))
+      `(("sbcl-prove" ,sbcl-prove)))
      (inputs
       `(("sbcl-fast-http" ,sbcl-fast-http)
         ("sbcl-jonathan" ,sbcl-jonathan)
@@ -4514,46 +3859,60 @@ reset to 0 and you're able to read it again.")
 (define-public cl-circular-streams
   (sbcl-package->cl-source-package sbcl-circular-streams))
 
-(define-public sbcl-lack-request
+(define-public sbcl-lack
   (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
         (revision "1"))
     (package
-     (name "sbcl-lack-request")
-     (version (git-version "0.1.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/fukamachi/lack")
-             (commit commit)))
-       (file-name (git-file-name "lack-request" version))
-       (sha256
-        (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
-     (build-system asdf-build-system/sbcl)
-     (arguments
-      '(#:asd-file "lack-request.asd"
-        #:asd-system-name "lack-request"
-        #:test-asd-file "t-lack-request.asd"
-        ;; XXX: Component :CLACK-TEST not found
-        #:tests? #f))
-     (native-inputs
-      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-        ("sbcl-prove" ,sbcl-prove)))
-     (inputs
-      `(("sbcl-quri" ,sbcl-quri)
-        ("sbcl-http-body" ,sbcl-http-body)
-        ("sbcl-circular-streams" ,sbcl-circular-streams)))
-     (home-page "https://github.com/fukamachi/lack")
-     (synopsis "Lack, the core of Clack")
-     (description
-      "Lack is a Common Lisp library which allows web applications to be
+      (name "sbcl-lack")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/lack")
+               (commit commit)))
+         (file-name (git-file-name "lack" version))
+         (sha256
+          (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("prove" ,sbcl-prove)))
+      (inputs
+       `(("circular-streams" ,sbcl-circular-streams)
+         ("http-body" ,sbcl-http-body)
+         ("ironclad" ,sbcl-ironclad)
+         ("local-time" ,sbcl-local-time)
+         ("quri" ,sbcl-quri)
+         ("trivial-mimes" ,sbcl-trivial-mimes)))
+      (arguments
+       '(#:asd-files '("lack.asd"
+                       "lack-request.asd"
+                       "lack-response.asd"
+                       "lack-component.asd"
+                       "lack-util.asd"
+                       "lack-middleware-backtrace.asd"
+                       "lack-middleware-static.asd")
+         #:asd-systems '("lack"
+                         "lack-request"
+                         "lack-response"
+                         "lack-component"
+                         "lack-util"
+                         "lack-middleware-backtrace"
+                         "lack-middleware-static")
+         #:test-asd-file "t-lack.asd"
+         ;; XXX: Component :CLACK not found
+         #:tests? #f))
+      (home-page "https://github.com/fukamachi/lack")
+      (synopsis "Lack, the core of Clack")
+      (description
+       "Lack is a Common Lisp library which allows web applications to be
 constructed of modular components.  It was originally a part of Clack, however
 it's going to be rewritten as an individual project since Clack v2 with
 performance and simplicity in mind.")
-     (license license:llgpl))))
+      (license license:llgpl))))
 
-(define-public cl-lack-request
-  (sbcl-package->cl-source-package sbcl-lack-request))
+(define-public cl-lack
+  (sbcl-package->cl-source-package sbcl-lack))
 
 (define-public sbcl-local-time
   (let ((commit "62792705245168d3fc2e04164b9a143477284142")
@@ -4589,157 +3948,6 @@ Long Painful History of Time\".")
 
 (define-public cl-local-time
   (sbcl-package->cl-source-package sbcl-local-time))
-
-(define-public sbcl-lack-response
-  (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
-        (revision "1"))
-    (package
-     (name "sbcl-lack-response")
-     (version (git-version "0.1.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/fukamachi/lack")
-             (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
-     (build-system asdf-build-system/sbcl)
-     (arguments
-      '(#:asd-file "lack-response.asd"
-        #:asd-system-name "lack-response"
-        ;; XXX: no tests for lack-response.
-        #:tests? #f))
-     (native-inputs
-      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-        ("sbcl-prove" ,sbcl-prove)))
-     (inputs
-      `(("sbcl-quri" ,sbcl-quri)
-        ("sbcl-http-body" ,sbcl-http-body)
-        ("sbcl-circular-streams" ,sbcl-circular-streams)
-        ("sbcl-local-time" ,sbcl-local-time)))
-     (home-page "https://github.com/fukamachi/lack")
-     (synopsis "Lack, the core of Clack")
-     (description
-      "Lack is a Common Lisp library which allows web applications to be
-constructed of modular components.  It was originally a part of Clack, however
-it's going to be rewritten as an individual project since Clack v2 with
-performance and simplicity in mind.")
-     (license license:llgpl))))
-
-(define-public cl-lack-response
-  (sbcl-package->cl-source-package sbcl-lack-response))
-
-(define-public sbcl-lack-component
-  (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
-        (revision "1"))
-    (package
-     (name "sbcl-lack-component")
-     (version (git-version "0.0.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/fukamachi/lack")
-             (commit commit)))
-       (file-name (git-file-name "lack-component" version))
-       (sha256
-        (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
-     (build-system asdf-build-system/sbcl)
-     (arguments
-      '(#:asd-file "lack-component.asd"
-        #:asd-system-name "lack-component"
-        #:test-asd-file "t-lack-component.asd"
-        ;; XXX: Component :LACK-TEST not found
-        #:tests? #f))
-     (native-inputs
-      `(("prove-asdf" ,sbcl-prove-asdf)))
-     (home-page "https://github.com/fukamachi/lack")
-     (synopsis "Lack, the core of Clack")
-     (description
-      "Lack is a Common Lisp library which allows web applications to be
-constructed of modular components.  It was originally a part of Clack, however
-it's going to be rewritten as an individual project since Clack v2 with
-performance and simplicity in mind.")
-     (license license:llgpl))))
-
-(define-public cl-lack-component
-  (sbcl-package->cl-source-package sbcl-lack-component))
-
-(define-public sbcl-lack-util
-  (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
-        (revision "1"))
-    (package
-     (name "sbcl-lack-util")
-     (version (git-version "0.1.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/fukamachi/lack")
-             (commit commit)))
-       (file-name (git-file-name "lack-util" version))
-       (sha256
-        (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
-     (build-system asdf-build-system/sbcl)
-     (arguments
-      '(#:asd-file "lack-util.asd"
-        #:asd-system-name "lack-util"
-        #:test-asd-file "t-lack-util.asd"
-        ;; XXX: Component :LACK-TEST not found
-        #:tests? #f))
-     (native-inputs
-      `(("prove-asdf" ,sbcl-prove-asdf)))
-     (inputs
-      `(("sbcl-ironclad" ,sbcl-ironclad)))
-     (home-page "https://github.com/fukamachi/lack")
-     (synopsis "Lack, the core of Clack")
-     (description
-      "Lack is a Common Lisp library which allows web applications to be
-constructed of modular components.  It was originally a part of Clack, however
-it's going to be rewritten as an individual project since Clack v2 with
-performance and simplicity in mind.")
-     (license license:llgpl))))
-
-(define-public cl-lack-util
-  (sbcl-package->cl-source-package sbcl-lack-util))
-
-(define-public sbcl-lack-middleware-backtrace
-  (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
-        (revision "1"))
-    (package
-     (name "sbcl-lack-middleware-backtrace")
-     (version (git-version "0.1.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/fukamachi/lack")
-             (commit commit)))
-       (file-name (git-file-name "lack-middleware-backtrace" version))
-       (sha256
-        (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
-     (build-system asdf-build-system/sbcl)
-     (arguments
-      '(#:asd-file "lack-middleware-backtrace.asd"
-        #:asd-system-name "lack-middleware-backtrace"
-        #:test-asd-file "t-lack-middleware-backtrace.asd"
-        ;; XXX: Component :LACK not found
-        #:tests? #f))
-     (native-inputs
-      `(("prove-asdf" ,sbcl-prove-asdf)))
-     (home-page "https://github.com/fukamachi/lack")
-     (synopsis "Lack, the core of Clack")
-     (description
-      "Lack is a Common Lisp library which allows web applications to be
-constructed of modular components.  It was originally a part of Clack, however
-it's going to be rewritten as an individual project since Clack v2 with
-performance and simplicity in mind.")
-     (license license:llgpl))))
-
-(define-public cl-lack-middleware-backtrace
-  (sbcl-package->cl-source-package sbcl-lack-middleware-backtrace))
 
 (define-public sbcl-trivial-mimes
   (let ((commit "303f8ac0aa6ca0bc139aa3c34822e623c3723fab")
@@ -4788,83 +3996,6 @@ mime-type of a file.")
 (define-public ecl-trivial-mimes
   (sbcl-package->ecl-package sbcl-trivial-mimes))
 
-(define-public sbcl-lack-middleware-static
-  (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
-        (revision "1"))
-    (package
-     (name "sbcl-lack-middleware-static")
-     (version (git-version "0.1.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/fukamachi/lack")
-             (commit commit)))
-       (file-name (git-file-name "lack-middleware-static" version))
-       (sha256
-        (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
-     (build-system asdf-build-system/sbcl)
-     (arguments
-      '(#:asd-file "lack-middleware-static.asd"
-        #:asd-system-name "lack-middleware-static"
-        #:test-asd-file "t-lack-middleware-static.asd"
-        ;; XXX: Component :LACK not found
-        #:tests? #f))
-     (native-inputs
-      `(("prove-asdf" ,sbcl-prove-asdf)))
-     (inputs
-      `(("sbcl-ironclad" ,sbcl-ironclad)
-        ("sbcl-trivial-mimes" ,sbcl-trivial-mimes)
-        ("sbcl-local-time" ,sbcl-local-time)))
-     (home-page "https://github.com/fukamachi/lack")
-     (synopsis "Lack, the core of Clack")
-     (description
-      "Lack is a Common Lisp library which allows web applications to be
-constructed of modular components.  It was originally a part of Clack, however
-it's going to be rewritten as an individual project since Clack v2 with
-performance and simplicity in mind.")
-     (license license:llgpl))))
-
-(define-public cl-lack-middleware-static
-  (sbcl-package->cl-source-package sbcl-lack-middleware-static))
-
-(define-public sbcl-lack
-  (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
-        (revision "1"))
-    (package
-     (name "sbcl-lack")
-     (version (git-version "0.1.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/fukamachi/lack")
-             (commit commit)))
-       (file-name (git-file-name "lack" version))
-       (sha256
-        (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
-     (build-system asdf-build-system/sbcl)
-     (arguments
-      '(#:test-asd-file "t-lack.asd"
-        ;; XXX: Component :CLACK not found
-        #:tests? #f))
-     (native-inputs
-      `(("prove-asdf" ,sbcl-prove-asdf)))
-     (inputs
-      `(("sbcl-lack-component" ,sbcl-lack-component)
-        ("sbcl-lack-util" ,sbcl-lack-util)))
-     (home-page "https://github.com/fukamachi/lack")
-     (synopsis "Lack, the core of Clack")
-     (description
-      "Lack is a Common Lisp library which allows web applications to be
-constructed of modular components.  It was originally a part of Clack, however
-it's going to be rewritten as an individual project since Clack v2 with
-performance and simplicity in mind.")
-     (license license:llgpl))))
-
-(define-public cl-lack
-  (sbcl-package->cl-source-package sbcl-lack))
-
 (define-public sbcl-ningle
   (let ((commit "50bd4f09b5a03a7249bd4d78265d6451563b25ad")
         (revision "1"))
@@ -4908,15 +4039,11 @@ performance and simplicity in mind.")
                  fasl-files)
                #t)))))
       (native-inputs
-       `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-         ("sbcl-prove" ,sbcl-prove)))
+       `(("sbcl-prove" ,sbcl-prove)))
       (inputs
        `(("sbcl-cl-syntax" ,sbcl-cl-syntax)
-         ("sbcl-cl-syntax-annot" ,sbcl-cl-syntax-annot)
          ("sbcl-myway" ,sbcl-myway)
-         ("sbcl-lack-request" ,sbcl-lack-request)
-         ("sbcl-lack-response" ,sbcl-lack-response)
-         ("sbcl-lack-component" ,sbcl-lack-component)
+         ("sbcl-lack" ,sbcl-lack)
          ("sbcl-alexandria" ,sbcl-alexandria)
          ("sbcl-babel" ,sbcl-babel)))
       (home-page "https://8arrow.org/ningle/")
@@ -4973,72 +4100,50 @@ mostly Common Lisp implementation.")
 (define-public ecl-cl-fastcgi
   (sbcl-package->ecl-package sbcl-cl-fastcgi))
 
-(define clack-commit "e3e032843bb1220ab96263c411aa7f2feb4746e0")
-(define clack-revision "1")
-
 (define-public sbcl-clack
-  (package
-    (name "sbcl-clack")
-    (version (git-version "2.0.0" clack-revision clack-commit))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/fukamachi/clack")
-             (commit clack-commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1ymzs6qyrwhlj6cgqsnpyn6g5cbp7a3s1vgxwna20y2q7y4iacy0"))))
-    (build-system asdf-build-system/sbcl)
-    (inputs
-     `(("sbcl-lack" ,sbcl-lack)
-       ("sbcl-lack-middleware-backtrace" ,sbcl-lack-middleware-backtrace)
-       ("sbcl-bordeaux-threads" ,sbcl-bordeaux-threads)))
-    (home-page "https://github.com/fukamachi/clack")
-    (synopsis "Web Application Environment for Common Lisp")
-    (description
-     "Clack is a web application environment for Common Lisp inspired by
+  (let ((commit "e3e032843bb1220ab96263c411aa7f2feb4746e0")
+        (revision "1"))
+    (package
+      (name "sbcl-clack")
+      (version (git-version "2.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/clack")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1ymzs6qyrwhlj6cgqsnpyn6g5cbp7a3s1vgxwna20y2q7y4iacy0"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-fastcgi" ,sbcl-cl-fastcgi)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("hunchentoot" ,sbcl-hunchentoot)
+         ("lack" ,sbcl-lack)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("usocket" ,sbcl-usocket)
+         ("quri" ,sbcl-quri)))
+      (arguments
+       '(#:asd-files '("clack.asd"
+                       "clack-handler-fcgi.asd"
+                       "clack-socket.asd"
+                       "clack-handler-hunchentoot.asd")
+         #:asd-systems '("clack"
+                         "clack-handler-fcgi"
+                         "clack-socket"
+                         "clack-handler-hunchentoot")))
+      (home-page "https://github.com/fukamachi/clack")
+      (synopsis "Web Application Environment for Common Lisp")
+      (description
+       "Clack is a web application environment for Common Lisp inspired by
 Python's WSGI and Ruby's Rack.")
-    (license license:llgpl)))
+      (license license:llgpl))))
 
 (define-public cl-clack
   (sbcl-package->cl-source-package sbcl-clack))
-
-(define-public sbcl-clack-handler-fcgi
-  (package
-    (inherit sbcl-clack)
-    (name "sbcl-clack-handler-fcgi")
-    (version (git-version "0.3.1" clack-revision clack-commit))
-    (inputs
-     `(("cl-fastcgi" ,sbcl-cl-fastcgi)
-       ("alexandria" ,sbcl-alexandria)
-       ("flexi-streams" ,sbcl-flexi-streams)
-       ("usocket" ,sbcl-usocket)
-       ("quri" ,sbcl-quri)))
-    (synopsis "Web Application Environment for Common Lisp (FastCGI handler)")))
-
-(define-public cl-clack-handler-fcgi
-  (sbcl-package->cl-source-package sbcl-clack-handler-fcgi))
-
-(define sbcl-clack-socket
-  (package
-    (inherit sbcl-clack)
-    (name "sbcl-clack-socket")
-    (version (git-version "0.1" clack-revision clack-commit))))
-
-(define-public sbcl-clack-handler-hunchentoot
-  (package
-    (inherit sbcl-clack)
-    (name "sbcl-clack-handler-hunchentoot")
-    (version (git-version "0.4.0" clack-revision clack-commit))
-    (inputs
-     `(("hunchentoot" ,sbcl-hunchentoot)
-       ("clack-socket" ,sbcl-clack-socket)
-       ("flexi-streams" ,sbcl-flexi-streams)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("split-sequence" ,sbcl-split-sequence)
-       ("alexandria" ,sbcl-alexandria)))
-    (synopsis "Web Application Environment for Common Lisp (Hunchentoot handler)")))
 
 (define-public sbcl-log4cl
   (let ((commit "611e094458504b938d49de904eab141285328c7c")
@@ -5218,8 +4323,8 @@ the CFFI approach used by burgled-batteries, but has the same goal.")
           (base32 "03g5qks4c59nmxa48pbslxkfh77h8hn8566jddp6m9pl15dzzpxd"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       `(#:asd-file "parse-declarations-1.0.asd"
-         #:asd-system-name "parse-declarations-1.0"))
+       `(#:asd-files '("parse-declarations-1.0.asd")
+         #:asd-systems '("parse-declarations-1.0")))
       (home-page "https://common-lisp.net/project/parse-declarations/")
       (synopsis "Parse, filter, and build declarations")
       (description
@@ -5263,7 +4368,7 @@ high-level way.  This library provides such operators.")
       ;; MIT
       (license license:expat))))
 
-(define-public cl-cl-quickcheck
+(define-public cl-quickcheck
   (sbcl-package->cl-source-package sbcl-cl-quickcheck))
 
 (define-public ecl-cl-quickcheck
@@ -5317,7 +4422,6 @@ high-level way.  This library provides such operators.")
       (inputs
        `(("python" ,python)
          ("sbcl-cffi" ,sbcl-cffi)
-         ("sbcl-cffi-grovel" ,sbcl-cffi-grovel)
          ("sbcl-alexandria" , sbcl-alexandria)
          ("sbcl-parse-declarations-1.0" ,sbcl-parse-declarations)
          ("sbcl-trivial-garbage" ,sbcl-trivial-garbage)))
@@ -5428,8 +4532,8 @@ basic everyday functions and macros.")
       (arguments
        ;; Guix incorrectly assumes the "8" is part of the version
        ;; number and lobs it off.
-       `(#:asd-file "trivial-utf-8.asd"
-         #:asd-system-name "trivial-utf-8"))
+       `(#:asd-files '("trivial-utf-8.asd")
+         #:asd-systems '("trivial-utf-8")))
       (build-system asdf-build-system/sbcl)
       (synopsis "UTF-8 input/output library")
       (description
@@ -5508,13 +4612,12 @@ formats.")
 (define-public ecl-swap-bytes
   (sbcl-package->ecl-package sbcl-swap-bytes))
 
-(define-public sbcl-iolib.asdf
+(define-public sbcl-iolib
   ;; Latest release is from June 2017.
   (let ((commit "7f5ea3a8457a29d224b24653c2b3657fb1898021")
         (revision "2"))
     (package
-      (name "sbcl-iolib.asdf")
-      (build-system asdf-build-system/sbcl)
+      (name "sbcl-iolib")
       (version (git-version "0.8.3" revision commit))
       (home-page "https://github.com/sionescu/iolib")
       (source
@@ -5527,134 +4630,41 @@ formats.")
          (sha256
           (base32
            "1bg5w7lm61hqk4b0svmri8a590q36z76jfa0sdgzb39r98c04w12"))))
+      (build-system asdf-build-system/sbcl)
       (inputs
-       `(("alexandria" ,sbcl-alexandria)))
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cffi" ,sbcl-cffi)
+         ("idna" ,sbcl-idna)
+         ("libfixposix" ,libfixposix)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("swap-bytes" ,sbcl-swap-bytes)))
       (arguments
-       '(#:asd-file "iolib.asdf.asd"))
-      (synopsis "ASDF component classes for IOLib, a Common Lisp I/O library")
+       '(#:asd-files '("iolib.asdf.asd"
+                       "iolib.conf.asd"
+                       "iolib.common-lisp.asd"
+                       "iolib.base.asd"
+                       "iolib.asd")
+         #:asd-systems '("iolib")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/syscalls/ffi-functions-unix.lisp"
+                 (("\\(:default \"libfixposix\"\\)")
+                  (string-append
+                   "(:default \""
+                   (assoc-ref inputs "libfixposix") "/lib/libfixposix\")")))
+               ;; Socket tests need Internet access, disable them.
+               (substitute* "iolib.asd"
+                 (("\\(:file \"sockets\" :depends-on \\(\"pkgdcl\" \"defsuites\"\\)\\)")
+                  "")))))))
+      (synopsis "Common Lisp I/O library")
       (description "IOlib is to be a better and more modern I/O library than
 the standard Common Lisp library.  It contains a socket library, a DNS
 resolver, an I/O multiplexer(which supports @code{select(2)}, @code{epoll(4)}
 and @code{kqueue(2)}), a pathname library and file-system utilities.")
       (license license:expat))))
-
-(define-public sbcl-iolib.conf
-  (package
-    (inherit sbcl-iolib.asdf)
-    (name "sbcl-iolib.conf")
-    (inputs
-     `(("iolib.asdf" ,sbcl-iolib.asdf)))
-    (arguments
-     '(#:asd-file "iolib.conf.asd"))
-    (synopsis "Compile-time configuration for IOLib, a Common Lisp I/O library")))
-
-(define-public sbcl-iolib.common-lisp
-  (package
-    (inherit sbcl-iolib.asdf)
-    (name "sbcl-iolib.common-lisp")
-    (inputs
-     `(("iolib.asdf" ,sbcl-iolib.asdf)
-       ("iolib.conf" ,sbcl-iolib.conf)))
-    (arguments
-     '(#:asd-file "iolib.common-lisp.asd"))
-    (synopsis "Slightly modified Common Lisp for IOLib, a Common Lisp I/O library")))
-
-(define-public sbcl-iolib.base
-  (package
-    (inherit sbcl-iolib.asdf)
-    (name "sbcl-iolib.base")
-    (inputs
-     `(("iolib.asdf" ,sbcl-iolib.asdf)
-       ("iolib.conf" ,sbcl-iolib.conf)
-       ("iolib.common-lisp" ,sbcl-iolib.common-lisp)
-       ("split-sequence" ,sbcl-split-sequence)))
-    (arguments
-     '(#:asd-file "iolib.base.asd"))
-    (synopsis "Base package for IOLib, a Common Lisp I/O library")))
-
-(define-public sbcl-iolib.grovel
-  (deprecated-package "sbcl-iolib.grovel" sbcl-cffi-grovel))
-
-(define sbcl-iolib+syscalls
-  (package
-    (inherit sbcl-iolib.asdf)
-    (name "sbcl-iolib+syscalls")
-    (inputs
-     `(("iolib.asdf" ,sbcl-iolib.asdf)
-       ("iolib.conf" ,sbcl-iolib.conf)
-       ("cffi-grovel" ,sbcl-cffi-grovel)
-       ("iolib.base" ,sbcl-iolib.base)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("idna" ,sbcl-idna)
-       ("swap-bytes" ,sbcl-swap-bytes)
-       ("libfixposix" ,libfixposix)
-       ("cffi" ,sbcl-cffi)))
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)))
-    (arguments
-     '(#:asd-file "iolib.asd"
-       #:asd-system-name "iolib/syscalls"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/syscalls/ffi-functions-unix.lisp"
-               (("\\(:default \"libfixposix\"\\)")
-                (string-append
-                 "(:default \""
-                 (assoc-ref inputs "libfixposix") "/lib/libfixposix\")")))
-             ;; Socket tests need Internet access, disable them.
-             (substitute* "iolib.asd"
-               (("\\(:file \"sockets\" :depends-on \\(\"pkgdcl\" \"defsuites\"\\)\\)")
-                "")))))))
-    (synopsis "Common Lisp I/O library")))
-
-(define sbcl-iolib+multiplex
-  (package
-    (inherit sbcl-iolib+syscalls)
-    (name "sbcl-iolib+multiplex")
-    (inputs
-     `(("iolib+syscalls" ,sbcl-iolib+syscalls)
-       ,@(package-inputs sbcl-iolib+syscalls)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
-       ((#:asd-system-name _) "iolib/multiplex")))))
-
-(define sbcl-iolib+streams
-  (package
-    (inherit sbcl-iolib+syscalls)
-    (name "sbcl-iolib+streams")
-    (inputs
-     `(("iolib+multiplex" ,sbcl-iolib+multiplex)
-       ,@(package-inputs sbcl-iolib+syscalls)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
-       ((#:asd-system-name _) "iolib/streams")))))
-
-(define sbcl-iolib+sockets
-  (package
-    (inherit sbcl-iolib+syscalls)
-    (name "sbcl-iolib+sockets")
-    (inputs
-     `(("iolib+syscalls" ,sbcl-iolib+syscalls)
-       ("iolib+streams" ,sbcl-iolib+streams)
-       ,@(package-inputs sbcl-iolib+syscalls)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
-       ((#:asd-system-name _) "iolib/sockets")))))
-
-(define-public sbcl-iolib
-  (package
-    (inherit sbcl-iolib+syscalls)
-    (name "sbcl-iolib")
-    (inputs
-     `(("iolib+multiplex" ,sbcl-iolib+multiplex)
-       ("iolib+streams" ,sbcl-iolib+streams)
-       ("iolib+sockets" ,sbcl-iolib+sockets)
-       ,@(package-inputs sbcl-iolib+syscalls)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
-       ((#:asd-system-name _) "iolib")))))
 
 (define-public cl-iolib
   (let ((parent (sbcl-package->cl-source-package sbcl-iolib)))
@@ -5720,14 +4730,12 @@ Closure is a reference to the web browser it was originally written for.")
       ;; TODO: License?
       (license #f))))
 
-(define-public sbcl-cxml+xml
+(define-public sbcl-cxml
   (let ((commit "00b22bf4c4cf11c993d5866fae284f95ab18e6bf")
         (revision "1"))
     (package
-      (name "sbcl-cxml+xml")
-      (build-system asdf-build-system/sbcl)
+      (name "sbcl-cxml")
       (version (git-version "0.0.0" revision commit))
-      (home-page "https://common-lisp.net/project/cxml/")
       (source
        (origin
          (method git-fetch)
@@ -5738,77 +4746,26 @@ Closure is a reference to the web browser it was originally written for.")
          (sha256
           (base32
            "13kif7rf3gqdycsk9zq0d7y0g9y81krkl0z87k0p2fkbjfgrph37"))))
-      (inputs
-       `(("closure-common" ,sbcl-closure-common)
-         ("puri" ,sbcl-puri)
-         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
-      (arguments
-       `(#:asd-file "cxml.asd"
-         #:asd-system-name "cxml/xml"))
-      (synopsis "Common Lisp XML parser")
-      (description "CXML implements a namespace-aware, validating XML 1.0
-parser as well as the DOM Level 2 Core interfaces.  Two parser interfaces are
-offered, one SAX-like, the other similar to StAX.")
-      (license license:llgpl))))
-
-(define sbcl-cxml+dom
-  (package
-    (inherit sbcl-cxml+xml)
-    (name "sbcl-cxml+dom")
+      (build-system asdf-build-system/sbcl)
     (inputs
      `(("closure-common" ,sbcl-closure-common)
        ("puri" ,sbcl-puri)
-       ("cxml+xml" ,sbcl-cxml+xml)))
+       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
     (arguments
-     `(#:asd-file "cxml.asd"
-       #:asd-system-name "cxml/dom"))))
-
-(define sbcl-cxml+klacks
-  (package
-    (inherit sbcl-cxml+xml)
-    (name "sbcl-cxml+klacks")
-    (inputs
-     `(("closure-common" ,sbcl-closure-common)
-       ("puri" ,sbcl-puri)
-       ("cxml+xml" ,sbcl-cxml+xml)))
-    (arguments
-     `(#:asd-file "cxml.asd"
-       #:asd-system-name "cxml/klacks"))))
-
-(define sbcl-cxml+test
-  (package
-    (inherit sbcl-cxml+xml)
-    (name "sbcl-cxml+test")
-    (inputs
-     `(("closure-common" ,sbcl-closure-common)
-       ("puri" ,sbcl-puri)
-       ("cxml+xml" ,sbcl-cxml+xml)))
-    (arguments
-     `(#:asd-file "cxml.asd"
-       #:asd-system-name "cxml/test"))))
-
-(define-public sbcl-cxml
-  (package
-    (inherit sbcl-cxml+xml)
-    (name "sbcl-cxml")
-    (inputs
-     `(("closure-common" ,sbcl-closure-common)
-       ("puri" ,sbcl-puri)
-       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
-       ("cxml+dom" ,sbcl-cxml+dom)
-       ("cxml+klacks" ,sbcl-cxml+klacks)
-       ("cxml+test" ,sbcl-cxml+test)))
-    (arguments
-     `(#:asd-file "cxml.asd"
-       #:asd-system-name "cxml"
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'install-dtd
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "catalog.dtd"
                            (string-append
                             (assoc-ref outputs "out")
-                            "/lib/" (%lisp-type))))))))))
+                            "/lib/common-lisp/" (%lisp-type) "/cxml")))))))
+    (synopsis "Common Lisp XML parser")
+    (description "CXML implements a namespace-aware, validating XML 1.0
+parser as well as the DOM Level 2 Core interfaces.  Two parser interfaces are
+offered, one SAX-like, the other similar to StAX.")
+    (home-page "https://common-lisp.net/project/cxml/")
+    (license license:llgpl))))
 
 (define-public cl-cxml
   (sbcl-package->cl-source-package sbcl-cxml))
@@ -5869,8 +4826,7 @@ cookie headers, cookie creation, cookie jar creation and more.")
          ("cl-ppcre" ,sbcl-cl-ppcre)
          ("local-time" ,sbcl-local-time)))
       (native-inputs
-       `(("prove-asdf" ,sbcl-prove-asdf)
-         ("prove" ,sbcl-prove)))
+       `(("prove" ,sbcl-prove)))
       (arguments
        ;; TODO: Tests fail because cl-cookie depends on cl-cookie-test.
        `(#:tests? #f))
@@ -5919,8 +4875,7 @@ cookie headers, cookie creation, cookie jar creation and more.")
          ("alexandria" ,sbcl-alexandria)))
       (native-inputs
        `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)
-         ("lack-request" ,sbcl-lack-request)
+         ("lack" ,sbcl-lack)
          ("clack" ,sbcl-clack)
          ("babel" ,sbcl-babel)
          ("alexandria" ,sbcl-alexandria)
@@ -6150,11 +5105,19 @@ optimizing techniques widely used in the functional programming world.")
          (sha256
           (base32 "1g6q11l50kgija9f55lzqpcwvaq0ljiw8v1j265hnyg6nahjwjvg"))))
       (inputs
-       `(("fare-utils" ,sbcl-fare-utils)))
+       `(("fare-utils" ,sbcl-fare-utils)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("optima" ,sbcl-optima)))
       (arguments
        ;; XXX: Circular dependencies: Tests depend on subsystems,
        ;; which depend on the main systems.
        `(#:tests? #f
+         #:asd-files '("fare-quasiquote.asd"
+                       "fare-quasiquote-optima.asd"
+                       "fare-quasiquote-readtable.asd"
+                       "fare-quasiquote-extras.asd")
+         #:asd-systems '("fare-quasiquote"
+                         "fare-quasiquote-extras")
          #:phases
          (modify-phases %standard-phases
            ;; XXX: Require 1.0.0 version of fare-utils, and we package some
@@ -6164,7 +5127,11 @@ optimizing techniques widely used in the functional programming world.")
              (lambda _
                (substitute* "fare-quasiquote.asd"
                  (("\\(:version \"fare-utils\" \"1.0.0\"\\)")
-                  "\"fare-utils\"")))))))
+                  "\"fare-utils\""))
+               (substitute* "fare-quasiquote-optima.asd"
+                 (("\\(:version \"optima\" \"1\\.0\"\\)")
+                  "\"optima\""))
+               #t)))))
       (synopsis "Pattern-matching friendly implementation of quasiquote")
       (description "The main purpose of this n+2nd reimplementation of
 quasiquote is enable matching of quasiquoted patterns, using Optima or
@@ -6174,218 +5141,91 @@ Trivia.")
 (define-public cl-fare-quasiquote
   (sbcl-package->cl-source-package sbcl-fare-quasiquote))
 
-(define-public sbcl-fare-quasiquote-optima
-  (package
-    (inherit sbcl-fare-quasiquote)
-    (name "sbcl-fare-quasiquote-optima")
-    (inputs
-     `(("optima" ,sbcl-optima)
-       ("fare-quasiquote" ,sbcl-fare-quasiquote)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-requirement
-           (lambda _
-             (substitute* "fare-quasiquote-optima.asd"
-               (("\\(:version \"optima\" \"1\\.0\"\\)")
-                "\"optima\""))
-             #t)))))))
-
-(define-public cl-fare-quasiquote-optima
-  (sbcl-package->cl-source-package sbcl-fare-quasiquote-optima))
-
-(define-public sbcl-fare-quasiquote-readtable
-  (package
-    (inherit sbcl-fare-quasiquote)
-    (name "sbcl-fare-quasiquote-readtable")
-    (inputs
-     `(("fare-quasiquote" ,sbcl-fare-quasiquote)
-       ("named-readtables" ,sbcl-named-readtables)))
-    (description "The main purpose of this n+2nd reimplementation of
-quasiquote is enable matching of quasiquoted patterns, using Optima or
-Trivia.
-
-This package uses fare-quasiquote with named-readtable.")))
-
-(define-public cl-fare-quasiquote-readtable
-  (sbcl-package->cl-source-package sbcl-fare-quasiquote-readtable))
-
-(define-public sbcl-fare-quasiquote-extras
-  (package
-    (inherit sbcl-fare-quasiquote)
-    (name "sbcl-fare-quasiquote-extras")
-    (build-system asdf-build-system/sbcl)
-    (inputs
-     `(("fare-quasiquote-optima" ,sbcl-fare-quasiquote-optima)
-       ("fare-quasiquote-readtable" ,sbcl-fare-quasiquote-readtable)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib/" (%lisp-type))))
-               (mkdir-p lib)
-               (install-file "fare-quasiquote-extras.asd" lib)
-               (make-file-writable
-                (string-append lib "/fare-quasiquote-extras.asd"))
-               #t))))))
-    (description "This library combines @code{fare-quasiquote-readtable} and
-@code{fare-quasiquote-optima}.")))
-
-(define-public cl-fare-quasiquote-extras
-  (package
-    (inherit cl-fare-quasiquote)
-    (name "cl-fare-quasiquote-extras")
-    (build-system asdf-build-system/source)
-    (propagated-inputs
-     `(("fare-quasiquote" ,cl-fare-quasiquote)
-       ("fare-quasiquote-optima" ,cl-fare-quasiquote-optima)
-       ("fare-quasiquote-readtable" ,cl-fare-quasiquote-readtable)))
-    (description "This library combines @code{fare-quasiquote-readtable} and
-@code{fare-quasiquote-optima}.")))
-
-(define-public sbcl-trivia.level0
+;;; Split the trivia package in two to work around the circular dependency
+;;; between guicho271828/trivia and guicho271828/type-i.
+(define-public sbcl-trivia.trivial
   (let ((commit "37698b47a14c2007630468de7a993694ef7bd475")
         (revision "2"))
     (package
-      (name "sbcl-trivia.level0")
-      (build-system asdf-build-system/sbcl)
+      (name "sbcl-trivia.trivial")
       (version (git-version "0.0.0" revision commit))
-      (home-page "https://github.com/guicho271828/trivia")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url home-page)
+               (url "https://github.com/guicho271828/trivia")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "trivia" version))
          (sha256
           (base32
            "0rsbwbw3ipxxgr6zzhci12nilq8zky475kmhz1rcxy4q8a85vn72"))))
+      (build-system asdf-build-system/sbcl)
       (inputs
-       `(("alexandria" ,sbcl-alexandria)))
+       `(("alexandria" ,sbcl-alexandria)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("lisp-namespace" ,sbcl-lisp-namespace)
+         ("trivial-cltl2" ,sbcl-trivial-cltl2)))
+      (arguments
+       '(#:asd-files '("trivia.level0.asd"
+                       "trivia.level1.asd"
+                       "trivia.level2.asd"
+                       "trivia.trivial.asd")
+         #:asd-systems '("trivia.trivial")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-build
+             (lambda _
+               (for-each delete-file
+                         '("trivia.balland2006.asd"
+                           "trivia.ppcre.asd"
+                           "trivia.quasiquote.asd"
+                           "trivia.cffi.asd"
+                           "trivia.asd"
+                           "trivia.test.asd"))
+               #t)))))
       (synopsis "Pattern matching in Common Lisp")
       (description "Trivia is a pattern matching compiler that is compatible
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.")
+      (home-page "https://github.com/guicho271828/trivia")
       (license license:llgpl))))
-
-(define-public sbcl-trivia.level1
-  (package
-    (inherit sbcl-trivia.level0)
-    (name "sbcl-trivia.level1")
-    (inputs
-     `(("trivia.level0" ,sbcl-trivia.level0)))
-    (description "Trivia is a pattern matching compiler that is compatible
-with Optima, another pattern matching library for Common Lisp.  It is meant to
-be faster and more extensible than Optima.
-
-This system contains the core patterns of Trivia.")))
-
-(define-public sbcl-trivia.level2
-  (package
-    (inherit sbcl-trivia.level0)
-    (name "sbcl-trivia.level2")
-    (inputs
-     `(("trivia.level1" ,sbcl-trivia.level1)
-       ("lisp-namespace" ,sbcl-lisp-namespace)
-       ("trivial-cltl2" ,sbcl-trivial-cltl2)
-       ("closer-mop" ,sbcl-closer-mop)))
-    (description "Trivia is a pattern matching compiler that is compatible
-with Optima, another pattern matching library for Common Lisp.  It is meant to
-be faster and more extensible than Optima.
-
-This system contains a non-optimized pattern matcher compatible with Optima,
-with extensible optimizer interface.")))
-
-(define-public sbcl-trivia.trivial
-  (package
-    (inherit sbcl-trivia.level0)
-    (name "sbcl-trivia.trivial")
-    (inputs
-     `(("trivia.level2" ,sbcl-trivia.level2)))
-    (description "Trivia is a pattern matching compiler that is compatible
-with Optima, another pattern matching library for Common Lisp.  It is meant to
-be faster and more extensible than Optima.
-
-This system contains the base level system of Trivia with a trivial optimizer.")))
-
-(define-public sbcl-trivia.balland2006
-  (package
-    (inherit sbcl-trivia.level0)
-    (name "sbcl-trivia.balland2006")
-    (inputs
-     `(("trivia.trivial" ,sbcl-trivia.trivial)
-       ("iterate" ,sbcl-iterate)
-       ("type-i" ,sbcl-type-i)
-       ("alexandria" ,sbcl-alexandria)))
-    (arguments
-     ;; Tests are done in trivia itself.
-     `(#:tests? #f))
-    (description "Trivia is a pattern matching compiler that is compatible
-with Optima, another pattern matching library for Common Lisp.  It is meant to
-be faster and more extensible than Optima.
-
-This system contains the base level system of Trivia with a trivial optimizer.")))
-
-(define-public sbcl-trivia.ppcre
-  (package
-    (inherit sbcl-trivia.level0)
-    (name "sbcl-trivia.ppcre")
-    (inputs
-     `(("trivia.trivial" ,sbcl-trivia.trivial)
-       ("cl-ppcre" ,sbcl-cl-ppcre)))
-    (description "Trivia is a pattern matching compiler that is compatible
-with Optima, another pattern matching library for Common Lisp.  It is meant to
-be faster and more extensible than Optima.
-
-This system contains the PPCRE extension.")))
-
-(define-public sbcl-trivia.quasiquote
-  (package
-    (inherit sbcl-trivia.level0)
-    (name "sbcl-trivia.quasiquote")
-    (inputs
-     `(("trivia.trivial" ,sbcl-trivia.trivial)
-       ("fare-quasiquote" ,sbcl-fare-quasiquote)
-       ("fare-quasiquote-readtable" ,sbcl-fare-quasiquote-readtable)))
-    (description "Trivia is a pattern matching compiler that is compatible
-with Optima, another pattern matching library for Common Lisp.  It is meant to
-be faster and more extensible than Optima.
-
-This system contains the fare-quasiquote extension.")))
-
-(define-public sbcl-trivia.cffi
-  (package
-    (inherit sbcl-trivia.level0)
-    (name "sbcl-trivia.cffi")
-    (inputs
-     `(("cffi" ,sbcl-cffi)
-       ("trivia.trivial" ,sbcl-trivia.trivial)))
-    (description "Trivia is a pattern matching compiler that is compatible
-with Optima, another pattern matching library for Common Lisp.  It is meant to
-be faster and more extensible than Optima.
-
-This system contains the CFFI foreign slot access extension.")))
 
 (define-public sbcl-trivia
   (package
-    (inherit sbcl-trivia.level0)
+    (inherit sbcl-trivia.trivial)
     (name "sbcl-trivia")
-    (inputs
-     `(("trivia.balland2006" ,sbcl-trivia.balland2006)))
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)
-       ("trivia.ppcre" ,sbcl-trivia.ppcre)
-       ("trivia.quasiquote" ,sbcl-trivia.quasiquote)
-       ("trivia.cffi" ,sbcl-trivia.cffi)
        ("optima" ,sbcl-optima)))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cffi" ,sbcl-cffi)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("fare-quasiquote" ,sbcl-fare-quasiquote)
+       ("iterate" ,sbcl-iterate)
+       ("trivia.trivial" ,sbcl-trivia.trivial)
+       ("type-i" ,sbcl-type-i)))
     (arguments
-     `(#:test-asd-file "trivia.test.asd"))
-    (description "Trivia is a pattern matching compiler that is compatible
-with Optima, another pattern matching library for Common Lisp.  It is meant to
-be faster and more extensible than Optima.")))
+     '(#:asd-files '("trivia.balland2006.asd"
+                     "trivia.ppcre.asd"
+                     "trivia.quasiquote.asd"
+                     "trivia.cffi.asd"
+                     "trivia.asd")
+       #:asd-systems '("trivia"
+                       "trivia.ppcre"
+                       "trivia.quasiquote"
+                       "trivia.cffi")
+       #:test-asd-file "trivia.test.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build
+           (lambda _
+             (for-each delete-file
+                       '("trivia.level0.asd"
+                         "trivia.level1.asd"
+                         "trivia.level2.asd"
+                         "trivia.trivial.asd"))
+             #t)))))))
 
 (define-public cl-trivia
   (sbcl-package->cl-source-package sbcl-trivia))
@@ -6444,11 +5284,10 @@ various string metrics in Common Lisp:
          ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
          ("cl-change-case" ,sbcl-cl-change-case)))
       (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)))
+       `(("prove" ,sbcl-prove)))
       (arguments
-       `(#:asd-file "str.asd"
-         #:asd-system-name "str"
+       `(#:asd-files '("str.asd")
+         #:asd-systems '("str")
          #:test-asd-file "str.test.asd"))
       (synopsis "Modern, consistent and terse Common Lisp string manipulation library")
       (description "A modern and consistent Common Lisp string manipulation
@@ -6495,15 +5334,11 @@ constructs can be used interchangeably with pattern matching, and the full
 power of CXML is available when necessary.")
       (license license:bsd-3))))
 
-;; TODO: dbus uses ASDF's package-inferred-system which is not supported by
-;; asdf-build-system/sbcl as of 2019-08-02.  We should fix
-;; asdf-build-system/sbcl.
-(define-public cl-dbus
+(define-public sbcl-dbus
   (let ((commit "24b452df3a45ca5dc95015500f34baad175c981a")
         (revision "1"))
     (package
-      (name "cl-dbus")
-      (build-system asdf-build-system/source)
+      (name "sbcl-dbus")
       (version (git-version "20190408" revision commit))
       (home-page "https://github.com/death/dbus")
       (source
@@ -6516,9 +5351,8 @@ power of CXML is available when necessary.")
          (sha256
           (base32
            "0fw2q866yddbf23nk9pxphm9gsasx35vjyss82xzvndnjmzlqfl5"))))
-      ;; Inputs must be propagated or else packages depending on this won't
-      ;; have the necessary packages.
-      (propagated-inputs
+      (build-system asdf-build-system/sbcl)
+      (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("trivial-garbage" ,sbcl-trivial-garbage)
          ("babel" ,sbcl-babel)
@@ -6531,6 +5365,9 @@ power of CXML is available when necessary.")
       (description "This is a Common Lisp library that publishes D-Bus
 objects as well as send and notify other objects connected to a bus.")
       (license license:bsd-2))))
+
+(define-public cl-dbus
+  (sbcl-package->cl-source-package sbcl-dbus))
 
 (define-public sbcl-cl-hooks
   (let ((commit "5b638083f3b4f1221a52631d9c8a0a265565cac7")
@@ -6616,8 +5453,7 @@ extension-points via the concept of hooks.")
            "1fh8r7kf8s3hvqdg6b71b8p7w3v2kkga9bw8j3qqdxhzr6anpm0b"))))
       (inputs
        `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-         ("usocket" ,sbcl-usocket)
-         ("usocket-server" ,sbcl-usocket-server)))
+         ("usocket" ,sbcl-usocket)))
       (synopsis "Common Lisp abstraction layer over platform dependent functionality")
       (description "@code{s-sysdeps} is an abstraction layer over platform
 dependent functionality.  This simple package is used as a building block in a
@@ -6731,7 +5567,13 @@ programming style and the efficiency of an iterative programming style.")
            "0z30jr3lxz3cmi019fsl4lgcgwf0yqpn95v9zkkkwgymdrkd4lga"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("local-time" ,sbcl-local-time)))
+       `(("local-time" ,sbcl-local-time)
+         ("series" ,sbcl-series)))
+      (arguments
+       '(#:asd-files '("periods.asd"
+                       "periods-series.asd")
+         #:asd-systems '("periods"
+                         "periods-series")))
       (synopsis "Common Lisp library for manipulating date/time objects")
       (description
        "Periods is a Common Lisp library providing a set of utilities for
@@ -6745,26 +5587,6 @@ discontiguous ranges of time.")
 
 (define-public ecl-periods
   (sbcl-package->ecl-package sbcl-periods))
-
-(define-public sbcl-periods-series
-  (package
-    (inherit sbcl-periods)
-    (name "sbcl-periods-series")
-    (inputs
-     `(("periods" ,sbcl-periods)
-       ("series" ,sbcl-series)))
-    (arguments
-     '(#:asd-file "periods-series.asd"
-       #:asd-system-name "periods-series"))
-    (description
-     "Periods-series is an extension of the periods Common Lisp library
-providing functions compatible with the series Common Lisp library.")))
-
-(define-public cl-periods-series
-  (sbcl-package->cl-source-package sbcl-periods-series))
-
-(define-public ecl-periods-series
-  (sbcl-package->ecl-package sbcl-periods-series))
 
 (define-public sbcl-metatilities-base
   (let ((commit "6eaa9e3ff0939a93a92109dd0fcd218de85417d5")
@@ -6887,57 +5709,41 @@ on the XPTest package by Craig Brozensky and the JUnit package by Kent Beck.")
 (define-public ecl-xlunit
   (sbcl-package->ecl-package sbcl-xlunit))
 
-(define-public sbcl-fprog
+(define-public sbcl-cambl
   (let ((commit "7016d1a98215f82605d1c158e7a16504ca1f4636")
         (revision "1"))
     (package
-      (name "sbcl-fprog")
-      (version (git-version "1.0.0" revision commit))
+      (name "sbcl-cambl")
+      (version (git-version "4.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/jwiegley/cambl")
                (commit commit)))
-         (file-name (git-file-name name version))
+         (file-name (git-file-name "cambl" version))
          (sha256
-          (base32
-           "103mry04j2k9vznsxm7wcvccgxkil92cdrv52miwcmxl8daa4jiz"))))
+          (base32 "103mry04j2k9vznsxm7wcvccgxkil92cdrv52miwcmxl8daa4jiz"))))
       (build-system asdf-build-system/sbcl)
-      (synopsis "Functional programming utilities for Common Lisp")
-      (description
-       "@code{fprog} is a Common Lisp library allowing iteration over
-immutable lists sharing identical sublists.")
-      (home-page "https://github.com/jwiegley/cambl")
-      (license license:bsd-3))))
-
-(define-public cl-fprog
-  (sbcl-package->cl-source-package sbcl-fprog))
-
-(define-public ecl-fprog
-  (sbcl-package->ecl-package sbcl-fprog))
-
-(define-public sbcl-cambl
-  (let ((commit "7016d1a98215f82605d1c158e7a16504ca1f4636")
-        (revision "1"))
-    (package
-      (inherit sbcl-fprog)
-      (name "sbcl-cambl")
-      (version (git-version "4.0.0" revision commit))
       (native-inputs
        `(("xlunit" ,sbcl-xlunit)))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cl-containers" ,sbcl-cl-containers)
          ("local-time" ,sbcl-local-time)
-         ("periods" ,sbcl-periods)
-         ("fprog" ,sbcl-fprog)))
+         ("periods" ,sbcl-periods)))
+      (arguments
+       '(#:asd-files '("fprog.asd"
+                       "cambl.asd")
+         #:asd-systems '("cambl")))
       (synopsis "Commoditized amounts and balances for Common Lisp")
       (description
        "CAMBL is a Common Lisp library providing a convenient facility for
 working with commoditized values.  It does not allow compound units (and so is
 not suited for scientific operations) but does work rather nicely for the
-purpose of financial calculations."))))
+purpose of financial calculations.")
+      (home-page "https://github.com/jwiegley/cambl")
+      (license license:bsd-3))))
 
 (define-public cl-cambl
   (sbcl-package->cl-source-package sbcl-cambl))
@@ -6966,7 +5772,7 @@ purpose of financial calculations."))))
        `(("cambl" ,sbcl-cambl)
          ("cl-ppcre" ,sbcl-cl-ppcre)
          ("local-time" ,sbcl-local-time)
-         ("periods-series" ,sbcl-periods-series)))
+         ("periods" ,sbcl-periods)))
       (arguments
        '(#:phases
          (modify-phases %standard-phases
@@ -7380,14 +6186,13 @@ implementation specific equivalent.")
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("trivia" ,sbcl-trivia)
-         ("trivia.quasiquote" ,sbcl-trivia.quasiquote)
          ("split-sequence" ,sbcl-split-sequence)
          ("string-case" ,sbcl-string-case)
          ("parse-number" ,sbcl-parse-number)
          ("trivial-garbage" ,sbcl-trivial-garbage)
          ("bordeaux-threads" ,sbcl-bordeaux-threads)
          ("named-readtables" ,sbcl-named-readtables)
-         ("fare-quasiquote-extras" ,sbcl-fare-quasiquote-extras)
+         ("fare-quasiquote" ,sbcl-fare-quasiquote)
          ("parse-declarations-1.0" ,sbcl-parse-declarations)
          ("global-vars" ,sbcl-global-vars)
          ("trivial-file-size" ,sbcl-trivial-file-size)
@@ -7593,11 +6398,8 @@ JSON interchange format.")
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("iterate" ,sbcl-iterate)
-         ("metabang-bind" ,sbcl-metabang-bind)))
-      (propagated-inputs
-       ;; Swank doesn't have a pre-compiled package, therefore we must
-       ;; propagate its sources.
-       `(("swank" ,cl-slime-swank)))
+         ("metabang-bind" ,sbcl-metabang-bind)
+         ("swank" ,sbcl-slime-swank)))
       (arguments
        '(#:phases
          (modify-phases %standard-phases
@@ -7632,19 +6434,23 @@ interactive development.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1qpij4xh8bqwc2myahpilcbh916v7vg0acz2fij14d3y0jm02h0g"))
-         (patches (search-patches "sbcl-graph-asdf-definitions.patch"))))
+           "1qpij4xh8bqwc2myahpilcbh916v7vg0acz2fij14d3y0jm02h0g"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("stefil" ,sbcl-stefil)))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cl-heap" ,sbcl-cl-heap)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
          ("curry-compose-reader-macros" ,sbcl-curry-compose-reader-macros)
          ("metabang-bind" ,sbcl-metabang-bind)
-         ("named-readtables" ,sbcl-named-readtables)))
+         ("named-readtables" ,sbcl-named-readtables)
+         ("yason" ,sbcl-yason)))
       (arguments
-       '(#:test-asd-file "graph-test.asd"))
+       '(#:asd-files '("graph.asd")
+         #:asd-systems '("graph"
+                         "graph/dot"
+                         "graph/json")))
       (synopsis "Graph data structure and algorithms for Common Lisp")
       (description
        "The GRAPH Common Lisp library provides a data structures to represent
@@ -7655,40 +6461,6 @@ path, maximum flow, minimum spanning tree, etc.).")
 
 (define-public cl-graph
   (sbcl-package->cl-source-package sbcl-graph))
-
-(define-public sbcl-graph-dot
-  (package
-    (inherit sbcl-graph)
-    (name "sbcl-graph-dot")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ppcre" ,sbcl-cl-ppcre)
-       ("curry-compose-reader-macros" ,sbcl-curry-compose-reader-macros)
-       ("graph" ,sbcl-graph)
-       ("metabang-bind" ,sbcl-metabang-bind)
-       ("named-readtables" ,sbcl-named-readtables)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-graph)
-       ((#:asd-file _ "") "graph-dot.asd")
-       ((#:asd-system-name _ #f) "graph-dot")))
-    (synopsis "Serialize graphs to and from DOT format")))
-
-(define-public sbcl-graph-json
-  (package
-    (inherit sbcl-graph)
-    (name "sbcl-graph-json")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("curry-compose-reader-macros" ,sbcl-curry-compose-reader-macros)
-       ("graph" ,sbcl-graph)
-       ("metabang-bind" ,sbcl-metabang-bind)
-       ("named-readtables" ,sbcl-named-readtables)
-       ("yason" ,sbcl-yason)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-graph)
-       ((#:asd-file _ "") "graph-json.asd")
-       ((#:asd-system-name _ #f) "graph-json")))
-    (synopsis "Serialize graphs to and from JSON format")))
 
 (define-public sbcl-trivial-indent
   (let ((commit "2d016941751647c6cc5bd471751c2cf68861c94a")
@@ -7881,6 +6653,8 @@ your own classes.")
 (define-public cl-plump
   (sbcl-package->cl-source-package sbcl-plump))
 
+;;; Split the antik package in two to work around the circular dependency
+;;; between antik/antik and antik/gsll.
 (define-public sbcl-antik-base
   (let ((commit "e4711a69b3d6bf37b5727af05c3cfd03e8428ba3")
         (revision "1"))
@@ -7900,13 +6674,34 @@ your own classes.")
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
          ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("drakma" ,sbcl-drakma)
+         ("fare-utils" ,sbcl-fare-utils)
          ("iterate" ,sbcl-iterate)
          ("metabang-bind" ,sbcl-metabang-bind)
          ("named-readtables" ,sbcl-named-readtables)
-         ("split-sequence" ,sbcl-split-sequence)))
+         ("split-sequence" ,sbcl-split-sequence)
+         ("static-vectors" ,sbcl-static-vectors)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("trivial-utf-8" ,sbcl-trivial-utf-8)))
       (native-inputs
        `(("lisp-unit" ,sbcl-lisp-unit)))
+      (arguments
+       '(#:asd-files '("antik-base.asd"
+                       "foreign-array.asd"
+                       "physical-dimension.asd"
+                       "science-data.asd")
+         #:asd-systems '("antik-base"
+                         "foreign-array"
+                         "physical-dimension"
+                         "science-data")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-build
+             (lambda _
+               (delete-file "antik.asd")
+               #t)))))
       (synopsis "Scientific and engineering computation in Common Lisp")
       (description
        "Antik provides a foundation for scientific and engineering
@@ -7918,68 +6713,6 @@ Antikythera mechanism, one of the oldest examples of a scientific
 computer known.")
       (home-page "https://common-lisp.net/project/antik/")
       (license license:gpl3))))
-
-(define-public cl-antik-base
-  (sbcl-package->cl-source-package sbcl-antik-base))
-
-(define-public ecl-antik-base
-  (sbcl-package->ecl-package sbcl-antik-base))
-
-(define-public sbcl-foreign-array
-  (package
-    (inherit sbcl-antik-base)
-    (name "sbcl-foreign-array")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-antik-base)
-       ((#:asd-file _ "") "foreign-array.asd")
-       ((#:asd-system-name _ #f) "foreign-array")))
-    (inputs
-     `(("antik-base" ,sbcl-antik-base)
-       ("cffi" ,sbcl-cffi)
-       ("trivial-garbage" ,sbcl-trivial-garbage)
-       ("static-vectors" ,sbcl-static-vectors)))
-    (synopsis "Common Lisp library providing access to foreign arrays")))
-
-(define-public cl-foreign-array
-  (sbcl-package->cl-source-package sbcl-foreign-array))
-
-(define-public ecl-foreign-array
-  (sbcl-package->ecl-package sbcl-foreign-array))
-
-(define-public sbcl-physical-dimension
-  (package
-    (inherit sbcl-antik-base)
-    (name "sbcl-physical-dimension")
-    (inputs
-     `(("fare-utils" ,sbcl-fare-utils)
-       ("foreign-array" ,sbcl-foreign-array)
-       ("trivial-utf-8" ,sbcl-trivial-utf-8)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-antik-base)
-       ((#:asd-file _ "") "physical-dimension.asd")
-       ((#:asd-system-name _ #f) "physical-dimension")))
-    (synopsis
-     "Common Lisp library providing computations with physical units")))
-
-(define-public cl-physical-dimension
-  (sbcl-package->cl-source-package sbcl-physical-dimension))
-
-(define-public sbcl-science-data
-  (package
-    (inherit sbcl-antik-base)
-    (name "sbcl-science-data")
-    (inputs
-     `(("physical-dimension" ,sbcl-physical-dimension)
-       ("drakma" ,sbcl-drakma)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-antik-base)
-       ((#:asd-file _ "") "science-data.asd")
-       ((#:asd-system-name _ #f) "science-data")))
-    (synopsis
-     "Common Lisp library for scientific and engineering numerical data")))
-
-(define-public cl-science-data
-  (sbcl-package->cl-source-package sbcl-science-data))
 
 (define-public sbcl-gsll
   (let ((commit "1a8ada22f9cf5ed7372d352b2317f4ccdb6ab308")
@@ -8002,9 +6735,8 @@ computer known.")
        `(("lisp-unit" ,sbcl-lisp-unit)))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
-         ("cffi-grovel" ,sbcl-cffi-grovel)
-         ("cffi-libffi" ,sbcl-cffi-libffi)
-         ("foreign-array" ,sbcl-foreign-array)
+         ("antik-base" ,sbcl-antik-base)
+         ("cffi" ,sbcl-cffi)
          ("gsl" ,gsl)
          ("metabang-bind" ,sbcl-metabang-bind)
          ("trivial-features" ,sbcl-trivial-features)
@@ -8048,12 +6780,21 @@ intending to program in Lisp.")
     (inherit sbcl-antik-base)
     (name "sbcl-antik")
     (inputs
-     `(("gsll" ,sbcl-gsll)
-       ("physical-dimension" ,sbcl-physical-dimension)))
+     `(("antik-base" ,sbcl-antik-base)
+       ("gsll" ,sbcl-gsll)))
     (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-antik-base)
-       ((#:asd-file _ "") "antik.asd")
-       ((#:asd-system-name _ #f) "antik")))))
+     '(#:asd-files '("antik.asd")
+       #:asd-systems '("antik")
+       #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-build
+             (lambda _
+               (for-each delete-file
+                         '("antik-base.asd"
+                           "foreign-array.asd"
+                           "physical-dimension.asd"
+                           "science-data.asd"))
+               #t)))))))
 
 (define-public cl-antik
   (sbcl-package->cl-source-package sbcl-antik))
@@ -8096,80 +6837,6 @@ doesn't support them.")
 (define-public ecl-cl-interpol
   (sbcl-package->ecl-package sbcl-cl-interpol))
 
-(define sbcl-symbol-munger-boot0
-  ;; There is a cyclical dependency between symbol-munger and lisp-unit2.
-  ;; See https://github.com/AccelerationNet/symbol-munger/issues/4
-  (let ((commit "cc2bb4b7acd454d756484aec81ba487648385fc3")
-        (revision "1"))
-    (package
-      (name "sbcl-symbol-munger-boot0")
-      (version (git-version "0.0.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/AccelerationNet/symbol-munger")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0diav5ricqsybqvbp4bkxyj3bn3v9n7xb2pqqc4vg1algsw2pyjl"))))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       `(#:asd-file "symbol-munger.asd"
-         #:asd-system-name "symbol-munger"))
-      (inputs
-       `(("iterate" ,sbcl-iterate)
-         ("alexandria" ,sbcl-alexandria)))
-      (native-inputs
-       `(("lisp-unit" ,sbcl-lisp-unit)))
-      (synopsis
-       "Capitalization and spacing conversion functions for Common Lisp")
-      (description
-       "This is a Common Lisp library to change the capitalization and spacing
-of a string or a symbol.  It can convert to and from Lisp, english, underscore
-and camel-case rules.")
-      (home-page "https://github.com/AccelerationNet/symbol-munger")
-      ;; The package declares a BSD license, but all of the license
-      ;; text is MIT.
-      ;; See https://github.com/AccelerationNet/symbol-munger/issues/5
-      (license license:expat))))
-
-(define sbcl-lisp-unit2-boot0
-  ;; There is a cyclical dependency between symbol-munger and lisp-unit2.
-  ;; See https://github.com/AccelerationNet/symbol-munger/issues/4
-  (let ((commit "fb9721524d1e4e73abb223ee036d74ce14a5505c")
-        (revision "1"))
-    (package
-      (name "sbcl-lisp-unit2-boot0")
-      (version (git-version "0.2.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/AccelerationNet/lisp-unit2")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1rsqy8y0jqll6xn9a593848f5wvd5ribv4csry1ly0hmdhfnqzlp"))))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       `(#:asd-file "lisp-unit2.asd"
-         #:asd-system-name "lisp-unit2"))
-      (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("cl-interpol" ,sbcl-cl-interpol)
-         ("iterate" ,sbcl-iterate)
-         ("symbol-munger-boot0" ,sbcl-symbol-munger-boot0)))
-      (synopsis "Test Framework for Common Lisp")
-      (description
-       "LISP-UNIT2 is a Common Lisp library that supports unit testing in the
-style of JUnit for Java.  It is a new version of the lisp-unit library written
-by Chris Riesbeck.")
-      (home-page "https://github.com/AccelerationNet/lisp-unit2")
-      (license license:expat))))
-
 (define-public sbcl-symbol-munger
   (let ((commit "97598d4c3c53fd5da72ab78908fbd5d8c7a13416")
         (revision "1"))
@@ -8190,8 +6857,10 @@ by Chris Riesbeck.")
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("iterate" ,sbcl-iterate)))
-      (native-inputs
-       `(("lisp-unit2-boot0" ,sbcl-lisp-unit2-boot0)))
+      (arguments
+       ;; There is a cyclical dependency between symbol-munger and lisp-unit2.
+       ;; See https://github.com/AccelerationNet/symbol-munger/issues/4
+       '(#:tests? #f))
       (synopsis
        "Capitalization and spacing conversion functions for Common Lisp")
       (description
@@ -8211,14 +6880,36 @@ and camel-case rules.")
   (sbcl-package->ecl-package sbcl-symbol-munger))
 
 (define-public sbcl-lisp-unit2
-  (package
-    (inherit sbcl-lisp-unit2-boot0)
-    (name "sbcl-lisp-unit2")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-interpol" ,sbcl-cl-interpol)
-       ("iterate" ,sbcl-iterate)
-       ("symbol-munger" ,sbcl-symbol-munger)))))
+  ;; There is a cyclical dependency between symbol-munger and lisp-unit2.
+  ;; See https://github.com/AccelerationNet/symbol-munger/issues/4
+  (let ((commit "fb9721524d1e4e73abb223ee036d74ce14a5505c")
+        (revision "1"))
+    (package
+      (name "sbcl-lisp-unit2")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/AccelerationNet/lisp-unit2")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1rsqy8y0jqll6xn9a593848f5wvd5ribv4csry1ly0hmdhfnqzlp"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-interpol" ,sbcl-cl-interpol)
+         ("iterate" ,sbcl-iterate)
+         ("symbol-munger" ,sbcl-symbol-munger)))
+      (synopsis "Test Framework for Common Lisp")
+      (description
+       "LISP-UNIT2 is a Common Lisp library that supports unit testing in the
+style of JUnit for Java.  It is a new version of the lisp-unit library written
+by Chris Riesbeck.")
+      (home-page "https://github.com/AccelerationNet/lisp-unit2")
+      (license license:expat))))
 
 (define-public cl-lisp-unit2
   (sbcl-package->cl-source-package sbcl-lisp-unit2))
@@ -8301,11 +6992,11 @@ sacrificing much in the way of power.")
 (define-public ecl-external-program
   (sbcl-package->ecl-package sbcl-external-program))
 
-(define sbcl-cl-ana-boot0
+(define-public sbcl-cl-ana
   (let ((commit "fa7cee4c50aa1c859652813049ba0da7c18a0df9")
         (revision "1"))
     (package
-     (name "sbcl-cl-ana-boot0")
+     (name "sbcl-cl-ana")
      (version (git-version "0.0.0" revision commit))
      (source
       (origin
@@ -8315,9 +7006,90 @@ sacrificing much in the way of power.")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0mr47l57m276dbpap7irr4fcnk5fgknhf6mgv4043s8h73amk5qh"))))
+        (base32 "0mr47l57m276dbpap7irr4fcnk5fgknhf6mgv4043s8h73amk5qh"))))
      (build-system asdf-build-system/sbcl)
+     (native-inputs
+      `(("cl-fad" ,sbcl-cl-fad)))
+     (inputs
+      `(("alexandria" ,sbcl-alexandria)
+        ("antik" ,sbcl-antik)
+        ("cffi" ,sbcl-cffi)
+        ("cl-csv" ,sbcl-cl-csv)
+        ("closer-mop" ,sbcl-closer-mop)
+        ("external-program" ,sbcl-external-program)
+        ("gsl" ,gsl)
+        ("gsll" ,sbcl-gsll)
+        ("hdf5" ,hdf5-parallel-openmpi)
+        ("iterate" ,sbcl-iterate)
+        ("libffi" ,libffi)
+        ("split-sequence" ,sbcl-split-sequence)))
+     (arguments
+      `(#:asd-files '("cl-ana.asd"
+                      "pathname-utils/cl-ana.pathname-utils.asd"
+                      "package-utils/cl-ana.package-utils.asd"
+                      "string-utils/cl-ana.string-utils.asd"
+                      "functional-utils/cl-ana.functional-utils.asd"
+                      "list-utils/cl-ana.list-utils.asd"
+                      "generic-math/cl-ana.generic-math.asd"
+                      "math-functions/cl-ana.math-functions.asd"
+                      "calculus/cl-ana.calculus.asd"
+                      "symbol-utils/cl-ana.symbol-utils.asd"
+                      "macro-utils/cl-ana.macro-utils.asd"
+                      "binary-tree/cl-ana.binary-tree.asd"
+                      "tensor/cl-ana.tensor.asd"
+                      "error-propogation/cl-ana.error-propogation.asd"
+                      "quantity/cl-ana.quantity.asd"
+                      "table/cl-ana.table.asd"
+                      "table-utils/cl-ana.table-utils.asd"
+                      "hdf-cffi/cl-ana.hdf-cffi.asd"
+                      "int-char/cl-ana.int-char.asd"
+                      "memoization/cl-ana.memoization.asd"
+                      "typespec/cl-ana.typespec.asd"
+                      "hdf-typespec/cl-ana.hdf-typespec.asd"
+                      "hdf-utils/cl-ana.hdf-utils.asd"
+                      "typed-table/cl-ana.typed-table.asd"
+                      "hdf-table/cl-ana.hdf-table.asd"
+                      "gsl-cffi/cl-ana.gsl-cffi.asd"
+                      "ntuple-table/cl-ana.ntuple-table.asd"
+                      "csv-table/cl-ana.csv-table.asd"
+                      "reusable-table/cl-ana.reusable-table.asd"
+                      "linear-algebra/cl-ana.linear-algebra.asd"
+                      "lorentz/cl-ana.lorentz.asd"
+                      "clos-utils/cl-ana.clos-utils.asd"
+                      "hash-table-utils/cl-ana.hash-table-utils.asd"
+                      "map/cl-ana.map.asd"
+                      "fitting/cl-ana.fitting.asd"
+                      "histogram/cl-ana.histogram.asd"
+                      "file-utils/cl-ana.file-utils.asd"
+                      "statistics/cl-ana.statistics.asd"
+                      "gnuplot-interface/cl-ana.gnuplot-interface.asd"
+                      "plotting/cl-ana.plotting.asd"
+                      "table-viewing/cl-ana.table-viewing.asd"
+                      "serialization/cl-ana.serialization.asd"
+                      "makeres/cl-ana.makeres.asd"
+                      "makeres-macro/cl-ana.makeres-macro.asd"
+                      "makeres-block/cl-ana.makeres-block.asd"
+                      "makeres-progress/cl-ana.makeres-progress.asd"
+                      "makeres-table/cl-ana.makeres-table.asd"
+                      "makeres-graphviz/cl-ana.makeres-graphviz.asd"
+                      "makeres-branch/cl-ana.makeres-branch.asd"
+                      "makeres-utils/cl-ana.makeres-utils.asd"
+                      "statistical-learning/cl-ana.statistical-learning.asd")
+        #:asd-systems '("cl-ana")
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'fix-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "hdf-cffi/hdf-cffi.lisp"
+                (("/usr/lib/i386-linux-gnu/hdf5/serial/libhdf5.so")
+                 (string-append (assoc-ref inputs "hdf5")
+                                "/lib/libhdf5.so")))
+              (substitute* "gsl-cffi/gsl-cffi.lisp"
+                (("define-foreign-library gsl-cffi" all)
+                 (string-append all " (:unix "
+                                (assoc-ref inputs "gsl")
+                                "/lib/libgsl.so)")))
+              #t)))))
      (synopsis "Common Lisp data analysis library")
      (description
       "CL-ANA is a data analysis library in Common Lisp providing tabular and
@@ -8325,1060 +7097,6 @@ binned data analysis along with nonlinear least squares fitting and
 visualization.")
      (home-page "https://github.com/ghollisjr/cl-ana")
      (license license:gpl3))))
-
-(define-public sbcl-cl-ana.pathname-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.pathname-utils")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "pathname-utils/cl-ana.pathname-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.pathname-utils")))))
-
-(define-public cl-ana.pathname-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.pathname-utils))
-
-(define-public ecl-cl-ana.pathname-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.pathname-utils))
-
-(define-public sbcl-cl-ana.package-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.package-utils")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "package-utils/cl-ana.package-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.package-utils")))))
-
-(define-public cl-ana.package-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.package-utils))
-
-(define-public ecl-cl-ana.package-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.package-utils))
-
-(define-public sbcl-cl-ana.string-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.string-utils")
-    (inputs
-     `(("split-sequence" ,sbcl-split-sequence)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "string-utils/cl-ana.string-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.string-utils")))))
-
-(define-public cl-ana.string-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.string-utils))
-
-(define-public ecl-cl-ana.string-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.string-utils))
-
-(define-public sbcl-cl-ana.functional-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.functional-utils")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "functional-utils/cl-ana.functional-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.functional-utils")))))
-
-(define-public cl-ana.functional-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.functional-utils))
-
-(define-public ecl-cl-ana.functional-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.functional-utils))
-
-(define-public sbcl-cl-ana.list-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.list-utils")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "list-utils/cl-ana.list-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.list-utils")))))
-
-(define-public cl-ana.list-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.list-utils))
-
-(define-public ecl-cl-ana.list-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.list-utils))
-
-(define-public sbcl-cl-ana.generic-math
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.generic-math")
-    (inputs
-     `(("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.package-utils" ,sbcl-cl-ana.package-utils)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "generic-math/cl-ana.generic-math.asd")
-       ((#:asd-system-name _ #f) "cl-ana.generic-math")))))
-
-(define-public cl-ana.generic-math
-  (sbcl-package->cl-source-package sbcl-cl-ana.generic-math))
-
-(define-public ecl-cl-ana.generic-math
-  (sbcl-package->ecl-package sbcl-cl-ana.generic-math))
-
-(define-public sbcl-cl-ana.math-functions
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.math-functions")
-    (inputs
-     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("gsll" ,sbcl-gsll)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "math-functions/cl-ana.math-functions.asd")
-       ((#:asd-system-name _ #f) "cl-ana.math-functions")))))
-
-(define-public cl-ana.math-functions
-  (sbcl-package->cl-source-package sbcl-cl-ana.math-functions))
-
-(define-public sbcl-cl-ana.calculus
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.calculus")
-    (inputs
-     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "calculus/cl-ana.calculus.asd")
-       ((#:asd-system-name _ #f) "cl-ana.calculus")))))
-
-(define-public cl-ana.calculus
-  (sbcl-package->cl-source-package sbcl-cl-ana.calculus))
-
-(define-public ecl-cl-ana.calculus
-  (sbcl-package->ecl-package sbcl-cl-ana.calculus))
-
-(define-public sbcl-cl-ana.symbol-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.symbol-utils")
-    (inputs
-     `(("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "symbol-utils/cl-ana.symbol-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.symbol-utils")))))
-
-(define-public cl-ana.symbol-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.symbol-utils))
-
-(define-public ecl-cl-ana.symbol-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.symbol-utils))
-
-(define-public sbcl-cl-ana.macro-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.macro-utils")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
-       ("split-sequence" ,sbcl-split-sequence)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "macro-utils/cl-ana.macro-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.macro-utils")))))
-
-(define-public cl-ana.macro-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.macro-utils))
-
-(define-public ecl-cl-ana.macro-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.macro-utils))
-
-(define-public sbcl-cl-ana.binary-tree
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.binary-tree")
-    (inputs
-     `(("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "binary-tree/cl-ana.binary-tree.asd")
-       ((#:asd-system-name _ #f) "cl-ana.binary-tree")))))
-
-(define-public cl-ana.binary-tree
-  (sbcl-package->cl-source-package sbcl-cl-ana.binary-tree))
-
-(define-public ecl-cl-ana.binary-tree
-  (sbcl-package->ecl-package sbcl-cl-ana.binary-tree))
-
-(define-public sbcl-cl-ana.tensor
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.tensor")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "tensor/cl-ana.tensor.asd")
-       ((#:asd-system-name _ #f) "cl-ana.tensor")))))
-
-(define-public cl-ana.tensor
-  (sbcl-package->cl-source-package sbcl-cl-ana.tensor))
-
-(define-public ecl-cl-ana.tensor
-  (sbcl-package->ecl-package sbcl-cl-ana.tensor))
-
-(define-public sbcl-cl-ana.error-propogation
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.error-propogation")
-    (inputs
-     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "error-propogation/cl-ana.error-propogation.asd")
-       ((#:asd-system-name _ #f) "cl-ana.error-propogation")))))
-
-(define-public cl-ana.error-propogation
-  (sbcl-package->cl-source-package sbcl-cl-ana.error-propogation))
-
-(define-public sbcl-cl-ana.quantity
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.quantity")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "quantity/cl-ana.quantity.asd")
-       ((#:asd-system-name _ #f) "cl-ana.quantity")))))
-
-(define-public cl-ana.quantity
-  (sbcl-package->cl-source-package sbcl-cl-ana.quantity))
-
-(define-public sbcl-cl-ana.table
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.table")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "table/cl-ana.table.asd")
-       ((#:asd-system-name _ #f) "cl-ana.table")))))
-
-(define-public cl-ana.table
-  (sbcl-package->cl-source-package sbcl-cl-ana.table))
-
-(define-public ecl-cl-ana.table
-  (sbcl-package->ecl-package sbcl-cl-ana.table))
-
-(define-public sbcl-cl-ana.table-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.table-utils")
-    (inputs
-     `(("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
-       ("cl-ana.table" ,sbcl-cl-ana.table)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "table-utils/cl-ana.table-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.table-utils")))))
-
-(define-public cl-ana.table-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.table-utils))
-
-(define-public ecl-cl-ana.table-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.table-utils))
-
-(define-public sbcl-cl-ana.hdf-cffi
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.hdf-cffi")
-    (inputs
-     `(("cffi" ,sbcl-cffi)
-       ("hdf5" ,hdf5-parallel-openmpi)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "hdf-cffi/cl-ana.hdf-cffi.asd")
-       ((#:asd-system-name _ #f) "cl-ana.hdf-cffi")
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'fix-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "hdf-cffi/hdf-cffi.lisp"
-                 (("/usr/lib/i386-linux-gnu/hdf5/serial/libhdf5.so")
-                  (string-append
-                   (assoc-ref inputs "hdf5")
-                   "/lib/libhdf5.so")))))))))))
-
-(define-public cl-ana.hdf-cffi
-  (sbcl-package->cl-source-package sbcl-cl-ana.hdf-cffi))
-
-(define-public ecl-cl-ana.hdf-cffi
-  (sbcl-package->ecl-package sbcl-cl-ana.hdf-cffi))
-
-(define-public sbcl-cl-ana.int-char
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.int-char")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "int-char/cl-ana.int-char.asd")
-       ((#:asd-system-name _ #f) "cl-ana.int-char")))))
-
-(define-public cl-ana.int-char
-  (sbcl-package->cl-source-package sbcl-cl-ana.int-char))
-
-(define-public ecl-cl-ana.int-char
-  (sbcl-package->ecl-package sbcl-cl-ana.int-char))
-
-(define-public sbcl-cl-ana.memoization
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.memoization")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "memoization/cl-ana.memoization.asd")
-       ((#:asd-system-name _ #f) "cl-ana.memoization")))))
-
-(define-public cl-ana.memoization
-  (sbcl-package->cl-source-package sbcl-cl-ana.memoization))
-
-(define-public ecl-cl-ana.memoization
-  (sbcl-package->ecl-package sbcl-cl-ana.memoization))
-
-(define-public sbcl-cl-ana.typespec
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.typespec")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cffi" ,sbcl-cffi)
-       ("cl-ana.int-char" ,sbcl-cl-ana.int-char)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
-       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "typespec/cl-ana.typespec.asd")
-       ((#:asd-system-name _ #f) "cl-ana.typespec")))))
-
-(define-public cl-ana.typespec
-  (sbcl-package->cl-source-package sbcl-cl-ana.typespec))
-
-(define-public ecl-cl-ana.typespec
-  (sbcl-package->ecl-package sbcl-cl-ana.typespec))
-
-(define-public sbcl-cl-ana.hdf-typespec
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.hdf-typespec")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cffi" ,sbcl-cffi)
-       ("cl-ana.hdf-cffi" ,sbcl-cl-ana.hdf-cffi)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
-       ("cl-ana.typespec" ,sbcl-cl-ana.typespec)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "hdf-typespec/cl-ana.hdf-typespec.asd")
-       ((#:asd-system-name _ #f) "cl-ana.hdf-typespec")))))
-
-(define-public cl-ana.hdf-typespec
-  (sbcl-package->cl-source-package sbcl-cl-ana.hdf-typespec))
-
-(define-public ecl-cl-ana.hdf-typespec
-  (sbcl-package->ecl-package sbcl-cl-ana.hdf-typespec))
-
-(define-public sbcl-cl-ana.hdf-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.hdf-utils")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cffi" ,sbcl-cffi)
-       ("cl-ana.hdf-cffi" ,sbcl-cl-ana.hdf-cffi)
-       ("cl-ana.hdf-typespec" ,sbcl-cl-ana.hdf-typespec)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
-       ("cl-ana.pathname-utils" ,sbcl-cl-ana.pathname-utils)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.typespec" ,sbcl-cl-ana.typespec)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "hdf-utils/cl-ana.hdf-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.hdf-utils")))))
-
-(define-public cl-ana.hdf-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.hdf-utils))
-
-(define-public ecl-cl-ana.hdf-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.hdf-utils))
-
-(define-public sbcl-cl-ana.typed-table
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.typed-table")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
-       ("cl-ana.table" ,sbcl-cl-ana.table)
-       ("cl-ana.typespec" ,sbcl-cl-ana.typespec)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "typed-table/cl-ana.typed-table.asd")
-       ((#:asd-system-name _ #f) "cl-ana.typed-table")))))
-
-(define-public cl-ana.typed-table
-  (sbcl-package->cl-source-package sbcl-cl-ana.typed-table))
-
-(define-public ecl-cl-ana.typed-table
-  (sbcl-package->ecl-package sbcl-cl-ana.typed-table))
-
-(define-public sbcl-cl-ana.hdf-table
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.hdf-table")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.binary-tree" ,sbcl-cl-ana.binary-tree)
-       ("cl-ana.hdf-cffi" ,sbcl-cl-ana.hdf-cffi)
-       ("cl-ana.hdf-typespec" ,sbcl-cl-ana.hdf-typespec)
-       ("cl-ana.hdf-utils" ,sbcl-cl-ana.hdf-utils)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
-       ("cl-ana.table" ,sbcl-cl-ana.table)
-       ("cl-ana.typed-table" ,sbcl-cl-ana.typed-table)
-       ("cl-ana.typespec" ,sbcl-cl-ana.typespec)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "hdf-table/cl-ana.hdf-table.asd")
-       ((#:asd-system-name _ #f) "cl-ana.hdf-table")))))
-
-(define-public cl-ana.hdf-table
-  (sbcl-package->cl-source-package sbcl-cl-ana.hdf-table))
-
-(define-public ecl-cl-ana.hdf-table
-  (sbcl-package->ecl-package sbcl-cl-ana.hdf-table))
-
-(define-public sbcl-cl-ana.gsl-cffi
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.gsl-cffi")
-    (inputs
-     `(("cffi" ,sbcl-cffi)
-       ("gsl" ,gsl)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "gsl-cffi/cl-ana.gsl-cffi.asd")
-       ((#:asd-system-name _ #f) "cl-ana.gsl-cffi")
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'fix-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "gsl-cffi/gsl-cffi.lisp"
-                 (("define-foreign-library gsl-cffi" all)
-                  (string-append all " (:unix "
-                                 (assoc-ref inputs "gsl")
-                                 "/lib/libgsl.so)")))))))))))
-
-(define-public cl-ana.gsl-cffi
-  (sbcl-package->cl-source-package sbcl-cl-ana.gsl-cffi))
-
-(define-public ecl-cl-ana.gsl-cffi
-  (sbcl-package->ecl-package sbcl-cl-ana.gsl-cffi))
-
-(define-public sbcl-cl-ana.ntuple-table
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.ntuple-table")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cffi" ,sbcl-cffi)
-       ("cl-ana.gsl-cffi" ,sbcl-cl-ana.gsl-cffi)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.table" ,sbcl-cl-ana.table)
-       ("cl-ana.typed-table" ,sbcl-cl-ana.typed-table)
-       ("cl-ana.typespec" ,sbcl-cl-ana.typespec)
-       ("gsll" ,sbcl-gsll)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "ntuple-table/cl-ana.ntuple-table.asd")
-       ((#:asd-system-name _ #f) "cl-ana.ntuple-table")))))
-
-(define-public cl-ana.ntuple-table
-  (sbcl-package->cl-source-package sbcl-cl-ana.ntuple-table))
-
-(define-public sbcl-cl-ana.csv-table
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.csv-table")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("antik" ,sbcl-antik)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.table" ,sbcl-cl-ana.table)
-       ("cl-csv" ,sbcl-cl-csv)
-       ("iterate" ,sbcl-iterate)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "csv-table/cl-ana.csv-table.asd")
-       ((#:asd-system-name _ #f) "cl-ana.csv-table")))))
-
-(define-public cl-ana.csv-table
-  (sbcl-package->cl-source-package sbcl-cl-ana.csv-table))
-
-(define-public sbcl-cl-ana.reusable-table
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.reusable-table")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.table" ,sbcl-cl-ana.table)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "reusable-table/cl-ana.reusable-table.asd")
-       ((#:asd-system-name _ #f) "cl-ana.reusable-table")))))
-
-(define-public cl-ana.reusable-table
-  (sbcl-package->cl-source-package sbcl-cl-ana.reusable-table))
-
-(define-public ecl-cl-ana.reusable-table
-  (sbcl-package->ecl-package sbcl-cl-ana.reusable-table))
-
-(define-public sbcl-cl-ana.linear-algebra
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.linear-algebra")
-    (inputs
-     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)
-       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)
-       ("gsll" ,sbcl-gsll)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "linear-algebra/cl-ana.linear-algebra.asd")
-       ((#:asd-system-name _ #f) "cl-ana.linear-algebra")))))
-
-(define-public cl-ana.linear-algebra
-  (sbcl-package->cl-source-package sbcl-cl-ana.linear-algebra))
-
-(define-public sbcl-cl-ana.lorentz
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.lorentz")
-    (inputs
-     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.linear-algebra" ,sbcl-cl-ana.linear-algebra)
-       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)
-       ("iterate" ,sbcl-iterate)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "lorentz/cl-ana.lorentz.asd")
-       ((#:asd-system-name _ #f) "cl-ana.lorentz")))))
-
-(define-public cl-ana.lorentz
-  (sbcl-package->cl-source-package sbcl-cl-ana.lorentz))
-
-(define-public sbcl-cl-ana.clos-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.clos-utils")
-    (inputs
-     `(("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
-       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)
-       ("closer-mop" ,sbcl-closer-mop)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "clos-utils/cl-ana.clos-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.clos-utils")))))
-
-(define-public cl-ana.clos-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.clos-utils))
-
-(define-public ecl-cl-ana.clos-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.clos-utils))
-
-(define-public sbcl-cl-ana.hash-table-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.hash-table-utils")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "hash-table-utils/cl-ana.hash-table-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.hash-table-utils")))))
-
-(define-public cl-ana.hash-table-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.hash-table-utils))
-
-(define-public ecl-cl-ana.hash-table-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.hash-table-utils))
-
-(define-public sbcl-cl-ana.map
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.map")
-    (inputs
-     `(("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "map/cl-ana.map.asd")
-       ((#:asd-system-name _ #f) "cl-ana.map")))))
-
-(define-public cl-ana.map
-  (sbcl-package->cl-source-package sbcl-cl-ana.map))
-
-(define-public ecl-cl-ana.map
-  (sbcl-package->ecl-package sbcl-cl-ana.map))
-
-(define-public sbcl-cl-ana.fitting
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.fitting")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.map" ,sbcl-cl-ana.map)
-       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)
-       ("gsll" ,sbcl-gsll)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "fitting/cl-ana.fitting.asd")
-       ((#:asd-system-name _ #f) "cl-ana.fitting")))))
-
-(define-public cl-ana.fitting
-  (sbcl-package->cl-source-package sbcl-cl-ana.fitting))
-
-(define-public sbcl-cl-ana.histogram
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.histogram")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("iterate" ,sbcl-iterate)
-       ("cl-ana.binary-tree" ,sbcl-cl-ana.binary-tree)
-       ("cl-ana.clos-utils" ,sbcl-cl-ana.clos-utils)
-       ("cl-ana.fitting" ,sbcl-cl-ana.fitting)
-       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.map" ,sbcl-cl-ana.map)
-       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "histogram/cl-ana.histogram.asd")
-       ((#:asd-system-name _ #f) "cl-ana.histogram")))))
-
-(define-public cl-ana.histogram
-  (sbcl-package->cl-source-package sbcl-cl-ana.histogram))
-
-(define-public sbcl-cl-ana.file-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.file-utils")
-    (inputs
-     `(("external-program" ,sbcl-external-program)
-       ("split-sequence" ,sbcl-split-sequence)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "file-utils/cl-ana.file-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.file-utils")))))
-
-(define-public cl-ana.file-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.file-utils))
-
-(define-public ecl-cl-ana.file-utils
-  (sbcl-package->ecl-package sbcl-cl-ana.file-utils))
-
-(define-public sbcl-cl-ana.statistics
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.statistics")
-    (inputs
-     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.map" ,sbcl-cl-ana.map)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "statistics/cl-ana.statistics.asd")
-       ((#:asd-system-name _ #f) "cl-ana.statistics")))))
-
-(define-public cl-ana.statistics
-  (sbcl-package->cl-source-package sbcl-cl-ana.statistics))
-
-(define-public sbcl-cl-ana.gnuplot-interface
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.gnuplot-interface")
-    (inputs
-     `(("external-program" ,sbcl-external-program)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "gnuplot-interface/cl-ana.gnuplot-interface.asd")
-       ((#:asd-system-name _ #f) "cl-ana.gnuplot-interface")))))
-
-(define-public cl-ana.gnuplot-interface
-  (sbcl-package->cl-source-package sbcl-cl-ana.gnuplot-interface))
-
-(define-public ecl-cl-ana.gnuplot-interface
-  (sbcl-package->ecl-package sbcl-cl-ana.gnuplot-interface))
-
-(define-public sbcl-cl-ana.plotting
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.plotting")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
-       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.gnuplot-interface" ,sbcl-cl-ana.gnuplot-interface)
-       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.map" ,sbcl-cl-ana.map)
-       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)
-       ("cl-ana.pathname-utils" ,sbcl-cl-ana.pathname-utils)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)
-       ("external-program" ,sbcl-external-program)
-       ("split-sequence" ,sbcl-split-sequence)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "plotting/cl-ana.plotting.asd")
-       ((#:asd-system-name _ #f) "cl-ana.plotting")))))
-
-(define-public cl-ana.plotting
-  (sbcl-package->cl-source-package sbcl-cl-ana.plotting))
-
-(define-public sbcl-cl-ana.table-viewing
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.table-viewing")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.plotting" ,sbcl-cl-ana.plotting)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.table" ,sbcl-cl-ana.table)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "table-viewing/cl-ana.table-viewing.asd")
-       ((#:asd-system-name _ #f) "cl-ana.table-viewing")))))
-
-(define-public cl-ana.table-viewing
-  (sbcl-package->cl-source-package sbcl-cl-ana.table-viewing))
-
-(define-public sbcl-cl-ana.serialization
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.serialization")
-    (inputs
-     `(("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
-       ("cl-ana.hdf-utils" ,sbcl-cl-ana.hdf-utils)
-       ("cl-ana.hdf-table" ,sbcl-cl-ana.hdf-table)
-       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
-       ("cl-ana.int-char" ,sbcl-cl-ana.int-char)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.typespec" ,sbcl-cl-ana.typespec)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "serialization/cl-ana.serialization.asd")
-       ((#:asd-system-name _ #f) "cl-ana.serialization")))))
-
-(define-public cl-ana.serialization
-  (sbcl-package->cl-source-package sbcl-cl-ana.serialization))
-
-(define-public sbcl-cl-ana.makeres
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.makeres")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
-       ("cl-ana.file-utils" ,sbcl-cl-ana.file-utils)
-       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)
-       ("cl-ana.hdf-utils" ,sbcl-cl-ana.hdf-utils)
-       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.map" ,sbcl-cl-ana.map)
-       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
-       ("cl-ana.pathname-utils" ,sbcl-cl-ana.pathname-utils)
-       ("cl-ana.plotting" ,sbcl-cl-ana.plotting)
-       ("cl-ana.reusable-table" ,sbcl-cl-ana.reusable-table)
-       ("cl-ana.serialization" ,sbcl-cl-ana.serialization)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
-       ("cl-ana.table" ,sbcl-cl-ana.table)
-       ("external-program" ,sbcl-external-program)))
-    (native-inputs
-     `(("cl-fad" ,sbcl-cl-fad)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "makeres/cl-ana.makeres.asd")
-       ((#:asd-system-name _ #f) "cl-ana.makeres")))))
-
-(define-public cl-ana.makeres
-  (sbcl-package->cl-source-package sbcl-cl-ana.makeres))
-
-(define-public sbcl-cl-ana.makeres-macro
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.makeres-macro")
-    (inputs
-     `(("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "makeres-macro/cl-ana.makeres-macro.asd")
-       ((#:asd-system-name _ #f) "cl-ana.makeres-macro")))))
-
-(define-public cl-ana.makeres-macro
-  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-macro))
-
-(define-public sbcl-cl-ana.makeres-block
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.makeres-block")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "makeres-block/cl-ana.makeres-block.asd")
-       ((#:asd-system-name _ #f) "cl-ana.makeres-block")))))
-
-(define-public cl-ana.makeres-block
-  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-block))
-
-(define-public sbcl-cl-ana.makeres-progress
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.makeres-progress")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "makeres-progress/cl-ana.makeres-progress.asd")
-       ((#:asd-system-name _ #f) "cl-ana.makeres-progress")))))
-
-(define-public cl-ana.makeres-progress
-  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-progress))
-
-(define-public sbcl-cl-ana.makeres-table
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.makeres-table")
-    (inputs
-     `(("cl-ana.csv-table" ,sbcl-cl-ana.csv-table)
-       ("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)
-       ("cl-ana.hdf-table" ,sbcl-cl-ana.hdf-table)
-       ("cl-ana.hdf-utils" ,sbcl-cl-ana.hdf-utils)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)
-       ("cl-ana.makeres-macro" ,sbcl-cl-ana.makeres-macro)
-       ("cl-ana.memoization" ,sbcl-cl-ana.memoization)
-       ("cl-ana.ntuple-table" ,sbcl-cl-ana.ntuple-table)
-       ("cl-ana.reusable-table" ,sbcl-cl-ana.reusable-table)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.table" ,sbcl-cl-ana.table)))
-    (native-inputs
-     `(("cl-fad" ,sbcl-cl-fad)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "makeres-table/cl-ana.makeres-table.asd")
-       ((#:asd-system-name _ #f) "cl-ana.makeres-table")))))
-
-(define-public cl-ana.makeres-table
-  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-table))
-
-(define-public sbcl-cl-ana.makeres-graphviz
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.makeres-graphviz")
-    (inputs
-     `(("cl-ana.makeres" ,sbcl-cl-ana.makeres)
-       ("external-program" ,sbcl-external-program)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "makeres-graphviz/cl-ana.makeres-graphviz.asd")
-       ((#:asd-system-name _ #f) "cl-ana.makeres-graphviz")))))
-
-(define-public cl-ana.makeres-graphviz
-  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-graphviz))
-
-(define-public sbcl-cl-ana.makeres-branch
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.makeres-branch")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.map" ,sbcl-cl-ana.map)
-       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "makeres-branch/cl-ana.makeres-branch.asd")
-       ((#:asd-system-name _ #f) "cl-ana.makeres-branch")))))
-
-(define-public cl-ana.makeres-branch
-  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-branch))
-
-(define-public sbcl-cl-ana.makeres-utils
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.makeres-utils")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-ana.file-utils" ,sbcl-cl-ana.file-utils)
-       ("cl-ana.fitting" ,sbcl-cl-ana.fitting)
-       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)
-       ("cl-ana.map" ,sbcl-cl-ana.map)
-       ("cl-ana.pathname-utils" ,sbcl-cl-ana.pathname-utils)
-       ("cl-ana.plotting" ,sbcl-cl-ana.plotting)
-       ("cl-ana.reusable-table" ,sbcl-cl-ana.reusable-table)
-       ("cl-ana.string-utils" ,sbcl-cl-ana.string-utils)
-       ("cl-ana.symbol-utils" ,sbcl-cl-ana.symbol-utils)
-       ("cl-ana.table" ,sbcl-cl-ana.table)))
-    (native-inputs
-     `(("cl-fad" ,sbcl-cl-fad)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "makeres-utils/cl-ana.makeres-utils.asd")
-       ((#:asd-system-name _ #f) "cl-ana.makeres-utils")))))
-
-(define-public cl-ana.makeres-utils
-  (sbcl-package->cl-source-package sbcl-cl-ana.makeres-utils))
-
-(define-public sbcl-cl-ana.statistical-learning
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana.statistical-learning")
-    (inputs
-     `(("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.functional-utils" ,sbcl-cl-ana.functional-utils)
-       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
-       ("cl-ana.linear-algebra" ,sbcl-cl-ana.linear-algebra)
-       ("cl-ana.list-utils" ,sbcl-cl-ana.list-utils)
-       ("cl-ana.macro-utils" ,sbcl-cl-ana.macro-utils)
-       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)
-       ("cl-ana.map" ,sbcl-cl-ana.map)
-       ("cl-ana.statistics" ,sbcl-cl-ana.statistics)))
-    (native-inputs
-     `(("cl-fad" ,sbcl-cl-fad)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "")
-        "statistical-learning/cl-ana.statistical-learning.asd")
-       ((#:asd-system-name _ #f) "cl-ana.statistical-learning")))))
-
-(define-public cl-ana.statistical-learning
-  (sbcl-package->cl-source-package sbcl-cl-ana.statistical-learning))
-
-(define-public sbcl-cl-ana
-  (package
-    (inherit sbcl-cl-ana-boot0)
-    (name "sbcl-cl-ana")
-    (inputs
-     `(("cl-ana.binary-tree" ,sbcl-cl-ana.binary-tree)
-       ("cl-ana.calculus" ,sbcl-cl-ana.calculus)
-       ("cl-ana.clos-utils" ,sbcl-cl-ana.clos-utils)
-       ("cl-ana.csv-table" ,sbcl-cl-ana.csv-table)
-       ("cl-ana.error-propogation" ,sbcl-cl-ana.error-propogation)
-       ("cl-ana.file-utils" ,sbcl-cl-ana.file-utils)
-       ("cl-ana.fitting" ,sbcl-cl-ana.fitting)
-       ("cl-ana.generic-math" ,sbcl-cl-ana.generic-math)
-       ("cl-ana.hash-table-utils" ,sbcl-cl-ana.hash-table-utils)
-       ("cl-ana.hdf-table" ,sbcl-cl-ana.hdf-table)
-       ("cl-ana.histogram" ,sbcl-cl-ana.histogram)
-       ("cl-ana.int-char" ,sbcl-cl-ana.int-char)
-       ("cl-ana.linear-algebra" ,sbcl-cl-ana.linear-algebra)
-       ("cl-ana.lorentz" ,sbcl-cl-ana.lorentz)
-       ("cl-ana.map" ,sbcl-cl-ana.map)
-       ("cl-ana.makeres" ,sbcl-cl-ana.makeres)
-       ("cl-ana.makeres-block" ,sbcl-cl-ana.makeres-block)
-       ("cl-ana.makeres-branch" ,sbcl-cl-ana.makeres-branch)
-       ("cl-ana.makeres-graphviz" ,sbcl-cl-ana.makeres-graphviz)
-       ("cl-ana.makeres-macro" ,sbcl-cl-ana.makeres-macro)
-       ("cl-ana.makeres-progress" ,sbcl-cl-ana.makeres-progress)
-       ("cl-ana.makeres-table" ,sbcl-cl-ana.makeres-table)
-       ("cl-ana.makeres-utils" ,sbcl-cl-ana.makeres-utils)
-       ("cl-ana.math-functions" ,sbcl-cl-ana.math-functions)
-       ("cl-ana.ntuple-table" ,sbcl-cl-ana.ntuple-table)
-       ("cl-ana.package-utils" ,sbcl-cl-ana.package-utils)
-       ("cl-ana.pathname-utils" ,sbcl-cl-ana.pathname-utils)
-       ("cl-ana.plotting" ,sbcl-cl-ana.plotting)
-       ("cl-ana.quantity" ,sbcl-cl-ana.quantity)
-       ("cl-ana.reusable-table" ,sbcl-cl-ana.reusable-table)
-       ("cl-ana.serialization" ,sbcl-cl-ana.serialization)
-       ("cl-ana.statistics" ,sbcl-cl-ana.statistics)
-       ("cl-ana.statistical-learning" ,sbcl-cl-ana.statistical-learning)
-       ("cl-ana.table" ,sbcl-cl-ana.table)
-       ("cl-ana.table-utils" ,sbcl-cl-ana.table-utils)
-       ("cl-ana.table-viewing" ,sbcl-cl-ana.table-viewing)
-       ("cl-ana.tensor" ,sbcl-cl-ana.tensor)
-       ("libffi" ,libffi)))
-    (native-inputs
-     `(("cl-fad" ,sbcl-cl-fad)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-ana-boot0)
-       ((#:asd-file _ "") "cl-ana.asd")
-       ((#:asd-system-name _ #f) "cl-ana")))))
 
 (define-public cl-ana
   (sbcl-package->cl-source-package sbcl-cl-ana))
@@ -9648,7 +7366,6 @@ has a small codebase that's easy to understand and use.")
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cffi" ,sbcl-cffi)
-         ("cffi-grovel" ,sbcl-cffi-grovel)
          ("libuv" ,libuv)))
       (arguments
        `(#:phases
@@ -9678,11 +7395,11 @@ has a small codebase that's easy to understand and use.")
 (define-public ecl-cl-libuv
   (sbcl-package->ecl-package sbcl-cl-libuv))
 
-(define-public sbcl-cl-async-base
+(define-public sbcl-cl-async
   (let ((commit "f6423e44404a44434d803605e0d2e17199158e28")
         (revision "1"))
     (package
-      (name "sbcl-cl-async-base")
+      (name "sbcl-cl-async")
       (version (git-version "0.6.1" revision commit))
       (source
        (origin
@@ -9696,98 +7413,26 @@ has a small codebase that's easy to understand and use.")
            "11xi9dxb8mjgwzrkj88i0xkgk26z9w9ddxzbv6xsvfc1d4x5cf4x"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       `(("babel" ,sbcl-babel)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
          ("cffi" ,sbcl-cffi)
-         ("cl-libuv" ,sbcl-cl-libuv)))
+         ("cl-libuv" ,sbcl-cl-libuv)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("fast-io" ,sbcl-fast-io)
+         ("openssl" ,openssl)
+         ("static-vectors" ,sbcl-static-vectors)
+         ("trivial-features" ,sbcl-trivial-features)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+         ("vom" ,sbcl-vom)))
       (arguments
-       `(#:asd-file "cl-async.asd"))
-      (synopsis "Base system for cl-async")
-      (description
-       "Cl-async is a library for general purpose, non-blocking programming in
-Common Lisp.  It uses the libuv library as backend.")
-      (home-page "https://orthecreedence.github.io/cl-async/")
-      (license license:expat))))
-
-(define-public cl-async-base
-  (sbcl-package->cl-source-package sbcl-cl-async-base))
-
-(define-public ecl-cl-async-base
-  (sbcl-package->ecl-package sbcl-cl-async-base))
-
-(define-public sbcl-cl-async-util
-  (package
-    (inherit sbcl-cl-async-base)
-    (name "sbcl-cl-async-util")
-    (inputs
-     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("cffi" ,sbcl-cffi)
-       ("cl-async-base" ,sbcl-cl-async-base)
-       ("cl-libuv" ,sbcl-cl-libuv)
-       ("cl-ppcre" ,sbcl-cl-ppcre)
-       ("fast-io" ,sbcl-fast-io)
-       ("vom" ,sbcl-vom)))
-    (synopsis "Internal utilities for cl-async")))
-
-(define-public cl-async-util
-  (sbcl-package->cl-source-package sbcl-cl-async-util))
-
-(define-public ecl-cl-async-util
-  (sbcl-package->ecl-package sbcl-cl-async-util))
-
-(define-public sbcl-cl-async
-  (package
-    (inherit sbcl-cl-async-base)
-    (name "sbcl-cl-async")
-    (inputs
-     `(("babel" ,sbcl-babel)
-       ("cffi" ,sbcl-cffi)
-       ("cl-async-base" ,sbcl-cl-async-base)
-       ("cl-async-util" ,sbcl-cl-async-util)
-       ("cl-libuv" ,sbcl-cl-libuv)
-       ("cl-ppcre" ,sbcl-cl-ppcre)
-       ("static-vectors" ,sbcl-static-vectors)
-       ("trivial-features" ,sbcl-trivial-features)
-       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
-    (synopsis "Asynchronous operations for Common Lisp")))
-
-(define-public cl-async
-  (sbcl-package->cl-source-package sbcl-cl-async))
-
-(define-public ecl-cl-async
-  (sbcl-package->ecl-package sbcl-cl-async))
-
-(define-public sbcl-cl-async-repl
-  (package
-    (inherit sbcl-cl-async-base)
-    (name "sbcl-cl-async-repl")
-    (inputs
-     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("cl-async" ,sbcl-cl-async)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-async-base)
-       ((#:asd-file _ "") "cl-async-repl.asd")))
-    (synopsis "REPL integration for cl-async")))
-
-(define-public cl-async-repl
-  (sbcl-package->cl-source-package sbcl-cl-async-repl))
-
-(define-public ecl-cl-async-repl
-  (sbcl-package->ecl-package sbcl-cl-async-repl))
-
-(define-public sbcl-cl-async-ssl
-  (package
-    (inherit sbcl-cl-async-base)
-    (name "sbcl-cl-async-ssl")
-    (inputs
-     `(("cffi" ,sbcl-cffi)
-       ("cl-async" ,sbcl-cl-async)
-       ("openssl" ,openssl)
-       ("vom" ,sbcl-vom)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-cl-async-base)
-       ((#:asd-file _ "") "cl-async-ssl.asd")
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
+       `(#:asd-files '("cl-async.asd"
+                       "cl-async-repl.asd"
+                       "cl-async-ssl.asd")
+         #:asd-systems '("cl-async"
+                         "cl-async-repl"
+                         "cl-async-ssl")
+         #:phases
+         (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/ssl/package.lisp"
@@ -9797,14 +7442,19 @@ Common Lisp.  It uses the libuv library as backend.")
                  (("libssl\\.so")
                   (string-append (assoc-ref inputs "openssl")
                                  "/lib/libssl.so")))
-               #t))))))
-    (synopsis "SSL wrapper around cl-async socket implementation")))
+               #t)))))
+      (synopsis "Asynchronous operations for Common Lisp")
+      (description
+       "Cl-async is a library for general purpose, non-blocking programming in
+Common Lisp.  It uses the libuv library as backend.")
+      (home-page "https://orthecreedence.github.io/cl-async/")
+      (license license:expat))))
 
-(define-public cl-async-ssl
-  (sbcl-package->cl-source-package sbcl-cl-async-ssl))
+(define-public cl-async
+  (sbcl-package->cl-source-package sbcl-cl-async))
 
-(define-public ecl-cl-async-ssl
-  (sbcl-package->ecl-package sbcl-cl-async-ssl))
+(define-public ecl-cl-async
+  (sbcl-package->ecl-package sbcl-cl-async))
 
 (define-public sbcl-blackbird
   (let ((commit "d361f81c1411dec07f6c2dcb11c78f7aea9aaca8")
@@ -10006,21 +7656,33 @@ ZeroMQ.")
      `(("imagemagick" ,imagemagick)
        ("tk" ,tk)))
     (arguments
-     `(#:asd-file "ltk/ltk.asd"
+     `(#:asd-files '("ltk/ltk.asd"
+                     "ltk/ltk-mw.asd"
+                     "ltk/ltk-remote.asd")
+       #:asd-systems '("ltk"
+                       "ltk-mw"
+                       "ltk-remote")
        #:tests? #f
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'fix-paths
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* "ltk/ltk.lisp"
-                        (("#-freebsd \"wish\"")
-                         (string-append "#-freebsd \""
-                                        (assoc-ref inputs "tk")
-                                        "/bin/wish\""))
-                        (("do-execute \"convert\"")
-                         (string-append "do-execute \""
-                                        (assoc-ref inputs "imagemagick")
-                                        "/bin/convert\"")))
-                      #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "ltk/ltk.lisp"
+               (("#-freebsd \"wish\"")
+                (string-append "#-freebsd \""
+                               (assoc-ref inputs "tk")
+                               "/bin/wish\""))
+               (("do-execute \"convert\"")
+                (string-append "do-execute \""
+                               (assoc-ref inputs "imagemagick")
+                               "/bin/convert\"")))
+             #t))
+         (add-after 'unpack 'fix-build
+           (lambda _
+             (substitute* "ltk/ltk-remote.lisp"
+               (("\\(:export")
+                "(:shadow #:raise) (:export"))
+             #t)))))
     (synopsis "Common Lisp bindings for the Tk GUI toolkit")
     (description
      "LTK is a Common Lisp binding for the Tk graphics toolkit.  It is written
@@ -10033,44 +7695,6 @@ in pure Common Lisp and does not require any Tk knowledge for its usage.")
 
 (define-public ecl-ltk
   (sbcl-package->ecl-package sbcl-ltk))
-
-(define-public sbcl-ltk-mw
-  (package
-    (inherit sbcl-ltk)
-    (name "sbcl-ltk-mw")
-    (inputs
-     `(("ltk" ,sbcl-ltk)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-ltk)
-       ((#:asd-file _) "ltk/ltk-mw.asd")
-       ((#:phases _) '%standard-phases)))
-    (synopsis "Extra widgets for LTK")
-    (description
-     "This is a collection of higher-level widgets built on top of LTK.")))
-
-(define-public cl-ltk-mw
-  (sbcl-package->cl-source-package sbcl-ltk-mw))
-
-(define-public ecl-ltk-mw
-  (sbcl-package->ecl-package sbcl-ltk-mw))
-
-(define-public sbcl-ltk-remote
-  (package
-    (inherit sbcl-ltk)
-    (name "sbcl-ltk-remote")
-    (inputs
-     `(("ltk" ,sbcl-ltk)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-ltk)
-       ((#:asd-file _) "ltk/ltk-remote.asd")
-       ((#:phases _) '%standard-phases)))
-    (synopsis "Remote GUI support for LTK")
-    (description
-     "This LTK extension allows the GUI to be displayed on a computer different
-from the one running the Lisp program by using a TCP connection.")))
-
-(define-public cl-ltk-remote
-  (sbcl-package->cl-source-package sbcl-ltk-remote))
 
 (define-public sbcl-cl-lex
   (let ((commit "f2dbbe25ef553005fb402d9a6203180c3fa1093b")
@@ -10400,13 +8024,12 @@ them as PNG files.")
                                "/LICENSE")))
       (inputs
        `(("cffi" ,sbcl-cffi)
-         ("cffi-grovel" ,sbcl-cffi-grovel)
          ("hdf5" ,hdf5-1.10)))
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-system-name "hdf5-cffi"
-         #:asd-file "hdf5-cffi.asd"
+       `(#:asd-systems '("hdf5-cffi")
+         #:asd-files '("hdf5-cffi.asd")
          #:test-asd-file "hdf5-cffi.test.asd"
          ;; Tests depend on hdf5-cffi.examples.asd in addition to hdf5-cffi.asd,
          ;; I don't know if there is a way to tell asdf-build-system to load
@@ -10458,8 +8081,8 @@ generation functions from the GSL library.")
     (home-page "https://github.com/lvaruzza/cl-randist")
     (license license:bsd-2)
     (arguments
-     `(#:asd-system-name "cl-randist"
-       #:asd-file "cl-randist.asd"
+     `(#:asd-systems '("cl-randist")
+       #:asd-files '("cl-randist.asd")
        #:tests? #f))))
 
 (define-public cl-randist
@@ -10492,8 +8115,8 @@ covered by the Common Lisp standard.")
     (inputs
      `(("documentation-utils" ,sbcl-documentation-utils)))
     (arguments
-     `(#:asd-system-name "float-features"
-       #:asd-file "float-features.asd"
+     `(#:asd-systems '("float-features")
+       #:asd-files '("float-features.asd")
        #:tests? #f))))
 
 (define-public cl-float-features
@@ -10532,8 +8155,8 @@ caching based on arguments (an expanded form of memoization).")
        ("symbol-munger" ,sbcl-symbol-munger)
        ("closer-mop" ,sbcl-closer-mop)))
     (arguments
-     `(#:asd-system-name "function-cache"
-       #:asd-file "function-cache.asd"
+     `(#:asd-systems '("function-cache")
+       #:asd-files '("function-cache.asd")
        #:tests? #f))))
 
 (define-public cl-function-cache
@@ -10572,8 +8195,8 @@ the elements in compound type specifier, e.g. @code{dimensions} in
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-system-name "type-r"
-         #:asd-file "type-r.asd"
+       `(#:asd-systems '("type-r")
+         #:asd-files '("type-r.asd")
          #:test-asd-file "type-r.test.asd")))))
 
 (define-public cl-type-r
@@ -10611,8 +8234,8 @@ correctly.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-system-name "trivialib.type-unify"
-         #:asd-file "trivialib.type-unify.asd"
+       `(#:asd-systems '("trivialib.type-unify")
+         #:asd-files '("trivialib.type-unify.asd")
          #:test-asd-file "trivialib.type-unify.test.asd")))))
 
 (define-public cl-trivialib-type-unify
@@ -10653,8 +8276,8 @@ code.  The main target of this macro is speed.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-system-name "specialized-function"
-         #:asd-file "specialized-function.asd"
+       `(#:asd-systems '("specialized-function")
+         #:asd-files '("specialized-function.asd")
          #:test-asd-file "specialized-function.test.asd")))))
 
 (define-public cl-specialized-function
@@ -10691,8 +8314,8 @@ additional form that is considered as a candidate for a constant.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-system-name "constantfold"
-         #:asd-file "constantfold.asd"
+       `(#:asd-systems '("constantfold")
+         #:asd-files '("constantfold.asd")
          #:test-asd-file "constantfold.test.asd")))))
 
 (define-public cl-constantfold
@@ -10731,8 +8354,8 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-system-name "gtype"
-         #:asd-file "gtype.asd"
+       `(#:asd-systems '("gtype")
+         #:asd-files '("gtype.asd")
          #:test-asd-file "gtype.test.asd")))))
 
 (define-public cl-gtype
@@ -10778,8 +8401,8 @@ and usefulness, not speed.  Track the progress at
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-system-name "numcl"
-         #:asd-file "numcl.asd"
+       `(#:asd-systems '("numcl")
+         #:asd-files '("numcl.asd")
          #:test-asd-file "numcl.test.asd")))))
 
 (define-public cl-numcl
@@ -10807,7 +8430,6 @@ and usefulness, not speed.  Track the progress at
          ("let-plus" ,sbcl-let-plus)))
       (inputs
        `(("cffi" ,sbcl-cffi)
-         ("cffi-grovel" ,sbcl-cffi-grovel)
          ("zeromq" ,zeromq)))
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -10945,11 +8567,11 @@ approach to templating.")
 (define-public cl-mysql
   (sbcl-package->cl-source-package sbcl-cl-mysql))
 
-(define-public sbcl-simple-date
+(define-public sbcl-postmodern
   (let ((commit "74469b25bbda990ec9b77e0d0eccdba0cd7e721a")
         (revision "1"))
     (package
-      (name "sbcl-simple-date")
+      (name "sbcl-postmodern")
       (version (git-version "1.19" revision commit))
       (source
        (origin
@@ -10963,108 +8585,27 @@ approach to templating.")
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
-      (synopsis "Basic date and time objects for Common Lisp")
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("global-vars" ,sbcl-global-vars)
+         ("md5" ,sbcl-md5)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("usocket" ,sbcl-usocket)))
+      (arguments
+       ;; TODO: Fix missing dependency errors for simple-date/postgres-glue,
+       ;; cl-postgres/tests and s-sql/tests.
+       `(#:tests? #f
+         #:asd-files '("postmodern.asd"
+                       "simple-date.asd"
+                       "cl-postgres.asd"
+                       "s-sql.asd")
+         #:asd-systems '("postmodern"
+                         "simple-date/postgres-glue")))
+      (synopsis "Common Lisp library for interacting with PostgreSQL")
       (description
-       "@code{simple-date} is a very basic implementation of date and time
-objects, used to support storing and retrieving time-related SQL types.")
-      (home-page "https://marijnhaverbeke.nl/postmodern/")
-      (license license:zlib))))
-
-(define-public cl-simple-date
-  (sbcl-package->cl-source-package sbcl-simple-date))
-
-(define-public ecl-simple-date
-  (sbcl-package->ecl-package sbcl-simple-date))
-
-(define-public sbcl-cl-postgres
-  (package
-    (inherit sbcl-simple-date)
-    (name "sbcl-cl-postgres")
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)
-       ("simple-date" ,sbcl-simple-date)))
-    (inputs
-     `(("md5" ,sbcl-md5)
-       ("split-sequence" ,sbcl-split-sequence)
-       ("usocket" ,sbcl-usocket)))
-    (arguments
-     `(#:tests? #f)) ; TODO: Break simple-date/postgres-glue circular dependency
-    (synopsis "Common Lisp interface for PostgreSQL")
-    (description
-     "@code{cl-postgres} is a low-level library used for interfacing with
-a PostgreSQL server over a socket.")))
-
-(define-public cl-postgres
-  (sbcl-package->cl-source-package sbcl-cl-postgres))
-
-(define-public ecl-cl-postgres
-  (package
-    (inherit (sbcl-package->ecl-package sbcl-cl-postgres))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-ecl
-           (lambda _
-             (substitute* "cl-postgres.asd"
-               (("\\) \"usocket\"") " :ecl) \"usocket\""))
-             #t)))
-       #:tests? #f))))
-
-(define-public sbcl-simple-date-postgres-glue
-  (package
-    (inherit sbcl-simple-date)
-    (name "sbcl-simple-date-postgres-glue")
-    (inputs
-     `(("cl-postgres" ,sbcl-cl-postgres)
-       ("simple-date" ,sbcl-simple-date)))
-    (arguments
-     `(#:asd-file "simple-date.asd"
-       #:asd-system-name "simple-date/postgres-glue"))))
-
-(define-public cl-simple-date-postgres-glue
-  (sbcl-package->cl-source-package sbcl-simple-date-postgres-glue))
-
-(define-public sbcl-s-sql
-  (package
-    (inherit sbcl-simple-date)
-    (name "sbcl-s-sql")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-postgres" ,sbcl-cl-postgres)))
-    (arguments
-     `(#:tests? #f)) ; TODO: Break postmodern circular dependency
-    (synopsis "Lispy DSL for SQL")
-    (description
-     "@code{s-sql} is a Common Lisp library that can be used to compile
-s-expressions to strings of SQL code, escaping any Lisp values inside, and
-doing as much as possible of the work at compile time.")))
-
-(define-public cl-s-sql
-  (sbcl-package->cl-source-package sbcl-s-sql))
-
-(define-public sbcl-postmodern
-  (package
-    (inherit sbcl-simple-date)
-    (name "sbcl-postmodern")
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)
-       ("simple-date" ,sbcl-simple-date)
-       ("simple-date-postgres-glue" ,sbcl-simple-date-postgres-glue)))
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("cl-postgres" ,sbcl-cl-postgres)
-       ("closer-mop" ,sbcl-closer-mop)
-       ("global-vars" ,sbcl-global-vars)
-       ("s-sql" ,sbcl-s-sql)
-       ("split-sequence" ,sbcl-split-sequence)))
-    (arguments
-     ;; TODO: Fix missing dependency errors for simple-date/postgres-glue,
-     ;; cl-postgres/tests and s-sql/tests.
-     `(#:tests? #f))
-    (synopsis "Common Lisp library for interacting with PostgreSQL")
-    (description
-     "@code{postmodern} is a Common Lisp library for interacting with
+       "@code{postmodern} is a Common Lisp library for interacting with
 PostgreSQL databases.  It provides the following features:
 
 @itemize
@@ -11074,7 +8615,9 @@ foreign libraries.
 @item A syntax for mixing SQL and Lisp code.
 @item Convenient support for prepared statements and stored procedures.
 @item A metaclass for simple database-access objects.
-@end itemize\n")))
+@end itemize\n")
+      (home-page "https://marijnhaverbeke.nl/postmodern/")
+      (license license:zlib))))
 
 (define-public cl-postmodern
   (sbcl-package->cl-source-package sbcl-postmodern))
@@ -11097,12 +8640,27 @@ foreign libraries.
          (sha256
           (base32 "0r3n4rw12qqxad0cryym2ibm4ddl49gbq4ra227afibsr43nw5k3"))))
       (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("rove" ,sbcl-rove)
+         ("trivial-types" ,sbcl-trivial-types)))
       (inputs
        `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-mysql" ,sbcl-cl-mysql)
+         ("cl-sqlite" ,sbcl-cl-sqlite)
          ("closer-mop" ,sbcl-closer-mop)
-         ("split-sequence" ,sbcl-split-sequence)))
+         ("postmodern" ,sbcl-postmodern)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
       (arguments
-       `(#:tests? #f))            ; TODO: Break circular dependency with dbd-*
+       `(#:asd-files '("cl-dbi.asd"
+                       "dbi.asd"
+                       "dbd-mysql.asd"
+                       "dbd-postgres.asd"
+                       "dbd-sqlite3.asd")
+         #:asd-systems '("dbi"
+                         "dbd-mysql"
+                         "dbd-postgres"
+                         "dbd-sqlite3")))
       (synopsis "Database independent interface for Common Lisp")
       (description
        "@code{dbi} is a Common Lisp library providing a database independent
@@ -11112,44 +8670,6 @@ interface for MySQL, PostgreSQL and SQLite.")
 
 (define-public cl-dbi
   (sbcl-package->cl-source-package sbcl-dbi))
-
-(define-public sbcl-dbd-mysql
-  (package
-   (inherit sbcl-dbi)
-   (name "sbcl-dbd-mysql")
-   (inputs
-    `(("cl-mysql" ,sbcl-cl-mysql)
-      ("dbi" ,sbcl-dbi)))
-   (synopsis "Database driver for MySQL")))
-
-(define-public cl-dbd-mysql
-  (sbcl-package->cl-source-package sbcl-dbd-mysql))
-
-(define-public sbcl-dbd-postgres
-  (package
-   (inherit sbcl-dbi)
-   (name "sbcl-dbd-postgres")
-   (inputs
-    `(("cl-postgres" ,sbcl-cl-postgres)
-      ("dbi" ,sbcl-dbi)
-      ("trivial-garbage" ,sbcl-trivial-garbage)))
-   (synopsis "Database driver for PostgreSQL")))
-
-(define-public cl-dbd-postgres
-  (sbcl-package->cl-source-package sbcl-dbd-postgres))
-
-(define-public sbcl-dbd-sqlite3
-  (package
-   (inherit sbcl-dbi)
-   (name "sbcl-dbd-sqlite3")
-   (inputs
-    `(("cl-sqlite" ,sbcl-cl-sqlite)
-      ("dbi" ,sbcl-dbi)
-      ("trivial-garbage" ,sbcl-trivial-garbage)))
-   (synopsis "Database driver for SQLite3")))
-
-(define-public cl-dbd-sqlite3
-  (sbcl-package->cl-source-package sbcl-dbd-sqlite3))
 
 (define-public sbcl-uffi
   (package
@@ -11215,16 +8735,75 @@ interface for MySQL, PostgreSQL and SQLite.")
            #t))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
-     `(("cffi-uffi-compat" ,sbcl-cffi-uffi-compat)
-       ("rt" ,sbcl-rt)
-       ("uffi" ,sbcl-uffi)))
+     `(("rt" ,sbcl-rt)))
+    (inputs
+     `(("cffi" ,sbcl-cffi)
+       ("md5" ,sbcl-md5)
+       ("mysql" ,mysql)
+       ("postgresql" ,postgresql)
+       ("postmodern" ,sbcl-postmodern)
+       ("sqlite" ,sqlite)
+       ("uffi" ,sbcl-uffi)
+       ("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(#:asd-files '("clsql-cffi.asd"
+                     "clsql.asd"
+                     "clsql-uffi.asd"
+                     "clsql-sqlite3.asd"
+                     "clsql-postgresql.asd"
+                     "clsql-postgresql-socket3.asd"
+                     "clsql-mysql.asd")
+       #:asd-systems '("clsql"
+                       "clsql-sqlite3"
+                       ;; TODO: Find why postgresql-sql.lisp fails to compile.
+                       ;;"clsql-postgresql"
+                       "clsql-postgresql-socket3"
+                       "clsql-mysql")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-permissions
            (lambda _
              (make-file-writable "doc/html.tar.gz")
              #t))
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "db-sqlite3/sqlite3-loader.lisp"
+               (("libsqlite3")
+                (string-append (assoc-ref inputs "sqlite")
+                               "/lib/libsqlite3")))
+             (substitute* "db-postgresql/postgresql-loader.lisp"
+               (("libpq")
+                (string-append (assoc-ref inputs "postgresql")
+                               "/lib/libpq")))
+             (let ((lib (string-append "#p\""
+                                       (assoc-ref outputs "out")
+                                       "/lib/\"")))
+               (substitute* "clsql-mysql.asd"
+                 (("#p\"/usr/lib/clsql/clsql_mysql\\.so\"")
+                  lib))
+               (substitute* "db-mysql/mysql-loader.lisp"
+                 (("libmysqlclient" all)
+                  (string-append (assoc-ref inputs "mysql") "/lib/" all))
+                 (("clsql-mysql-system::\\*library-file-dir\\*")
+                  lib)))
+             #t))
+         (add-before 'build 'build-helper-library
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((mysql (assoc-ref inputs "mysql"))
+                    (inc-dir (string-append mysql "/include/mysql"))
+                    (lib-dir (string-append mysql "/lib"))
+                    (shared-lib-dir (string-append (assoc-ref outputs "out")
+                                                   "/lib"))
+                    (shared-lib (string-append shared-lib-dir
+                                               "/clsql_mysql.so")))
+               (mkdir-p shared-lib-dir)
+               (invoke "gcc" "-fPIC" "-shared"
+                       "-I" inc-dir
+                       "db-mysql/clsql_mysql.c"
+                       "-Wl,-soname=clsql_mysql"
+                       "-L" lib-dir "-lmysqlclient" "-lz"
+                       "-o" shared-lib)
+               #t)))
          (add-after 'unpack 'fix-tests
            (lambda _
              (substitute* "clsql.asd"
@@ -11250,9 +8829,9 @@ interfaces as well as a functional and an object oriented interface.")
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("cl-postgres" ,cl-postgres)
-       ("cffi-uffi-compat" ,cl-cffi-uffi-compat)
+     `(("cffi" ,cl-cffi)
        ("md5" ,cl-md5)
+       ("postmodern" ,cl-postmodern)
        ("uffi" ,cl-uffi)))
     (arguments
      `(#:phases
@@ -11263,127 +8842,6 @@ interfaces as well as a functional and an object oriented interface.")
            (lambda _
              (make-file-writable "doc/html.tar.gz")
              #t)))))))
-
-(define-public sbcl-clsql-uffi
-  (package
-    (inherit sbcl-clsql)
-    (name "sbcl-clsql-uffi")
-    (inputs
-     `(("cffi-uffi-compat" ,sbcl-cffi-uffi-compat)
-       ("clsql" ,sbcl-clsql)
-       ("uffi" ,sbcl-uffi)))
-    (synopsis "UFFI helper functions for Common Lisp SQL interface library")))
-
-(define-public sbcl-clsql-sqlite3
-  (package
-    (inherit sbcl-clsql)
-    (name "sbcl-clsql-sqlite3")
-    (inputs
-     `(("clsql" ,sbcl-clsql)
-       ("clsql-uffi" ,sbcl-clsql-uffi)
-       ("sqlite" ,sqlite)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-clsql)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'fix-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "db-sqlite3/sqlite3-loader.lisp"
-                 (("libsqlite3")
-                  (string-append (assoc-ref inputs "sqlite")
-                                 "/lib/libsqlite3")))
-               #t))))))
-    (synopsis "SQLite3 driver for Common Lisp SQL interface library")))
-
-(define-public sbcl-clsql-postgresql
-  (package
-    (inherit sbcl-clsql)
-    (name "sbcl-clsql-postgresql")
-    (inputs
-     `(("clsql" ,sbcl-clsql)
-       ("clsql-uffi" ,sbcl-clsql-uffi)
-       ("postgresql" ,postgresql)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-clsql)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'fix-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "db-postgresql/postgresql-loader.lisp"
-                 (("libpq")
-                  (string-append (assoc-ref inputs "postgresql")
-                                 "/lib/libpq")))
-               #t))))))
-    (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
-
-(define-public sbcl-clsql-postgresql-socket3
-  (package
-    (inherit sbcl-clsql)
-    (name "sbcl-clsql-postgresql-socket3")
-    (inputs
-     `(("cl-postgres" ,sbcl-cl-postgres)
-       ("clsql" ,sbcl-clsql)
-       ("md5" ,sbcl-md5)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-clsql)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-after 'create-asd-file 'fix-asd-file
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (lib (string-append out "/lib/" (%lisp-type)))
-                      (asd (string-append lib "/clsql-postgresql-socket3.asd")))
-                 (substitute* asd
-                   (("CLSQL-POSTGRESQL-SOCKET-SYSTEM::")
-                    "")))
-               #t))))))
-    (synopsis "PostgreSQL driver for Common Lisp SQL interface library")))
-
-(define-public sbcl-clsql-mysql
-  (package
-    (inherit sbcl-clsql)
-    (name "sbcl-clsql-mysql")
-    (inputs
-     `(("mysql" ,mysql)
-       ("sbcl-clsql" ,sbcl-clsql)
-       ("sbcl-clsql-uffi" ,sbcl-clsql-uffi)
-       ("zlib" ,zlib)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-clsql)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'fix-paths
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((lib (string-append "#p\""
-                                         (assoc-ref outputs "out")
-                                         "/lib/\"")))
-                 (substitute* "clsql-mysql.asd"
-                   (("#p\"/usr/lib/clsql/clsql_mysql\\.so\"")
-                    lib))
-                 (substitute* "db-mysql/mysql-loader.lisp"
-                   (("libmysqlclient" all)
-                    (string-append (assoc-ref inputs "mysql") "/lib/" all))
-                   (("clsql-mysql-system::\\*library-file-dir\\*")
-                    lib)))
-               #t))
-           (add-before 'build 'build-helper-library
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((mysql (assoc-ref inputs "mysql"))
-                      (inc-dir (string-append mysql "/include/mysql"))
-                      (lib-dir (string-append mysql "/lib"))
-                      (shared-lib-dir (string-append (assoc-ref outputs "out")
-                                                     "/lib"))
-                      (shared-lib (string-append shared-lib-dir
-                                                 "/clsql_mysql.so")))
-                 (mkdir-p shared-lib-dir)
-                 (invoke "gcc" "-fPIC" "-shared"
-                         "-I" inc-dir
-                         "db-mysql/clsql_mysql.c"
-                         "-Wl,-soname=clsql_mysql"
-                         "-L" lib-dir "-lmysqlclient" "-lz"
-                         "-o" shared-lib)
-                 #t)))))))
-    (synopsis "MySQL driver for Common Lisp SQL interface library")))
 
 (define-public sbcl-sycamore
   (let ((commit "fd2820fec165ad514493426dea209728f64e6d18"))
@@ -11401,7 +8859,7 @@ interfaces as well as a functional and an object oriented interface.")
           (base32 "00bv1aj89q5vldmq92zp2364jq312zjq2mbd3iyz1s2b4widzhl7"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       `(#:asd-file "src/sycamore.asd"))
+       `(#:asd-files '("src/sycamore.asd")))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cl-ppcre" ,sbcl-cl-ppcre)))
@@ -11589,8 +9047,7 @@ MOP easier to use.")
          ("cffi" ,sbcl-cffi)
          ("trivial-features" ,sbcl-trivial-features)))
       (native-inputs
-       `(("cffi-grovel" ,sbcl-cffi-grovel)
-         ("rt" ,sbcl-rt)))
+       `(("rt" ,sbcl-rt)))
       (synopsis "Operating system interface for Common Lisp")
       (description
        "Osicat is a lightweight operating system interface for Common Lisp on
@@ -11619,7 +9076,7 @@ accompaniment to the standard ANSI facilities.")
           (base32 "1abx4v36ycmfjdwpjk4hh8058ya8whwia7ds9vd96q2qsrs57f12"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       `(#:asd-system-name "xembed"))
+       `(#:asd-systems '("xembed")))
       (inputs
        `(("sbcl-clx" ,sbcl-clx)))
       (synopsis "CL(x) xembed protocol implementation ")
@@ -11649,7 +9106,7 @@ accompaniment to the standard ANSI facilities.")
          "0rlswkf0siaabsvvch3dgxmg45fw5w8pd9b7ri2w7a298aya52z9"))))
     (build-system asdf-build-system/sbcl)
     (arguments
-     '(#:asd-system-name "quantile-estimator"))
+     '(#:asd-systems '("quantile-estimator")))
     (inputs
      `(("alexandria" ,sbcl-alexandria)))
     (home-page "https://github.com/deadtrickster/quantile-estimator.cl")
@@ -11685,9 +9142,29 @@ Streams in ICDE’05.")
     (inputs
      `(("alexandria" ,sbcl-alexandria)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cffi" ,sbcl-cffi)
+       ("cl-fad" ,sbcl-cl-fad)
        ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("drakma" ,sbcl-drakma)
+       ("hunchentoot" ,sbcl-hunchentoot)
        ("local-time" ,sbcl-local-time)
-       ("quantile-estimator" ,sbcl-quantile-estimator)))
+       ("quantile-estimator" ,sbcl-quantile-estimator)
+       ("salza2" ,sbcl-salza2)
+       ("split-sequence" ,sbcl-split-sequence)
+       ("trivial-utf-8" ,sbcl-trivial-utf-8)))
+    (arguments
+     '(#:asd-files '("prometheus.asd"
+                     "prometheus.collectors.sbcl.asd"
+                     "prometheus.collectors.process.asd"
+                     "prometheus.formats.text.asd"
+                     "prometheus.exposers.hunchentoot.asd"
+                     "prometheus.pushgateway.asd")
+       #:asd-systems '("prometheus"
+                       "prometheus.collectors.sbcl"
+                       "prometheus.collectors.process"
+                       "prometheus.formats.text"
+                       "prometheus.exposers.hunchentoot"
+                       "prometheus.pushgateway")))
     (home-page "https://github.com/deadtrickster/prometheus.cl")
     (synopsis "Prometheus.io Common Lisp client")
     (description "Prometheus.io Common Lisp client.")
@@ -11698,85 +9175,6 @@ Streams in ICDE’05.")
 
 (define-public ecl-prometheus
   (sbcl-package->ecl-package sbcl-prometheus))
-
-(define-public sbcl-prometheus.collectors.sbcl
-  (package
-    (inherit sbcl-prometheus)
-    (name "sbcl-prometheus.collectors.sbcl")
-    (inputs `(("prometheus" ,sbcl-prometheus)))
-    (synopsis "Prometheus collector for SBCL metrics")
-    (description "Prometheus collector for SBCL metrics.")))
-
-(define-public cl-prometheus.collectors.sbcl
-  (sbcl-package->cl-source-package sbcl-prometheus.collectors.sbcl))
-
-(define-public sbcl-prometheus.collectors.process
-  (package
-    (inherit sbcl-prometheus)
-    (name "sbcl-prometheus.collectors.process")
-    (inputs
-     `(("cffi" ,sbcl-cffi)
-       ("cffi-grovel" ,sbcl-cffi-grovel)
-       ("cl-fad" ,sbcl-cl-fad)
-       ("prometheus" ,sbcl-prometheus)
-       ("split-sequence" ,sbcl-split-sequence)))
-    (synopsis "Prometheus collector for process metrics")
-    (description "Prometheus collector for process metrics.")))
-
-(define-public cl-prometheus.collectors.process
-  (sbcl-package->cl-source-package sbcl-prometheus.collectors.process))
-
-(define-public ecl-prometheus.collectors.process
-  (sbcl-package->ecl-package sbcl-prometheus.collectors.process))
-
-(define-public sbcl-prometheus.formats.text
-  (package
-    (inherit sbcl-prometheus)
-    (name "sbcl-prometheus.formats.text")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("prometheus" ,sbcl-prometheus)))
-    (synopsis "Prometheus client text format")
-    (description "Prometheus client text format.")))
-
-(define-public cl-prometheus.formats.text
-  (sbcl-package->cl-source-package sbcl-prometheus.formats.text))
-
-(define-public ecl-prometheus.formats.text
-  (sbcl-package->ecl-package sbcl-prometheus.formats.text))
-
-(define-public sbcl-prometheus.exposers.hunchentoot
-  (package
-    (inherit sbcl-prometheus)
-    (name "sbcl-prometheus.exposers.hunchentoot")
-    (inputs
-     `(("hunchentoot" ,sbcl-hunchentoot)
-       ("prometheus" ,sbcl-prometheus)
-       ("prometheus.formats.text" ,sbcl-prometheus.formats.text)
-       ("salza2" ,sbcl-salza2)
-       ("trivial-utf-8" ,sbcl-trivial-utf-8)))
-    (synopsis "Prometheus collector for Hunchentoot metrics")
-    (description "Prometheus collector for Hunchentoot metrics")))
-
-(define-public cl-prometheus.exposers.hunchentoot
-  (sbcl-package->cl-source-package sbcl-prometheus.exposers.hunchentoot))
-
-(define-public sbcl-prometheus.pushgateway
-  (package
-    (inherit sbcl-prometheus)
-    (name "sbcl-prometheus.pushgateway")
-    (inputs
-     `(("drakma" ,sbcl-drakma)
-       ("prometheus" ,sbcl-prometheus)
-       ("prometheus.formats.text" ,sbcl-prometheus.formats.text)))
-    (synopsis "Prometheus Pushgateway client")
-    (description "Prometheus Pushgateway client.")))
-
-(define-public cl-prometheus.pushgateway
-  (sbcl-package->cl-source-package sbcl-prometheus.pushgateway))
-
-(define-public ecl-prometheus.pushgateway
-  (sbcl-package->ecl-package sbcl-prometheus.pushgateway))
 
 (define-public sbcl-uuid
   (let ((commit "e7d6680c3138385c0708f7aaf0c96622eeb140e8"))
@@ -11842,9 +9240,6 @@ and active restarts.")
 (define-public ecl-dissect
   (sbcl-package->ecl-package sbcl-dissect))
 
-;; TODO: Uses ASDF's package-inferred-system which is not supported by
-;; asdf-build-system/sbcl as of 2020-05-21. We should fix
-;; asdf-build-system/sbcl.
 (define-public sbcl-rove
   (package
     (name "sbcl-rove")
@@ -11928,14 +9323,13 @@ learn about each of the parameters.")
        `(#:test-asd-file "sxql-test.asd"))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
-         ("cl-syntax-annot" ,sbcl-cl-syntax-annot)
+         ("cl-syntax" ,sbcl-cl-syntax)
          ("iterate" ,sbcl-iterate)
          ("optima" ,sbcl-optima)
          ("split-sequence" ,sbcl-split-sequence)
          ("trivial-types" ,sbcl-trivial-types)))
       (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)))
+       `(("prove" ,sbcl-prove)))
       (home-page "https://github.com/fukamachi/sxql")
       (synopsis "SQL generator for Common Lisp")
       (description "SQL generator for Common Lisp.")
@@ -11964,7 +9358,7 @@ learn about each of the parameters.")
            "05ss4nz1jb9kb796295482b62w5cj29msfj8zis33sp2rw2vmv2g"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       `(#:asd-system-name "1am"))
+       `(#:asd-systems '("1am")))
       (home-page "https://github.com/lmj/1am")
       (synopsis "Minimal testing framework for Common Lisp")
       (description "A minimal testing framework for Common Lisp.")
@@ -12041,7 +9435,6 @@ tables.")
     (inputs
      `(("bordeaux-threads" ,sbcl-bordeaux-threads)
        ("cffi" ,sbcl-cffi)
-       ("cffi-grovel" ,sbcl-cffi-grovel)
        ("librdkafka" ,librdkafka)
        ("lparallel" ,sbcl-lparallel)
        ("trivial-garbage" ,sbcl-trivial-garbage)))
@@ -12083,10 +9476,10 @@ weight, temperature, names of physical quantitites, etc.")
 (define-public cl-acclimation
   (sbcl-package->cl-source-package sbcl-acclimation))
 
-(define-public sbcl-clump-2-3-tree
+(define-public sbcl-clump
   (let ((commit "1ea4dbac1cb86713acff9ae58727dd187d21048a"))
     (package
-      (name "sbcl-clump-2-3-tree")
+      (name "sbcl-clump")
       (version (git-version "0.0.0" "1" commit))
       (source
        (origin
@@ -12099,13 +9492,15 @@ weight, temperature, names of physical quantitites, etc.")
           (base32
            "1639msyagsswj85gc0wd90jgh8588j3qg5q70by9s2brf2q6w4lh"))))
       (arguments
-       '(#:asd-file "2-3-tree/clump-2-3-tree.asd"
-         #:asd-system-name "clump-2-3-tree"))
+       '(#:asd-files '("clump.asd"
+                       "2-3-tree/clump-2-3-tree.asd"
+                       "Binary-tree/clump-binary-tree.asd")
+         #:asd-systems '("clump")))
       (inputs
        `(("acclimation" ,sbcl-acclimation)))
       (build-system asdf-build-system/sbcl)
       (home-page "https://github.com/robert-strandh/Clump")
-      (synopsis "Implementation of 2-3 trees for Common Lisp")
+      (synopsis "Collection of tree implementations for Common Lisp")
       (description "The purpose of this library is to provide a collection of
 implementations of trees.
 
@@ -12119,34 +9514,13 @@ where the trees can be used as search trees or as trees that represent
 sequences of objects.")
       (license license:bsd-2))))
 
-(define-public sbcl-clump-binary-tree
-  (package
-    (inherit sbcl-clump-2-3-tree)
-    (name "sbcl-clump-binary-tree")
-    (arguments
-     '(#:asd-file "Binary-tree/clump-binary-tree.asd"
-       #:asd-system-name "clump-binary-tree"))
-    (synopsis "Implementation of binary trees for Common Lisp")))
-
-(define-public sbcl-clump
-  (package
-    (inherit sbcl-clump-2-3-tree)
-    (name "sbcl-clump")
-    (arguments
-     '(#:asd-file "clump.asd"
-       #:asd-system-name "clump"))
-    (inputs
-     `(("clump-2-3-tree" ,sbcl-clump-2-3-tree)
-       ("clump-binary-tree" ,sbcl-clump-binary-tree)))
-    (synopsis "Collection of tree implementations for Common Lisp")))
-
 (define-public cl-clump
   (sbcl-package->cl-source-package sbcl-clump))
 
-(define-public sbcl-cluffer-base
+(define-public sbcl-cluffer
   (let ((commit "4aad29c276a58a593064e79972ee4d77cae0af4a"))
     (package
-      (name "sbcl-cluffer-base")
+      (name "sbcl-cluffer")
       (version (git-version "0.0.0" "1" commit))
       (source
        (origin
@@ -12158,12 +9532,18 @@ sequences of objects.")
          (sha256
           (base32
            "1bcg13g7qb3dr8z50aihdjqa6miz5ivlc9wsj2csgv1km1mak2kj"))))
-      (arguments
-       '(#:asd-file "Base/cluffer-base.asd"
-         #:asd-system-name "cluffer-base"))
-      (inputs
-       `(("acclimation" ,sbcl-acclimation)))
       (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("acclimation" ,sbcl-acclimation)
+         ("clump" ,sbcl-clump)))
+      (arguments
+       '(#:asd-files '("cluffer.asd"
+                       "Base/cluffer-base.asd"
+                       "Standard-line/cluffer-standard-line.asd"
+                       "Standard-buffer/cluffer-standard-buffer.asd"
+                       "Simple-line/cluffer-simple-line.asd"
+                       "Simple-buffer/cluffer-simple-buffer.asd")
+         #:asd-systems '("cluffer")))
       (home-page "https://github.com/robert-strandh/cluffer")
       (synopsis "Common Lisp library providing a protocol for text-editor buffers")
       (description "Cluffer is a library for representing the buffer of a text
@@ -12171,61 +9551,6 @@ editor.  As such, it defines a set of CLOS protocols for client code to
 interact with the buffer contents in various ways, and it supplies different
 implementations of those protocols for different purposes.")
       (license license:bsd-2))))
-
-(define-public sbcl-cluffer-standard-line
-  (package
-    (inherit sbcl-cluffer-base)
-    (name "sbcl-cluffer-standard-line")
-    (arguments
-     '(#:asd-file "Standard-line/cluffer-standard-line.asd"
-       #:asd-system-name "cluffer-standard-line"))
-    (inputs
-     `(("cluffer-base" ,sbcl-cluffer-base)))))
-
-(define-public sbcl-cluffer-standard-buffer
-  (package
-    (inherit sbcl-cluffer-base)
-    (name "sbcl-cluffer-standard-buffer")
-    (arguments
-     '(#:asd-file "Standard-buffer/cluffer-standard-buffer.asd"
-       #:asd-system-name "cluffer-standard-buffer"))
-    (inputs
-     `(("cluffer-base" ,sbcl-cluffer-base)
-       ("clump" ,sbcl-clump)))))
-
-(define-public sbcl-cluffer-simple-line
-  (package
-    (inherit sbcl-cluffer-base)
-    (name "sbcl-cluffer-simple-line")
-    (arguments
-     '(#:asd-file "Simple-line/cluffer-simple-line.asd"
-       #:asd-system-name "cluffer-simple-line"))
-    (inputs
-     `(("cluffer-base" ,sbcl-cluffer-base)))))
-
-(define-public sbcl-cluffer-simple-buffer
-  (package
-    (inherit sbcl-cluffer-base)
-    (name "sbcl-cluffer-simple-buffer")
-    (arguments
-     '(#:asd-file "Simple-buffer/cluffer-simple-buffer.asd"
-       #:asd-system-name "cluffer-simple-buffer"))
-    (inputs
-     `(("cluffer-base" ,sbcl-cluffer-base)))))
-
-(define-public sbcl-cluffer
-  (package
-    (inherit sbcl-cluffer-base)
-    (name "sbcl-cluffer")
-    (arguments
-     '(#:asd-file "cluffer.asd"
-       #:asd-system-name "cluffer"))
-    (inputs
-     `(("cluffer-base" ,sbcl-cluffer-base)
-       ("cluffer-standard-line" ,sbcl-cluffer-standard-line)
-       ("cluffer-standard-buffer" ,sbcl-cluffer-standard-buffer)
-       ("cluffer-simple-line" ,sbcl-cluffer-simple-line)
-       ("cluffer-simple-buffer" ,sbcl-cluffer-simple-buffer)))))
 
 (define-public cl-cluffer
   (sbcl-package->cl-source-package sbcl-cluffer))
@@ -12248,8 +9573,7 @@ implementations of those protocols for different purposes.")
            "0284aj84xszhkhlivaigf9qj855fxad3mzmv3zfr0qzb5k0nzwrg"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)))
+       `(("prove" ,sbcl-prove)))
       (inputs
        `(("alexandria" ,sbcl-alexandria)))
       (synopsis "LibSVM data format reader for Common Lisp")
@@ -12283,8 +9607,7 @@ format.")
            "14x95rlg80ay5hv645ki57pqvy12v28hz4k1w0f6bsfi2rmpxchq"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)))
+       `(("prove" ,sbcl-prove)))
       (inputs
        `(("cl-libsvm-format" ,sbcl-cl-libsvm-format)
          ("cl-store" ,sbcl-cl-store)))
@@ -12323,7 +9646,6 @@ online linear classification written in Common Lisp.")
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("prove" ,sbcl-prove)
-         ("prove-asdf" ,sbcl-prove-asdf)
          ("trivial-garbage" ,sbcl-trivial-garbage)))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -12541,7 +9863,6 @@ wrappers of deflate streams.  It currently does not handle compression.")
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cffi" ,sbcl-cffi)
-         ("cffi-grovel" ,sbcl-cffi-grovel)
          ("freetype" ,freetype)
          ("trivial-garbage" ,sbcl-trivial-garbage)))
       (arguments
@@ -12707,7 +10028,7 @@ than a few Kb.")
          ("trivial-features" ,sbcl-trivial-features)))
       (arguments
        ;; FIXME: Without the following line, the build fails (see issue 41437).
-       `(#:asd-system-name "3bz"))
+       `(#:asd-systems '("3bz")))
       (home-page "https://github.com/3b/3bz")
       (synopsis "Deflate decompression for Common Lisp")
       (description
@@ -12827,11 +10148,11 @@ and saving 2-dimensional pixel-based images.")
 (define-public cl-opticl
   (sbcl-package->cl-source-package sbcl-opticl))
 
-(define-public sbcl-clim-lisp
+(define-public sbcl-mcclim
   (let ((commit "27b4d7a667c9b3faa74cabcb57706b888314fff7")
         (revision "0"))
     (package
-      (name "sbcl-clim-lisp")
+      (name "sbcl-mcclim")
       (version (git-version "0.9.7" revision commit))
       (source
        (origin
@@ -12843,11 +10164,94 @@ and saving 2-dimensional pixel-based images.")
          (sha256
           (base32 "0jijfgkwas6xnpp5wiii6slcx9pgsalngacb8zm29x6pamx2193h"))))
       (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)
+         ("pkg-config" ,pkg-config)))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-freetype2" ,sbcl-cl-freetype2)
+         ("cl-pdf" ,sbcl-cl-pdf)
+         ("cffi" ,sbcl-cffi)
+         ("cl-unicode" ,sbcl-cl-unicode)
+         ("cl-vectors" ,sbcl-cl-vectors)
          ("closer-mop" ,sbcl-closer-mop)
+         ("clx" ,sbcl-clx)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("flexichain" ,sbcl-flexichain)
+         ("font-dejavu" ,font-dejavu)
+         ("fontconfig" ,fontconfig)
+         ("freetype" ,freetype)
+         ("harfbuzz" ,harfbuzz)
          ("log4cl" ,sbcl-log4cl)
-         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+         ("opticl" ,sbcl-opticl)
+         ("spatial-trees" ,sbcl-spatial-trees)
+         ("swank" ,sbcl-slime-swank)
+         ("trivial-features" ,sbcl-trivial-features)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+         ("zpb-ttf" ,sbcl-zpb-ttf)))
+      (arguments
+       '(#:asd-files '("mcclim.asd"
+                       "clim-lisp.asd"
+                       "Core/clim-basic/clim-basic.asd"
+                       "Core/clim-core/clim-core.asd"
+                       "Libraries/ESA/esa-mcclim.asd"
+                       "Extensions/fonts/mcclim-fonts.asd"
+                       "Libraries/Drei/cl-automaton/automaton.asd"
+                       "Libraries/Drei/Persistent/persistent.asd"
+                       "Libraries/Drei/drei-mcclim.asd"
+                       "Core/clim/clim.asd"
+                       "Backends/common/mcclim-backend-common.asd"
+                       "Backends/CLX/mcclim-clx.asd"
+                       "Extensions/fontconfig/mcclim-fontconfig.asd"
+                       "Extensions/harfbuzz/mcclim-harfbuzz.asd"
+                       "Extensions/render/mcclim-render.asd"
+                       "Backends/CLX-fb/mcclim-clx-fb.asd"
+                       "Backends/Null/mcclim-null.asd"
+                       "Backends/PostScript/clim-postscript-font.asd"
+                       "Backends/PostScript/clim-postscript.asd"
+                       "Backends/PDF/clim-pdf.asd"
+                       "Extensions/Franz/mcclim-franz.asd"
+                       "Extensions/bezier/mcclim-bezier.asd"
+                       "Extensions/bitmap-formats/mcclim-bitmaps.asd"
+                       "Extensions/conditional-commands/conditional-commands.asd"
+                       "Extensions/layouts/mcclim-layouts.asd"
+                       "Backends/RasterImage/mcclim-raster-image.asd"
+                       "Examples/clim-examples.asd")
+         #:asd-systems '("mcclim"
+                         "clim-examples")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; mcclim-truetype uses DejaVu as default font and
+               ;; sets the path at build time.
+               (substitute* "Extensions/fonts/fontconfig.lisp"
+                 (("/usr/share/fonts/truetype/dejavu/")
+                  (string-append (assoc-ref inputs "font-dejavu")
+                                 "/share/fonts/truetype/")))
+               (substitute* "Extensions/fontconfig/src/functions.lisp"
+                 (("libfontconfig\\.so")
+                  (string-append (assoc-ref inputs "fontconfig")
+                                 "/lib/libfontconfig.so")))
+               (substitute* "Extensions/harfbuzz/src/functions.lisp"
+                 (("libharfbuzz\\.so")
+                  (string-append (assoc-ref inputs "harfbuzz")
+                                 "/lib/libharfbuzz.so")))
+               #t))
+           (add-after 'unpack 'fix-build
+             (lambda _
+               ;; The cffi-grovel system does not get loaded automatically,
+               ;; so we load it explicitly.
+               (substitute* "Extensions/fontconfig/mcclim-fontconfig.asd"
+                 (("\\(asdf:defsystem #:mcclim-fontconfig" all)
+                  (string-append "(asdf:load-system :cffi-grovel)\n" all)))
+               (substitute* "Extensions/harfbuzz/mcclim-harfbuzz.asd"
+                 (("\\(asdf:defsystem #:mcclim-harfbuzz" all)
+                  (string-append "(asdf:load-system :cffi-grovel)\n" all)))
+               #t)))))
       (home-page "https://common-lisp.net/project/mcclim/")
       (synopsis "Common Lisp GUI toolkit")
       (description
@@ -12855,642 +10259,8 @@ and saving 2-dimensional pixel-based images.")
 specification}, a toolkit for writing GUIs in Common Lisp.")
       (license license:lgpl2.1+))))
 
-(define-public sbcl-clim-basic
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-clim-basic")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("babel" ,sbcl-babel)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("clim-lisp" ,sbcl-clim-lisp)
-       ("flexichain" ,sbcl-flexichain)
-       ("spatial-trees" ,sbcl-spatial-trees)
-       ("trivial-features" ,sbcl-trivial-features)
-       ("trivial-garbage" ,sbcl-trivial-garbage)))
-    (arguments
-     '(#:asd-file "Core/clim-basic/clim-basic.asd"))))
-
-(define-public sbcl-clim-core
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-clim-core")
-    (inputs
-     `(("clim-basic" ,sbcl-clim-basic)))
-    (arguments
-     '(#:asd-file "Core/clim-core/clim-core.asd"))))
-
-(define-public sbcl-esa-mcclim
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-esa-mcclim")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("clim-core" ,sbcl-clim-core)))
-    (arguments
-     '(#:asd-file "Libraries/ESA/esa-mcclim.asd"))))
-
-(define-public sbcl-mcclim-fonts
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-fonts")
-    (inputs
-     `(("clim-basic" ,sbcl-clim-basic)))
-    (arguments
-     '(#:asd-file "Extensions/fonts/mcclim-fonts.asd"))))
-
-(define-public sbcl-automaton
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-automaton")
-    (inputs
-     `())
-    (arguments
-     '(#:asd-file "Libraries/Drei/cl-automaton/automaton.asd"))))
-
-(define-public sbcl-persistent
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-persistent")
-    (inputs
-     `())
-    (arguments
-     '(#:asd-file "Libraries/Drei/Persistent/persistent.asd"))))
-
-(define-public sbcl-drei-mcclim
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-drei-mcclim")
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)))
-    (inputs
-     `(("automaton" ,sbcl-automaton)
-       ("clim-core" ,sbcl-clim-core)
-       ("esa-mcclim" ,sbcl-esa-mcclim)
-       ("flexichain" ,sbcl-flexichain)
-       ("mcclim-fonts" ,sbcl-mcclim-fonts)
-       ("persistent" ,sbcl-persistent)
-       ("swank" ,cl-slime-swank)))
-    (arguments
-     '(#:asd-file "Libraries/Drei/drei-mcclim.asd"))))
-
-(define-public sbcl-clim
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-clim")
-    (inputs
-     `(("clim-core" ,sbcl-clim-core)
-       ("drei-mcclim" ,sbcl-drei-mcclim)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Core/clim/clim.asd"))))
-
-(define-public sbcl-mcclim-backend-common
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-backend-common")
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)))
-    (inputs
-     `(("clim" ,sbcl-clim)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/common/mcclim-backend-common.asd"))))
-
-(define-public sbcl-mcclim-clx
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-clx")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-unicode" ,sbcl-cl-unicode)
-       ("clx" ,sbcl-clx)
-       ("mcclim-backend-common" ,sbcl-mcclim-backend-common)
-       ("mcclim-fonts" ,sbcl-mcclim-fonts)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/CLX/mcclim-clx.asd"))))
-
-(define-public sbcl-mcclim-fonts-truetype
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-fonts-truetype")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-aa" ,sbcl-cl-aa)
-       ("cl-paths-ttf" ,sbcl-cl-paths-ttf)
-       ("cl-vectors" ,sbcl-cl-vectors)
-       ("clim-basic" ,sbcl-clim-basic)
-       ("font-dejavu" ,font-dejavu)
-       ("zpb-ttf" ,sbcl-zpb-ttf)))
-    (arguments
-     '(#:asd-file "Extensions/fonts/mcclim-fonts.asd"
-       #:asd-system-name "mcclim-fonts/truetype"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; mcclim-truetype uses DejaVu as default font and
-             ;; sets the path at build time.
-             (substitute* "Extensions/fonts/fontconfig.lisp"
-               (("/usr/share/fonts/truetype/dejavu/")
-                (string-append (assoc-ref inputs "font-dejavu")
-                               "/share/fonts/truetype/")))
-             #t)))))))
-
-(define-public sbcl-mcclim-fonts-clx-truetype
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-fonts-clx-truetype")
-    (inputs
-     `(("mcclim-clx" ,sbcl-mcclim-clx)
-       ("mcclim-fonts-truetype" ,sbcl-mcclim-fonts-truetype)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "./Extensions/fonts/mcclim-fonts.asd"
-       #:asd-system-name "mcclim-fonts/clx-truetype"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "Extensions/fonts/mcclim-fonts.asd"
-               ((":depends-on \\(#:mcclim-fonts/truetype")
-                ":depends-on (#:mcclim-fonts-truetype"))
-             #t)))))))
-
-(define-public sbcl-mcclim-clx-truetype
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-clx-truetype")
-    (inputs
-     `(("mcclim-clx" ,sbcl-mcclim-clx)
-       ("mcclim-fonts-clx-truetype" ,sbcl-mcclim-fonts-clx-truetype)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/CLX/mcclim-clx.asd"
-       #:asd-system-name "mcclim-clx/truetype"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "Backends/CLX/mcclim-clx.asd"
-               (("mcclim-fonts/clx-truetype")
-                "mcclim-fonts-clx-truetype"))
-             #t)))))))
-
-(define-public sbcl-mcclim-fontconfig
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-fontconfig")
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cffi" ,sbcl-cffi)
-       ("cffi-grovel" ,sbcl-cffi-grovel)
-       ("fontconfig" ,fontconfig)))
-    (arguments
-     '(#:asd-file "Extensions/fontconfig/mcclim-fontconfig.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Extensions/fontconfig/src/functions.lisp"
-               (("libfontconfig\\.so")
-                (string-append (assoc-ref inputs "fontconfig")
-                               "/lib/libfontconfig.so")))
-             #t))
-         (add-after 'unpack 'fix-build
-           (lambda _
-             ;; The cffi-grovel system does not get loaded automatically,
-             ;; so we load it explicitly.
-             (substitute* "Extensions/fontconfig/mcclim-fontconfig.asd"
-               (("\\(asdf:defsystem #:mcclim-fontconfig" all)
-                (string-append "(asdf:load-system :cffi-grovel)\n" all)))
-             #t)))))))
-
-(define-public sbcl-mcclim-harfbuzz
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-harfbuzz")
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cffi" ,sbcl-cffi)
-       ("cffi-grovel" ,sbcl-cffi-grovel)
-       ("freetype" ,freetype)
-       ("harfbuzz" ,harfbuzz)
-       ("trivial-garbage" ,sbcl-trivial-garbage)))
-    (arguments
-     '(#:asd-file "Extensions/harfbuzz/mcclim-harfbuzz.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Extensions/harfbuzz/src/functions.lisp"
-               (("libharfbuzz\\.so")
-                (string-append (assoc-ref inputs "harfbuzz")
-                               "/lib/libharfbuzz.so")))
-             #t))
-         (add-after 'unpack 'fix-build
-           (lambda _
-             ;; The cffi-grovel system does not get loaded automatically,
-             ;; so we load it explicitly.
-             (substitute* "Extensions/harfbuzz/mcclim-harfbuzz.asd"
-               (("\\(asdf:defsystem #:mcclim-harfbuzz" all)
-                (string-append "(asdf:load-system :cffi-grovel)\n" all)))
-             #t)))))))
-
-(define-public sbcl-mcclim-fonts-clx-freetype
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-fonts-clx-freetype")
-    (inputs
-     `(("cl-freetype2" ,sbcl-cl-freetype2)
-       ("mcclim-clx" ,sbcl-mcclim-clx)
-       ("mcclim-fontconfig" ,sbcl-mcclim-fontconfig)
-       ("mcclim-fonts" ,sbcl-mcclim-fonts)
-       ("mcclim-harfbuzz" ,sbcl-mcclim-harfbuzz)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Extensions/fonts/mcclim-fonts.asd"
-       #:asd-system-name "mcclim-fonts/clx-freetype"))))
-
-(define-public sbcl-mcclim-clx-freetype
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-clx-freetype")
-    (inputs
-     `(("mcclim-clx" ,sbcl-mcclim-clx)
-       ("mcclim-fonts-clx-freetype" ,sbcl-mcclim-fonts-clx-freetype)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/CLX/mcclim-clx.asd"
-       #:asd-system-name "mcclim-clx/freetype"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "Backends/CLX/mcclim-clx.asd"
-               (("mcclim-fonts/clx-freetype")
-                "mcclim-fonts-clx-freetype"))
-             #t)))))))
-
-(define-public sbcl-mcclim-render
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-render")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-vectors" ,sbcl-cl-vectors)
-       ("clim-basic" ,sbcl-clim-basic)
-       ("mcclim-backend-common" ,sbcl-mcclim-backend-common)
-       ("mcclim-fonts-truetype" ,sbcl-mcclim-fonts-truetype)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Extensions/render/mcclim-render.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "Extensions/render/mcclim-render.asd"
-               (("mcclim-fonts/truetype")
-                "mcclim-fonts-truetype"))
-             #t)))))))
-
-(define-public sbcl-mcclim-clx-fb
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-clx-fb")
-    (inputs
-     `(("mcclim-backend-common" ,sbcl-mcclim-backend-common)
-       ("mcclim-clx" ,sbcl-mcclim-clx)
-       ("mcclim-render" ,sbcl-mcclim-render)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/CLX-fb/mcclim-clx-fb.asd"))))
-
-(define-public sbcl-mcclim-null
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-null")
-    (inputs
-     `(("clim" ,sbcl-clim)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/Null/mcclim-null.asd"))))
-
-(define-public sbcl-clim-postscript-font
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-clim-postscript-font")
-    (inputs
-     `(("clim-basic" ,sbcl-clim-basic)
-       ("mcclim-backend-common" ,sbcl-mcclim-backend-common)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/PostScript/clim-postscript-font.asd"))))
-
-(define-public sbcl-clim-postscript
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-clim-postscript")
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)))
-    (inputs
-     `(("clim-basic" ,sbcl-clim-basic)
-       ("clim-postscript-font" ,sbcl-clim-postscript-font)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/PostScript/clim-postscript.asd"
-       ;; Test suite disabled because of a dependency cycle.
-       ;; The tests depend on mcclim/test-util, which depends on mcclim,
-       ;; wich depends on mcclim/extensions, which depends on clim-postscript.
-       #:tests? #f))))
-
-(define-public sbcl-clim-pdf
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-clim-pdf")
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)))
-    (inputs
-     `(("cl-pdf" ,sbcl-cl-pdf)
-       ("clim-basic" ,sbcl-clim-basic)
-       ("clim-postscript-font" ,sbcl-clim-postscript-font)
-       ("flexi-streams" ,sbcl-flexi-streams)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/PDF/clim-pdf.asd"
-       ;; Test suite disabled because of a dependency cycle.
-       ;; The tests depend on mcclim/test-util, which depends on mcclim,
-       ;; wich depends on mcclim/extensions, which depends on clim-pdf.
-       #:tests? #f))))
-
-(define-public sbcl-mcclim-looks
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-looks")
-    (inputs
-     `(("clim" ,sbcl-clim)
-       ("mcclim-clx" ,sbcl-mcclim-clx)
-       ("mcclim-clx-fb" ,sbcl-mcclim-clx-fb)
-       ("mcclim-clx-freetype" ,sbcl-mcclim-clx-freetype)
-       ("mcclim-clx-truetype" ,sbcl-mcclim-clx-truetype)
-       ("mcclim-null" ,sbcl-mcclim-null)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "mcclim.asd"
-       #:asd-system-name "mcclim/looks"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "mcclim.asd"
-               (("mcclim-clx/truetype")
-                "mcclim-clx-truetype")
-               (("mcclim-clx/freetype")
-                "mcclim-clx-freetype"))
-             #t)))))))
-
-(define-public sbcl-mcclim-franz
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-franz")
-    (inputs
-     `(("clim" ,sbcl-clim)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Extensions/Franz/mcclim-franz.asd"))))
-
-(define-public sbcl-mcclim-bezier-core
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-bezier-core")
-    (inputs
-     `(("clim" ,sbcl-clim)
-       ("clim-pdf" ,sbcl-clim-pdf)
-       ("clim-postscript" ,sbcl-clim-postscript)
-       ("mcclim-null" ,sbcl-mcclim-null)
-       ("mcclim-render" ,sbcl-mcclim-render)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Extensions/bezier/mcclim-bezier.asd"
-       #:asd-system-name "mcclim-bezier/core"))))
-
-(define-public sbcl-mcclim-bezier-clx
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-bezier-clx")
-    (inputs
-     `(("clim" ,sbcl-clim)
-       ("mcclim-bezier/core" ,sbcl-mcclim-bezier-core)
-       ("mcclim-clx" ,sbcl-mcclim-clx)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Extensions/bezier/mcclim-bezier.asd"
-       #:asd-system-name "mcclim-bezier/clx"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "Extensions/bezier/mcclim-bezier.asd"
-               (("mcclim-bezier/core\\)")
-                "mcclim-bezier-core)"))
-             #t)))))))
-
-(define-public sbcl-mcclim-bezier
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-bezier")
-    (inputs
-     `(("mcclim-bezier/clx" ,sbcl-mcclim-bezier-clx)
-       ("mcclim-bezier/core" ,sbcl-mcclim-bezier-core)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Extensions/bezier/mcclim-bezier.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "Extensions/bezier/mcclim-bezier.asd"
-               (("\\(#:mcclim-bezier/core")
-                "(#:mcclim-bezier-core")
-               (("#:mcclim-bezier/clx\\)\\)")
-                "#:mcclim-bezier-clx))"))
-             #t)))))))
-
-(define-public sbcl-mcclim-bitmaps
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-bitmaps")
-    (inputs
-     `(("clim-basic" ,sbcl-clim-basic)
-       ("opticl" ,sbcl-opticl)))
-    (arguments
-     '(#:asd-file "Extensions/bitmap-formats/mcclim-bitmaps.asd"))))
-
-(define-public sbcl-conditional-commands
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-conditional-commands")
-    (inputs
-     `(("clim-basic" ,sbcl-clim-basic)))
-    (arguments
-     '(#:asd-file "Extensions/conditional-commands/conditional-commands.asd"))))
-
-(define-public sbcl-mcclim-layouts-tab
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-layouts-tab")
-    (inputs
-     `(("clim" ,sbcl-clim)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Extensions/layouts/mcclim-layouts.asd"
-       #:asd-system-name "mcclim-layouts/tab"))))
-
-(define-public sbcl-mcclim-extensions
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-extensions")
-    (inputs
-     `(("clim-pdf" ,sbcl-clim-pdf)
-       ("clim-postscript" ,sbcl-clim-postscript)
-       ("conditional-commands" ,sbcl-conditional-commands)
-       ("mcclim-bezier" ,sbcl-mcclim-bezier)
-       ("mcclim-bitmaps" ,sbcl-mcclim-bitmaps)
-       ("mcclim-franz" ,sbcl-mcclim-franz)
-       ("mcclim-layouts-tab" ,sbcl-mcclim-layouts-tab)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "mcclim.asd"
-       #:asd-system-name "mcclim/extensions"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "mcclim.asd"
-               (("mcclim-layouts/tab")
-                "mcclim-layouts-tab"))
-             #t)))))))
-
-(define-public sbcl-mcclim
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim")
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)))
-    (inputs
-     `(("mcclim-looks" ,sbcl-mcclim-looks)
-       ("mcclim-extensions" ,sbcl-mcclim-extensions)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "mcclim.asd"
-               ((":depends-on \\(\"mcclim/looks\" \"mcclim/extensions\"\\)")
-                ":depends-on (\"mcclim-looks\" \"mcclim-extensions\")"))
-             #t)))
-       ;; Test suite disabled because of a dependency cycle.
-       ;; The tests depend on mcclim/test-util, which depends on mcclim.
-       #:tests? #f))))
-
 (define-public cl-mcclim
-  (let ((base (sbcl-package->cl-source-package sbcl-clim-lisp)))
-    (package
-      (inherit base)
-      (name "cl-mcclim")
-      (native-inputs
-       `(("fiveam" ,cl-fiveam)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("alexandria" ,cl-alexandria)
-         ("babel" ,cl-babel)
-         ("bordeaux-threads" ,cl-bordeaux-threads)
-         ("cffi" ,cl-cffi)
-         ("cl-aa" ,cl-aa)
-         ("cl-freetype2" ,cl-freetype2)
-         ("cl-paths-ttf" ,cl-paths-ttf)
-         ("cl-pdf" ,cl-pdf)
-         ("cl-unicode" ,cl-unicode)
-         ("cl-vectors" ,cl-vectors)
-         ("closer-mop" ,cl-closer-mop)
-         ("clx" ,cl-clx)
-         ("flexi-streams" ,cl-flexi-streams)
-         ("flexichain" ,cl-flexichain)
-         ("fontconfig" ,fontconfig)
-         ("freetype" ,freetype)
-         ("harfbuzz" ,harfbuzz)
-         ("log4cl" ,cl-log4cl)
-         ("opticl" ,cl-opticl)
-         ("spatial-trees" ,cl-spatial-trees)
-         ("trivial-features" ,cl-trivial-features)
-         ("trivial-garbage" ,cl-trivial-garbage)
-         ("trivial-gray-streams" ,cl-trivial-gray-streams)
-         ("swank" ,cl-slime-swank)
-         ("zpb-ttf" ,cl-zpb-ttf))))))
-
-(define-public sbcl-mcclim-test-util
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-test-util")
-    (inputs
-     `(("fiveam" ,sbcl-fiveam)
-       ("mcclim" ,sbcl-mcclim)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "mcclim.asd"
-       #:asd-system-name "mcclim/test-util"))))
-
-(define-public sbcl-mcclim-raster-image
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-mcclim-raster-image")
-    (native-inputs
-     `(("fiveam" ,sbcl-fiveam)
-       ("mcclim-test-util" ,sbcl-mcclim-test-util)))
-    (inputs
-     `(("clim-basic" ,sbcl-clim-basic)
-       ("mcclim-backend-common" ,sbcl-mcclim-backend-common)
-       ("mcclim-render" ,sbcl-mcclim-render)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Backends/RasterImage/mcclim-raster-image.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "Backends/RasterImage/mcclim-raster-image.asd"
-               (("mcclim/test-util")
-                "mcclim-test-util"))
-             #t)))))))
-
-(define-public sbcl-clim-examples
-  (package
-    (inherit sbcl-clim-lisp)
-    (name "sbcl-clim-examples")
-    (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("closer-mop" ,sbcl-closer-mop)
-       ("mcclim" ,sbcl-mcclim)
-       ("mcclim-bezier" ,sbcl-mcclim-bezier)
-       ("mcclim-layouts-tab" ,sbcl-mcclim-layouts-tab)
-       ("mcclim-raster-image" ,sbcl-mcclim-raster-image)
-       ("swank" ,cl-slime-swank))) ; For drei-mcclim
-    (arguments
-     '(#:asd-file "Examples/clim-examples.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-asd-system-names
-           (lambda _
-             (substitute* "Examples/clim-examples.asd"
-               (("mcclim-layouts/tab")
-                "mcclim-layouts-tab"))
-             #t)))))))
+  (sbcl-package->cl-source-package sbcl-mcclim))
 
 (define-public sbcl-cl-inflector
   (let ((commit "f1ab16919ccce3bd82a0042677d9616dde2034fe")
@@ -13746,11 +10516,11 @@ can separate configuration system from an implementation.")
 (define-public ecl-envy
   (sbcl-package->ecl-package sbcl-envy))
 
-(define sbcl-mito-core
+(define-public sbcl-mito
   (let ((commit "d3b9e375ef364a65692da2185085a08c969ac88a")
 	(revision "1"))
     (package
-      (name "sbcl-mito-core")
+      (name "sbcl-mito")
       (version (git-version "0.1" revision commit))
       (home-page "https://github.com/fukamachi/mito")
       (source
@@ -13763,77 +10533,27 @@ can separate configuration system from an implementation.")
          (sha256
           (base32 "08mncgzjnbbsf1a6am3l73iw4lyfvz5ldjg5g84awfaxml4p73mb"))))
       (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("prove" ,sbcl-prove)))
       (inputs
-       `(("dbi" ,sbcl-dbi)
-         ("sxql" ,sbcl-sxql)
+       `(("alexandria" ,sbcl-alexandria)
          ("cl-ppcre" ,sbcl-cl-ppcre)
-         ("closer-mop" ,sbcl-closer-mop)
-         ("dissect" ,sbcl-dissect)
-         ("optima" ,sbcl-optima)
          ("cl-reexport" ,sbcl-cl-reexport)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("dbi" ,sbcl-dbi)
+         ("dissect" ,sbcl-dissect)
+         ("esrap" ,sbcl-esrap)
          ("local-time" ,sbcl-local-time)
-         ("uuid" ,sbcl-uuid)
-         ("alexandria" ,sbcl-alexandria)))
-      (synopsis "ORM for Common Lisp with migrations and relationships support")
-      (description "Mito is yet another object relational mapper, and it aims
-to be a successor of Integral.
-
-@itemize
-@item Support MySQL, PostgreSQL and SQLite3.
-@item Add id (serial/uuid primary key), created_at and updated_at by default
-like Ruby's ActiveRecord.
-@item Migrations.
-@item Database schema versioning.
-@end itemize\n")
-      (license license:llgpl))))
-
-(define sbcl-mito-migration
-  (package
-    (inherit sbcl-mito-core)
-    (name "sbcl-mito-migration")
-    (inputs
-     `(("mito-core" ,sbcl-mito-core)
-       ("dbi" ,sbcl-dbi)
-       ("sxql" ,sbcl-sxql)
-       ("closer-mop" ,sbcl-closer-mop)
-       ("cl-reexport" ,sbcl-cl-reexport)
-       ("uuid" ,sbcl-uuid)
-       ("alexandria" ,sbcl-alexandria)
-       ("esrap" ,sbcl-esrap)))))
-
-(define sbcl-lack-middleware-mito
-  (package
-    (inherit sbcl-mito-core)
-    (name "sbcl-lack-middleware-mito")
-    (inputs
-     `(("mito-core" ,sbcl-mito-core)
-       ("dbi" ,sbcl-dbi)))
-    (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-build
-             (lambda _
-               (substitute* "lack-middleware-mito.asd"
-                 (("cl-dbi") "dbi"))
-               #t)))))))
-
-(define-public sbcl-mito
-  (package
-    (inherit sbcl-mito-core)
-    (name "sbcl-mito")
-    (inputs
-     `(("mito-core" ,sbcl-mito-core)
-       ("mito-migration" ,sbcl-mito-migration)
-       ("lack-middleware-mito" ,sbcl-lack-middleware-mito)
-       ("cl-reexport" ,sbcl-cl-reexport)))
-    (native-inputs
-     `(("prove" ,sbcl-prove)
-       ("prove-asdf" ,sbcl-prove-asdf)
-       ("dbd-mysql" ,sbcl-dbd-mysql)
-       ("dbd-postgres" ,sbcl-dbd-postgres)
-       ("dbd-sqlite3" ,sbcl-dbd-sqlite3)))
-    (arguments
-       '(#:phases
+         ("optima" ,sbcl-optima)
+         ("sxql" ,sbcl-sxql)
+         ("uuid" ,sbcl-uuid)))
+      (arguments
+       '(#:asd-files '("mito.asd"
+                       "mito-core.asd"
+                       "mito-migration.asd"
+                       "lack-middleware-mito.asd")
+         #:asd-systems '("mito")
+         #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'remove-non-functional-tests
              (lambda _
@@ -13852,7 +10572,19 @@ like Ruby's ActiveRecord.
                #t)))
          ;; TODO: While all enabled tests pass, the phase fails with:
          ;; Component MITO-ASD::MITO-TEST not found, required by #<SYSTEM "mito">
-         #:tests? #f))))
+         #:tests? #f))
+      (synopsis "ORM for Common Lisp with migrations and relationships support")
+      (description "Mito is yet another object relational mapper, and it aims
+to be a successor of Integral.
+
+@itemize
+@item Support MySQL, PostgreSQL and SQLite3.
+@item Add id (serial/uuid primary key), created_at and updated_at by default
+like Ruby's ActiveRecord.
+@item Migrations.
+@item Database schema versioning.
+@end itemize\n")
+      (license license:llgpl))))
 
 (define-public cl-mito
   (sbcl-package->cl-source-package sbcl-mito))
@@ -13880,8 +10612,7 @@ like Ruby's ActiveRecord.
          ("cl-interpol" ,sbcl-cl-interpol)
          ("split-sequence" ,sbcl-split-sequence)))
       (native-inputs
-       `(("prove-asdf" ,sbcl-prove-asdf)
-         ("prove" ,sbcl-prove)))
+       `(("prove" ,sbcl-prove)))
       (arguments
        ;; Tests passes but the phase fails with
        ;; Component KEBAB-ASD::KEBAB-TEST not found, required by #<SYSTEM "kebab">.
@@ -13921,7 +10652,7 @@ camelCase, snake_case, kebab-case (lisp-case).")
          ("optima" ,sbcl-optima)
          ("trivial-types" ,sbcl-trivial-types)
          ("closer-mop" ,sbcl-closer-mop)
-         ("cl-syntax-annot" ,sbcl-cl-syntax-annot)
+         ("cl-syntax" ,sbcl-cl-syntax)
          ("sxql" ,sbcl-sxql)
          ("dbi" ,sbcl-dbi)
          ("babel" ,sbcl-babel)
@@ -13931,9 +10662,7 @@ camelCase, snake_case, kebab-case (lisp-case).")
          ("kebab" ,sbcl-kebab)
          ("log4cl" ,sbcl-log4cl)))
       (native-inputs
-       `(("prove-asdf" ,sbcl-prove-asdf)
-         ("prove" ,sbcl-prove)
-         ("dbd-sqlite3" ,sbcl-dbd-sqlite3)))
+       `(("prove" ,sbcl-prove)))
       (arguments
        ;; TODO: Tests fail with
        ;; While evaluating the form starting at line 22, column 0
@@ -14072,19 +10801,18 @@ can begin writing unit tests as soon as the project is generated.")
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("ningle" ,cl-ningle)
-         ("lack-request" ,sbcl-lack-request)
-         ("lack-response" ,sbcl-lack-response)
+         ("lack" ,sbcl-lack)
          ("cl-project" ,sbcl-cl-project)
          ("dbi" ,sbcl-dbi)
-         ("cl-syntax-annot" ,sbcl-cl-syntax-annot)
+         ("cl-syntax" ,sbcl-cl-syntax)
          ("myway" ,sbcl-myway)
          ("quri" ,sbcl-quri)))
       (native-inputs
        `(("usocket" ,sbcl-usocket)
          ("dexador" ,sbcl-dexador)))
       (arguments
-       `(#:asd-file "caveman2.asd"
-         #:asd-system-name "caveman2"
+       `(#:asd-files '("caveman2.asd")
+         #:asd-systems '("caveman2")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'remove-v1
