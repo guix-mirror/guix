@@ -408,14 +408,15 @@ levels.")
 (define-public python-xsge
   (package
     (name "python-xsge")
-    (version "2018.02.26")
+    (version "2020.09.07")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/xsge/xsge/xsge-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://github.com/python-sge/xsge"
+                                  "/releases/download/v" version
+                                  "/xsge-" version ".zip"))
               (sha256
                (base32
-                "0bx93hgf7cgdw2gsygbh59y8vpw37pgsa279rajw3fkdpl8vrc40"))))
+                "136xgy3f9vw636wxpqbha022avk0wyxw63mm3a2dvwhh90s716f9"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -428,12 +429,11 @@ levels.")
                      (string-append "--prefix=" (assoc-ref outputs "out"))
                      "--root=/"))))
        #:tests? #f)) ; no check target
+    (native-inputs
+     `(("unzip" ,unzip)))
     (propagated-inputs
-     `(("python-sge-pygame" ,python-sge-pygame)
-       ("python-pygame" ,python-pygame)
-       ("python-six" ,python-six)
-       ("python-tmx" ,python-tmx)))
-    (home-page "http://xsge.nongnu.org")
+     `(("python-sge" ,python-sge)))
+    (home-page "https://python-sge.github.io/")
     (synopsis "Extensions for the SGE Game Engine")
     (description
      "xSGE is a collection of modules that make doing certain tasks with the SGE
@@ -441,9 +441,6 @@ Game Engine easier.  In addition to SGE's conveniences, the user has access to a
 GUI toolkit, lighting and physics frameworks and @code{Tiled} TMX format
 support.")
     (license license:gpl3+)))
-
-(define-public python2-xsge
-  (package-with-python2 python-xsge))
 
 (define-public tiled
   (package
