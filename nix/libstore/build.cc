@@ -85,7 +85,7 @@ static string pathNullDevice = "/dev/null";
 
 /* Forward definition. */
 class Worker;
-struct HookInstance;
+struct Agent;
 
 
 /* A pointer to a goal. */
@@ -265,7 +265,7 @@ public:
 
     LocalStore & store;
 
-    std::shared_ptr<HookInstance> hook;
+    std::shared_ptr<Agent> hook;
 
     Worker(LocalStore & store);
     ~Worker();
@@ -590,37 +590,41 @@ void UserLock::kill()
 //////////////////////////////////////////////////////////////////////
 
 
-struct HookInstance
+/* An "agent" is a helper program that runs in the background and that we talk
+   to over pipes, such as the "guix offload" program.  */
+struct Agent
 {
-    /* Pipes for talking to the build hook. */
-    Pipe toHook;
+    /* Pipes for talking to the agent. */
+    Pipe toAgent;
 
-    /* Pipe for the hook's standard output/error. */
-    Pipe fromHook;
+    /* Pipe for the agent's standard output/error. */
+    Pipe fromAgent;
 
-    /* Pipe for the builder's standard output/error. */
+    /* Pipe for build standard output/error--e.g., for build processes started
+       by "guix offload".  */
     Pipe builderOut;
 
-    /* The process ID of the hook. */
+    /* The process ID of the agent. */
     Pid pid;
 
-    HookInstance();
+    /* The 'guix' sub-command and arguments passed to the agent.  */
+    Agent(const string &command, const Strings &args);
 
-    ~HookInstance();
+    ~Agent();
 };
 
 
-HookInstance::HookInstance()
+Agent::Agent(const string &command, const Strings &args)
 {
-    debug("starting build hook");
+    debug(format("starting agent '%1%'") % command);
 
     const Path &buildHook = settings.guixProgram;
 
     /* Create a pipe to get the output of the child. */
-    fromHook.create();
+    fromAgent.create();
 
     /* Create the communication pipes. */
-    toHook.create();
+    toAgent.create();
 
     /* Create a pipe to get the output of the builder. */
     builderOut.create();
@@ -628,38 +632,38 @@ HookInstance::HookInstance()
     /* Fork the hook. */
     pid = startProcess([&]() {
 
-        commonChildInit(fromHook);
+        commonChildInit(fromAgent);
 
         if (chdir("/") == -1) throw SysError("changing into `/");
 
         /* Dup the communication pipes. */
-        if (dup2(toHook.readSide, STDIN_FILENO) == -1)
+        if (dup2(toAgent.readSide, STDIN_FILENO) == -1)
             throw SysError("dupping to-hook read side");
 
         /* Use fd 4 for the builder's stdout/stderr. */
         if (dup2(builderOut.writeSide, 4) == -1)
             throw SysError("dupping builder's stdout/stderr");
 
-        execl(buildHook.c_str(), buildHook.c_str(), "offload",
-	    settings.thisSystem.c_str(),
-            (format("%1%") % settings.maxSilentTime).str().c_str(),
-            (format("%1%") % settings.printBuildTrace).str().c_str(),
-            (format("%1%") % settings.buildTimeout).str().c_str(),
-            NULL);
+	Strings allArgs;
+	allArgs.push_back(buildHook);
+	allArgs.push_back(command);
+	allArgs.insert(allArgs.end(), args.begin(), args.end()); // append
 
-        throw SysError(format("executing `%1% offload'") % buildHook);
+        execv(buildHook.c_str(), stringsToCharPtrs(allArgs).data());
+
+        throw SysError(format("executing `%1% %2%'") % buildHook % command);
     });
 
     pid.setSeparatePG(true);
-    fromHook.writeSide.close();
-    toHook.readSide.close();
+    fromAgent.writeSide.close();
+    toAgent.readSide.close();
 }
 
 
-HookInstance::~HookInstance()
+Agent::~Agent()
 {
     try {
-        toHook.writeSide.close();
+        toAgent.writeSide.close();
         pid.kill(true);
     } catch (...) {
         ignoreException();
@@ -760,7 +764,7 @@ private:
     Pipe builderOut;
 
     /* The build hook. */
-    std::shared_ptr<HookInstance> hook;
+    std::shared_ptr<Agent> hook;
 
     /* Whether we're currently doing a chroot build. */
     bool useChroot;
@@ -1440,7 +1444,7 @@ void DerivationGoal::buildDone()
     /* Close the read side of the logger pipe. */
     if (hook) {
         hook->builderOut.readSide.close();
-        hook->fromHook.readSide.close();
+        hook->fromAgent.readSide.close();
     }
     else builderOut.readSide.close();
 
@@ -1587,8 +1591,16 @@ HookReply DerivationGoal::tryBuildHook()
 {
     if (!settings.useBuildHook) return rpDecline;
 
-    if (!worker.hook)
-        worker.hook = std::shared_ptr<HookInstance>(new HookInstance);
+    if (!worker.hook) {
+	Strings args = {
+	    settings.thisSystem.c_str(),
+            (format("%1%") % settings.maxSilentTime).str().c_str(),
+            (format("%1%") % settings.printBuildTrace).str().c_str(),
+            (format("%1%") % settings.buildTimeout).str().c_str()
+	};
+
+        worker.hook = std::make_shared<Agent>("offload", args);
+    }
 
     /* Tell the hook about system features (beyond the system type)
        required from the build machine.  (The hook could parse the
@@ -1597,7 +1609,7 @@ HookReply DerivationGoal::tryBuildHook()
     foreach (Strings::iterator, i, features) checkStoreName(*i); /* !!! abuse */
 
     /* Send the request to the hook. */
-    writeLine(worker.hook->toHook.writeSide, (format("%1% %2% %3% %4%")
+    writeLine(worker.hook->toAgent.writeSide, (format("%1% %2% %3% %4%")
         % (worker.getNrLocalBuilds() < settings.maxBuildJobs ? "1" : "0")
         % drv.platform % drvPath % concatStringsSep(",", features)).str());
 
@@ -1605,7 +1617,7 @@ HookReply DerivationGoal::tryBuildHook()
        whether the hook wishes to perform the build. */
     string reply;
     while (true) {
-        string s = readLine(worker.hook->fromHook.readSide);
+        string s = readLine(worker.hook->fromAgent.readSide);
         if (string(s, 0, 2) == "# ") {
             reply = string(s, 2);
             break;
@@ -1637,21 +1649,21 @@ HookReply DerivationGoal::tryBuildHook()
 
     string s;
     foreach (PathSet::iterator, i, allInputs) { s += *i; s += ' '; }
-    writeLine(hook->toHook.writeSide, s);
+    writeLine(hook->toAgent.writeSide, s);
 
     /* Tell the hooks the missing outputs that have to be copied back
        from the remote system. */
     s = "";
     foreach (PathSet::iterator, i, missingPaths) { s += *i; s += ' '; }
-    writeLine(hook->toHook.writeSide, s);
+    writeLine(hook->toAgent.writeSide, s);
 
-    hook->toHook.writeSide.close();
+    hook->toAgent.writeSide.close();
 
     /* Create the log file and pipe. */
     Path logFile = openLogFile();
 
     set<int> fds;
-    fds.insert(hook->fromHook.readSide);
+    fds.insert(hook->fromAgent.readSide);
     fds.insert(hook->builderOut.readSide);
     worker.childStarted(shared_from_this(), hook->pid, fds, false, true);
 
@@ -2785,7 +2797,7 @@ void DerivationGoal::handleChildOutput(int fd, const string & data)
             writeFull(fdLogFile, data);
     }
 
-    if (hook && fd == hook->fromHook.readSide)
+    if (hook && fd == hook->fromAgent.readSide)
         writeToStderr(prefix + data);
 }
 
