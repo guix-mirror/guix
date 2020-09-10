@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,14 +24,17 @@
 (define-module (gnu packages language)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages swig)
@@ -1057,3 +1061,46 @@ labelled links connecting pairs of words.  The parser also produces a
 \"constituent\" (HPSG style phrase tree) representation of a sentence (showing
 noun phrases, verb phrases, etc.).")
     (license bsd-3)))
+
+(define-public praat
+  (package
+    (name "praat")
+    (version "6.1.16")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/praat/praat")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rx4qvl0dd85x0r6pl0zk4bysx9ykxl05kywjr4pyvv6dvpswkrm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (copy-file "makefiles/makefile.defs.linux.pulse" "makefile.defs")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (copy-file "praat" (string-append bin "/praat")))
+             #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("gtk" ,gtk+-2)
+       ("jack" ,jack-1)
+       ("publesaudio" ,pulseaudio)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.fon.hum.uva.nl/praat/")
+    (synopsis "Doing phonetics by computer")
+    (description "Praat is a tool to perform phonetics tasks.  It can do speach
+analysis (pitch, formant, intensity, ...), speach synthesis, labeling, segmenting
+and manipulation.")
+    (license gpl2+)))
