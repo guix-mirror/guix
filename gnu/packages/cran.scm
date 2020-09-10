@@ -3771,7 +3771,7 @@ with the package @code{optim}.")
       ("r-purrr" ,r-purrr)
       ("r-scales" ,r-scales)))
    (home-page "https://github.com/jaredlander/useful")
-   (synopsis "A Collection of Handy, Useful Functions")
+   (synopsis "Collection of handy, useful functions")
    (description "This package provides a set of little functions that have been
 found useful to do little odds and ends such as plotting the results of K-means
 clustering, substituting special text characters, viewing parts of a
