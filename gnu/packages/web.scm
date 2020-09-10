@@ -7421,6 +7421,37 @@ update an existing mirrored site, and resume interrupted downloads.
 HTTrack is fully configurable, and has an integrated help system.")
     (license license:gpl3+)))
 
+(define-public buku
+  (package
+    (name "buku")
+    (version "4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "buku" version))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1g1xhdskfn72xaraqzz2v8dl2iza7bzfpn17z2wdrzkq3ih7yvgg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;FIXME: many tests need network access
+    (inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-certifi" ,python-certifi)
+       ("python-cryptography" ,python-cryptography)
+       ("python-html5lib" ,python-html5lib)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://github.com/jarun/buku")
+    (synopsis "Bookmark manager")
+    (description
+     "buku is a powerful bookmark manager written in Python3 and SQLite3.
+@command{buku} can auto-import bookmarks from your browser and present them
+in an interactive command-line interface that lets you compose and update
+bookmarks directly.  It can also present them in a web interface with
+@command{bukuserver}.")
+    (license license:gpl3+)))
+
 (define-public anonip
   (package
     (name "anonip")
