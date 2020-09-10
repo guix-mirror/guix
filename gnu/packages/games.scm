@@ -385,15 +385,17 @@ The game includes a built-in editor so you can design and share your own maps.")
 (define-public armagetronad
   (package
     (name "armagetronad")
-    (version "0.2.8.3.5")
+    (version "0.2.9.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/armagetronad/stable/"
-                                  version "/armagetronad-" version ".src.tar.gz"))
+                                  version "/armagetronad-" version ".tbz"))
               (sha256
                (base32
-                "1z266haq22n5b0733h7qsg1rpzhz8lvm82f7wd06r008iiar7jdl"))))
+                "19rfhlg4gp0r7k1j8v4iw20325ciy156nmzax4xikmw22c6nmxcz"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libxml2" ,libxml2)
        ("sdl" ,sdl)
