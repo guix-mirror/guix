@@ -1307,17 +1307,17 @@ B.Choppr is the successor of B.Slizr.")
   (package
     (inherit bsequencer)
     (name "bjumblr")
-    (version "0.2")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/sjaehn/BJumblr")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14z8113zkwykbhm1a8h2xs972dgifvlfij92b08jckyc7cbz84ys"))))
+         "0kl6hrxmqrdf0195bfnzsa2h1073fgiqrfhg2276fm1954sm994v"))))
     (inputs
      `(("cairo", cairo)
        ("libsndfile", libsndfile)
