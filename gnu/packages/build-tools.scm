@@ -179,7 +179,7 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.53.2")
+    (version "0.55.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -187,7 +187,7 @@ files and generates build instructions for the Ninja build system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07y2hh9dfn1m9g4bsy49nbn3vdmd0b2iwr8bxg19fhqq6c7q73ry"))))
+                "1070kjiirxxdfppmrhi3wsc6rykay1zlciqrzayjhjg0hkw42mrv"))))
     (build-system python-build-system)
     (arguments
      `(;; FIXME: Tests require many additional inputs, a fix for the RUNPATH
@@ -216,8 +216,7 @@ resembles Python.")
     (inherit meson)
     (name "meson-for-build")
     (source (origin
-              (inherit (package-source meson))
-              (patches (search-patches "meson-for-build-rpath.patch"))))
+              (inherit (package-source meson))))
 
     ;; People should probably install "meson", not "meson-for-build".
     (properties `((hidden? . #t)))))
