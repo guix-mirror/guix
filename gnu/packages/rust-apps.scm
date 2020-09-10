@@ -5,6 +5,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -203,6 +204,34 @@ also knows about symlinks, extended attributes, and Git.")
      "@code{fd} is a simple, fast and user-friendly alternative to @code{find}.
 While it does not seek to mirror all of find's powerful functionality, it
 provides defaults for 80% of the use cases.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public hexyl
+  (package
+    (name "hexyl")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hexyl" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0sipag77196467idbznbk5q5lwhqz85zw7y1pwg9b27jxqyk04rp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/sharkdp/hexyl")
+    (synopsis "Command-line hex viewer")
+    (description
+     "This package provides a command line hex viewer.  It uses a colored output
+for distinguishing different kinds of bytes such as NULL bytes, printable ASCII
+characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
     (license (list license:expat license:asl2.0))))
 
 (define-public ripgrep
