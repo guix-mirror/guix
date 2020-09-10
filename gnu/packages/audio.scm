@@ -4652,7 +4652,7 @@ libsamplerate for reading and resampling audio files, based on Robin Gareus'
 (define-public lv2lint
   (package
     (name "lv2lint")
-    (version "0.4.0")
+    (version "0.8.0")
     (source
       (origin
         (method git-fetch)
@@ -4662,7 +4662,7 @@ libsamplerate for reading and resampling audio files, based on Robin Gareus'
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "1pspwqpzl2dw1hd9ra9yr53arqbbqjn7d7j0f7p9g3iqa76vblpi"))))
+            "1jrka0hsn4n1clri7zfkcl3c2vi52144lkpjm81l51ff8rqy8ks1"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
