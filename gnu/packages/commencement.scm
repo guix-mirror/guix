@@ -3902,6 +3902,12 @@ binaries, plus debugging symbols in the @code{debug} output), and Binutils.")
 (define-public gcc-toolchain-10
   (make-gcc-toolchain gcc-10))
 
+(define-public gcc-toolchain-aka-gcc
+  ;; It's natural for users to try "guix install gcc".  This package
+  ;; automatically "redirects" them to 'gcc-toolchain'.
+  (deprecated-package "gcc" gcc-toolchain-10))
+
+
 (define-public gdc-toolchain-10
   (package (inherit (make-gcc-toolchain gdc-10))
     (synopsis "Complete GCC tool chain for D lang development")
