@@ -147,6 +147,7 @@
   #:use-module (gnu packages vim)       ;for 'xxd'
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
@@ -776,6 +777,75 @@ required.  Extempore also has strong timing and concurrency semantics, which
 are helpful when working in problem spaces where timing is important (such as
 audio and video).")
     (license license:bsd-2)))
+
+(define-public surge-synth
+  (package
+   (name "surge-synth")
+   (version "1.7.1")
+   (source
+     (origin
+       (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/surge-synthesizer/surge")
+               (commit (string-append "release_" version))
+               (recursive? #t))) ; build system expects modules to be there
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1jhk8iaqh89dnci4446b47315v2lc8gclraygk8m9jl20zpjxl0l"))))
+   (build-system cmake-build-system)
+   (arguments
+    `(#:tests? #f ; no tests included
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'replace-python
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "CMakeLists.txt"
+              ((" python ")
+               (string-append " " (assoc-ref inputs "python")
+                              "/bin/python3 ")))
+            #t))
+        (add-after 'unpack 'fix-data-directory-name
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "src/common/SurgeStorage.cpp"
+              (("/usr") (assoc-ref outputs "out")))
+            #t))
+        (replace 'install ; no install target
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let* ((src (assoc-ref inputs "source"))
+                   (out (assoc-ref outputs "out"))
+                   (share (string-append out "/share"))
+                   (lib (string-append out "/lib"))
+                   (lv2 (string-append lib "/lv2"))
+                   (vst3 (string-append lib "/vst3")))
+              (mkdir-p lv2)
+              (mkdir-p vst3)
+              ;; Install LV2 plugin.
+              (copy-recursively "surge_products/Surge.lv2"
+                                (string-append lv2 "/Surge.lv2"))
+              ;; Install VST3 plugin.
+              (copy-recursively "surge_products/Surge.vst3"
+                                (string-append vst3 "/Surge.vst3"))
+              ;; Install data.
+              (copy-recursively (string-append src "/resources/data")
+                                (string-append share "/Surge"))
+              #t))))))
+   (inputs
+    `(("cairo" ,cairo)
+      ("libxkbcommon" ,libxkbcommon)
+      ("python" ,python)
+      ("xcb-util" ,xcb-util)
+      ("xcb-util-cursor" ,xcb-util-cursor)
+      ("xcb-util-keysyms" ,xcb-util-keysyms)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "https://surge-synthesizer.github.io/")
+   (synopsis "Synthesizer plugin")
+   (description
+    "Surge is a subtractive hybrid digital synthesizer.  Each patch contains
+two @dfn{scenes} which are separate instances of the entire synthesis
+engine (except effects) that can be used for layering or split patches.")
+   (license license:gpl3+)))
 
 (define-public klick
   (package
