@@ -19,6 +19,7 @@
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Todor Kondić <tk.code@protonmail.com>
 ;;; Copyright © 2020 Danjela Lura <danielaluraa@gmail.com>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
@@ -24356,3 +24357,29 @@ Using a hidden Markov model, R/qtl estimates genetic maps, to
 identify genotyping errors, and to perform single-QTL and two-QTL,
 two-dimensional genome scans.")
   (license license:gpl3)))
+
+(define-public r-qtl2
+  (package
+    (name "r-qtl2")
+    (version "0.22-11")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "qtl2" version))
+              (sha256
+               (base32 "0dfdzjylqzc92dcszawc8cyinxccjm3p36v9vcq9ma818pqcanmr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://kbroman.org/qtl2/")
+    (synopsis "Quantitative Trait Locus Mapping in Experimental Crosses")
+    (description
+     "This package provides a set of tools to perform @dfn{Quantitative Trait
+Locus} (QTL) analysis in experimental crosses.  It is a reimplementation of the
+@code{R/qtl} package to better handle high-dimensional data and complex cross
+designs.  Broman et al. (2018) <doi:10.1534/genetics.118.301595>.")
+    (license license:gpl3)))
