@@ -80,9 +80,6 @@ namespace nix {
 using std::map;
 
 
-static string pathNullDevice = "/dev/null";
-
-
 /* Forward definition. */
 class Worker;
 struct Agent;
@@ -397,33 +394,6 @@ void Goal::trace(const format & f)
 //////////////////////////////////////////////////////////////////////
 
 
-/* Common initialisation performed in child processes. */
-static void commonChildInit(Pipe & logPipe)
-{
-    /* Put the child in a separate session (and thus a separate
-       process group) so that it has no controlling terminal (meaning
-       that e.g. ssh cannot open /dev/tty) and it doesn't receive
-       terminal signals. */
-    if (setsid() == -1)
-        throw SysError(format("creating a new session"));
-
-    /* Dup the write side of the logger pipe into stderr. */
-    if (dup2(logPipe.writeSide, STDERR_FILENO) == -1)
-        throw SysError("cannot pipe standard error into log file");
-
-    /* Dup stderr to stdout. */
-    if (dup2(STDERR_FILENO, STDOUT_FILENO) == -1)
-        throw SysError("cannot dup stderr into stdout");
-
-    /* Reroute stdin to /dev/null. */
-    int fdDevNull = open(pathNullDevice.c_str(), O_RDWR);
-    if (fdDevNull == -1)
-        throw SysError(format("cannot open `%1%'") % pathNullDevice);
-    if (dup2(fdDevNull, STDIN_FILENO) == -1)
-        throw SysError("cannot dup null device into stdin");
-    close(fdDevNull);
-}
-
 /* Restore default handling of SIGPIPE, otherwise some programs will
    randomly say "Broken pipe". */
 static void restoreSIGPIPE()
@@ -585,91 +555,6 @@ void UserLock::kill()
     assert(enabled());
     killUser(uid);
 }
-
-
-//////////////////////////////////////////////////////////////////////
-
-
-/* An "agent" is a helper program that runs in the background and that we talk
-   to over pipes, such as the "guix offload" program.  */
-struct Agent
-{
-    /* Pipes for talking to the agent. */
-    Pipe toAgent;
-
-    /* Pipe for the agent's standard output/error. */
-    Pipe fromAgent;
-
-    /* Pipe for build standard output/error--e.g., for build processes started
-       by "guix offload".  */
-    Pipe builderOut;
-
-    /* The process ID of the agent. */
-    Pid pid;
-
-    /* The 'guix' sub-command and arguments passed to the agent.  */
-    Agent(const string &command, const Strings &args);
-
-    ~Agent();
-};
-
-
-Agent::Agent(const string &command, const Strings &args)
-{
-    debug(format("starting agent '%1%'") % command);
-
-    const Path &buildHook = settings.guixProgram;
-
-    /* Create a pipe to get the output of the child. */
-    fromAgent.create();
-
-    /* Create the communication pipes. */
-    toAgent.create();
-
-    /* Create a pipe to get the output of the builder. */
-    builderOut.create();
-
-    /* Fork the hook. */
-    pid = startProcess([&]() {
-
-        commonChildInit(fromAgent);
-
-        if (chdir("/") == -1) throw SysError("changing into `/");
-
-        /* Dup the communication pipes. */
-        if (dup2(toAgent.readSide, STDIN_FILENO) == -1)
-            throw SysError("dupping to-hook read side");
-
-        /* Use fd 4 for the builder's stdout/stderr. */
-        if (dup2(builderOut.writeSide, 4) == -1)
-            throw SysError("dupping builder's stdout/stderr");
-
-	Strings allArgs;
-	allArgs.push_back(buildHook);
-	allArgs.push_back(command);
-	allArgs.insert(allArgs.end(), args.begin(), args.end()); // append
-
-        execv(buildHook.c_str(), stringsToCharPtrs(allArgs).data());
-
-        throw SysError(format("executing `%1% %2%'") % buildHook % command);
-    });
-
-    pid.setSeparatePG(true);
-    fromAgent.writeSide.close();
-    toAgent.readSide.close();
-}
-
-
-Agent::~Agent()
-{
-    try {
-        toAgent.writeSide.close();
-        pid.kill(true);
-    } catch (...) {
-        ignoreException();
-    }
-}
-
 
 //////////////////////////////////////////////////////////////////////
 
@@ -1593,13 +1478,14 @@ HookReply DerivationGoal::tryBuildHook()
 
     if (!worker.hook) {
 	Strings args = {
+	    "offload",
 	    settings.thisSystem.c_str(),
             (format("%1%") % settings.maxSilentTime).str().c_str(),
             (format("%1%") % settings.printBuildTrace).str().c_str(),
             (format("%1%") % settings.buildTimeout).str().c_str()
 	};
 
-        worker.hook = std::make_shared<Agent>("offload", args);
+        worker.hook = std::make_shared<Agent>(settings.guixProgram, args);
     }
 
     /* Tell the hook about system features (beyond the system type)
