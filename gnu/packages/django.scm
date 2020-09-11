@@ -750,36 +750,6 @@ used to attach comments to any model, so you can use it for comments on blog
 entries, photos, book chapters, or anything else.")
     (license license:bsd-3)))
 
-(define-public python-django-overextends
-  (package
-    (name "python-django-overextends")
-    (version "0.4.3")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "django-overextends" version))
-              (sha256
-               (base32
-                "0qc2pcf3i56pmfxh2jw7k3pgljd8xzficmkl2541n7bkcbngqfzm"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _ (invoke "./test_project/manage.py" "test"))))))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
-    (native-inputs
-     `(("sphinx-me" ,python-sphinx-me)))
-    (home-page "https://github.com/stephenmcd/django-overextends")
-    (synopsis "Circular template inheritance")
-    (description
-      "A Django reusable app providing the overextends template tag, a drop-in
-replacement for Django's extends tag, which allows you to use circular template
-inheritance.  The primary use-case for overextends is to simultaneously
-override and extend templates from other reusable apps, in your own Django
-project.")
-    (license license:bsd-2)))
-
 (define-public python-django-pipeline
   (package
     (name "python-django-pipeline")
