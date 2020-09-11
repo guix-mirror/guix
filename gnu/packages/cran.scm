@@ -23676,7 +23676,7 @@ value.")
     (synopsis "Adaptive sparsity models")
     (description
      "This package implements the Figueiredo machine learning algorithm for
-adaptive sparsity and the Wong algorithm for adaptively sparse gaussian
+adaptive sparsity and the Wong algorithm for adaptively sparse Gaussian
 geometric models.")
     (license license:lgpl3+)))
 
