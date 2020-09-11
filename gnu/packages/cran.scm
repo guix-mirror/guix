@@ -91,6 +91,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public r-rticles
@@ -23701,6 +23702,38 @@ parametrization, including creation and visualization of diffusion maps,
 clustering with diffusion K-means and regression using the adaptive regression
 model.")
     (license license:gpl2)))
+
+(define-public r-igraph
+  (package
+    (name "r-igraph")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "igraph" version))
+       (sha256
+        (base32
+         "126z1ygbmi3g7hk97snf22rnx680dyi30idssm5zacba5rdngp8c"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("glpk" ,glpk)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
+       ("r-pkgconfig" ,r-pkgconfig)))
+    (home-page "https://igraph.org")
+    (synopsis "Network analysis and visualization")
+    (description
+     "This package provides routines for simple graphs and network analysis.
+It can handle large graphs very well and provides functions for generating
+random and regular graphs, graph visualization, centrality methods and much
+more.")
+    (license license:gpl2+)))
 
 (define-public r-workflows
   (package
