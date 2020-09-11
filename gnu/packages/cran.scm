@@ -24025,14 +24025,14 @@ vignettes in all common formats.")
 (define-public r-tidytext
   (package
     (name "r-tidytext")
-    (version "0.2.4")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidytext" version))
        (sha256
         (base32
-         "0gck3f039qkpkwn92jlyfan76w0xydg17bh6nsg9qlba7c35kzs6"))))
+         "0kwbpffdnqrb6hgrrmrfnx890imbzvp5bs6sj1k72if28qijarm5"))))
     (properties `((upstream-name . "tidytext")))
     (build-system r-build-system)
     (propagated-inputs
@@ -24043,8 +24043,8 @@ vignettes in all common formats.")
        ("r-matrix" ,r-matrix)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
-       ("r-stopwords" ,r-stopwords)
        ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
        ("r-tokenizers" ,r-tokenizers)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
