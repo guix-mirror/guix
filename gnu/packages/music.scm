@@ -1328,6 +1328,47 @@ re-sequencer LV2 plugin.")
     (home-page "https://github.com/sjaehn/BJumblr")
     (license license:gpl3+)))
 
+(define-public bschaffl
+  (package
+    (inherit bsequencer)
+    (name "bschaffl")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sjaehn/BSchaffl")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c09acqrbd387ba41f8ch1qykdap5h6cg9if5pgd16i4dmjnpghj"))))
+    (inputs
+     `(("cairo", cairo)
+       ("fontconfig" ,fontconfig)
+       ("libsndfile", libsndfile)
+       ("libx11" ,libx11)
+       ("lv2", lv2)))
+    (home-page "https://github.com/sjaehn/BSchaffl")
+    (synopsis "Pattern-controlled MIDI amp & time stretch LV2 plugin")
+    (description "This package provides an LV2 plugin that allows for
+pattern-controlled MIDI amp & time stretching to produce shuffle / swing
+effects.
+
+Key features include:
+
+@enumerate
+@item MIDI velocity amplification and timing manipulation plugin
+@item Swing and shuffle rhythms
+@item Pre-generator dynamics
+@item Tempo rubato
+@item Pattern (sliders) or shape-controlled
+@item MIDI filters
+@item Smart quantization
+@end itemize
+")
+    (license license:gpl3+)))
+
 (define-public solfege
   (package
     (name "solfege")
