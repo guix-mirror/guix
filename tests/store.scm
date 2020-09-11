@@ -990,7 +990,7 @@
 
     ;; Ensure 'import-paths' raises an exception.
     (guard (c ((store-protocol-error? c)
-               (and (not (zero? (store-protocol-error-status (pk 'C c))))
+               (and (not (zero? (store-protocol-error-status c)))
                     (string-contains (store-protocol-error-message c)
                                      "lacks a signature"))))
       (let* ((source   (open-bytevector-input-port dump))
@@ -1030,9 +1030,9 @@
 
     ;; Ensure 'import-paths' raises an exception.
     (guard (c ((store-protocol-error? c)
-               ;; XXX: The daemon-provided error message currently doesn't
-               ;; mention the reason of the failure.
-               (not (zero? (store-protocol-error-status c)))))
+               (and (not (zero? (store-protocol-error-status c)))
+                    (string-contains (store-protocol-error-message c)
+                                     "unauthorized public key"))))
       (let* ((source   (open-bytevector-input-port dump))
              (imported (import-paths %store source)))
         (pk 'unauthorized-imported imported)
