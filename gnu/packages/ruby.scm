@@ -1115,7 +1115,7 @@ line of code.")
              #t))
          (add-after 'unpack 'patch-pandoc-path
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((pandoc (string-append (assoc-ref inputs "ghc-pandoc")
+             (let ((pandoc (string-append (assoc-ref inputs "pandoc")
                                           "/bin/pandoc")))
                (substitute* "lib/pandoc-ruby.rb"
                  (("@@pandoc_path = 'pandoc'")
@@ -1135,7 +1135,7 @@ line of code.")
     (native-inputs
      `(("ruby-mocha" ,ruby-mocha)))
     (inputs
-     `(("ghc-pandoc" ,ghc-pandoc)))
+     `(("pandoc" ,pandoc)))
     (synopsis "Ruby wrapper for Pandoc")
     (description "PandocRuby is a wrapper for Pandoc, a Haskell library with
 command line tools for converting one markup format to another.  Pandoc can
