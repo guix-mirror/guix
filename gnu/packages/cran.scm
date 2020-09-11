@@ -23522,14 +23522,14 @@ p-value approximations.")
 (define-public r-survminer
   (package
     (name "r-survminer")
-    (version "0.4.7")
+    (version "0.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survminer" version))
        (sha256
         (base32
-         "1pdj3gs4aii8gn8wf4smbwmjymbzwkjwr3kxf90dxyy6i66mqq3v"))))
+         "1niysd89mxb2a6ncvzm1s6xgfvq3psba65af0whh2p56r2hwrwff"))))
     (properties `((upstream-name . "survminer")))
     (build-system r-build-system)
     (propagated-inputs
