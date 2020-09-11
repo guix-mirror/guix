@@ -9425,32 +9425,6 @@ for analyzing gene-level association tests in meta-analyses for binary
 trait.")
     (license license:gpl3)))
 
-(define-public r-maldiquant
-  (package
-    (name "r-maldiquant")
-    (version "1.19.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "MALDIquant" version))
-       (sha256
-        (base32
-         "0b7kdz3x4sdq413h1q09l1qhcvdnnwv6fqsqwllks1cd3xy34c57"))))
-    (properties `((upstream-name . "MALDIquant")))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/MALDIquant")
-    (synopsis "Quantitative analysis of mass spectrometry data")
-    (description
-     "This package provides a complete analysis pipeline for matrix-assisted
-laser desorption/ionization-time-of-flight (MALDI-TOF) and other
-two-dimensional mass spectrometry data.  In addition to commonly used plotting
-and processing methods it includes distinctive features, namely baseline
-subtraction methods such as morphological filters (TopHat) or the
-statistics-sensitive non-linear iterative peak-clipping algorithm (SNIP), peak
-alignment using warping functions, handling of replicated measurements as well
-as allowing spectra with different resolutions.")
-    (license license:gpl3+)))
-
 (define-public r-protgenerics
   (package
     (name "r-protgenerics")
