@@ -1763,6 +1763,7 @@ expressed genes in DNA microarray experiments.")
 fitting of some classes of graphical Markov models.")
     (license license:gpl2+)))
 
+;; This is a CRAN package, but it depends on a Bioconductor package.
 (define-public r-codedepends
   (package
     (name "r-codedepends")
