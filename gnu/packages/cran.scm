@@ -24496,3 +24496,31 @@ dimensionality reduction; PCA, ICA, t-SNE, standard unsupervised clustering
 algorithms; density clustering, hierarchical clustering, k-means, and the
 discovery of differentially expressed genes and markers.")
     (license license:gpl3)))
+
+(define-public r-phangorn
+  (package
+    (name "r-phangorn")
+    (version "2.5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "phangorn" version))
+       (sha256
+        (base32
+         "0ihkaykqjmf80d8wrk3saphxvnv58zma6pd13633bd3cwanc33f5"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-fastmatch" ,r-fastmatch)
+       ("r-igraph" ,r-igraph)
+       ("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
+       ("r-quadprog" ,r-quadprog)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/KlausVigo/phangorn")
+    (synopsis "Phylogenetic analysis in R")
+    (description
+     "Phangorn is a package for phylogenetic analysis in R.  It supports
+estimation of phylogenetic trees and networks using Maximum Likelihood,
+Maximum Parsimony, distance methods and Hadamard conjugation.")
+    (license license:gpl2+)))
