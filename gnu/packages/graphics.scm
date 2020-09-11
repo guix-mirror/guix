@@ -1208,7 +1208,7 @@ realistic reflections, shading, perspective and other effects.")
        ("python" ,python-2)
        ("cython" ,python2-cython)))
     (native-inputs
-     `(("pandoc" ,ghc-pandoc)
+     `(("pandoc" ,pandoc)
        ("bison" ,bison)
        ("flex" ,flex)
        ("doxygen" ,doxygen)
