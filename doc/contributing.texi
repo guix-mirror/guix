@@ -369,6 +369,7 @@ needed is to review and apply the patch.
 * Package Naming::              What's in a name?
 * Version Numbers::             When the name is not enough.
 * Synopses and Descriptions::   Helping users find the right package.
+* Snippets versus Phases::      Whether to use a snippet, or a build phase.
 * Python Modules::              A touch of British comedy.
 * Perl Modules::                Little pearls.
 * Java Packages::               Coffee break.
@@ -599,6 +600,20 @@ Gettext}):
 for the X11 resize-and-rotate (RandR) extension. @dots{}")
 @end example
 
+@node Snippets versus Phases
+@subsection Snippets versus Phases
+
+@cindex snippets, when to use
+The boundary between using an origin snippet versus a build phase to
+modify the sources of a package can be elusive.  Origin snippets are
+typically used to remove unwanted files such as bundled libraries,
+nonfree sources, or to apply simple substitutions.  The source derived
+from an origin should produce a source that can be used to build the
+package on any system that the upstream package supports (i.e., act as
+the corresponding source).  In particular, origin snippets must not
+embed store items in the sources; such patching should rather be done
+using build phases.  Refer to the @code{origin} record documentation for
+more information (@pxref{origin Reference}).
 
 @node Python Modules
 @subsection Python Modules
