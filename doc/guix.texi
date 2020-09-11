@@ -22478,9 +22478,10 @@ A list of @code{certificates-configuration}s for which to generate
 certificates and request signatures.  Each certificate has a @code{name}
 and several @code{domains}.
 
-@item @code{email}
-Mandatory email used for registration, recovery contact, and important
-account notifications.
+@item @code{email} (default: @code{#f})
+Optional email address used for registration and recovery contact.
+Setting this is encouraged as it allows you to receive important
+notifications about the account and issued certificates.
 
 @item @code{server} (default: @code{#f})
 Optional URL of ACME server.  Setting this overrides certbot's default,

@@ -71,7 +71,8 @@
                        (default "/var/www"))
   (certificates        certbot-configuration-certificates
                        (default '()))
-  (email               certbot-configuration-email)
+  (email               certbot-configuration-email
+                       (default #f))
   (server              certbot-configuration-server
                        (default #f))
   (rsa-key-size        certbot-configuration-rsa-key-size
@@ -99,12 +100,14 @@
                    (if challenge
                      (append
                       (list name certbot "certonly" "-n" "--agree-tos"
-                            "-m" email
                             "--manual"
                             (string-append "--preferred-challenges=" challenge)
                             "--cert-name" name
                             "--manual-public-ip-logging-ok"
                             "-d" (string-join domains ","))
+                      (if email
+                          `("--email" ,email)
+                          '("--register-unsafely-without-email"))
                       (if server `("--server" ,server) '())
                       (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())
                       (if authentication-hook
@@ -114,10 +117,12 @@
                       (if deploy-hook `("--deploy-hook" ,deploy-hook) '()))
                      (append
                       (list name certbot "certonly" "-n" "--agree-tos"
-                            "-m" email
                             "--webroot" "-w" webroot
                             "--cert-name" name
                             "-d" (string-join domains ","))
+                      (if email
+                          `("--email" ,email)
+                          '("--register-unsafely-without-email"))
                       (if server `("--server" ,server) '())
                       (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())
                       (if deploy-hook `("--deploy-hook" ,deploy-hook) '()))))))
