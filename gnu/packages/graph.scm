@@ -153,31 +153,6 @@ random and regular graphs, graph visualization, centrality methods and much
 more.")
     (license license:gpl2+)))
 
-(define-public r-diffusionmap
-  (package
-    (name "r-diffusionmap")
-    (version "1.2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "diffusionMap" version))
-       (sha256
-        (base32
-         "1rvk7069brlm1s9kqj4c31mwwr3mw4hmhay95cjjjfmw5xclff2j"))))
-    (properties `((upstream-name . "diffusionMap")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-igraph" ,r-igraph)
-       ("r-matrix" ,r-matrix)
-       ("r-scatterplot3d" ,r-scatterplot3d)))
-    (home-page "https://www.r-project.org")
-    (synopsis "Diffusion map")
-    (description "This package implements the diffusion map method of data
-parametrization, including creation and visualization of diffusion maps,
-clustering with diffusion K-means and regression using the adaptive regression
-model.")
-    (license license:gpl2)))
-
 (define-public r-rgraphviz
   (package
     (name "r-rgraphviz")
