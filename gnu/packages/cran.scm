@@ -23312,3 +23312,39 @@ to speed up repeated queries of the same set of target points.")
 censored data.")
     ;; Any version of the GPL.
     (license license:gpl3+)))
+
+(define-public r-flexsurv
+  (package
+    (name "r-flexsurv")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flexsurv" version))
+       (sha256
+        (base32
+         "0x7p1rv51pplfyyzcg63ssb8z56mig7y0363hkr0219w3cvyq9nr"))))
+    (properties `((upstream-name . "flexsurv")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-desolve" ,r-desolve)
+       ("r-mstate" ,r-mstate)
+       ("r-muhaz" ,r-muhaz)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-quadprog" ,r-quadprog)
+       ("r-rcpp" ,r-rcpp)
+       ("r-survival" ,r-survival)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/chjackson/flexsurv-dev")
+    (synopsis "Flexible parametric survival and multi-state models")
+    (description
+     "This package provides flexible parametric models for time-to-event data,
+including the Royston-Parmar spline model, generalized gamma and generalized F
+distributions.  Any user-defined parametric distribution can be fitted, given
+at least an R function defining the probability density or hazard.  There are
+also tools for fitting and predicting from fully parametric multi-state
+models.")
+    (license license:gpl2+)))
