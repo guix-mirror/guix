@@ -24340,8 +24340,7 @@ covariate (usually group indicator) and the scores.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/qtl_"
-                           version ".tar.gz"))
+       (uri (cran-uri "qtl" version))
        (sha256
         (base32
          "0rbwcnvyy96gq1dsgpxx03pv423qya26h6ws5y0blj3blfdmj83a"))))
