@@ -23710,21 +23710,20 @@ workflow.  The advantages are:
 (define-public r-yardstick
   (package
     (name "r-yardstick")
-    (version "0.0.6")
+    (version "0.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "yardstick" version))
        (sha256
         (base32
-         "1qkvbvc0cnwl5mkk47swnd8by84zz0qpy1996fziapn35qxvx9qa"))))
+         "1yrvlhn4gxyn9f20z5yv3xam0j0a8z362jwa32r33r0g0jk5z2fq"))))
     (properties `((upstream-name . "yardstick")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-generics" ,r-generics)
        ("r-proc" ,r-proc)
-       ("r-rcpp" ,r-rcpp)
        ("r-rlang" ,r-rlang)
        ("r-tidyselect" ,r-tidyselect)))
     (native-inputs
