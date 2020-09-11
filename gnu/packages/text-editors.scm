@@ -670,7 +670,7 @@ environment with Markdown markup.")
                    #:categories "Office;WordProcessor;"))
                #t))))))
     (inputs
-     `(("ghc-pandoc" ,ghc-pandoc)
+     `(("pandoc" ,pandoc)
        ("python-lxml" ,python-lxml)
        ("python-markdown" ,python-markdown)
        ("python-pyqt" ,python-pyqt)
