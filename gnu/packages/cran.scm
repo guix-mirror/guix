@@ -24143,14 +24143,14 @@ model-related packages.")
 (define-public r-tidymodels
   (package
     (name "r-tidymodels")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidymodels" version))
        (sha256
         (base32
-         "1bi5vh80f6f2ibhyaapgnl7q1mkkx8425vj6ci0ml5rb7l8jhjm8"))))
+         "0w2xnr642klmqlflkw6rkvqcrgs01i8f34nk9wdax3fsl1yx2wi4"))))
     (properties `((upstream-name . "tidymodels")))
     (build-system r-build-system)
     (propagated-inputs
@@ -24162,22 +24162,23 @@ model-related packages.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-infer" ,r-infer)
        ("r-magrittr" ,r-magrittr)
+       ("r-modeldata" ,r-modeldata)
        ("r-parsnip" ,r-parsnip)
-       ("r-pillar" ,r-pillar)
        ("r-purrr" ,r-purrr)
        ("r-recipes" ,r-recipes)
        ("r-rlang" ,r-rlang)
        ("r-rsample" ,r-rsample)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-tibble" ,r-tibble)
-       ("r-tidyposterior" ,r-tidyposterior)
-       ("r-tidypredict" ,r-tidypredict)
-       ("r-tidytext" ,r-tidytext)
+       ("r-tidyr" ,r-tidyr)
        ("r-tune" ,r-tune)
        ("r-workflows" ,r-workflows)
        ("r-yardstick" ,r-yardstick)))
     (native-inputs
-     `(("r-knitr" ,r-knitr)))
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("pandoc" ,pandoc)
+       ("pandoc-citeproc" ,pandoc-citeproc))) ; for vignettes
     (home-page "https://github.com/tidymodels/tidymodels")
     (synopsis "Tidy collection for modeling and statistical analysis")
     (description
