@@ -13084,37 +13084,6 @@ analyses in addition to large-scale sequence-level searches.")
       (supported-systems '("x86_64-linux"))
       (license license:bsd-3))))
 
-(define-public r-diversitree
-  (package
-    (name "r-diversitree")
-    (version "0.9-13")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (cran-uri "diversitree" version))
-        (sha256
-         (base32
-          "00vi4klywi35hd170ksjv3xja3hqqbkcidcnrrlpgv4179k0azix"))))
-    (build-system r-build-system)
-    (native-inputs
-     `(("gfortran" ,gfortran)))
-    (inputs `(("fftw" ,fftw) ("gsl" ,gsl)))
-    (propagated-inputs
-     `(("r-ape" ,r-ape)
-       ("r-desolve" ,r-desolve)
-       ("r-rcpp" ,r-rcpp)
-       ("r-subplex" ,r-subplex)))
-    (home-page "https://www.zoology.ubc.ca/prog/diversitree")
-    (synopsis "Comparative 'phylogenetic' analyses of diversification")
-    (description "This package contains a number of comparative \"phylogenetic\"
-methods, mostly focusing on analysing diversification and character evolution.
-Contains implementations of \"BiSSE\" (Binary State Speciation and Extinction)
-and its unresolved tree extensions, \"MuSSE\" (Multiple State Speciation and
-Extinction), \"QuaSSE\", \"GeoSSE\", and \"BiSSE-ness\" Other included methods
-include Markov models of discrete and continuous trait evolution and constant
-rate speciation and extinction.")
-    (license license:gpl2+)))
-
 (define-public sjcount
   ;; There is no tag for version 3.2, nor is there a release archive.
   (let ((commit "292d3917cadb3f6834c81e509c30e61cd7ead6e5")
