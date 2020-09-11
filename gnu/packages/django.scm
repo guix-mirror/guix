@@ -592,33 +592,9 @@ provides certain advantages over the builtin Jinja2 backend in Django, for
 example, explicit calls to callables from templates and better performance.")
     (license license:bsd-3)))
 
+;; JSONField is now built-in to Django, obsoleting this package.
 (define-public python-django-jsonfield
-  (package
-    (name "python-django-jsonfield")
-    (version "1.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "jsonfield" version))
-              (sha256
-               (base32
-                "19x4lak0hg9c20r7mvf27w7i8r6i4sg2g0ypmlmp2665fnk76zvy"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'fix-tests
-           (lambda _
-             (substitute* "jsonfield/tests.py"
-               (("django.forms.util") "django.forms.utils")))))))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
-    (home-page "https://github.com/bradjasper/django-jsonfield")
-    (synopsis "Store validated JSON in your model")
-    (description
-      "Django-jsonfield is a reusable Django field that allows you to store
-validated JSON in your model.  It silently takes care of serialization.  To
-use, simply add the field to one of your models.")
-    (license license:expat)))
+  (deprecated-package "python-django-jsonfield" python-django))
 
 (define-public python-dj-database-url
   (package
