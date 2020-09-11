@@ -1231,7 +1231,7 @@ device supports.")
 (define-public bsequencer
   (package
     (name "bsequencer")
-    (version "1.2.0")
+    (version "1.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1240,7 +1240,7 @@ device supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08xwz5v8wrar0rx7qdr9pkpjz2k9sw6bn5glhpn6sp6453fabf8q"))))
+                "0w21kzq695xy4i1r6xvvh7sad5m0rlmdgc7ykmrlzfsm1252dz80"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
