@@ -211,6 +211,21 @@ files}, are written in a custom domain-specific language (@dfn{DSL}) that
 resembles Python.")
     (license license:asl2.0)))
 
+;; Added temporarily for packages that need it.
+;; TODO: Remove when core-updates is merged.
+(define-public meson-0.55
+  (package
+    (inherit meson)
+    (version "0.55.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mesonbuild/meson/"
+                                  "releases/download/" version  "/meson-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1070kjiirxxdfppmrhi3wsc6rykay1zlciqrzayjhjg0hkw42mrv"))))))
+
 (define-public meson-for-build
   (package
     (inherit meson)
