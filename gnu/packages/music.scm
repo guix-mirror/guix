@@ -73,11 +73,13 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages code)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -5457,8 +5459,13 @@ and as an LV2 plugin.")
 
 (define-public zrythm
   (package
+    ;; Zrythm contains trademarks and comes with a trademark policy found in
+    ;; TRADMARKS.md inside the release distribution.  The trademark policy
+    ;; allows verbatim re-distribution, and it also allows FSF-approved
+    ;; distros to make necessary changes to integrate the software into the
+    ;; distribution.
     (name "zrythm")
-    (version "0.8.333")
+    (version "0.8.911")
     (source
       (origin
         (method url-fetch)
@@ -5466,13 +5473,19 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "0x2kxr5zz058jpy6k6ymj0fi2gqfcgrlv4qkwz9443hjy5345iwb"))))
+            "1xyp70sjc2k5pfdqbwqa988v86da0rmmyl8ry86bqv4ja80sc6g9"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
+      #:meson ,meson-0.55
       #:configure-flags
-      `("-Denable_tests=true" "-Dmanpage=true"
-        "-Dinstall_dseg_font=false" "-Denable_ffmpeg=true")
+      `("-Dtests=true"
+        "-Dmanpage=true"
+        "-Ddseg_font=false"
+        "-Dgraphviz=enabled" ; for exporting routing graphs
+        "-Dguile=enabled" ; for Guile scripting
+        "-Djack=enabled" ; for JACK audio/MIDI backend
+        "-Dsdl=enabled") ; for SDL audio backend (which uses ALSA)
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'patch-xdg-open
@@ -5485,7 +5498,6 @@ and as an LV2 plugin.")
     `(("alsa-lib" ,alsa-lib)
       ("jack" ,jack-1)
       ("font-dseg" ,font-dseg)
-      ("ffmpeg" ,ffmpeg)
       ("fftw" ,fftw)
       ("fftwf" ,fftwf)
       ("gettext" ,gettext-minimal)
@@ -5494,19 +5506,23 @@ and as an LV2 plugin.")
       ("gtk+" ,gtk+)
       ("gtksourceview" ,gtksourceview)
       ("guile" ,guile-2.2)
+      ("libaudec" ,libaudec)
       ("libcyaml" ,libcyaml)
       ("libsamplerate" ,libsamplerate)
       ("libsndfile" ,libsndfile)
       ("libyaml" ,libyaml)
       ("lilv" ,lilv)
+      ("lv2" ,lv2)
+      ("reproc" ,reproc)
+      ("rubberband" ,rubberband)
+      ("rtmidi" ,rtmidi)
+      ("sdl2" ,sdl2)
       ("xdg-utils" ,xdg-utils)
-      ("rubberband" ,rubberband)))
+      ("zstd" ,zstd "lib")))
    (native-inputs
      `(("pkg-config" ,pkg-config)
        ("help2man" ,help2man)
-       ("libaudec" ,libaudec)
-       ("lv2" ,lv2)
-       ("glib" ,glib "bin"))) ;for 'glib-compile-resources'
+       ("glib" ,glib "bin"))) ; for 'glib-compile-resources'
    (synopsis "Digital audio workstation focusing on usability")
    (description "Zrythm is a digital audio workstation designed to be
 featureful and easy to use.  It offers unlimited automation options, LV2
