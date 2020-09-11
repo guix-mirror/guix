@@ -25,10 +25,12 @@
   #:use-module (guix diagnostics)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (srfi srfi-71)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:export (guix-authenticate))
 
 ;;; Commentary:
@@ -43,32 +45,40 @@
   ;; Read a gcrypt sexp from a port and return it.
   (compose string->canonical-sexp read-string))
 
-(define (sign-with-key key-file sha256)
-  "Sign the hash SHA256 (a bytevector) with KEY-FILE, and return the signature
-as a canonical sexp that includes both the hash and the actual signature."
-  (let* ((secret-key (call-with-input-file key-file read-canonical-sexp))
-         (public-key (if (string-suffix? ".sec" key-file)
-                         (call-with-input-file
+(define (load-key-pair key-file)
+  "Load the key pair whose secret key lives at KEY-FILE.  Return a pair of
+canonical sexps representing those keys."
+  (catch 'system-error
+    (lambda ()
+      (let* ((secret-key (call-with-input-file key-file read-canonical-sexp))
+             (public-key (call-with-input-file
                              (string-append (string-drop-right key-file 4)
                                             ".pub")
-                           read-canonical-sexp)
-                         (raise
-                          (formatted-message
-                           (G_ "cannot find public key for secret key '~a'~%")
-                           key-file))))
-         (data       (bytevector->hash-data sha256
-                                            #:key-type (key-type public-key)))
-         (signature  (signature-sexp data secret-key public-key)))
-    signature))
+                           read-canonical-sexp)))
+        (cons public-key secret-key)))
+    (lambda args
+      (let ((errno (system-error-errno args)))
+        (raise
+         (formatted-message
+          (G_ "failed to load key pair at '~a': ~a~%")
+          key-file (strerror errno)))))))
 
-(define (validate-signature signature)
+(define (sign-with-key public-key secret-key sha256)
+  "Sign the hash SHA256 (a bytevector) with SECRET-KEY (a canonical sexp), and
+return the signature as a canonical sexp that includes SHA256, PUBLIC-KEY, and
+the actual signature."
+  (let ((data (bytevector->hash-data sha256
+                                     #:key-type (key-type public-key))))
+    (signature-sexp data secret-key public-key)))
+
+(define (validate-signature signature acl)
   "Validate SIGNATURE, a canonical sexp.  Check whether its public key is
-authorized, verify the signature, and return the signed data (a bytevector)
-upon success."
+authorized in ACL, verify the signature, and return the signed data (a
+bytevector) upon success."
   (let* ((subject (signature-subject signature))
          (data    (signature-signed-data signature)))
     (if (and data subject)
-        (if (authorized-key? subject)
+        (if (authorized-key? subject acl)
             (if (valid-signature? signature)
                 (hash-data->bytevector data)      ; success
                 (raise
@@ -145,6 +155,19 @@ by colon, followed by the given number of characters."
       (put-bytevector (current-output-port) bv)
       (force-output (current-output-port))))
 
+  (define (call-with-reply thunk)
+    ;; Send a reply for the result of THUNK or for any exception raised during
+    ;; its execution.
+    (guard (c ((formatted-message? c)
+               (send-reply (reply-code command-failed)
+                           (apply format #f
+                                  (G_ (formatted-message-string c))
+                                  (formatted-message-arguments c)))))
+      (send-reply (reply-code success) (thunk))))
+
+  (define-syntax-rule (with-reply exp ...)
+    (call-with-reply (lambda () exp ...)))
+
   ;; Signature sexps written to stdout may contain binary data, so force
   ;; ISO-8859-1 encoding so that things are not mangled.  See
   ;; <http://bugs.gnu.org/17312> for details.
@@ -162,31 +185,38 @@ Sign data or verify signatures.  This tool is meant to be used internally by
       (("--version")
        (show-version-and-exit "guix authenticate"))
       (()
-       (let loop ()
-         (guard (c ((formatted-message? c)
-                    (send-reply (reply-code command-failed)
-                                (apply format #f
-                                       (G_ (formatted-message-string c))
-                                       (formatted-message-arguments c)))))
+       (let ((acl (current-acl)))
+         (let loop ((key-pairs vlist-null))
            ;; Read a request on standard input and reply.
            (match (read-command (current-input-port))
              (("sign" signing-key (= base16-string->bytevector hash))
-              (let ((signature (sign-with-key signing-key hash)))
-                (send-reply (reply-code success)
-                            (canonical-sexp->string signature))))
+              (let* ((key-pairs keys
+                                (match (vhash-assoc signing-key key-pairs)
+                                  ((_ . keys)
+                                   (values key-pairs keys))
+                                  (#f
+                                   (let ((keys (load-key-pair signing-key)))
+                                     (values (vhash-cons signing-key keys
+                                                         key-pairs)
+                                             keys))))))
+                (with-reply (canonical-sexp->string
+                             (match keys
+                               ((public . secret)
+                                (sign-with-key public secret hash)))))
+                (loop key-pairs)))
              (("verify" signature)
-              (send-reply (reply-code success)
-                          (bytevector->base16-string
+              (with-reply (bytevector->base16-string
                            (validate-signature
-                            (string->canonical-sexp signature)))))
+                            (string->canonical-sexp signature)
+                            acl)))
+              (loop key-pairs))
              (()
               (exit 0))
              (commands
               (warning (G_ "~s: invalid command; ignoring~%") commands)
               (send-reply (reply-code command-not-found)
-                          "invalid command"))))
-
-         (loop)))
+                          "invalid command")
+              (loop key-pairs))))))
       (_
        (leave (G_ "wrong arguments~%"))))))
 
