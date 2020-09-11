@@ -8510,31 +8510,6 @@ Stephens (1990).")
 throughput genetic sequencing data sets using regression methods.")
     (license license:artistic2.0)))
 
-(define-public r-qtl
- (package
-  (name "r-qtl")
-  (version "1.46-2")
-  (source
-   (origin
-    (method url-fetch)
-    (uri (string-append "mirror://cran/src/contrib/qtl_"
-                        version ".tar.gz"))
-    (sha256
-     (base32
-      "0rbwcnvyy96gq1dsgpxx03pv423qya26h6ws5y0blj3blfdmj83a"))))
-  (build-system r-build-system)
-  (home-page "https://rqtl.org/")
-  (synopsis "R package for analyzing QTL experiments in genetics")
-  (description "R/qtl is an extension library for the R statistics
-system.  It is used to analyze experimental crosses for identifying
-genes contributing to variation in quantitative traits (so-called
-quantitative trait loci, QTLs).
-
-Using a hidden Markov model, R/qtl estimates genetic maps, to
-identify genotyping errors, and to perform single-QTL and two-QTL,
-two-dimensional genome scans.")
-  (license license:gpl3)))
-
 (define-public r-qtl2
   (package
     (name "r-qtl2")

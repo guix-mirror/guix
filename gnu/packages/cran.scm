@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -24330,3 +24331,28 @@ are tests where the test statistic is the sum of the product of a
 covariate (usually group indicator) and the scores.")
     ;; Any version of the GPL
     (license license:gpl2+)))
+
+(define-public r-qtl
+ (package
+  (name "r-qtl")
+  (version "1.46-2")
+  (source
+   (origin
+    (method url-fetch)
+    (uri (string-append "mirror://cran/src/contrib/qtl_"
+                        version ".tar.gz"))
+    (sha256
+     (base32
+      "0rbwcnvyy96gq1dsgpxx03pv423qya26h6ws5y0blj3blfdmj83a"))))
+  (build-system r-build-system)
+  (home-page "https://rqtl.org/")
+  (synopsis "R package for analyzing QTL experiments in genetics")
+  (description "R/qtl is an extension library for the R statistics
+system.  It is used to analyze experimental crosses for identifying
+genes contributing to variation in quantitative traits (so-called
+quantitative trait loci, QTLs).
+
+Using a hidden Markov model, R/qtl estimates genetic maps, to
+identify genotyping errors, and to perform single-QTL and two-QTL,
+two-dimensional genome scans.")
+  (license license:gpl3)))
