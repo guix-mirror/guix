@@ -8177,3 +8177,30 @@ hypothesis @code{K=1}.")
 @dfn{nonparametric maximum likelihood estimator} (NPMLE) for censored and
 truncated data.")
     (license license:artistic2.0)))
+
+;; This is a CRAN package but it depends on r-icens, which is published on
+;; Bioconductor.
+(define-public r-interval
+  (package
+    (name "r-interval")
+    (version "1.1-0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "interval" version))
+       (sha256
+        (base32
+         "1lln9jkli28i4wivwzqrsxvv2n15560f7msjy5gssrm45vxrxms8"))))
+    (properties `((upstream-name . "interval")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-icens" ,r-icens)
+       ("r-mlecens" ,r-mlecens)
+       ("r-perm" ,r-perm)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/interval/")
+    (synopsis "Weighted Logrank tests and NPMLE for interval censored data")
+    (description
+     "This package provides functions to fit nonparametric survival curves,
+plot them, and perform logrank or Wilcoxon type tests.")
+    (license license:gpl2+)))
