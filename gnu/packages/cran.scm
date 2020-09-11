@@ -23664,7 +23664,8 @@ value.")
            (lambda _
              (substitute* "src/Makevars"
                (("PKG_LIBS=" prefix)
-                (string-append prefix "-larmadillo"))))))))
+                (string-append prefix "-larmadillo")))
+             #t)))))
     (propagated-inputs
      `(("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
