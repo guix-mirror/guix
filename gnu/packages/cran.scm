@@ -23823,14 +23823,14 @@ for creating, simulating, or validating values for such parameters.")
 (define-public r-tune
   (package
     (name "r-tune")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tune" version))
        (sha256
         (base32
-         "0xiidzkl0hbd0f7jh1v2kkg26wdgy33w74c9bmpjgy317ckhsz8h"))))
+         "0293xkmv1nyvm72wxznnlm3qpf6475xzl2sf52mnrjxxr7i447p1"))))
     (properties `((upstream-name . "tune")))
     (build-system r-build-system)
     (propagated-inputs
@@ -23851,6 +23851,7 @@ for creating, simulating, or validating values for such parameters.")
        ("r-rsample" ,r-rsample)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
+       ("r-vctrs" ,r-vctrs)
        ("r-workflows" ,r-workflows)
        ("r-yardstick" ,r-yardstick)))
     (home-page "https://github.com/tidymodels/tune")
