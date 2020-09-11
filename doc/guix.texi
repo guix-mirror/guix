@@ -18625,8 +18625,7 @@ Defaults to @samp{"/var/run/dovecot/auth-userdb"}.
 
 @deftypevr {@code{dovecot-configuration} parameter} file-name mail-plugin-dir
 Directory where to look up mail plugins.
-Defaults to @samp{"/etc/dovecot/modules"}, a union of all enabled mail
-plugins.
+Defaults to @samp{"/usr/lib/dovecot"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} space-separated-string-list mail-plugins

@@ -988,10 +988,8 @@ directories are prefixed with the chroot directory, append \"/.\" to
 This is used by imap (for shared users) and lda.")
 
   (mail-plugin-dir
-   (file-name "/etc/dovecot/modules")
-   "Directory where to look up mail plugins.
-Defaults to @samp{\"/etc/dovecot/modules\"}, a union of all enabled mail
-plugins.")
+   (file-name "/usr/lib/dovecot")
+   "Directory where to look up mail plugins.")
 
   (mail-plugins
    (space-separated-string-list '())
@@ -1523,18 +1521,13 @@ greyed out, instead of only later giving \"not selectable\" popup error.
              (else
               (format (current-error-port)
                       "Failed to create public key at ~a.\n" public-key)))))
-        (let ((user (getpwnam "dovecot"))
-              ;; This is Dovecot's term for the base directory for
-              ;; dynamically loadable modules.  It supports only one.
-              (moduledir "/etc/dovecot/modules"))
+        (let ((user (getpwnam "dovecot")))
           (mkdir-p/perms "/var/run/dovecot" user #o755)
           (mkdir-p/perms "/var/lib/dovecot" user #o755)
           (mkdir-p/perms "/etc/dovecot" user #o755)
           (copy-file #$(plain-file "dovecot.conf" config-str)
                      "/etc/dovecot/dovecot.conf")
           (mkdir-p/perms "/etc/dovecot/private" user #o700)
-          (unless (file-exists? moduledir)
-            (symlink "/run/current-system/profile/lib/dovecot" moduledir))
           (create-self-signed-certificate-if-absent
            #:private-key "/etc/dovecot/private/default.pem"
            #:public-key "/etc/dovecot/default.pem"
