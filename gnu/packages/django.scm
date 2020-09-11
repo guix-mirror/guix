@@ -126,21 +126,7 @@ development and clean, pragmatic design.  It provides many tools for building
 any Web site.  Django focuses on automating as much as possible and adhering
 to the @dfn{don't repeat yourself} (DRY) principle.")
     (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-django))
-                  (cpe-name . "django")))))
-
-(define-public python2-django
-  (let ((base (package-with-python2 (strip-python2-variant python-django))))
-    (package
-      (inherit base)
-      (native-inputs
-       `(;; Test requirements for Python 2 taken from
-         ;; tests/requirements/py3.txt: enum34 and mock.
-         ("python2-enum34" ,python2-enum34)
-         ("python2-mock" ,python2-mock)
-         ;; When adding memcached mind: for Python 2 memcached <= 1.53 is
-         ;; required.
-         ,@(package-native-inputs base))))))
+    (properties `((cpe-name . "django")))))
 
 (define-public python-django-2.2
   (package
@@ -237,9 +223,6 @@ commands, additional database fields and admin extensions.")
 with no settings.py configuration necessary, but instead can be configured
 with arguments to the field constructor.")
     (license license:asl2.0)))
-
-(define-public python2-django-simple-math-captcha
-  (package-with-python2 python-django-simple-math-captcha))
 
 (define-public python-django-classy-tags
   (package
@@ -370,9 +353,6 @@ size and quality.")
 useful tools for testing Django applications and projects.")
     (license license:bsd-3)))
 
-(define-public python2-pytest-django
-  (package-with-python2 python-pytest-django))
-
 (define-public python-django-haystack
   (package
     (name "python-django-haystack")
@@ -452,9 +432,6 @@ filter down a queryset based on a model’s fields, displaying the form to let
 them do this.")
     (license license:bsd-3)))
 
-(define-public python2-django-filter
-  (package-with-python2 python-django-filter))
-
 (define-public python-django-allauth
   (package
     (name "python-django-allauth")
@@ -490,9 +467,6 @@ them do this.")
 registration, account management as well as 3rd party (social)
 account authentication.")
     (license license:expat)))
-
-(define-public python2-django-allauth
-  (package-with-python2 python-django-allauth))
 
 (define-public python-django-debug-toolbar
   (package
@@ -553,9 +527,6 @@ request and response as a toolbar on the rendered page.")
 templatetags and a full test suite.")
     (license license:expat)))
 
-(define-public python2-django-gravatar2
-  (package-with-python2 python-django-gravatar2))
-
 (define-public python-django-assets
   (package
     (name "python-django-assets")
@@ -579,9 +550,6 @@ templatetags and a full test suite.")
 files.  Integrates the webassets library with Django, adding support for
 merging, minifying and compiling CSS and Javascript files.")
     (license license:bsd-2)))
-
-(define-public python2-django-assets
-  (package-with-python2 python-django-assets))
 
 (define-public python-django-jinja
   (package
@@ -652,9 +620,6 @@ validated JSON in your model.  It silently takes care of serialization.  To
 use, simply add the field to one of your models.")
     (license license:expat)))
 
-(define-public python2-django-jsonfield
-  (package-with-python2 python-django-jsonfield))
-
 (define-public python-dj-database-url
   (package
     (name "python-dj-database-url")
@@ -676,9 +641,6 @@ The dj_database_url.config method returns a Django database connection
 dictionary, populated with all the data specified in your URL.  There is also a
 conn_max_age argument to easily enable Django’s connection pool.")
     (license license:bsd-2)))
-
-(define-public python2-dj-database-url
-  (package-with-python2 python-dj-database-url))
 
 (define-public python-django-picklefield
   (package
@@ -731,9 +693,6 @@ conn_max_age argument to easily enable Django’s connection pool.")
 project aims to bulk update given objects using one query over Django ORM.")
     (license license:expat)))
 
-(define-public python2-django-bulk-update
-  (package-with-python2 python-django-bulk-update))
-
 (define-public python-django-contact-form
   (package
     (name "python-django-contact-form")
@@ -766,9 +725,6 @@ project aims to bulk update given objects using one query over Django ORM.")
 for Django sites.")
     (license license:bsd-3)))
 
-(define-public python2-django-contact-form
-  (package-with-python2 python-django-contact-form))
-
 (define-public python-django-contrib-comments
   (package
     (name "python-django-contrib-comments")
@@ -790,9 +746,6 @@ separated to a separate project.  This is that project.  This framework can be
 used to attach comments to any model, so you can use it for comments on blog
 entries, photos, book chapters, or anything else.")
     (license license:bsd-3)))
-
-(define-public python2-django-contrib-comments
-  (package-with-python2 python-django-contrib-comments))
 
 (define-public python-django-overextends
   (package
@@ -823,9 +776,6 @@ inheritance.  The primary use-case for overextends is to simultaneously
 override and extend templates from other reusable apps, in your own Django
 project.")
     (license license:bsd-2)))
-
-(define-public python2-django-overextends
-  (package-with-python2 python-django-overextends))
 
 (define-public python-django-pipeline
   (package
@@ -905,9 +855,6 @@ support, and optional data-URI image and font embedding.")
       "Full featured redis cache backend for Django.")
     (license license:bsd-3)))
 
-(define-public python2-django-redis
-  (package-with-python2 python-django-redis))
-
 (define-public python-django-rq
   (package
     (name "python-django-rq")
@@ -943,9 +890,6 @@ support, and optional data-URI image and font embedding.")
 Django-RQ is a simple app that allows you to configure your queues in django's
 settings.py and easily use them in your project.")
     (license license:expat)))
-
-(define-public python2-django-rq
-  (package-with-python2 python-django-rq))
 
 (define-public python-django-q
   (package
@@ -1002,9 +946,6 @@ The provided SortedManyToManyField behaves like the original one but remembers
 the order of added relations.")
     (license license:bsd-3)))
 
-(define-public python2-django-sortedm2m
-  (package-with-python2 python-django-sortedm2m))
-
 (define-public python-django-appconf
   (package
     (name "python-django-appconf")
@@ -1035,9 +976,6 @@ In other words, they solve a related but different use case than
 django-appconf and can't easily be used as a replacement.  The similarity in
 name is purely coincidental.")
     (license license:bsd-3)))
-
-(define-public python2-django-appconf
-  (package-with-python2 python-django-appconf))
 
 (define-public python-django-statici18n
   (package
@@ -1075,9 +1013,6 @@ name is purely coincidental.")
 static files.")
     (license license:bsd-3)))
 
-(define-public python2-django-statici18n
-  (package-with-python2 python-django-statici18n))
-
 (define-public python-django-tagging
   (package
     (name "python-django-tagging")
@@ -1104,22 +1039,7 @@ static files.")
     (description "This package provides a generic tagging application for
 Django projects, which allows association of a number of tags with any
 @code{Model} instance and makes retrieval of tags simple.")
-    (properties `((python2-variant . ,(delay python2-django-tagging))))
     (license license:bsd-3)))
-
-(define-public python2-django-tagging
-  (let ((base (package-with-python2
-                (strip-python2-variant python-django-tagging))))
-    (package
-      (inherit base)
-      (version "0.4.6")
-      (source
-        (origin
-          (method url-fetch)
-          (uri (pypi-uri "django-tagging" version))
-          (sha256
-           (base32
-            "0s7b4v45j783yaxs7rni10k24san0ya77nqz4s7zdf3jhfpk42r1")))))))
 
 (define-public python-djangorestframework
   (package
