@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;; Copyright © 2020 Rafael Luque Leiva <rafael.luque@osoco.es>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2641,6 +2642,25 @@ Utility functions are provided, e.g. for plotting data as maps, spatial
 selection, as well as methods for retrieving coordinates, for subsetting,
 print, summary, etc.")
     (license license:gpl2+)))
+
+(define-public r-laplacesdemon
+  (package
+    (name "r-laplacesdemon")
+    (version "16.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "LaplacesDemon" version))
+       (sha256
+        (base32 "1nv1kx86cg8f2s8q15pzskc0lg94bb250p0fhybrx5sjqv1s2lj1"))))
+    (properties `((upstream-name . "LaplacesDemon")))
+    (build-system r-build-system)
+    (home-page "https://github.com/LaplacesDemonR/LaplacesDemon")
+    (synopsis "Complete environment for Bayesian inference")
+    (description
+     "This package provides a complete environment for Bayesian inference using
+a variety of different samplers.")
+    (license license:expat)))
 
 (define-public r-rmtstat
   (package
