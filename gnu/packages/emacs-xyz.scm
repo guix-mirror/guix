@@ -22009,7 +22009,7 @@ format.")
                 "0iibxplgdp34bpq1yll2gmqjd8d8lnqn4mqjvx6cdf0y438yr4jz"))))
     (build-system emacs-build-system)
     (inputs
-     `(("pandoc" ,ghc-pandoc)))
+     `(("pandoc" ,pandoc)))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-ht" ,emacs-ht)))
