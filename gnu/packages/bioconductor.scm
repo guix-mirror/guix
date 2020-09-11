@@ -8204,3 +8204,39 @@ truncated data.")
      "This package provides functions to fit nonparametric survival curves,
 plot them, and perform logrank or Wilcoxon type tests.")
     (license license:gpl2+)))
+
+;; This is a CRAN package, but it depends on r-interval, which depends on a
+;; Bioconductor package.
+(define-public r-fhtest
+  (package
+    (name "r-fhtest")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "FHtest" version))
+       (sha256
+        (base32
+         "1wsn0j9ydpp9nfswiqg21p09kgkvaq8fh0y0h8syqgizah7i8vs2"))))
+    (properties `((upstream-name . "FHtest")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-interval" ,r-interval)
+       ("r-kmsurv" ,r-kmsurv)
+       ("r-mass" ,r-mass)
+       ("r-perm" ,r-perm)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/FHtest/")
+    (synopsis "Tests for survival data based on the Fleming-Harrington class")
+    (description
+     "This package provides functions to compare two or more survival curves
+with:
+
+@itemize
+@item The Fleming-Harrington test for right-censored data based on
+  permutations and on counting processes.
+@item An extension of the Fleming-Harrington test for interval-censored data
+  based on a permutation distribution and on a score vector distribution.
+@end itemize
+")
+    (license license:gpl2+)))
