@@ -123,6 +123,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gsasl)
@@ -134,6 +135,7 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
@@ -187,6 +189,52 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public python-slixmpp
+  (package
+    (name "python-slixmpp")
+    (version "1.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://lab.louiz.org/poezio/slixmpp.git")
+         (commit
+          (string-append "slix-" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "15mqxcws14bjvh5jcfwl86zsvrymkdw3ya07vb44md7vfnsnclwx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "setup.py"
+               (("'CC', 'cc'")
+                "'CC', 'gcc'"))
+             #t)))))
+    (native-inputs
+     `(("cython" ,python-cython)
+       ("gnupg" ,gnupg)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("python-aiodns" ,python-aiodns)
+       ("python-aiohttp" ,python-aiohttp)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)))
+    (inputs
+     `(("libidn" ,libidn)
+       ("python" ,python))) ; We are building a Python extension.
+    (synopsis "XMPP library without threads")
+    (description "Slixmpp is a XMPP library for Python 3.7+.  It is a fork of
+SleekXMPP.  Its goal is to only rewrite the core of the library (the low level
+socket handling, the timers, the events dispatching) in order to remove all
+threads.")
+    (home-page "https://lab.louiz.org/poezio/slixmpp")
+    (license license:expat)))
 
 (define-public python-tenacity
   (package
