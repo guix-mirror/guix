@@ -18462,7 +18462,7 @@ can be queued at any time.")
        ("emacs-esxml" ,emacs-esxml)
        ("emacs-s" ,emacs-s)))
     (inputs
-     `(("pandoc" ,ghc-pandoc)))
+     `(("pandoc" ,pandoc)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
