@@ -4610,7 +4610,7 @@ in the package.")
 (define-public libaudec
   (package
     (name "libaudec")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
       (origin
         (method git-fetch)
@@ -4620,14 +4620,14 @@ in the package.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "04mpmfmqc43asw0m3zxhb6jj4qms7x4jw7mx4xb1d3lh16xllniz"))))
+            "04hw61db8wscj28qjyiaiafx8xl87njgmvqszxyhs4gmg8xgjip7"))))
    (build-system meson-build-system)
    (arguments
-    `(#:configure-flags `("-Denable_tests=true -Denable_ffmpeg=true")))
+     ;; Compile tests.
+    `(#:configure-flags `("-Dtests=true")))
    (inputs
     `(("libsamplerate" ,libsamplerate)
-      ("libsndfile" ,libsndfile)
-      ("ffmpeg" ,ffmpeg)))
+      ("libsndfile" ,libsndfile)))
    (native-inputs
      `(("pkg-config", pkg-config)))
    (synopsis "Library for reading and resampling audio files")
