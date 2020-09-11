@@ -3333,14 +3333,14 @@ authentication for Flask routes.")
 (define-public python-uritemplate
   (package
     (name "python-uritemplate")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "uritemplate" version))
        (sha256
         (base32
-         "0781gm9g34wa0asc19dx81ng0nqq07igzv3bbvdqmz13pv7469n0"))))
+         "1bkwmgr0ia9gcn4bszs2xlvml79f0bi2s4a87xg22ky9rq8avy2s"))))
     (build-system python-build-system)
     (home-page "https://uritemplate.readthedocs.org")
     (synopsis "Library to deal with URI Templates")
