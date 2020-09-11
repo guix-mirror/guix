@@ -45,6 +45,10 @@ EOF
 
 test "`guix repl "$tmpfile"`" = "coreutils"
 
+# Make sure that the file can also be loaded when passed as a relative file
+# name.
+(cd "$(dirname "$tmpfile")"; test "$(guix repl "$(basename "$tmpfile")")" = "coreutils")
+
 
 cat > "$module_dir/foo.scm"<<EOF
 (define-module (foo)
