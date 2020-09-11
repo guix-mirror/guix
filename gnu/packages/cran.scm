@@ -24120,6 +24120,26 @@ functions or computational engines (e.g. R, Spark, Stan, etc).")
 expressive statistical grammar that coheres with the Tidy design framework.")
     (license license:cc0)))
 
+(define-public r-modeldata
+  (package
+    (name "r-modeldata")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "modeldata" version))
+       (sha256
+        (base32
+         "13q6hhbwqbwnjvg8bz6iwwfx96p1saqq3r34cjrbnpgzmr1nn11l"))))
+    (properties `((upstream-name . "modeldata")))
+    (build-system r-build-system)
+    (home-page "https://modeldata.tidymodels.org")
+    (synopsis "Data sets useful for modeling packages")
+    (description
+     "This package provides data sets used for demonstrating or testing
+model-related packages.")
+    (license license:expat)))
+
 (define-public r-tidymodels
   (package
     (name "r-tidymodels")
