@@ -2107,14 +2107,14 @@ HTTP proxies.")
 (define-public enet
   (package
     (name "enet")
-    (version "1.3.15")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://enet.bespin.org/download/"
-                                  "enet-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1yxxf9bkx6dx3j8j70fj17c05likyfibb1419ls74hp58qrzdgas"))))
+    (version "1.3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://enet.bespin.org/download/"
+                           "enet-" version ".tar.gz"))
+       (sha256
+        (base32 "1lggc82rbzscci057dqqyhkbq4j6mr5k01hbrvn06jkzc2xpxdxv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
