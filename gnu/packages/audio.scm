@@ -108,6 +108,7 @@
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim) ;xxd
+  #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xiph)
@@ -1822,7 +1823,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.38.1")
+    (version "0.41.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1830,28 +1831,14 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0bw7xnrx062nwb1bfj9x660h7069ncmz77szcs8icpqxrvhs7z80"))))
+               "0qsfbyrrpb3bbdyq68k28mjql7kglxh8nqcw9jvja28x6x9ik5a0"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:python ,python-2
        #:configure-flags
        (list
         ;; Add the output lib directory to the RUNPATH.
-        (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-boost-includes
-           (lambda _
-             (substitute* "src/headers/gx_internal_plugins.h"
-               (("namespace gx_jack" m)
-                (string-append "#include <boost/noncopyable.hpp>\n" m)))
-             (substitute* '("src/headers/gx_system.h"
-                            "src/headers/gx_parameter.h"
-                            "src/headers/gx_json.h")
-               (("namespace gx_system" m)
-                (string-append "#include <boost/noncopyable.hpp>\n" m)))
-             #t)))))
+        (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("boost" ,boost)
@@ -1862,8 +1849,8 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        ("lilv" ,lilv)
        ("ladspa" ,ladspa)
        ("jack" ,jack-1)
-       ("gtkmm" ,gtkmm-2)
-       ("gtk+" ,gtk+-2)
+       ("gtkmm" ,gtkmm)
+       ("gtk+" ,gtk+)
        ("fftwf" ,fftwf)
        ("lrdf" ,lrdf)
        ("zita-resampler" ,zita-resampler)
@@ -1873,7 +1860,8 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        ("faust" ,faust)
        ("intltool" ,intltool)
        ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("sassc" ,sassc)))
     (native-search-paths
      (list (search-path-specification
             (variable "LV2_PATH")
