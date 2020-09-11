@@ -679,7 +679,7 @@ server and embedded PowerPC, and S390 guests.")
        ;; For the documentation.
        ("python-docutils" ,python-docutils)
        ("sphinx" ,python-sphinx)
-       ("pandoc" ,ghc-pandoc)
+       ("pandoc" ,pandoc)
        ("dot" ,graphviz)
 
        ;; Test dependencies.
