@@ -24431,3 +24431,68 @@ statistics-sensitive non-linear iterative peak-clipping algorithm (SNIP), peak
 alignment using warping functions, handling of replicated measurements as well
 as allowing spectra with different resolutions.")
     (license license:gpl3+)))
+
+(define-public r-seurat
+  (package
+    (name "r-seurat")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "Seurat" version))
+              (sha256
+               (base32
+                "1vj3dlsqakgnn4x1jz9fkl2cy0jzc5s65h1c20fnamr7lk45pnf2"))))
+    (properties `((upstream-name . "Seurat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-cluster" ,r-cluster)
+       ("r-cowplot" ,r-cowplot)
+       ("r-fitdistrplus" ,r-fitdistrplus)
+       ("r-future" ,r-future)
+       ("r-future-apply" ,r-future-apply)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-ggridges" ,r-ggridges)
+       ("r-httr" ,r-httr)
+       ("r-ica" ,r-ica)
+       ("r-igraph" ,r-igraph)
+       ("r-irlba" ,r-irlba)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-leiden" ,r-leiden)
+       ("r-lmtest" ,r-lmtest)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-miniui" ,r-miniui)
+       ("r-patchwork" ,r-patchwork)
+       ("r-pbapply" ,r-pbapply)
+       ("r-plotly" ,r-plotly)
+       ("r-png" ,r-png)
+       ("r-rann" ,r-rann)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppannoy" ,r-rcppannoy)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-rcppprogress" ,r-rcppprogress)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rlang" ,r-rlang)
+       ("r-rocr" ,r-rocr)
+       ("r-rsvd" ,r-rsvd)
+       ("r-rtsne" ,r-rtsne)
+       ("r-scales" ,r-scales)
+       ("r-sctransform" ,r-sctransform)
+       ("r-shiny" ,r-shiny)
+       ("r-spatstat" ,r-spatstat)
+       ("r-tibble" ,r-tibble)
+       ("r-uwot" ,r-uwot)))
+    (home-page "http://www.satijalab.org/seurat")
+    (synopsis "Seurat is an R toolkit for single cell genomics")
+    (description
+     "This package is an R package designed for QC, analysis, and
+exploration of single cell RNA-seq data.  It easily enables widely-used
+analytical techniques, including the identification of highly variable genes,
+dimensionality reduction; PCA, ICA, t-SNE, standard unsupervised clustering
+algorithms; density clustering, hierarchical clustering, k-means, and the
+discovery of differentially expressed genes and markers.")
+    (license license:gpl3)))
