@@ -23287,3 +23287,28 @@ designed as a drop-in replacement for the RANN function @code{nn2}.  In
 addition, objects which include the k-d tree search structure can be returned
 to speed up repeated queries of the same set of target points.")
     (license license:bsd-3)))
+
+(define-public r-muhaz
+  (package
+    (name "r-muhaz")
+    (version "1.2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "muhaz" version))
+       (sha256
+        (base32
+         "08qh43zx6h3yby44q2vxphfvmfdmqxpgyp0734yn341sy9n8pkkk"))))
+    (properties `((upstream-name . "muhaz")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-survival" ,r-survival)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/muhaz/")
+    (synopsis "Hazard function estimation in survival analysis")
+    (description
+     "This package produces a smooth estimate of the hazard function for
+censored data.")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
