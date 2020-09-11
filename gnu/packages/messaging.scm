@@ -80,6 +80,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
+  #:use-module (gnu packages mpd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pcre)
@@ -94,6 +95,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -119,6 +121,59 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public poezio
+  (package
+    (name "poezio")
+    (version "0.13.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://lab.louiz.org/poezio/poezio.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "041y61pcbdb86s04qwp8s1g6bp84yskc7vdizwpi2hz18y01x5fy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "setup.py"
+               (("'CC', 'cc'")
+                "'CC', 'gcc'"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)))
+    (inputs
+     `(("python-mpd2" ,python-mpd2)
+       ("python-potr" ,python-potr)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
+       ("python-pygments" ,python-pygments)
+       ("python-pyinotify" ,python-pyinotify)
+       ;("python" ,python)
+       ("python-qrcode" ,python-qrcode)
+       ("python-slixmpp" ,python-slixmpp)))
+    (synopsis "Console Jabber/XMPP Client")
+    (description "Poezio is a free console XMPP client (the protocol on which
+the Jabber IM network is built).
+Its goal is to let you connect very easily (no account creation needed) to the
+network and join various chatrooms, immediately.  It tries to look like the
+most famous IRC clients (weechat, irssi, etc).  Many commands are identical and
+you won't be lost if you already know these clients.  Configuration can be
+made in a configuration file or directly from the client.
+You'll find the light, fast, geeky and anonymous spirit of IRC while using a
+powerful, standard and open protocol.")
+    (home-page "https://poez.io/en/")
+    (license license:zlib)))
 
 (define-public libotr
   (package
