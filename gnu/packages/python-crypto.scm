@@ -64,6 +64,30 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
 
+(define-public python-potr
+  (package
+    (name "python-potr")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/python-otr/pure-python-otr.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "1hzw6h01fm216nmipyylgz0zybd80w1xsk12m7djycnhqrnrvvv1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pycrypto" ,python-pycrypto)))
+    (synopsis "Python OTR Implementation")
+    (description "Python OTR is an Off-The-Record Protocol Implementation in
+Python.  It does not bind to libotr.")
+    (home-page "https://github.com/python-otr/pure-python-otr")
+    (license license:lgpl3+)))
+
 (define-public python-base58
   (package
     (name "python-base58")
