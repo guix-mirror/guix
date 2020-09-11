@@ -9393,28 +9393,6 @@ imaging data that can be used in subsequent analyses to adjust for unknown,
 unmodeled, or latent sources of noise.")
     (license license:artistic2.0)))
 
-(define-public r-seqminer
-  (package
-    (name "r-seqminer")
-    (version "8.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "seqminer" version))
-       (sha256
-        (base32
-         "00jzj8mwb0zaiwlifd41b26mrq9mzigj18nc29dydi0r42hxg16i"))))
-    (build-system r-build-system)
-    (inputs
-     `(("zlib" ,zlib)))
-    (home-page "http://seqminer.genomic.codes")
-    (synopsis "Read nucleotide sequence data (VCF, BCF, and METAL formats)")
-    (description
-     "This package provides tools to integrate nucleotide sequencing
-data (variant call format, e.g. VCF or BCF) or meta-analysis results in R.")
-    ;; Any version of the GPL is acceptable
-    (license (list license:gpl2+ license:gpl3+))))
-
 (define-public r-raremetals2
   (package
     (name "r-raremetals2")

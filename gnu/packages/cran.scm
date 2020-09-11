@@ -24383,3 +24383,25 @@ Locus} (QTL) analysis in experimental crosses.  It is a reimplementation of the
 @code{R/qtl} package to better handle high-dimensional data and complex cross
 designs.  Broman et al. (2018) <doi:10.1534/genetics.118.301595>.")
     (license license:gpl3)))
+
+(define-public r-seqminer
+  (package
+    (name "r-seqminer")
+    (version "8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "seqminer" version))
+       (sha256
+        (base32
+         "00jzj8mwb0zaiwlifd41b26mrq9mzigj18nc29dydi0r42hxg16i"))))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "http://seqminer.genomic.codes")
+    (synopsis "Read nucleotide sequence data (VCF, BCF, and METAL formats)")
+    (description
+     "This package provides tools to integrate nucleotide sequencing
+data (variant call format, e.g. VCF or BCF) or meta-analysis results in R.")
+    ;; Any version of the GPL is acceptable
+    (license (list license:gpl2+ license:gpl3+))))
