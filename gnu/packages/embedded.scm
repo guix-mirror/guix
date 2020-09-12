@@ -47,6 +47,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages messaging)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1358,7 +1359,6 @@ this feature to provide conveniences for building applications, flashing and
 debugging them, and more.")
     (license license:expat)))
 
-;; TODO: Support MQTT.
 (define-public ebusd
   (package
     (name "ebusd")
@@ -1385,6 +1385,8 @@ debugging them, and more.")
                                                 "/ebusd-2.1.x")
                                  config-destination)
                #t))))))
+    (inputs
+     `(("mosquitto" ,mosquitto)))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
