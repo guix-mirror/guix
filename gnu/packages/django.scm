@@ -166,10 +166,10 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
      `(("python-six" ,python-six)
        ("python-vobject" ,python-vobject)
        ("python-werkzeug" ,python-werkzeug)
-       ("python-dateutil" ,python-dateutil)
-       ("python-django" ,python-django)))
+       ("python-dateutil" ,python-dateutil)))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("python-django" ,python-django)
+       ("python-mock" ,python-mock)
        ("python-factory-boy" ,python-factory-boy)
        ("python-tox" ,python-tox)
        ("python-pytest" ,python-pytest)
@@ -214,10 +214,10 @@ commands, additional database fields and admin extensions.")
                     (lambda _
                       (invoke "python" "runtests.py"))))))
     (native-inputs
-     `(("python-mock" ,python-mock)))
-    (propagated-inputs
      `(("python-django" ,python-django)
-       ("python-six" ,python-six)))
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (synopsis "Easy-to-use math field/widget captcha for Django forms")
     (description
      "A multi-value-field that presents a human answerable question,
@@ -239,8 +239,6 @@ with arguments to the field constructor.")
     (build-system python-build-system)
     ;; FIXME: How to make the test templates available to Django?
     (arguments '(#:tests? #f))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
     (home-page "https://github.com/divio/django-classy-tags")
     (synopsis "Class based template tags for Django")
     (description
@@ -269,10 +267,10 @@ when coding custom template tags.")
            (lambda _
              (invoke "python3" "-m" "django" "test" "--settings=tests.settings"))))))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-isort" ,python-isort)))
+     `(("python-isort" ,python-isort)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-django" ,python-django)
+       ("python-pytest" ,python-pytest)
        ("python-mock" ,python-mock)))
     (home-page
      "https://github.com/jazzband/django-taggit")
@@ -294,9 +292,10 @@ when coding custom template tags.")
         (base32
          "14gzp5cv24z0qhxb7f7k7v9jgzpaj4n8yhjq83ynpx8183fs1rz4"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-pillow" ,python-pillow)))
+     `(("python-pillow" ,python-pillow)))
     (home-page "https://github.com/SmileyChris/easy-thumbnails")
     (synopsis "Easy thumbnails for Django")
     (description
@@ -381,11 +380,10 @@ useful tools for testing Django applications and projects.")
                                     "/lib"))
              #t)))
        #:tests? #f)) ; OSError: libgdal.so.27: cannot open shared object file
-    (propagated-inputs
-     `(("python-django" ,python-django)))
     (native-inputs
      `(("gdal" ,gdal)
        ("python-coverage" ,python-coverage)
+       ("python-django" ,python-django)
        ("python-dateutil" ,python-dateutil)
        ("python-geopy" ,python-geopy)
        ("python-mock" ,python-mock)
@@ -458,9 +456,8 @@ them do this.")
        ("python-requests" ,python-requests)
        ("python-requests-oauthlib" ,python-requests-oauthlib)))
     (native-inputs
-     `(("python-mock" ,python-mock)))
-    (inputs
-     `(("python-django" ,python-django)))
+     `(("python-django" ,python-django)
+       ("python-mock" ,python-mock)))
     (home-page "https://github.com/pennersr/django-allauth")
     (synopsis "Set of Django applications addressing authentication")
     (description
@@ -485,10 +482,10 @@ account authentication.")
          "14069rlgjd5g724iaglai0nc636g9km4ba56r4j3k84chibqzn03"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sqlparse" ,python-sqlparse)
-       ("python-django" ,python-django)))
+     `(("python-sqlparse" ,python-sqlparse)))
     (native-inputs
-     `(("python-django-jinja" ,python-django-jinja)
+     `(("python-django" ,python-django)
+       ("python-django-jinja" ,python-django-jinja)
        ("python-html5lib" ,python-html5lib)))
     (arguments
      '(#:phases
@@ -518,8 +515,7 @@ request and response as a toolbar on the rendered page.")
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ;XXX: 'make check' does "echo TODO"
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-django-debug-toolbar" ,python-django-debug-toolbar)
+     `(("python-django-debug-toolbar" ,python-django-debug-toolbar)
        ("python-jsonplus" ,python-jsonplus)
        ("python-six" ,python-six)
        ("python-sqlalchemy" ,python-sqlalchemy)))
@@ -566,10 +562,10 @@ templatetags and a full test suite.")
                 "0fc6i77faxxv1gjlp06lv3kw64b5bhdiypaygfxh5djddgk83fwa"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
-    (propagated-inputs
      `(("python-django" ,python-django)
-       ("python-webassets" ,python-webassets)))
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-webassets" ,python-webassets)))
     (home-page "https://github.com/miracle2k/django-assets")
     (synopsis "Asset management for Django")
     (description
@@ -594,8 +590,7 @@ merging, minifying and compiling CSS and Javascript files.")
          "06ldbkfkm6sc0p9sqpjph06gxrqpj78ih3dc2yik2fcba2y5mak1"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-jinja2" ,python-jinja2)
+     `(("python-jinja2" ,python-jinja2)
        ("python-pytz" ,python-pytz)
        ("python-django-pipeline" ,python-django-pipeline)))
     (arguments
@@ -668,7 +663,7 @@ conn_max_age argument to easily enable Django’s connection pool.")
                     (lambda _
                       (invoke "python" "-m" "django" "test" "-v2"
                               "--settings=tests.settings"))))))
-    (propagated-inputs `(("python-django" ,python-django)))
+    (native-inputs `(("python-django" ,python-django)))
     (synopsis "Pickled object field for Django")
     (description "Pickled object field for Django")
     (license license:expat)))
@@ -687,8 +682,6 @@ conn_max_age argument to easily enable Django’s connection pool.")
     (arguments
      ;; XXX: Tests require a Postgres database.
      `(#:tests? #f))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
     (home-page "https://github.com/aykut/django-bulk-update")
     (synopsis "Simple bulk update over Django ORM or with helper function")
     (description
@@ -718,9 +711,8 @@ project aims to bulk update given objects using one query over Django ORM.")
              (invoke "coverage" "run" "--source" "contact_form"
                      "runtests.py"))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
+     `(("python-coverage" ,python-coverage)
+       ("python-django" ,python-django)))
     (home-page "https://github.com/ubernostrum/django-contact-form")
     (synopsis "Contact form for Django")
     (description
@@ -739,8 +731,10 @@ for Django sites.")
                (base32
                 "0ccdiv784a5vnpfal36km4dyg12340rwhpr0riyy0k89wfnjn8yi"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (native-inputs
      `(("python-django" ,python-django)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (home-page "https://github.com/django/django-contrib-comments")
     (synopsis "Comments framework")
     (description
@@ -780,9 +774,10 @@ entries, photos, book chapters, or anything else.")
                                        (getenv "PYTHONPATH")))
                 (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
                 (invoke "django-admin" "test" "tests"))))))))
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
      `(("python-css-html-js-minify" ,python-css-html-js-minify)
-       ("python-django" ,python-django)
        ("python-slimit" ,python-slimit)
        ("python-jsmin" ,python-jsmin)))
     (home-page
@@ -814,14 +809,14 @@ support, and optional data-URI image and font embedding.")
              (with-directory-excursion "tests"
                (invoke "python" "runtests.py")))))))
     (native-inputs
-     `(("python-fakeredis" ,python-fakeredis)
+     `(("python-django" ,python-django)
+       ("python-fakeredis" ,python-fakeredis)
        ("python-hiredis" ,python-hiredis)
        ("python-mock" ,python-mock)
        ("python-msgpack" ,python-msgpack)
        ("redis" ,redis)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-redis" ,python-redis)))
+     `(("python-redis" ,python-redis)))
     (home-page "https://github.com/niwibe/django-redis")
     (synopsis "Full featured redis cache backend for Django")
     (description
@@ -849,13 +844,13 @@ support, and optional data-URI image and font embedding.")
                      "--settings=django_rq.tests.settings"
                      "--pythonpath=."))))))
     (native-inputs
-     `(("python-django-redis" ,python-django-redis)
+     `(("python-django" ,python-django)
+       ("python-django-redis" ,python-django-redis)
        ("python-mock" ,python-mock)
        ("python-rq-scheduler" ,python-rq-scheduler)
        ("redis" ,redis)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-rq" ,python-rq)))
+     `(("python-rq" ,python-rq)))
     (home-page "https://github.com/ui/django-rq")
     (synopsis "Django integration with RQ")
     (description
@@ -878,10 +873,11 @@ settings.py and easily use them in your project.")
     (build-system python-build-system)
     ;; FIXME: Tests require disque, Redis, MongoDB, Docker.
     (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
      `(("python-arrow" ,python-arrow)
        ("python-blessed" ,python-blessed)
-       ("python-django" ,python-django)
        ("python-django-picklefield" ,python-django-picklefield)))
     (home-page "https://django-q.readthedocs.io/")
     (synopsis "Multiprocessing distributed task queue for Django")
@@ -909,7 +905,7 @@ using Python multiprocessing.")
                                                           "./build/lib:.:"
                                                           (getenv "PYTHONPATH")))
                       (invoke "django-admin.py" "test" "--settings=settings"))))))
-    (propagated-inputs
+    (native-inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/jazzband/django-sortedm2m")
     (synopsis "Drop-in replacement for django's own ManyToManyField")
@@ -938,7 +934,7 @@ the order of added relations.")
                                                           (getenv "PYTHONPATH")))
                       (setenv "DJANGO_SETTINGS_MODULE" "tests.test_settings")
                       (invoke "django-admin.py" "test" "-v2"))))))
-    (propagated-inputs
+    (native-inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/django-compressor/django-appconf")
     (synopsis "Handle configuration defaults of packaged Django apps")
@@ -975,11 +971,11 @@ name is purely coincidental.")
                       (setenv "DJANGO_SETTINGS_MODULE" "project.settings")
                       (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-django" ,python-django)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-django" ,python-pytest-django)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("django-appconf" ,python-django-appconf)))
+     `(("django-appconf" ,python-django-appconf)))
     (synopsis "Generate JavaScript catalog to static files")
     (description
       "A Django app that provides helper for generating JavaScript catalog to
@@ -1029,8 +1025,6 @@ Django projects, which allows association of a number of tags with any
     (arguments
      '(;; No included tests
        #:tests? #f))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
     (home-page "https://www.django-rest-framework.org")
     (synopsis "Toolkit for building Web APIs with Django")
     (description
@@ -1051,9 +1045,10 @@ provides features like a web browseable API and authentication policies.")
           "0vrkli625b5s1wldri3dyrfvqbxg7zxy2pg0rpjixw3b1ndz0ag8"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; Tests not included with release.
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-django-classy-tags" ,python-django-classy-tags)
+     `(("python-django-classy-tags" ,python-django-classy-tags)
        ("python-six" ,python-six)))
     (home-page "https://github.com/divio/django-sekizai")
     (synopsis "Template blocks for Django projects")
@@ -1082,7 +1077,7 @@ a single block.")
     (arguments
      '(;; No included tests
        #:tests? #f))
-    (propagated-inputs
+    (native-inputs
      `(("python-django" ,python-django)))
     (home-page
      "http://github.com/maraujop/django-crispy-forms")
@@ -1158,9 +1153,8 @@ template tag.")
                     (lambda _
                       (invoke "python" "runtests.py"))))))
     (native-inputs
-     `(("python-mock" ,python-mock)))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
+     `(("python-django" ,python-django)
+       ("python-mock" ,python-mock)))
     (synopsis "Django test helpers to manage file storage side effects")
     (description
      "This project provides tools to help reduce the side effects of using
@@ -1192,10 +1186,10 @@ FileFields during tests.")
                                 "--settings" "tests.settings")))))))
     (native-inputs
      `(("openldap" ,openldap)
+       ("python-django" ,python-django)
        ("python-mock" ,python-mock)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-ldap" ,python-ldap)))
+     `(("python-ldap" ,python-ldap)))
     (home-page "https://github.com/django-auth-ldap/django-auth-ldap")
     (synopsis "Django LDAP authentication backend")
     (description
@@ -1214,9 +1208,10 @@ FileFields during tests.")
                 "06041a8icazzp73kg93c7k1ska12wvkq7fpcad0l0sm1qnxx5yx7"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ;no tests
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
-       ("python-django" ,python-django)
        ("python-elasticsearch" ,python-elasticsearch)
        ("python-six" ,python-six)))
     (home-page "https://github.com/cipriantarta/django-logging")
@@ -1239,9 +1234,10 @@ to ElasticSearch.")
                 "1c47azr5am0q8g45x0fbn0cay7vyrack6n7k6siliw1j2p0gzi7s"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))      ;XXX: Requires a running PostgreSQL server
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-ipaddress" ,python-ipaddress)
+     `(("python-ipaddress" ,python-ipaddress)
        ("python-netaddr" ,python-netaddr)
        ("python-six" ,python-six)))
     (home-page "https://github.com/jimfunk/django-postgresql-netfields")
@@ -1286,9 +1282,10 @@ to ElasticSearch.")
                             (invoke "pytest" "-vv" "--doctest-modules"
                                     "tests/" "url_filter/"))
                           (format #t "test suite not run~%")))))))
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
      `(("python-cached-property" ,python-cached-property)
-       ("python-django" ,python-django)
        ("python-six" ,python-six)))
     (synopsis "Filter data via human-friendly URLs")
     (description
