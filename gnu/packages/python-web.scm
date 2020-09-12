@@ -186,7 +186,7 @@ aiohttp.  It supports SOCKS4(a) and SOCKS5.")
         (base32
          "1snr5paql8dgvc676n8xq460wypjsb1xj53cf3px1s4wczf7lryq"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-pycares" ,python-pycares)))
     (arguments
      `(#:tests? #f))                    ;tests require internet access
