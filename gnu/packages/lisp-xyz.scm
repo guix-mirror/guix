@@ -9035,22 +9035,6 @@ MOP easier to use.")
          (sha256
           (base32 "15viw5pi5sa7qq9b4n2rr3dj2jkqr180rh9z1lh8w3rgl42i2adc"))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           ;; The cleanup phase moves files around but we need to keep the
-           ;; directory structure for the grovel-generated library.
-           (replace 'cleanup
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (lib (string-append out "/lib/sbcl/")))
-                 (delete-file-recursively (string-append lib "src"))
-                 (delete-file-recursively (string-append lib "tests"))
-                 (for-each delete-file
-                           (filter (lambda (file)
-                                     (not (member (basename file) '("libosicat.so"))))
-                                   (find-files (string-append lib "posix") ".*"))))
-               #t)))))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cffi" ,sbcl-cffi)
