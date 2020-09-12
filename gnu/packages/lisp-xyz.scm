@@ -9001,6 +9001,15 @@ PascalCase, snake_case, param-case, CONSTANT_CASE and more.")
        `(("closer-mop" ,sbcl-closer-mop)))
       (native-inputs
        `(("lift" ,sbcl-lift)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "lift-standard.config"
+                 ((":relative-to lift-test")
+                  ":relative-to moptilities-test"))
+               #t)))))
       (synopsis "Compatibility layer for Common Lisp MOP implementation differences")
       (description
        "MOP utilities provide a common interface between Lisps and make the
