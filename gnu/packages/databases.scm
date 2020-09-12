@@ -2995,14 +2995,14 @@ database).")
 (define-public python-mysqlclient
   (package
     (name "python-mysqlclient")
-    (version "1.3.13")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mysqlclient" version))
        (sha256
         (base32
-         "0kv4a1icwdav8jpl7qvnr931lw5h3v22ids6lwq6qpi1hjzf33pz"))))
+         "1rf5l8hazs3v18hmcrm90z3hi9wxv553ipwd5l6kj8j7l6p7abzv"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ;XXX: requires a live database
     (inputs
