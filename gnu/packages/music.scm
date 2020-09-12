@@ -4175,9 +4175,7 @@ sample library.")
     (arguments
      `(#:tests? #f ; there is no test target
        #:configure-flags
-       (list "-DENABLE_LV2_SUPPLIED=OFF"
-             "-DENABLE_RTAUDIO=OFF"    ; FIXME: not packaged
-             "-DENABLE_INSTPATCH=OFF"  ; FIXME: not packaged
+       (list "-DENABLE_INSTPATCH=OFF"  ; FIXME: not packaged
              "-DENABLE_VST_NATIVE=OFF"
              (string-append "-DCMAKE_EXE_LINKER_FLAGS="
                             "-Wl,-rpath="
@@ -4190,7 +4188,12 @@ sample library.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
-           (lambda _ (chdir "muse3") #t)))))
+           (lambda _ (chdir "muse3") #t))
+         (add-after 'chdir 'fix-include
+           (lambda _
+             (substitute* "muse/driver/rtaudio.h"
+               (("rtaudio/RtAudio.h") "RtAudio.h"))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("lash" ,lash)
@@ -4203,10 +4206,14 @@ sample library.")
        ("sord" ,sord)
        ("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
+       ("lrdf" ,lrdf)
        ("fluidsynth" ,fluidsynth)
        ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio) ; required by rtaudio
        ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)))
+       ("qtsvg" ,qtsvg)
+       ("rtaudio" ,rtaudio)
+       ("rubberband" ,rubberband)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
