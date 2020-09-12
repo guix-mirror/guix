@@ -570,7 +570,7 @@ are detected, the user is notified.")
 (define-public editorconfig-vim
   (package
     (name "editorconfig-vim")
-    (version "0.3.3")
+    (version "1.1.1")
     (source
       (origin
         (method git-fetch)
@@ -580,27 +580,13 @@ are detected, the user is notified.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0vssfl1wjq0mv0p30c3dszwrh4yy90vwxmmdgqaxf5rykik7bdfd"))
-        (modules '((guix build utils)))
-        (snippet
-         '(begin
-            (delete-file-recursively "plugin/editorconfig-core-py") #t))))
+          "0mp80bi2m56bb93szw87vy6q5s85yk9g91sl4pr51316rgdv5kkv"))))
     (build-system copy-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-editorconfig-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((editorconfig (assoc-ref inputs "editorconfig-core")))
-               (substitute* "plugin/editorconfig.vim"
-                 (("/opt") editorconfig))
-               #t))))
-       #:install-plan
+     '(#:install-plan
        '(("autoload" "share/vim/vimfiles/")
          ("doc" "share/vim/vimfiles/")
          ("plugin" "share/vim/vimfiles/"))))
-    (inputs
-     `(("editorconfig-core" ,editorconfig-core-c)))
     (home-page "https://editorconfig.org/")
     (synopsis "EditorConfig plugin for Vim")
     (description "EditorConfig makes it easy to maintain the correct coding
