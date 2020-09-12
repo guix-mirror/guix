@@ -11438,3 +11438,82 @@ integrated profiler via Sysprof, debugging support, and more.")
     (description "Komikku is an online/offline manga reader for GNOME,
 developed with the aim of being used with the Librem 5 phone.")
     (license license:gpl3+)))
+
+(define-public libgda
+  (package
+    (name "libgda")
+    (version "5.2.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/GNOME/libgda.git/")
+             (commit "LIBGDA_5_2_9")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "122anbk15vj2dfxrw7s48b6zwlpp7cyppshxizynvf3zmc0ygw3j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-vala")
+       ;; There's a race between check_cnc_lock and check_threaded_cnc
+       ;; in tests/multi-threading.
+       #:parallel-tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-glade-install
+           (lambda _
+             (substitute* "configure.ac"
+               (("`\\$PKG_CONFIG --variable=catalogdir gladeui-2\\.0`")
+                "${datadir}/glade/catalogs")
+               (("`\\$PKG_CONFIG --variable=pixmapdir gladeui-2\\.0`")
+                "${datadir}/glade/pixmaps"))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             #t))
+         (add-after 'install 'symlink-glade-module
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((shlib "libgda-ui-5.0.so")
+                    (out (assoc-ref outputs "out"))
+                    (out/lib (string-append out "/lib"))
+                    (moduledir (string-append out/lib "/glade/modules")))
+               (mkdir-p moduledir)
+               (symlink (string-append out/lib "/" shlib)
+                        (string-append moduledir "/" shlib))
+               #t))))))
+    (propagated-inputs
+     `(("libxml2" ,libxml2)))           ; required by libgda-5.0.pc
+    (inputs
+     `(("glib" ,glib)
+       ("glade" ,glade3)
+       ("gtk+" ,gtk+)
+       ("libsecret" ,libsecret)
+       ("libxslt" ,libxslt)
+       ("openssl" ,openssl)
+       ("vala" ,vala)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib:bin" ,glib "bin")
+       ("gnome-common" ,gnome-common)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("which" ,which)
+       ("xorg-server" ,xorg-server-for-tests)
+       ("yelp-tools" ,yelp-tools)))
+    (home-page "https://gitlab.gnome.org/GNOME/libgda")
+    (synopsis "Uniform data access")
+    (description
+     "GNU Data Access (GDA) is an attempt to provide uniform access to
+different kinds of data sources (databases, information servers, mail spools,
+etc).  It is a complete architecture that provides all you need to access
+your data.")
+    (license license:lgpl2.1+)))
