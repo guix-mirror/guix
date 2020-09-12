@@ -11517,3 +11517,51 @@ different kinds of data sources (databases, information servers, mail spools,
 etc).  It is a complete architecture that provides all you need to access
 your data.")
     (license license:lgpl2.1+)))
+
+(define-public gtranslator
+  (package
+    (name "gtranslator")
+    (version "3.36.0")
+        (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1lxd2nkji4jk8g2xmyc1a1r3ww710ddk91zh9psmx8xlb4xivaid"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("json-glib" ,json-glib)
+       ("jsonrpc-glib" ,jsonrpc-glib)
+       ("gettext" ,gettext-minimal)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)
+       ("libdazzle" ,libdazzle)
+       ("libgda" ,libgda)
+       ("libsoup" ,libsoup)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("gtksourceview" ,gtksourceview))) ; required for source view
+    (arguments
+     `(#:build-type "release"
+       #:phases
+       (modify-phases %standard-phases
+       (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "build-aux/meson/meson_post_install.py"
+               (("gtk-update-icon-cache") (which "true")))
+             #t)))))
+    (home-page "https://wiki.gnome.org/Apps/Gtranslator")
+    (synopsis "Translation making program")
+    (description
+     "gtranslator is a quite comfortable gettext po/po.gz/(g)mo files editor
+for the GNOME 3.x platform with many features.  It aims to be a very complete
+editing environment for translation issues within the GNU gettext/GNOME desktop
+world.")
+    (license license:gpl3+)))
