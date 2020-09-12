@@ -4158,7 +4158,7 @@ sample library.")
 (define-public muse-sequencer
   (package
     (name "muse-sequencer")
-    (version "3.0.0")
+    (version "3.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4170,7 +4170,7 @@ sample library.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nninz8qyqlxxjdnrm79y3gr3056pga9l2fsqh674jd3cjvafya3"))))
+                "1rasp2v1ds2aw296lbf27rzw0l9fjl0cvbvw85d5ycvh6wkm301p"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there is no test target
@@ -4178,11 +4178,19 @@ sample library.")
        (list "-DENABLE_LV2_SUPPLIED=OFF"
              "-DENABLE_RTAUDIO=OFF"    ; FIXME: not packaged
              "-DENABLE_INSTPATCH=OFF"  ; FIXME: not packaged
-             "-DENABLE_VST_NATIVE=OFF")
+             "-DENABLE_VST_NATIVE=OFF"
+             (string-append "-DCMAKE_EXE_LINKER_FLAGS="
+                            "-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib/muse-"
+                            ,(version-major+minor version) "/modules")
+             (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
+                            "-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib/muse-"
+                            ,(version-major+minor version) "/modules"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
-           (lambda _ (chdir "muse3"))))))
+           (lambda _ (chdir "muse3") #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("lash" ,lash)
