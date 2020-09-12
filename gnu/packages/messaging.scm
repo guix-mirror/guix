@@ -2293,4 +2293,33 @@ as well as on desktop platforms.  It's based on libpurple and ModemManager.")
    (home-page "https://source.puri.sm/Librem5/chatty")
    (license license:gpl3+)))
 
+(define-public mosquitto
+  (package
+    (name "mosquitto")
+    (version "1.6.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mosquitto.org/files/source/mosquitto-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1yq7y329baa1ly488rw125c3mvsnsa7kjkik602xv1xpkz8p73al"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (synopsis "Message broker")
+    (description "This package provides Eclipse Mosquitto, a message broker
+that implements the MQTT protocol versions 5.0, 3.1.1 and 3.1.  Mosquitto
+is lightweight and is suitable for use on all devices from low power single
+board computers to full servers.
+
+The MQTT protocol provides a lightweight method of carrying out messaging
+using a publish/subscribe model. This makes it suitable for Internet of
+Things messaging such as with low power sensors or mobile devices such
+as phones, embedded computers or microcontrollers.")
+    (home-page "https://mosquitto.org/")
+    ;; Dual licensed.
+    (license (list license:epl1.0 license:edl1.0))))
+
 ;;; messaging.scm ends here
