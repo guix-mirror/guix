@@ -3024,9 +3024,6 @@ for Python.  The design goals are:
 @end enumerate")
     (license license:gpl2)))
 
-(define-public python2-mysqlclient
-  (package-with-python2 python-mysqlclient))
-
 (define-public python-hiredis
   (package
     (name "python-hiredis")
