@@ -3004,15 +3004,10 @@ database).")
         (base32
          "0kv4a1icwdav8jpl7qvnr931lw5h3v22ids6lwq6qpi1hjzf33pz"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("nose" ,python-nose)
-       ("mock" ,python-mock)
-       ("py.test" ,python-pytest)))
+    (arguments '(#:tests? #f))          ;XXX: requires a live database
     (inputs
      `(("mysql" ,mariadb "lib")
-       ("mysql-dev" ,mariadb "dev")
-       ("libz" ,zlib)
-       ("openssl" ,openssl)))
+       ("mysql-dev" ,mariadb "dev")))
     (home-page "https://github.com/PyMySQL/mysqlclient-python")
     (synopsis "MySQLdb is an interface to the popular MySQL database server for Python")
     (description "MySQLdb is an interface to the popular MySQL database server
