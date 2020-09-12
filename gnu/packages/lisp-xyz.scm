@@ -9416,15 +9416,7 @@ tables.")
              (substitute* "src/low-level/librdkafka-bindings.lisp"
                (("librdkafka" all)
                 (string-append (assoc-ref inputs "librdkafka") "/lib/"
-                               all)))))
-         (add-before 'cleanup 'move-bundle
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (actual (string-append out "/lib/sbcl/src/cl-rdkafka.fasl"))
-                    (expected (string-append
-                               out "/lib/sbcl/cl-rdkafka--system.fasl")))
-               (copy-file actual expected)
-               #t))))))
+                               all))))))))
     (inputs
      `(("bordeaux-threads" ,sbcl-bordeaux-threads)
        ("cffi" ,sbcl-cffi)
