@@ -8707,10 +8707,8 @@ interface for MySQL, PostgreSQL and SQLite.")
        ;; asdf-build-system/source has its own phases and does not inherit
        ;; from asdf-build-system/sbcl phases.
        (modify-phases %standard-phases/source
-         (add-after 'unpack 'fix-permissions
-           (lambda _
-             (make-file-writable "doc/html.tar.gz")
-             #t)))))))
+         ;; Already done in SBCL package.
+         (delete 'reset-gzip-timestamps))))))
 
 (define-public sbcl-clsql
   (package
