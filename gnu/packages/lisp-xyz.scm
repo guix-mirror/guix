@@ -2711,10 +2711,10 @@ portability, and boilerplate reduction in CSS.")
   (sbcl-package->ecl-package sbcl-cl-css))
 
 (define-public sbcl-portable-threads
-  (let ((commit "c0e61a1faeb0583c80fd3f20b16cc4c555226920"))
+  (let ((commit "aa26bf38338a6b068bf8bfb3375d8d8c3b0a28df"))
     (package
       (name "sbcl-portable-threads")
-      (version (git-version "2.3" "1" commit))
+      (version (git-version "2.3" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -2723,14 +2723,13 @@ portability, and boilerplate reduction in CSS.")
                (commit commit)))
          (file-name (git-file-name "portable-threads" version))
          (sha256
-          (base32
-           "03fmxyarc0xf4kavwkfa0a2spkyfrz6hbgbi9y4q7ny5aykdyfaq"))))
+          (base32 "058ksi07vfdmhrf5mdlc833s82m1rcqfja2266520m3r8bzs8bvs"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        `(;; Tests seem broken.
          #:tests? #f))
       (home-page "https://github.com/binghe/portable-threads")
-      (synopsis "Portable threads (and scheduled and periodic functions) API for Common Lisp")
+      (synopsis "Portable threads API for Common Lisp")
       (description
        "Portable Threads (and Scheduled and Periodic Functions) API for Common
 Lisp (from GBBopen project).")
