@@ -874,6 +874,10 @@ Language.")
                            "--testcase-timeout=40"
                            "--suite-timeout=600"
                            "--parallel" (number->string (parallel-job-count))
+                           ;; Skip the replication tests: they are very I/O
+                           ;; intensive and frequently causes indeterministic
+                           ;; failures even on powerful hardware.
+                           "--skip-rpl"
                            "--skip-test-list=unstable-tests"))
                  (format #t "test suite not run~%"))
              #t))
