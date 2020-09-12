@@ -2513,78 +2513,86 @@ during idle time, while Emacs is doing nothing else.")
     (license license:gpl3+)))
 
 (define-public emacs-pdf-tools
-  (package
-    (name "emacs-pdf-tools")
-    (version "0.90")
-    (home-page "https://github.com/politza/pdf-tools")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference (url home-page)
-                                  (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0iv2g5kd14zk3r5dzdw7b7hk4b5w7qpbilcqkja46jgxbb6xnpl9"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:modules ((guix build gnu-build-system)
-                  ((guix build emacs-build-system) #:prefix emacs:)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-build-system)
-                           (guix build emacs-utils))
-       #:phases
-       (modify-phases %standard-phases
-         ;; Build server side using 'gnu-build-system'.
-         (add-after 'unpack 'enter-server-dir
-           (lambda _ (chdir "server") #t))
-         (add-after 'enter-server-dir 'autogen
-           (lambda _
-             (invoke "bash" "autogen.sh")))
+  ;; XXX: Development branch fixes an incompatibility with Emacs 27+.  See
+  ;; <https://github.com/politza/pdf-tools/issues/616>.
+  (let ((commit "c510442ab89c8a9e9881230eeb364f4663f59e76")
+        (revision "1"))
+    (package
+      (name "emacs-pdf-tools")
+      (version (git-version "0.90" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/politza/pdf-tools")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "17z3cpn76g9dp62drjrgrqpp1bgf4gl5k5gspylskpvd4kj4bq4d"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:modules ((guix build gnu-build-system)
+                    ((guix build emacs-build-system) #:prefix emacs:)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-build-system)
+                             (guix build emacs-utils))
+         #:phases
+         (modify-phases %standard-phases
+           ;; Build server side using 'gnu-build-system'.
+           (add-after 'unpack 'enter-server-dir
+             (lambda _ (chdir "server") #t))
+           (add-after 'enter-server-dir 'autogen
+             (lambda _
+               (invoke "bash" "autogen.sh")))
 
-         ;; Build emacs side using 'emacs-build-system'.
-         (add-after 'compress-documentation 'enter-lisp-dir
-           (lambda _ (chdir "../lisp") #t))
-         (add-after 'enter-lisp-dir 'emacs-patch-variables
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each make-file-writable (find-files "."))
+           ;; Build emacs side using 'emacs-build-system'.
+           (add-after 'compress-documentation 'enter-lisp-dir
+             (lambda _ (chdir "../lisp") #t))
+           (add-after 'enter-lisp-dir 'emacs-patch-variables
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each make-file-writable (find-files "."))
 
-             ;; Set path to epdfinfo program.
-             (emacs-substitute-variables "pdf-info.el"
-               ("pdf-info-epdfinfo-program"
-                (string-append (assoc-ref outputs "out")
-                               "/bin/epdfinfo")))
-             ;; Set 'pdf-tools-handle-upgrades' to nil to avoid "auto
-             ;; upgrading" that pdf-tools tries to perform.
-             (emacs-substitute-variables "pdf-tools.el"
-               ("pdf-tools-handle-upgrades" '()))))
-         (add-after 'emacs-patch-variables 'emacs-add-source-to-load-path
-           (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
-         (add-after 'emacs-add-source-to-load-path 'emacs-install
-           (assoc-ref emacs:%standard-phases 'install))
-         (add-after 'emacs-install 'emacs-build
-           (assoc-ref emacs:%standard-phases 'build))
-         (add-after 'emacs-install 'emacs-make-autoloads
-           (assoc-ref emacs:%standard-phases 'make-autoloads)))))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs-minimal)))
-    (inputs `(("poppler" ,poppler)
-              ("cairo" ,cairo)
-              ("glib" ,glib)
-              ("libpng" ,libpng)
-              ("zlib" ,zlib)))
-    (propagated-inputs `(("tablist" ,emacs-tablist)))
-    (synopsis "Emacs support library for PDF files")
-    (description
-     "PDF Tools is, among other things, a replacement of DocView for PDF
+               ;; Set path to epdfinfo program.
+               (emacs-substitute-variables "pdf-info.el"
+                 ("pdf-info-epdfinfo-program"
+                  (string-append (assoc-ref outputs "out")
+                                 "/bin/epdfinfo")))
+               ;; Set 'pdf-tools-handle-upgrades' to nil to avoid "auto
+               ;; upgrading" that pdf-tools tries to perform.
+               (emacs-substitute-variables "pdf-tools.el"
+                 ("pdf-tools-handle-upgrades" '()))))
+           (add-after 'emacs-patch-variables 'emacs-add-source-to-load-path
+             (assoc-ref emacs:%standard-phases 'add-source-to-load-path))
+           (add-after 'emacs-add-source-to-load-path 'emacs-install
+             (assoc-ref emacs:%standard-phases 'install))
+           (add-after 'emacs-install 'emacs-build
+             (assoc-ref emacs:%standard-phases 'build))
+           (add-after 'emacs-install 'emacs-make-autoloads
+             (assoc-ref emacs:%standard-phases 'make-autoloads)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("emacs" ,emacs-minimal)))
+      (inputs
+       `(("poppler" ,poppler)
+         ("cairo" ,cairo)
+         ("glib" ,glib)
+         ("libpng" ,libpng)
+         ("zlib" ,zlib)))
+      (propagated-inputs
+       `(("tablist" ,emacs-tablist)))
+      (home-page "https://github.com/politza/pdf-tools")
+      (synopsis "Emacs support library for PDF files")
+      (description
+       "PDF Tools is, among other things, a replacement of DocView for PDF
 files.  The key difference is that pages are not pre-rendered by
 e.g. ghostscript and stored in the file-system, but rather created on-demand
 and stored in memory.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-dash
   (package
