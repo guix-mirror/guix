@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1453,7 +1454,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.5.4")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -1461,13 +1462,14 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "1nslmyqyzhfr4hxd4llqkkkb8ap8apkdna32rllvar7r576059ci"))))
+                "0566b499lbpfb1gk4p17iw78ywmk9l2jww1kqjbdanrl22hai1y4"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
        ("cairo" ,cairo)
        ("glib" ,glib)
        ("startup-notification" ,startup-notification)
+       ("libjpeg" ,libjpeg-turbo)
        ("librsvg" ,librsvg)
        ("libxkbcommon" ,libxkbcommon)
        ("libxcb" ,libxcb)
