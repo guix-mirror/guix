@@ -225,7 +225,7 @@ running checks after installing the package."
   (define (list-of-files dir)
     (find-files dir (lambda (file stat)
                       (and (eq? 'regular (stat:type stat))
-                           (not (wrapper? file))))))
+                           (not (wrapped-program? file))))))
 
   (define bindirs
     (append-map (match-lambda

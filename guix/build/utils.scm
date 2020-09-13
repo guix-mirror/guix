@@ -96,7 +96,7 @@
             patch-/usr/bin/file
             fold-port-matches
             remove-store-references
-            wrapper?
+            wrapped-program?
             wrap-program
             wrap-script
 
@@ -1227,8 +1227,8 @@ known as `nuke-refs' in Nixpkgs."
   (program    wrap-error-program)
   (type       wrap-error-type))
 
-(define (wrapper? prog)
-  "Return #t if PROG is a wrapper as produced by 'wrap-program'."
+(define (wrapped-program? prog)
+  "Return #t if PROG is a program that was moved and wrapped by 'wrap-program'."
   (and (file-exists? prog)
        (let ((base (basename prog)))
          (and (string-prefix? "." base)

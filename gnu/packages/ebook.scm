@@ -324,7 +324,7 @@ sip-include-dirs = [\"" pyqt "/share/sip" "\"]")))
                   ;; rather than create ..calibre-real-real-s.  For more
                   ;; information see: https://issues.guix.gnu.org/43249.
                   (find-files "." (lambda (file stat)
-                                    (not (wrapper? file)))))))
+                                    (not (wrapped-program? file)))))))
              #t)))))
     (home-page "https://calibre-ebook.com/")
     (synopsis "E-book library management software")
