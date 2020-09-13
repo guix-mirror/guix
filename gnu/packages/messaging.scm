@@ -1783,7 +1783,7 @@ are both supported).")
        (sha256
         (base32
          "00j9l9v62rz9hprgiy1vrz8v3v59ph18h8kskqxr31fgqvjv5xr3"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
        (list
