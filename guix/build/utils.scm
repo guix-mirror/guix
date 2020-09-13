@@ -1303,6 +1303,9 @@ with definitions for VARS."
        (format #f "export ~a=\"$~a${~a:+:}~a\""
                var var var (string-join rest ":")))))
 
+  (when (wrapped-program? prog)
+    (error (string-append prog " is a wrapper. Refusing to wrap.")))
+
   (if already-wrapped?
 
       ;; PROG is already a wrapper: add the new "export VAR=VALUE" lines just
