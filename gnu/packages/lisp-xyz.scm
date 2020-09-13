@@ -395,6 +395,9 @@ ANSI-compliant Common Lisp implementations.")
              (delete-file "cl-ppcre.asd")
              #t)))))))
 
+(define-public cl-ppcre-unicode
+  (sbcl-package->cl-source-package sbcl-cl-ppcre-unicode))
+
 (define-public ecl-cl-ppcre-unicode
   (sbcl-package->ecl-package sbcl-cl-ppcre-unicode))
 
