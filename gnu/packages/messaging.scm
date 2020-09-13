@@ -1774,22 +1774,35 @@ are both supported).")
   (package
     (name "profanity")
     (version "0.9.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://profanity-im.github.io/profanity-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "00j9l9v62rz9hprgiy1vrz8v3v59ph18h8kskqxr31fgqvjv5xr3"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://profanity-im.github.io/profanity-"
+                       version ".tar.gz"))
+       (sha256
+        (base32
+         "00j9l9v62rz9hprgiy1vrz8v3v59ph18h8kskqxr31fgqvjv5xr3"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
-       (list "--enable-c-plugins"
-             "--enable-otr"
-             "--enable-omemo"
-             "--enable-pgp"
-             "--enable-icons"
-             "--enable-notifications")))
+     `(#:configure-flags
+       (list
+        "--enable-notifications"
+        "--enable-c-plugins"
+        "--enable-otr"
+        "--enable-pgp"
+        "--enable-omemo"
+        "--enable-icons")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
+       ("automake" ,automake)
+       ("cmocka" ,cmocka)
+       ("gtk+" ,gtk+-2)
+       ("libnotify" ,libnotify)
+       ("libtool" ,libtool)
+       ("libsignal-protocol-c" ,libsignal-protocol-c)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("curl" ,curl)
        ("expat" ,expat)
@@ -1801,16 +1814,6 @@ are both supported).")
        ("openssl" ,openssl)
        ("readline" ,readline)
        ("sqlite" ,sqlite)))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("autoconf-archive" ,autoconf-archive)
-       ("automake" ,automake)
-       ("cmocka" ,cmocka)
-       ("gtk+" ,gtk+-2)
-       ("libnotify" ,libnotify)
-       ("libtool" ,libtool)
-       ("libsignal-protocol-c" ,libsignal-protocol-c)
-       ("pkg-config" ,pkg-config)))
     (synopsis "Console-based XMPP client")
     (description "Profanity is a console based XMPP client written in C
 using ncurses and libmesode, inspired by Irssi.")
