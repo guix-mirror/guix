@@ -14523,7 +14523,7 @@ to ansi-escaped strings suitable for display in a terminal.")
     (synopsis "Convert ANSI-decorated console output to HTML")
     (description
      "@command{ansi2html} is a Python library and command line utility for
-convering text with ANSI color codes to HTML or LaTeX.")
+converting text with ANSI color codes to HTML or LaTeX.")
     (license license:gpl3+)))
 
 (define-public python2-ansi2html
