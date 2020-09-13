@@ -5,6 +5,7 @@
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
+;;; Copyright © 2020 Robin Green <greenrd@greenrd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages texinfo)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
@@ -47,7 +49,7 @@
 (define-public coq
   (package
     (name "coq")
-    (version "8.10.2")
+    (version "8.11.2")
     (source
      (origin
        (method git-fetch)
@@ -57,7 +59,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ji2rzd70b3hcwfw97qk7rv3m2977ylqnq82l1555dp3njr8nm3q"))))
+         "1gia82dkmzqspw2w3s4gjyh39ghbmw4i41i4hyzc91g7mza17nbz"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
@@ -70,7 +72,9 @@
        ("camlp5" ,camlp5)
        ("ocaml-num" ,ocaml-num)))
     (native-inputs
-     `(("ocaml-ounit" ,ocaml-ounit)))
+     `(("ocaml-ounit" ,ocaml-ounit)
+       ("rsync" ,rsync)
+       ("which" ,which)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -125,7 +129,7 @@
                ;; Fails because the output is not formatted as expected.
                (delete-file-recursively "coq-makefile/timing")
                ;; Fails because we didn't build coqtop.byte.
-               (delete-file-recursively "coq-makefile/findlib-package")
+               (delete-file "misc/printers.sh")
                (invoke "make")))))))
     (home-page "https://coq.inria.fr")
     (synopsis "Proof assistant for higher-order logic")
@@ -215,7 +219,7 @@ provers.")
 (define-public coq-flocq
   (package
     (name "coq-flocq")
-    (version "3.2.0")
+    (version "3.3.1")
     (source
      (origin
        (method git-fetch)
@@ -225,7 +229,7 @@ provers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "15bi36x7zj0glsb3s2gwqd4wswhfzh36rbp7imbyff53a7nna95l"))))
+         "01gdykva0lcw6y3dm8j0djxayb87szfg9vn0mxd6z3pks644misl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -272,7 +276,7 @@ inside Coq.")
 (define-public coq-gappa
   (package
     (name "coq-gappa")
-    (version "1.4.2")
+    (version "1.4.4")
     (source
      (origin
        (method git-fetch)
@@ -282,7 +286,7 @@ inside Coq.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0r7jwp5xssdfzivs2flp7mzrscqhgl63mryhhf1cvndpgzqwfk2f"))))
+         "0f3g3wjkvfkm961l4jpckhsqd43jnvm7f5qqk78qc32zh1fg339n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -332,7 +336,7 @@ assistant.")
 (define-public coq-mathcomp
   (package
     (name "coq-mathcomp")
-    (version "1.10.0")
+    (version "1.11.0")
     (source
      (origin
        (method git-fetch)
@@ -341,7 +345,7 @@ assistant.")
              (commit (string-append "mathcomp-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1h5h1c2025r1ms5qryvwy6pikxmpmmjav6yl127xpzmqdi6w732d"))))
+        (base32 "1axywpa1jcpnidd86irpd1gdbbg2sfbwc652675xisq5wnmfmf6f"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -374,7 +378,7 @@ part of the distribution.")
 (define-public coq-coquelicot
   (package
     (name "coq-coquelicot")
-    (version "3.0.3")
+    (version "3.1.0")
     (source
      (origin
        (method git-fetch)
@@ -384,7 +388,7 @@ part of the distribution.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0m5wbr2s8lnf8b7cfwv15hyzsmbcaz6hgdn7aazcrkxnwr87vgkp"))))
+         "0mz3pxan1237fr5fi79c66y7b9z7bmi0sc45kwrmkczsjm5462jm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -427,7 +431,7 @@ theorems between the two libraries.")
 (define-public coq-bignums
   (package
     (name "coq-bignums")
-    (version "8.10.0")
+    (version "8.11.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -436,7 +440,7 @@ theorems between the two libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bpb4flckn4nqxbs3wjiznyx1k7r8k93qdigp3qwmikp2lxvcbw5"))))
+                "1xcd7c7qlvs0narfba6px34zq0mz8rffnhxw0kzhhg6i4iw115dp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -460,7 +464,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
 (define-public coq-interval
   (package
     (name "coq-interval")
-    (version "3.4.1")
+    (version "4.0.0")
     (source
      (origin
        (method git-fetch)
@@ -470,7 +474,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03q3dfqi3r3f7aji5s06ig4aav9ajcwswwdzi5lrgr69z0m487k4"))))
+         "01iz6qmnsm6b9s1vmdjs79vjx9xgwzn5rwyjp6bvs8hg3zlmhpip"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -556,16 +560,16 @@ uses Ltac to synthesize the substitution operation.")
 (define-public coq-equations
   (package
     (name "coq-equations")
-    (version "1.2.1")
+    (version "1.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/mattam82/Coq-Equations")
-                    (commit (string-append "v" version "-8.10-2"))))
+                    (commit (string-append "v" version "-8.11"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j3z4l5nrbyi9zbbyqkc6kassjanwld2188mwmrbqspaypm2ys68"))))
+                "1srxz1rws8jsh7402g2x2vcqgjbbsr64dxxj5d2zs48pmhb20csf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml"  ,ocaml)
