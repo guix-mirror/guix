@@ -741,6 +741,36 @@ for the Go language.")
 processing.")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-sync
+  (let ((commit "6e8e738ad208923de99951fe0b48239bfd864f28")
+        (revision "1"))
+    (package
+      (name "go-golang-org-x-sync")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/sync")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1avk27pszd5l5df6ff7j78wgla46ir1hhy2jwfl9a3c0ys602yx9"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/sync"
+         #:tests? #f
+         ;; Source-only package
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
+      (synopsis "Additional Go concurrency primitives")
+      (description "This package provides Go concurrency primitives in addition
+to the ones provided by the language and “sync” and “sync/atomic”
+packages.")
+      (home-page "https://go.googlesource.com/sync/")
+      (license license:bsd-3))))
+
 (define-public go-golang-org-x-sys
   (let ((commit "c709ea063b76879dc9915358f55d4d77c16ab6d5")
         (revision "6"))
