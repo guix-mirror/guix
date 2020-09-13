@@ -1291,6 +1291,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/luajit-no_ldconfig.patch			\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/lvm2-static-link.patch			\
+  %D%/packages/patches/mailutils-fix-uninitialized-variable.patch	\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mariadb-client-test-32bit.patch		\
   %D%/packages/patches/mars-install.patch			\

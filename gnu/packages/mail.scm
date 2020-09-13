@@ -197,7 +197,10 @@ example, modify the message headers or body, or encrypt or sign the message.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "17smrxjdgbbzbzakik30vj46q4iib85ksqhb82jr4vjp57akszh9"))))
+               "17smrxjdgbbzbzakik30vj46q4iib85ksqhb82jr4vjp57akszh9"))
+             (patches
+              ;; Fixes https://issues.guix.gnu.org/43088.
+              (search-patches "mailutils-fix-uninitialized-variable.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
