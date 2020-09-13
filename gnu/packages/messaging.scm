@@ -1788,11 +1788,13 @@ are both supported).")
      `(#:configure-flags
        (list
         "--enable-notifications"
+        "--enable-python-plugins"
         "--enable-c-plugins"
+        "--enable-plugins"
         "--enable-otr"
         "--enable-pgp"
         "--enable-omemo"
-        "--enable-icons")))
+        "--enable-icons-and-clipboard")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)
@@ -1812,6 +1814,7 @@ are both supported).")
        ("libsignal-protocol-c" ,libsignal-protocol-c)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
+       ("python" ,python-wrapper)
        ("readline" ,readline)
        ("sqlite" ,sqlite)))
     (synopsis "Console-based XMPP client")
