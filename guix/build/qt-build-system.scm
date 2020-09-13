@@ -111,7 +111,10 @@ add a dependency of that output on Qt."
   (define (find-files-to-wrap directory)
     (append-map
      (lambda (dir)
-       (if (directory-exists? dir) (find-files dir ".*") (list)))
+       (if (directory-exists? dir)
+           (find-files dir (lambda (file stat)
+                             (not (wrapped-program? file))))
+           '()))
      (list (string-append directory "/bin")
            (string-append directory "/sbin")
            (string-append directory "/libexec")
