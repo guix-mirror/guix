@@ -196,7 +196,7 @@ representation."
 (define-record-type* <zram-device-configuration>
   zram-device-configuration make-zram-device-configuration
   zram-device-configuration?
-  (size                     zram-device-configration-size
+  (size                     zram-device-configuration-size
                             (default "1G"))     ; string or integer
   (compression-algorithm    zram-device-configuration-compression-algorithm
                             (default 'lzo))     ; symbol
