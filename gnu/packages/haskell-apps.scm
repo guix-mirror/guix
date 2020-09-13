@@ -775,7 +775,7 @@ too slow and you'll get wound up in the scroll and crushed.")
 (define-public shellcheck
   (package
     (name "shellcheck")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
@@ -783,7 +783,7 @@ too slow and you'll get wound up in the scroll and crushed.")
              "https://hackage.haskell.org/package/ShellCheck/ShellCheck-"
              version ".tar.gz"))
        (sha256
-        (base32 "1vx895cp5k5h0680xfwj74lk97m9y627n965x6srds0gfnbkzy9s"))
+        (base32 "06m4wh891nah3y0br4wh3adpsb16zawkb2ijgf1vcz61fznj6ps1"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system haskell-build-system)
     (inputs
