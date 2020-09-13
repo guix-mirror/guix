@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1290,7 +1291,7 @@ to the OSM opening hours specification.")
               (modules '((guix build utils)))
             (snippet
              '(begin
-		(for-each delete-file (find-files "." ".*.jar$"))
+                (for-each delete-file (find-files "." ".*.jar$"))
                 #t))))
     (build-system ant-build-system)
     (native-inputs
@@ -1339,7 +1340,8 @@ to the OSM opening hours specification.")
                        (filter
                          (lambda (s)
                            (let ((source (assoc-ref inputs "source")))
-                             (not (equal? (substring s 0 (string-length source)) source))))
+                             (not (equal? (substring s 0 (string-length source))
+                                          source))))
                          (string-split (getenv "CLASSPATH") #\:))
                        ":"))
              #t))
@@ -1385,6 +1387,19 @@ to the OSM opening hours specification.")
                    (string-append "Revision: " ,version "\n"
                                   "Is-Local-Build: true\n"
                                   "Build-Date: 1970-01-01 00:00:00 +0000\n"))))
+             #t))
+         (add-after 'install 'install-share-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (share-directories '("applications" "icons" "man" "menu"
+                                        "metainfo" "mime" "pixmaps")))
+               (for-each (lambda (directory)
+                           (copy-recursively (string-append
+                                              "native/linux/tested/usr/share/"
+                                              directory)
+                                             (string-append
+                                              out "/share/" directory)))
+                         share-directories))
              #t))
          (add-after 'install 'install-bin
            (lambda* (#:key outputs inputs #:allow-other-keys)
