@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
-;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2019, 2020 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Alva <alva@skogen.is>
@@ -951,19 +951,16 @@ designed to work well in user interface environments.")
 (define-public font-adobe-source-sans-pro
   (package
     (name "font-adobe-source-sans-pro")
-    (version "2.040R-ro-1.090R-it")
+    (version "3.028R")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/adobe-fonts/source-sans-pro")
-             (commit (regexp-substitute/global
-                      ;; The upstream tag uses "/" between the roman and italic
-                      ;; versions, so substitute our "-" separator here.
-                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lzin2hfwidbvhps7shs201p1bpxy6220xmhhprv9fc8bknd4c45"))))
+        (base32 "0lgjqi4d5p1q1z00ad807v5qy4z54gmp7jpdaypc0rxk8czv6zq7"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-sans-pro")
     (synopsis
