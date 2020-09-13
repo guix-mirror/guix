@@ -8743,8 +8743,7 @@ interface for MySQL, PostgreSQL and SQLite.")
        ("uffi" ,sbcl-uffi)
        ("zlib" ,zlib)))
     (arguments
-     `(#:asd-files '("clsql-cffi.asd"
-                     "clsql.asd"
+     `(#:asd-files '("clsql.asd"
                      "clsql-uffi.asd"
                      "clsql-sqlite3.asd"
                      "clsql-postgresql.asd"
@@ -8752,8 +8751,7 @@ interface for MySQL, PostgreSQL and SQLite.")
                      "clsql-mysql.asd")
        #:asd-systems '("clsql"
                        "clsql-sqlite3"
-                       ;; TODO: Find why postgresql-sql.lisp fails to compile.
-                       ;;"clsql-postgresql"
+                       "clsql-postgresql"
                        "clsql-postgresql-socket3"
                        "clsql-mysql")
        #:phases
@@ -8761,6 +8759,15 @@ interface for MySQL, PostgreSQL and SQLite.")
          (add-after 'unpack 'fix-permissions
            (lambda _
              (make-file-writable "doc/html.tar.gz")
+             #t))
+         (add-after 'unpack 'fix-build
+           (lambda _
+             (substitute* "clsql-uffi.asd"
+               (("\\(:version uffi \"2.0\"\\)")
+                "uffi"))
+             (substitute* "db-postgresql/postgresql-api.lisp"
+               (("\\(data :cstring\\)")
+                "(data :string)"))
              #t))
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
