@@ -169,7 +169,7 @@ Rust, using gimli.")
     (arguments
      `(#:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))
        #:cargo-development-inputs
        (("rust-bencher" ,rust-bencher-0.1)
         ("rust-rand" ,rust-rand-0.4))))
@@ -1035,7 +1035,7 @@ in Rust.")
         ("rust-memmap" ,rust-memmap-0.7)
         ("rust-rustc-demangle" ,rust-rustc-demangle-0.1)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/rust-lang/backtrace-rs")
@@ -1063,7 +1063,7 @@ trace (backtrace) at runtime in a Rust program.")
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
         ("rust-cc" ,rust-cc-1))))
     (home-page "https://github.com/rust-lang/backtrace-rs")
     (synopsis "Bindings to the libbacktrace gcc library")
@@ -2929,7 +2929,7 @@ archive to be linked into Rustcode.")
     (arguments
      `(#:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
     (home-page "https://github.com/alexcrichton/cfg-if")
     (synopsis "Define an item depending on parameters")
     (description "This package provides a macro to ergonomically define an item
@@ -3488,7 +3488,7 @@ CMAKE environmental variable is set.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
+       (("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
         ("rust-cc" ,rust-cc-1))))
     (home-page "https://github.com/rust-lang/compiler-builtins")
     (synopsis "Compiler intrinsics used by the Rust compiler")
@@ -8580,7 +8580,7 @@ API library @code{gdi32}.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-unicode-width" ,rust-unicode-width-0.1)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
         ("rust-rustc-std-workspace-std" ,rust-rustc-std-workspace-std-1.0))
        #:cargo-development-inputs
        (("rust-log" ,rust-log-0.3))))
@@ -8614,7 +8614,7 @@ API library @code{gdi32}.")
         ("rust-log" ,rust-log-0.4)
         ("rust-stdweb" ,rust-stdweb-0.4)
         ("rust-wasi" ,rust-wasi-0.9)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
     (home-page "https://github.com/rust-random/getrandom")
     (synopsis "Retrieve random data from system source")
     (description
@@ -9471,7 +9471,7 @@ the template engine that renders the official Rust website")
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1.0)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
@@ -9595,7 +9595,7 @@ consistent, and reasonably well performing.")
        #:cargo-inputs
         (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
          ("rust-libc" ,rust-libc-0.2)
-         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
+         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
     (home-page "https://github.com/hermitcore/rusty-hermit")
     (synopsis "Small interface to call functions from RustyHermit")
     (description
@@ -11420,7 +11420,7 @@ requires non-const function calls to be computed.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
+       (("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
     (home-page "https://github.com/rust-lang/libc")
     (synopsis "Raw FFI bindings to platform libraries like libc")
     (description
@@ -20060,7 +20060,7 @@ It is automatically published using the compiler repository at
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
     (home-page "https://github.com/alexcrichton/rustc-demangle")
     (synopsis "Rust compiler symbol demangling")
     (description
@@ -20211,7 +20211,7 @@ decoding.")
     (description "This package is a Rust workspace hack.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-rustc-std-workspace-core-1.0
+(define-public rust-rustc-std-workspace-core-1
   (package
     (name "rust-rustc-std-workspace-core")
     (version "1.0.0")
@@ -26386,7 +26386,7 @@ boundaries according to Unicode Standard Annex #29 rules.")
     (arguments
      `(#:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
         ("rust-rustc-std-workspace-std" ,rust-rustc-std-workspace-std-1.0))))
     (home-page "https://github.com/unicode-rs/unicode-width")
     (synopsis "Determine displayed width according to Unicode rules")
@@ -27298,7 +27298,7 @@ specified across Unix and Windows platforms.")
        #:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
         ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1.0)
-        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
     (home-page "https://github.com/bytecodealliance/wasi")
     (synopsis "Experimental WASI API bindings for Rust")
     (description
