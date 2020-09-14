@@ -155,6 +155,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -1028,7 +1029,7 @@ Library reference documentation.")
 (define-public phodav
   (package
    (name "phodav")
-   (version "2.4")
+   (version "2.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1036,10 +1037,21 @@ Library reference documentation.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1hxq8c5qfah3w7mxcyy3yhzdgswplll31a69p5mqdl04bsvw5pbx"))))
+              "045rdzf8isqmzix12lkz6z073b5qvcqq6ad028advm5gf36skw3i"))))
    (build-system meson-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'check 'start-virtual-dir-server
+          ;; The same server when started by tests/virtual-dir returns an
+          ;; unexpected status (4 instead of 200) and fails a test.  It is
+          ;; unclear why starting it manually here makes it pass.
+          (lambda _
+            (system "tests/virtual-dir-server &")
+            #t)))))
    (native-inputs
-    `(("gettext" ,gettext-minimal)
+    `(("docbook-xml" ,docbook-xml-4.3)
+      ("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
       ("gtk-doc" ,gtk-doc)
       ("pkg-config" ,pkg-config)))
@@ -2907,7 +2919,13 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
     (description "Glade is a rapid application development (RAD) tool to
 enable quick & easy development of user interfaces for the GTK+ toolkit and
 the GNOME desktop environment.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.0+)
+    (native-search-paths (list (search-path-specification
+                                (variable "GLADE_CATALOG_SEARCH_PATH")
+                                (files '("share/glade/catalogs")))
+                               (search-path-specification
+                                (variable "GLADE_MODULE_SEARCH_PATH")
+                                (files '("lib/glade/modules")))))))
 
 (define-public libcroco
   (package
@@ -4033,7 +4051,7 @@ libraries written in C.")
 (define-public vala-0.48
   (package
     (inherit vala)
-    (version "0.48.7")
+    (version "0.48.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vala/"
@@ -4041,7 +4059,7 @@ libraries written in C.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "0lswkb7gj0chas9n3l3dbrm9l71hs77adhvm2v600id2ipi37pi8"))))))
+                "1agyrvslv2yh9ikiw7k5nw6j6il1l2zrzfan0pzdpb9xpg9idslw"))))))
 
 (define-public vte
   (package
@@ -4635,7 +4653,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.34.0")
+    (version "3.36.1")
     (source
      (origin
        (method url-fetch)
@@ -4643,8 +4661,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "1spxa6qr1y8s5rrsvpciywpvhk812ngn95s1apaxaigwy2g1iw54"))))
+        (base32 "0m2680r94nk61imym4x73j03jwfjd8cxm592m5ybiqdfdw6i723i"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -5158,7 +5175,7 @@ settings, themes, mouse settings, and startup of other daemons.")
 (define-public totem-pl-parser
  (package
    (name "totem-pl-parser")
-   (version "3.26.3")
+   (version "3.26.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/totem-pl-parser/"
@@ -5166,7 +5183,7 @@ settings, themes, mouse settings, and startup of other daemons.")
                                 "totem-pl-parser-" version ".tar.xz"))
             (sha256
              (base32
-              "13a45py2j1r9967zgww8kd24bn2fhycd4m3kzr90sxx9l2w03z8f"))))
+              "132jihnf51zs98yjkc6jxyqib4f3dawpjm17g4bj4j78y93dww2k"))))
    (build-system meson-build-system)
    (arguments
     ;; FIXME: Tests require gvfs.
@@ -5646,16 +5663,15 @@ as possible!")
 (define-public grilo
   (package
     (name "grilo")
-    (version "0.3.10")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/grilo/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "grilo-" version ".tar.xz"))
        (sha256
-        (base32
-         "1s7ilyywf18q26aj5c4709kfizqywjlnacp4jzmj9v9i9kkv4i3y"))))
+        (base32 "0w8sq5g6g1rg85h53vbll8va70fcp6082mlpmy98aa03444ddyyv"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums and glib-genmarshal
@@ -5687,7 +5703,7 @@ for application developers.")
 (define-public grilo-plugins
   (package
     (name "grilo-plugins")
-    (version "0.3.10")
+    (version "0.3.11")
     (source
      (origin
        (method url-fetch)
@@ -5695,8 +5711,7 @@ for application developers.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "0jldaixc4kzycn5v8ixkjld1n0z3dp0l1p3vchgdwpvdvc7kcfw0"))))
+        (base32 "0wyd3n5mn7b77hxylkc3f62v01mlavh96901pz342hwrn42ydqnx"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -6169,7 +6184,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.36.4")
+    (version "3.36.6")
     (source
      (origin
        (method url-fetch)
@@ -6177,7 +6192,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "09gmzrlljdqkj3w6wa1c27wypy6j8z9dw3jzv9izfqvp38liibsn"))))
+        (base32 "0x9hzqnji5l966yy2k5gppl8hqasn3sd5an4sr8srjmncxcs80ys"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
@@ -8263,7 +8278,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "2.3.4")
+    (version "2.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker/"
@@ -8271,7 +8286,7 @@ easy, safe, and automatic.")
                                   "tracker-" version ".tar.xz"))
               (sha256
                (base32
-                "0vai0qz9jn3z5dlzysynwhbbmslp84ygdql81f5wfxxr98j54yap"))))
+                "1ixxyqjlv7pnl4j8g6b72fkbjvzfspza8y71ppkncry8i6xkr223"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -8333,7 +8348,7 @@ endpoint and it understands SPARQL. ")
 (define-public tracker-miners
   (package
     (name "tracker-miners")
-    (version "2.3.3")
+    (version "2.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker-miners/"
@@ -8341,7 +8356,7 @@ endpoint and it understands SPARQL. ")
                                   "/tracker-miners-" version ".tar.xz"))
               (sha256
                (base32
-                "06abxrnrz7xayykrabn135rpsm6z0fqw7gibrb9j09l6swlalwkl"))))
+                "10wy8d8ski52k809p7s6lbw72qmg05bbmhnl00vx4qrbzqyxvc0b"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -9159,7 +9174,7 @@ existing databases over the internet.")
        ("gtk+" ,gtk+)
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("libhandy" ,libhandy)
+       ("libhandy" ,libhandy-0.0)
        ("libnotify" ,libnotify)
        ("libsoup" ,libsoup)
        ("nautilus" ,nautilus)
@@ -10268,7 +10283,7 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
 (define-public libdazzle
   (package
     (name "libdazzle")
-    (version "3.34.1")
+    (version "3.37.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libdazzle/"
@@ -10276,7 +10291,7 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
                                   "libdazzle-" version ".tar.xz"))
               (sha256
                (base32
-                "01cmcrd75b7ns7j2b4p6h7pv68vjhkcl9zbvzzx7pf4vknxir61x"))))
+                "03r5cr11dc031qa3694bpgm3lajrhiiln67kvl7vjj4q0scf7w7x"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -10480,20 +10495,20 @@ advanced image management tool")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "0.0.12")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://source.puri.sm/Librem5/libhandy")
-             (commit (string-append "v" version))))
+             (url "https://gitlab.gnome.org/GNOME/libhandy")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09wlknarzsbk9hr5ws6s7x5kibkhx9ayrbhshfqib4zkhq2f76hw"))))
+        (base32 "193y09yy0302x8fkyrnq591m805xp68bkd93fl5qggxi52k8pj0v"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       '("-Dglade_catalog=disabled"
+       '("-Dglade_catalog=enabled"
          "-Dgtk_doc=true")
        #:phases
        (modify-phases %standard-phases
@@ -10504,7 +10519,9 @@ advanced image management tool")
              (setenv "DISPLAY" ":1")
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)))
+     `(("gtk+" ,gtk+)
+       ("glade" ,glade3)
+       ("libxml2" ,libxml2)))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-scanner
@@ -10522,6 +10539,24 @@ advanced image management tool")
 interfaces for mobile devices using GTK+.  It provides responsive GTK+ widgets
 for usage on small and big screens.")
     (license license:lgpl2.1+)))
+
+(define-public libhandy-0.0
+  (package
+    (inherit libhandy)
+    (version "0.0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/GNOME/libhandy")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "libhandy" version))
+       (sha256
+        (base32 "1y23k623sjkldfrdiwfarpchg5mg58smcy1pkgnwfwca15wm1ra5"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments libhandy)
+       ((#:configure-flags flags)
+        '(list "-Dglade_catalog=disabled" "-Dgtk_doc=true"))))))
 
 (define-public libgit2-glib
   (package
@@ -10897,7 +10932,7 @@ join_paths\\('build-aux', 'post_install.py'\\)\\)")
        ("json-glib" ,json-glib)
        ("libcanberra" ,libcanberra)
        ("libgee" ,libgee)
-       ("libhandy" ,libhandy)
+       ("libhandy" ,libhandy-0.0)
        ("libpeas" ,libpeas)
        ("libsecret" ,libsecret)
        ("libunwind" ,libunwind)
@@ -11335,4 +11370,71 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
 environment (IDE) for writing GNOME-based software.  It features fuzzy search,
 auto-completion, a mini code map, documentation browsing, Git integration, an
 integrated profiler via Sysprof, debugging support, and more.")
+    (license license:gpl3+)))
+
+(define-public komikku
+  (package
+    (name "komikku")
+    (version "0.19.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/valos/Komikku/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16d7k500nd9klnjqqcgk3glhv2sy78yndkz3n0x7lynvblsy45kk"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             (substitute* "komikku/utils.py"
+               (("from komikku\\.servers import get_servers_list")
+                ;; code following that line should migrate old databases
+                ;; but the line itself results in an import error
+                "return data_dir_path"))))
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((prog (string-append (assoc-ref outputs "out")
+                                       "/bin/komikku")))
+              (wrap-program prog
+                `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+              #t))))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libhandy" ,libhandy)
+       ("libnotify" ,libnotify)
+       ("libsecret" ,libsecret)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-cloudscraper" ,python-cloudscraper)
+       ("python-dateparser" ,python-dateparser)
+       ("python-keyring" ,python-keyring)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-pillow" ,python-pillow)
+       ("python-pure-protobuf" ,python-pure-protobuf)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-unidecode" ,python-unidecode)))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.com/valos/Komikku")
+    (synopsis "Manga reader for GNOME")
+    (description "Komikku is an online/offline manga reader for GNOME,
+developed with the aim of being used with the Librem 5 phone.")
     (license license:gpl3+)))

@@ -1013,7 +1013,10 @@ methods, return the applicable compression."
 ;;; Entry point.
 ;;;
 
-(define (guix-publish . args)
+(define-command (guix-publish . args)
+  (category packaging)
+  (synopsis "publish build results over HTTP")
+
   (with-error-handling
     (let* ((opts    (args-fold* args %options
                                 (lambda (opt name arg result)

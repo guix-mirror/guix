@@ -518,7 +518,7 @@ user's graphical desktop.")
 (define-public scrypt
   (package
     (name "scrypt")
-    (version "1.2.1")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
@@ -526,20 +526,24 @@ user's graphical desktop.")
                             version ".tgz"))
         (sha256
          (base32
-          "0xy5yhrwwv13skv9im9vm76rybh9f29j2dh4hlh2x01gvbkza8a6"))))
+          "1hnl0r6pmyxiy4dmafmqk1db7wpc0x9rqpzqcwr9d2cmghcj6byz"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-        (add-after 'unpack 'patch-command-invocations
+     `(#:license-file-regexp "COPYRIGHT"
+       #:phases (modify-phases %standard-phases
+        (add-after 'unpack 'patch-$PATH-assumptions
           (lambda _
+            (substitute* "configure"
+              (("\\{POSIX_PATH\\}")
+               "{PATH}"))
             (substitute* "Makefile.in"
               (("command -p") ""))
             #t))
         (add-after 'install 'install-docs
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref %outputs "out"))
-                   (misc (string-append out "/share/doc/scrypt")))
-              (install-file "FORMAT" misc)
+                   (doc (string-append out "/share/doc/" ,name "-" ,version)))
+              (install-file "FORMAT" doc)
               #t))))))
     (inputs
      `(("openssl" ,openssl)))
@@ -765,7 +769,7 @@ data on your platform, so the seed itself will be as random as possible.
                      "libdir=" out "/lib\n"
                      "includedir=" out "/include\n\n"
                      "Name: libcrypto++-" ,version "\n"
-                     "Description: Class library of cryptographic schemes"
+                     "Description: Class library of cryptographic schemes\n"
                      "Version: " ,version "\n"
                      "Libs: -L${libdir} -lcryptopp\n"
                      "Cflags: -I${includedir}\n"))
@@ -1056,6 +1060,58 @@ Features:
 @end itemize\n")
       (home-page "https://github.com/bitcoin-core/secp256k1")
       (license license:unlicense))))
+
+(define-public libsecp256k1-bitcoin-cash
+  (package
+    (name "libsecp256k1-bitcoin-cash")
+    (version "0.22.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Bitcoin-ABC/secp256k1")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rnif3iny6pz1r3g69bagzr342mm3x0v66b60csnmm1rg44bd5v1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     '(#:configure-flags '("--enable-module-recovery"
+                           "--enable-experimental"
+                           "--enable-module-ecdh"
+                           "--disable-jni"
+                           "--with-bignum=no"
+                           "--enable-module-schnorr"
+                           "--disable-static"
+                           "--enable-shared")))
+    (synopsis "Optimized C library for EC operations on curve secp256k1")
+    (description
+     "Optimized C library for cryptographic operations on curve secp256k1.
+
+This library is used for consensus critical cryptographic operations on the
+Bitcoin Cash network.
+
+Features:
+
+@itemize
+@item secp256k1 ECDSA signing/verification and key generation.
+@item secp256k1 Schnorr signing/verification (Bitcoin Cash Schnorr variant).
+@item Additive and multiplicative tweaking of secret/public keys.
+@item Serialization/parsing of secret keys, public keys, signatures.
+@item Constant time, constant memory access signing and pubkey generation.
+@item Derandomized ECDSA (via RFC6979 or with a caller provided function).
+@item Very efficient implementation.
+@item Suitable for embedded systems.
+@item Optional module for public key recovery.
+@item Optional module for ECDH key exchange (experimental).
+@item Optional module for multiset hash (experimental).
+@end itemize\n")
+    (home-page "https://github.com/Bitcoin-ABC/secp256k1")
+    (license license:expat)))
 
 (define-public stoken
   (package

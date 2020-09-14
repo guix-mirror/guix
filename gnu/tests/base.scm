@@ -55,7 +55,10 @@
 
 
 (define* (run-basic-test os command #:optional (name "basic")
-                         #:key initialization root-password)
+                         #:key
+                         initialization
+                         root-password
+                         desktop?)
   "Return a derivation called NAME that tests basic features of the OS started
 using COMMAND, a gexp that evaluates to a list of strings.  Compare some
 properties of running system to what's declared in OS, an <operating-system>.
@@ -300,6 +303,12 @@ info --version")
           (test-equal "login on tty1"
             "root\n"
             (begin
+              ;; XXX: On desktop, GDM3 will switch to TTY7. If this happens
+              ;; after we switched to TTY1, we won't be able to login. Make
+              ;; sure to wait long enough before switching to TTY1.
+              (when #$desktop?
+                (sleep 30))
+
               (marionette-control "sendkey ctrl-alt-f1" marionette)
               ;; Wait for the 'term-tty1' service to be running (using
               ;; 'start-service' is the simplest and most reliable way to do

@@ -175,39 +175,6 @@ manual."
   ;; Sub-directory used as the backing store for copy-on-write.
   "/tmp/guix-inst")
 
-(define (make-cow-store target)
-  "Return a gexp that makes the store copy-on-write, using TARGET as the
-backing store.  This is useful when TARGET is on a hard disk, whereas the
-current store is on a RAM disk."
-
-  (define (set-store-permissions directory)
-    ;; Set the right perms on DIRECTORY to use it as the store.
-    #~(begin
-        (chown #$directory 0 30000)             ;use the fixed 'guixbuild' GID
-        (chmod #$directory #o1775)))
-
-  #~(begin
-      ;; Bind-mount TARGET's /tmp in case we need space to build things.
-      (let ((tmpdir (string-append #$target "/tmp")))
-        (mkdir-p tmpdir)
-        (mount tmpdir "/tmp" "none" MS_BIND))
-
-      (let* ((rw-dir (string-append target #$%backing-directory))
-             (work-dir (string-append rw-dir "/../.overlayfs-workdir")))
-        (mkdir-p rw-dir)
-        (mkdir-p work-dir)
-        (mkdir-p "/.rw-store")
-        #$(set-store-permissions #~rw-dir)
-        #$(set-store-permissions "/.rw-store")
-
-        ;; Mount the overlay, then atomically make it the store.
-        (mount "none" "/.rw-store" "overlay" 0
-               (string-append "lowerdir=" #$(%store-prefix) ","
-                              "upperdir=" rw-dir ","
-                              "workdir=" work-dir))
-        (mount "/.rw-store" #$(%store-prefix) "" MS_MOVE)
-        (rmdir "/.rw-store"))))
-
 (define cow-store-service-type
   (shepherd-service-type
    'cow-store
@@ -222,13 +189,18 @@ the given target.")
       ;; This is meant to be explicitly started by the user.
       (auto-start? #f)
 
-      (start #~(case-lambda
-                 ((target)
-                  #$(make-cow-store #~target)
-                  target)
-                 (else
-                  ;; Do nothing, and mark the service as stopped.
-                  #f)))
+      (modules `((gnu build install)
+                 ,@%default-modules))
+      (start
+       (with-imported-modules (source-module-closure
+                               '((gnu build install)))
+         #~(case-lambda
+             ((target)
+              (mount-cow-store target #$%backing-directory)
+              target)
+             (else
+              ;; Do nothing, and mark the service as stopped.
+              #f))))
       (stop #~(lambda (target)
                 ;; Delete the temporary directory, but leave everything
                 ;; mounted as there may still be processes using it since

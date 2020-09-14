@@ -295,6 +295,33 @@ code."
         ((? file-system-label? label)
          (format #f "search --label --set ~a"
                  (file-system-label->string label)))
+        ((? (lambda (device)
+              (and (string? device) (string-contains device ":/"))) nfs-uri)
+         ;; This assumes that if your root file system is on NFS, then
+         ;; you also want to load your grub extra files, kernel and initrd
+         ;; from there.
+         ;;
+         ;; We explicitly set "root=(tftp)" here even though if grub.cfg
+         ;; had been loaded via TFTP, Grub would have set "root=(tftp)"
+         ;; automatically anyway.  The reason is if you have a system that
+         ;; used to be on NFS but now is local, root would be set to local
+         ;; disk.  If you then selected an older system generation that is
+         ;; supposed to boot from network in the Grub boot menu, Grub still
+         ;; wouldn't load those files from network otherwise.
+         ;;
+         ;; TFTP is preferred to HTTP because it is used more widely and
+         ;; specified in standards more widely--especially BOOTP/DHCPv4
+         ;; defines a TFTP server for DHCP option 66, but not HTTP.
+         ;;
+         ;; Note: DHCPv6 specifies option 59 to contain a boot-file-url,
+         ;; which can contain a HTTP or TFTP URL.
+         ;;
+         ;; Note: It is assumed that the file paths are of a similar
+         ;; setup on both the TFTP server and the NFS server (it is
+         ;; not possible to search for files on TFTP).
+         ;;
+         ;; TODO: Allow HTTP.
+         "set root=(tftp)")
         ((or #f (? string?))
          #~(format #f "search --file --set ~a" #$file)))))
 
@@ -506,6 +533,10 @@ fi~%"))))
 ;;;
 ;;; Bootloader definitions.
 ;;;
+;;; For all these grub-bootloader variables the path to /boot/grub/grub.cfg
+;;; is fixed.  Inheriting and overwriting the field 'configuration-file' will
+;;; break 'guix system delete-generations', 'guix system switch-generation',
+;;; and 'guix system roll-back'.
 
 (define grub-bootloader
   (bootloader
@@ -516,12 +547,12 @@ fi~%"))))
    (configuration-file "/boot/grub/grub.cfg")
    (configuration-file-generator grub-configuration-file)))
 
-(define* grub-minimal-bootloader
+(define grub-minimal-bootloader
   (bootloader
    (inherit grub-bootloader)
    (package grub-minimal)))
 
-(define* grub-efi-bootloader
+(define grub-efi-bootloader
   (bootloader
    (inherit grub-bootloader)
    (installer install-grub-efi)
@@ -529,7 +560,7 @@ fi~%"))))
    (name 'grub-efi)
    (package grub-efi)))
 
-(define* grub-mkrescue-bootloader
+(define grub-mkrescue-bootloader
   (bootloader
    (inherit grub-efi-bootloader)
    (package grub-hybrid)))

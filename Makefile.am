@@ -68,7 +68,6 @@ MODULES =					\
   guix/cpio.scm					\
   guix/deprecation.scm				\
   guix/docker.scm	   			\
-  guix/json.scm					\
   guix/records.scm				\
   guix/openpgp.scm				\
   guix/pki.scm					\
@@ -80,6 +79,7 @@ MODULES =					\
   guix/modules.scm				\
   guix/download.scm				\
   guix/discovery.scm				\
+  guix/android-repo-download.scm		\
   guix/bzr-download.scm            		\
   guix/git-download.scm				\
   guix/hg-download.scm				\
@@ -170,6 +170,7 @@ MODULES =					\
   guix/build/minify-build-system.scm		\
   guix/build/font-build-system.scm		\
   guix/build/go-build-system.scm		\
+  guix/build/android-repo.scm			\
   guix/build/asdf-build-system.scm		\
   guix/build/bzr.scm				\
   guix/build/copy-build-system.scm		\
@@ -335,10 +336,6 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/5.8-arm64.conf     \
   gnu/packages/aux-files/linux-libre/5.8-i686.conf      \
   gnu/packages/aux-files/linux-libre/5.8-x86_64.conf    \
-  gnu/packages/aux-files/linux-libre/5.7-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.7-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/5.7-i686.conf	\
-  gnu/packages/aux-files/linux-libre/5.7-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.4-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.4-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.4-i686.conf	\
@@ -838,6 +835,7 @@ release: dist-with-updated-version
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
 	    --file-system-type=iso9660							\
+	    --label="GUIX_$${system}_$(VERSION)"						\
             --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\

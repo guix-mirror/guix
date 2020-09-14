@@ -293,8 +293,7 @@ the Rust programming language.")
          (base32
           "19f8v503ibvlyr824g5ynicrh1lsmp2i0zmpszr8lqay0qw3vkl1"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-memchr" ,rust-memchr-2))
        #:cargo-development-inputs
        (("rust-csv" ,rust-csv-1.1)
@@ -1031,7 +1030,7 @@ Mac, and Unix.")
 (define-public rust-autocfg-1.0
   (package
     (name "rust-autocfg")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
@@ -1040,7 +1039,7 @@ Mac, and Unix.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "17cv6pwb4q08s0ynpr4n8hv5299hcmhdgvdchzixfpw8y5qcgapq"))))
+         "0jj6i9zn4gjl03kjvziqdji6rwx8ykz8zk2ngpc331z2g3fk3c6d"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/cuviper/autocfg")
     (synopsis
@@ -1172,7 +1171,7 @@ trace (backtrace) at runtime in a Rust program.")
 (define-public rust-backtrace-sys-0.1
   (package
     (name "rust-backtrace-sys")
-    (version "0.1.35")
+    (version "0.1.37")
     (source
       (origin
         (method url-fetch)
@@ -1180,7 +1179,7 @@ trace (backtrace) at runtime in a Rust program.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "066iviphi72mx9hd3njzsplk5v45jhi10mrccbbyij391ahsps3x"))))
+          "16a3igz22q9lnnjjr77f4k8ci48v8zdwrs67khx3h7wx3jzfpyqq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -2315,7 +2314,7 @@ in a byte slice, fast.")
 (define-public rust-bytemuck-1
   (package
     (name "rust-bytemuck")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
@@ -2324,13 +2323,44 @@ in a byte slice, fast.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1scaac5xbfynzbpvz9yjbmg9ag2jalxfijapwlqh7xldf4li0ynv"))))
+          "071043n73hwi55z9c55ga4v52v8a7ri56gqja8r98clkdyxns14j"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytemuck-derive" ,rust-bytemuck-derive-1))))
     (home-page "https://github.com/Lokathor/bytemuck")
     (synopsis "Crate for mucking around with piles of bytes")
     (description
      "This package provides a crate for mucking around with piles of bytes.")
     (license license:zlib)))
+
+(define-public rust-bytemuck-derive-1
+  (package
+    (name "rust-bytemuck-derive")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bytemuck-derive" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1k59b6g2d87nf32qwhp73vng3al0zklxg64iiwf0pkxy74xf5ni8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-bytemuck" ,rust-bytemuck-1))))
+    (home-page "https://github.com/Lokathor/bytemuck")
+    (synopsis "Derive proc-macros for @code{bytemuck}")
+    (description
+     "This package derives proc-macros for the @code{bytemuck} crate.")
+    (license
+      (list license:zlib license:asl2.0 license:expat))))
 
 (define-public rust-byteorder-1.3
   (package
@@ -2481,7 +2511,7 @@ exposed as Reader/Writer streams.")
 (define-public rust-bzip2-sys-0.1
   (package
     (name "rust-bzip2-sys")
-    (version "0.1.7")
+    (version "0.1.9+1.0.8")
     (source
      (origin
        (method url-fetch)
@@ -2490,11 +2520,11 @@ exposed as Reader/Writer streams.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0pz2mdhkk8yphiqdh2kghdxb60kqyd10lfrjym3r4k5dylvam135"))
+         "0pi8lxzb1104q9cpvv1jgnk909cggqh2zcdhywqwlbq6c2i3jfxd"))
         (modules '((guix build utils)))
         (snippet
          '(begin
-            (delete-file-recursively "bzip2-1.0.6")
+            (delete-file-recursively "bzip2-1.0.8")
             (delete-file "build.rs")
             ;; Inspired by Debian's patch.
             (with-output-to-file "build.rs"
@@ -2507,7 +2537,8 @@ exposed as Reader/Writer streams.")
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-cc" ,rust-cc-1))))
+        ("rust-cc" ,rust-cc-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (home-page "https://github.com/alexcrichton/bzip2-rs")
     (synopsis "Rust bindings to libbzip2")
     (description
@@ -5049,7 +5080,7 @@ Transparency logs for use with sct crate.")
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-libnghttp2-sys" ,rust-libnghttp2-sys-0.1)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-cc" ,rust-cc-1)
@@ -7408,7 +7439,7 @@ cross platform API.")
         ("rust-crc32fast" ,rust-crc32fast-1.2)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-miniz-sys" ,rust-miniz-sys-0.1)
         ("rust-miniz-oxide" ,rust-miniz-oxide-0.3)
         ("rust-tokio-io" ,rust-tokio-io-0.1))
@@ -7790,7 +7821,7 @@ values to other threads.")
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (inputs
      `(("freetype" ,freetype)
@@ -8964,6 +8995,37 @@ retrieving random data from system source.")
     (home-page "https://github.com/Koka/gettext-rs")
     (synopsis "Gettext raw FFI bindings")
     (description "This package provides raw FFI bindings for GNU Gettext.")
+    (license license:expat)))
+
+(define-public rust-gfa-0.6
+  (package
+    (name "rust-gfa")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gfa" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ghmy4r0324s6vvmj9nmh326346nkwm7nybnpcpswnjvf02b85gw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bstr" ,rust-bstr-0.2)
+        ("rust-bytemuck" ,rust-bytemuck-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-nom" ,rust-nom-5)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/chfi/rs-gfa")
+    (synopsis "Library for graphs in the GFA (Graphical Fragment Assembly) format")
+    (description
+     "This package provides a library for working with graphs in the
+@acronym{GFA, Graphical Fragment Assembly} format.")
     (license license:expat)))
 
 (define-public rust-gfx-0.18
@@ -12455,7 +12517,7 @@ macros on libc without stdlib.")
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-libssh2-sys" ,rust-libssh2-sys-0.2)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ;; Build dependencies:
@@ -12518,7 +12580,7 @@ macros on libc without stdlib.")
        (("rust-curl-sys" ,rust-curl-sys-0.4)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-libssh2-sys" ,rust-libssh2-sys-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))))
@@ -12615,7 +12677,7 @@ functions and static variables these libraries contain.")
 (define-public rust-libnghttp2-sys-0.1
   (package
     (name "rust-libnghttp2-sys")
-    (version "0.1.2")
+    (version "0.1.4+1.41.0")
     (source
       (origin
         (method url-fetch)
@@ -12623,18 +12685,30 @@ functions and static variables these libraries contain.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0qr4lyh7righx9n22c7amlcpk906rn1jnb2zd6gdfpa3yi24s982"))
+          "1wcd93a8cw1h9y25834160y6ng982fi0qcd277hpjvhnvz34wqh3"))
         (modules '((guix build utils)))
         (snippet
-         '(begin (delete-file-recursively "nghttp2") #t))))
+         '(begin
+            (delete-file-recursively "nghttp2")
+            (substitute* "Cargo.toml"
+              (("false")
+               "false\n[build-dependencies.pkg-config]\nversion = \"0.3\"\n"))
+            (delete-file "build.rs")
+            (with-output-to-file "build.rs"
+              (lambda _
+                (format #t "fn main() {~@
+                        println!(\"cargo:rustc-link-lib=nghttp2\");~@
+                        }~%")))
+                 #t))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t     ; Uses unstable features
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-cc" ,rust-cc-1))))
+        ("rust-cc" ,rust-cc-1)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (inputs
-     `(("nghttp2" ,nghttp2)))
+     `(("nghttp2" ,nghttp2 "lib")
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/alexcrichton/nghttp2-rs")
     (synopsis "FFI bindings for libnghttp2 (nghttp2)")
     (description
@@ -12668,10 +12742,10 @@ functions and static variables these libraries contain.")
     (description "Native bindings to the libsqlite3 library")
     (license license:expat)))
 
-(define-public rust-libz-sys-1.0
+(define-public rust-libz-sys-1
   (package
     (name "rust-libz-sys")
-    (version "1.0.25")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
@@ -12679,16 +12753,19 @@ functions and static variables these libraries contain.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1gjycyl2283525abks98bhxa4r259m617xfm5z52p3p3c8ry9d9f"))
+          "1q25cb8vs113si7q2p0innhi8jk0wpq37hqi2wcc219hcmw43cr3"))
         (modules '((guix build utils)))
         (snippet
-         '(begin (delete-file-recursively "src/zlib") #t))))
+         '(begin (delete-file-recursively "src/zlib")
+                 (delete-file-recursively "src/zlib-ng")
+                 #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1)
+        ("rust-cmake" ,rust-cmake-0.1)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
@@ -12830,7 +12907,7 @@ pairs in insertion order.")
 (define-public rust-libssh2-sys-0.2
   (package
     (name "rust-libssh2-sys")
-    (version "0.2.14")
+    (version "0.2.19")
     (source
       (origin
         (method url-fetch)
@@ -12838,7 +12915,7 @@ pairs in insertion order.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "042gsgbvxgm5by4mk906j3zm4qdvzcfhjxrb55is1lrr6f0nxain"))
+          "0mkhw4pksbz7gldj8hia7k6npc479n1x09i8r0pm275sac424ina"))
         (modules '((guix build utils)))
         (snippet
          '(begin (delete-file-recursively "libssh2") #t))))
@@ -12846,7 +12923,7 @@ pairs in insertion order.")
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ;; Build dependencies:
         ("rust-cc" ,rust-cc-1)
@@ -16008,21 +16085,21 @@ system for OpenSSL.")
 (define-public rust-openssl-sys-0.9
   (package
     (name "rust-openssl-sys")
-    (version "0.9.53")
+    (version "0.9.58")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "openssl-sys" version))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32 "0vvk8vzrc73y8n5rf4yj3x8ygyxjaz7wxrbxiwqi7qy0gyp1cpa6"))
+         (base32 "1pkq3x8w16kqvkg75g4w7nny56w9clssww0ibpzg015n153xnhm8"))
         (patches (search-patches "rust-openssl-sys-no-vendor.patch"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ;; Build dependencies:
-        ("rust-autocfg" ,rust-autocfg-0.1)
+        ("rust-autocfg" ,rust-autocfg-1.0)
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))
@@ -17040,7 +17117,7 @@ in pure Rust.")
 (define-public rust-pcre2-sys-0.2
   (package
     (name "rust-pcre2-sys")
-    (version "0.2.2")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
@@ -17049,7 +17126,7 @@ in pure Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0nwdvc43dkb89qmm5q8gw1zyll0wsfqw7kczpn23mljra3874v47"))
+         "08mp6yxrvadplwd0drdydzskvzapr6dri9fyy7xvhzn3krg0xhyy"))
        (modules '((guix build utils)))
        (snippet
         '(begin (delete-file-recursively "pcre2") #t))))

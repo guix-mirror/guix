@@ -355,7 +355,10 @@ output port."
 ;;; Entry point.
 ;;;
 
-(define (guix-archive . args)
+(define-command (guix-archive . args)
+  (category plumbing)
+  (synopsis "manipulate, export, and import normalized archives (nars)")
+
   (define (lines port)
     ;; Return lines read from PORT.
     (let loop ((line   (read-line port))

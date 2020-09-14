@@ -1,0 +1,59 @@
+Removes references to bundled libuv.
+
+--- a/src/Makevars	2020-07-31 11:53:30.576484531 +0200
++++ b/src/Makevars	2020-07-31 11:54:19.369863118 +0200
+@@ -5,7 +5,7 @@
+ 
+ UNAME := $(shell uname)
+ 
+-PKG_LIBS = ./libuv/.libs/libuv.a ./http-parser/http_parser.o ./sha1/sha1.o ./base64/base64.o -pthread
++PKG_LIBS = -luv ./http-parser/http_parser.o ./sha1/sha1.o ./base64/base64.o -pthread
+ 
+ ifeq ($(UNAME), Darwin)
+ PKG_LIBS += -framework CoreServices
+@@ -23,7 +23,7 @@
+ 
+ PKG_CFLAGS = $(C_VISIBILITY) -DSTRICT_R_HEADERS
+ PKG_CXXFLAGS = $(CXX_VISIBILITY) -DSTRICT_R_HEADERS
+-PKG_CPPFLAGS = -Ilibuv/include -pthread
++PKG_CPPFLAGS = -pthread
+ 
+ # To avoid spurious warnings from `R CMD check --as-cran`, about compiler
+ # warning flags like -Werror.
+@@ -43,35 +43,5 @@
+ # PKG_CPPFLAGS += -D_GLIBCXX_ASSERTIONS
+ 
+ 
+-$(SHLIB): libuv/.libs/libuv.a http-parser/http_parser.o sha1/sha1.o base64/base64.o
++$(SHLIB): http-parser/http_parser.o sha1/sha1.o base64/base64.o
+ 
+-# We needed to rename lt~obsolete.m4 because the name causes problems with R
+-# CMD check. Here we rename it back.
+-libuv/m4/lt~obsolete.m4: libuv/m4/lt_obsolete.m4
+-	cp -p -f libuv/m4/lt_obsolete.m4 libuv/m4/lt~obsolete.m4
+-
+-# Run ./configure. We need to touch various autotools-related files to avoid
+-# it trying to run autotools programs again. We also need to make sure
+-# configure is executable, because on some platforms, calling unzip() in R
+-# does not preserve the executable bit.
+-#
+-# It's VERY IMPORTANT that mtime(aclocal.m4) <= mtime(configure), and also
+-# mtime(aclocal.m4) <= mtime(Makefile.in). On some platforms, passing multiple
+-# files to a single touch command gives them all the same time, but on others
+-# (Solaris and possibly some Fedoras) the timestamps are slightly increasing
+-# from one to the next, i.e. the order matters. To remove this fragility, we
+-# use "-r aclocal.m4" to ensure that all three files are guaranteed to have
+-# precisely the same timestamp value.
+-libuv/Makefile: libuv/m4/lt~obsolete.m4
+-	(cd libuv \
+-		&& touch aclocal.m4 \
+-		&& touch -r aclocal.m4 configure Makefile.in \
+-		&& chmod +x configure \
+-		&& CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS) $(C_VISIBILITY)" AR="$(AR)" RANLIB="$(RANLIB)" LDFLAGS="$(LDFLAGS)" ./configure $(CONFIGURE_FLAGS))
+-
+-libuv/.libs/libuv.a: libuv/Makefile
+-	$(MAKE) --directory=libuv \
+-		HAVE_DTRACE=0
+-
+-clean:
+-	$(MAKE) --directory=libuv distclean

@@ -228,7 +228,8 @@ as base32.  Otherwise, it must be a bytevector."
 (define (print-content-hash hash port)
   (format port "#<content-hash ~a:~a>"
           (content-hash-algorithm hash)
-          (bytevector->nix-base32-string (content-hash-value hash))))
+          (and=> (content-hash-value hash)
+                 bytevector->nix-base32-string)))
 
 (set-record-type-printer! <content-hash> print-content-hash)
 

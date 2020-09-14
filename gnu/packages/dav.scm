@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,29 +24,45 @@
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages sphinx))
+  #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages time)
+  #:use-module (gnu packages xml))
 
 (define-public radicale
   (package
     (name "radicale")
-    (version "1.1.6")
-    (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "Radicale" version))
-             (sha256
-              (base32
-               "0ay90nj6fmr2aq8imi0mbjl4m2rzq7a83ikj8qs9gxsylj71j1y0"))))
+    (version "3.0.4")
+    (source
+     (origin
+       ;; There are no tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kozea/Radicale")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hj9mmhrj32mzhxlnjcfijb7768cyjsn603nalp54clgb2gkmvw8"))))
     (build-system python-build-system)
-    (arguments
-     '(#:tests? #f)) ; The tests are not distributed in the PyPi release.
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-waitress" ,python-waitress)))
     (propagated-inputs
-      ;; TODO: Add python-pam
-     `(("python-requests" ,python-requests)))
+     `(("python-dateutil" ,python-dateutil)
+       ("python-defusedxml" ,python-defusedxml)
+       ("python-passlib" ,python-passlib)
+       ("python-vobject" ,python-vobject)))
     (synopsis "Basic CalDAV and CardDAV server")
     (description "Radicale is a CalDAV and CardDAV server for UNIX-like
 platforms.  Calendars and address books are available for both local and remote
@@ -56,6 +73,44 @@ Radicale intentionally does not fully comply with the CalDAV and CardDAV RFCs.
 Instead, it supports the CalDAV and CardDAV implementations of popular
 clients.")
     (home-page "https://radicale.org/")
+    (license gpl3+)))
+
+(define-public xandikos
+  (package
+    (name "xandikos")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xandikos" version))
+       (sha256
+        (base32 "13ikmcja9p42azb5ccqj2bw98zybna6zlflj10hqy0kvbib70l94"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-defusedxml" ,python-defusedxml)
+       ("python-dulwich" ,python-dulwich)
+       ("python-icalendar" ,python-icalendar)
+       ("python-jinja2" ,python-jinja2)
+       ("python-multidict" ,python-multidict)))
+    (home-page "https://www.xandikos.org/")
+    (synopsis "Lightweight CalDAV/CardDAV server")
+    (description
+     "Xandikos is a lightweight yet complete CardDAV/CalDAV server that backs
+onto a Git repository.
+
+Features:
+
+@itemize
+@item Easy to set up
+@item Share calendars (events, todo items, journal entries) via CalDAV and
+contacts (vCard) via CardDAV
+@item Automatically keep history and back up changes in Git
+@item Supports synchronization extensions for CalDAV/CardDAV for quick and
+efficient syncing
+@item Automatically keep history and back up
+@item Works with all tested CalDAV and CardDAV clients
+@end itemize")
     (license gpl3+)))
 
 (define-public vdirsyncer

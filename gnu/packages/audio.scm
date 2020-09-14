@@ -108,6 +108,7 @@
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim) ;xxd
+  #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xiph)
@@ -298,7 +299,7 @@ Linux kernel.")
 (define-public libopenmpt
   (package
     (name "libopenmpt")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -306,8 +307,20 @@ Linux kernel.")
         (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
                        "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "1vpalfsrkbx4vyrh1qy564lr91jwdxlbjivv5gzf8zcywxasf0xa"))))
+        (base32 "1cwpc4j90dpxa2siia68rg9qwwm2xk6bhxnslfjj364507jy6s4l"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'delete-static-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (for-each delete-file (find-files lib "\\.a$"))
+               #t))))))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("perl" ,perl)
@@ -1810,7 +1823,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.38.1")
+    (version "0.41.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1818,28 +1831,14 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0bw7xnrx062nwb1bfj9x660h7069ncmz77szcs8icpqxrvhs7z80"))))
+               "0qsfbyrrpb3bbdyq68k28mjql7kglxh8nqcw9jvja28x6x9ik5a0"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:python ,python-2
        #:configure-flags
        (list
         ;; Add the output lib directory to the RUNPATH.
-        (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-boost-includes
-           (lambda _
-             (substitute* "src/headers/gx_internal_plugins.h"
-               (("namespace gx_jack" m)
-                (string-append "#include <boost/noncopyable.hpp>\n" m)))
-             (substitute* '("src/headers/gx_system.h"
-                            "src/headers/gx_parameter.h"
-                            "src/headers/gx_json.h")
-               (("namespace gx_system" m)
-                (string-append "#include <boost/noncopyable.hpp>\n" m)))
-             #t)))))
+        (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("boost" ,boost)
@@ -1850,8 +1849,8 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        ("lilv" ,lilv)
        ("ladspa" ,ladspa)
        ("jack" ,jack-1)
-       ("gtkmm" ,gtkmm-2)
-       ("gtk+" ,gtk+-2)
+       ("gtkmm" ,gtkmm)
+       ("gtk+" ,gtk+)
        ("fftwf" ,fftwf)
        ("lrdf" ,lrdf)
        ("zita-resampler" ,zita-resampler)
@@ -1861,7 +1860,8 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        ("faust" ,faust)
        ("intltool" ,intltool)
        ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("sassc" ,sassc)))
     (native-search-paths
      (list (search-path-specification
             (variable "LV2_PATH")
@@ -4013,14 +4013,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "20.6")
+    (version "20.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "1h4dsq5xcvwjbnayhn719cln0lg199w3xm59sl9d2jz8bq78gqgj"))))
+                "1kd422krz8ln4m8g3p14wfplcq8lgpzly9297rpbvyc94dc6sdwj"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -4467,7 +4467,7 @@ supports both of ID3v1/v2 and APEv2 tags.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "0.8.1")
+    (version "1.0.3")
     (source
      (origin
        (method git-fetch)
@@ -4476,7 +4476,7 @@ supports both of ID3v1/v2 and APEv2 tags.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17kv2jc4jvn3sdicz3sf8dnf25wbvv7ijzkr0mm0sbrrjz6vrwz0"))))
+        (base32 "1m2db7c791fi33snkjwnvlxapmf879g5r8azlkx7sr6vp2s0jq2k"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
@@ -4610,7 +4610,7 @@ in the package.")
 (define-public libaudec
   (package
     (name "libaudec")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
       (origin
         (method git-fetch)
@@ -4620,14 +4620,14 @@ in the package.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "04mpmfmqc43asw0m3zxhb6jj4qms7x4jw7mx4xb1d3lh16xllniz"))))
+            "04hw61db8wscj28qjyiaiafx8xl87njgmvqszxyhs4gmg8xgjip7"))))
    (build-system meson-build-system)
    (arguments
-    `(#:configure-flags `("-Denable_tests=true -Denable_ffmpeg=true")))
+     ;; Compile tests.
+    `(#:configure-flags `("-Dtests=true")))
    (inputs
     `(("libsamplerate" ,libsamplerate)
-      ("libsndfile" ,libsndfile)
-      ("ffmpeg" ,ffmpeg)))
+      ("libsndfile" ,libsndfile)))
    (native-inputs
      `(("pkg-config", pkg-config)))
    (synopsis "Library for reading and resampling audio files")
@@ -4640,7 +4640,7 @@ libsamplerate for reading and resampling audio files, based on Robin Gareus'
 (define-public lv2lint
   (package
     (name "lv2lint")
-    (version "0.4.0")
+    (version "0.8.0")
     (source
       (origin
         (method git-fetch)
@@ -4650,7 +4650,7 @@ libsamplerate for reading and resampling audio files, based on Robin Gareus'
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "1pspwqpzl2dw1hd9ra9yr53arqbbqjn7d7j0f7p9g3iqa76vblpi"))))
+            "1jrka0hsn4n1clri7zfkcl3c2vi52144lkpjm81l51ff8rqy8ks1"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -4777,6 +4777,37 @@ edited, converted, compressed and saved.")
      `(("librsvg" ,librsvg)
        ,@(package-inputs ztoolkit)))
     (synopsis "ZToolkit with SVG support")))
+
+(define-public lsp-dsp-lib
+  (package
+    (name "lsp-dsp-lib")
+    (version "0.5.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/sadko4u/lsp-dsp-lib/"
+                            "releases/download/lsp-dsp-lib-" version
+                            "/lsp-dsp-lib-" version "-src.tar.gz"))
+        (sha256
+         (base32
+          "07w3d2i0z0xmvi1ngcgs7lc5a0da8jvf7rv4dnjk01md43b7fkh1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "config"
+                     (string-append "PREFIX=" (assoc-ref outputs "out"))))))))
+    (home-page "https://github.com/sadko4u/lsp-dsp-lib")
+    (synopsis "Digital signal processing library")
+    (description "The LSP DSP library provides a set of functions that perform
+SIMD-optimized computing on several hardware architectures.  All functions
+currently operate on IEEE-754 single-precision floating-point numbers.")
+    (license license:lgpl3+)))
 
 (define-public codec2
   (package

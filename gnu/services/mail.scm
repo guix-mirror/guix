@@ -99,7 +99,9 @@
                   (and (string? x) (not (string-index x #\space))))
                 val)))
 (define (serialize-space-separated-string-list field-name val)
-  (serialize-field field-name (string-join val " ")))
+  (match val
+    (() #f)
+    (_ (serialize-field field-name (string-join val " ")))))
 
 (define (comma-separated-string-list? val)
   (and (list? val)
@@ -478,64 +480,6 @@ listens in all IPv4 interfaces, @samp{::} listens in all IPv6
 interfaces.  If you want to specify non-default ports or anything more
 complex, customize the address and port fields of the
 @samp{inet-listener} of the specific services you are interested in.")
-
-  (protocols
-   (protocol-configuration-list
-    (list (protocol-configuration
-           (name "imap"))))
-   "List of protocols we want to serve.  Available protocols include
-@samp{imap}, @samp{pop3}, and @samp{lmtp}.")
-
-  (services
-   (service-configuration-list
-    (list
-     (service-configuration
-      (kind "imap-login")
-      (client-limit 0)
-      (process-limit 0)
-      (listeners
-       (list
-        (inet-listener-configuration (protocol "imap") (port 143) (ssl? #f))
-        (inet-listener-configuration (protocol "imaps") (port 993) (ssl? #t)))))
-     (service-configuration
-      (kind "pop3-login")
-      (listeners
-       (list
-        (inet-listener-configuration (protocol "pop3") (port 110) (ssl? #f))
-        (inet-listener-configuration (protocol "pop3s") (port 995) (ssl? #t)))))
-     (service-configuration
-      (kind "lmtp")
-      (client-limit 1)
-      (process-limit 0)
-      (listeners
-       (list (unix-listener-configuration (path "lmtp") (mode "0666")))))
-     (service-configuration
-      (kind "imap")
-      (client-limit 1)
-      (process-limit 1024))
-     (service-configuration
-      (kind "pop3")
-      (client-limit 1)
-      (process-limit 1024))
-     (service-configuration
-      (kind "auth")
-      (service-count 0)
-      (client-limit 0)
-      (process-limit 1)
-      (listeners
-       (list (unix-listener-configuration (path "auth-userdb")))))
-     (service-configuration
-      (kind "auth-worker")
-      (client-limit 1)
-      (process-limit 0))
-     (service-configuration
-      (kind "dict")
-      (client-limit 1)
-      (process-limit 0)
-      (listeners (list (unix-listener-configuration (path "dict")))))))
-   "List of services to enable.  Available services include @samp{imap},
-@samp{imap-login}, @samp{pop3}, @samp{pop3-login}, @samp{auth}, and
-@samp{lmtp}.")
 
   (dict
    (dict-configuration (dict-configuration))
@@ -1430,7 +1374,65 @@ greyed out, instead of only later giving \"not selectable\" popup error.
 
   (imap-urlauth-host
    (string "")
-   "Host allowed in URLAUTH URLs sent by client.  \"*\" allows all.")  )
+   "Host allowed in URLAUTH URLs sent by client.  \"*\" allows all.")
+
+  (protocols
+   (protocol-configuration-list
+    (list (protocol-configuration
+           (name "imap"))))
+   "List of protocols we want to serve.  Available protocols include
+@samp{imap}, @samp{pop3}, and @samp{lmtp}.")
+
+  (services
+   (service-configuration-list
+    (list
+     (service-configuration
+      (kind "imap-login")
+      (client-limit 0)
+      (process-limit 0)
+      (listeners
+       (list
+        (inet-listener-configuration (protocol "imap") (port 143) (ssl? #f))
+        (inet-listener-configuration (protocol "imaps") (port 993) (ssl? #t)))))
+     (service-configuration
+      (kind "pop3-login")
+      (listeners
+       (list
+        (inet-listener-configuration (protocol "pop3") (port 110) (ssl? #f))
+        (inet-listener-configuration (protocol "pop3s") (port 995) (ssl? #t)))))
+     (service-configuration
+      (kind "lmtp")
+      (client-limit 1)
+      (process-limit 0)
+      (listeners
+       (list (unix-listener-configuration (path "lmtp") (mode "0666")))))
+     (service-configuration
+      (kind "imap")
+      (client-limit 1)
+      (process-limit 1024))
+     (service-configuration
+      (kind "pop3")
+      (client-limit 1)
+      (process-limit 1024))
+     (service-configuration
+      (kind "auth")
+      (service-count 0)
+      (client-limit 0)
+      (process-limit 1)
+      (listeners
+       (list (unix-listener-configuration (path "auth-userdb")))))
+     (service-configuration
+      (kind "auth-worker")
+      (client-limit 1)
+      (process-limit 0))
+     (service-configuration
+      (kind "dict")
+      (client-limit 1)
+      (process-limit 0)
+      (listeners (list (unix-listener-configuration (path "dict")))))))
+   "List of services to enable.  Available services include @samp{imap},
+@samp{imap-login}, @samp{pop3}, @samp{pop3-login}, @samp{auth}, and
+@samp{lmtp}."))
 
 (define-configuration opaque-dovecot-configuration
   (dovecot

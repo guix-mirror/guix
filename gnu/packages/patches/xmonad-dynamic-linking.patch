@@ -1,0 +1,16 @@
+This patch is required for xmonad to make use of shared libraries.
+Without it, xmonad will not work since we do not (by default) use
+statically linked Haskell libraries.
+
+diff -ruN xmonad-0.15-a/src/XMonad/Core.hs xmonad-0.15-b/src/XMonad/Core.hs
+--- xmonad-0.15-a/src/XMonad/Core.hs	1969-12-31 19:00:00.000000000 -0500
++++ xmonad-0.15-b/src/XMonad/Core.hs	1969-12-31 19:00:00.000000000 -0500
+@@ -681,6 +681,8 @@
+        compileGHC bin dir errHandle =
+          runProcess "ghc" ["--make"
+                           , "xmonad.hs"
++                          , "-dynamic"
++                          , "-fPIC"
+                           , "-i"
+                           , "-ilib"
+                           , "-fforce-recomp"

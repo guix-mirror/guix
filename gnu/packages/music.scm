@@ -73,11 +73,13 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages code)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -504,7 +506,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)
@@ -513,7 +515,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kwlqfah0yk135i0rzmbbgnqdzxrzg9yslii5asl4ip9x4dc1w3r"))))
+        (base32 "0snljpvbcgikhz610c325dgvayi0k512p3bglck9vvi90wsqx7l1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "tests"
@@ -1231,7 +1233,7 @@ device supports.")
 (define-public bsequencer
   (package
     (name "bsequencer")
-    (version "1.2.0")
+    (version "1.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1240,7 +1242,7 @@ device supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08xwz5v8wrar0rx7qdr9pkpjz2k9sw6bn5glhpn6sp6453fabf8q"))))
+                "0w21kzq695xy4i1r6xvvh7sad5m0rlmdgc7ykmrlzfsm1252dz80"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1266,17 +1268,17 @@ with a selectable pattern matrix size.")
   (package
     (inherit bsequencer)
     (name "bchoppr")
-    (version "1.4.2")
+    (version "1.8.0")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/sjaehn/BChoppr")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-          (base32
-            "1ympx0kyn3mkb23xgd44rlrf4qnngnlkmikz9syhayklgax7ijgm"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sjaehn/BChoppr")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nd6byy75f0rbz9dm9drhxmpsfhxhg0y7q3v2m3098llynhy9k2j"))))
     (synopsis "Audio stream-chopping LV2 plugin")
     (description "B.Choppr cuts the audio input stream into a repeated
 sequence of up to 16 chops.  Each chop can be leveled up or down (gating).
@@ -1307,17 +1309,17 @@ B.Choppr is the successor of B.Slizr.")
   (package
     (inherit bsequencer)
     (name "bjumblr")
-    (version "0.2")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/sjaehn/BJumblr")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14z8113zkwykbhm1a8h2xs972dgifvlfij92b08jckyc7cbz84ys"))))
+         "0kl6hrxmqrdf0195bfnzsa2h1073fgiqrfhg2276fm1954sm994v"))))
     (inputs
      `(("cairo", cairo)
        ("libsndfile", libsndfile)
@@ -1326,6 +1328,47 @@ B.Choppr is the successor of B.Slizr.")
     (description "B.Jumblr is a pattern-controlled audio stream / sample
 re-sequencer LV2 plugin.")
     (home-page "https://github.com/sjaehn/BJumblr")
+    (license license:gpl3+)))
+
+(define-public bschaffl
+  (package
+    (inherit bsequencer)
+    (name "bschaffl")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sjaehn/BSchaffl")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c09acqrbd387ba41f8ch1qykdap5h6cg9if5pgd16i4dmjnpghj"))))
+    (inputs
+     `(("cairo", cairo)
+       ("fontconfig" ,fontconfig)
+       ("libsndfile", libsndfile)
+       ("libx11" ,libx11)
+       ("lv2", lv2)))
+    (home-page "https://github.com/sjaehn/BSchaffl")
+    (synopsis "Pattern-controlled MIDI amp & time stretch LV2 plugin")
+    (description "This package provides an LV2 plugin that allows for
+pattern-controlled MIDI amp & time stretching to produce shuffle / swing
+effects.
+
+Key features include:
+
+@enumerate
+@item MIDI velocity amplification and timing manipulation plugin
+@item Swing and shuffle rhythms
+@item Pre-generator dynamics
+@item Tempo rubato
+@item Pattern (sliders) or shape-controlled
+@item MIDI filters
+@item Smart quantization
+@end itemize
+")
     (license license:gpl3+)))
 
 (define-public solfege
@@ -1410,46 +1453,42 @@ your own lessons.")
     (license license:gpl3+)))
 
 (define-public powertabeditor
-  ;; This commit is after the switch from catch2 to doctest; I couldn't build
-  ;; powertabeditor with catch2.
-  (let ((commit "c5d39b25b75bf87ec693a3ac5018823b1d87f277")
-        (revision "1"))
-    (package
-      (name "powertabeditor")
-      (version (git-version "2.0.0-alpha12" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/powertab/powertabeditor")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "16qhqfvk14bp7s8cwr8ds8zfd80pq603d7aymr7967pnb49kic5z"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (replace 'check (lambda _ (invoke "bin/pte_tests"))))))
-      (inputs
-       `(("alsa-lib" ,alsa-lib)
-         ("boost" ,boost)
-         ("minizip" ,minizip)
-         ("pugixml" ,pugixml)
-         ("qtbase" ,qtbase)
-         ("rapidjson" ,rapidjson)
-         ("rtmidi" ,rtmidi)
-         ("timidity" ,timidity++)
-         ("zlib" ,zlib)))
-      (native-inputs
-       `(("doctest" ,doctest)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/powertab/powertabedito")
-      (synopsis "Guitar tablature editor")
-      (description
-       "Power Tab Editor 2.0 is the successor to the famous original Power Tab
+  (package
+    (name "powertabeditor")
+    (version "2.0.0-alpha13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/powertab/powertabeditor")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12il5xzgg53ick5k4ivvvqdagld5pgigiiz6s829kkdaymqr7vx5"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _ (invoke "bin/pte_tests"))))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("minizip" ,minizip)
+       ("pugixml" ,pugixml)
+       ("qtbase" ,qtbase)
+       ("rapidjson" ,rapidjson)
+       ("rtmidi" ,rtmidi)
+       ("timidity" ,timidity++)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("doctest" ,doctest)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/powertab/powertabedito")
+    (synopsis "Guitar tablature editor")
+    (description
+     "Power Tab Editor 2.0 is the successor to the famous original Power Tab
 Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public jalv-select
   (package
@@ -1501,7 +1540,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.16")
+    (version "0.9.17")
     (source (origin
               (method url-fetch)
               (uri
@@ -1509,7 +1548,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1k5sm6s2d5di5yk0bxwy3nizq9m1ym46b4qz2m45nm3zspkbzybp"))))
+                "0jc2drk5dzsaa6vxmk1hyi0zp02zm3mzar3arssfy5vcyc5ig6sk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1533,7 +1572,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.16")
+    (version "0.9.17")
     (source (origin
               (method url-fetch)
               (uri
@@ -1541,7 +1580,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1r55575w9r0ifysw9mgxjvv0fszvx8ykjgim3zczf3mb5s9ngavv"))))
+                "198fyc5dwjn679si86vy139ngym4n3mdy1z4vfjikn7b6mriq1x2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1566,7 +1605,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.16")
+    (version "0.9.17")
     (source (origin
               (method url-fetch)
               (uri
@@ -1574,7 +1613,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0k5vpjd4wv7h0s3f7gg07a2ksw0b010yvkwmadzzvv2qfb928grm"))))
+                "1v21r722m027jjy4x6lm5cvzapsnpx36r10ar543ay0hgmygl322"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1599,7 +1638,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.16")
+    (version "0.9.17")
     (source (origin
               (method url-fetch)
               (uri
@@ -1607,7 +1646,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1f2v60dpja0rnml60g463fjiz0f84v32yjwpvr56z79h1i6fssmv"))))
+                "098fk8fwcgssnfr1gilqg8g17zvch62lrn3rqsswpzbr3an5adb3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1617,7 +1656,7 @@ effects.")
        ("alsa-lib" ,alsa-lib)
        ("non-session-manager" ,non-session-manager)
        ("liblo" ,liblo)
-       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
        ("qtbase" ,qtbase)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1945,7 +1984,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.51-0")
+    (version "0.51-1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1953,7 +1992,7 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "0qzv4hjf4h7xx00ihnbl43pxa0fia9qkc8nwgzhqrs12jiljz6ps"))))
+                "0imbha9h96vqa967cbmdj7kkx7zrs054n5w2bjnifxdzws3qbxf6"))))
     (build-system gnu-build-system)
     (arguments
      (let ((wish (string-append "wish" (version-major+minor
@@ -2304,66 +2343,61 @@ capabilities, custom envelopes, effects, etc.")
     (license license:gpl2)))
 
 (define-public yoshimi
-  ;; Release 1.7.1 doesn't build with our version of LV2.  Applying only
-  ;; 86996cbb235f0fe138ae814a6758c2c8ba1c2a38 is not enough.
-  (let ((commit "bfcadc6537dbcb301cd93346f21d36bcbffa36c7")
-        (revision "0"))
-    (package
-      (name "yoshimi")
-      (version (git-version "1.7.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://git.code.sf.net/p/yoshimi/code")
-               (commit commit)))
-         (sha256
-          (base32 "0vhdxj7ky4iyq11r5wj9jwavjih4xvcn2djbrlmwpkdhrzpy6myl"))
-         (file-name (git-file-name name version))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:tests? #f                    ; there are no tests
-         #:configure-flags
-         (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
-                              (assoc-ref %outputs "out") "/share"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'enter-dir
-             (lambda _ (chdir "src") #t))
-           ;; Move SSE compiler optimization flags from generic target to
-           ;; athlon64 and core2 targets, because otherwise the build would fail
-           ;; on non-Intel machines.
-           (add-after 'unpack 'remove-sse-flags-from-generic-target
-             (lambda _
-               (substitute* "src/CMakeLists.txt"
-                 (("-msse -msse2 -mfpmath=sse") "")
-                 (("-march=(athlon64|core2)" flag)
-                  (string-append flag " -msse -msse2 -mfpmath=sse")))
-               #t)))))
-      (inputs
-       `(("boost" ,boost)
-         ("fftwf" ,fftwf)
-         ("alsa-lib" ,alsa-lib)
-         ("jack" ,jack-1)
-         ("fontconfig" ,fontconfig)
-         ("minixml" ,minixml)
-         ("mesa" ,mesa)
-         ("fltk" ,fltk)
-         ("lv2" ,lv2)
-         ("readline" ,readline)
-         ("ncurses" ,ncurses)
-         ("cairo" ,cairo)
-         ("zlib" ,zlib)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)))
-      (home-page "http://yoshimi.sourceforge.net/")
-      (synopsis "Multi-paradigm software synthesizer")
-      (description
-       "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
+  (package
+    (name "yoshimi")
+    (version "1.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/yoshimi/"
+                           (version-major+minor version)
+                           "/yoshimi-" version ".tar.bz2"))
+       (sha256
+        (base32 "1vxrksg199pcgiykq0nsf67ihfk2ny2jmpf6gzdb3nk9iphm7di3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:configure-flags
+       (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
+                            (assoc-ref %outputs "out") "/share"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'enter-dir
+           (lambda _ (chdir "src") #t))
+         ;; Move SSE compiler optimization flags from generic target to
+         ;; athlon64 and core2 targets, because otherwise the build would fail
+         ;; on non-Intel machines.
+         (add-after 'unpack 'remove-sse-flags-from-generic-target
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("-msse -msse2 -mfpmath=sse") "")
+               (("-march=(athlon64|core2)" flag)
+                (string-append flag " -msse -msse2 -mfpmath=sse")))
+             #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("fftwf" ,fftwf)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("fontconfig" ,fontconfig)
+       ("minixml" ,minixml)
+       ("mesa" ,mesa)
+       ("fltk" ,fltk)
+       ("lv2" ,lv2)
+       ("readline" ,readline)
+       ("ncurses" ,ncurses)
+       ("cairo" ,cairo)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://yoshimi.sourceforge.net/")
+    (synopsis "Multi-paradigm software synthesizer")
+    (description
+     "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
 synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
 synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
-      (license license:gpl2))))
+    (license license:gpl2)))
 
 (define-public libgig
   (package
@@ -3226,15 +3260,14 @@ with a number of bugfixes and changes to improve IT playback.")
 (define-public sooperlooper
   (package
     (name "sooperlooper")
-    (version "1.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://essej.net/sooperlooper/sooperlooper-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0n2gdxw1fx8nxxnpzf4sj0kp6k6zi1yq59cbz6qqzcnsnpnvszbs"))
-              (patches (search-patches "sooperlooper-build-with-wx-30.patch"))))
+    (version "1.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://essej.net/sooperlooper/sooperlooper-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1jjvq4aflbyr3nr8b318k1vkad16xfa1jkqn9ckzw4419qc6c1k5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4127,7 +4160,7 @@ sample library.")
 (define-public muse-sequencer
   (package
     (name "muse-sequencer")
-    (version "3.0.0")
+    (version "3.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4139,19 +4172,30 @@ sample library.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nninz8qyqlxxjdnrm79y3gr3056pga9l2fsqh674jd3cjvafya3"))))
+                "1rasp2v1ds2aw296lbf27rzw0l9fjl0cvbvw85d5ycvh6wkm301p"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there is no test target
        #:configure-flags
-       (list "-DENABLE_LV2_SUPPLIED=OFF"
-             "-DENABLE_RTAUDIO=OFF"    ; FIXME: not packaged
-             "-DENABLE_INSTPATCH=OFF"  ; FIXME: not packaged
-             "-DENABLE_VST_NATIVE=OFF")
+       (list "-DENABLE_INSTPATCH=OFF"  ; FIXME: not packaged
+             "-DENABLE_VST_NATIVE=OFF"
+             (string-append "-DCMAKE_EXE_LINKER_FLAGS="
+                            "-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib/muse-"
+                            ,(version-major+minor version) "/modules")
+             (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
+                            "-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib/muse-"
+                            ,(version-major+minor version) "/modules"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
-           (lambda _ (chdir "muse3"))))))
+           (lambda _ (chdir "muse3") #t))
+         (add-after 'chdir 'fix-include
+           (lambda _
+             (substitute* "muse/driver/rtaudio.h"
+               (("rtaudio/RtAudio.h") "RtAudio.h"))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("lash" ,lash)
@@ -4164,10 +4208,14 @@ sample library.")
        ("sord" ,sord)
        ("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
+       ("lrdf" ,lrdf)
        ("fluidsynth" ,fluidsynth)
        ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio) ; required by rtaudio
        ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)))
+       ("qtsvg" ,qtsvg)
+       ("rtaudio" ,rtaudio)
+       ("rubberband" ,rubberband)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
@@ -4999,7 +5047,7 @@ applications.")
 (define-public sherlock-lv2
   (package
     (name "sherlock-lv2")
-    (version "0.20.0")
+    (version "0.24.0")
     (source
      (origin
        (method url-fetch)
@@ -5009,10 +5057,11 @@ applications.")
              version ".tar.xz"))
        (sha256
         (base32
-         "1c5xajpss9h8lbyx160bbzg8va50n2d74qwnxig9sf468rzmha1y"))))
+         "08gjfx7vrsx9zvj04j8cr3vscxmq6jr2hbdi6dfgp1l1dnnpxsgq"))))
     (build-system meson-build-system)
     (inputs
-     `(("libx11" ,libx11)
+     `(("glu" ,glu)
+       ("libx11" ,libx11)
        ("mesa" ,mesa)
        ("sratom" ,sratom)))
     (native-inputs
@@ -5024,6 +5073,49 @@ visualizing LV2 atom, MIDI and OSC events.  They can be used for monitoring
 and debugging of event signal flows inside plugin graphs.")
     (home-page "https://open-music-kontrollers.ch/lv2/sherlock/")
     (license license:artistic2.0)))
+
+(define-public foo-yc20
+  (package
+    (name "foo-yc20")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sampov2/foo-yc20/releases/download/"
+                           version "/foo-yc20-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1drzfyr7mzb58pdv0gsqkg6ds6kbgp6g25rrv1yya1611cljgvjh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f  ; no automated test
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "Makefile"
+               (("-mtune=native") "")
+               (("-march=native") ""))
+             #t)))))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("cairo" ,cairo)
+       ("gtk" ,gtk+-2)))
+    (native-inputs
+     `(("faust" ,faust)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://foo-yc20.codeforcode.com/")
+    (synopsis "Implementation of Yamaha YC-20 combo organ from 1969")
+    (description "This is a Faust implementation of a 1969 designed Yamaha
+combo organ, the YC-20.  This package provides an LV2 plugin and a standalone
+version.  Processing for the organ is based on original schematics and
+measurements from a working specimen.  This instrument simulates the circutry
+as a whole to realisticly reproduce the features and flaws of the real deal.")
+    ;; Note that after 1.3.0 the license was changed.
+    (license license:gpl3+)))
 
 (define-public spectacle-analyzer
   (package
@@ -5071,15 +5163,15 @@ short-time Fourier transform, available as LV2 audio plugin and JACK client.")
 (define-public x42-plugins
   (package
     (name "x42-plugins")
-    (version "20191215")
+    (version "20200714")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "http://gareus.org/misc/x42-plugins/x42-plugins-"
+        (string-append "https://gareus.org/misc/x42-plugins/x42-plugins-"
                        version ".tar.xz"))
        (sha256
-        (base32 "1mwfvhsvc0qgjyiwd8pmmam1mav43lmv39fljhmj9yri558v5g1c"))))
+        (base32 "1av05ykph8x67018hm9zfgh1vk0zi39mvrsxkj6bm4hkarxf0vvl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -5175,7 +5267,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
 (define-public geonkick
   (package
     (name "geonkick")
-    (version "1.10.0")
+    (version "2.3.7")
     (source
      (origin
        (method git-fetch)
@@ -5185,7 +5277,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1a59wnm4035kjhs66hihlkiv45p3ffb2yaj1awvyyi5f0lds5zvh"))))
+         "1wdcbwiyy6i5agq5lffkyilyc8mv1cc4mp9h0nybn240vb2flqc2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests included
@@ -5204,6 +5296,8 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
        ("rapidjson" ,rapidjson)))
     (native-inputs
      `(("lv2" ,lv2)
+       ;; Fails with default gcc (#include <filesystem> not found).
+       ("gcc" ,gcc-9)
        ("pkg-config" ,pkg-config)
        ("sord" ,sord)))
     (synopsis "Percussion synthesizer")
@@ -5365,8 +5459,13 @@ and as an LV2 plugin.")
 
 (define-public zrythm
   (package
+    ;; Zrythm contains trademarks and comes with a trademark policy found in
+    ;; TRADMARKS.md inside the release distribution.  The trademark policy
+    ;; allows verbatim re-distribution, and it also allows FSF-approved
+    ;; distros to make necessary changes to integrate the software into the
+    ;; distribution.
     (name "zrythm")
-    (version "0.8.333")
+    (version "0.8.911")
     (source
       (origin
         (method url-fetch)
@@ -5374,13 +5473,19 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "0x2kxr5zz058jpy6k6ymj0fi2gqfcgrlv4qkwz9443hjy5345iwb"))))
+            "1xyp70sjc2k5pfdqbwqa988v86da0rmmyl8ry86bqv4ja80sc6g9"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
+      #:meson ,meson-0.55
       #:configure-flags
-      `("-Denable_tests=true" "-Dmanpage=true"
-        "-Dinstall_dseg_font=false" "-Denable_ffmpeg=true")
+      `("-Dtests=true"
+        "-Dmanpage=true"
+        "-Ddseg_font=false"
+        "-Dgraphviz=enabled" ; for exporting routing graphs
+        "-Dguile=enabled" ; for Guile scripting
+        "-Djack=enabled" ; for JACK audio/MIDI backend
+        "-Dsdl=enabled") ; for SDL audio backend (which uses ALSA)
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'patch-xdg-open
@@ -5393,7 +5498,6 @@ and as an LV2 plugin.")
     `(("alsa-lib" ,alsa-lib)
       ("jack" ,jack-1)
       ("font-dseg" ,font-dseg)
-      ("ffmpeg" ,ffmpeg)
       ("fftw" ,fftw)
       ("fftwf" ,fftwf)
       ("gettext" ,gettext-minimal)
@@ -5402,19 +5506,23 @@ and as an LV2 plugin.")
       ("gtk+" ,gtk+)
       ("gtksourceview" ,gtksourceview)
       ("guile" ,guile-2.2)
+      ("libaudec" ,libaudec)
       ("libcyaml" ,libcyaml)
       ("libsamplerate" ,libsamplerate)
       ("libsndfile" ,libsndfile)
       ("libyaml" ,libyaml)
       ("lilv" ,lilv)
+      ("lv2" ,lv2)
+      ("reproc" ,reproc)
+      ("rubberband" ,rubberband)
+      ("rtmidi" ,rtmidi)
+      ("sdl2" ,sdl2)
       ("xdg-utils" ,xdg-utils)
-      ("rubberband" ,rubberband)))
+      ("zstd" ,zstd "lib")))
    (native-inputs
      `(("pkg-config" ,pkg-config)
        ("help2man" ,help2man)
-       ("libaudec" ,libaudec)
-       ("lv2" ,lv2)
-       ("glib" ,glib "bin"))) ;for 'glib-compile-resources'
+       ("glib" ,glib "bin"))) ; for 'glib-compile-resources'
    (synopsis "Digital audio workstation focusing on usability")
    (description "Zrythm is a digital audio workstation designed to be
 featureful and easy to use.  It offers unlimited automation options, LV2
@@ -5425,7 +5533,7 @@ plugin support, JACK support and chord assistance.")
 (define-public dragonfly-reverb
   (package
     (name "dragonfly-reverb")
-    (version "3.0.0")
+    (version "3.2.1")
     (source
      (origin
        (method git-fetch)
@@ -5437,7 +5545,7 @@ plugin support, JACK support and chord assistance.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1z2x33lzpd26dv1p29ca7vy8mjfzkfpin35iq46spwd9k3sqn1ja"))))
+        (base32 "0vfm2510shah67k87mdyar4wr4vqwii59y9lqfhwm6blxparkrqa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target

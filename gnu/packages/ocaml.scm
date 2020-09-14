@@ -2258,19 +2258,25 @@ radix-64 representation.  It is specified in RFC 4648.")
 (define-public ocamlify
   (package
     (name "ocamlify")
-    (version "0.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri "https://download.ocamlcore.org/ocamlify/ocamlify/0.0.1/ocamlify-0.0.1.tar.gz")
-              (sha256
-               (base32
-                "1j9nb3vjqbdsx3d6jazixgrh776051zkrc06nsc5q5ilp1jhrwkm"))))
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.ocamlcore.org/ocamlify/ocamlify/"
+                           version "/ocamlify-" version ".tar.gz"))
+       (sha256
+        (base32 "1f0fghvlbfryf5h3j4as7vcqrgfjb4c8abl5y0y5h069vs4kp5ii"))))
     (build-system ocaml-build-system)
-    ; tests are done during build
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'check)
+         (add-after 'unpack 'disable-safe-string
+           ;; Work around ‘Error: This expression has type string but an
+           ;; expression was expected of type bytes’ since OCaml 4.06.
+           (lambda _
+             (setenv "OCAMLPARAM" "safe-string=0,_")
+             #t))
+         (delete 'check)                ; tests are run during the build
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "ocaml" "setup.ml" "-configure" "--prefix"

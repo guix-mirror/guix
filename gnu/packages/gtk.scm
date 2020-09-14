@@ -229,7 +229,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public libdatrie
   (package
     (name "libdatrie")
-    (version "0.2.11")
+    (version "0.2.12")
     (source
      (origin
        (method url-fetch)
@@ -237,7 +237,7 @@ affine transformation (scale, rotation, shear, etc.).")
         (string-append "https://linux.thai.net/pub/ThaiLinux/software/"
                        "libthai/libdatrie-" version ".tar.xz"))
        (sha256
-        (base32 "0jz9k0dd8jim4iyk5xrhkkdm4zq2ly6aw317ydjss44ymg97nz2l"))))
+        (base32 "0jdi01pcxv0b24zbjy7zahawsqqqw4mv94f2yy01zh4n796wqba5"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -916,14 +916,14 @@ application suites.")
 (define-public guile-cairo
   (package
     (name "guile-cairo")
-    (version "1.10.0")
+    (version "1.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-cairo/guile-cairo-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0p6xrhf2k6n5dybn88050za7h90gnd7534n62l53vsca187pwgdf"))
+                "1gc642r9ndsjhhmh9bl5cbd3dwvy4dpxwhr0zpsw43y9nmz37xpl"))
               (modules '((guix build utils)))
               (snippet
                (begin
@@ -945,7 +945,8 @@ application suites.")
     (arguments
      ;; Uses of 'scm_t_uint8' & co. are deprecated; don't stop the build
      ;; because of them.
-     '(#:configure-flags '("--disable-Werror")))
+     '(#:configure-flags '("--disable-Werror")
+       #:make-flags '("GUILE_AUTO_COMPILE=0")))     ; to prevent guild warnings
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)

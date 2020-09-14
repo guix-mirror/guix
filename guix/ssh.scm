@@ -20,7 +20,11 @@
   #:use-module (guix store)
   #:use-module (guix inferior)
   #:use-module (guix i18n)
-  #:use-module ((guix diagnostics) #:select (&fix-hint formatted-message))
+  #:use-module ((guix diagnostics)
+                #:select (info &fix-hint formatted-message))
+  #:use-module ((guix progress)
+                #:select (progress-bar
+                          erase-current-line current-terminal-columns))
   #:use-module (gcrypt pk-crypto)
   #:use-module (ssh session)
   #:use-module (ssh auth)
@@ -36,6 +40,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 binary-ports)
+  #:use-module (ice-9 vlist)
   #:export (open-ssh-session
             authenticate-server*
 
@@ -402,6 +407,56 @@ to the system ACL file if it has not yet been authorized."
    session
    become-command))
 
+(define (prepare-to-send store host log-port items)
+  "Notify the user that we're about to send ITEMS to HOST.  Return three
+values allowing 'notify-send-progress' to track the state of this transfer."
+  (let* ((count (length items))
+         (sizes (fold (lambda (item result)
+                        (vhash-cons item
+                                    (path-info-nar-size
+                                     (query-path-info store item))
+                                    result))
+                      vlist-null
+                      items))
+         (total  (vlist-fold (lambda (pair result)
+                               (match pair
+                                 ((_ . size) (+ size result))))
+                             0
+                             sizes)))
+    (info (N_ "sending ~a store item (~h MiB) to '~a'...~%"
+              "sending ~a store items (~h MiB) to '~a'...~%" count)
+          count
+          (inexact->exact (round (/ total (expt 2. 20))))
+          host)
+
+    (values log-port sizes total 0)))
+
+(define (notify-transfer-progress item port sizes total sent)
+  "Notify the user that we've already transferred SENT bytes out of TOTAL.
+Use SIZES to determine the size of ITEM, which is about to be sent."
+  (define (display-bar %)
+    (erase-current-line port)
+    (format port "~3@a% ~a"
+            (inexact->exact (round (* 100. (/ sent total))))
+            (progress-bar % (- (max (current-terminal-columns) 5) 5)))
+    (force-output port))
+
+  (unless (zero? total)
+    (let ((% (* 100. (/ sent total))))
+      (match (vhash-assoc item sizes)
+        (#f
+         (display-bar %)
+         (values port sizes total sent))
+        ((_ . size)
+         (display-bar %)
+         (values port sizes total (+ sent size)))))))
+
+(define (notify-transfer-completion port . args)
+  "Notify the user that the transfer has completed."
+  (apply notify-transfer-progress "" port args) ;display the 100% progress bar
+  (erase-current-line port)
+  (force-output port))
+
 (define* (send-files local files remote
                      #:key
                      recursive?
@@ -421,11 +476,8 @@ Return the list of store items actually sent."
                         (remove (cut valid-path? store <>)
                                 ',files)))
                    session))
-         (count   (length missing))
-         (sizes   (map (lambda (item)
-                         (path-info-nar-size (query-path-info local item)))
-                       missing))
-         (port    (store-import-channel session)))
+         (port    (store-import-channel session))
+         (host    (session-get session 'host)))
     ;; Make sure everything alright on the remote side.
     (match (read port)
       (('importing)
@@ -433,14 +485,12 @@ Return the list of store items actually sent."
       (sexp
        (handle-import/export-channel-error sexp remote)))
 
-    (format log-port (N_ "sending ~a store item (~h MiB) to '~a'...~%"
-                         "sending ~a store items (~h MiB) to '~a'...~%" count)
-            count
-            (inexact->exact (round (/ (reduce + 0 sizes) (expt 2. 20))))
-            (session-get session 'host))
-
     ;; Send MISSING in topological order.
-    (export-paths local missing port)
+    (let ((tty? (isatty? log-port)))
+      (export-paths local missing port
+                    #:start (cut prepare-to-send local host log-port <>)
+                    #:progress (if tty? notify-transfer-progress (const #f))
+                    #:finish (if tty? notify-transfer-completion (const #f))))
 
     ;; Tell the remote process that we're done.  (In theory the end-of-archive
     ;; mark of 'export-paths' would be enough, but in practice it's not.)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -21,6 +21,7 @@
 
 (define-module (guix scripts import)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -98,7 +99,10 @@ Run IMPORTER with ARGS.\n"))
   (newline)
   (show-bug-report-information))
 
-(define (guix-import . args)
+(define-command (guix-import . args)
+  (category packaging)
+  (synopsis "import a package definition from an external repository")
+
   (match args
     (()
      (format (current-error-port)

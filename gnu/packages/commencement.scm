@@ -3851,7 +3851,8 @@ COREUTILS-FINAL vs. COREUTILS, etc."
       (description
        "This package provides a complete GCC tool chain for C/C++ development to
 be installed in user profiles.  This includes GCC, as well as libc (headers and
-binaries, plus debugging symbols in the @code{debug} output), and Binutils.")
+binaries, plus debugging symbols in the @code{debug} output), and Binutils.  GCC
+is the GNU Compiler Collection.")
       (home-page "https://gcc.gnu.org/")
       (outputs '("out" "debug" "static"))
 
@@ -3891,6 +3892,12 @@ binaries, plus debugging symbols in the @code{debug} output), and Binutils.")
 
 (define-public gcc-toolchain-10
   (make-gcc-toolchain gcc-10))
+
+(define-public gcc-toolchain-aka-gcc
+  ;; It's natural for users to try "guix install gcc".  This package
+  ;; automatically "redirects" them to 'gcc-toolchain'.
+  (deprecated-package "gcc" gcc-toolchain-10))
+
 
 (define-public gdc-toolchain-10
   (package (inherit (make-gcc-toolchain gdc-10))

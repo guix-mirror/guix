@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <grp.h>
+#include <ctype.h>
 
 #if HAVE_UNSHARE && HAVE_STATVFS && HAVE_SYS_MOUNT_H
 #include <sched.h>
@@ -1231,11 +1232,91 @@ static void checkSecrecy(const Path & path)
 }
 
 
-static std::string runAuthenticationProgram(const Strings & args)
+/* Return the authentication agent, a "guix authenticate" process started
+   lazily.  */
+static std::shared_ptr<Agent> authenticationAgent()
 {
-    Strings fullArgs = { "authenticate" };
-    fullArgs.insert(fullArgs.end(), args.begin(), args.end()); // append
-    return runProgram(settings.guixProgram, false, fullArgs);
+    static std::shared_ptr<Agent> agent;
+
+    if (!agent) {
+	Strings args = { "authenticate" };
+	agent = std::make_shared<Agent>(settings.guixProgram, args);
+    }
+
+    return agent;
+}
+
+/* Read an integer and the byte that immediately follows it from FD.  Return
+   the integer.  */
+static int readInteger(int fd)
+{
+    string str;
+
+    while (1) {
+        char ch;
+        ssize_t rd = read(fd, &ch, 1);
+        if (rd == -1) {
+            if (errno != EINTR)
+                throw SysError("reading an integer");
+        } else if (rd == 0)
+            throw EndOfFile("unexpected EOF reading an integer");
+        else {
+	    if (isdigit(ch)) {
+		str += ch;
+	    } else {
+		break;
+	    }
+        }
+    }
+
+    return stoi(str);
+}
+
+/* Read from FD a reply coming from 'guix authenticate'.  The reply has the
+   form "CODE LEN:STR".  CODE is an integer, where zero indicates success.
+   LEN specifies the length in bytes of the string that immediately
+   follows.  */
+static std::string readAuthenticateReply(int fd)
+{
+    int code = readInteger(fd);
+    int len = readInteger(fd);
+
+    string str;
+    str.resize(len);
+    readFull(fd, (unsigned char *) &str[0], len);
+
+    if (code == 0)
+	return str;
+    else
+	throw Error(str);
+}
+
+/* Sign HASH with the key stored in file SECRETKEY.  Return the signature as a
+   string, or raise an exception upon error.  */
+static std::string signHash(const string &secretKey, const Hash &hash)
+{
+    auto agent = authenticationAgent();
+    auto hexHash = printHash(hash);
+
+    writeLine(agent->toAgent.writeSide,
+	      (format("sign %1%:%2% %3%:%4%")
+	       % secretKey.size() % secretKey
+	       % hexHash.size() % hexHash).str());
+
+    return readAuthenticateReply(agent->fromAgent.readSide);
+}
+
+/* Verify SIGNATURE and return the base16-encoded hash over which it was
+   computed.  */
+static std::string verifySignature(const string &signature)
+{
+    auto agent = authenticationAgent();
+
+    writeLine(agent->toAgent.writeSide,
+	      (format("verify %1%:%2%")
+	       % signature.size() % signature).str());
+
+    return readAuthenticateReply(agent->fromAgent.readSide);
 }
 
 void LocalStore::exportPath(const Path & path, bool sign,
@@ -1277,23 +1358,10 @@ void LocalStore::exportPath(const Path & path, bool sign,
 
         writeInt(1, hashAndWriteSink);
 
-        Path tmpDir = createTempDir();
-        AutoDelete delTmp(tmpDir);
-        Path hashFile = tmpDir + "/hash";
-        writeFile(hashFile, printHash(hash));
-
         Path secretKey = settings.nixConfDir + "/signing-key.sec";
         checkSecrecy(secretKey);
 
-        Strings args;
-        args.push_back("rsautl");
-        args.push_back("-sign");
-        args.push_back("-inkey");
-        args.push_back(secretKey);
-        args.push_back("-in");
-        args.push_back(hashFile);
-
-        string signature = runAuthenticationProgram(args);
+	string signature = signHash(secretKey, hash);
 
         writeString(signature, hashAndWriteSink);
 
@@ -1372,18 +1440,7 @@ Path LocalStore::importPath(bool requireSignature, Source & source)
         string signature = readString(hashAndReadSource);
 
         if (requireSignature) {
-            Path sigFile = tmpDir + "/sig";
-            writeFile(sigFile, signature);
-
-            Strings args;
-            args.push_back("rsautl");
-            args.push_back("-verify");
-            args.push_back("-inkey");
-            args.push_back(settings.nixConfDir + "/signing-key.pub");
-            args.push_back("-pubin");
-            args.push_back("-in");
-            args.push_back(sigFile);
-            string hash2 = runAuthenticationProgram(args);
+	    string hash2 = verifySignature(signature);
 
             /* Note: runProgram() throws an exception if the signature
                is invalid. */

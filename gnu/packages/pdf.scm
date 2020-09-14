@@ -848,6 +848,14 @@ using a stylus.")
              (for-each (lambda (po) (chmod po #o666))
                        (find-files "." "\\.po$"))
              #t))
+         ;; Fix path to addr2line utility, which the crash reporter uses.
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/util/Stacktrace.cpp"
+               ;; Match only the commandline.
+               (("\"addr2line ")
+                (string-append "\"" (which "addr2line") " ")))
+             #t))
          (add-after 'install 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (native-inputs

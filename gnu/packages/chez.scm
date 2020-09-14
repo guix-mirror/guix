@@ -240,7 +240,9 @@ and 32-bit PowerPC architectures.")
      `(("chez-scheme" ,chez-scheme)))
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "PREFIX=" out)))
+                      (list (string-append "PREFIX=" out)
+                            "CHEZ=chez-scheme --libdirs ./"
+                            (string-append "chezversion=" ,(package-version chez-scheme))))
        #:test-target "test"
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
@@ -414,9 +416,13 @@ Chez Scheme.")
 ;; files.
 (define (chez-make-flags name version)
   `(let ((out (assoc-ref %outputs "out")))
-     (list (string-append "PREFIX=" out)
-           (string-append "DOCDIR=" out "/share/doc/"
-                          ,name "-" ,version))))
+     (list
+      ;; Set 'chezversion' so that libraries are installed in
+      ;; 'lib/csvX.Y.Z-site' like Chez's 'native-search-paths' expects.
+      (string-append "chezversion=" ,(package-version chez-scheme))
+      (string-append "PREFIX=" out)
+      (string-append "DOCDIR=" out "/share/doc/"
+                     ,name "-" ,version))))
 
 (define-public chez-matchable
   (package

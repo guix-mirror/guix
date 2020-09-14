@@ -941,7 +941,9 @@ processed, #f otherwise."
 ;;; Entry point.
 ;;;
 
-(define (guix-package . args)
+(define-command (guix-package . args)
+  (synopsis "manage packages and profiles")
+
   (define (handle-argument arg result arg-handler)
     ;; Process non-option argument ARG by calling back ARG-HANDLER.
     (if arg-handler

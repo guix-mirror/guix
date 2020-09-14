@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2017, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -342,26 +342,22 @@ compiling NML files (along with their associated language, sound and graphic
 files) into @file{.grf} and/or @file{.nfo} files.")
     (license license:gpl2+)))
 
-(define-public python-sge-pygame
+(define-public python-sge
   (package
-    (name "python-sge-pygame")
-    (version "1.5.1")
+    (name "python-sge")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/stellarengine/"
-                           (version-major+minor version) "/sge-pygame-"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "sge" version))
        (sha256
         (base32
-         "1rl3xjzh78sl0sq3xl8rl7cgp9v9v3h7s2pfwn7nj1vrmffzkcpd"))))
+         "02fn6v6bxk3sngwd4kd3mglrp0jlnhx7x6h8nnkik6wdv150a0wv"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pygame" ,python-pygame)
-       ("python-six" ,python-six)
        ("python-uniseg" ,python-uniseg)))
-    (home-page "http://stellarengine.nongnu.org")
+    (home-page "https://python-sge.github.io/")
     (synopsis "2D game engine for Python")
     (description
      "The SGE Game Engine (\"SGE\", pronounced like \"Sage\") is a
@@ -370,8 +366,8 @@ you can focus on the game itself.  This makes more rapid game development
 possible, and it also makes the SGE easy to learn.")
     (license license:lgpl3+)))
 
-(define-public python2-sge-pygame
-  (package-with-python2 python-sge-pygame))
+(define-public python-sge-pygame
+  (deprecated-package "python-sge-pygame" python-sge))
 
 (define-public python-tmx
   (package
@@ -412,14 +408,15 @@ levels.")
 (define-public python-xsge
   (package
     (name "python-xsge")
-    (version "2018.02.26")
+    (version "2020.09.07")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/xsge/xsge/xsge-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://github.com/python-sge/xsge"
+                                  "/releases/download/v" version
+                                  "/xsge-" version ".zip"))
               (sha256
                (base32
-                "0bx93hgf7cgdw2gsygbh59y8vpw37pgsa279rajw3fkdpl8vrc40"))))
+                "136xgy3f9vw636wxpqbha022avk0wyxw63mm3a2dvwhh90s716f9"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -432,12 +429,11 @@ levels.")
                      (string-append "--prefix=" (assoc-ref outputs "out"))
                      "--root=/"))))
        #:tests? #f)) ; no check target
+    (native-inputs
+     `(("unzip" ,unzip)))
     (propagated-inputs
-     `(("python-sge-pygame" ,python-sge-pygame)
-       ("python-pygame" ,python-pygame)
-       ("python-six" ,python-six)
-       ("python-tmx" ,python-tmx)))
-    (home-page "http://xsge.nongnu.org")
+     `(("python-sge" ,python-sge)))
+    (home-page "https://python-sge.github.io/")
     (synopsis "Extensions for the SGE Game Engine")
     (description
      "xSGE is a collection of modules that make doing certain tasks with the SGE
@@ -445,9 +441,6 @@ Game Engine easier.  In addition to SGE's conveniences, the user has access to a
 GUI toolkit, lighting and physics frameworks and @code{Tiled} TMX format
 support.")
     (license license:gpl3+)))
-
-(define-public python2-xsge
-  (package-with-python2 python-xsge))
 
 (define-public tiled
   (package

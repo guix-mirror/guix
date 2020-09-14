@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ryan Moe <ryan.moe@gmail.com>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,6 +39,7 @@
   #:use-module (gnu system)
   #:use-module (guix derivations)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix records)
@@ -61,7 +62,10 @@
             hurd-vm-configuration-options
             hurd-vm-configuration-id
             hurd-vm-configuration-net-options
+            hurd-vm-configuration-secrets
+
             hurd-vm-disk-image
+            hurd-vm-port
             hurd-vm-net-options
             hurd-vm-service-type
 
@@ -806,6 +810,41 @@ functionality of the kernel Linux.")))
 
 
 ;;;
+;;; Secrets for guest VMs.
+;;;
+
+(define (secret-service-activation port)
+  "Return an activation snippet that fetches sensitive material at local PORT,
+over TCP.  Reboot upon failure."
+  (with-imported-modules '((gnu build secret-service)
+                           (guix build utils))
+    #~(begin
+        (use-modules (gnu build secret-service))
+        (let ((sent (secret-service-receive-secrets #$port)))
+          (unless sent
+            (sleep 3)
+            (reboot))))))
+
+(define secret-service-type
+  (service-type
+   (name 'secret-service)
+   (extensions (list (service-extension activation-service-type
+                                        secret-service-activation)))
+   (description
+    "This service fetches secret key and other sensitive material over TCP at
+boot time.  This service is meant to be used by virtual machines (VMs) that
+can only be accessed by their host.")))
+
+(define (secret-service-operating-system os)
+  "Return an operating system based on OS that includes the secret-service,
+that will be listening to receive secret keys on port 1004, TCP."
+  (operating-system
+    (inherit os)
+    (services (cons (service secret-service-type 1004)
+                    (operating-system-user-services os)))))
+
+
+;;;
 ;;; The Hurd in VM service: a Childhurd.
 ;;;
 
@@ -849,11 +888,14 @@ functionality of the kernel Linux.")))
                (default #f))
   (net-options hurd-vm-configuration-net-options        ;list of string
                (thunked)
-               (default (hurd-vm-net-options this-record))))
+               (default (hurd-vm-net-options this-record)))
+  (secret-root hurd-vm-configuration-secret-root        ;string
+               (default "/etc/childhurd")))
 
 (define (hurd-vm-disk-image config)
-  "Return a disk-image for the Hurd according to CONFIG."
-  (let ((os (hurd-vm-configuration-os config))
+  "Return a disk-image for the Hurd according to CONFIG.  The secret-service
+is added to the OS specified in CONFIG."
+  (let ((os (secret-service-operating-system (hurd-vm-configuration-os config)))
         (disk-size (hurd-vm-configuration-disk-size config)))
     (system-image
      (image
@@ -861,15 +903,27 @@ functionality of the kernel Linux.")))
       (size disk-size)
       (operating-system os)))))
 
-(define (hurd-vm-net-options config)
+(define (hurd-vm-port config base)
+  "Return the forwarded vm port for this childhurd config."
   (let ((id (or (hurd-vm-configuration-id config) 0)))
-    (define (qemu-vm-port base)
-      (number->string (+ base (* 1000 id))))
-    `("--device" "rtl8139,netdev=net0"
-      "--netdev" ,(string-append
-                   "user,id=net0"
-                   ",hostfwd=tcp:127.0.0.1:" (qemu-vm-port 10022) "-:2222"
-                   ",hostfwd=tcp:127.0.0.1:" (qemu-vm-port 15900) "-:5900"))))
+    (+ base (* 1000 id))))
+(define %hurd-vm-secrets-port 11004)
+(define %hurd-vm-ssh-port 10022)
+(define %hurd-vm-vnc-port 15900)
+
+(define (hurd-vm-net-options config)
+  `("--device" "rtl8139,netdev=net0"
+    "--netdev"
+    ,(string-append "user,id=net0"
+                    ",hostfwd=tcp:127.0.0.1:"
+                    (number->string (hurd-vm-port config %hurd-vm-secrets-port))
+                    "-:1004"
+                    ",hostfwd=tcp:127.0.0.1:"
+                    (number->string (hurd-vm-port config %hurd-vm-ssh-port))
+                    "-:2222"
+                    ",hostfwd=tcp:127.0.0.1:"
+                    (number->string (hurd-vm-port config %hurd-vm-vnc-port))
+                    "-:5900")))
 
 (define (hurd-vm-shepherd-service config)
   "Return a <shepherd-service> for a Hurd in a Virtual Machine with CONFIG."
@@ -900,8 +954,26 @@ functionality of the kernel Linux.")))
                             (string->symbol (number->string id)))
                       provisions)
                      provisions))
-      (requirement '(networking))
-      (start #~(make-forkexec-constructor #$vm-command))
+      (requirement '(loopback networking user-processes))
+      (start
+       (with-imported-modules
+           (source-module-closure '((gnu build secret-service)
+                                    (guix build utils)))
+         #~(let ((spawn (make-forkexec-constructor #$vm-command)))
+             (lambda _
+               (let ((pid (spawn))
+                     (port #$(hurd-vm-port config %hurd-vm-secrets-port))
+                     (root #$(hurd-vm-configuration-secret-root config)))
+                 (catch #t
+                   (lambda _
+                     (secret-service-send-secrets port root))
+                   (lambda (key . args)
+                     (kill (- pid) SIGTERM)
+                     (apply throw key args)))
+                 pid)))))
+      (modules `((gnu build secret-service)
+                 (guix build utils)
+                 ,@%default-modules))
       (stop  #~(make-kill-destructor))))))
 
 (define hurd-vm-service-type

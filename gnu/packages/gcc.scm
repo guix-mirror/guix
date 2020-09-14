@@ -9,6 +9,7 @@
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -759,11 +760,26 @@ as the 'native-search-paths' field."
                (for-each delete-file
                          (find-files (string-append (assoc-ref outputs "out") "/bin")
                                      ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|gcc-.*)"))
-               #t))))))))
+               #t))))))
+    (synopsis "GCC library generating machine code on-the-fly at runtime")
+    (description
+     "This package is part of the GNU Compiler Collection and provides an
+embeddable library for generating machine code on-the-fly at runtime.  This
+shared library can then be dynamically-linked into bytecode interpreters and
+other such programs that want to generate machine code on-the-fly at run-time.
+It can also be used for ahead-of-time code generation for building standalone
+compilers.  The just-in-time (jit) part of the name is now something of a
+misnomer.")))
 
 
 (define-public gccgo-4.9
-  (custom-gcc gcc-4.9 "gccgo" '("go")
+  (custom-gcc (package
+                (inherit gcc-4.9)
+                (synopsis "Go frontend to GCC")
+                (description
+                 "This package is part of the GNU Compiler Collection and
+provides the GNU compiler for the Go programming language."))
+              "gccgo" '("go")
               %generic-search-paths
               ;; Suppress the separate "lib" output, because otherwise the
               ;; "lib" and "out" outputs would refer to each other, creating

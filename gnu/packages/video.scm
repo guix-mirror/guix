@@ -524,7 +524,7 @@ applications by providing high-level classes for commonly required tasks.")
 (define-public libde265
   (package
     (name "libde265")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method git-fetch)
@@ -534,7 +534,7 @@ applications by providing high-level classes for commonly required tasks.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qisj8ryzbknam3hk81rq70fsd9mcpxm898bqygvbsmbwyvmz3pg"))))
+        (base32 "0ipccyavlgf7hfzx1g8bvzg62xq10vcxvwgq70r3z3j6mdvmrzjp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1001,7 +1001,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public straw-viewer
   (package
     (name "straw-viewer")
-    (version "0.0.6")
+    (version "0.0.7")
     (source
      (origin
        (method git-fetch)
@@ -1010,8 +1010,7 @@ H.264 (MPEG-4 AVC) video streams.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0a9g10r56jdm2jx2yg9i8j8nczq74x78c29bhannr7ybnm2r6w2a"))))
+        (base32 "11ywip9ck2rgyj8s1pyr6za3si0bnx8rl2f3cv84xgcq36ac3rv4"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -2166,7 +2165,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.07.28")
+    (version "2020.09.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -2174,7 +2173,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1if7xyi7g9rpni1jbs7gv5m12s34qdb15dpfbbjn8120h16y7cqz"))))
+                "18wfhprbaszpxgqkac3hb050ngvdsaibbcifg88rkv5vc6bc2mq6"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2353,7 +2352,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.7.7")
+    (version "3.7.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2362,7 +2361,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gc1b1zm55w2w62ayc6k51l31fswk17b072lpbq65is3ngjg6c98"))))
+                "1ckzzf35nbwlx5prvzjr52n28chyd479vhdk5w7vb2343az80mzi"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -2737,7 +2736,7 @@ capabilities.")
 (define-public vapoursynth
   (package
     (name "vapoursynth")
-    (version "49")
+    (version "52")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2746,7 +2745,7 @@ capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1d298mlb24nlc2x7pixfbkd0qbpv4c706c32idsgpi96z1spkhvl"))))
+                "1krfdzc2x2vxv4nq9kiv1c09hgj525qn120ah91fw2ikq8ldvmx4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -4441,16 +4440,16 @@ transcode or reformat the videos in any way, producing perfect backups.")
 (define-public svt-av1
   (package
     (name "svt-av1")
-    (version "0.8.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/OpenVisualCloud/SVT-AV1")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0xad35q9sv5w0iihcf9q1f1m7br5anl3vsyx9svnx128iqf0n997"))))
+    (version "0.8.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenVisualCloud/SVT-AV1")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gfxdmdql090p7c8ln1z344g467l41p45287lmwy590hv8gw6bfg"))))
     (build-system cmake-build-system)
     ;; SVT-AV1 only supports Intel-compatible CPUs.
     (supported-systems '("x86_64-linux" "i686-linux"))

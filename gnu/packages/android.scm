@@ -7,9 +7,10 @@
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2019, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Sergey Trofimov <sarg@sarg.org.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,8 +31,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix build-system gnu)
   #:use-module (guix build-system android-ndk)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
@@ -41,6 +43,7 @@
   #:use-module (gnu packages docker)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
@@ -916,14 +919,14 @@ useful for reverse engineering, analysis of Android applications and more.")
 (define-public fdroidserver
   (package
     (name "fdroidserver")
-    (version "1.1.1")
+    (version "1.1.9")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fdroidserver" version))
         (sha256
          (base32
-          "0fp7q8faicx6i6wxm717qqaham3jpilb23mvynpz6v73z7hm6wcg"))))
+          "0m07f791z45w7r2dzx4yb6s54b3c3wykm3w9hn25p2jcyax082a2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -931,14 +934,20 @@ useful for reverse engineering, analysis of Android applications and more.")
          (add-after 'unpack 'fix-versioning
            (lambda _
              (substitute* "setup.py"
-               (("0.2.1") ,(package-version python-pyasn1-modules)))
+               (("0.2.1") ,(package-version python-pyasn1-modules))
+               ;; The dependency on docker has been removed upstream by
+               ;; a fairly large patch:
+               ;; https://gitlab.com/fdroid/fdroidserver/-/commit/89614851250c79a05db84070feca6dea033af334
+               ;; that is not in a release yet. It appears we can compile with
+               ;; a newer version.
+               (("docker-py >= 1.9, < 2.0") "docker >= 1.9"))
              #t)))))
     (propagated-inputs
      `(("python-androguard" ,python-androguard)
        ("python-apache-libcloud" ,python-apache-libcloud)
        ("python-clint" ,python-clint)
        ("python-defusedxml" ,python-defusedxml)
-       ("python-docker-py" ,python-docker-py)
+       ("python-docker" ,python-docker)
        ("python-gitpython" ,python-gitpython)
        ("python-mwclient" ,python-mwclient)
        ("python-paramiko" ,python-paramiko)
@@ -965,6 +974,36 @@ these same tools to create your own additional or alternative repository for
 publishing, or to assist in creating, testing and submitting metadata to the
 main repository.")
     (license license:agpl3+)))
+
+(define-public fdroidcl
+  (package
+    (name "fdroidcl")
+    (version "0.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mvdan/fdroidcl")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1rxcdyy2j34z0ql9d62w7ivsch9xihjnpb1z9kgy9q46vl8zhhy0"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "mvdan.cc/fdroidcl"
+       #:tests? #f  ; TODO: Inputs missing.
+       #:install-source? #f))
+    (inputs
+     `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
+    ;(native-inputs
+    ; `(("go-github-com-rogpeppe-go-internal-testscript"
+    ;    ,go-github-com-rogpeppe-go-internal-testscript)))
+    (synopsis "F-Droid desktop client")
+    (description
+     "While the Android client integrates with the system with regular update
+checks and notifications, this is a simple command line client that talks to
+connected devices via ADB.")
+    (home-page "https://github.com/mvdan/fdroidcl")
+    (license license:bsd-3)))
 
 (define-public enjarify
   (package

@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -504,13 +505,15 @@ This is the declarative counterpart of 'text-file'."
   (options    computed-file-options))             ;list of arguments
 
 (define* (computed-file name gexp
-                        #:key guile (options '(#:local-build? #t)))
+                        #:key guile (local-build? #t) (options '()))
   "Return an object representing the store item NAME, a file or directory
-computed by GEXP.  OPTIONS is a list of additional arguments to pass
-to 'gexp->derivation'.
+computed by GEXP.  When LOCAL-BUILD? is #t (the default), it ensures the
+corresponding derivation is built locally.  OPTIONS may be used to pass
+additional arguments to 'gexp->derivation'.
 
 This is the declarative counterpart of 'gexp->derivation'."
-  (%computed-file name gexp guile options))
+  (let ((options* `(#:local-build? ,local-build? ,@options)))
+    (%computed-file name gexp guile options*)))
 
 (define-gexp-compiler (computed-file-compiler (file <computed-file>)
                                               system target)

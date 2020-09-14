@@ -48,6 +48,7 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -193,7 +195,7 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
           (method url-fetch)
           (uri (string-append "https://linux-libre.fsfla.org"
                               "/pub/linux-libre/releases/" version "-gnu/"
-                              "deblob-" (version-major+minor version)))
+                              "deblob-" version))
           (file-name (string-append "linux-libre-deblob-"
                                     (version-major+minor version)))
           (sha256 deblob-hash))
@@ -202,51 +204,8 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
           (uri (string-append "https://linux-libre.fsfla.org"
                               "/pub/linux-libre/releases/" version "-gnu/"
                               "deblob-check"))
-          (file-name (string-append "linux-libre-deblob-check-"
-                                    (version-major+minor version)))
+          (file-name (string-append "linux-libre-deblob-check-" version))
           (sha256 deblob-check-hash))))
-
-(define deblob-scripts-5.8
-  (linux-libre-deblob-scripts
-   "5.8.2"
-   (base32 "07z7sglyrfh0706icqqf3shadf638pvyid9386r661ds5lbsa2mw")
-   (base32 "0j6jba5fcddqlb42f95gjl78jisfla4nswqila074gglcrbnl9q7")))
-
-(define deblob-scripts-5.7
-  (linux-libre-deblob-scripts
-   "5.7.16"
-   (base32 "1gharhw104wxp9dxjkzzvsqc2xn44mc9yvacc3v7jh7b6bb0a64a")
-   (base32 "19mzampqx6j85fbdnl347wsy8zw2fnm189llsjc7jwfm10qc2kms")))
-
-(define deblob-scripts-5.4
-  (linux-libre-deblob-scripts
-   "5.4.59"
-   (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "1b3q88i2qfdxyvpi9f7jds0qlb8hfpw87mgia096ax6822c2cmyb")))
-
-(define deblob-scripts-4.19
-  (linux-libre-deblob-scripts
-   "4.19.140"
-   (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
-   (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
-
-(define deblob-scripts-4.14
-  (linux-libre-deblob-scripts
-   "4.14.193"
-   (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
-   (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
-
-(define deblob-scripts-4.9
-  (linux-libre-deblob-scripts
-   "4.9.232"
-   (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
-   (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
-
-(define deblob-scripts-4.4
-  (linux-libre-deblob-scripts
-   "4.4.232"
-   (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
-   (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 
 (define* (computed-origin-method gexp-promise hash-algo hash
                                  #:optional (name "source")
@@ -285,6 +244,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (srfi srfi-1)
                              (ice-9 match)
                              (ice-9 ftw))
+
+                (setvbuf (current-output-port) 'line)
+
                 (let ((dir (string-append "linux-" #$version)))
 
                   (mkdir "/tmp/bin")
@@ -302,11 +264,8 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                          #+(canonical-package bzip2)
                          #+(canonical-package gzip)
                          #+(canonical-package tar)
-                         ;; The comments in the 'deblob-check' script
-                         ;; claim that it supports Python 2 and 3, but
-                         ;; in fact it fails when run in Python 3 as
-                         ;; of version 5.1.3.
-                         #+python-2))
+                         #+(canonical-package gawk)
+                         #+python-wrapper))
 
                   (with-directory-excursion "/tmp/bin"
 
@@ -325,12 +284,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                   (if (file-is-directory? #+upstream-source)
                       (begin
                         (format #t "Copying upstream linux source...~%")
-                        (force-output)
                         (invoke "cp" "--archive" #+upstream-source dir)
                         (invoke "chmod" "--recursive" "u+w" dir))
                       (begin
                         (format #t "Unpacking upstream linux tarball...~%")
-                        (force-output)
                         (invoke "tar" "xf" #$upstream-source)
                         (match (scandir "."
                                         (lambda (name)
@@ -343,13 +300,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                            (error "multiple directories found" dirs)))))
 
                   (with-directory-excursion dir
-                    (setenv "PYTHON" (which "python"))
                     (format #t "Running deblob script...~%")
-                    (force-output)
                     (invoke "/tmp/bin/deblob"))
 
                   (format #t "~%Packing new Linux-libre tarball...~%")
-                  (force-output)
                   (invoke "tar" "cvfa" #$output
                           ;; Avoid non-determinism in the archive.
                           "--mtime=@0"
@@ -357,7 +311,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                           "--group=root:0"
                           "--sort=name"
                           "--hard-dereference"
-                          dir))))))))))
+                          dir)
+
+                  (format #t "~%Scanning the generated tarball for blobs...~%")
+                  (invoke "/tmp/bin/deblob-check" "--use-awk" "--list-blobs"
+                          #$output))))))))))
 
 
 ;;;
@@ -389,58 +347,85 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.8-version "5.8.3")
+;; The current "stable" kernel. That is, the most recently released major
+;; version.
+(define-public linux-libre-5.8-version "5.8.7")
+(define deblob-scripts-5.8
+  (linux-libre-deblob-scripts
+   linux-libre-5.8-version
+   (base32 "07z7sglyrfh0706icqqf3shadf638pvyid9386r661ds5lbsa2mw")
+   (base32 "0j6jba5fcddqlb42f95gjl78jisfla4nswqila074gglcrbnl9q7")))
 (define-public linux-libre-5.8-pristine-source
   (let ((version linux-libre-5.8-version)
-        (hash (base32 "0y8prifvkywqsx5lk80bh31m505vinmicpvdrirgg0c9scg7x8lf")))
+        (hash (base32 "1zhpzlhl2ykna2nc70m72wlgyv1pkvkpfssb4k8p5pwlkh1ga2vv")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.8)))
 
-(define-public linux-libre-5.7-version "5.7.17")
-(define-public linux-libre-5.7-pristine-source
-  (let ((version linux-libre-5.7-version)
-        (hash (base32 "09ajavdyvr0025rwvwfp9yv2z8q779nan1i6dck2kkdxr48kd36c")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.7)))
-
-(define-public linux-libre-5.4-version "5.4.60")
+;; The "longterm" kernels — the older releases with long-term upstream support.
+;; Here are the support timelines:
+;; <https://www.kernel.org/category/releases.html>
+(define-public linux-libre-5.4-version "5.4.64")
+(define deblob-scripts-5.4
+  (linux-libre-deblob-scripts
+   "5.4.63"
+   (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
+   (base32 "1b3q88i2qfdxyvpi9f7jds0qlb8hfpw87mgia096ax6822c2cmyb")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "08x2a78n23371k7l5p677mihnl58dpjh7r7bvyiwj3y4hlisplmd")))
+        (hash (base32 "1vymhl6p7i06gfgpw9iv75bvga5sj5kgv46i1ykqiwv6hj9w5lxr")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.141")
+(define-public linux-libre-4.19-version "4.19.144")
+(define deblob-scripts-4.19
+  (linux-libre-deblob-scripts
+   "4.19.143"
+   (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
+   (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0511vb9rfpy5l6cz69v0v97rw2rk2pscc4hkz2pfmgikagm1shm4")))
+        (hash (base32 "0jnj65bdy5y9lcj5zhrn4iaszpww8z41ac66j00l75sd931l1g9k")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.194")
+(define-public linux-libre-4.14-version "4.14.197")
+(define deblob-scripts-4.14
+  (linux-libre-deblob-scripts
+   "4.14.196"
+   (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
+   (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1q7ssi2790bqjn8s8ra5ihma70hmxykahink7iq5h78738id191y")))
+        (hash (base32 "029h46yki2hxdbn7afmnf3yar1pnwrpszx76irsa5mf8gnrasyp0")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.233")
+(define-public linux-libre-4.9-version "4.9.235")
+(define deblob-scripts-4.9
+  (linux-libre-deblob-scripts
+   linux-libre-4.9-version
+   (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
+   (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "19dcwylhy5iqq3dmppqf7s9wy9d16m103djn1n183c9acnqclv9a")))
+        (hash (base32 "1hqcb3zw4546h6x5xy2mywdznha8813lx15mxbgfbvwm4qhsc9g6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.233")
+(define-public linux-libre-4.4-version "4.4.235")
+(define deblob-scripts-4.4
+  (linux-libre-deblob-scripts
+   linux-libre-4.4-version
+   (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
+   (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1z77dikgkvkp9ggwxp07hl8vxsf9kq57rhfdpbvhny1x13fqkrlp")))
+        (hash (base32 "0w5pkv936zb0shjgnpv17gcp5n8f91djznzq54p6j1bl5q2qdyqd")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -475,11 +460,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-5.8-source
   (source-with-patches linux-libre-5.8-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-5.7-source
-  (source-with-patches linux-libre-5.7-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
@@ -586,10 +566,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
   (make-linux-libre-headers* linux-libre-5.8-version
                              linux-libre-5.8-source))
 
-(define-public linux-libre-headers-5.7
-  (make-linux-libre-headers* linux-libre-5.7-version
-                             linux-libre-5.7-source))
-
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
                              linux-libre-5.4-source))
@@ -641,6 +617,26 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     ("CONFIG_USER_NS" . #t)
     ("CONFIG_PID_NS" . #t)
     ("CONFIG_NET_NS" . #t)
+    ;; Various options needed for elogind service:
+    ;; https://issues.guix.gnu.org/43078
+    ("CONFIG_CGROUP_FREEZER" . #t)
+    ("CONFIG_BLK_CGROUP" . #t)
+    ("CONFIG_CGROUP_WRITEBACK" . #t)
+    ("CONFIG_CGROUP_SCHED" . #t)
+    ("CONFIG_CGROUP_PIDS" . #t)
+    ("CONFIG_CGROUP_FREEZER" . #t)
+    ("CONFIG_CGROUP_DEVICE" . #t)
+    ("CONFIG_CGROUP_CPUACCT" . #t)
+    ("CONFIG_CGROUP_PERF" . #t)
+    ("CONFIG_SOCK_CGROUP_DATA" . #t)
+    ("CONFIG_BLK_CGROUP_IOCOST" . #t)
+    ("CONFIG_CGROUP_NET_PRIO" . #t)
+    ("CONFIG_CGROUP_NET_CLASSID" . #t)
+    ("CONFIG_MEMCG" . #t)
+    ("CONFIG_MEMCG_SWAP" . #t)
+    ("CONFIG_MEMCG_KMEM" . #t)
+    ("CONFIG_CPUSETS" . #t)
+    ("CONFIG_PROC_PID_CPUSET" . #t)
     ;; Modules required for initrd:
     ("CONFIG_NET_9P" . m)
     ("CONFIG_NET_9P_VIRTIO" . m)
@@ -867,12 +863,6 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-pristine-source linux-libre-5.8-pristine-source)
 (define-public linux-libre-source          linux-libre-5.8-source)
 (define-public linux-libre                 linux-libre-5.8)
-
-(define-public linux-libre-5.7
-  (make-linux-libre* linux-libre-5.7-version
-                     linux-libre-5.7-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
 
 (define-public linux-libre-5.4
   (make-linux-libre* linux-libre-5.4-version
@@ -3654,7 +3644,7 @@ compliance.")
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
-    (version "2019.06.03")
+    (version "2020.04.29")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3662,7 +3652,7 @@ compliance.")
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
                (base32
-                "1gslvh0aqdkv48jyr2ddq153mw28i7qz2ybrjj9qvkk3dgc7x4fd"))
+                "0yicda474ygahv8da18h1p4yf42s6x2f208mlwcw4xsrxld07zc9"))
 
               ;; We're building 'regulatory.bin' by ourselves.
               (snippet '(begin
@@ -6926,7 +6916,7 @@ IP addresses and routes, and configure IPsec.")
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.2.1")
+    (version "5.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6934,7 +6924,7 @@ IP addresses and routes, and configure IPsec.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0q5xd4gb9g83h82mg68cx616ifzl8qkzzlgg5xna698117ph3wky"))))
+                "0bssrfhnw5mhybgaa6d8wp87izi3c9cjpjy7vicm6y76mf7kl8p9"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -7208,7 +7198,7 @@ of Linux application development.")
   (package
     (inherit pipewire)
     (name "pipewire")
-    (version "0.3.7")
+    (version "0.3.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7217,12 +7207,15 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04l66p0wj553gp2zf3vwwh6jbr1vkf6wrq4za9zlm9dn144am4j2"))))
+                "1y293sfhhmzbgnlvs46bpiyimlii5nk71f8115qxs8sviwlsdr3w"))))
     (arguments
-     '(#:configure-flags '("-Dsystemd=false")
+     '(#:configure-flags
+       (list (string-append "-Dudevrulesdir=" (assoc-ref %outputs "out")
+                            "/lib/udev/rules.d")
+             "-Dsystemd=false")
        #:phases
        (modify-phases %standard-phases
-         ;; Skip shrink-runpath, otherwise validate-runpath fails
+         ;; Skip shrink-runpath, otherwise validate-runpath fails.
          (delete 'shrink-runpath))))
     (inputs
      (append (package-inputs pipewire)
@@ -7526,3 +7519,30 @@ tracing (uprobes), and tracepoints.  The bpftrace language is inspired by awk
 and C, and predecessor tracers such as DTrace and SystemTap.  bpftrace was
 created by Alastair Robertson.")
     (license license:asl2.0)))
+
+(define-public ttyebus-linux-module
+  (let ((revision "0")
+        (commit "fe4332a2281cf79804ef4d8516aa848ca1c58d1f"))
+    (package
+      (name "ttyebus-linux-module")
+      (version (git-version "1.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eBUS/ttyebus.git")
+               (commit "fe4332a2281cf79804ef4d8516aa848ca1c58d1f")))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1i66xjs9vln5cca6wx7aiiw7jihrlsk9hjdqyczp36fvm1b1bani"))))
+      (supported-systems '("armhf-linux" "aarch64-linux"))
+      (build-system linux-module-build-system)
+      (arguments
+       `(#:tests? #f))
+      (home-page "https://github.com/eBUS/ttyebus")
+      (synopsis "Low-latency Raspberry Pi UART driver")
+      (description "This package provides a Linux kernel module that will
+provide a serial device @code{/dev/ttyebus} with almost no latency upon
+receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
+      (license license:gpl3+))))

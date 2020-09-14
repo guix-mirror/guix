@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -74,7 +74,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "3.4.1")
+    (version "3.5")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -82,14 +82,15 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yvvj1s7ayn0lwils582smwkmckdk0gij5c58g45n4xh981n693q"))))
+                "07jklibpi4ig9pbdrwhllsfffxn2h8xf4ma36qii00w4hb69v3rq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:test-target "test"
        #:make-flags
        (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             "exif=1")))
+             "exif=1"
+             "inotify=1")))
     (native-inputs
      `(("perl" ,perl)
        ("perl-test-command" ,perl-test-command)))
@@ -202,7 +203,7 @@ It is the default image viewer on LXDE desktop environment.")
      `(#:tests? #f                      ; no check target
        #:make-flags
        (list (string-append "PREFIX=" %output)
-             "CC=gcc"
+             (string-append "CC=" ,(cc-for-target))
              ;; Xft.h #includes <ft2build.h> without ‘freetype2/’.  The Makefile
              ;; works around this by hard-coding /usr/include & $PREFIX.
              (string-append "CPPFLAGS=-I"
@@ -211,7 +212,16 @@ It is the default image viewer on LXDE desktop environment.")
              "V=1")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))         ; no configure script
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "sxiv.desktop"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/applications"))
+             #t))
+         (add-after 'install 'install-icons
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "-C" "icon" "install" make-flags))))))
     (inputs
      `(("freetype" ,freetype)
        ("giflib" ,giflib)

@@ -12,7 +12,7 @@
 ;;; Copyright © 2019, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Brian Leung <bkleung89@gmail.com>
 ;;;
@@ -339,18 +339,18 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20200810")
+    (version "8.20200908")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "1wy6ckcf5f6m94gakg1504h1zryail3mmj85sglq03s45vawjcg6"))))
+        (base32 "1113inl10f4m0699ba2zglaqlfqvwhqjkqg6r6m1d5rqv5brswb1"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
-       '("--flags=-Android -Assistant -Pairing -Webapp -WebDAV")
+       '("--flags=-Android -Assistant -Pairing -Webapp")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-shell-for-tests
@@ -448,6 +448,7 @@ to @code{cabal repl}).")
        ("ghc-crypto-api" ,ghc-crypto-api)
        ("ghc-cryptonite" ,ghc-cryptonite)
        ("ghc-data-default" ,ghc-data-default)
+       ("ghc-dav" ,ghc-dav)
        ("ghc-disk-free-space" ,ghc-disk-free-space)
        ("ghc-dlist" ,ghc-dlist)
        ("ghc-edit-distance" ,ghc-edit-distance)
@@ -627,7 +628,7 @@ and mIRC chat codes.")
 (define-public kmonad
   (package
     (name "kmonad")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -636,7 +637,7 @@ and mIRC chat codes.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1g40nkpldih6h1rlxjx5yf9iavr3qs1f2b6j0gd8135p5hkg8d8n"))))
+        (base32 "064gnzzcm6fnxfiildbjmgbdxkhqvp61zrl6qhkl1pgbn27j1mll"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
@@ -661,7 +662,7 @@ and mIRC chat codes.")
                     (doc (string-append out "/share/doc/kmonad-" ,version)))
                (install-file "README.md" doc)
                (copy-recursively "doc" doc)
-               (copy-recursively "example" (string-append doc "/example"))
+               (copy-recursively "keymap" (string-append doc "/keymap"))
                #t))))))
     (inputs
      `(("ghc-cereal" ,ghc-cereal)
@@ -670,6 +671,8 @@ and mIRC chat codes.")
        ("ghc-lens" ,ghc-lens)
        ("ghc-megaparsec" ,ghc-megaparsec)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-rio" ,ghc-rio)
        ("ghc-unagi-chan" ,ghc-unagi-chan)
        ("ghc-unliftio" ,ghc-unliftio)
        ("ghc-unordered-containers" ,ghc-unordered-containers)))
@@ -772,7 +775,7 @@ too slow and you'll get wound up in the scroll and crushed.")
 (define-public shellcheck
   (package
     (name "shellcheck")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
@@ -780,7 +783,7 @@ too slow and you'll get wound up in the scroll and crushed.")
              "https://hackage.haskell.org/package/ShellCheck/ShellCheck-"
              version ".tar.gz"))
        (sha256
-        (base32 "1vx895cp5k5h0680xfwj74lk97m9y627n965x6srds0gfnbkzy9s"))
+        (base32 "06m4wh891nah3y0br4wh3adpsb16zawkb2ijgf1vcz61fznj6ps1"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system haskell-build-system)
     (inputs

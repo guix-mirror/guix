@@ -795,6 +795,51 @@ language.")
       (license (list license:mpl2.0               ;library
                      license:gpl2+)))))           ;Guile bindings and GUI
 
+(define-public inspekt3d
+  (let ((commit "703f52ccbfedad2bf5240bf8183d1b573c9d54ef")
+        (revision "0"))
+    (package
+      (name "inspekt3d")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/kavalogic-inc/inspekt3d.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0lan6930g5a9z4ack9jj0zdd0mb2s6q2xzpiwcjdc3pvl9b1nbw4"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-libfive-guile-location
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "inspekt3d/library.scm"
+                 (("\"libfive-guile")
+                  (string-append "\""
+                                 (assoc-ref inputs "libfive")
+                                 "/lib/libfive-guile")))
+               #t)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("mesa" ,mesa)
+         ("guile" ,guile-2.2)))
+      (propagated-inputs
+       `(("libfive" ,libfive)
+         ("guile-opengl" ,guile-opengl)))
+      (home-page "https://gitlab.com/kavalogic-inc/inspekt3d/")
+      (synopsis "Lightweight 3D viewer for Libfive written in Guile Scheme")
+      (description
+       "Inspekt3d is a lightweight 3D viewer for Libfive written in Guile Scheme.
+The viewer can be used interactively with a REPL (for example Geiser in
+Emacs).")
+      (license license:gpl3+))))
+
 ;; TODO Add doc https://gitlab.com/kicad/services/kicad-doc/-/tree/master
 (define-public kicad
   (package

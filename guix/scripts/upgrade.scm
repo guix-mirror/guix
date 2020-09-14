@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -67,7 +67,9 @@ This is an alias for 'guix package -u'.\n"))
                  %transformation-options
                  %standard-build-options)))
 
-(define (guix-upgrade . args)
+(define-command (guix-upgrade . args)
+  (synopsis "upgrade packages to their latest version")
+
   (define (handle-argument arg result arg-handler)
     ;; Accept at most one non-option argument, and treat it as an upgrade
     ;; regexp.

@@ -507,6 +507,7 @@ true, display what would be built without actually building it."
   ;; workaround, skip this code when $SUDO_USER is set.  See
   ;; <https://bugs.gnu.org/36785>.
   (unless (or (getenv "SUDO_USER")
+              (not (file-exists? %user-profile-directory))
               (string=? %profile-directory
                         (dirname
                          (canonicalize-profile %user-profile-directory))))
@@ -750,7 +751,9 @@ Use '~/.config/guix/channels.scm' instead."))
         channels)))
 
 
-(define (guix-pull . args)
+(define-command (guix-pull . args)
+  (synopsis "pull the latest revision of Guix")
+
   (with-error-handling
     (with-git-error-handling
      (let* ((opts         (parse-command-line args %options

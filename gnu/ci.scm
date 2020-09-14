@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix profiles)
   #:use-module (guix packages)
   #:use-module (guix channels)
+  #:use-module (guix config)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
   #:use-module (guix monads)
@@ -116,7 +118,7 @@ SYSTEM."
   ;; Note: Don't put the '-final' package variants because (1) that's
   ;; implicit, and (2) they cannot be cross-built (due to the explicit input
   ;; chain.)
-  (list gcc-4.8 gcc-4.9 gcc-5 glibc binutils
+  (list gcc-7 gcc-8 gcc-9 gcc-10 glibc binutils
         gmp mpfr mpc coreutils findutils diffutils patch sed grep
         gawk gnu-gettext hello guile-2.0 guile-2.2 zlib gzip xz
         %bootstrap-binaries-tarball
@@ -233,7 +235,12 @@ system.")
         ,(->job 'iso9660-image
                 (build-image
                  (image
-                  (inherit iso9660-image)
+                  (inherit (image-with-label
+                             iso9660-image
+                             (string-append "GUIX_" system "_"
+                                            (if (> (string-length %guix-version) 7)
+                                                (substring %guix-version 0 7)
+                                                %guix-version))))
                   (operating-system installation-os))))
         ;; Only cross-compile Guix System images from x86_64-linux for now.
         ,@(if (string=? system "x86_64-linux")

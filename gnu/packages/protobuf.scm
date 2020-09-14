@@ -32,11 +32,14 @@
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system ruby)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ruby))
 
@@ -226,6 +229,59 @@ encoder in C++.  The developer using protozero has to manually translate the
      "Protocol buffers are a language-neutral, platform-neutral extensible
 mechanism for serializing structured data.")
     (license license:bsd-3)))
+
+(define-public python-pure-protobuf
+  (package
+    (name "python-pure-protobuf")
+    (version "2.0.0")
+    (source
+     (origin
+       ;; pypi is broken; has no tests
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/eigenein/protobuf")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0lgs99dpfyckz6spib419sl7jpdk2g54pcw0yg59gdcsd1f5zqgz"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-isort" ,python-isort)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'setup-test-env
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (py3sitedir
+                     (string-append out "/lib/python"
+                                    ,(version-major+minor
+                                      (package-version python))
+                                    "/site-packages")))
+               (setenv "PYTHONPATH"
+                       (string-append py3sitedir ":"
+                                      (getenv "PYTHONPATH"))))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "--cov-report" "term-missing" "--cov"
+                     "pure_protobuf")
+             (invoke "flake8" "pure_protobuf" "tests"
+                     "--ignore=F541")
+             (invoke "isort" "-rc" "-c" "pure_protobuf" "tests")
+             #t)))))
+    (home-page "https://pypi.org/project/pure-protobuf/")
+    (synopsis "Protobuf implementation using dataclasses")
+    (description
+     "@code{python-pure-protobuf} allows to take advantage of the standard
+dataclasses module to define message types.  Protocol buffers are a
+language-neutral, platform-neutral extensible mechanism for serializing
+structured data.")
+    (license license:expat)))
 
 (define-public python2-protobuf
   (package-with-python2 python-protobuf))

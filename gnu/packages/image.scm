@@ -1409,7 +1409,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.19")
+    (version "2.0.20")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1418,8 +1418,20 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "036rcr0wkz9gzmvk1jb96piznk0c0bwxgf31z1zrlg8js4zl1n84"))))
+                "1bn4mg6l5afryrlyk3y7p3accdq113fis8hpwywy5g51ycablz3h"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-checking-disabled-things
+           (lambda _
+             ;; The MIF codec was disabled for security reasons in JasPer 2.0.20
+             ;; but its test suite still assumes that the format is supported.
+             (for-each delete-file
+                       (find-files "data/test" "\\.mif$")) ; for run_test_1
+             (substitute* "test/bin/run_test_2"
+               (("image_formats\\+=\\(mif\\)") ""))
+             #t)))))
     (inputs `(("libjpeg" ,libjpeg-turbo)))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference

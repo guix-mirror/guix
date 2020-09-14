@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
 (define-module (gnu packages scheme)
   #:use-module (gnu packages)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.0+ lgpl2.1+ lgpl3+ asl2.0 bsd-3
+                #:select (gpl2+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ asl2.0 bsd-3
                           cc-by-sa4.0 non-copyleft expat))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -71,6 +72,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages libedit)
+  #:use-module (gnu packages linux)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
@@ -396,7 +398,7 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "7.8")
+    (version "7.8") ;; Note: Remember to also update racket-minimal!
     (source (origin
               (method url-fetch)
               (uri (list (string-append "http://mirror.racket-lang.org/installers/"
@@ -538,7 +540,7 @@ of libraries.")
                           version "/racket-minimal-" version "-src.tgz")))
               (sha256
                (base32
-                "1lxcd4ix8q3089xql48hwccxvcpkinfxwxnc6fhcjdgzqcyxh3ln"))
+                "0bbglf9vfacpm2hn3lskhvc8cpg6z088fbnzpqsn17z8qdk8yvb3"))
               (patches (search-patches
                         "racket-store-checksum-override.patch"))))
     (synopsis "Racket without bundled packages such as Dr. Racket")
@@ -1077,3 +1079,107 @@ multilingual support are some of the goals.  Gauche comes with a package
 manager/installer @code{gauche-package} which can download, compile, install
 and list gauche extension packages.")
     (license bsd-3)))
+
+(define-public gerbil
+  (package
+    (name "gerbil")
+    (version "0.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vyzo/gerbil")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vng0kxpnwsg8jbjdpyn4sdww36jz7zfpfbzayg9sdpz6bjxjy0f"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "src")
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (invoke "chmod" "755" "-R" ".")
+             ;; Otherwise fails when editing an r--r--r-- file.
+             (invoke "gsi-script" "configure"
+                     "--prefix" (assoc-ref outputs "out")
+                     "--with-gambit" (assoc-ref inputs "gambit-c"))))
+         (add-before 'patch-generated-file-shebangs 'fix-gxi-shebangs
+           (lambda _
+             ;; Some .ss files refer to gxi using /usr/bin/env gxi
+             ;; and 'patch-generated-file-shebangs can't fix that
+             ;; because gxi has not been compiled yet.
+             ;; We know where gxi is going to end up so we
+             ;; Doctor Who our fix here before the problem
+             ;; happens towards the end of the build.sh script.
+             (let ((abs-srcdir (getcwd)))
+               (for-each
+                (lambda (f)
+                   (substitute* f
+                     (("#!/usr/bin/env gxi")
+                      (string-append "#!" abs-srcdir "/../bin/gxi"))))
+                 '("./gerbil/gxc"
+                   "./lang/build.ss"
+                   "./misc/http-perf/build.ss"
+                   "./misc/rpc-perf/build.ss"
+                   "./misc/scripts/docsnarf.ss"
+                   "./misc/scripts/docstub.ss"
+                   "./misc/scripts/docsyms.ss"
+                   "./r7rs-large/build.ss"
+                   "./release.ss"
+                   "./std/build.ss"
+                   "./std/run-tests.ss"
+                   "./std/web/fastcgi-test.ss"
+                   "./std/web/rack-test.ss"
+                   "./tools/build.ss"
+                   "./tutorial/httpd/build.ss"
+                   "./tutorial/kvstore/build.ss"
+                   "./tutorial/lang/build.ss"
+                   "./tutorial/proxy/build-static.ss"
+                   "./tutorial/proxy/build.ss")))
+             #t))
+         (replace
+          'build
+          (lambda*
+           (#:key inputs #:allow-other-keys)
+           (setenv "HOME" (getcwd))
+             (invoke
+              ;; The build script needs a tty or it'll crash on an ioctl
+              ;; trying to find the width of the terminal it's running on.
+              ;; Calling in script prevents that.
+              "script"
+              "-qefc"
+              "./build.sh")))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib")))
+               (mkdir-p bin)
+               (mkdir-p lib)
+               (copy-recursively "../bin" bin)
+               (copy-recursively "../lib" lib)))))))
+    (native-inputs
+     `(("coreutils" ,coreutils)
+       ("util-linux" ,util-linux)))
+    (propagated-inputs
+     `(("gambit-c" ,gambit-c)
+       ("zlib" ,zlib)
+       ("openssl" ,openssl)
+       ("sqlite" ,sqlite)))
+    (build-system gnu-build-system)
+    (synopsis "Meta-dialect of Scheme with post-modern features")
+    (description "Gerbil is an opinionated dialect of Scheme designed for Systems
+Programming, with a state of the art macro and module system on top of the Gambit
+runtime.  The macro system is based on quote-syntax, and provides the full meta-syntactic
+tower with a native implementation of syntax-case.  It also provides a full-blown module
+system, similar to PLT Scheme's (sorry, Racket) modules.  The main difference from Racket
+is that Gerbil modules are single instantiation, supporting high performance ahead of
+time compilation and compiled macros.")
+    (home-page "https://cons.io")
+    (license `(,lgpl2.1 ,asl2.0))))

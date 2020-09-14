@@ -115,13 +115,23 @@
                         arch "-linux"
                         "/20131110/guile-2.0.9.tar.xz"))))
 
+;; NOTE: The commit IDs used here form a linked list threaded through the git
+;; history. In a phenomenon known as boot-stripping, not only the head of this
+;; list is used, but also a few older versions, when a guix from this package is
+;; used to build something also depending on guix.
+;;
+;; Therefore, if, by accident, you set this package to a non-existent commit ID,
+;; it is insufficient to simply correct it with the latest commit.
+;; Instead, please push one commit that rolls back Guix to before the mistake,
+;; and then another that points to the first one. That way, the faulty commit
+;; won't appear on the linked list.
 (define-public guix
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.1.0")
-        (commit "29d3569c9c712d70466d9175474c8fd1a3262234")
-        (revision 21))
+        (commit "44c6e6f590b706f1ecfea6a7e7406bbd7cb70736")
+        (revision 25))
     (package
       (name "guix")
 
@@ -137,7 +147,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1sprs2hpi27qawscpj13v2kckagq5jhwd3bibwvz1p229m54dhg6"))
+                  "17kmn9yrk9pxi88v4d48h9q3m5dpd2j0pf15fhxzh4k915jv8n6k"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -548,18 +558,17 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "2.3.6")
+    (version "2.3.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "128xf2as0y7hr28x575pbf9lkjpxr9hsxknbavv4p7ywr4lhbs85"))))
+               "15p50jkss6szinisb7axhxybgfi29sm9grz7mxwair8ljj2553yx"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--sysconfdir=/etc")
+     `(#:configure-flags '("--sysconfdir=/etc" "--enable-gc")
        #:phases
        (modify-phases %standard-phases
          (replace 'install
@@ -991,6 +1000,15 @@ environments.")
                   (substitute* "configure.ac"
                     (("^GUILE_PKG.*")
                      "GUILE_PKG([3.0 2.2])\n"))
+
+                  ;; Avoid name clash and build failure now that
+                  ;; 'define-json-mapping' is also provided by Guile-JSON, as
+                  ;; of version 4.3.
+                  (substitute* (find-files "." "\\.scm$")
+                    (("define-json-mapping")
+                     "define-json-mapping*")
+                    (("<=>")
+                     "<->"))
                   #t))
               (file-name (string-append "guix-jupyter-" version "-checkout"))))
     (build-system gnu-build-system)
@@ -1067,14 +1085,14 @@ in an isolated environment, in separate namespaces.")
 (define-public gcab
   (package
     (name "gcab")
-    (version "1.2")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gcab/"
                                   version "/gcab-" version ".tar.xz"))
               (sha256
                (base32
-                "038h5kk41si2hc9d9169rrlvp8xgsxq27kri7hv2vr39gvz9cbas"))))
+                "13q43iqld4l50yra45lhvkd376pn6qpk7rkx374zn8y9wsdzm9b7"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums
@@ -1130,15 +1148,15 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2020.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/ostreedev/ostree/releases/download/v"
-                    (version-major+minor version) "/libostree-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1k92177hjalbdpmg45ymwwrni68vh9rs5x9zvy5fzl9lng12fgpb"))))
+    (version "2020.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/ostreedev/ostree/releases/download/v"
+             (version-major+minor version) "/libostree-" version ".tar.xz"))
+       (sha256
+        (base32 "0wk9fgj9jl25ns2hcgcb6j24k5mvfn13b02ka0p8l4hdh8c4hpc6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1184,14 +1202,14 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.8.1")
+   (version "1.8.2")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
                          version "/flatpak-" version ".tar.xz"))
      (sha256
-      (base32 "1bcymiv0yzs05rplbyzpimb1k17s345a95y0dhw7jh56z5k4p4b6"))))
+      (base32 "1c45a0k7wx685n5b3ihv7dk0mm2kmwbw7cx8w5g2la62yxfn49kr"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.
@@ -1227,7 +1245,7 @@ cp -r /tmp/locale/*/en_US.*")))
               (("/usr/bin/python3") (which "python3")))
             #t))
         ;; Many tests fail for unknown reasons, so we just run a few basic
-        ;; tests
+        ;; tests.
         (replace 'check
           (lambda _
             (setenv "HOME" "/tmp")

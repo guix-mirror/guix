@@ -128,7 +128,9 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
 ;;; Entry point.
 ;;;
 
-(define (guix-time-machine . args)
+(define-command (guix-time-machine . args)
+  (synopsis "run commands from a different revision")
+
   (with-error-handling
     (with-git-error-handling
      (let* ((opts         (parse-args args))

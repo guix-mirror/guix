@@ -443,7 +443,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.34")
+    (version "4.0.35")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -452,7 +452,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19lcmmcnxkbirvh5bn5xa9a99z48zmb1b8845cp5r598y019gxqp"))))
+                "1f203g2hp96cp8w4x1myhqdj5j09z9s23kylwkrxr69fjhn0vhnb"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -514,20 +514,24 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "2.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://hisham.hm/htop/releases/"
-                                  version "/htop-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
+    (version "3.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/htop-dev/htop")
+             (commit version)))
+       (sha256
+        (base32 "0kjlphdvwwbj91kk91s4ksc954d3c2bznddzx2223jmb1bn9rcsa"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
     (native-inputs
-     `(("python" ,python-wrapper)))     ;for scripts/MakeHeader.py
-    (home-page "https://hisham.hm/htop/")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("python" ,python-wrapper)))     ; for scripts/MakeHeader.py
+    (home-page "https://htop.dev")
     (synopsis "Interactive process viewer")
     (description
      "This is htop, an interactive process viewer.  It is a text-mode
@@ -1048,10 +1052,10 @@ connection alive.")
                ;; if finds all the programs it needs.
                (let* ((out       (assoc-ref outputs "out"))
                       (libexec   (string-append out "/libexec"))
-                      (coreutils (assoc-ref inputs "coreutils"))
+                      (coreutils (assoc-ref inputs "coreutils*"))
                       (inetutils (assoc-ref inputs "inetutils"))
                       (net-tools (assoc-ref inputs "net-tools"))
-                      (sed       (assoc-ref inputs "sed")))
+                      (sed       (assoc-ref inputs "sed*")))
                  (substitute* "client/scripts/linux"
                    (("/sbin/ip")
                     (string-append (assoc-ref inputs "iproute")
@@ -1091,12 +1095,8 @@ connection alive.")
                      (base32
                       "1j9a4r83a77mp8k1y8z524c9rzdqgd8rzwczd6zwmw86a00xiimg"))))
 
-                ;; When cross-compiling, we need the cross Coreutils and sed.
-                ;; Otherwise just use those from %FINAL-INPUTS.
-                ,@(if (%current-target-system)
-                      `(("coreutils" ,coreutils)
-                        ("sed" ,sed))
-                      '())))
+                ("coreutils*" ,coreutils)
+                ("sed*" ,sed)))
 
       (home-page "https://www.isc.org/products/DHCP/")
       (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
@@ -1375,10 +1375,11 @@ at once based on a Perl regular expression.")
                          "packdir=\"/var/log\""))
                       #t))
                   (add-before 'install 'tweak-rc-weekly
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "rc/weekly"
                         (("/bin/kill")
-                         (which "kill"))
+                         (string-append (assoc-ref inputs "coreutils*")
+                                        "/bin/kill"))
                         (("syslogd\\.pid")
                          ;; The file is called 'syslog.pid' (no 'd').
                          "syslog.pid"))
@@ -1389,6 +1390,7 @@ at once based on a Perl regular expression.")
     (native-inputs `(("texinfo" ,texinfo)
                      ("automake" ,automake)
                      ("util-linux" ,util-linux))) ; for 'cal'
+    (inputs `(("coreutils*" ,coreutils)))
     (home-page "https://www.gnu.org/software/rottlog/")
     (synopsis "Log rotation and management")
     (description
@@ -2085,7 +2087,7 @@ track changes in important system configuration files.")
 (define-public libcap-ng
   (package
     (name "libcap-ng")
-    (version "0.7.11")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2093,7 +2095,7 @@ track changes in important system configuration files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1s8akhnnazk0b5c6z5i3x54rjb26p8pz2wdl1m21ml3231qmr0c5"))))
+                "08cy59iassiwbmfxa5v0kb374r80290vv32f5q1mnip11av26kgi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2137,24 +2139,19 @@ degradation and failure.")
 (define-public fdupes
   (package
     (name "fdupes")
-    (version "1.6.1")
+    (version "2.1.2")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/adrianlopezroche/fdupes")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/adrianlopezroche/fdupes/"
+                           "releases/download/v" version "/"
+                           "fdupes-" version ".tar.gz"))
        (sha256
-        (base32 "19b6vqblddaw8ccw4sn0qsqzbswlhrz8ia6n4m3hymvcxn8skpz9"))))
+        (base32 "1g9p50xhi2sp0hqxml4w2k0kq9jv988q2yxm347z5349dlxvap6d"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (delete 'configure))
-       #:tests? #f ; no 'check' target
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("pcre2" ,pcre2)))
     (home-page "https://github.com/adrianlopezroche/fdupes")
     (synopsis "Identify duplicate files")
     (description
@@ -3598,7 +3595,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.05-2")
+      (version "3.1.06-1")
       (source
        (origin
          (method git-fetch)
@@ -3607,7 +3604,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "1a7nl2wk49yz5hcrph692xh5phv1mdg1m5cbvgv3ya12c6r32pa2"))))
+          (base32 "0h65n03q9kdsv0i1q5f88i11iv79ca7fqq97rdkzkmiqb4whhnm2"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

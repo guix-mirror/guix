@@ -155,7 +155,7 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2020.08.04")
+    (version "2020.09.01")
     (source
      (origin
        (method url-fetch)
@@ -163,7 +163,7 @@ based command language.")
                            "releases/download/v" version "/"
                            "kakoune-" version ".tar.bz2"))
        (sha256
-        (base32 "08gikjxyvcr415br1g1llzh5pnq737q55yinalb92cgq3yn9yih2"))))
+        (base32 "0x81rxy7bqnhd9374g5ypy4w4nxmm0vnqw6b52bf62jxdg2qj6l6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -657,24 +657,20 @@ environment with Markdown markup.")
                      (icons-dir (string-append out "/share/pixmaps")))
                  (install-file "icons/Manuskript/manuskript.svg" icons-dir)
                  (mkdir-p apps)
-                 (with-output-to-file (string-append apps "/manuskript.desktop")
-                   (lambda _
-                     (format #t
-                             "[Desktop Entry]~@
-                         Name=Manuskript~@
-                         MimeType=application/x-manuskript-book;~@
-                         Exec=~a/bin/manuskript %f~@
-                         Comment=Tool for writers~@
-                         Comment[es]=Herramienta para escritores/as~@
-                         Keywords=manuskript;office;write;edit;novel;text;msk~@
-                         Terminal=false~@
-                         Type=Application~@
-                         Icon=manuskript~@
-                         Categories=Office;WordProcessor;~%"
-                             out))))
+                 (make-desktop-entry-file (string-append apps "/manuskript.desktop")
+                   #:name "Manuskript"
+                   #:mime-type "application/x-manuskript-book;"
+                   #:exec (string-append out "/bin/manuskript %f")
+                   #:comment '((#f "Tool for writers")
+                               ("es" "Herramienta para escritores/as"))
+                   #:keywords "manuskript;office;write;edit;novel;text;msk"
+                   #:terminal #f
+                   #:type "Application"
+                   #:icon "manuskript"
+                   #:categories "Office;WordProcessor;"))
                #t))))))
     (inputs
-     `(("ghc-pandoc" ,ghc-pandoc)
+     `(("pandoc" ,pandoc)
        ("python-lxml" ,python-lxml)
        ("python-markdown" ,python-markdown)
        ("python-pyqt" ,python-pyqt)
@@ -709,7 +705,7 @@ in plain text file format.")
 (define-public editorconfig-core-c
   (package
     (name "editorconfig-core-c")
-    (version "0.12.3")
+    (version "0.12.4")
     (source
       (origin
         (method git-fetch)
@@ -718,8 +714,7 @@ in plain text file format.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0jkc69r4jwn4rih6h6cqvgljjc3ff49cxj8286mi515aczr48cm1"))))
+         (base32 "1311fhh2jfsja2hhk3nwb6nijlq03jw8dk35cwbrac0p9jvy03jx"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
@@ -728,17 +723,25 @@ in plain text file format.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((tests (assoc-ref inputs "tests")))
                (copy-recursively tests "tests"))
-             #t)))))
+             #t))
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (with-directory-excursion lib
+                 (delete-file "libeditorconfig_static.a"))
+               #t))))))
     (native-inputs
-     `(("tests" ,(origin
-                   (method git-fetch)
-                   (uri (git-reference
-                          (url "https://github.com/editorconfig/editorconfig-core-test")
-                          (commit "6ea1d8ece62cac9cf72c79dce4879b046abe1fe7"))) ; matches version
-                   (file-name (git-file-name "editorconfig-core-test" version))
-                   (sha256
-                    (base32
-                     "1sf6910idnd4bgzbj8w8f9ldsbkaqa0lh6syymwy3hfqda63acj7"))))))
+     `(("tests"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/editorconfig/editorconfig-core-test")
+                 ;; The tests submodule commit matching this package's version.
+                 (commit "48610d43b7455af12195473377f93c4ceea654f5")))
+           (file-name (git-file-name "editorconfig-core-test" version))
+           (sha256
+            (base32 "1s29p4brmcsc3xsww3gk85dg45f1kk3iykh1air3ij0hymf5dyqy"))))))
     (inputs
      `(("pcre2" ,pcre2)))
     (home-page "https://editorconfig.org/")

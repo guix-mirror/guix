@@ -1089,7 +1089,10 @@ Create a bundle of PACKAGE.\n"))
 ;;; Entry point.
 ;;;
 
-(define (guix-pack . args)
+(define-command (guix-pack . args)
+  (category development)
+  (synopsis "create application bundles")
+
   (define opts
     (parse-command-line args %options (list %default-options)))
 

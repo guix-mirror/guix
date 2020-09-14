@@ -171,10 +171,6 @@ AM_CONDITIONAL([ENABLE_INSTALLER],
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])
 
-dnl Make sure we don't suffer from the bug in 'equal?' wrt. syntax objects
-dnl found in 2.2.1.  See <https://bugs.gnu.org/29903>.
-GUIX_ASSERT_SYNTAX_OBJECT_EQUAL
-
 AC_PROG_SED
 
 dnl Decompressors, for use by the substituter and other modules.
@@ -197,11 +193,6 @@ AC_ARG_WITH([nix-prefix],
       ;;
    esac],
   [])
-
-AC_PATH_PROG([NIX_HASH], [nix-hash])
-if test "x$guix_build_daemon$NIX_HASH" = "xno"; then
-   AC_MSG_ERROR([Nix programs not found; please install Nix or use `--with-nix-prefix'.])
-fi
 
 AC_ARG_WITH([nixpkgs],
   [AS_HELP_STRING([--with-nixpkgs=DIR],

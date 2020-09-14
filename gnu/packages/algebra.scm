@@ -1118,17 +1118,17 @@ xtensor provides:
 (define-public gap
   (package
     (name "gap")
-    (version "4.10.2")
+    (version "4.11.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.gap-system.org/pub/gap/gap-"
+       (uri (string-append "https://files.gap-system.org/gap-"
                            (version-major+minor version)
                            "/tar.bz2/gap-"
                            version
                            ".tar.bz2"))
        (sha256
-        (base32 "0cp6ddk0469zzv1m1vair6gm27ic6c5m77ri8rn0znq3gaps6x94"))
+        (base32 "00l6hvy4iggnlrib4vp805sxdm3j7n3hzpv5zs9hbiiavh80l1xz"))
        (modules '((guix build utils) (ice-9 ftw) (srfi srfi-1)))
        (snippet
         '(begin
@@ -1140,41 +1140,46 @@ xtensor provides:
            ;; FIXME: This might be fixed in the next release, see
            ;; https://github.com/gap-system/gap/issues/3292
            (delete-file "tst/testinstall/dir.tst")
-           ;; Delete all packages except for a fixed list.
+           ;; Delete all packages except for a fixed list,
+           ;; given by their names up to version numbers.
            (with-directory-excursion "pkg"
              (for-each delete-file-recursively
-               (lset-difference string=? (scandir ".")
+               (lset-difference
+                 (lambda (all keep) (string-prefix? keep all))
+                 (scandir ".")
                  '("." ".."
                    ;; Necessary packages.
-                   "GAPDoc-1.6.2"
-                   "primgrp-3.3.2"
-                   "SmallGrp-1.3"    ; artistic2.0
-                   "transgrp"        ; artistic2.0 for data,
-                                     ; gpl2 or gpl3 for code
-                   ;; Recommanded package.
-                   "io-4.5.4"        ; gpl3+
+                   "GAPDoc-"
+                   "primgrp-"
+                   "SmallGrp-"   ; artistic2.0
+                   "transgrp"    ; artistic2.0 for data,
+                                 ; gpl2 or gpl3 for code
+                   ;; Recommended package.
+                   "io-"         ; gpl3+
                    ;; Optional packages, searched for at start,
                    ;; and their depedencies.
-                   "alnuth-3.1.0"
-                   "autpgrp-1.10"
-                   "crisp-1.4.4"     ; bsd-2
-                   "ctbllib"       ; gpl3+ according to doc/chap0.txt
-                   "FactInt-1.6.2"
+                   "alnuth-"
+                   "autpgrp-"
+                   "crisp-"      ; bsd-2
+                   "ctbllib"     ; gpl3+, clarified in the next release;
+                                 ; see
+                                 ; http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib/README.md
+                   "FactInt-"
                    "fga"
-                   "irredsol-1.4"    ; bsd-2
-                   "laguna-3.9.2"
-                   "polenta-1.3.8"
-                   "polycyclic-2.14"
-                   "radiroot-2.8"
-                   "resclasses-4.7.1"
-                   "sophus-1.24"
-                   "tomlib-1.2.7"  ; gpl2+, clarified in the git repository
-                                   ; and the next release
-                   "utils-0.59"))))
+                   "irredsol-"   ; bsd-2
+                   "laguna-"
+                   "polenta-"
+                   "polycyclic-"
+                   "radiroot-"
+                   "resclasses-"
+                   "sophus-"
+                   "tomlib-"
+                   "utils-"))))
            #t))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)
+       ("readline" ,readline)
        ("zlib" ,zlib)))
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -1201,15 +1206,14 @@ xtensor provides:
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
-                    (lib (string-append out "/lib"))
                     (prog (string-append bin "/gap"))
                     (prog-real (string-append bin "/.gap-real"))
-                    (share (string-append out "/share/gap"))
-                    (include (string-append out "/include/gap"))
-                    (include-hpc (string-append include "/hpc")))
+                    (share (string-append out "/share/gap")))
                ;; Install only the gap binary; the gac compiler is left
                ;; for maybe later. "Wrap" it in a shell script that calls
                ;; the binary with the correct parameter.
+               ;; The make target install-bin is supposed to do that, but
+               ;; is not currently working.
                (mkdir-p bin)
                (copy-file "gap" prog-real)
                (call-with-output-file prog
@@ -1220,52 +1224,18 @@ xtensor provides:
                            prog-real
                            share)))
                (chmod prog #o755)
-               ;; Install the headers, which are needed by Sage. The
-               ;; Makefile target "install-headers" was available in
-               ;; gap-4.10.0, but has been commented out in gap-4.10.1.
-               (mkdir-p include-hpc)
-               (install-file "gen/config.h" include)
-               (let ((file-name-predicate-without-stat
-                       (lambda (regex)
-                         (cut (file-name-predicate regex) <> #f))))
-                 (with-directory-excursion "src"
-                   (for-each
-                     (cut install-file <> include)
-                     (scandir "."
-                              (file-name-predicate-without-stat ".*\\.h$"))))
-                 (with-directory-excursion "src/hpc"
-                   (for-each
-                     (cut install-file <> include-hpc)
-                     (scandir "."
-                              (file-name-predicate-without-stat ".*\\.h$")))))
-               ;; Install the library, which is needed by Sage. The
-               ;; Makefile target "install-libgap" was available in
-               ;; gap-4.10.0, but has been commented out in gap-4.10.1.
-               ;; Compared to the Makefile, which used libtool, the
-               ;; following approach of copying files and making symlinks
-               ;; is rather pedestrian. There is hope that some later
-               ;; version of gap reinstates and completes the install
-               ;; targets.
-               (invoke "make" "libgap.la")
-               (install-file "libgap.la" lib)
-               (install-file ".libs/libgap.so.0.0.0" lib)
-               (symlink "libgap.so.0.0.0" (string-append lib "/libgap.so")) 
-               (symlink "libgap.so.0.0.0" (string-append lib "/libgap.so.0"))
-               ;; Install a certain number of files and directories to
-               ;; SHARE, where the wrapped shell script expects them.
+               ;; Install the headers and library, which are needed by Sage.
+               (invoke "make" "install-headers")
+               (invoke "make" "install-libgap")
                ;; Remove information on the build directory from sysinfo.gap.
                (substitute* "sysinfo.gap"
                  (("GAP_BIN_DIR=\".*\"") "GAP_BIN_DIR=\"\"")
                  (("GAP_LIB_DIR=\".*\"") "GAP_LIB_DIR=\"\"")
                  (("GAP_CPPFLAGS=\".*\"") "GAP_CPPFLAGS=\"\""))
-               (install-file "sysinfo.gap" share)
-               (copy-recursively "grp" (string-append share "/grp"))
-               (copy-recursively "pkg" (string-append share "/pkg"))
-               ;; The following is not the C library libgap.so, but a
-               ;; library of GAP code.
-               (copy-recursively "lib" (string-append share "/lib"))
-               ;; The gap binary looks for documentation inside SHARE.
-               (copy-recursively "doc" (string-append share "/doc")))
+               (invoke "make" "install-gaproot")
+               ;; Copy the directory of compiled packages; the make target
+               ;; install-pkg is currently empty.
+               (copy-recursively "pkg" (string-append share "/pkg")))
              #t)))))
     (home-page "https://www.gap-system.org/")
     (synopsis

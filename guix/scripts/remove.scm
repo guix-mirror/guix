@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +63,9 @@ This is an alias for 'guix package -r'.\n"))
 
                  %standard-build-options)))
 
-(define (guix-remove . args)
+(define-command (guix-remove . args)
+  (synopsis "remove installed packages")
+
   (define (handle-argument arg result arg-handler)
     ;; Treat all non-option arguments as package specs.
     (values (alist-cons 'remove arg result)

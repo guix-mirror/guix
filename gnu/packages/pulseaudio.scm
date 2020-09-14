@@ -538,7 +538,7 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
 (define-public noisetorch
   (package
     (name "noisetorch")
-    (version "0.6.1-beta")
+    (version "0.7.2-beta")
     (source
      (origin
        (method git-fetch)
@@ -547,7 +547,7 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jmh7204mhlabdn0azfjrm3kb944j24n0w0cwibqrs9lfgdn8k52"))))
+        (base32 "06xlqjma8h7lcnqgc9226blps6m9dp487hk71lslfxj0jkay548k"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/lawl/NoiseTorch"
@@ -571,6 +571,12 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
                (with-output-to-file "version.go"
                  (lambda ()
                    (format #t "package main~%~%var version=~s~&" ,version))))
+             #t))
+         (add-after 'unpack 'disable-update-check.go
+           (lambda _
+             (with-directory-excursion "src/github.com/lawl/NoiseTorch"
+               (substitute* "main.go"
+                 ((".*updateCheck.*") "")))
              #t))
          (add-before 'build 'go-generate
            (lambda _

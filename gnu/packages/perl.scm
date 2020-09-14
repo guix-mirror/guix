@@ -5023,16 +5023,19 @@ relic support.")
 (define-public perl-hash-merge
   (package
     (name "perl-hash-merge")
-    (version "0.300")
+    (version "0.302")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+       (uri (string-append "mirror://cpan/authors/id/H/HE/HERMES/"
                            "Hash-Merge-" version ".tar.gz"))
        (sha256
-        (base32
-         "0h3wfnpv5d4d3f9xzmwkchay6251nhzngdv3f6xia56mj4hxabs0"))))
+        (base32 "0i46agids6pk445gfck80f8z7q3pjvkp0ip1vmhqnq1rcpvj41df"))))
     (build-system perl-build-system)
+    (native-inputs
+     ;; For tests only.
+     `(("perl-clone" ,perl-clone)
+       ("perl-clone-pp" ,perl-clone-pp)))
     (propagated-inputs
      `(("perl-clone-choose" ,perl-clone-choose)))
     (home-page "https://metacpan.org/release/Hash-Merge")
@@ -8226,7 +8229,7 @@ with file paths.")
 (define-public perl-pdf-api2
   (package
     (name "perl-pdf-api2")
-    (version "2.036")
+    (version "2.038")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8234,7 +8237,7 @@ with file paths.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0x0pa75wpb87pcshl92y5nh8pzikjp46ljlr2pqvdgpqzvll8107"))))
+                "02dxz798sx0ncdphjrfvfl2a3c1lkplyriyk4psq99q2kdsc8ivl"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)
@@ -9738,14 +9741,14 @@ can combine fields into a CSV string and parse a CSV string into fields.")
 (define-public perl-text-csv-xs
   (package
     (name "perl-text-csv-xs")
-    (version "1.43")
+    (version "1.44")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HM/HMBRAND/"
                            "Text-CSV_XS-" version ".tgz"))
        (sha256
-        (base32 "1frh8awr5ipry21x4403wdkbglpl707n69smksg8sf79ia75756d"))))
+        (base32 "1i4viyf61lzss474ndnmqhdqlhksn9hcxhjbqhv4frg2m3f2v0f4"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-CSV_XS")
     (synopsis "Routines for manipulating CSV files")
@@ -10227,7 +10230,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
 (define-public perl-time-hires
   (package
     (name "perl-time-hires")
-    (version "1.9760")
+    (version "1.9764")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -10235,10 +10238,10 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0avh25m5ffsqc2xnfczvlnlbfbisw5wjq9d3w0j01h9byjzrif1c"))))
+                "1cfp078spid9z5g7xiswkpkjbkh4mkjvarz25wgwvdxzhxavwhcq"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Time-HiRes")
-    (synopsis "High resolution alarm, sleep, gettimeofday, interval timers")
+    (synopsis "High-resolution alarm, sleep, gettimeofday, and interval timers")
     (description "This package implements @code{usleep}, @code{ualarm}, and
 @code{gettimeofday} for Perl, as well as wrappers to implement @code{time},
 @code{sleep}, and @code{alarm} that know about non-integral seconds.")

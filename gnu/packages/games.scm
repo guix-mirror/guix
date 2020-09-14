@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -385,15 +385,17 @@ The game includes a built-in editor so you can design and share your own maps.")
 (define-public armagetronad
   (package
     (name "armagetronad")
-    (version "0.2.8.3.5")
+    (version "0.2.9.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/armagetronad/stable/"
-                                  version "/armagetronad-" version ".src.tar.gz"))
+                                  version "/armagetronad-" version ".tbz"))
               (sha256
                (base32
-                "1z266haq22n5b0733h7qsg1rpzhz8lvm82f7wd06r008iiar7jdl"))))
+                "19rfhlg4gp0r7k1j8v4iw20325ciy156nmzax4xikmw22c6nmxcz"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libxml2" ,libxml2)
        ("sdl" ,sdl)
@@ -1811,15 +1813,16 @@ Every puzzle has a complete solution, although there may be more than one.")
 (define-public retux
   (package
     (name "retux")
-    (version "1.3.6")
+    (version "1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/retux/"
+              (uri (string-append "https://github.com/retux-game/retux/"
+                                  "releases/download/v"
                                   (version-major+minor version) "/retux-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "01bidh4zisjp3nc436x0g85v60dvwb3ig37i7y01sa71j8fm4fmb"))))
+                "1hxy1pvlxhk0ci3wh2i3mmr82faqdjnnxsiwwr5gcr93nfnw9w5f"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -1831,28 +1834,22 @@ Every puzzle has a complete solution, although there may be more than one.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (bin    (string-append out "/bin"))
-                    (data   (string-append out "/share/retux"))
-                    (doc    (string-append out "/share/doc/retux")))
+                    (data   (string-append out "/share/retux")))
                (mkdir-p bin)
 
                (substitute* "retux.py"
                  ;; Use the correct data directory.
                  (("os\\.path\\.join\\(os\\.path\\.dirname\\(__file__\\), \"data\"\\),")
-                  (string-append "\"" data "\","))
-                 ;; Use Python 3 so the patch-shebangs phase works properly.
-                 ((".*python2.*") "#!/usr/bin/python3"))
+                  (string-append "\"" data "\",")))
 
                (copy-file "retux.py" (string-append bin "/retux"))
-
                (copy-recursively "data" data)
-
-               (install-file "COPYING" doc)
                #t))))))
     (inputs
      `(("python-sge-pygame" ,python-sge-pygame)
        ("python-six" ,python-six)
        ("python-xsge" ,python-xsge)))
-    (home-page "http://retux.nongnu.org")
+    (home-page "https://retux-game.github.io/")
     (synopsis "Action platformer game")
     (description
      "ReTux is an action platformer loosely inspired by the Mario games,
@@ -3667,7 +3664,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.13")
+    (version "1.14.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -3676,7 +3673,7 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "1pmqj4rah0256qi9w394ksb9apid723i5f5agkg6x1lahb1ac91q"))))
+                "1l7mdxn4kw938qz824057rqh99b7y9439a54s64n1xz95w77lp0r"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
@@ -4788,7 +4785,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.3.1")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4797,7 +4794,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "13396hvsj4cswlrw52kwqn37dadxps00vhr0hrqgm87fl4ih5yyx"))))
+                "1nvi277cazsw36b6nhd5nmk0cjvm71rlxasy24mf18j7fsvq9vp8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -7048,7 +7045,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public odamex
   (package
     (name "odamex")
-    (version "0.8.1")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
@@ -7056,7 +7053,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
              "mirror://sourceforge/odamex/Odamex/" version "/"
              "odamex-src-" version ".tar.gz"))
        (sha256
-        (base32 "1ywbqkfacc9fc5di3dn95y5ah2ys9i241j64q3f37a73x92llw1i"))))
+        (base32 "0f887g87bmcq4dpcga7xc2mpxs947dkbc934ir9xs55gz6z13q96"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests
     (inputs
@@ -8848,7 +8845,8 @@ play with up to four players simultaneously.  It has network support.")
      ;; XXX: Engine is built as Pascal source code, requiring Free Pascal
      ;; Compiler, which we haven't packaged yet.  With the flag below, we use
      ;; a Pascal to C translator and Clang instead.
-     `(#:configure-flags (list "-DBUILD_ENGINE_C=ON")
+     `(#:configure-flags (list "-DBUILD_ENGINE_C=ON"
+                               "-Dhaskell_flags=-dynamic;-fPIC")
        #:phases
        (modify-phases %standard-phases
          (replace 'check

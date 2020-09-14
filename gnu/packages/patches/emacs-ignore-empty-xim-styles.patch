@@ -5,7 +5,7 @@ Index: emacs-26.3/src/xfns.c
 ===================================================================
 --- emacs-26.3.orig/src/xfns.c
 +++ emacs-26.3/src/xfns.c
-@@ -2533,6 +2533,8 @@ xic_free_xfontset (struct frame *f)
+@@ -2628,6 +2628,8 @@ xic_free_xfontset (struct frame *f)
  static XIMStyle
  best_xim_style (XIMStyles *xim)
  {
@@ -14,7 +14,7 @@ Index: emacs-26.3/src/xfns.c
    int i, j;
    int nr_supported = ARRAYELTS (supported_xim_styles);
 
-@@ -2541,6 +2543,7 @@ best_xim_style (XIMStyles *xim)
+@@ -2636,6 +2638,7 @@ best_xim_style (XIMStyles *xim)
        if (supported_xim_styles[i] == xim->supported_styles[j])
 	return supported_xim_styles[i];
 

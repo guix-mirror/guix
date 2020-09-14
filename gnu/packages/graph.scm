@@ -121,63 +121,6 @@ more.")
     (home-page "https://pypi.org/project/python-igraph/")
     (synopsis "Python bindings for the igraph network analysis library")))
 
-(define-public r-igraph
-  (package
-    (name "r-igraph")
-    (version "1.2.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "igraph" version))
-       (sha256
-        (base32
-         "126z1ygbmi3g7hk97snf22rnx680dyi30idssm5zacba5rdngp8c"))))
-    (build-system r-build-system)
-    (native-inputs
-     `(("gfortran" ,gfortran)))
-    (inputs
-     `(("gmp" ,gmp)
-       ("glpk" ,glpk)
-       ("libxml2" ,libxml2)
-       ("zlib" ,zlib)))
-    (propagated-inputs
-     `(("r-magrittr" ,r-magrittr)
-       ("r-matrix" ,r-matrix)
-       ("r-pkgconfig" ,r-pkgconfig)))
-    (home-page "https://igraph.org")
-    (synopsis "Network analysis and visualization")
-    (description
-     "This package provides routines for simple graphs and network analysis.
-It can handle large graphs very well and provides functions for generating
-random and regular graphs, graph visualization, centrality methods and much
-more.")
-    (license license:gpl2+)))
-
-(define-public r-diffusionmap
-  (package
-    (name "r-diffusionmap")
-    (version "1.2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "diffusionMap" version))
-       (sha256
-        (base32
-         "1rvk7069brlm1s9kqj4c31mwwr3mw4hmhay95cjjjfmw5xclff2j"))))
-    (properties `((upstream-name . "diffusionMap")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-igraph" ,r-igraph)
-       ("r-matrix" ,r-matrix)
-       ("r-scatterplot3d" ,r-scatterplot3d)))
-    (home-page "https://www.r-project.org")
-    (synopsis "Diffusion map")
-    (description "This package implements the diffusion map method of data
-parametrization, including creation and visualization of diffusion maps,
-clustering with diffusion K-means and regression using the adaptive regression
-model.")
-    (license license:gpl2)))
-
 (define-public r-rgraphviz
   (package
     (name "r-rgraphviz")

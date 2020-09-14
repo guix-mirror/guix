@@ -19,6 +19,7 @@
 (define-module (guix scripts git)
   #:use-module (ice-9 match)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:export (guix-git))
 
 (define (show-help)
@@ -45,7 +46,10 @@ Operate on Git repositories.\n"))
         (proc (string->symbol (string-append "guix-git-" name))))
     (module-ref module proc)))
 
-(define (guix-git . args)
+(define-command (guix-git . args)
+  (category plumbing)
+  (synopsis "operate on Git repositories")
+
   (with-error-handling
     (match args
       (()

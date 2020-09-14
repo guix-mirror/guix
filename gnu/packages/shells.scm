@@ -65,14 +65,14 @@
 (define-public dash
   (package
     (name "dash")
-    (version "0.5.11.1")
+    (version "0.5.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://gondor.apana.org.au/~herbert/dash/files/"
                            "dash-" version ".tar.gz"))
        (sha256
-        (base32 "048n1rbw3v1ffzsw5mkc6zzvvf1csq7pcri7jraaqag38vqq3j3k"))
+        (base32 "0pvdpm1cgfbc25ramn4305a0158yq031q1ain4dc972rnxl7vyq0"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -513,14 +513,13 @@ ksh, and tcsh.")
 (define-public xonsh
   (package
     (name "xonsh")
-    (version "0.9.19")
+    (version "0.9.21")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xonsh" version))
         (sha256
-          (base32
-            "0k7v2d166w74j4pw1v72dskhb1xxn40hz874579v4yyvbpfpazcp"))
+          (base32 "1mih5w73wp57fnf1vcxnfmm5d31vm7pz8fq5a9vw1ch3dv0yczl5"))
         (modules '((guix build utils)))
         (snippet
          `(begin

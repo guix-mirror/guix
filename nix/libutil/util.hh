@@ -264,6 +264,29 @@ public:
     void setKillSignal(int signal);
 };
 
+/* An "agent" is a helper program that runs in the background and that we talk
+   to over pipes, such as the "guix offload" program.  */
+struct Agent
+{
+    /* Pipes for talking to the agent. */
+    Pipe toAgent;
+
+    /* Pipe for the agent's standard output/error. */
+    Pipe fromAgent;
+
+    /* Pipe for build standard output/error--e.g., for build processes started
+       by "guix offload".  */
+    Pipe builderOut;
+
+    /* The process ID of the agent. */
+    Pid pid;
+
+    /* The command and arguments passed to the agent.  */
+    Agent(const string &command, const Strings &args);
+
+    ~Agent();
+};
+
 
 /* Kill all processes running under the specified uid by sending them
    a SIGKILL. */
@@ -295,6 +318,8 @@ void closeMostFDs(const set<int> & exceptions);
 /* Set the close-on-exec flag for the given file descriptor. */
 void closeOnExec(int fd);
 
+/* Common initialisation performed in child processes. */
+void commonChildInit(Pipe & logPipe);
 
 /* User interruption. */
 

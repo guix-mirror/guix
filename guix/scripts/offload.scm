@@ -39,6 +39,7 @@
                 #:select (fcntl-flock set-thread-name))
   #:use-module ((guix build utils) #:select (which mkdir-p))
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix diagnostics)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -365,6 +366,8 @@ of free disk space on '~a'~%")
                                        #:log-port (current-error-port)
                                        #:lock? #f)))
 
+  (close-connection store)
+  (disconnect! session)
   (format (current-error-port) "done with offloaded '~a'~%"
           (derivation-file-name drv)))
 
@@ -723,7 +726,10 @@ machine."
 ;;; Entry point.
 ;;;
 
-(define (guix-offload . args)
+(define-command (guix-offload . args)
+  (category plumbing)
+  (synopsis "set up and operate build offloading")
+
   (define request-line-rx
     ;; The request format.  See 'tryBuildHook' method in build.cc.
     (make-regexp "([01]) ([a-z0-9_-]+) (/[[:graph:]]+.drv) ([[:graph:]]*)"))

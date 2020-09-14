@@ -2620,7 +2620,7 @@ with Python.")
 (define-public delly
   (package
     (name "delly")
-    (version "0.7.9")
+    (version "0.8.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2628,7 +2628,7 @@ with Python.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "034jqsxswy9gqdh2zkgc1js99qkv75ks4xvzgmh0284sraagv61z"))
+               (base32 "1ibnplgfzj96w8glkx17v7sld3pm402fr5ybmf3h0rlcryabxrqy"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2652,9 +2652,9 @@ with Python.")
                #t))))))
     (inputs
      `(("boost" ,boost)
+       ("bzip2" ,bzip2)
        ("htslib" ,htslib)
-       ("zlib" ,zlib)
-       ("bzip2" ,bzip2)))
+       ("zlib" ,zlib)))
     (home-page "https://github.com/dellytools/delly")
     (synopsis "Integrated structural variant prediction method")
     (description "Delly is an integrated structural variant prediction method
@@ -6357,14 +6357,14 @@ bioinformatics file formats, sequence alignment, and more.")
 (define-public seqmagick
   (package
     (name "seqmagick")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "seqmagick" version))
        (sha256
         (base32
-         "12bfyp8nqi0hd36rmj450aygafp01qy3hkbvlwn3bk39pyjjkgg5"))))
+         "0pf98da7i59q47gwrbx0wjk6xlvbybiwphw80w7h4ydjj0579a2b"))))
     (build-system python-build-system)
     (inputs
      `(("python-biopython" ,python-biopython)))
@@ -8510,57 +8510,6 @@ Stephens (1990).")
 throughput genetic sequencing data sets using regression methods.")
     (license license:artistic2.0)))
 
-(define-public r-qtl
- (package
-  (name "r-qtl")
-  (version "1.46-2")
-  (source
-   (origin
-    (method url-fetch)
-    (uri (string-append "mirror://cran/src/contrib/qtl_"
-                        version ".tar.gz"))
-    (sha256
-     (base32
-      "0rbwcnvyy96gq1dsgpxx03pv423qya26h6ws5y0blj3blfdmj83a"))))
-  (build-system r-build-system)
-  (home-page "https://rqtl.org/")
-  (synopsis "R package for analyzing QTL experiments in genetics")
-  (description "R/qtl is an extension library for the R statistics
-system.  It is used to analyze experimental crosses for identifying
-genes contributing to variation in quantitative traits (so-called
-quantitative trait loci, QTLs).
-
-Using a hidden Markov model, R/qtl estimates genetic maps, to
-identify genotyping errors, and to perform single-QTL and two-QTL,
-two-dimensional genome scans.")
-  (license license:gpl3)))
-
-(define-public r-qtl2
-  (package
-    (name "r-qtl2")
-    (version "0.22-11")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "qtl2" version))
-              (sha256
-               (base32 "0dfdzjylqzc92dcszawc8cyinxccjm3p36v9vcq9ma818pqcanmr"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-data-table" ,r-data-table)
-       ("r-jsonlite" ,r-jsonlite)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rcppeigen" ,r-rcppeigen)
-       ("r-rsqlite" ,r-rsqlite)
-       ("r-yaml" ,r-yaml)))
-    (home-page "https://kbroman.org/qtl2/")
-    (synopsis "Quantitative Trait Locus Mapping in Experimental Crosses")
-    (description
-     "This package provides a set of tools to perform @dfn{Quantitative Trait
-Locus} (QTL) analysis in experimental crosses.  It is a reimplementation of the
-@code{R/qtl} package to better handle high-dimensional data and complex cross
-designs.  Broman et al. (2018) <doi:10.1534/genetics.118.301595>.")
-    (license license:gpl3)))
-
 (define-public r-zlibbioc
   (package
     (name "r-zlibbioc")
@@ -9444,28 +9393,6 @@ imaging data that can be used in subsequent analyses to adjust for unknown,
 unmodeled, or latent sources of noise.")
     (license license:artistic2.0)))
 
-(define-public r-seqminer
-  (package
-    (name "r-seqminer")
-    (version "8.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "seqminer" version))
-       (sha256
-        (base32
-         "00jzj8mwb0zaiwlifd41b26mrq9mzigj18nc29dydi0r42hxg16i"))))
-    (build-system r-build-system)
-    (inputs
-     `(("zlib" ,zlib)))
-    (home-page "http://seqminer.genomic.codes")
-    (synopsis "Read nucleotide sequence data (VCF, BCF, and METAL formats)")
-    (description
-     "This package provides tools to integrate nucleotide sequencing
-data (variant call format, e.g. VCF or BCF) or meta-analysis results in R.")
-    ;; Any version of the GPL is acceptable
-    (license (list license:gpl2+ license:gpl3+))))
-
 (define-public r-raremetals2
   (package
     (name "r-raremetals2")
@@ -9497,32 +9424,6 @@ solution for binary trait.  The package rareMETALS2 offers improved features
 for analyzing gene-level association tests in meta-analyses for binary
 trait.")
     (license license:gpl3)))
-
-(define-public r-maldiquant
-  (package
-    (name "r-maldiquant")
-    (version "1.19.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "MALDIquant" version))
-       (sha256
-        (base32
-         "0b7kdz3x4sdq413h1q09l1qhcvdnnwv6fqsqwllks1cd3xy34c57"))))
-    (properties `((upstream-name . "MALDIquant")))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/MALDIquant")
-    (synopsis "Quantitative analysis of mass spectrometry data")
-    (description
-     "This package provides a complete analysis pipeline for matrix-assisted
-laser desorption/ionization-time-of-flight (MALDI-TOF) and other
-two-dimensional mass spectrometry data.  In addition to commonly used plotting
-and processing methods it includes distinctive features, namely baseline
-subtraction methods such as morphological filters (TopHat) or the
-statistics-sensitive non-linear iterative peak-clipping algorithm (SNIP), peak
-alignment using warping functions, handling of replicated measurements as well
-as allowing spectra with different resolutions.")
-    (license license:gpl3+)))
 
 (define-public r-protgenerics
   (package
@@ -9833,71 +9734,6 @@ identifications while not exceeding a specified false discovery rate.  It also
 contains a number of utilities to explore the MS/MS results and assess missed
 and irregular enzymatic cleavages, mass measurement accuracy, etc.")
     (license license:artistic2.0)))
-
-(define-public r-seurat
-  (package
-    (name "r-seurat")
-    (version "3.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "Seurat" version))
-              (sha256
-               (base32
-                "1vj3dlsqakgnn4x1jz9fkl2cy0jzc5s65h1c20fnamr7lk45pnf2"))))
-    (properties `((upstream-name . "Seurat")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-ape" ,r-ape)
-       ("r-cluster" ,r-cluster)
-       ("r-cowplot" ,r-cowplot)
-       ("r-fitdistrplus" ,r-fitdistrplus)
-       ("r-future" ,r-future)
-       ("r-future-apply" ,r-future-apply)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-ggrepel" ,r-ggrepel)
-       ("r-ggridges" ,r-ggridges)
-       ("r-httr" ,r-httr)
-       ("r-ica" ,r-ica)
-       ("r-igraph" ,r-igraph)
-       ("r-irlba" ,r-irlba)
-       ("r-jsonlite" ,r-jsonlite)
-       ("r-kernsmooth" ,r-kernsmooth)
-       ("r-leiden" ,r-leiden)
-       ("r-lmtest" ,r-lmtest)
-       ("r-mass" ,r-mass)
-       ("r-matrix" ,r-matrix)
-       ("r-miniui" ,r-miniui)
-       ("r-patchwork" ,r-patchwork)
-       ("r-pbapply" ,r-pbapply)
-       ("r-plotly" ,r-plotly)
-       ("r-png" ,r-png)
-       ("r-rann" ,r-rann)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rcppannoy" ,r-rcppannoy)
-       ("r-rcppeigen" ,r-rcppeigen)
-       ("r-rcppprogress" ,r-rcppprogress)
-       ("r-reticulate" ,r-reticulate)
-       ("r-rlang" ,r-rlang)
-       ("r-rocr" ,r-rocr)
-       ("r-rsvd" ,r-rsvd)
-       ("r-rtsne" ,r-rtsne)
-       ("r-scales" ,r-scales)
-       ("r-sctransform" ,r-sctransform)
-       ("r-shiny" ,r-shiny)
-       ("r-spatstat" ,r-spatstat)
-       ("r-tibble" ,r-tibble)
-       ("r-uwot" ,r-uwot)))
-    (home-page "http://www.satijalab.org/seurat")
-    (synopsis "Seurat is an R toolkit for single cell genomics")
-    (description
-     "This package is an R package designed for QC, analysis, and
-exploration of single cell RNA-seq data.  It easily enables widely-used
-analytical techniques, including the identification of highly variable genes,
-dimensionality reduction; PCA, ICA, t-SNE, standard unsupervised clustering
-algorithms; density clustering, hierarchical clustering, k-means, and the
-discovery of differentially expressed genes and markers.")
-    (license license:gpl3)))
 
 (define-public r-aroma-light
   (package
@@ -11099,34 +10935,6 @@ contains high-performing functions operating on rows and columns of
 are optimized per data type and for subsetted calculations such that both
 memory usage and processing time is minimized.")
     (license license:expat)))
-
-(define-public r-phangorn
-  (package
-    (name "r-phangorn")
-    (version "2.5.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "phangorn" version))
-       (sha256
-        (base32
-         "0ihkaykqjmf80d8wrk3saphxvnv58zma6pd13633bd3cwanc33f5"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-ape" ,r-ape)
-       ("r-fastmatch" ,r-fastmatch)
-       ("r-igraph" ,r-igraph)
-       ("r-magrittr" ,r-magrittr)
-       ("r-matrix" ,r-matrix)
-       ("r-quadprog" ,r-quadprog)
-       ("r-rcpp" ,r-rcpp)))
-    (home-page "https://github.com/KlausVigo/phangorn")
-    (synopsis "Phylogenetic analysis in R")
-    (description
-     "Phangorn is a package for phylogenetic analysis in R.  It supports
-estimation of phylogenetic trees and networks using Maximum Likelihood,
-Maximum Parsimony, distance methods and Hadamard conjugation.")
-    (license license:gpl2+)))
 
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
@@ -13276,37 +13084,6 @@ analyses in addition to large-scale sequence-level searches.")
       (supported-systems '("x86_64-linux"))
       (license license:bsd-3))))
 
-(define-public r-diversitree
-  (package
-    (name "r-diversitree")
-    (version "0.9-13")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (cran-uri "diversitree" version))
-        (sha256
-         (base32
-          "00vi4klywi35hd170ksjv3xja3hqqbkcidcnrrlpgv4179k0azix"))))
-    (build-system r-build-system)
-    (native-inputs
-     `(("gfortran" ,gfortran)))
-    (inputs `(("fftw" ,fftw) ("gsl" ,gsl)))
-    (propagated-inputs
-     `(("r-ape" ,r-ape)
-       ("r-desolve" ,r-desolve)
-       ("r-rcpp" ,r-rcpp)
-       ("r-subplex" ,r-subplex)))
-    (home-page "https://www.zoology.ubc.ca/prog/diversitree")
-    (synopsis "Comparative 'phylogenetic' analyses of diversification")
-    (description "This package contains a number of comparative \"phylogenetic\"
-methods, mostly focusing on analysing diversification and character evolution.
-Contains implementations of \"BiSSE\" (Binary State Speciation and Extinction)
-and its unresolved tree extensions, \"MuSSE\" (Multiple State Speciation and
-Extinction), \"QuaSSE\", \"GeoSSE\", and \"BiSSE-ness\" Other included methods
-include Markov models of discrete and continuous trait evolution and constant
-rate speciation and extinction.")
-    (license license:gpl2+)))
-
 (define-public sjcount
   ;; There is no tag for version 3.2, nor is there a release archive.
   (let ((commit "292d3917cadb3f6834c81e509c30e61cd7ead6e5")
@@ -14305,33 +14082,6 @@ generated by nanopore sequencing devices for the purposes of quality control and
 downstream analysis.  Poretools operates directly on the native FAST5, a variant
 of the Hierarchical Data Format (HDF5) standard.")
       (license license:expat))))
-
-(define-public r-absfiltergsea
-  (package
-    (name "r-absfiltergsea")
-    (version "1.5.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "AbsFilterGSEA" version))
-       (sha256
-        (base32 "15srxkxsvn38kd5frdrwfdf0ad8gskrd0h01wmdf9hglq8fjrp7w"))))
-    (properties `((upstream-name . "AbsFilterGSEA")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-deseq" ,r-deseq)
-       ("r-limma" ,r-limma)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rcpparmadillo" ,r-rcpparmadillo)))
-    (home-page "https://cran.r-project.org/web/packages/AbsFilterGSEA/")
-    (synopsis "Improved false positive control of gene-permuting with absolute filtering")
-    (description
-     "This package provides a function that performs gene-permuting of a gene-set
-enrichment analysis (GSEA) calculation with or without the absolute filtering.
-  Without filtering, users can perform (original) two-tailed or one-tailed
-absolute GSEA.")
-    (license license:gpl2)))
 
 (define-public jamm
   (package
@@ -15400,12 +15150,34 @@ mutations from scRNA-Seq data.")
                       (string-append "HTS_LIB=" htslib-ref "/lib/libhts.a")
                       (string-append "INCLUDES= -I" htslib-ref "/include/htslib")
                       "HTS_HEADERS="    ; No need to check for headers here.
-                      (string-append "LIBPATH=-L. -L" htslib-ref "/include")))))
+                      (string-append "LIBPATH=-L. -L" htslib-ref "/include"))
+              (invoke "g++" "-shared" "-o" "libtabixpp.so" "tabix.o" "-lhts")
+              (invoke "ar" "rcs" "libtabixpp.a" "tabix.o"))))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
-            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-              (install-file "tabix++" bin))
-            #t)))))
+            (let* ((out (assoc-ref outputs "out"))
+                   (lib (string-append out "/lib"))
+                   (bin (string-append out "/bin")))
+              (install-file "tabix++" bin)
+              (install-file "libtabixpp.so" lib)
+              (install-file "libtabixpp.a" lib)
+              (install-file "tabix.hpp" (string-append out "/include"))
+              (mkdir-p (string-append lib "/pkgconfig"))
+              (with-output-to-file (string-append lib "/pkgconfig/tabixpp.pc")
+                (lambda _
+                  (format #t "prefix=~a~@
+                          exec_prefix=${prefix}~@
+                          libdir=${exec_prefix}/lib~@
+                          includedir=${prefix}/include~@
+                          ~@
+                          ~@
+                          Name: libtabixpp~@
+                          Version: ~a~@
+                          Description: C++ wrapper around tabix project~@
+                          Libs: -L${libdir} -ltabixpp~@
+                          Cflags: -I${includedir}~%"
+                          out ,version)))
+              #t))))))
    (home-page "https://github.com/ekg/tabixpp")
    (synopsis "C++ wrapper around tabix project")
    (description "This is a C++ wrapper around the Tabix project which abstracts
@@ -15432,13 +15204,45 @@ some of the details of opening and jumping in tabix-indexed files.")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure) ; There is no configure phase.
+           (add-after 'unpack 'patch-source
+             (lambda _
+               (substitute* "Makefile"
+                 (("-c ") "-c -fPIC "))
+               #t))
+           (add-after 'build 'build-dynamic
+             (lambda _
+               (invoke "g++"
+                       "-shared" "-o" "libsmithwaterman.so"
+                       "smithwaterman.o" "SmithWatermanGotoh.o"
+                       "disorder.o" "BandedSmithWaterman.o"
+                       "LeftAlign.o" "Repeats.o" "IndelAllele.o")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin"))
                       (lib (string-append out "/lib")))
                  (install-file "smithwaterman" bin)
-                 (install-file "libsw.a" lib))
+                 (for-each
+                   (lambda (file)
+                     (install-file file (string-append out "/include/smithwaterman")))
+                   (find-files "." "\\.h$"))
+                 (install-file "libsmithwaterman.so" lib)
+                 (install-file "libsw.a" lib)
+                 (mkdir-p (string-append lib "/pkgconfig"))
+                 (with-output-to-file (string-append lib "/pkgconfig/smithwaterman.pc")
+                   (lambda _
+                     (format #t "prefix=~a~@
+                             exec_prefix=${prefix}~@
+                             libdir=${exec_prefix}/lib~@
+                             includedir=${prefix}/include/smithwaterman~@
+                             ~@
+                             ~@
+                             Name: smithwaterman~@
+                             Version: ~a~@
+                             Description: smith-waterman-gotoh alignment algorithm~@
+                             Libs: -L${libdir} -lsmithwaterman~@
+                             Cflags: -I${includedir}~%"
+                             out ,version))))
                #t)))))
       (home-page "https://github.com/ekg/smithwaterman")
       (synopsis "Implementation of the Smith-Waterman algorithm")
@@ -15528,10 +15332,43 @@ neural networks.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure) ; There is no configure phase.
+           (add-after 'unpack 'patch-source
+             (lambda _
+               (substitute* "Makefile"
+                 (("-c ") "-c -fPIC "))
+               #t))
+         (add-after 'build 'build-dynamic
+           (lambda _
+             (invoke "g++"
+                     "-shared" "-o" "libfastahack.so"
+                     "Fasta.o" "FastaHack.o" "split.o" "disorder.o")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (install-file "fastahack" bin))
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p (string-append out "/include/fastahack"))
+               (for-each
+                 (lambda (file)
+                   (install-file file (string-append out "/include/fastahack")))
+                 (find-files "." "\\.h$"))
+               (install-file "fastahack" bin)
+               (install-file "libfastahack.so" lib)
+               (mkdir-p (string-append lib "/pkgconfig"))
+               (with-output-to-file (string-append lib "/pkgconfig/fastahack.pc")
+                 (lambda _
+                   (format #t "prefix=~a~@
+                           exec_prefix=${prefix}~@
+                           libdir=${exec_prefix}/lib~@
+                           includedir=${prefix}/include/fastahack~@
+                           ~@
+                           ~@
+                           Name: fastahack~@
+                           Version: ~a~@
+                           Description: Indexing and sequence extraction from FASTA files~@
+                           Libs: -L${libdir} -lfastahack~@
+                           Cflags: -I${includedir}~%"
+                           out ,version))))
              #t)))))
     (home-page "https://github.com/ekg/fastahack")
     (synopsis "Indexing and sequence extraction from FASTA files")
@@ -15554,9 +15391,16 @@ library automatically handles index file generation and use.")
                            "/vcflib-" version "-src.tar.gz"))
        (sha256
         (base32 "14zzrg8hg8cq9cvq2wdvp21j7nmxxkjrbagw2apd2yqv2kyx42lm"))
+       (patches (search-patches "vcflib-use-shared-libraries.patch"))
        (modules '((guix build utils)))
        (snippet
         `(begin
+           (substitute* (find-files "." "\\.(h|c)(pp)?$")
+             (("\"SmithWatermanGotoh.h\"") "<smithwaterman/SmithWatermanGotoh.h>")
+             (("\"convert.h\"") "<smithwaterman/convert.h>")
+             (("\"disorder.h\"") "<smithwaterman/disorder.h>")
+             (("\"tabix.hpp\"") "<tabix.hpp>")
+             (("\"Fasta.h\"") "<fastahack/Fasta.h>"))
            (for-each delete-file-recursively
                      '("fastahack" "filevercmp" "fsom" "googletest" "intervaltree"
                        "libVCFH" "multichoose" "smithwaterman" "tabixpp"))
@@ -15564,34 +15408,34 @@ library automatically handles index file generation and use.")
     (build-system gnu-build-system)
     (inputs
      `(("htslib" ,htslib)
+       ("fastahack" ,fastahack)
        ("perl" ,perl)
        ("python" ,python)
+       ("smithwaterman" ,smithwaterman)
+       ("tabixpp" ,tabixpp)
+       ("xz" ,xz)
        ("zlib" ,zlib)))
     (native-inputs
-     `(;; Submodules.
+     `(("pkg-config" ,pkg-config)
+       ;; Submodules.
        ;; This package builds against the .o files so we need to extract the source.
-       ("fastahack-src" ,(package-source fastahack))
        ("filevercmp-src" ,(package-source filevercmp))
-       ("fsom-src" ,(package-source fsom))
        ("intervaltree-src" ,(package-source intervaltree))
-       ("multichoose-src" ,(package-source multichoose))
-       ("smithwaterman-src" ,(package-source smithwaterman))
-       ("tabixpp-src" ,(package-source tabixpp))))
+       ("multichoose-src" ,(package-source multichoose))))
     (arguments
      `(#:tests? #f ; no tests
-       #:make-flags (list (string-append "HTS_LIB="
-                                         (assoc-ref %build-inputs "htslib")
-                                         "/lib/libhts.a")
-                          (string-append "HTS_INCLUDES= -I"
-                                         (assoc-ref %build-inputs "htslib")
-                                         "/include/htslib")
-                          (string-append "HTS_LDFLAGS= -L"
-                                         (assoc-ref %build-inputs "htslib")
-                                         "/include/htslib" " -lhts"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'set-flags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("LDFLAGS =")
+                (string-append "LDFLAGS = -Wl,-rpath="
+                               (assoc-ref outputs "out") "/lib ")))
+             (substitute* "filevercmp/Makefile"
+               (("-c") "-c -fPIC"))
+             #t))
          (delete 'configure)
-         (delete 'check)
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((unpack (lambda (source target)
@@ -15603,34 +15447,39 @@ library automatically handles index file generation and use.")
                                            (assoc-ref inputs source)
                                            "--strip-components=1"))))))
                (and
-                (unpack "fastahack-src" "fastahack")
                 (unpack "filevercmp-src" "filevercmp")
-                (unpack "fsom-src" "fsom")
                 (unpack "intervaltree-src" "intervaltree")
-                (unpack "multichoose-src" "multichoose")
-                (unpack "smithwaterman-src" "smithwaterman")
-                (unpack "tabixpp-src" "tabixpp")))))
-         (replace 'build
-           (lambda* (#:key inputs make-flags #:allow-other-keys)
-             (let ((htslib (assoc-ref inputs "htslib")))
-               (with-directory-excursion "tabixpp"
-                 (substitute* "Makefile"
-                   (("-Ihtslib") (string-append "-I" htslib "/include/htslib"))
-                   (("-Lhtslib") (string-append "-L" htslib "/lib/htslib"))
-                   (("htslib/htslib") (string-append htslib "/include/htslib")))
-                 (invoke "make"
-                         (string-append "HTS_LIB=" htslib "/lib/libhts.a")))
-               (apply invoke "make" "CC=gcc" "CFLAGS=-Itabixpp" make-flags))))
+                (unpack "multichoose-src" "multichoose")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
-                   (lib (string-append (assoc-ref outputs "out") "/lib")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib")))
                (for-each (lambda (file)
                            (install-file file bin))
                          (find-files "bin" ".*"))
-               ;; The header files in src/ do not interface libvcflib,
-               ;; therefore they are left out.
-               (install-file "libvcflib.a" lib))
+               (install-file "libvcflib.so" lib)
+               (install-file "libvcflib.a" lib)
+               (for-each
+                 (lambda (file)
+                   (install-file file (string-append out "/include")))
+                 (find-files "include" "\\.h(pp)?$"))
+               (mkdir-p (string-append lib "/pkgconfig"))
+               (with-output-to-file (string-append lib "/pkgconfig/vcflib.pc")
+                 (lambda _
+                   (format #t "prefix=~a~@
+                           exec_prefix=${prefix}~@
+                           libdir=${exec_prefix}/lib~@
+                           includedir=${prefix}/include~@
+                           ~@
+                           ~@
+                           Name: libvcflib~@
+                           Version: ~a~@
+                           Requires: smithwaterman, fastahack~@
+                           Description: C++ library for parsing and manipulating VCF files~@
+                           Libs: -L${libdir} -lvcflib~@
+                           Cflags: -I${includedir}~%"
+                           out ,version))))
              #t)))))
     (home-page "https://github.com/vcflib/vcflib/")
     (synopsis "Library for parsing and manipulating VCF files")

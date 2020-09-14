@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1762,6 +1763,7 @@ expressed genes in DNA microarray experiments.")
 fitting of some classes of graphical Markov models.")
     (license license:gpl2+)))
 
+;; This is a CRAN package, but it depends on a Bioconductor package.
 (define-public r-codedepends
   (package
     (name "r-codedepends")
@@ -1793,14 +1795,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.22.2")
+    (version "3.22.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "199mlg0gwjy39afyk0ah6lzcm759bzxla4hgcajj0ay9jiibjqpa"))))
+         "0q3f55hh0a2hl96272js6gagmgps9cxs8s13pf6fii64rzaz5m7y"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3452,14 +3454,14 @@ surface of a flowcell.")
 (define-public r-gkmsvm
   (package
     (name "r-gkmsvm")
-    (version "0.80.0")
+    (version "0.81.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gkmSVM" version))
        (sha256
         (base32
-         "0ljcga246ad0ql8x3drvrdsyp0f20mgp3p6lnl79xb76qgfdnm0p"))))
+         "119g5rhc7ffyviz04r04aj5z1g6abnj3ddd01g7db505sdr6lapj"))))
     (properties `((upstream-name . "gkmSVM")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4360,14 +4362,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.12.3")
+    (version "1.12.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "12710c4024pndwwqiiqr6dhrd360z26fc8r3fxhs739gyd0ddk9r"))))
+         "1gs9862hhh4gr1akij6ykhcj29s9dzg1vnj87hqrm19dfgl43qbh"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6334,14 +6336,14 @@ self-organizing map clustering and minimal spanning trees.")
 (define-public r-mixomics
   (package
     (name "r-mixomics")
-    (version "6.12.1")
+    (version "6.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mixOmics" version))
        (sha256
         (base32
-         "13kq9l5xwhwp30y5gfqfh5f11n63vn8rk195mb2y2mww4cwi6lv4"))))
+         "1nkqlvm9j1f4vfj3f3kyxqgan38rpa9imimvl9pwivvsfl647vvc"))))
     (properties `((upstream-name . "mixOmics")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6460,14 +6462,14 @@ genes in the gene-set that are ranked above the leading edge).")
 (define-public r-cicero
   (package
     (name "r-cicero")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "cicero" version))
        (sha256
         (base32
-         "0nf9yqg5krj26n4n82iyx3rsr84d46b17i9zfk35sh12l4xssbii"))))
+         "042ba6yfa7fksij2v7cwnp2sca3vmz7izn6fsxx9xswnncrkgcqh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -7157,14 +7159,14 @@ data.")
 (define-public r-activedriverwgs
   (package
     (name "r-activedriverwgs")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActiveDriverWGS" version))
        (sha256
         (base32
-         "08l9dj8d3cd74z1dqn8n4yqykwvqjxsfa067wnxyh7xnfvvnm5v1"))))
+         "0l6h0f54zjvcx19ngq3kp01dypsjqf28vssjm8yzccmpyacfypag"))))
     (properties
      `((upstream-name . "ActiveDriverWGS")))
     (build-system r-build-system)
@@ -7175,8 +7177,9 @@ data.")
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
-       ("r-plyr" ,r-plyr)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ActiveDriverWGS/")
     (synopsis "Driver discovery tool for cancer whole genomes")
     (description
@@ -8153,3 +8156,89 @@ user's input and automatically retrieving results from GREAT web server.")
 simulation to eliminate overestimation of @code{K} and can reject the null
 hypothesis @code{K=1}.")
     (license license:agpl3+)))
+
+(define-public r-icens
+  (package
+    (name "r-icens")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Icens" version))
+       (sha256
+        (base32
+         "0fh7wgkrw20f61p06i87nccnbig9wv4m0jcg7cx1rw7g2ndnabgp"))))
+    (properties `((upstream-name . "Icens")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-survival" ,r-survival)))
+    (home-page "https://bioconductor.org/packages/Icens")
+    (synopsis "NPMLE for censored and truncated data")
+    (description
+     "This package provides many functions for computing the
+@dfn{nonparametric maximum likelihood estimator} (NPMLE) for censored and
+truncated data.")
+    (license license:artistic2.0)))
+
+;; This is a CRAN package but it depends on r-icens, which is published on
+;; Bioconductor.
+(define-public r-interval
+  (package
+    (name "r-interval")
+    (version "1.1-0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "interval" version))
+       (sha256
+        (base32
+         "1lln9jkli28i4wivwzqrsxvv2n15560f7msjy5gssrm45vxrxms8"))))
+    (properties `((upstream-name . "interval")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-icens" ,r-icens)
+       ("r-mlecens" ,r-mlecens)
+       ("r-perm" ,r-perm)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/interval/")
+    (synopsis "Weighted Logrank tests and NPMLE for interval censored data")
+    (description
+     "This package provides functions to fit nonparametric survival curves,
+plot them, and perform logrank or Wilcoxon type tests.")
+    (license license:gpl2+)))
+
+;; This is a CRAN package, but it depends on r-interval, which depends on a
+;; Bioconductor package.
+(define-public r-fhtest
+  (package
+    (name "r-fhtest")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "FHtest" version))
+       (sha256
+        (base32
+         "1wsn0j9ydpp9nfswiqg21p09kgkvaq8fh0y0h8syqgizah7i8vs2"))))
+    (properties `((upstream-name . "FHtest")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-interval" ,r-interval)
+       ("r-kmsurv" ,r-kmsurv)
+       ("r-mass" ,r-mass)
+       ("r-perm" ,r-perm)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/FHtest/")
+    (synopsis "Tests for survival data based on the Fleming-Harrington class")
+    (description
+     "This package provides functions to compare two or more survival curves
+with:
+
+@itemize
+@item The Fleming-Harrington test for right-censored data based on
+  permutations and on counting processes.
+@item An extension of the Fleming-Harrington test for interval-censored data
+  based on a permutation distribution and on a score vector distribution.
+@end itemize
+")
+    (license license:gpl2+)))

@@ -457,129 +457,130 @@ driven and does not detract you from your daily work.")
     (license license:gpl3+)))
 
 (define-public nyxt
-  ;; 1.5.0 does not build anymore, let's use the master which is more stable anyways.
-  (let ((commit "9440980a9c5f75232b08ca98183b22be4a3d9bc3"))
-    (package
-      (name "nyxt")
-      (version (git-version "1.5.0" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               ;; TODO: Mirror seems to hang, let's fallback to GitHub for now.
-               ;; (url "https://source.atlas.engineer/public/nyxt")
-               (url "https://github.com/atlas-engineer/nyxt")
-               (commit commit)))
-         (sha256
-          (base32
-           "079n5ffsa8136i9ik5mn4rwa3iv0avncw6y973gj3hlf8sf4wv7g"))
-         (file-name (git-file-name "nyxt" version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list "nyxt" "NYXT_INTERNAL_QUICKLISP=false"
-                            (string-append "DESTDIR=" (assoc-ref %outputs "out"))
-                            "PREFIX=")
-         #:strip-binaries? #f           ; Stripping breaks SBCL binaries.
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-version ; Version is guessed from .git which Guix does not have.
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((version (format #f "~a" ,version)))
-                 (substitute* "source/global.lisp"
-                   (("version\\)\\)\\)")
-                    (string-append "version)))"
-                                   "\n"
-                                   "(setf +version+ \"" version "\")"))))
-               #t))
-           (add-before 'build 'make-desktop-version-number
-             (lambda _
-               (with-output-to-file "version"
-                 (lambda _
-                   (format #t "~a" ,version)))))
+  (package
+    (name "nyxt")
+    ;; Package the pre-release because latest stable 1.5.0 does not build
+    ;; anymore.
+    (version "2-pre-release-1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             ;; TODO: Mirror seems to hang, let's fallback to GitHub for now.
+             ;; (url "https://source.atlas.engineer/public/nyxt")
+             (url "https://github.com/atlas-engineer/nyxt")
+             (commit version)))
+       (sha256
+        (base32
+         "0aipsmzqnlkmy001cihz2jnc0hja8c10rm08jycxr05j3gx3qsxd"))
+       (file-name (git-file-name "nyxt" version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "nyxt" "NYXT_INTERNAL_QUICKLISP=false"
+                          (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+                          "PREFIX=")
+       #:strip-binaries? #f             ; Stripping breaks SBCL binaries.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-version ; Version is guessed from .git which Guix does not have.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((version (format #f "~a" ,version))
+                   (file "source/global.lisp"))
+               (chmod file #o666)
+               (let ((port (open-file file "a")))
+                 (format port "(setf +version+ ~s)" version)
+                 (close-port port)))
+             #t))
+         (add-before 'build 'make-desktop-version-number
+           (lambda _
+             (with-output-to-file "version"
+               (lambda _
+                 (format #t "~a" ,version)
+                 #t))))
 
-           (delete 'configure)
-           (add-before 'build 'fix-common-lisp-cache-folder
-             (lambda _
-               (setenv "HOME" "/tmp")
-               #t))
-           (add-after 'install 'wrap-program
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((bin (string-append (assoc-ref outputs "out") "/bin/nyxt"))
-                      (glib-networking (assoc-ref inputs "glib-networking"))
-                      (libs '("gsettings-desktop-schemas"))
-                      (path (string-join
-                             (map (lambda (lib)
-                                    (string-append (assoc-ref inputs lib) "/lib"))
-                                  libs)
-                             ":"))
-                      (gi-path (string-join
-                                (map (lambda (lib)
-                                       (string-append (assoc-ref inputs lib) "/lib/girepository-1.0"))
-                                     libs)
-                                ":"))
-                      (xdg-path (string-join
-                                 (map (lambda (lib)
-                                        (string-append (assoc-ref inputs lib) "/share"))
-                                      libs)
-                                 ":")))
-                 (wrap-program bin
-                   `("GIO_EXTRA_MODULES" prefix
-                     (,(string-append glib-networking "/lib/gio/modules")))
-                   `("GI_TYPELIB_PATH" prefix (,gi-path))
-                   `("LD_LIBRARY_PATH" ":" prefix (,path))
-                   `("XDG_DATA_DIRS" ":" prefix (,xdg-path)))
-                 #t))))))
-      (native-inputs
-       `(("prove" ,sbcl-prove)
-         ("sbcl" ,sbcl)))
-      (inputs
-       ;; We need to avoid sbcl-* inputs (sbcl-cl-cffi-gtk in particular) as they
-       ;; seem to cause Nyxt to hang into a hogging process in about 10 minutes.
-       ;; Probably an issue between CFFI and how we build SBCL packages.
-       ;; See https://github.com/atlas-engineer/nyxt/issues/680.
-       `(("alexandria" ,cl-alexandria)
-         ("bordeaux-threads" ,cl-bordeaux-threads)
-         ("cl-containers" ,cl-containers)
-         ("cl-css" ,cl-css)
-         ("cl-json" ,cl-json)
-         ("cl-markup" ,cl-markup)
-         ("cl-ppcre" ,cl-ppcre)
-         ("cl-prevalence" ,cl-prevalence)
-         ("closer-mop" ,cl-closer-mop)
-         ("cluffer" ,cl-cluffer)
-         ("dexador" ,cl-dexador)
-         ("enchant" ,cl-enchant)
-         ("fset" ,cl-fset)
-         ("iolib" ,cl-iolib)
-         ("local-time" ,cl-local-time)
-         ("log4cl" ,cl-log4cl)
-         ("lparallel" ,cl-lparallel)
-         ("mk-string-metrics" ,cl-mk-string-metrics)
-         ("moptilities" ,cl-moptilities)
-         ("osicat" ,sbcl-osicat)       ; SBCL version needed for libosicat.so.
-         ("parenscript" ,cl-parenscript)
-         ("plump" ,cl-plump)
-         ("quri" ,cl-quri)
-         ("serapeum" ,cl-serapeum)
-         ("str" ,cl-str)
-         ("swank" ,cl-slime-swank)
-         ("trivia" ,cl-trivia)
-         ("trivial-clipboard" ,cl-trivial-clipboard)
-         ("trivial-features" ,cl-trivial-features)
-         ("trivial-package-local-nicknames" ,cl-trivial-package-local-nicknames)
-         ("trivial-types" ,cl-trivial-types)
-         ("unix-opts" ,cl-unix-opts)
-         ;; WebKitGTK deps
-         ("cl-cffi-gtk" ,cl-cffi-gtk)
-         ("cl-webkit" ,cl-webkit)
-         ("glib-networking" ,glib-networking)
-         ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
-      (synopsis "Extensible web-browser in Common Lisp")
-      (home-page "https://nyxt.atlas.engineer")
-      (description "Nyxt is a keyboard-oriented, extensible web-browser
+         (delete 'configure)
+         (add-before 'build 'fix-common-lisp-cache-folder
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((bin (string-append (assoc-ref outputs "out") "/bin/nyxt"))
+                    (glib-networking (assoc-ref inputs "glib-networking"))
+                    (libs '("gsettings-desktop-schemas"))
+                    (path (string-join
+                           (map (lambda (lib)
+                                  (string-append (assoc-ref inputs lib) "/lib"))
+                                libs)
+                           ":"))
+                    (gi-path (string-join
+                              (map (lambda (lib)
+                                     (string-append (assoc-ref inputs lib) "/lib/girepository-1.0"))
+                                   libs)
+                              ":"))
+                    (xdg-path (string-join
+                               (map (lambda (lib)
+                                      (string-append (assoc-ref inputs lib) "/share"))
+                                    libs)
+                               ":")))
+               (wrap-program bin
+                 `("GIO_EXTRA_MODULES" prefix
+                   (,(string-append glib-networking "/lib/gio/modules")))
+                 `("GI_TYPELIB_PATH" prefix (,gi-path))
+                 `("LD_LIBRARY_PATH" ":" prefix (,path))
+                 `("XDG_DATA_DIRS" ":" prefix (,xdg-path)))
+               #t))))))
+    (native-inputs
+     `(("prove" ,sbcl-prove)
+       ("sbcl" ,sbcl)))
+    (inputs
+     ;; We need to avoid sbcl-* inputs (sbcl-cl-cffi-gtk in particular) as they
+     ;; seem to cause Nyxt to hang into a hogging process in about 10 minutes.
+     ;; Probably an issue between CFFI and how we build SBCL packages.
+     ;; See https://github.com/atlas-engineer/nyxt/issues/680.
+     `(("alexandria" ,cl-alexandria)
+       ("bordeaux-threads" ,cl-bordeaux-threads)
+       ("cl-containers" ,cl-containers)
+       ("cl-css" ,cl-css)
+       ("cl-json" ,cl-json)
+       ("cl-markup" ,cl-markup)
+       ("cl-ppcre" ,cl-ppcre)
+       ("cl-prevalence" ,cl-prevalence)
+       ("closer-mop" ,cl-closer-mop)
+       ("cluffer" ,cl-cluffer)
+       ("dexador" ,cl-dexador)
+       ("enchant" ,cl-enchant)
+       ("fset" ,cl-fset)
+       ("iolib" ,cl-iolib)
+       ("local-time" ,cl-local-time)
+       ("log4cl" ,cl-log4cl)
+       ("lparallel" ,cl-lparallel)
+       ("mk-string-metrics" ,cl-mk-string-metrics)
+       ("moptilities" ,cl-moptilities)
+       ("osicat" ,sbcl-osicat)         ; SBCL version needed for libosicat.so.
+       ("parenscript" ,cl-parenscript)
+       ("plump" ,cl-plump)
+       ("quri" ,cl-quri)
+       ("serapeum" ,cl-serapeum)
+       ("str" ,cl-str)
+       ("swank" ,cl-slime-swank)
+       ("trivia" ,cl-trivia)
+       ("trivial-clipboard" ,cl-trivial-clipboard)
+       ("trivial-features" ,cl-trivial-features)
+       ("trivial-package-local-nicknames" ,cl-trivial-package-local-nicknames)
+       ("trivial-types" ,cl-trivial-types)
+       ("unix-opts" ,cl-unix-opts)
+       ;; WebKitGTK deps
+       ("cl-cffi-gtk" ,cl-cffi-gtk)
+       ("cl-webkit" ,cl-webkit)
+       ("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (synopsis "Extensible web-browser in Common Lisp")
+    (home-page "https://nyxt.atlas.engineer")
+    (description "Nyxt is a keyboard-oriented, extensible web-browser
 designed for power users.  The application has familiar Emacs and VI
 key-bindings and is fully configurable and extensible in Common Lisp.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public next
   (deprecated-package "next" nyxt))

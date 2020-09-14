@@ -16,6 +16,7 @@ Copyright @copyright{} 2020 Matthew Brooks@*
 Copyright @copyright{} 2020 Marcin Karpezo@*
 Copyright @copyright{} 2020 Brice Waegeneire@*
 Copyright @copyright{} 2020 André Batista@*
+Copyright @copyright{} 2020 Christopher Lemmer Webber
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1348,6 +1349,7 @@ reference.
 * Customizing the Kernel::       Creating and using a custom Linux kernel on Guix System.
 * Connecting to Wireguard VPN::  Connecting to a Wireguard VPN.
 * Customizing a Window Manager:: Handle customization of a Window manager on Guix System.
+* Running Guix on a Linode Server:: Running Guix on a Linode Server
 * Setting up a bind mount:: Setting up a bind mount in the file-systems definition.
 * Getting substitutes from Tor:: Configuring Guix daemon to get substitutes through Tor.
 @end menu
@@ -1759,6 +1761,246 @@ If you manually lock your screen, e.g. by directly calling slock when you want t
 your screen but not suspend it, it's a good idea to notify xss-lock about this so no
 confusion occurs. This can be done by executing @code{xset s activate} immediately
 before you execute slock.
+
+@node Running Guix on a Linode Server
+@section Running Guix on a Linode Server
+@cindex linode, Linode
+
+To run Guix on a server hosted by @uref{https://www.linode.com, Linode},
+start with a recommended Debian server.  We recommend using the default
+distro as a way to bootstrap Guix. Create your SSH keys.
+
+@example
+ssh-keygen
+@end example
+
+Be sure to add your SSH key for easy login to the remote server.
+This is trivially done via Linode's graphical interface for adding
+SSH keys.  Go to your profile and click add SSH Key.
+Copy into it the output of:
+
+@example
+cat ~/.ssh/<username>_rsa.pub
+@end example
+
+Power the Linode down. In the Linode's Disks/Configurations tab, resize
+the Debian disk to be smaller. 30 GB is recommended.
+
+In the Linode settings, "Add a disk", with the following:
+@itemize @bullet
+@item
+Label: "Guix"
+
+@item
+Filesystem: ext4
+
+@item
+Set it to the remaining size
+@end itemize
+
+On the "configuration" field that comes with the default image, press
+"..." and select "Edit", then on that menu add to @file{/dev/sdc} the "Guix"
+label.
+
+Now "Add a Configuration", with the following:
+@itemize @bullet
+@item
+Label: Guix
+
+@item
+Kernel:GRUB 2 (it's at the bottom!  This step is @b{IMPORTANT!})
+
+@item
+Block device assignment:
+
+@item
+@file{/dev/sda}: Guix
+
+@item
+@file{/dev/sdb}: swap
+
+@item
+Root device: @file{/dev/sda}
+
+@item
+Turn off all the filesystem/boot helpers
+@end itemize
+
+Now power it back up, picking the Debian configuration.  Once it's
+booted up, ssh in your server via @code{ssh
+root@@@var{<your-server-IP-here>}}. (You can find your server IP address in
+your Linode Summary section.) Now you can run the "install guix from
+@pxref{Binary Installation,,, guix, GNU Guix}" steps:
+
+@example
+sudo apt-get install gpg
+wget https://sv.gnu.org/people/viewgpg.php?user_id=15145 -qO - | gpg --import -
+wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh
+chmod +x guix-install.sh
+./guix-install.sh
+guix pull
+@end example
+
+Now it's time to write out a config for the server.  The key information
+is below. Save the resulting file as @file{guix-config.scm}.
+
+@lisp
+(use-modules (gnu)
+             (guix modules))
+(use-service-modules networking
+                     ssh)
+(use-package-modules admin
+                     certs
+                     package-management
+                     ssh
+                     tls)
+
+(operating-system
+  (host-name "my-server")
+  (timezone "America/New_York")
+  (locale "en_US.UTF-8")
+  ;; This goofy code will generate the grub.cfg
+  ;; without installing the grub bootloader on disk.
+  (bootloader (bootloader-configuration
+               (bootloader
+                (bootloader
+                 (inherit grub-bootloader)
+                 (installer #~(const #t))))))
+  (file-systems (cons (file-system
+                        (device "/dev/sda")
+                        (mount-point "/")
+                        (type "ext4"))
+                      %base-file-systems))
+
+
+  (swap-devices (list "/dev/sdb"))
+
+
+  (initrd-modules (cons "virtio_scsi"    ; Needed to find the disk
+                        %base-initrd-modules))
+
+  (users (cons (user-account
+                (name "janedoe")
+                (group "users")
+                ;; Adding the account to the "wheel" group
+                ;; makes it a sudoer.
+                (supplementary-groups '("wheel"))
+                (home-directory "/home/janedoe"))
+               %base-user-accounts))
+
+  (packages (cons* nss-certs            ;for HTTPS access
+                   openssh-sans-x
+                   %base-packages))
+
+  (services (cons*
+             (service dhcp-client-service-type)
+             (service openssh-service-type
+                      (openssh-configuration
+                       (openssh openssh-sans-x)
+                       (password-authentication? #f)
+                       (authorized-keys
+                        `(("janedoe" ,(local-file "janedoe_rsa.pub"))
+                          ("root" ,(local-file "janedoe_rsa.pub"))))))
+             %base-services)))
+@end lisp
+
+Replace the following fields in the above configuration:
+@lisp
+(host-name "my-server")       ; replace with your server name
+; if you chose a linode server outside the U.S., then
+; use tzselect to find a correct timezone string
+(timezone "America/New_York") ; if needed replace timezone
+(name "janedoe")              ; replace with your username
+("janedoe" ,(local-file "janedoe_rsa.pub")) ; replace with your ssh key
+("root" ,(local-file "janedoe_rsa.pub")) ; replace with your ssh key
+@end lisp
+
+The last line in the above example lets you log into the server as root
+and set the initial root password.  After you have done this, you may
+delete that line from your configuration and reconfigure to prevent root
+login.
+
+Save your ssh public key (eg: @file{~/.ssh/id_rsa.pub}) as
+@file{@var{<your-username-here>}_rsa.pub} and your
+@file{guix-config.scm} in the same directory.  In a new terminal run
+these commands.
+
+@example
+sftp root@@<remote server ip address>
+put /home/<username>/ssh/id_rsa.pub .
+put /path/to/linode/guix-config.scm .
+@end example
+
+In your first terminal, mount the guix drive:
+
+@example
+mkdir /mnt/guix
+mount /dev/sdc /mnt/guix
+@end example
+
+Due to the way we set things up above, we do not install GRUB
+completely.  Instead we install only our grub configuration file.  So we
+need to copy over some of the other GRUB stuff that is already there:
+
+@example
+mkdir -p /mnt/guix/boot/grub
+cp -r /boot/grub/* /mnt/guix/boot/grub/
+@end example
+
+Now initialize the Guix installation:
+
+@example
+guix system init guix-config.scm /mnt/guix
+@end example
+
+Ok, power it down!
+Now from the Linode console, select boot and select "Guix".
+
+Once it boots, you should be able to log in via SSH!  (The server config
+will have changed though.)  You may encounter an error like:
+
+@example
+$ ssh root@@<server ip address>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ECDSA key sent by the remote host is
+SHA256:0B+wp33w57AnKQuHCvQP0+ZdKaqYrI/kyU7CfVbS7R4.
+Please contact your system administrator.
+Add correct host key in /home/joshua/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /home/joshua/.ssh/known_hosts:3
+ECDSA host key for 198.58.98.76 has changed and you have requested strict checking.
+Host key verification failed.
+@end example
+
+Either delete @file{~/.ssh/known_hosts} file, or delete the offending line
+starting with your server IP address.
+
+Be sure to set your password and root's password.
+
+@example
+ssh root@@<remote ip address>
+passwd  ; for the root password
+passwd <username> ; for the user password
+@end example
+
+You may not be able to run the above commands at this point.  If you
+have issues remotely logging into your linode box via SSH, then you may
+still need to set your root and user password initially by clicking on
+the ``Launch Console'' option in your linode.  Choose the ``Glish''
+instead of ``Weblish''.  Now you should be able to ssh into the machine.
+
+Horray!  At this point you can shut down the server, delete the
+Debian disk, and resize the Guix to the rest of the size.
+Congratulations!
+
+By the way, if you save it as a disk image right at this point, you'll
+have an easy time spinning up new Guix images!  You may need to
+down-size the Guix image to 6144MB, to save it as an image.  Then you
+can resize it again to the max size.
 
 @node Setting up a bind mount
 @section Setting up a bind mount

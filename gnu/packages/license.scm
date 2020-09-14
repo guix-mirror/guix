@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -168,16 +169,17 @@ belonging to various licenses.")
 (define-public reuse
   (package
     (name "reuse")
-    (version "0.7.0")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "reuse" version))
        (sha256
-        (base32 "16wn28xxjcm5qlb7bs6jmdkfrkr5v97s59nmi9cn85qcg4gmj7lk"))))
+        (base32 "09qjb4f49vr0a7zrszab8g719ilg2p6b942mr0bgyvplrjikkid5"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (inputs
      `(("python-binaryornot" ,python-binaryornot)
        ("python-boolean.py" ,python-boolean.py)

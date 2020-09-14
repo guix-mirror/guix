@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
@@ -100,7 +100,7 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
 (define-public ttfautohint
   (package
     (name "ttfautohint")
-    (version "1.5")
+    (version "1.8.3")
     (source
      (origin
        (method url-fetch)
@@ -108,8 +108,7 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1lgghck46p33z3hg8dnl76jryig4fh6d8rhzms837zp7x4hyfkv4"))
-       (patches (list (search-patch "ttfautohint-source-date-epoch.patch")))))
+         "0zpqgihn3yh3v51ynxwr8asqrijvs4gv686clwv7bm8sawr4kfw7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -119,7 +118,8 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
      `(("freetype" ,freetype)
        ("harfbuzz" ,harfbuzz)))
     (arguments
-     `(#:configure-flags '("--with-qt=no"))) ;no gui
+     `(#:configure-flags '("--disable-static"
+                           "--with-qt=no"))) ;no gui
     (synopsis "Automated font hinting")
     (description
      "ttfautohint provides a 99% automated hinting process and a platform for

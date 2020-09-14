@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -236,14 +236,34 @@ to the structure and choosing one or more fields to act as the key.")
                           "0m542xpys54bni29zibgrfpgpd0zgyny4h131virxsanixsbz52z")))))))
     (build-system cmake-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-static-library
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (copy-file "lib/libsdsl_static.a"
                           (string-append out "/lib/libsdsl.a")))
-             #t)))))
+             #t))
+        (add-after 'install 'install-pkgconfig-file
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (lib (string-append out "/lib")))
+              (mkdir-p (string-append lib "/pkgconfig"))
+              (with-output-to-file (string-append lib "/pkgconfig/sdsl-lite.pc")
+                (lambda _
+                  (format #t "prefix=~a~@
+                          exec_prefix=${prefix}~@
+                          libdir=${exec_prefix}/lib~@
+                          includedir=${prefix}/include~@
+                          ~@
+                          ~@
+                          Name: sdsl~@
+                          Version: ~a~@
+                          Description: SDSL: Succinct Data Structure Library~@
+                          Libs: -L${libdir} -lsdsl -ldivsufsort -ldivsufsort64~@
+                          Cflags: -I${includedir}~%"
+                          out ,version)))
+              #t))))))
     (native-inputs
      `(("libdivsufsort" ,libdivsufsort)))
     (home-page "https://github.com/simongog/sdsl-lite")

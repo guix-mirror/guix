@@ -660,42 +660,6 @@ synchronization, thread-safety, concurrent data structures, and non-blocking
 I/O.")
     (license license:asl2.0)))
 
-(define-public r-adaptivesparsity
-  (package
-    (name "r-adaptivesparsity")
-    (version "1.6")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "AdaptiveSparsity" version))
-              (sha256
-               (base32
-                "0imr5m8mll9j6n4icsv6z9rl5kbnwsp9wvzrg7n90nnmcxq2cz91"))))
-    (properties
-     `((upstream-name . "AdaptiveSparsity")))
-    (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'link-against-armadillo
-           (lambda _
-             (substitute* "src/Makevars"
-               (("PKG_LIBS=" prefix)
-                (string-append prefix "-larmadillo"))))))))
-    (propagated-inputs
-     `(("r-mass" ,r-mass)
-       ("r-matrix" ,r-matrix)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rcpparmadillo" ,r-rcpparmadillo)))
-    (inputs
-     `(("armadillo" ,armadillo)))
-    (home-page "https://cran.r-project.org/web/packages/AdaptiveSparsity")
-    (synopsis "Adaptive sparsity models")
-    (description
-     "This package implements the Figueiredo machine learning algorithm for
-adaptive sparsity and the Wong algorithm for adaptively sparse gaussian
-geometric models.")
-    (license license:lgpl3+)))
-
 (define-public gemmlowp-for-tensorflow
   ;; The commit hash is taken from "tensorflow/workspace.bzl".
   (let ((commit "38ebac7b059e84692f53e5938f97a9943c120d98")
@@ -1049,7 +1013,16 @@ the following advantages:
        (modify-phases %standard-phases
          (add-after 'unpack 'make-files-writable
            (lambda _
-             (for-each make-file-writable (find-files "." ".*")) #t)))))
+             (for-each make-file-writable (find-files "." ".*")) #t))
+         (add-after 'install 'install-more-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each
+               (lambda (file)
+                 (install-file file (string-append
+                                      (assoc-ref outputs "out")
+                                      "/include/vowpalwabbit")))
+               (find-files "vowpalwabbit" "\\.h$"))
+             #t)))))
     (build-system gnu-build-system)
     (home-page "https://github.com/JohnLangford/vowpal_wabbit")
     (synopsis "Fast machine learning library for online learning")

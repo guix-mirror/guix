@@ -23,6 +23,8 @@
   #:use-module (guix utils)
   #:use-module (guix monads)
   #:use-module ((gcrypt hash) #:prefix gcrypt:)
+  #:use-module ((gcrypt pk-crypto) #:prefix gcrypt:)
+  #:use-module (guix pki)
   #:use-module (guix base32)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -141,6 +143,15 @@
                     (string-append (%store-prefix) "/"
                                    (make-string 32 #\e) "-foobar"))))
 
+(test-equal "with-store, multiple values"        ;<https://bugs.gnu.org/42912>
+  '(1 2 3)
+  (call-with-values
+      (lambda ()
+        (with-store s
+          (add-text-to-store s "foo" "bar")
+          (values 1 2 3)))
+    list))
+
 (test-assert "valid-path? error"
   (with-store s
     (guard (c ((store-protocol-error? c) #t))
@@ -212,30 +223,22 @@
            ;;(> freed 0)
            (not (file-exists? p))))))
 
-(test-assert "add-text-to-store vs. delete-paths"
-  ;; Before, 'add-text-to-store' would return PATH2 without noticing that it
-  ;; is no longer valid.
+(test-assert "add-text-to-store/add-to-store vs. delete-paths"
+  ;; Before, 'add-text-to-store' and 'add-to-store' would return the same
+  ;; store item without noticing that it is no longer valid.
   (with-store store
     (let* ((text    (random-text))
-           (path    (add-text-to-store store "delete-me" text))
-           (deleted (delete-paths store (list path)))
-           (path2   (add-text-to-store store "delete-me" text)))
-      (and (string=? path path2)
-           (equal? deleted (list path))
-           (valid-path? store path)
-           (file-exists? path)))))
-
-(test-assert "add-to-store vs. delete-paths"
-  ;; Same as above.
-  (with-store store
-    (let* ((file    (search-path %load-path "guix.scm"))
-           (path    (add-to-store store "delete-me" #t "sha256" file))
-           (deleted (delete-paths store (list path)))
-           (path2   (add-to-store store "delete-me" #t "sha256" file)))
-      (and (string=? path path2)
-           (equal? deleted (list path))
-           (valid-path? store path)
-           (file-exists? path)))))
+           (file    (search-path %load-path "guix.scm"))
+           (path1   (add-text-to-store store "delete-me" text))
+           (path2   (add-to-store store "delete-me" #t "sha256" file))
+           (deleted (delete-paths store (list path1 path2))))
+      (and (string=? path1 (add-text-to-store store "delete-me" text))
+           (string=? path2 (add-to-store store "delete-me" #t "sha256" file))
+           (lset= string=? deleted (list path1 path2))
+           (valid-path? store path1)
+           (valid-path? store path2)
+           (file-exists? path1)
+           (file-exists? path2)))))
 
 (test-equal "add-file-tree-to-store"
   `(42
@@ -956,6 +959,76 @@
                #t
                (list out1 out2))))
     #:guile-for-build (%guile-for-build)))
+
+
+(test-assert "import not signed"
+  (let* ((text (random-text))
+         (file (add-file-tree-to-store %store
+                                       `("tree" directory
+                                         ("text" regular (data ,text))
+                                         ("link" symlink "text"))))
+         (dump (call-with-bytevector-output-port
+                (lambda (port)
+                  (write-int 1 port)              ;start
+
+                  (write-file file port)          ;contents
+                  (write-int #x4558494e port)     ;%export-magic
+                  (write-string file port)        ;store item
+                  (write-string-list '() port)    ;references
+                  (write-string "" port)          ;deriver
+                  (write-int 0 port)              ;not signed
+
+                  (write-int 0 port)))))          ;done
+
+    ;; Ensure 'import-paths' raises an exception.
+    (guard (c ((store-protocol-error? c)
+               (and (not (zero? (store-protocol-error-status c)))
+                    (string-contains (store-protocol-error-message c)
+                                     "lacks a signature"))))
+      (let* ((source   (open-bytevector-input-port dump))
+             (imported (import-paths %store source)))
+        (pk 'unsigned-imported imported)
+        #f))))
+
+(test-assert "import signed by unauthorized key"
+  (let* ((text (random-text))
+         (file (add-file-tree-to-store %store
+                                       `("tree" directory
+                                         ("text" regular (data ,text))
+                                         ("link" symlink "text"))))
+         (key  (gcrypt:generate-key
+                (gcrypt:string->canonical-sexp
+                 "(genkey (ecdsa (curve Ed25519) (flags rfc6979)))")))
+         (dump (call-with-bytevector-output-port
+                (lambda (port)
+                  (write-int 1 port)              ;start
+
+                  (write-file file port)          ;contents
+                  (write-int #x4558494e port)     ;%export-magic
+                  (write-string file port)        ;store item
+                  (write-string-list '() port)    ;references
+                  (write-string "" port)          ;deriver
+                  (write-int 1 port)              ;signed
+                  (write-string (gcrypt:canonical-sexp->string
+                                 (signature-sexp
+                                  (gcrypt:bytevector->hash-data
+                                   (gcrypt:sha256 #vu8(0 1 2))
+                                   #:key-type 'ecc)
+                                  (gcrypt:find-sexp-token key 'private-key)
+                                  (gcrypt:find-sexp-token key 'public-key)))
+                                port)
+
+                  (write-int 0 port)))))          ;done
+
+    ;; Ensure 'import-paths' raises an exception.
+    (guard (c ((store-protocol-error? c)
+               (and (not (zero? (store-protocol-error-status c)))
+                    (string-contains (store-protocol-error-message c)
+                                     "unauthorized public key"))))
+      (let* ((source   (open-bytevector-input-port dump))
+             (imported (import-paths %store source)))
+        (pk 'unauthorized-imported imported)
+        #f))))
 
 (test-assert "import corrupt path"
   (let* ((text (random-text))

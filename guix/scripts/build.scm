@@ -945,7 +945,10 @@ needed."
 ;;; Entry point.
 ;;;
 
-(define (guix-build . args)
+(define-command (guix-build . args)
+  (category packaging)
+  (synopsis "build packages or derivations without installing them")
+
   (define opts
     (parse-command-line args %options
                         (list %default-options)))

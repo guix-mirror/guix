@@ -144,6 +144,7 @@ Project}.
 * Introduction::                What is Guix about?
 * Installation::                Installing Guix.
 * System Installation::         Installing the whole operating system.
+* Getting Started::             Your first steps.
 * Package Management::          Package installation, upgrade, etc.
 * Development::                 Guix-aided software development.
 * Programming Interface::       Using Guix in Scheme.
@@ -195,6 +196,8 @@ System Installation
 * After System Installation::   When installation succeeded.
 * Installing Guix in a VM::     Guix System playground.
 * Building the Installation Image::  How this comes to be.
+
+Getting Started
 
 Manual Installation
 
@@ -562,6 +565,9 @@ wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh
 chmod +x guix-install.sh
 ./guix-install.sh
 @end example
+
+When you're done, @pxref{Application Setup} for extra configuration you
+might need, and @ref{Getting Started} for your first steps!
 @end quotation
 
 Installing goes along these lines:
@@ -784,7 +790,8 @@ or later;
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
 2017 or later;
-@item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON} 3.x;
+@item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON}
+4.3.0 or later;
 @item @url{https://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
@@ -2476,7 +2483,8 @@ as.  This means that if you choose to use @command{guix system reconfigure} in
 root's login shell, you'll need to @command{guix pull} separately.
 @end quotation
 
-Join us on @code{#guix} on the Freenode IRC network or on
+Now, @pxref{Getting Started}, and
+join us on @code{#guix} on the Freenode IRC network or on
 @email{guix-devel@@gnu.org} to share your experience!
 
 
@@ -2564,6 +2572,210 @@ guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-wit
 board, a list of possible boards will be printed.
 
 @c *********************************************************************
+@node Getting Started
+@chapter Getting Started
+
+Presumably, you've reached this section because either you have
+installed Guix on top of another distribution (@pxref{Installation}), or
+you've installed the standalone Guix System (@pxref{System
+Installation}).  It's time for you to get started using Guix and this
+section aims to help you do that and give you a feel of what it's like.
+
+Guix is about installing software, so probably the first thing you'll
+want to do is to actually look for software.  Let's say you're looking
+for a text editor, you can run:
+
+@example
+guix search text editor
+@end example
+
+This command shows you a number of matching @dfn{packages}, each time
+showing the package's name, version, a description, and additional info.
+Once you've found out the one you want to use, let's say Emacs (ah ha!),
+you can go ahead and install it (run this command as a regular user,
+@emph{no need for root privileges}!):
+
+@example
+guix install emacs
+@end example
+
+You've installed your first package, congrats!  In the process, you've
+probably noticed that Guix downloaded pre-built binaries; or, if you
+explicitly chose to @emph{not} use pre-built binaries, then probably
+Guix is still building software (@pxref{Substitutes}, for more info).
+
+Unless you're using Guix System, the @command{guix install} command must
+have printed this hint:
+
+@example
+hint: Consider setting the necessary environment variables by running:
+
+     GUIX_PROFILE="$HOME/.guix-profile"
+     . "$GUIX_PROFILE/etc/profile"
+
+Alternately, see `guix package --search-paths -p "$HOME/.guix-profile"'.
+@end example
+
+Indeed, you must now tell your shell where @command{emacs} and other
+programs installed with Guix are to be found.  Pasting the two lines
+above will do just that: it will add
+@code{$HOME/.guix-profile/bin}---which is where the installed package
+is---to the @code{PATH} environment variable.  You can paste these two
+lines in your shell so they take effect right away, but more importantly
+you should add them to @file{~/.bash_profile} (or equivalent file if you
+do not use Bash) so that environment variables are set next time you
+spawn a shell.  You only need to do this once and other search paths
+environment variables will be taken care of similarly---e.g., if you
+eventually install @code{python} and Python libraries, @code{PYTHONPATH}
+will be defined.
+
+You can go on installing packages at your will.  To list installed
+packages, run:
+
+@example
+guix package --list-installed
+@end example
+
+To remove a package, you would unsurprisingly run @command{guix remove}.
+A distinguishing feature is the ability to @dfn{roll back} any operation
+you made---installation, removal, upgrade---by simply typing:
+
+@example
+guix package --roll-back
+@end example
+
+This is because each operation is in fact a @dfn{transaction} that
+creates a new @dfn{generation}.  These generations and the difference
+between them can be displayed by running:
+
+@example
+guix package --list-generations
+@end example
+
+Now you know the basics of package management!
+
+@quotation Going further
+@xref{Package Management}, for more about package management.  You may
+like @dfn{declarative} package management with @command{guix package
+--manifest}, managing separate @dfn{profiles} with @option{--profile},
+deleting old generations, collecting garbage, and other nifty features
+that will come in handy as you become more familiar with Guix.  If you
+are a developer, @pxref{Development} for additional tools.  And if
+you're curious, @pxref{Features}, to peek under the hood.
+@end quotation
+
+Once you've installed a set of packages, you will want to periodically
+@emph{upgrade} them to the latest and greatest version.  To do that, you
+will first pull the latest revision of Guix and its package collection:
+
+@example
+guix pull
+@end example
+
+The end result is a new @command{guix} command, under
+@file{~/.config/guix/current/bin}.  Unless you're on Guix System, the
+first time you run @command{guix pull}, be sure to follow the hint that
+the command prints and, similar to what we saw above, paste these two
+lines in your terminal and @file{.bash_profile}:
+
+@example
+GUIX_PROFILE="$HOME/.config/guix/current/etc/profile"
+. "$GUIX_PROFILE/etc/profile"
+@end example
+
+@noindent
+You must also instruct your shell to point to this new @command{guix}:
+
+@example
+hash guix
+@end example
+
+At this point, you're running a brand new Guix.  You can thus go ahead
+and actually upgrade all the packages you previously installed:
+
+@example
+guix upgrade
+@end example
+
+As you run this command, you will see that binaries are downloaded (or
+perhaps some packages are built), and eventually you end up with the
+upgraded packages.  Should one of these upgraded packages not be to your
+liking, remember you can always roll back!
+
+You can display the exact revision of Guix you're currently using by
+running:
+
+@example
+guix describe
+@end example
+
+The information it displays is @emph{all it takes to reproduce the exact
+same Guix}, be it at a different point in time or on a different
+machine.
+
+@quotation Going further
+@xref{Invoking guix pull}, for more information.  @xref{Channels}, on
+how to specify additional @dfn{channels} to pull packages from, how to
+replicate Guix, and more.  You may also find @command{time-machine}
+handy (@pxref{Invoking guix time-machine}).
+@end quotation
+
+If you installed Guix System, one of the first things you'll want to do
+is to upgrade your system.  Once you've run @command{guix pull} to get
+the latest Guix, you can upgrade the system like this:
+
+@example
+sudo guix system reconfigure /etc/config.scm
+@end example
+
+Upon completion, the system runs the latest versions of its software
+packages.  When you eventually reboot, you'll notice a sub-menu in the
+bootloader that reads ``Old system generations'': it's what allows you
+to boot @emph{an older generation of your system}, should the latest
+generation be ``broken'' or otherwise unsatisfying.  Just like for
+packages, you can always @emph{roll back} to a previous generation
+@emph{of the whole system}:
+
+@example
+sudo guix system roll-back
+@end example
+
+There are many things you'll probably want to tweak on your system:
+adding new user accounts, adding new system services, fiddling with the
+configuration of those services, etc.  The system configuration is
+@emph{entirely} described in the @file{/etc/config.scm} file.
+@xref{Using the Configuration System}, to learn how to change it.
+
+Now you know enough to get started!
+
+@quotation Resources
+The rest of this manual provides a reference for all things Guix.  Here
+are some additional resources you may find useful:
+
+@itemize
+@item
+@xref{Top,,, guix-cookbook, The GNU Guix Cookbook}, for a list of
+``how-to'' style of recipes for a variety of applications.
+
+@item
+The @uref{https://guix.gnu.org/guix-refcard.pdf, GNU Guix Reference
+Card} lists in two pages most of the commands and options you'll ever
+need.
+
+@item
+The web site contains @uref{https://guix.gnu.org/en/videos/,
+instructional videos} covering topics such as everyday use of Guix, how
+to get help, and how to become a contributor.
+
+@item
+@xref{Documentation}, to learn how to access documentation on your
+computer.
+@end itemize
+
+We hope you will enjoy Guix as much as the community enjoys building it!
+@end quotation
+
+@c *********************************************************************
 @node Package Management
 @chapter Package Management
 
@@ -2601,6 +2813,10 @@ guix install emacs-guix
 
 @node Features
 @section Features
+
+Here we assume you've already made your first steps with Guix
+(@pxref{Getting Started}) and would like to get an overview about what's
+going on under the hood.
 
 When using Guix, each package ends up in the @dfn{package store}, in its
 own directory---something that resembles
@@ -4774,7 +4990,13 @@ what you should use in this case (@pxref{Invoking guix copy}).
 
 @cindex nar, archive format
 @cindex normalized archive (nar)
-Archives are stored in the ``normalized archive'' or ``nar'' format, which is
+@cindex nar bundle, archive format
+Each store item is written in the @dfn{normalized archive} or @dfn{nar}
+format (described below), and the output of @command{guix archive
+--export} (and input of @command{guix archive --import}) is a @dfn{nar
+bundle}.
+
+The nar format is
 comparable in spirit to `tar', but with differences
 that make it more appropriate for our purposes.  First, rather than
 recording all Unix metadata for each file, the nar format only mentions
@@ -4783,6 +5005,10 @@ and owner/group are dismissed.  Second, the order in which directory
 entries are stored always follows the order of file names according to
 the C locale collation order.  This makes archive production fully
 deterministic.
+
+That nar bundle format is essentially the concatenation of zero or more
+nars along with metadata for each store item it contains: its file name,
+references, corresponding derivation, and a digital signature.
 
 When exporting, the daemon digitally signs the contents of the archive,
 and that digital signature is appended.  When importing, the daemon
@@ -8334,10 +8560,12 @@ This is the declarative counterpart of @code{text-file}.
 @end deffn
 
 @deffn {Scheme Procedure} computed-file @var{name} @var{gexp} @
-          [#:options '(#:local-build? #t)]
+          [#:local-build? #t]
+          [#:options '()]
 Return an object representing the store item @var{name}, a file or
-directory computed by @var{gexp}.  @var{options}
-is a list of additional arguments to pass to @code{gexp->derivation}.
+directory computed by @var{gexp}.  When @var{local-build?} is true (the
+default), the derivation is built locally.  @var{options} is a list of
+additional arguments to pass to @code{gexp->derivation}.
 
 This is the declarative counterpart of @code{gexp->derivation}.
 @end deffn
@@ -12203,6 +12431,19 @@ example for an encrypted partition (@pxref{Mapped Devices}).
 @end table
 @end deftp
 
+@deffn {Scheme Procedure} file-system-label @var{str}
+This procedure returns an opaque file system label from @var{str}, a
+string:
+
+@lisp
+(file-system-label "home")
+@result{} #<file-system-label "home">
+@end lisp
+
+File system labels are used to refer to file systems by label rather
+than by device name.  See above for examples.
+@end deffn
+
 The @code{(gnu system file-systems)} exports the following useful
 variables.
 
@@ -12248,6 +12489,29 @@ The @code{fusectl} file system, which allows unprivileged users to mount
 and unmount user-space FUSE file systems.  This requires the
 @code{fuse.ko} kernel module to be loaded.
 @end defvr
+
+The @code{(gnu system uuid)} module provides tools to deal with file
+system ``unique identifiers'' (UUIDs).
+
+@deffn {Scheme Procedure} uuid @var{str} [@var{type}]
+Return an opaque UUID (unique identifier) object of the given @var{type}
+(a symbol) by parsing @var{str} (a string):
+
+@lisp
+(uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")
+@result{} #<<uuid> type: dce bv: @dots{}>
+
+(uuid "1234-ABCD" 'fat)
+@result{} #<<uuid> type: fat bv: @dots{}>
+@end lisp
+
+@var{type} may be one of @code{dce}, @code{iso9660}, @code{fat},
+@code{ntfs}, or one of the commonly found synonyms for these.
+
+UUIDs are another way to unambiguously refer to file systems in
+operating system configuration.  See the examples above.
+@end deffn
+
 
 @node Btrfs file system
 @subsection Btrfs file system
@@ -21943,6 +22207,31 @@ Can be set to @code{#f} to disable logging.
 @item @code{file} (default @code{#f})
 An optional override of the whole configuration.
 You can use the @code{mixed-text-file} function or an absolute filepath for it.
+@item @code{php-ini-file} (default @code{#f})
+An optional override of the default php settings.
+It may be any ``file-like'' object (@pxref{G-Expressions, file-like objects}).
+You can use the @code{mixed-text-file} function or an absolute filepath for it.
+
+For local development it is useful to set a higher timeout and memory
+limit for spawned php processes.  This be accomplished with the
+following operating system configuration snippet:
+@lisp
+(define %local-php-ini
+  (plain-file "php.ini"
+              "memory_limit = 2G
+max_execution_time = 1800"))
+
+(operating-system
+  ;; @dots{}
+  (services (cons (service php-fpm-service-type
+                           (php-fpm-configuration
+                            (php-ini-file %local-php-ini)))
+                  %base-services)))
+@end lisp
+
+Consult the @url{https://www.php.net/manual/en/ini.core.php,core php.ini
+directives} for comprehensive documentation on the acceptable
+@file{php.ini} directives.
 @end table
 @end deftp
 
@@ -22196,9 +22485,10 @@ A list of @code{certificates-configuration}s for which to generate
 certificates and request signatures.  Each certificate has a @code{name}
 and several @code{domains}.
 
-@item @code{email}
-Mandatory email used for registration, recovery contact, and important
-account notifications.
+@item @code{email} (default: @code{#f})
+Optional email address used for registration and recovery contact.
+Setting this is encouraged as it allows you to receive important
+notifications about the account and issued certificates.
 
 @item @code{server} (default: @code{#f})
 Optional URL of ACME server.  Setting this overrides certbot's default,
@@ -25126,6 +25416,7 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 
 @cindex @code{hurd}
 @cindex the Hurd
+@cindex childhurd
 
 Service @code{hurd-vm} provides support for running GNU/Hurd in a
 virtual machine (VM), a so-called ``Childhurd''.  The virtual machine is
@@ -25198,14 +25489,40 @@ By default, it produces
 @lisp
 '("--device" "rtl8139,netdev=net0"
   "--netdev" "user,id=net0\
+              ,hostfwd=tcp:127.0.0.1:<secrets-port>-:1004\
               ,hostfwd=tcp:127.0.0.1:<ssh-port>-:2222\
               ,hostfwd=tcp:127.0.0.1:<vnc-port>-:5900")
 @end lisp
 with forwarded ports
 @example
+<ssh-port>: @code{(+ 11004 (* 1000 @var{ID}))}
 <ssh-port>: @code{(+ 10022 (* 1000 @var{ID}))}
 <vnc-port>: @code{(+ 15900 (* 1000 @var{ID}))}
 @end example
+
+@item @code{secret-root} (default: @file{/etc/childhurd})
+The root directory with out-of-band secrets to be installed into the
+childhurd once it runs.  Childhurds are volatile which means that on
+every startup, secrets such as the SSH host keys and Guix signing key
+are recreated.
+
+If the @file{/etc/childhurd} directory does not exist, the
+@code{secret-service} running in the Childhurd will be sent an empty
+list of secrets.
+
+Typical use to populate @file{"/etc/childhurd"} with a tree of
+non-volatile secrets, like so
+
+@example
+/etc/childhurd/etc/guix/signing-key.pub
+/etc/childhurd/etc/guix/signing-key.sec
+/etc/childhurd/etc/ssh/ssh_host_ed25519_key
+/etc/childhurd/etc/ssh/ssh_host_ecdsa_key
+/etc/childhurd/etc/ssh/ssh_host_ed25519_key.pub
+/etc/childhurd/etc/ssh/ssh_host_ecdsa_key.pub
+@end example
+
+to be sent to the Childhurd, including permissions.
 
 @end table
 @end deftp
@@ -27688,7 +28005,7 @@ The Containerd package to use.
 @item @code{proxy} (default @var{docker-libnetwork-cmd-proxy})
 The Docker user-land networking proxy package to use.
 
-@item @code{enable-proxy?} (default @code{#f})
+@item @code{enable-proxy?} (default @code{#t})
 Enable or disable the use of the Docker user-land networking proxy.
 
 @item @code{debug?} (default @code{#f})
@@ -27799,7 +28116,7 @@ The common way to create this file is as follows:
        (app       (string-append out "/bin/" ,name))
        (Rbin      (string-append (assoc-ref %build-inputs "r-min")
                                  "/bin/Rscript")))
-@dots{}
+  ;; @dots{}
   (mkdir-p (string-append out "/bin"))
   (call-with-output-file app
     (lambda (port)
@@ -27808,8 +28125,7 @@ The common way to create this file is as follows:
 library(shiny)
 setwd(\"~a\")
 runApp(launch.browser=0, port=4202)~%\n"
-      Rbin targetdir)))
-@dots{}
+      Rbin targetdir))))
 @end lisp
 
 @end table
@@ -28843,7 +29159,9 @@ the @option{--image-size} option is ignored in the case of
 @code{docker-image}.
 
 You can specify the root file system type by using the
-@option{--file-system-type} option.  It defaults to @code{ext4}.
+@option{--file-system-type} option.  It defaults to @code{ext4}.  When its
+value is @code{iso9660}, the @option{--label} option can be used to specify
+a volume ID with @code{disk-image}.
 
 When using @code{vm-image}, the returned image is in qcow2 format, which
 the QEMU emulator can efficiently use. @xref{Running Guix in a VM},
@@ -29777,6 +30095,23 @@ calls it, passing it the initial value of the service as the first
 argument and the result of applying @code{compose} to the extension
 values as the second argument.  It must return a value that is a valid
 parameter value for the service instance.
+
+@item @code{description}
+This is a string, possibly using Texinfo markup, describing in a couple
+of sentences what the service is about.  This string allows users to
+find about the service through @command{guix system search}
+(@pxref{Invoking guix system}).
+
+@item @code{default-value} (default: @code{&no-default-value})
+The default value associated for instances of this service type.  This
+allows users to use the @code{service} form without its second argument:
+
+@lisp
+(service @var{type})
+@end lisp
+
+The returned service in this case has the default value specified by
+@var{type}.
 @end table
 
 @xref{Service Types and Services}, for examples.

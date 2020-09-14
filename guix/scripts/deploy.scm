@@ -136,7 +136,8 @@ Perform the deployment specified by FILE.\n"))
           (machine-display-name machine))))
 
 
-(define (guix-deploy . args)
+(define-command (guix-deploy . args)
+  (synopsis "deploy operating systems on a set of machines")
   (define (handle-argument arg result)
     (alist-cons 'file arg result))
 

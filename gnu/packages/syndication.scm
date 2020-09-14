@@ -97,7 +97,7 @@
         ("rust-gettext-rs" ,rust-gettext-rs-0.4)
         ("rust-gettext-sys" ,rust-gettext-sys-0.19)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-natord" ,rust-natord-1.0)
         ("rust-nom" ,rust-nom-5)
         ("rust-once-cell" ,rust-once-cell-1.2)
@@ -183,7 +183,7 @@ file system, and many more features.")
 (define-public liferea
   (package
     (name "liferea")
-    (version "1.12.8")
+    (version "1.12.9")
     (source
      (origin
        (method url-fetch)
@@ -191,7 +191,7 @@ file system, and many more features.")
                            "releases/download/v" version "/liferea-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1xm5if831llkjcmbq4w9ssgqjgy3zlb5n9y7kh54xpy6afafbsh7"))))
+        (base32 "06ybr1wjlfir8iqjx6x0v1knd4b2hsy30qmkk4kssy6ky2ahc66q"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -206,9 +206,9 @@ file system, and many more features.")
                    (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
                    (python-path       (getenv "PYTHONPATH")))
                (wrap-program (string-append out "/bin/liferea")
-                             `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                             `("PYTHONPATH" ":" prefix (,python-path))))
-            #t)))))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                 `("PYTHONPATH" ":" prefix (,python-path))))
+             #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")

@@ -316,11 +316,13 @@ file system labels."
       ((? bytevector? bv)                         ;old format
        (bytevector->uuid bv 'dce))
       ((? string? device)
-       ;; It used to be that we would not distinguish between labels and
-       ;; device names.  Try to infer the right thing here.
-       (if (string-prefix? "/dev/" device)
-           device
-           (file-system-label device)))))
+       (if (string-contains device ":/")
+           device ; nfs-root
+           ;; It used to be that we would not distinguish between labels and
+           ;; device names.  Try to infer the right thing here.
+           (if (string-prefix? "/" device)
+               device
+               (file-system-label device))))))
 
   (match (read port)
     (('boot-parameters ('version 0)

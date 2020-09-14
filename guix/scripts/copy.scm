@@ -20,6 +20,7 @@
   #:use-module (guix ui)
   #:use-module (guix scripts)
   #:use-module (guix ssh)
+  #:use-module ((ssh session) #:select (disconnect!))
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix utils)
@@ -71,9 +72,10 @@ package names, build the underlying packages before sending them."
     (and (build-derivations local drv)
          (let* ((session (open-ssh-session host #:user user
                                            #:port (or port 22)))
-                (sent    (send-files local items
-                                     (connect-to-remote-daemon session)
+                (remote  (connect-to-remote-daemon session))
+                (sent    (send-files local items remote
                                      #:recursive? #t)))
+           (close-connection remote)
            (format #t "~{~a~%~}" sent)
            sent))))
 
@@ -93,6 +95,8 @@ package names, build the underlying packages before sending them."
                    (options->derivations+files local opts))
                   ((retrieved)
                    (retrieve-files local items remote #:recursive? #t)))
+      (close-connection remote)
+      (disconnect! session)
       (format #t "~{~a~%~}" retrieved)
       retrieved)))
 
@@ -166,7 +170,10 @@ Copy ITEMS to or from the specified host over SSH.\n"))
 ;;; Entry point.
 ;;;
 
-(define (guix-copy . args)
+(define-command (guix-copy . args)
+  (category plumbing)
+  (synopsis "copy store items remotely over SSH")
+
   (with-error-handling
     (let* ((opts     (parse-command-line args %options (list %default-options)))
            (source   (assoc-ref opts 'source))

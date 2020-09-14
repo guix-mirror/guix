@@ -118,26 +118,6 @@ AC_DEFUN([GUIX_ASSERT_GUILE_FEATURES], [
   done
 ])
 
-dnl GUIX_ASSERT_SYNTAX_OBJECT_EQUAL
-dnl
-dnl Guile 2.2.1 was a brown-paper-bag release where 'equal?' wouldn't work
-dnl for syntax objects, which broke gexps.  Unfortunately Fedora 25 provides it.
-dnl Reject it.
-AC_DEFUN([GUIX_ASSERT_SYNTAX_OBJECT_EQUAL], [
-  AC_CACHE_CHECK([whether 'equal?' works for syntax objects],
-    [ac_cv_guix_syntax_object_equal],
-    [if "$GUILE" -c '(exit (equal? (syntax x) (syntax x)))'
-     then
-       ac_cv_guix_syntax_object_equal=yes
-     else
-       ac_cv_guix_syntax_object_equal=no
-     fi])
-  if test "x$ac_cv_guix_syntax_object_equal" != xyes; then
-    # This bug was present in Guile 2.2.1 only.
-    AC_MSG_ERROR(['equal?' does not work for syntax object; upgrade to Guile 2.2.2 or later.])
-  fi
-])
-
 dnl GUIX_CHECK_GUILE_SSH
 dnl
 dnl Check whether a recent-enough Guile-SSH is available.
@@ -181,14 +161,23 @@ dnl GUIX_CHECK_GUILE_JSON
 dnl
 dnl Check whether a recent-enough Guile-JSON is available.
 AC_DEFUN([GUIX_CHECK_GUILE_JSON], [
-  dnl Check whether we're using Guile-JSON 3.x, which uses a JSON-to-Scheme
-  dnl mapping different from that of earlier versions.
+  dnl Check whether we're using Guile-JSON 4.3+, which provides
+  dnl 'define-json-mapping'.
   AC_CACHE_CHECK([whether Guile-JSON is available and recent enough],
     [guix_cv_have_recent_guile_json],
     [GUILE_CHECK([retval],
-      [(use-modules (json) (ice-9 match))
-       (match (json-string->scm \"[[ { \\\"a\\\": 42 } ]]\")
-         (#((("a" . 42))) #t))])
+      [(use-modules (json))
+
+       (define-json-mapping <frob> make-frob
+         frob?
+	 json->frob
+	 (a frob-a)
+	 (b frob-b \"bee\"))
+
+       (exit
+        (equal? (json->frob
+                 (open-input-string \"{ \\\"a\\\": 1, \\\"bee\\\": 2 }\"))
+                (make-frob 1 2)))])
      if test "$retval" = 0; then
        guix_cv_have_recent_guile_json="yes"
      else

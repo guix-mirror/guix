@@ -655,7 +655,8 @@ desktop environment.")
                                   "xmonad-" version ".tar.gz"))
               (sha256
                (base32
-                "0a7rh21k9y6g8fwkggxdxjns2grvvsd5hi2ls4klmqz5xvk4hyaa"))))
+                "0a7rh21k9y6g8fwkggxdxjns2grvvsd5hi2ls4klmqz5xvk4hyaa"))
+              (patches (search-patches "xmonad-dynamic-linking.patch"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)

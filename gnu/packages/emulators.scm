@@ -1397,7 +1397,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.223")
+    (version "0.224")
     (source
      (origin
        (method git-fetch)
@@ -1406,7 +1406,7 @@ play them on systems for which they were never designed!")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fmf9ygbic4lw84vifhpz8wq2736dj8zsi1cqhb1m0fjq3dvn0vm"))
+        (base32 "0dpg4hz2f1wlp0rmk5c5xq57fy0sblh97z3l66p814wkgzap4bhx"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

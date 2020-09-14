@@ -9,6 +9,7 @@
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1945,3 +1946,38 @@ as frontend to hjsmin.")
      "This package provides a data type and ToJSON/FromJSON instances for
 Bower's package manifest file, bower.json.")
     (license license:expat)))
+
+(define-public ghc-dav
+  (package
+    (name "ghc-dav")
+    (version "1.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/DAV/DAV-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1isvi4fahq70lzxfz23as7qzkc01g7kba568l6flrgd0j1984fsy"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-client-tls" ,ghc-http-client-tls)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-xml-conduit" ,ghc-xml-conduit)
+       ("ghc-xml-hamlet" ,ghc-xml-hamlet)
+       ("ghc-network" ,ghc-network)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+    (home-page "http://floss.scru.org/hDAV")
+    (synopsis "RFC 4918 WebDAV support")
+    (description "This package provides a library for the Web Distributed
+Authoring and Versioning (WebDAV) extensions to HTTP as well an executable,
+@command{hdav}, for command-line operation.")
+    (license license:gpl3)))

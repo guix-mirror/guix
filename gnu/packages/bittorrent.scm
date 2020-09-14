@@ -34,6 +34,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages boost)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
@@ -465,29 +467,65 @@ features.")
 (define-public deluge
   (package
     (name "deluge")
-    (version "1.3.15")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://download.deluge-torrent.org/source/deluge-"
-             version ".tar.xz"))
+             "https://ftp.osuosl.org/pub/deluge/source/"
+             (version-major+minor version) "/deluge-" version ".tar.xz"))
        (sha256
         (base32
-         "0b7rri4x0wrcj7rjghrnw1kfrsd5i7i6aq85dsg5dg1w1qa0ar59"))))
+         "14d8kn2pvr1qv8mwqrxmj85jycr73vwfqz12hzag0ararbkfhyky"))))
     (build-system python-build-system)
-    (inputs
-     `(("libtorrent" ,libtorrent-rasterbar)
-       ("python2-chardet" ,python2-chardet)
-       ("python2-pygtk" ,python2-pygtk)
-       ("python2-pyopenssl" ,python2-pyopenssl)
-       ("python2-pyxdg" ,python2-pyxdg)
-       ("python2-service-identity" ,python2-service-identity)
-       ("python2-twisted" ,python2-twisted)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)
+       ("libtorrent" ,libtorrent-rasterbar)
+       ("python-pycairo" ,python-pycairo)
+       ("python-chardet" ,python-chardet)
+       ("python-dbus" ,python-dbus)
+       ("python-mako" ,python-mako)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pillow" ,python-pillow)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pyxdg" ,python-pyxdg)
+       ("python-rencode" ,python-rencode)
+       ("python-service-identity" ,python-service-identity)
+       ("python-setproctitle" ,python-setproctitle)
+       ("python-six" ,python-six)
+       ("python-twisted" ,python-twisted)
+       ("python-zope-interface" ,python-zope-interface)))
     (native-inputs
-     `(("intltool" ,intltool)))
+     `(("intltool" ,intltool)
+       ("python-wheel" ,python-wheel)))
+    ;; TODO: Enable tests.
+    ;; After "pytest-twisted" is packaged, HOME is set, and an X server is
+    ;; started, some of the tests still fail.  There are likely some tests
+    ;; that require a network connection.
     (arguments
-     `(#:python ,python-2))
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; Remove this phase when upgrading to version 2.0.4 or beyond, as
+         ;; the issue is fixed upstream.
+         (add-after 'unpack 'fix-gettext-warning
+           (lambda _
+             (substitute* "deluge/i18n/util.py"
+               (("names='ngettext'") "names=['ngettext']"))
+             #t))
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (for-each
+                (lambda (program)
+                  (wrap-program program
+                    `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                (map (lambda (name)
+                       (string-append out "/bin/" name))
+                     '("deluge" "deluge-gtk"))))
+             #t)))))
     (home-page "https://www.deluge-torrent.org/")
     (synopsis  "Fully-featured cross-platform ​BitTorrent client")
     (description

@@ -34,7 +34,12 @@
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
-  #:export (args-fold*
+  #:export (synopsis
+            category
+            define-command
+            %command-categories
+
+            args-fold*
             parse-command-line
             maybe-build
             build-package
@@ -49,6 +54,61 @@
 ;;; General code for Guix scripts.
 ;;;
 ;;; Code:
+
+;; Syntactic keywords.
+(define synopsis 'command-synopsis)
+(define category 'command-category)
+
+(define-syntax define-command-categories
+  (syntax-rules (G_)
+    "Define command categories."
+    ((_ name assert-valid (identifiers (G_ synopses)) ...)
+     (begin
+       (define-public identifiers
+         ;; Define and export syntactic keywords.
+         (list 'syntactic-keyword-for-command-category))
+       ...
+
+       (define-syntax assert-valid
+         ;; Validate at expansion time that we're passed a valid category.
+         (syntax-rules (identifiers ...)
+           ((_ identifiers) #t)
+           ...))
+
+       (define name
+         ;; Alist mapping category name to synopsis.
+         `((identifiers . synopses) ...))))))
+
+;; Command categories.
+(define-command-categories %command-categories
+  assert-valid-command-category
+  (main        (G_ "main commands"))
+  (development (G_ "software development commands"))
+  (packaging   (G_ "packaging commands"))
+  (plumbing    (G_ "plumbing commands"))
+  (internal    (G_ "internal commands")))
+
+(define-syntax define-command
+  (syntax-rules (category synopsis)
+    "Define the given command as a procedure along with its synopsis and,
+optionally, its category.  The synopsis becomes the docstring of the
+procedure, but both the category and synopsis are meant to be read (parsed) by
+'guix help'."
+    ;; The (synopsis ...) form is here so that xgettext sees those strings as
+    ;; translatable.
+    ((_ (name . args)
+        (synopsis doc) body ...)
+     (define (name . args)
+       doc
+       body ...))
+    ((_ (name . args)
+        (category cat) (synopsis doc)
+        body ...)
+     (begin
+       (assert-valid-command-category cat)
+       (define (name . args)
+         doc
+         body ...)))))
 
 (define (args-fold* args options unrecognized-option-proc operand-proc . seeds)
   "A wrapper on top of `args-fold' that does proper user-facing error

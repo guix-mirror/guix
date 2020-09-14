@@ -405,6 +405,23 @@ relocated_search_path (const char *path[], const char *store)
   return new_path;
 }
 
+/* Concatenate PATH1 and PATH2 with a colon in between.  The result is
+   potentially malloc'd.  */
+static char *
+concat_paths (const char *path1, const char *path2)
+{
+  if (path1[0] == '\0')
+    return (char *) path2;
+  else
+    {
+      char *result = xmalloc (strlen (path1) + strlen (path2) + 2);
+      strcpy (result, path1);
+      strcat (result, ":");
+      strcat (result, path2);
+      return result;
+    }
+}
+
 /* Execute the wrapped program by invoking the loader (ld.so) directly,
    passing it the audit module and preloading libfakechroot.so.  */
 static void
@@ -421,9 +438,12 @@ exec_with_loader (const char *store, int argc, char *argv[])
   loader_argv[2] = concat (store,
 			   LOADER_AUDIT_MODULE + sizeof original_store);
 
-  /* The audit module depends on libc.so and libgcc_s.so.  */
+  /* The audit module depends on libc.so and libgcc_s.so so honor
+     AUDIT_LIBRARY_PATH.  Additionally, honor $LD_LIBRARY_PATH if set.  */
   loader_argv[3] = "--library-path";
-  loader_argv[4] = relocated_search_path (audit_library_path, store);
+  loader_argv[4] =
+    concat_paths (getenv ("LD_LIBRARY_PATH") ?: "",
+		  relocated_search_path (audit_library_path, store));
 
   loader_argv[5] = "--preload";
   loader_argv[6] = concat (store,

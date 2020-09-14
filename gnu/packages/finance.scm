@@ -480,7 +480,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
 (define-public electron-cash
   (package
     (name "electron-cash")
-    (version "4.0.15")
+    (version "4.1.0")
     (source
      (origin
        (method git-fetch)
@@ -489,11 +489,11 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bvj64fdxpi0dbivhgv509kqq503zjp7r7xckl8q5c48j5h1zik2"))))
+        (base32 "1ccfm6kkmbkvykfdzrisxvr0lx9kgq4l43ixk6v3xnvhnbfwz4s2"))))
     (build-system python-build-system)
     (inputs
      `(("libevent" ,libevent)
-       ("libsecp256k1", libsecp256k1)
+       ("libsecp256k1", libsecp256k1-bitcoin-cash)
        ("openssl" ,openssl)
        ("python-cython" ,python-cython)
        ("python-dateutil", python-dateutil)
@@ -530,7 +530,9 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "lib/secp256k1.py"
                (("library_paths = .* 'libsecp256k1.so.0'.")
-                (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))
+                (string-append "library_paths = ('"
+                               (assoc-ref inputs "libsecp256k1")
+                               "/lib/libsecp256k1.so.0'")))
              #t))
          (add-after 'install 'wrap-qt
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1397,7 +1399,7 @@ entity management.")
 (define-public bitcoin-unlimited
   (package
     (name "bitcoin-unlimited")
-    (version "1.8.0.0")
+    (version "1.9.0.0")
     (source
      (origin
        (method git-fetch)
@@ -1406,7 +1408,7 @@ entity management.")
              (commit (string-append "BCHunlimited" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ivkig6q7i4n389dg1zv06cmfki20bjq0slmshx0p5a1aavkqj7k"))))
+        (base32 "1a64h7mcqdra4ahnw1nycp4ysx308ymgbl4yn5fj5jfaszdzvy0h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

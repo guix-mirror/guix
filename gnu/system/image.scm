@@ -63,7 +63,8 @@
             iso9660-image
 
             find-image
-            system-image))
+            system-image
+            image-with-label))
 
 
 ;;;
@@ -266,8 +267,7 @@ used in the image."
                                        #$output
                                        image-root)))))
         (computed-file "partition.img" image-builder
-                       #:options `(#:local-build? #t ;typically large file
-                                   #:references-graphs ,inputs))))
+                       #:options `(#:references-graphs ,inputs))))
 
     (define (partition->config partition)
       ;; Return the genimage partition configuration for PARTITION.
@@ -325,8 +325,7 @@ image ~a {
                    #~(symlink
                       (string-append #$image-dir "/" #$genimage-name)
                       #$output)
-                   #:options `(#:local-build? #t ;typically large file
-                               #:substitutable? ,substitutable?))))
+                   #:options `(#:substitutable? ,substitutable?))))
 
 
 ;;
@@ -403,9 +402,22 @@ used in the image. "
                                  #:volume-id #$root-label
                                  #:volume-uuid #$root-uuid)))))
     (computed-file name builder
-                   #:options `(#:local-build? #t ;typically large file
-                               #:references-graphs ,inputs
+                   #:options `(#:references-graphs ,inputs
                                #:substitutable? ,substitutable?))))
+
+(define (image-with-label base-image label)
+  "The volume ID of an ISO is the label of the first partition.  This procedure
+returns an image record where the first partition's label is set to <label>."
+  (image
+    (inherit base-image)
+    (partitions
+      (match (image-partitions base-image)
+        ((boot others ...)
+         (cons
+           (partition
+             (inherit boot)
+             (label label))
+           others))))))
 
 
 ;;

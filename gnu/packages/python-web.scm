@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -68,10 +68,12 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
@@ -184,7 +186,7 @@ aiohttp.  It supports SOCKS4(a) and SOCKS5.")
         (base32
          "1snr5paql8dgvc676n8xq460wypjsb1xj53cf3px1s4wczf7lryq"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-pycares" ,python-pycares)))
     (arguments
      `(#:tests? #f))                    ;tests require internet access
@@ -1856,6 +1858,27 @@ WebSocket usage in Python programs.")
           ,python2-backport-ssl-match-hostname)
          ,@(package-native-inputs base))))))
 
+(define-public python-purl
+  (package
+    (name "python-purl")
+    (version "1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "purl" version))
+        (sha256
+          (base32
+            "15ibnz1xrh5msmn04j0nr00sz4n7jwx6cwd6zlx99kkz3vpin53m"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-six" ,python-six)))
+    (home-page
+      "https://github.com/codeinthehole/purl")
+    (synopsis
+      "Python package for URL manipulation")
+    (description
+      "Purl is a Python package for handling URLs.")
+    (license license:expat)))
+
 (define-public python-requests
   (package
     (name "python-requests")
@@ -1898,18 +1921,6 @@ than Python’s urllib2 library.")
               ("python-idna" ,python-idna-2.7)
               ,@(package-propagated-inputs python-requests)))))
 
-;; Some software requires an older version of Requests, notably Docker
-;; Compose.
-(define-public python-requests-2.7
-  (package (inherit python-requests)
-    (version "2.7.0")
-    (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "requests" version))
-             (sha256
-              (base32
-               "0gdr9dxm24amxpbyqpbh3lbwxc2i42hnqv50sigx568qssv3v2ir"))))))
-
 (define-public python2-requests
   (package-with-python2 python-requests))
 
@@ -1940,14 +1951,14 @@ library.")
 (define-public python-requests-mock
   (package
     (name "python-requests-mock")
-    (version "1.3.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "requests-mock" version))
        (sha256
         (base32
-         "0jr997dvk6zbmhvbpcv3rajrgag69mcsm1ai3w3rgk2jdh6rg1mx"))))
+         "09nj8fmyj7xz2mgwyvbw0fl9zybmx2d3qd2hf529vvjc9s24d3z6"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-requests" ,python-requests)
@@ -1958,9 +1969,10 @@ library.")
        ("python-docutils" ,python-docutils)
        ("python-fixtures" ,python-fixtures)
        ("python-mock" ,python-mock)
+       ("python-purl" ,python-purl)
+       ("python-pytest" ,python-pytest)
        ("python-sphinx" ,python-sphinx)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testtools" ,python-testtools)))
+       ("python-testrepository" ,python-testrepository)))
     (home-page "https://requests-mock.readthedocs.org/")
     (synopsis "Mock out responses from the requests package")
     (description
@@ -2002,6 +2014,20 @@ with python-requests.")
 
 (define-public python2-requests-toolbelt
   (package-with-python2 python-requests-toolbelt))
+
+(define-public python-requests-toolbelt-0.9.1
+  (package
+    (inherit python-requests-toolbelt)
+    (version "0.9.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "requests-toolbelt" version))
+             (sha256
+              (base32
+               "1h3gm88dcjbd7gm229a7x5qkkhnsqsjz0m0l2xyavm2ab3a8k04n"))))
+    (arguments
+     `(;; FIXME: Some tests require network access.
+       #:tests? #f))))
 
 (define-public python-oauthlib
   (package
@@ -3863,6 +3889,43 @@ XPath and therefore does not have all the correctness corner cases that are
 hard or impossible to fix in cssselect.")
     (license license:bsd-3)))
 
+(define-public python-uvloop
+  (package
+    (name "python-uvloop")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "uvloop" version))
+       (sha256
+        (base32 "07j678z9gf41j98w72ysrnb5sa41pl5yxd7ib17lcwfxqz0cjfhj"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f ;FIXME: tests hang and with some errors in the way
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'preparations
+           (lambda _
+             ;; Use packaged libuv.
+             (substitute* "setup.py" (("self.use_system_libuv = False")
+                                      "self.use_system_libuv = True"))
+             #t)))))
+    (native-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-cython" ,python-cython)
+       ("python-flake8" ,python-flake8)
+       ("python-psutil" ,python-psutil)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-twine" ,python-twine)))
+    (inputs
+     `(("libuv" ,libuv)))
+    (home-page "https://github.com/MagicStack/uvloop")
+    (synopsis "Fast implementation of asyncio event loop on top of libuv")
+    (description
+     "@code{uvloop} is a fast, drop-in replacement of the built-in asyncio
+event loop.  It is implemented in Cython and uses libuv under the hood.")
+    (license license:expat)))
+
 (define-public gunicorn
   (package
     (name "gunicorn")
@@ -3932,6 +3995,104 @@ and fairly speedy.")
     (arguments `(#:tests? #f))
     (properties '((hidden? . #t)))
     (native-inputs `())))
+
+(define-public python-httptools
+  (package
+    (name "python-httptools")
+    (version "0.1.1")
+    (source
+     (origin
+       ;; PyPI tarball comes with a vendored http-parser and no tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MagicStack/httptools")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g08128x2ixsiwrzskxc6c8ymgzs39wbzr5mhy0mjk30q9pqqv77"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'preparations
+           (lambda _
+             ;; Skip a failing test (AssertionError).  Bug report:
+             ;; https://github.com/MagicStack/httptools/issues/10.
+             (substitute* "tests/test_parser.py"
+               (("    def test_parser_response_1")
+                (string-append
+                 "    @unittest.skip(\"Disabled.\")\n"
+                 "    def test_parser_response_1")))
+             ;; Use packaged http-parser.
+             (substitute* "setup.py" (("self.use_system_http_parser = False")
+                                      "self.use_system_http_parser = True"))
+             ;; This path is hardcoded.  Hardcode our own.
+             (substitute* "httptools/parser/cparser.pxd"
+               (("../../vendor/http-parser")
+                (string-append (assoc-ref %build-inputs "http-parser")
+                               "/include")))
+             ;; Don't force Cython version.
+             (substitute* "setup.py" (("Cython==") "Cython>="))
+             #t)))))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)))
+    (inputs
+     `(("http-parser" ,http-parser)))
+    (home-page "https://github.com/MagicStack/httptools")
+    (synopsis "Collection of framework independent HTTP protocol utils")
+    (description
+     "@code{httptools} is a Python binding for the nodejs HTTP parser.")
+    (license license:expat)))
+
+(define-public python-uvicorn
+  (package
+    (name "python-uvicorn")
+    (version "0.11.8")
+    (source
+     (origin
+       ;; PyPI tarball has no tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/encode/uvicorn")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00iidg5ysp7k00bw3kmkvr8mghnh4jdi0p2ryiarhryf8wz2r3fy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-codecov" ,python-codecov)
+       ("python-flake8" ,python-flake8)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-requests" ,python-requests)))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-h11" ,python-h11)
+       ("python-httptools" ,python-httptools)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-uvloop" ,python-uvloop)
+       ("python-watchgod" ,python-watchgod)
+       ("python-websockets" ,python-websockets)
+       ("python-wsproto" ,python-wsproto)))
+    (home-page "https://github.com/encode/uvicorn")
+    (synopsis "Fast ASGI server implementation")
+    (description
+     "@code{uvicorn} is a fast ASGI server implementation, using @code{uvloop}
+and @code{httptools}.  It currently supports HTTP/1.1 and WebSockets.  Support
+for HTTP/2 is planned.")
+    (license license:bsd-3)))
 
 (define-public python-translation-finder
   (package
@@ -4145,6 +4306,168 @@ and serve updated contents upon changes to the directory.")
     (description "@code{VF-1} is a command line gopher client with
 @acronym{TLS, Transport Layer Security} support.")
     (license license:bsd-2)))
+
+(define-public python-httpcore
+  (package
+    (name "python-httpcore")
+    (version "0.10.2")
+    (source
+     (origin
+       ;; PyPI tarball does not contain tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/encode/httpcore")
+             (commit  version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00gn8nfv814rg6fj7xv97mrra3fvx6fzjcgx9y051ihm6hxljdsi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-unavailable-tests
+           (lambda _
+             ;; These tests require 'mitmproxy' which is not packaged.
+             (for-each (lambda (f)
+                         (delete-file f))
+                       '("tests/conftest.py"
+                         "tests/sync_tests/test_interfaces.py"
+                         "tests/async_tests/test_interfaces.py"))
+             #t))
+         (add-after 'remove-unavailable-tests 'force-h11-version
+           ;; Allow build with h11 >= 0.10.
+           (lambda _
+             (substitute* "setup.py" (("h11>=0.8,<0.10") "h11"))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "--cov=httpcore"
+                     "--cov=tests" "tests"))))))
+    (native-inputs
+     `(;; ("mitmproxy" ,mitmproxy) ;; TODO: Package this.
+       ("python-autoflake" ,python-autoflake)
+       ("python-flake8" ,python-flake8)
+       ("python-flake8-bugbear" ,python-flake8-bugbear)
+       ("python-flake8-pie" ,python-flake8-pie)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-trio" ,python-pytest-trio)
+       ("python-uvicorn" ,python-uvicorn)
+       ("python-trustme" ,python-trustme)))
+    (propagated-inputs
+     `(("python-h11" ,python-h11)
+       ("python-h2" ,python-h2)
+       ("python-sniffio" ,python-sniffio)
+       ("python-trio" ,python-trio)
+       ("python-trio-typing" ,python-trio-typing)))
+    (home-page "https://github.com/encode/httpcore")
+    (synopsis "Minimal, low-level HTTP client")
+    (description
+     "HTTP Core provides a minimal and low-level HTTP client, which does one
+thing only: send HTTP requests.
+
+Some things HTTP Core does do:
+
+@itemize
+@item Sending HTTP requests.
+@item Provides both sync and async interfaces.
+@item Supports HTTP/1.1 and HTTP/2.
+@item Async backend support for asyncio and trio.
+@item Automatic connection pooling.
+@item HTTP(S) proxy support.
+@end itemize")
+    (license license:bsd-3)))
+
+(define-public python-httpx
+  (package
+    (name "python-httpx")
+    (version "0.14.3")
+    (source
+     (origin
+       ;; PyPI tarball does not contain tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/encode/httpx")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mn8gqkgaij3s2pbwgrih20iq34f3f82dfvypaw3nnh7n63vna43"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv" "-k"
+                     ;; This test tries to open an outgoing connection.
+                     "not test_connect_timeout[asyncio]"))))))
+    (native-inputs
+     `(("python-autoflake" ,python-autoflake)
+       ("python-black" ,python-black)
+       ("python-cryptography" ,python-cryptography)
+       ("python-flake8" ,python-flake8)
+       ("python-flake8-bugbear" ,python-flake8-bugbear)
+       ("python-flake8-pie" ,python-flake8-pie)
+       ("python-isort" ,python-isort)
+       ("python-mypy" ,python-mypy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-asyncio" ,python-pytest-asyncio)
+       ("python-pytest-trio" ,python-pytest-trio)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-trio" ,python-trio)
+       ("python-trio-typing" ,python-trio-typing)
+       ("python-trustme" ,python-trustme)
+       ("python-uvicorn" ,python-uvicorn)))
+    (propagated-inputs
+     `(("python-brotli" ,python-brotli)
+       ("python-certifi" ,python-certifi)
+       ("python-chardet" ,python-chardet)
+       ("python-httpcore" ,python-httpcore)
+       ("python-idna" ,python-idna)
+       ("python-rfc3986" ,python-rfc3986)
+       ("python-sniffio" ,python-sniffio)))
+    (home-page "https://github.com/encode/httpx")
+    (synopsis "HTTP client for Python")
+    (description
+     "HTTPX is a fully featured HTTP client for Python 3, which provides sync
+and async APIs, and support for both HTTP/1.1 and HTTP/2.
+
+HTTPX builds on the well-established usability of requests, and gives you:
+
+@itemize
+@item A broadly requests-compatible API.
+@item Standard synchronous interface, but with async support if you need it.
+@item HTTP/1.1 and HTTP/2 support.
+@item Ability to make requests directly to WSGI applications or ASGI applications.
+@item Strict timeouts everywhere.
+@item Fully type annotated.
+@item 99% test coverage.
+@end itemize
+
+Plus all the standard features of requests:
+
+@itemize
+@item International Domains and URLs
+@item Keep-Alive & Connection Pooling
+@item Sessions with Cookie Persistence
+@item Browser-style SSL Verification
+@item Basic/Digest Authentication
+@item Elegant Key/Value Cookies
+@item Automatic Decompression
+@item Automatic Content Decoding
+@item Unicode Response Bodies
+@item Multipart File Uploads
+@item HTTP(S) Proxy Support
+@item Connection Timeouts
+@item Streaming Downloads
+@item .netrc Support
+@item Chunked Requests
+@end itemize")
+    (license license:bsd-3)))
 
 (define-public python-websockets
   (package
@@ -4651,4 +4974,40 @@ using a pure Python implementation.")
     (description
      "This package provices a simple implementation of Encrypted Content
 Encoding for HTTP.")
+    (license license:expat)))
+
+(define-public python-cloudscraper
+  (package
+    (name "python-cloudscraper")
+    (version "1.2.46")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cloudscraper" version))
+       (sha256
+        (base32
+         "1br4p648yassywsd7whz1c7s10rwdysnd7wdqfjq9bksqfxrac3r"))
+       (modules '((guix build utils)))
+       (snippet
+        '(with-directory-excursion "cloudscraper"
+           (for-each delete-file
+                     '("captcha/2captcha.py"
+                       "captcha/9kw.py"
+                       "captcha/anticaptcha.py"
+                       "captcha/deathbycaptcha.py"
+                       "interpreters/js2py.py"
+                       "interpreters/v8.py"))
+           #t))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-requests-toolbelt" ,python-requests-toolbelt-0.9.1)
+       ("python-pyparsing" ,python-pyparsing-2.4.7)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/venomous/cloudscraper")
+    (synopsis "Cloudflare anti-bot bypass")
+    (description
+     "This module acts as a webbrowser solving Cloudflare's Javascript
+challenges.")
     (license license:expat)))

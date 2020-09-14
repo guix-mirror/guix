@@ -80,12 +80,9 @@ namespace nix {
 using std::map;
 
 
-static string pathNullDevice = "/dev/null";
-
-
 /* Forward definition. */
 class Worker;
-struct HookInstance;
+struct Agent;
 
 
 /* A pointer to a goal. */
@@ -265,7 +262,7 @@ public:
 
     LocalStore & store;
 
-    std::shared_ptr<HookInstance> hook;
+    std::shared_ptr<Agent> hook;
 
     Worker(LocalStore & store);
     ~Worker();
@@ -396,33 +393,6 @@ void Goal::trace(const format & f)
 
 //////////////////////////////////////////////////////////////////////
 
-
-/* Common initialisation performed in child processes. */
-static void commonChildInit(Pipe & logPipe)
-{
-    /* Put the child in a separate session (and thus a separate
-       process group) so that it has no controlling terminal (meaning
-       that e.g. ssh cannot open /dev/tty) and it doesn't receive
-       terminal signals. */
-    if (setsid() == -1)
-        throw SysError(format("creating a new session"));
-
-    /* Dup the write side of the logger pipe into stderr. */
-    if (dup2(logPipe.writeSide, STDERR_FILENO) == -1)
-        throw SysError("cannot pipe standard error into log file");
-
-    /* Dup stderr to stdout. */
-    if (dup2(STDERR_FILENO, STDOUT_FILENO) == -1)
-        throw SysError("cannot dup stderr into stdout");
-
-    /* Reroute stdin to /dev/null. */
-    int fdDevNull = open(pathNullDevice.c_str(), O_RDWR);
-    if (fdDevNull == -1)
-        throw SysError(format("cannot open `%1%'") % pathNullDevice);
-    if (dup2(fdDevNull, STDIN_FILENO) == -1)
-        throw SysError("cannot dup null device into stdin");
-    close(fdDevNull);
-}
 
 /* Restore default handling of SIGPIPE, otherwise some programs will
    randomly say "Broken pipe". */
@@ -586,87 +556,6 @@ void UserLock::kill()
     killUser(uid);
 }
 
-
-//////////////////////////////////////////////////////////////////////
-
-
-struct HookInstance
-{
-    /* Pipes for talking to the build hook. */
-    Pipe toHook;
-
-    /* Pipe for the hook's standard output/error. */
-    Pipe fromHook;
-
-    /* Pipe for the builder's standard output/error. */
-    Pipe builderOut;
-
-    /* The process ID of the hook. */
-    Pid pid;
-
-    HookInstance();
-
-    ~HookInstance();
-};
-
-
-HookInstance::HookInstance()
-{
-    debug("starting build hook");
-
-    const Path &buildHook = settings.guixProgram;
-
-    /* Create a pipe to get the output of the child. */
-    fromHook.create();
-
-    /* Create the communication pipes. */
-    toHook.create();
-
-    /* Create a pipe to get the output of the builder. */
-    builderOut.create();
-
-    /* Fork the hook. */
-    pid = startProcess([&]() {
-
-        commonChildInit(fromHook);
-
-        if (chdir("/") == -1) throw SysError("changing into `/");
-
-        /* Dup the communication pipes. */
-        if (dup2(toHook.readSide, STDIN_FILENO) == -1)
-            throw SysError("dupping to-hook read side");
-
-        /* Use fd 4 for the builder's stdout/stderr. */
-        if (dup2(builderOut.writeSide, 4) == -1)
-            throw SysError("dupping builder's stdout/stderr");
-
-        execl(buildHook.c_str(), buildHook.c_str(), "offload",
-	    settings.thisSystem.c_str(),
-            (format("%1%") % settings.maxSilentTime).str().c_str(),
-            (format("%1%") % settings.printBuildTrace).str().c_str(),
-            (format("%1%") % settings.buildTimeout).str().c_str(),
-            NULL);
-
-        throw SysError(format("executing `%1% offload'") % buildHook);
-    });
-
-    pid.setSeparatePG(true);
-    fromHook.writeSide.close();
-    toHook.readSide.close();
-}
-
-
-HookInstance::~HookInstance()
-{
-    try {
-        toHook.writeSide.close();
-        pid.kill(true);
-    } catch (...) {
-        ignoreException();
-    }
-}
-
-
 //////////////////////////////////////////////////////////////////////
 
 
@@ -760,7 +649,7 @@ private:
     Pipe builderOut;
 
     /* The build hook. */
-    std::shared_ptr<HookInstance> hook;
+    std::shared_ptr<Agent> hook;
 
     /* Whether we're currently doing a chroot build. */
     bool useChroot;
@@ -1440,7 +1329,7 @@ void DerivationGoal::buildDone()
     /* Close the read side of the logger pipe. */
     if (hook) {
         hook->builderOut.readSide.close();
-        hook->fromHook.readSide.close();
+        hook->fromAgent.readSide.close();
     }
     else builderOut.readSide.close();
 
@@ -1587,8 +1476,17 @@ HookReply DerivationGoal::tryBuildHook()
 {
     if (!settings.useBuildHook) return rpDecline;
 
-    if (!worker.hook)
-        worker.hook = std::shared_ptr<HookInstance>(new HookInstance);
+    if (!worker.hook) {
+	Strings args = {
+	    "offload",
+	    settings.thisSystem.c_str(),
+            (format("%1%") % settings.maxSilentTime).str().c_str(),
+            (format("%1%") % settings.printBuildTrace).str().c_str(),
+            (format("%1%") % settings.buildTimeout).str().c_str()
+	};
+
+        worker.hook = std::make_shared<Agent>(settings.guixProgram, args);
+    }
 
     /* Tell the hook about system features (beyond the system type)
        required from the build machine.  (The hook could parse the
@@ -1597,7 +1495,7 @@ HookReply DerivationGoal::tryBuildHook()
     foreach (Strings::iterator, i, features) checkStoreName(*i); /* !!! abuse */
 
     /* Send the request to the hook. */
-    writeLine(worker.hook->toHook.writeSide, (format("%1% %2% %3% %4%")
+    writeLine(worker.hook->toAgent.writeSide, (format("%1% %2% %3% %4%")
         % (worker.getNrLocalBuilds() < settings.maxBuildJobs ? "1" : "0")
         % drv.platform % drvPath % concatStringsSep(",", features)).str());
 
@@ -1605,7 +1503,7 @@ HookReply DerivationGoal::tryBuildHook()
        whether the hook wishes to perform the build. */
     string reply;
     while (true) {
-        string s = readLine(worker.hook->fromHook.readSide);
+        string s = readLine(worker.hook->fromAgent.readSide);
         if (string(s, 0, 2) == "# ") {
             reply = string(s, 2);
             break;
@@ -1637,21 +1535,21 @@ HookReply DerivationGoal::tryBuildHook()
 
     string s;
     foreach (PathSet::iterator, i, allInputs) { s += *i; s += ' '; }
-    writeLine(hook->toHook.writeSide, s);
+    writeLine(hook->toAgent.writeSide, s);
 
     /* Tell the hooks the missing outputs that have to be copied back
        from the remote system. */
     s = "";
     foreach (PathSet::iterator, i, missingPaths) { s += *i; s += ' '; }
-    writeLine(hook->toHook.writeSide, s);
+    writeLine(hook->toAgent.writeSide, s);
 
-    hook->toHook.writeSide.close();
+    hook->toAgent.writeSide.close();
 
     /* Create the log file and pipe. */
     Path logFile = openLogFile();
 
     set<int> fds;
-    fds.insert(hook->fromHook.readSide);
+    fds.insert(hook->fromAgent.readSide);
     fds.insert(hook->builderOut.readSide);
     worker.childStarted(shared_from_this(), hook->pid, fds, false, true);
 
@@ -2785,7 +2683,7 @@ void DerivationGoal::handleChildOutput(int fd, const string & data)
             writeFull(fdLogFile, data);
     }
 
-    if (hook && fd == hook->fromHook.readSide)
+    if (hook && fd == hook->fromAgent.readSide)
         writeToStderr(prefix + data);
 }
 

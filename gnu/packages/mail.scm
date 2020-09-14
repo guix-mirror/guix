@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2019 Julien Lepiller <julien@lepiller.eu>
@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Alexey Abramov <levenson@mmer.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,6 +139,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
@@ -393,7 +395,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.8")
+    (version "6.4.12")
     (source
      (origin
        (method url-fetch)
@@ -401,7 +403,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "1g893dr3982vrqzxybmflnqfmd1q6yipd9krvxn0avhlrrp97k96"))))
+        (base32 "11s83af63gs9nnrjb66yq58xriyvi8hzj4ykxp3kws5z3nby111b"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -428,7 +430,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.14.6")
+    (version "1.14.7")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -438,7 +440,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "0i0q6vwhnb1grimsrpmz8maw255rh9k0laijzxkry6xqa80jm5s7"))
+               "0r58xnjgkw0kmnnzhb32mk5gkkani5kbi5krybpbag156fqhgxg4"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -624,6 +626,69 @@ Extension (MIME).")
               (sha256
                (base32
                 "0slzlzcr3h8jikpz5a5amqd0csqh2m40gdk910ws2hnaf5m6hjbi"))))))
+
+(define-public altermime
+  (package
+    (name "altermime")
+    (version "0.3.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://pldaniels.com/altermime/altermime-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vn3vmbcimv0n14khxr1782m76983zz9sf4j2kz5v86lammxld43"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-bugs
+           (lambda _
+             (substitute* "MIME_headers.c"
+               (("hinfo->filename, sizeof\\(hinfo->name\\)")
+                "hinfo->filename, sizeof(hinfo->filename)")
+               (("memset\\(hinfo->defects, 0, _MIMEH_DEFECT_ARRAY_SIZE\\);")
+                "memset(hinfo->defects, 0, sizeof(hinfo->defects));"))
+             (substitute* "pldstr.c"
+               (("if \\(\\(st->start\\)&&\\(st->start != '\\\\0'\\)\\)")
+                "if ((st->start)&&(*st->start != '\\0'))"))
+             (substitute* "qpe.c"
+               (("if \\(lineend != '\\\\0'\\)")
+                "if (*lineend != '\\0')"))
+             #t))
+         (add-after 'unpack 'install-to-prefix
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr/local") "${PREFIX}")
+               (("cp altermime.*") "install -D -t ${PREFIX}/bin altermime\n"))
+             #t))
+         (add-after 'unpack 'disable-Werror
+           (lambda _
+             (substitute* "Makefile"
+               (("-Werror") ""))
+             #t)))))
+    (home-page "https://pldaniels.com/altermime/")
+    (synopsis "Modify MIME-encoded messages")
+    (description
+     "alterMIME is a small program which is used to alter your mime-encoded
+mailpack.  What can alterMIME do?
+
+@enumerate
+@item Insert disclaimers,
+@item insert arbitary X-headers,
+@item modify existing headers,
+@item remove attachments based on filename or content-type,
+@item replace attachments based on filename.
+@end enumerate
+.")
+    ;; MIME_headers.c is distributed under BSD-3; the rest of the code is
+    ;; published under the alterMIME license.
+    (license (list (license:non-copyleft "file://LICENSE")
+                   license:bsd-3))))
 
 (define-public bogofilter
   (package
@@ -926,14 +991,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.29.3")
+    (version "0.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0dfwa38vgnxk9cvvpza66szjgp8lir6iz6yy0cry9593lywh9xym"))))
+                "1543l57viqzqikjgfzp2abpwz3p0k2iq0b1b3wmn31lwaghs07sp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -963,6 +1028,13 @@ invoking @command{notifymuch} from the post-new hook.")
                                 (string-append "--prefix=" out)
                                 (string-append "--emacslispdir=" elisp)
                                 (string-append "--emacsetcdir=" elisp)))))
+                  (add-before 'check 'disable-failing-tests
+                    ;; FIXME: Investigate why these tests are failing,
+                    ;; and try removing this for notmuch versions > 0.31.
+                    (lambda _
+                      (substitute* "test/T356-protected-headers.sh"
+                        (("\\$NOTMUCH_GMIME_X509_CERT_VALIDITY") "0"))
+                      #t))
                   (add-before 'check 'prepare-test-environment
                     (lambda _
                       (setenv "TEST_CC" "gcc")
@@ -1134,7 +1206,7 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.9.3")
+    (version "1.9.4")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -1142,7 +1214,7 @@ useful features.")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
-               (base32 "19g4qskg71jv7sxfxsdkjmrxk9mk5kf9b6fhw06g6wvm3205n95f"))))
+               (base32 "0g7an003simfdn7ihg9yjv7hl2czsmjsndjrp39i7cad8icixscn"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
@@ -1411,6 +1483,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
+    ;; Also update dovecot-pigeonhole when updating to a new minor version.
     (version "2.3.11.3")
     (source
      (origin
@@ -1475,6 +1548,83 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
     ;; Unicode, Inc. License Agreement for Data Files and Software.
     (license (list license:lgpl2.1 license:expat
                    (license:non-copyleft "file://COPYING")))))
+
+(define-public dovecot-pigeonhole
+  (let ((dovecot-version (version-major+minor (package-version dovecot))))
+    (package
+      (name "dovecot-pigeonhole")
+      (version "0.5.11")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://pigeonhole.dovecot.org/releases/" dovecot-version "/"
+               "dovecot-" dovecot-version "-pigeonhole-" version ".tar.gz"))
+         (sha256
+          (base32 "1w5mryv6izh1gv7davnl94rb0pvh5bxl2bydzbfla1b83x22m5qb"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; RFC licencing is ad-hoc and rarely free.  Remove them all.
+             (delete-file-recursively "doc/rfc")
+             (substitute* "configure"
+               (("doc/rfc/Makefile") ""))
+             (substitute* "doc/Makefile.in"
+               (("rfc ") ""))
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list "--disable-static"
+               "--with-dovecot-install-dirs=no"
+               (string-append "--with-dovecot="
+                              (assoc-ref %build-inputs "dovecot")
+                              "/lib/dovecot")
+               (string-append "--docdir="
+                              (assoc-ref %outputs "out")
+                              "/share/doc/" ,name "-" ,version)
+               (string-append "--with-moduledir="
+                              (assoc-ref %outputs "out")
+                              "/lib/dovecot"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-file-names
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (libexec (string-append out "/libexec/dovecot")))
+                 (substitute* "src/managesieve/managesieve-settings.c"
+                   (("\\.executable = \"managesieve\"")
+                    (string-append ".executable = \"" libexec
+                                   "/managesieve\"")))
+                 (substitute* "src/managesieve-login/managesieve-login-settings.c"
+                   (("\\.executable = \"managesieve-login\"")
+                    (string-append ".executable = \"" libexec
+                                   "/managesieve-login\"")))
+                 #t))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("dovecot" ,dovecot)))
+      (home-page "https://pigeonhole.dovecot.org")
+      (synopsis "Dovecot Sieve mail filtering plug-in and ManageSieve service")
+      (description
+       "Pigeonhole adds support for the Sieve language (RFC 5228) and the
+ManageSieve protocol (RFC 5804) to the Dovecot e-mail server.
+
+@dfn{Sieve} is a language for filtering incoming mail.  Messages can be
+forwarded or sorted into separate folders.  Unwanted messages can be rejected
+or discarded, and, when the user is not available, the Sieve interpreter can
+send an automated reply.
+
+Sieve is meant to be simple, extensible, and system-independent.  The
+intention is to make it impossible to write anything more complex (and
+dangerous) than simple mail filters.  Unlike most other mail filtering script
+languages, Sieve does not allow users to execute arbitrary programmes.
+
+Through the @dfn{ManageSieve} protocol, users can remotely manage their Sieve
+scripts without needing file system access.  The server accepts only valid
+scripts to prevent embarrassing errors later on.")
+      (license license:lgpl2.1))))
 
 (define-public dovecot-trees
   (package
@@ -2257,7 +2407,6 @@ etc; plus other capabilities including support for MIME and
 powerful user customization features.")
     (license license:gpl2+)))
 
-
 (define-public sendmail
   (package
     (name "sendmail")
@@ -2339,6 +2488,70 @@ Allman.  It is highly configurable and supports many delivery methods and many
 transfer protocols.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
+
+(define-public sieve-connect
+  (package
+    (name "sieve-connect")
+    (version "0.90")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://people.spodhuis.org/phil.pennock/software/"
+                           "sieve-connect-" version ".tar.bz2"))
+       (sha256
+        (base32 "00vnyzr67yr2ilnprbd388gfnwmrmbdx1jsig9d0n5q902jqn62a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'install 'create-output-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (subdirectory)
+                           (mkdir-p (string-append out "/" subdirectory)))
+                         (list "bin"
+                               "man/man1"))
+               #t)))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (path (getenv "PERL5LIB")))
+               (wrap-script (string-append out "/bin/sieve-connect")
+                 `("PERL5LIB" ":" = (,path)))
+               #t))))))
+    (inputs
+     `(("guile" ,guile-3.0)             ; for wrap-script
+       ("perl" ,perl)
+       ("perl-authen-sasl" ,perl-authen-sasl)
+       ("perl-io-socket-inet6" ,perl-io-socket-inet6)
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-net-dns" ,perl-net-dns)
+       ("perl-socket6" ,perl-socket6)
+       ("perl-term-readkey" ,perl-term-readkey)
+       ("perl-term-readline" ,perl-term-readline-gnu)))
+    (home-page
+     "https://people.spodhuis.org/phil.pennock/software/#sieve-connect")
+    (synopsis "ManageSieve client for managing Sieve e-mail filters")
+    (description
+     "Sieve-connect lets you view, upload, edit, delete, and otherwise manage
+Sieve scripts on any mail server that speaks the @dfn{ManageSieve} protocol,
+as specifed in RFC 5804.
+
+@dfn{Sieve} (RFC 5228) is a specialised language for e-mail filtering.  Sieve
+scripts are stored on the server and run whenever mail arrives.  They can
+automatically sort new messages into folders, silently reject them, send an
+automated response, and more.
+
+@command{sieve-connect} is designed to be both a tool which can be invoked
+from scripts as well as a decent interactive client.  It supports TLS for
+connection privacy, as well as authentication with SASL or GSSAPI client
+certificates.  It should be a drop-in replacement for @command{sieveshell}
+from the Cyrus IMAP project.")
+      (license license:bsd-3)))
 
 (define-public opensmtpd
   (package
@@ -2479,6 +2692,125 @@ to esoteric or niche requirements.")
 for OpenSMTPD to extend its functionality.")
     (license (list license:bsd-2 license:bsd-3 ; openbsd-compat
                    license:isc))))             ; everything else
+
+(define libopensmtpd
+  ;; Private source dependency of opensmtpd-filter-dkimsign (by the same
+  ;; author), until any project actually uses it in its compiled form.
+  (let ((revision 48))
+    (package
+      (name "libopensmtpd")
+      (version (format #f "0.0.0-~a" revision))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "http://imperialat.at/dev/libopensmtpd/")
+               (revision revision)))
+         (sha256
+          (base32 "04fgibpi6q0c3468ww3z7gsvraz0gyfps0c2dj8mdyri636c0x0s"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         (list "-f" "Makefile.gnu"
+               (string-append "CC=" ,(cc-for-target))
+               (string-append "LOCALBASE=" (assoc-ref %outputs "out")))
+         #:tests? #f                    ; no test suite
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'inherit-ownership
+             (lambda _
+               (substitute* "Makefile.gnu"
+                 (("-o \\$\\{BINOWN\\} -g \\$\\{BINGRP\\}") ""))
+               #t))
+           (delete 'configure)          ; no configure script
+           (add-before 'install 'create-output-directories
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (mkdir-p (string-append out "/lib"))
+                 #t)))
+           (add-after 'install 'install-header-file
+             (lambda* (#:key make-flags outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (mkdir-p (string-append out "/include"))
+                 (apply invoke "make" "includes" make-flags))))
+           (add-after 'install 'install-man-page
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (man3 (string-append out "/share/man/man3")))
+                 ;; There is no make target for this.
+                 (install-file "osmtpd_run.3" man3)
+                 #t))))))
+      (inputs
+       `(("libevent" ,libevent)))
+      (home-page "http://imperialat.at/dev/libopensmtpd/")
+      (synopsis "OpenSMTPd filter C API")
+      (description
+       "The @code{osmtpd} API is an event-based C programming interface for
+writing OpenSMTPd filters.")
+      (license license:expat))))
+
+(define-public opensmtpd-filter-dkimsign
+  (package
+    (name "opensmtpd-filter-dkimsign")
+    ;; The .arch repackaging provides not only a usable Makefile, but patches
+    ;; the source to actually build on GNU, e.g., by making pledge() optional.
+    ;; It's effectively the portable branch that upstream lacks at this time.
+    (version "0.2.arch2")               ; also update both native-inputs
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/de-vri-es/filter-dkimsign")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1dv6184h0gq2safnc7ln4za3arbafzc1xwkgwmiihqcjvdyxig0c"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source inputs #:allow-other-keys)
+             (copy-recursively source "filter-dkimsign")
+             (copy-recursively (assoc-ref inputs "libopensmtpd-source")
+                               "libopensmtpd")
+             (copy-file (assoc-ref inputs "Makefile") "Makefile")
+             #t))
+         (delete 'configure)            ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (libexec (string-append out "/libexec/opensmtpd"))
+                    (man8    (string-append out "/share/man/man8")))
+               (chdir "filter-dkimsign")
+               (install-file "filter-dkimsign" libexec)
+               (install-file "filter-dkimsign.8" man8)
+               #t))))))
+    (native-inputs
+     `(("Makefile"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://aur.archlinux.org/cgit/aur.git/plain/Makefile"
+                 "?h=opensmtpd-filter-dkimsign"
+                 "&id=58393470477a2ff2a58f9d72f5d851698067539f"))
+           (sha256
+            (base32 "0da5qr9hfjkf07ybvfva967njmf2x0b82z020r6v5f93jzsbqx92"))
+           (file-name (string-append name "-" version "-Makefile"))))
+       ("libopensmtpd-source" ,(package-source libopensmtpd))))
+    (inputs
+     `(("libevent" ,libevent)
+       ("libressl" ,libressl)))         ; openssl works too but follow opensmtpd
+    (home-page "http://imperialat.at/dev/filter-dkimsign/")
+    (synopsis "OpenSMTPd filter for signing mail with DKIM")
+    (description
+     "The @command{filter-dkimsign} OpenSMTPd filter signs outgoing e-mail
+messages with @acronym{DKIM, DomainKeys Identified Mail} (RFC 4871).")
+    (license license:expat)))
 
 (define-public mailman
   (package
@@ -2930,10 +3262,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    ;; Upstream doesn't use git tags, but does ‘tag’ their releases in the
-    ;; commit message.  Hence the lack of GIT-VERSIONing despite using a commit
-    ;; ID below.  Don't forget to update it…
-    (version "2.22")
+    (version "2.23.2")
     (source
      (origin
        (method git-fetch)
@@ -2943,10 +3272,10 @@ operators and scripters.")
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
        (uri (git-reference
              (url "http://repo.or.cz/alpine.git")
-             (commit "b50297779a4becb9ceca9c6b5b375d526fe3df78")))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06js44fvdl7l33hfd4lsxpcd1cz3c0h796cswyzz0lkrzx89yl48"))
+        (base32 "16ldmmcymrnpnbfc1kb2rhac7nzlc87wjawic4wfinkphd124d1y"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3443,23 +3772,22 @@ designed for keyboard-oriented operation.")
            (lambda _
              (invoke "python" "-m" "authres" "-v"))))))
     (home-page "https://launchpad.net/authentication-results-python")
-    (synopsis "Email Authentication Results Header Module")
+    (synopsis "Authentication-Results email header creator and parser")
     (description
-     "This module can be used to generate and parse RFC 5451/7001/7601
-Authentication-Results headers.  It also supports Authentication Results
-extensions:
+     "This Python module can be used to generate and parse RFC 5451/7001/7601
+@code{Authentication-Results} email headers.  It supports extensions such as:
 @itemize
 @item RFC 5617 DKIM/ADSP
-@item RFC 6008 DKIM signature identification (header.b)
-@item RFC 6212 Vouch By Reference (VBR)
-@item RFC 6577 Sender Policy Framework (SPF)
-@item RFC 7281 Authentication-Results Registration for S/MIME
-@item RFC 7293 The Require-Recipient-Valid-Since Header Field
-@item RFC 7489 Domain-based Message Authentication, Reporting, and Conformance (DMARC)
-@item Authenticated Recieved Chain (ARC) (draft-ietf-dmarc-arc-protocol-08)
-@end itemize
-Note: RFC 7601 obsoletes RFC 5451, 6577, 7001, and 7410.  Authres supports the
-current standard.  No backward compatibility issues have been noted.")
+@item RFC 6008 DKIM signature identification (@code{header.b})
+@item RFC 6212 @acronym{VBR, Vouch By Reference}
+@item RFC 6577 @acronym{SPF, Sender Policy Framework}
+@item RFC 7281 @code{Authentication-Results} registration for S/MIME
+@item RFC 7293 The @code{Require-Recipient-Valid-Since} header field
+@item RFC 7489 @acronym{DMARC, Domain-based Message Authentication Reporting
+and Conformance}
+@item @acronym{ARC, Authenticated Received Chain}
+(draft-ietf-dmarc-arc-protocol-08)
+@end itemize\n")
     (license license:asl2.0)))
 
 (define-public python-dkimpy

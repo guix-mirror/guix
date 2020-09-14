@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,15 +76,15 @@ in downloaded documents to relative links.")
 (define-public wgetpaste
   (package
     (name "wgetpaste")
-    (version "2.29")
+    (version "2.30")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://wgetpaste.zlin.dk/wgetpaste-"
+        (uri (string-append "https://wgetpaste.zlin.dk/wgetpaste-"
                             version ".tar.bz2"))
         (sha256
-         (base32
-          "1rp0wxr3zy7y2xp3azaadfghrx7g0m138f9qg6icjxkkz4vj9r22"))))
+         (base32 "14k5i6j6f34hcf9gdb9cnvfwscn0ys2dgd73ci421wj9zzqkbv73"))
+        (patches (search-patches "wgetpaste-update-bpaste.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -94,12 +94,12 @@ in downloaded documents to relative links.")
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
-         (add-after 'unpack 'remove-dead-paste-site
-           ;; This phase is adaped from the following patch:
-           ;; https://gitweb.gentoo.org/repo/gentoo.git/tree/app-text/wgetpaste/files/wgetpaste-remove-dead.patch
+         (add-after 'unpack 'change-unfriendly-default
            (lambda _
              (substitute* "wgetpaste"
-               (("-bpaste") "-dpaste")) ; dpaste blocks tor users
+               ;; dpaste blocks Tor users.  Use a better default.
+               (("DEFAULT_SERVICE:-dpaste")
+                "DEFAULT_SERVICE-bpaste"))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -128,7 +128,7 @@ in downloaded documents to relative links.")
     (inputs
      `(("wget" ,wget)
        ("xclip" ,xclip)))
-    (home-page "http://wgetpaste.zlin.dk/")
+    (home-page "https://wgetpaste.zlin.dk/")
     (synopsis "Script that automates pasting to a number of pastebin services")
     (description
      "@code{wgetpaste} is an extremely simple command-line interface to various

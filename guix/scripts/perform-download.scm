@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +18,7 @@
 
 (define-module (guix scripts perform-download)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix derivations)
   #:use-module ((guix store) #:select (derivation-path? store-path?))
   #:use-module (guix build download)
@@ -91,14 +92,15 @@ actual output is different from that when we're doing a 'bmCheck' or
     (leave (G_ "refusing to run with elevated privileges (UID ~a)~%")
            (getuid))))
 
-(define (guix-perform-download . args)
-  "Perform the download described by the given fixed-output derivation.
+(define-command (guix-perform-download . args)
+  (category internal)
+  (synopsis "perform download described by fixed-output derivations")
 
-This is an \"out-of-band\" download in that this code is executed directly by
-the daemon and not explicitly described as an input of the derivation.  This
-allows us to sidestep bootstrapping problems, such downloading the source code
-of GnuTLS over HTTPS, before we have built GnuTLS.  See
-<http://bugs.gnu.org/22774>."
+  ;; This is an "out-of-band" download in that this code is executed directly
+  ;; by the daemon and not explicitly described as an input of the derivation.
+  ;; This allows us to sidestep bootstrapping problems, such as downloading
+  ;; the source code of GnuTLS over HTTPS before we have built GnuTLS.  See
+  ;; <https://bugs.gnu.org/22774>.
 
   (define print-build-trace?
     (match (getenv "_NIX_OPTIONS")

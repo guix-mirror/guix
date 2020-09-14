@@ -581,7 +581,9 @@ for more information.")))
     (description
      "This package provides wrappers for the commands of Python@tie{}3.x such
 that they can be invoked under their usual name---e.g., @command{python}
-instead of @command{python3}.")))
+instead of @command{python3} or @command{pip} instead of @command{pip3}.
+To function properly, this package should not be installed together with the
+@command{python} package.")))
 
 (define-public python-wrapper (wrap-python3 python))
 (define-public python-minimal-wrapper (wrap-python3 python-minimal))

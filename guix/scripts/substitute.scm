@@ -20,6 +20,7 @@
 
 (define-module (guix scripts substitute)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix combinators)
@@ -1095,8 +1096,10 @@ default value."
   (unless (string->uri uri)
     (leave (G_ "~a: invalid URI~%") uri)))
 
-(define (guix-substitute . args)
-  "Implement the build daemon's substituter protocol."
+(define-command (guix-substitute . args)
+  (category internal)
+  (synopsis "implement the build daemon's substituter protocol")
+
   (define print-build-trace?
     (match (or (find-daemon-option "untrusted-print-extended-build-trace")
                (find-daemon-option "print-extended-build-trace"))
@@ -1126,12 +1129,13 @@ default value."
   ;; Sanity-check SUBSTITUTE-URLS so we can provide a meaningful error message.
   (for-each validate-uri (substitute-urls))
 
-  ;; Attempt to install the client's locale, mostly so that messages are
-  ;; suitably translated.
+  ;; Attempt to install the client's locale so that messages are suitably
+  ;; translated.  LC_CTYPE must be a UTF-8 locale; it's the case by default so
+  ;; don't change it.
   (match (or (find-daemon-option "untrusted-locale")
              (find-daemon-option "locale"))
     (#f     #f)
-    (locale (false-if-exception (setlocale LC_ALL locale))))
+    (locale (false-if-exception (setlocale LC_MESSAGES locale))))
 
   (catch 'system-error
     (lambda ()

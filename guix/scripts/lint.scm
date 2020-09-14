@@ -157,7 +157,10 @@ run the checkers on all packages.\n"))
 ;;; Entry Point
 ;;;
 
-(define (guix-lint . args)
+(define-command (guix-lint . args)
+  (category packaging)
+  (synopsis "validate package definitions")
+
   (define (parse-options)
     ;; Return the alist of option values.
     (parse-command-line args %options (list %default-options)
