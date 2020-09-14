@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020 André Batista <nandre@riseup.net>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,7 +106,7 @@ library in Rust.")
         ("rust-cpp-demangle" ,rust-cpp-demangle-0.2)
         ("rust-gimli" ,rust-gimli-0.20)
         ("rust-smallvec" ,rust-smallvec-1)
-        ("rust-lazycell" ,rust-lazycell-1.2))
+        ("rust-lazycell" ,rust-lazycell-1))
        #:cargo-development-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-clap" ,rust-clap-2)
@@ -140,7 +141,7 @@ Rust, using gimli.")
         ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
         ("rust-gimli" ,rust-gimli-0.18)
         ("rust-intervaltree" ,rust-intervaltree-0.2)
-        ("rust-lazycell" ,rust-lazycell-1.2)
+        ("rust-lazycell" ,rust-lazycell-1)
         ("rust-object" ,rust-object-0.12)
         ("rust-rustc-demangle" ,rust-rustc-demangle-0.1)
         ("rust-smallvec" ,rust-smallvec-0.6))
@@ -1283,7 +1284,7 @@ that uses Serde for transforming structs into bytes and vice versa!")
         ("rust-clap" ,rust-clap-2)
         ("rust-env-logger" ,rust-env-logger-0.7)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-lazycell" ,rust-lazycell-1.2)
+        ("rust-lazycell" ,rust-lazycell-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-peeking-take-while" ,rust-peeking-take-while-0.1)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
@@ -1336,7 +1337,7 @@ that uses Serde for transforming structs into bytes and vice versa!")
         ("rust-clap" ,rust-clap-2)
         ("rust-env-logger" ,rust-env-logger-0.7)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-lazycell" ,rust-lazycell-1.2)
+        ("rust-lazycell" ,rust-lazycell-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-peeking-take-while" ,rust-peeking-take-while-0.1)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
@@ -1386,7 +1387,7 @@ that uses Serde for transforming structs into bytes and vice versa!")
         ("rust-quote" ,rust-quote-1)
         ("rust-rustc-hash" ,rust-rustc-hash-1.1)
         ("rust-bitflags" ,rust-bitflags-1)
-        ("rust-lazycell" ,rust-lazycell-1.2)
+        ("rust-lazycell" ,rust-lazycell-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-clap" ,rust-clap-2)
@@ -2532,7 +2533,7 @@ exposed as Reader/Writer streams.")
         ("rust-mio-extras" ,rust-mio-extras-2)
         ("rust-nix" ,rust-nix-0.14))
        #:cargo-development-inputs
-       (("rust-lazycell" ,rust-lazycell-1.2))))
+       (("rust-lazycell" ,rust-lazycell-1))))
     (home-page "https://github.com/Smithay/calloop")
     (synopsis "Callback-based event loop")
     (description
@@ -11319,7 +11320,7 @@ requires non-const function calls to be computed.")
          "05vl1h4b0iv800grsdyc3fg2bq29p70wjav6zpjvxxd5i8d6s66g"))))
     (arguments '())))
 
-(define-public rust-lazycell-1.2
+(define-public rust-lazycell-1
   (package
     (name "rust-lazycell")
     (version "1.2.1")
@@ -13154,7 +13155,7 @@ drop-in replacement for miniz.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-lazycell" ,rust-lazycell-1.2)
+       (("rust-lazycell" ,rust-lazycell-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-mio" ,rust-mio-0.6)
         ("rust-slab" ,rust-slab-0.4))))
@@ -23951,7 +23952,7 @@ cryptographic implementations.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-fnv" ,rust-fnv-1)
         ("rust-bitflags" ,rust-bitflags-1)
-        ("rust-lazycell" ,rust-lazycell-1.2)
+        ("rust-lazycell" ,rust-lazycell-1)
         ("rust-bincode" ,rust-bincode-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-walkdir" ,rust-walkdir-2)
