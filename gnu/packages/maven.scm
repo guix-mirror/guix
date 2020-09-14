@@ -3053,13 +3053,14 @@ components for supporting incremental build functionality in maven plugins.")
     (name "maven-compiler-plugin")
     (version "3.8.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/apache/"
-                                  "maven-compiler-plugin/archive/"
-                                  "maven-compiler-plugin-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/apache/maven-compiler-plugin")
+                     (commit (string-append "maven-compiler-plugin-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "018d9qwc4cd6k7a8kvhvxjmzbzd2ifdf7m36wqjfq42010js1mv1"))))
+                "0jkbq02vykd09ws8k9bzqxv6fjrpmir8gcxydbmj05kkhl242bma"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-compiler-plugin.jar"
