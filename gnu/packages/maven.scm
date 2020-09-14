@@ -3620,13 +3620,14 @@ reports in two different file formats, plain text and xml.")))
     (name "maven-jar-plugin")
     (version "3.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/apache/"
-                                  "maven-jar-plugin/archive/"
-                                  "maven-jar-plugin-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/apache/maven-jar-plugin")
+                     (commit (string-append "maven-jar-plugin-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "032042n3kfb4g5jf6khzxywn22xfy3jpx57lkq88xsv0lwx9np96"))))
+                "04y2rlmcabmc55ljqlkgbb5xx94a59cz1dvrnpfj1vzz024pqkyg"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-jar-plugin.jar"
