@@ -107,7 +107,7 @@
         ("rust-rusqlite" ,rust-rusqlite-0.19)
         ("rust-structopt" ,rust-structopt-0.3)
         ("rust-tempfile" ,rust-tempfile-3)
-        ("rust-thiserror" ,rust-thiserror-1.0)
+        ("rust-thiserror" ,rust-thiserror-1)
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-core" ,rust-tokio-core-0.1)
         ("rust-unicode-normalization" ,rust-unicode-normalization-0.1)

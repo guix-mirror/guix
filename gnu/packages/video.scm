@@ -4577,7 +4577,7 @@ result in several formats:
         ("rust-serde" ,rust-serde-1)
         ("rust-signal-hook" ,rust-signal-hook-0.1)
         ("rust-simd-helpers" ,rust-simd-helpers-0.1)
-        ("rust-thiserror" ,rust-thiserror-1.0)
+        ("rust-thiserror" ,rust-thiserror-1)
         ("rust-toml" ,rust-toml-0.5)
         ("rust-y4m" ,rust-y4m-0.5)
         ("rust-cc" ,rust-cc-1)

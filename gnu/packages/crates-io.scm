@@ -448,9 +448,9 @@ code that is generic with regard to the algebraic entity types.")
      `(#:skip-build? #t
        #:cargo-development-inputs
        (("rust-futures" ,rust-futures-0.3)
-        ("rust-thiserror" ,rust-thiserror-1.0)
         ("rust-trybuild" ,rust-trybuild-1.0))))
         ("rust-rustversion" ,rust-rustversion-1)
+        ("rust-thiserror" ,rust-thiserror-1)
     (home-page "https://github.com/dtolnay/anyhow")
     (synopsis "Flexible concrete Error type")
     (description "This package provides a flexible concrete Error type built on
@@ -13629,7 +13629,7 @@ types as proposed in RFC 1158.")
        (("rust-getrandom" ,rust-getrandom-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-nettle-sys" ,rust-nettle-sys-2)
-        ("rust-thiserror" ,rust-thiserror-1.0))
+        ("rust-thiserror" ,rust-thiserror-1))
        #:cargo-development-inputs
        (("rust-bindgen" ,rust-bindgen-0.51)
         ("rust-pkg-config" ,rust-pkg-config-0.3))
@@ -24761,7 +24761,7 @@ handle Unicode characters correctly.")
      "An owned slice that packs the slice storage into a single word when possible.")
     (license license:mpl2.0)))
 
-(define-public rust-thiserror-1.0
+(define-public rust-thiserror-1
   (package
     (name "rust-thiserror")
     (version "1.0.9")
@@ -28668,7 +28668,7 @@ formatters with per-field documentation generated for each structure.
         (("rust-anyhow" ,rust-anyhow-1.0)
          ("rust-either" ,rust-either-1.5)
          ("rust-serde" ,rust-serde-1)
-         ("rust-thiserror" ,rust-thiserror-1.0)
+         ("rust-thiserror" ,rust-thiserror-1)
          ("rust-xmltree" ,rust-xmltree-0.8))
         #:cargo-development-inputs
         (("rust-serde-json" ,rust-serde-json-1))))
