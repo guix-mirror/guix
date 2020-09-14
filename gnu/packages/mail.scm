@@ -690,6 +690,54 @@ mailpack.  What can alterMIME do?
     (license (list (license:non-copyleft "file://LICENSE")
                    license:bsd-3))))
 
+(define-public ripmime
+  ;; Upstream does not tag or otherwise provide any releases (only a version
+  ;; number in the source)
+  (let ((commit "a556ffe08d620602475c976732e8e1a82f3169e9")
+        (revision "1"))
+    (package
+      (name "ripmime")
+      (version (git-version "1.4.0.10" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/inflex/ripMIME")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1z8ar8flvkd9q3ax4x28sj5pyq8ykk5pq249y967lj2406lxparh"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; Source has no configure script
+           (delete 'configure)
+           ;; Buildcodes make the build non-reproducible; remove them
+           (add-after 'unpack 'strip-buildcodes
+             (lambda _
+               (substitute* "generate-buildcodes.sh"
+                 (("`date \\+%s`") "0")
+                 (("`date`") "0")
+                 (("`uname -a`") "Guix"))
+               #t))
+           ;; https://github.com/inflex/ripMIME/pull/16 makes 'mkdir-p-bin-man unnecessary
+           (add-before 'install 'mkdir-p-bin-man
+             (lambda _
+               (mkdir-p (string-append (assoc-ref %outputs "out") "/bin"))
+               (mkdir-p (string-append (assoc-ref %outputs "out") "/man"))
+               #t)))
+         ;; Makefile has no tests
+         #:tests? #f
+         #:make-flags (list (string-append "LOCATION=" (assoc-ref %outputs "out"))
+                            "CC=gcc")))
+      (synopsis "Extract attachments from MIME-encoded email")
+      (description
+       "ripMIME is a small program to extract the attached files out of a
+MIME-encoded email package.")
+      (home-page "https://github.com/inflex/ripMIME")
+      (license license:bsd-3))))
+
 (define-public bogofilter
   (package
     (name "bogofilter")
