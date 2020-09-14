@@ -5420,8 +5420,9 @@ device.
 @item --link-profile
 @itemx -P
 For containers, link the environment profile to @file{~/.guix-profile}
-within the container.  This is equivalent to running the command
-@samp{ln -s $GUIX_ENVIRONMENT ~/.guix-profile} within the container.
+within the container and set @code{GUIX_ENVIRONMENT} to that.
+This is equivalent to making @file{~/.guix-profile} a symlink to the
+actual profile within the container.
 Linking will fail and abort the environment if the directory already
 exists, which will certainly be the case if @command{guix environment}
 was invoked in the user's home directory.

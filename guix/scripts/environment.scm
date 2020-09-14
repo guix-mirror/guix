@@ -564,7 +564,11 @@ WHILE-LIST."
             (primitive-exit/status
              ;; A container's environment is already purified, so no need to
              ;; request it be purified again.
-             (launch-environment command profile manifest #:pure? #f)))
+             (launch-environment command
+                                 (if link-profile?
+                                     (string-append home-dir "/.guix-profile")
+                                     profile)
+                                 manifest #:pure? #f)))
           #:guest-uid uid
           #:guest-gid gid
           #:namespaces (if network?

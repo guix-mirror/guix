@@ -127,11 +127,15 @@ grep -e "$NIX_STORE_DIR/.*-bash" $tmpdir/mounts # bootstrap bash
 
 rm $tmpdir/mounts
 
-# Make sure 'GUIX_ENVIRONMENT' is linked to '~/.guix-profile' when requested
+# Make sure 'GUIX_ENVIRONMENT' is set to '~/.guix-profile' when requested
 # within a container.
 (
-  linktest='(exit (string=? (getenv "GUIX_ENVIRONMENT")
-(readlink (string-append (getenv "HOME") "/.guix-profile"))))'
+  linktest='
+(exit (and (string=? (getenv "GUIX_ENVIRONMENT")
+                     (string-append (getenv "HOME") "/.guix-profile"))
+           (string-prefix? "'"$NIX_STORE_DIR"'"
+                           (readlink (string-append (getenv "HOME")
+                                                    "/.guix-profile")))))'
 
   cd "$tmpdir" \
      && guix environment --bootstrap --container --link-profile \
