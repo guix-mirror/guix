@@ -448,9 +448,9 @@ code that is generic with regard to the algebraic entity types.")
      `(#:skip-build? #t
        #:cargo-development-inputs
        (("rust-futures" ,rust-futures-0.3)
-        ("rust-rustversion" ,rust-rustversion-1.0)
         ("rust-thiserror" ,rust-thiserror-1.0)
         ("rust-trybuild" ,rust-trybuild-1.0))))
+        ("rust-rustversion" ,rust-rustversion-1)
     (home-page "https://github.com/dtolnay/anyhow")
     (synopsis "Flexible concrete Error type")
     (description "This package provides a flexible concrete Error type built on
@@ -6632,7 +6632,7 @@ variables.")
         ("rust-proc-macro-error" ,rust-proc-macro-error-0.4)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-syn" ,rust-syn-1)
-        ("rust-rustversion" ,rust-rustversion-1.0)
+        ("rust-rustversion" ,rust-rustversion-1)
         ("rust-quote" ,rust-quote-1))
        #:cargo-development-inputs
        (("rust-skeptic" ,rust-skeptic-0.13))))
@@ -15775,8 +15775,8 @@ synchronization primitives.")
        (("rust-paste-impl" ,rust-paste-impl-0.1)
         ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))
        #:cargo-development-inputs
-       (("rust-rustversion" ,rust-rustversion-1.0)
         ("rust-trybuild" ,rust-trybuild-1.0))))
+       (("rust-rustversion" ,rust-rustversion-1)
     (home-page "https://github.com/dtolnay/paste")
     (synopsis "Macros for all your token pasting needs")
     (description
@@ -16631,7 +16631,7 @@ function data structures.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-rustversion" ,rust-rustversion-1.0)
+       (("rust-rustversion" ,rust-rustversion-1)
         ("rust-trybuild" ,rust-trybuild-1.0))))
     (home-page "https://github.com/taiki-e/pin-project-lite")
     (synopsis "Lightweight version of pin-project written with declarative
@@ -17194,7 +17194,7 @@ formatted tables in terminal.")
     (arguments
      `(#:cargo-development-inputs
        (("rust-quote" ,rust-quote-1)
-        ("rust-rustversion" ,rust-rustversion-1.0)
+        ("rust-rustversion" ,rust-rustversion-1)
         ("rust-syn" ,rust-syn-1)
         ("rust-trybuild" ,rust-trybuild-1.0)
         ("rust-demo-hack" ,rust-demo-hack-0.0)
@@ -17935,8 +17935,8 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1))
        #:cargo-development-inputs
-       (("rust-rustversion" ,rust-rustversion-1.0)
         ("rust-trybuild" ,rust-trybuild-1.0))))
+       (("rust-rustversion" ,rust-rustversion-1)
     (home-page "https://github.com/dtolnay/quote")
     (synopsis "Quasi-quoting macro quote!(...)")
     (description "Quasi-quoting macro quote!(...)")
@@ -18987,8 +18987,8 @@ functionality.")
      `(#:cargo-inputs
        (("rust-ref-cast-impl" ,rust-ref-cast-impl-1.0))
        #:cargo-development-inputs
-       (("rust-rustversion" ,rust-rustversion-1.0)
         ("rust-trybuild" ,rust-trybuild-1.0))))
+       (("rust-rustversion" ,rust-rustversion-1)
     (home-page "https://github.com/dtolnay/ref-cast")
     (synopsis "Safely cast &T to &U")
     (description
@@ -20512,7 +20512,7 @@ font rendering.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-unicode-normalization" ,rust-unicode-normalization-0.1))))))
 
-(define-public rust-rustversion-1.0
+(define-public rust-rustversion-1
   (package
     (name "rust-rustversion")
     (version "1.0.2")
@@ -21618,7 +21618,7 @@ for the serde framework.")
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (;("rust-automod" ,rust-automod-0.1)
-        ("rust-rustversion" ,rust-rustversion-1.0)
+        ("rust-rustversion" ,rust-rustversion-1)
         ("rust-serde-bytes" ,rust-serde-bytes-0.11)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ;("rust-serde-stacker" ,rust-serde-stacker-0.1)
@@ -24782,8 +24782,8 @@ handle Unicode characters correctly.")
        #:cargo-development-inputs
        (("rust-anyhow" ,rust-anyhow-1.0)
         ("rust-ref-cast" ,rust-ref-cast-1.0)
-        ("rust-rustversion" ,rust-rustversion-1.0)
         ("rust-trybuild" ,rust-trybuild-1.0))))
+        ("rust-rustversion" ,rust-rustversion-1)
     (home-page "https://github.com/dtolnay/thiserror")
     (synopsis "derive(Error)")
     (description "This package provides @code{derive(Error)} in Rust.")
