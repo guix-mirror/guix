@@ -4778,6 +4778,37 @@ edited, converted, compressed and saved.")
        ,@(package-inputs ztoolkit)))
     (synopsis "ZToolkit with SVG support")))
 
+(define-public lsp-dsp-lib
+  (package
+    (name "lsp-dsp-lib")
+    (version "0.5.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/sadko4u/lsp-dsp-lib/"
+                            "releases/download/lsp-dsp-lib-" version
+                            "/lsp-dsp-lib-" version "-src.tar.gz"))
+        (sha256
+         (base32
+          "07w3d2i0z0xmvi1ngcgs7lc5a0da8jvf7rv4dnjk01md43b7fkh1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "config"
+                     (string-append "PREFIX=" (assoc-ref outputs "out"))))))))
+    (home-page "https://github.com/sadko4u/lsp-dsp-lib")
+    (synopsis "Digital signal processing library")
+    (description "The LSP DSP library provides a set of functions that perform
+SIMD-optimized computing on several hardware architectures.  All functions
+currently operate on IEEE-754 single-precision floating-point numbers.")
+    (license license:lgpl3+)))
+
 (define-public codec2
   (package
     (name "codec2")
