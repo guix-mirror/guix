@@ -920,7 +920,7 @@ for computer graphics.")
         ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
         ("rust-tiff" ,rust-tiff-0.5))
        #:cargo-development-inputs
-       (("rust-crc32fast" ,rust-crc32fast-1.2)
+       (("rust-crc32fast" ,rust-crc32fast-1)
         ("rust-criterion" ,rust-criterion-0.3)
         ("rust-glob" ,rust-glob-0.3)
         ("rust-num-complex" ,rust-num-complex-0.3)
@@ -959,7 +959,7 @@ for the most common image formats.")
         ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
         ("rust-tiff" ,rust-tiff-0.3))
        #:cargo-development-inputs
-       (("rust-crc32fast" ,rust-crc32fast-1.2)
+       (("rust-crc32fast" ,rust-crc32fast-1)
         ("rust-glob" ,rust-glob-0.3)
         ("rust-num-complex" ,rust-num-complex-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.9))))))
@@ -1538,7 +1538,7 @@ interactive applications.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-crc32fast" ,rust-crc32fast-1.2)
+        ("rust-crc32fast" ,rust-crc32fast-1)
         ("rust-deflate" ,rust-deflate-0.8)
         ("rust-miniz-oxide" ,rust-miniz-oxide-0.3))
        #:cargo-development-inputs
@@ -1573,7 +1573,7 @@ interactive applications.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
-        ("rust-crc32fast" ,rust-crc32fast-1.2)
+        ("rust-crc32fast" ,rust-crc32fast-1)
         ("rust-deflate" ,rust-deflate-0.7)
         ("rust-inflate" ,rust-inflate-0.4))
        #:cargo-development-inputs
