@@ -15035,36 +15035,36 @@ macro takes a first argument (whose value must be an alist) and a body.")
     (license license:gpl3+)))
 
 (define-public emacs-esup
-  (package
-    (name "emacs-esup")
-    (version "0.7")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/jschaf/esup")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "100w28n3qb3s5b18vvqpwmijdjnjazawn38i0pjbpxz5llhqgl1g"))))
-    (build-system emacs-build-system)
-    (native-inputs
-     `(("emacs-noflet" ,emacs-noflet)
-       ("emacs-el-mock" ,emacs-el-mock)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (invoke "emacs" "--batch" "-L" "."
-                     "-l" "test/esup-test.el"
-                     "-f" "ert-run-tests-batch-and-exit"))))))
-    (home-page "https://github.com/jschaf/esup")
-    (synopsis "Emacs start up profiler")
-    (description "Benchmark Emacs Startup time without ever leaving
+  (let ((commit "0de8af8233d9ce1b67f05a50f25c481c4f1118d8")
+        (revision "1"))
+    (package
+      (name "emacs-esup")
+      (version (git-version "0.7.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jschaf/esup")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "01khb3xyj0ylwib6ryzzvqmkh5wvzxiq2n3l0s3h9zv7wx849bzv"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs-noflet" ,emacs-noflet)
+         ("emacs-undercover" ,emacs-undercover)
+         ("emacs-buttercup" ,emacs-buttercup)))
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (arguments
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")))
+      (home-page "https://github.com/jschaf/esup")
+      (synopsis "Emacs start up profiler")
+      (description "Benchmark Emacs Startup time without ever leaving
 your Emacs.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-restart-emacs
   (let ((commit "9aa90d3df9e08bc420e1c9845ee3ff568e911bd9")
