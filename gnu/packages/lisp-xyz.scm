@@ -4739,15 +4739,6 @@ Closure is a reference to the web browser it was originally written for.")
      `(("closure-common" ,sbcl-closure-common)
        ("puri" ,sbcl-puri)
        ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'install-dtd
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "catalog.dtd"
-                           (string-append
-                            (assoc-ref outputs "out")
-                            "/lib/common-lisp/" (%lisp-type) "/cxml")))))))
     (synopsis "Common Lisp XML parser")
     (description "CXML implements a namespace-aware, validating XML 1.0
 parser as well as the DOM Level 2 Core interfaces.  Two parser interfaces are
