@@ -4079,27 +4079,6 @@ framework, with additional code inspection and report generation tools.")
 hierarchical clustering dendrograms.")
     (license license:gpl2+)))
 
-(define-public r-preprocesscore
-  (package
-    (name "r-preprocesscore")
-    (version "1.50.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "preprocessCore" version))
-       (sha256
-        (base32
-         "0q1406kswylc8zn5k3wyd34p34pfzbhi1ggkfsh30zcjp6adbwjl"))))
-    (properties
-     `((upstream-name . "preprocessCore")))
-    (build-system r-build-system)
-    (home-page "https://github.com/bmbolstad/preprocessCore")
-    (synopsis "Collection of pre-processing functions")
-    (description
-     "This package provides a library of core pre-processing and normalization
-routines.")
-    (license license:lgpl2.0+)))
-
 (define-public r-fastcluster
   (package
     (name "r-fastcluster")

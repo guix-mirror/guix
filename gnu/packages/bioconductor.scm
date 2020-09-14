@@ -8287,3 +8287,24 @@ a Python script to demultiplex libraries and trim off primer sequences.  With
 a standard alignment software the required bam files can be then be
 generated.")
     (license license:gpl3+)))
+
+(define-public r-preprocesscore
+  (package
+    (name "r-preprocesscore")
+    (version "1.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "preprocessCore" version))
+       (sha256
+        (base32
+         "0q1406kswylc8zn5k3wyd34p34pfzbhi1ggkfsh30zcjp6adbwjl"))))
+    (properties
+     `((upstream-name . "preprocessCore")))
+    (build-system r-build-system)
+    (home-page "https://github.com/bmbolstad/preprocessCore")
+    (synopsis "Collection of pre-processing functions")
+    (description
+     "This package provides a library of core pre-processing and normalization
+routines.")
+    (license license:lgpl2.0+)))
