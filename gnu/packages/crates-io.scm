@@ -8766,7 +8766,7 @@ retrieving random data from system source.")
          ,rust-fallible-iterator-0.2)
         ("rust-arrayvec" ,rust-arrayvec-0.5)
         ("rust-stable-deref-trait"
-         ,rust-stable-deref-trait-1.1)
+         ,rust-stable-deref-trait-1)
         ("rust-smallvec" ,rust-smallvec-1)
         ("rust-indexmap" ,rust-indexmap-1)
         ("rust-byteorder" ,rust-byteorder-1))))
@@ -8796,7 +8796,7 @@ retrieving random data from system source.")
         ("rust-byteorder" ,rust-byteorder-1)
         ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
         ("rust-indexmap" ,rust-indexmap-1)
-        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1))
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))
        #:cargo-development-inputs
        (("rust-crossbeam" ,rust-crossbeam-0.7)
         ("rust-getopts" ,rust-getopts-0.2)
@@ -15314,7 +15314,7 @@ under its new name.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1))))
+       (("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
     (home-page "https://github.com/Kimundi/owning-ref-rs")
     (synopsis "Create references that carry their owner with them")
     (description
@@ -19851,7 +19851,7 @@ It is automatically published using the compiler repository at
         ("rust-rustc-rayon" ,rust-rustc-rayon-0.3)
         ("rust-rustc-rayon-core" ,rust-rustc-rayon-core-0.3)
         ("rust-smallvec" ,rust-smallvec-1)
-        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1)
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/alexcrichton/rustc-auto-publish")
     (synopsis "Automatically published versions of rustc data structures")
@@ -21858,7 +21858,7 @@ for the serde framework.")
      `(#:cargo-inputs
        (("rust-nodrop" ,rust-nodrop-0.1)
         ("rust-serde" ,rust-serde-1)
-        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1))))
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
     (home-page "https://github.com/servo/servo")
     (synopsis "Fork of std::sync::Arc with some extra functionality")
     (description
@@ -22911,7 +22911,7 @@ initializers are available.")
      "This package provides a single-producer single-consumer lock-free buffer.")
     (license license:expat)))
 
-(define-public rust-stable-deref-trait-1.1
+(define-public rust-stable-deref-trait-1
   (package
     (name "rust-stable-deref-trait")
     (version "1.1.1")
