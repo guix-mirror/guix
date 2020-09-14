@@ -18158,14 +18158,14 @@ models.")
 (define-public r-gamlss
   (package
     (name "r-gamlss")
-    (version "5.1-7")
+    (version "5.2-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gamlss" version))
        (sha256
         (base32
-         "0ywqwsp4k6jgnicp1gdsglji61l5cnackl52700v8kmkk83bq4c8"))))
+         "1q82md0439si0n7vqbbbdk45sjr0ad7i8mgrn3kwnr4h213pb4nk"))))
     (properties `((upstream-name . "gamlss")))
     (build-system r-build-system)
     (propagated-inputs
