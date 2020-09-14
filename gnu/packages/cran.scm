@@ -12200,14 +12200,14 @@ JASA, 94:496-509.")
 (define-public r-etm
   (package
     (name "r-etm")
-    (version "1.1")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "etm" version))
        (sha256
         (base32
-         "02yvh473l5qajaymhsxwb235a9r7q3nsig9a9mrfca68xih8yvgd"))))
+         "1hvrplmdpjjpjji663rw0vjbbrzj2nvr04d1nkc8bf46p4ixyxgy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
