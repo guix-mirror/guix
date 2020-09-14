@@ -10900,42 +10900,6 @@ cell-specific biases, assignment of cell cycle phase, and detection of highly
 variable and significantly correlated genes.")
     (license license:gpl3)))
 
-(define-public r-delayedmatrixstats
-  (package
-    (name "r-delayedmatrixstats")
-    (version "1.10.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "DelayedMatrixStats" version))
-       (sha256
-        (base32
-         "046sam0rz42ph0m7jz7v3bck7d3h2mp45gzywh5dvc1qkjq6fdxx"))))
-    (properties
-     `((upstream-name . "DelayedMatrixStats")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocparallel" ,r-biocparallel)
-       ("r-delayedarray" ,r-delayedarray)
-       ("r-hdf5array" ,r-hdf5array)
-       ("r-iranges" ,r-iranges)
-       ("r-matrix" ,r-matrix)
-       ("r-matrixstats" ,r-matrixstats)
-       ("r-s4vectors" ,r-s4vectors)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://github.com/PeteHaitch/DelayedMatrixStats")
-    (synopsis "Functions that apply to rows and columns of DelayedMatrix objects")
-    (description
-     "This package provides a port of the @code{matrixStats} API for use with
-@code{DelayedMatrix} objects from the @code{DelayedArray} package.  It
-contains high-performing functions operating on rows and columns of
-@code{DelayedMatrix} objects, e.g. @code{colMedians}, @code{rowMedians},
-@code{colRanks}, @code{rowRanks}, @code{colSds}, and @code{rowSds}.  Functions
-are optimized per data type and for subsetted calculations such that both
-memory usage and processing time is minimized.")
-    (license license:expat)))
-
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
         (revision "2"))
