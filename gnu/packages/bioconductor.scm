@@ -8348,6 +8348,36 @@ routines.")
 objects from the @code{graph} package.")
     (license license:epl1.0)))
 
+(define-public r-hdf5array
+  (package
+    (name "r-hdf5array")
+    (version "1.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "HDF5Array" version))
+       (sha256
+        (base32
+         "01767v90nl0499jcicpxngbbs0af5p9c5aasi5va01w3v5bnqddn"))))
+    (properties `((upstream-name . "HDF5Array")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-rhdf5lib" ,r-rhdf5lib)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/HDF5Array")
+    (synopsis "HDF5 back end for DelayedArray objects")
+    (description "This package provides an array-like container for convenient
+access and manipulation of HDF5 datasets.  It supports delayed operations and
+block processing.")
+    (license license:artistic2.0)))
+
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
