@@ -218,7 +218,10 @@ It is the default image viewer on LXDE desktop environment.")
              (install-file "sxiv.desktop"
                            (string-append (assoc-ref outputs "out")
                                           "/share/applications"))
-             #t)))))
+             #t))
+         (add-after 'install 'install-icons
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "-C" "icon" "install" make-flags))))))
     (inputs
      `(("freetype" ,freetype)
        ("giflib" ,giflib)
