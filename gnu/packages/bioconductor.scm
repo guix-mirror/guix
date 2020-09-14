@@ -8308,3 +8308,41 @@ generated.")
      "This package provides a library of core pre-processing and normalization
 routines.")
     (license license:lgpl2.0+)))
+
+(define-public r-rgraphviz
+  (package
+    (name "r-rgraphviz")
+    (version "2.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rgraphviz" version))
+       (sha256
+        (base32
+         "1calpvzgcz6v7s4x6bf35kj83sga95zjp7x87p5d3qnbv7q2wz5y"))))
+    (properties `((upstream-name . "Rgraphviz")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; The replacement value is taken from src/graphviz/builddate.h
+             (substitute* "src/graphviz/configure"
+               (("VERSION_DATE=.*")
+                "VERSION_DATE=20200427.2341\n"))
+             #t)))))
+    ;; FIXME: Rgraphviz bundles the sources of an older variant of
+    ;; graphviz.  It does not build with the latest version of graphviz, so
+    ;; we do not add graphviz to the inputs.
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-graph" ,r-graph)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://bioconductor.org/packages/Rgraphviz")
+    (synopsis "Plotting capabilities for R graph objects")
+    (description
+     "This package interfaces R with the graphviz library for plotting R graph
+objects from the @code{graph} package.")
+    (license license:epl1.0)))
