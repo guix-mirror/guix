@@ -3967,20 +3967,6 @@ Long Painful History of Time\".")
          (sha256
           (base32 "17jxgl47r695bvsb7wi3n2ws5rp1zzgvw0zii8cy5ggw4b4ayv6m"))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after
-               'unpack 'fix-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((anchor "#p\"/etc/mime.types\""))
-                 (substitute* "mime-types.lisp"
-                   ((anchor all)
-                    (string-append
-                     anchor "\n"
-                     "(asdf:system-relative-pathname :trivial-mimes "
-                     "\"../../share/common-lisp/" (%lisp-type)
-                     "-source/trivial-mimes/mime.types\")")))))))))
       (native-inputs
        `(("stefil" ,sbcl-hu.dwim.stefil)))
       (inputs
