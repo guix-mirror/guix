@@ -746,7 +746,7 @@ standard library.")
     (arguments
      `(#:tests? #f ;; requires `printenv`, but installing coreutils doesn't help
        #:cargo-inputs
-       (("rust-colored" ,rust-colored-1.9)
+       (("rust-colored" ,rust-colored-1)
         ("rust-difference" ,rust-difference-2)
         ("rust-environment" ,rust-environment-0.1)
         ("rust-failure" ,rust-failure-0.1)
@@ -3422,7 +3422,7 @@ CMAKE environmental variable is set.")
      "Color quantization library to reduce n colors to 256 colors.")
     (license license:expat)))
 
-(define-public rust-colored-1.9
+(define-public rust-colored-1
   (package
     (name "rust-colored")
     (version "1.9.3")
@@ -3459,7 +3459,7 @@ CMAKE environmental variable is set.")
     (license license:mpl2.0)))
 
 (define-public rust-colored-1.9.1
-  (package/inherit rust-colored-1.9
+  (package/inherit rust-colored-1
     (name "rust-colored")
     (version "1.9.1")
     (source
@@ -6964,7 +6964,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
     (arguments
      `(#:cargo-inputs
        (("rust-chrono" ,rust-chrono-0.4)
-        ("rust-colored" ,rust-colored-1.9)
+        ("rust-colored" ,rust-colored-1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-reopen" ,rust-reopen-0.3)
@@ -7000,7 +7000,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
         ("rust-reopen" ,rust-reopen-0.3)
         ("rust-log" ,rust-log-0.4)
         ("rust-chrono" ,rust-chrono-0.4)
-        ("rust-colored" ,rust-colored-1.9)
+        ("rust-colored" ,rust-colored-1)
         ("rust-syslog" ,rust-syslog-3.3)
         ("rust-syslog" ,rust-syslog-4.0))
        #:cargo-development-inputs
@@ -19487,7 +19487,7 @@ Rust Language Server.")
     (arguments
      `(#:skip-build? #t ;; TODO unpackaged dev-dependencies
        #:cargo-inputs
-       (("rust-colored" ,rust-colored-1.9)
+       (("rust-colored" ,rust-colored-1)
         ("rust-derive-new" ,rust-derive-new-0.5)
         ("rust-derive-builder" ,rust-derive-builder-0.5)
         ("rust-expectest" ,rust-expectest-0.9)
