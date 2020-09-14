@@ -253,17 +253,18 @@ series of numeric vectors/matrices and factors.")
 (define-public r-ggpmisc
   (package
     (name "r-ggpmisc")
-    (version "0.3.5")
+    (version "0.3.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggpmisc" version))
               (sha256
                (base32
-                "0ma2d3a3v8n85sghxr9anl6vgbs8gi82i1dllw99n81gsm59wgin"))))
+                "05i81q9rg8zf35vgcxhn3yhkc9dlvcpwpxncq1q3zs0rxhfkf208"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
        ("r-dplyr" ,r-dplyr)
+       ("r-glue" ,r-glue)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
        ("r-lubridate" ,r-lubridate)
