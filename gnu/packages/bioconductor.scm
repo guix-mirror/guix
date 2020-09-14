@@ -8347,6 +8347,35 @@ routines.")
 objects from the @code{graph} package.")
     (license license:epl1.0)))
 
+(define-public r-singlecellexperiment
+  (package
+    (name "r-singlecellexperiment")
+    (version "1.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "SingleCellExperiment" version))
+       (sha256
+        (base32
+         "092wvk11n7pa234vlwhxm3gdi4k3sbnz1splhxalbdhz3jf02zfp"))))
+    (properties
+     `((upstream-name . "SingleCellExperiment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/SingleCellExperiment")
+    (synopsis "S4 classes for single cell data")
+    (description "This package defines an S4 class for storing data from
+single-cell experiments.  This includes specialized methods to store and
+retrieve spike-in information, dimensionality reduction coordinates and size
+factors for each cell, along with the usual metadata for genes and
+libraries.")
+    (license license:gpl3)))
+
 (define-public r-scater
   (package
     (name "r-scater")
