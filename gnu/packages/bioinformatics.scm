@@ -10766,31 +10766,6 @@ block processing.")
 packages.")
     (license license:artistic2.0)))
 
-(define-public r-beachmat
-  (package
-    (name "r-beachmat")
-    (version "2.4.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "beachmat" version))
-       (sha256
-        (base32
-         "1vl6jbf9ia78cm4ikdb8vz04jv4b46zhvg5i006c63a9pzw7zhxi"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-delayedarray" ,r-delayedarray)
-       ("r-matrix" ,r-matrix)))
-    (native-inputs
-     `(("r-knitr" ,r-knitr)))
-    (home-page "https://bioconductor.org/packages/beachmat")
-    (synopsis "Compiling Bioconductor to handle each matrix type")
-    (description "This package provides a consistent C++ class interface for a
-variety of commonly used matrix types, including sparse and HDF5-backed
-matrices.")
-    (license license:gpl3)))
-
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
         (revision "2"))
