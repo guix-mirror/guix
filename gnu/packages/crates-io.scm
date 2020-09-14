@@ -4038,7 +4038,7 @@ to @code{is_x86_feature_detected}.")
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-tinytemplate" ,rust-tinytemplate-1.0)
+        ("rust-tinytemplate" ,rust-tinytemplate-1)
         ("rust-walkdir" ,rust-walkdir-2))
        #:cargo-development-inputs
        (("rust-approx" ,rust-approx-0.3)
@@ -4084,7 +4084,7 @@ to @code{is_x86_feature_detected}.")
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-tinytemplate" ,rust-tinytemplate-1.0)
+        ("rust-tinytemplate" ,rust-tinytemplate-1)
         ("rust-walkdir" ,rust-walkdir-2))
        #:cargo-development-inputs
        (("rust-approx" ,rust-approx-0.3)
@@ -24972,7 +24972,7 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-tinytemplate-1.0
+(define-public rust-tinytemplate-1
   (package
     (name "rust-tinytemplate")
     (version "1.0.3")
