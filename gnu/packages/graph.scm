@@ -134,6 +134,16 @@ more.")
          "1calpvzgcz6v7s4x6bf35kj83sga95zjp7x87p5d3qnbv7q2wz5y"))))
     (properties `((upstream-name . "Rgraphviz")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; The replacement value is taken from src/graphviz/builddate.h
+             (substitute* "src/graphviz/configure"
+               (("VERSION_DATE=.*")
+                "VERSION_DATE=20200427.2341\n"))
+             #t)))))
     ;; FIXME: Rgraphviz bundles the sources of an older variant of
     ;; graphviz.  It does not build with the latest version of graphviz, so
     ;; we do not add graphviz to the inputs.
