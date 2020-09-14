@@ -203,7 +203,7 @@ It is the default image viewer on LXDE desktop environment.")
      `(#:tests? #f                      ; no check target
        #:make-flags
        (list (string-append "PREFIX=" %output)
-             "CC=gcc"
+             (string-append "CC=" ,(cc-for-target))
              ;; Xft.h #includes <ft2build.h> without ‘freetype2/’.  The Makefile
              ;; works around this by hard-coding /usr/include & $PREFIX.
              (string-append "CPPFLAGS=-I"
