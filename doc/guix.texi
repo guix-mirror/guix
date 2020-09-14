@@ -27998,7 +27998,7 @@ The Containerd package to use.
 @item @code{proxy} (default @var{docker-libnetwork-cmd-proxy})
 The Docker user-land networking proxy package to use.
 
-@item @code{enable-proxy?} (default @code{#f})
+@item @code{enable-proxy?} (default @code{#t})
 Enable or disable the use of the Docker user-land networking proxy.
 
 @item @code{debug?} (default @code{#f})
