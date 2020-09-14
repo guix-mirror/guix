@@ -1075,16 +1075,19 @@ summary, and level 0 shows nothing."
                          (null? hook) (map colorized-store-item hook)))
                 ((= verbosity 1)
                  ;; Display the bare minimum; don't mention grafts and hooks.
+                 (unless (null? build)
+                   (newline (current-error-port)))
                  (if display-download-size?
                      (format (current-error-port)
                              ;; TRANSLATORS: "MB" is for "megabyte"; it should be
                              ;; translated to the corresponding abbreviation.
-                             (G_ "~:[~,1h MB would be downloaded~%~;~]")
+                             (highlight (G_ "~:[~,1h MB would be downloaded~%~;~]"))
                              (null? download) download-size)
                      (format (current-error-port)
-                             (N_ "~:[~h item would be downloaded~%~;~]"
-                                 "~:[~h items would be downloaded~%~;~]"
-                                 (length download))
+                             (highlight
+                              (N_ "~:[~h item would be downloaded~%~;~]"
+                                  "~:[~h items would be downloaded~%~;~]"
+                                  (length download)))
                              (null? download) (length download))))))
 
         (begin
@@ -1123,16 +1126,19 @@ summary, and level 0 shows nothing."
                          (null? hook) (map colorized-store-item hook)))
                 ((= verbosity 1)
                  ;; Display the bare minimum; don't mention grafts and hooks.
+                 (unless (null? build)
+                   (newline (current-error-port)))
                  (if display-download-size?
                      (format (current-error-port)
                              ;; TRANSLATORS: "MB" is for "megabyte"; it should be
                              ;; translated to the corresponding abbreviation.
-                             (G_ "~:[~,1h MB will be downloaded~%~;~]")
+                             (highlight (G_ "~:[~,1h MB will be downloaded~%~;~]"))
                              (null? download) download-size)
                      (format (current-error-port)
-                             (N_ "~:[~h item will be downloaded~%~;~]"
-                                 "~:[~h items will be downloaded~%~;~]"
-                                 (length download))
+                             (highlight
+                              (N_ "~:[~h item will be downloaded~%~;~]"
+                                  "~:[~h items will be downloaded~%~;~]"
+                                  (length download)))
                              (null? download) (length download)))))))
 
     (check-available-space installed-size)
