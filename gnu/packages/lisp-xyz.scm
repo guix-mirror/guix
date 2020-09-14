@@ -2926,7 +2926,7 @@ client and server.")
             (lambda* (#:key outputs #:allow-other-keys)
               (let ((test-results (string-append (assoc-ref outputs "out")
                                                  "/share/common-lisp/"
-                                                 (%lisp-type) "-source"
+                                                 (%lisp-type)
                                                  "/trivial-backtrace"
                                                  "/test-results")))
                 (when (file-exists? test-results)
