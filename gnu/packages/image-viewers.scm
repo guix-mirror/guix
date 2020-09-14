@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -212,7 +212,13 @@ It is the default image viewer on LXDE desktop environment.")
              "V=1")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))         ; no configure script
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "sxiv.desktop"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/applications"))
+             #t)))))
     (inputs
      `(("freetype" ,freetype)
        ("giflib" ,giflib)
