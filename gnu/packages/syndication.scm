@@ -104,7 +104,7 @@
         ("rust-percent-encoding" ,rust-percent-encoding-2.1)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-smallvec" ,rust-smallvec-0.6)
-        ("rust-url" ,rust-url-2.1)
+        ("rust-url" ,rust-url-2)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-xdg" ,rust-xdg-2.2))
        #:cargo-development-inputs

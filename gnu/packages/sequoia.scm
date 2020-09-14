@@ -111,7 +111,7 @@
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-core" ,rust-tokio-core-0.1)
         ("rust-unicode-normalization" ,rust-unicode-normalization-0.1)
-        ("rust-url" ,rust-url-2.1)
+        ("rust-url" ,rust-url-2)
         ("rust-zbase32" ,rust-zbase32-0.1))
        #:cargo-development-inputs
        (("rust-bindgen" ,rust-bindgen-0.51) ;; FIXME for nettle-sys and rusqlite

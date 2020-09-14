@@ -8836,7 +8836,7 @@ DWARF debugging format.")
         ("rust-log" ,rust-log-0.4)
         ("rust-openssl-probe" ,rust-openssl-probe-0.1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
-        ("rust-url" ,rust-url-2.1))
+        ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
        (("rust-docopt" ,rust-docopt-1.1)
         ("rust-serde" ,rust-serde-1)
@@ -26564,7 +26564,7 @@ untrusted inputs in Rust.")
        (sha256
         (base32 "0byf88b7ca1kb5aap8f6npp6xncvg95dnma8ipmnmd4n9r5izkam"))))))
 
-(define-public rust-url-2.1
+(define-public rust-url-2
   (package
     (name "rust-url")
     (version "2.1.1")
@@ -26597,7 +26597,7 @@ untrusted inputs in Rust.")
 
 (define-public rust-url-1.7
   (package
-    (inherit rust-url-2.1)
+    (inherit rust-url-2)
     (name "rust-url")
     (version "1.7.2")
     (source

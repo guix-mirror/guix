@@ -3261,7 +3261,7 @@ library.")
         ("rust-selectors" ,rust-selectors-0.22)
         ("rust-string-cache" ,rust-string-cache-0.8)
         ("rust-tinyvec" ,rust-tinyvec-0.3)
-        ("rust-url" ,rust-url-2.1)
+        ("rust-url" ,rust-url-2)
         ("rust-xml5ever" ,rust-xml5ever-0.16))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
