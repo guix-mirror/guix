@@ -8347,6 +8347,49 @@ routines.")
 objects from the @code{graph} package.")
     (license license:epl1.0)))
 
+(define-public r-scran
+  (package
+    (name "r-scran")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "scran" version))
+       (sha256
+        (base32
+         "1gm4ys4aq8h1pn45k1rxk384wjyf55izivw8kgxbrflj6j4xvvsv"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-bh" ,r-bh)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocneighbors" ,r-biocneighbors)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biocsingular" ,r-biocsingular)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-dqrng" ,r-dqrng)
+       ("r-edger" ,r-edger)
+       ("r-igraph" ,r-igraph)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scater" ,r-scater)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-statmod" ,r-statmod)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/scran")
+    (synopsis "Methods for single-cell RNA-Seq data analysis")
+    (description "This package implements a variety of low-level analyses of
+single-cell RNA-seq data.  Methods are provided for normalization of
+cell-specific biases, assignment of cell cycle phase, and detection of highly
+variable and significantly correlated genes.")
+    (license license:gpl3)))
+
 (define-public r-delayedmatrixstats
   (package
     (name "r-delayedmatrixstats")
