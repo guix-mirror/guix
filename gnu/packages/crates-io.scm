@@ -747,7 +747,7 @@ standard library.")
      `(#:tests? #f ;; requires `printenv`, but installing coreutils doesn't help
        #:cargo-inputs
        (("rust-colored" ,rust-colored-1.9)
-        ("rust-difference" ,rust-difference-2.0)
+        ("rust-difference" ,rust-difference-2)
         ("rust-environment" ,rust-environment-0.1)
         ("rust-failure" ,rust-failure-0.1)
         ("rust-failure-derive" ,rust-failure-derive-0.1)
@@ -4547,7 +4547,7 @@ Code} (MAC) algorithms.")
         ("rust-smallvec" ,rust-smallvec-1)
         ("rust-syn" ,rust-syn-1))
        #:cargo-development-inputs
-       (("rust-difference" ,rust-difference-2.0)
+       (("rust-difference" ,rust-difference-2)
         ("rust-encoding-rs" ,rust-encoding-rs-0.8)
         ("rust-serde-json" ,rust-serde-json-1))))
     (home-page "https://github.com/servo/rust-cssparser")
@@ -4587,7 +4587,7 @@ Code} (MAC) algorithms.")
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))
        #:cargo-development-inputs
-       (("rust-difference" ,rust-difference-2.0)
+       (("rust-difference" ,rust-difference-2)
         ("rust-encoding-rs" ,rust-encoding-rs-0.8)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
@@ -5448,7 +5448,7 @@ structs and enums.")
      "An LCS based slice and string diffing implementation.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-difference-2.0
+(define-public rust-difference-2
   (package
     (name "rust-difference")
     (version "2.0.0")
@@ -5476,7 +5476,7 @@ structs and enums.")
     (license license:expat)))
 
 (define-public rust-difference-1
-  (package/inherit rust-difference-2.0
+  (package/inherit rust-difference-2
     (name "rust-difference")
     (version "1.0.0")
     (source
@@ -10442,7 +10442,7 @@ in Rust.")
        (("rust-chrono" ,rust-chrono-0.4)
         ("rust-ci-info" ,rust-ci-info-0.3)
         ("rust-console" ,rust-console-0.7)
-        ("rust-difference" ,rust-difference-2.0)
+        ("rust-difference" ,rust-difference-2)
         ("rust-failure" ,rust-failure-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-pest" ,rust-pest-2.1)
@@ -16920,7 +16920,7 @@ dependency to expose a precomputed hash.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-difference" ,rust-difference-2.0)
+       (("rust-difference" ,rust-difference-2)
         ("rust-float-cmp" ,rust-float-cmp-0.6)
         ("rust-normalize-line-endings" ,rust-normalize-line-endings-0.3)
         ("rust-predicates-core" ,rust-predicates-core-1)
@@ -17001,7 +17001,7 @@ dependency to expose a precomputed hash.")
        (("rust-ctor" ,rust-ctor-0.1)
         ("rust-output-vt100" ,rust-output-vt100-0.1)
         ("rust-ansi-term" ,rust-ansi-term-0.11)
-        ("rust-difference" ,rust-difference-2.0))))
+        ("rust-difference" ,rust-difference-2))))
     (home-page "https://github.com/colin-kiegel/rust-pretty-assertions")
     (synopsis "Drop-in replacements for assert_eq! and assert_ne!")
     (description
@@ -20375,7 +20375,7 @@ rustc compiler.")
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1))
        #:cargo-development-inputs
-       (("rust-difference" ,rust-difference-2.0)
+       (("rust-difference" ,rust-difference-2)
         ("rust-duct" ,rust-duct-0.13)
         ("rust-env-logger" ,rust-env-logger-0.6)
         ("rust-log" ,rust-log-0.4)
