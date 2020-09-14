@@ -2944,13 +2944,14 @@ projects.")
     (name "maven-resources-plugin")
     (version "3.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/apache/"
-                                  "maven-resources-plugin/archive/"
-                                  "maven-resources-plugin-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/apache/maven-resources-plugin")
+                     (commit (string-append  "maven-resources-plugin-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f5gnjg2xmqfxml6k0ydyd1sxxwzgnb24qn6avcc4mijwd8a84pl"))))
+                "090k5j2y7ak54czfjjg3v7pdmdlgd96fbs91d1fd3vslm9zzndg8"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-resources-plugin.jar"
