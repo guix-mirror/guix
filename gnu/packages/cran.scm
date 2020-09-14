@@ -24437,18 +24437,17 @@ as allowing spectra with different resolutions.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.2.0")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "1vj3dlsqakgnn4x1jz9fkl2cy0jzc5s65h1c20fnamr7lk45pnf2"))))
+                "0jipc4xpmx56jzc31w6nsl77ah8x8wq7jclg2mxhjql4ixkwmz54"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ape" ,r-ape)
-       ("r-cluster" ,r-cluster)
+     `(("r-cluster" ,r-cluster)
        ("r-cowplot" ,r-cowplot)
        ("r-fitdistrplus" ,r-fitdistrplus)
        ("r-future" ,r-future)
@@ -24466,6 +24465,7 @@ as allowing spectra with different resolutions.")
        ("r-lmtest" ,r-lmtest)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
        ("r-miniui" ,r-miniui)
        ("r-patchwork" ,r-patchwork)
        ("r-pbapply" ,r-pbapply)
