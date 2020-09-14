@@ -6859,14 +6859,14 @@ references and Rd files.")
 (define-public r-officer
   (package
     (name "r-officer")
-    (version "0.3.13")
+    (version "0.3.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "officer" version))
        (sha256
         (base32
-         "15v5dishdsrw95nj6f7x23llzla3sgbvw35ibdk8ld3miwzxb2kr"))))
+         "1nyv4710bcd2afh1l1qiy5zrspjcdvc7mrzz5189dwy9xvgxi31h"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)
