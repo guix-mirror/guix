@@ -8348,6 +8348,35 @@ routines.")
 objects from the @code{graph} package.")
     (license license:epl1.0)))
 
+(define-public r-hitc
+  (package
+    (name "r-hitc")
+    (version "1.32.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "HiTC" version))
+              (sha256
+               (base32
+                "1jx2pfa7sbdz7xi466lz1h5xv126g56z73n0a5l2wrq28k47qaxy"))))
+    (properties `((upstream-name . "HiTC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rtracklayer" ,r-rtracklayer)))
+    (home-page "https://bioconductor.org/packages/HiTC")
+    (synopsis "High throughput chromosome conformation capture analysis")
+    (description
+     "The HiTC package was developed to explore high-throughput \"C\" data
+such as 5C or Hi-C.  Dedicated R classes as well as standard methods for
+quality controls, normalization, visualization, and further analysis are also
+provided.")
+    (license license:artistic2.0)))
+
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
