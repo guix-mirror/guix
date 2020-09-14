@@ -7915,18 +7915,17 @@ and coverage methods to tune the choice of threshold.")
 (define-public r-mosaiccore
   (package
     (name "r-mosaiccore")
-    (version "0.6.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mosaicCore" version))
        (sha256
-        (base32 "1klw97h6lchw1cpcl8s637ikcl428cckmjq0czi7mibh9q9mw72z"))))
+        (base32 "00va6x1i8d3wkm1bgsms9dsjfn5a1l43prpl9pqirgq3zm85hrqj"))))
     (properties `((upstream-name . "mosaicCore")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
-       ("r-lazyeval" ,r-lazyeval)
        ("r-mass" ,r-mass)
        ("r-rlang" ,r-rlang)
        ("r-tidyr" ,r-tidyr)))
