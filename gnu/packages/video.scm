@@ -4553,7 +4553,7 @@ result in several formats:
         ("rust-arrayvec" ,rust-arrayvec-0.5)
         ("rust-backtrace" ,rust-backtrace-0.3)
         ("rust-bitstream-io" ,rust-bitstream-io-0.8)
-        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-byteorder" ,rust-byteorder-1)
         ("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-clap" ,rust-clap-2)
         ("rust-console" ,rust-console-0.11)

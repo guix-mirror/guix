@@ -910,7 +910,7 @@ for computer graphics.")
      `(#:tests? #f      ; Some test images are missing from the release.
        #:cargo-inputs
        (("rust-bytemuck" ,rust-bytemuck-1)
-        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-byteorder" ,rust-byteorder-1)
         ("rust-gif" ,rust-gif-0.10)
         ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.1)
         ("rust-num-iter" ,rust-num-iter-0.1)
@@ -949,7 +949,7 @@ for the most common image formats.")
     (arguments
      `(#:tests? #f      ; Some test images are missing from the release.
        #:cargo-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-gif" ,rust-gif-0.10)
         ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.1)
         ("rust-num-iter" ,rust-num-iter-0.1)
@@ -980,7 +980,7 @@ for the most common image formats.")
          "1sv534xp8yyn7jj0q6yn2bgng1350f962g81sv8v7c6pgi31wdrm"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-gif" ,rust-gif-0.10)
         ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.1)
         ("rust-lzw" ,rust-lzw-0.10)
@@ -1011,7 +1011,7 @@ for the most common image formats.")
          "01058n0jcw25pq5shn7lkvywv8c28xsxb3nwwyb4r16ijm1mnrj4"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-gif" ,rust-gif-0.10)
         ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.1)
         ("rust-lzw" ,rust-lzw-0.10)
@@ -1043,7 +1043,7 @@ for the most common image formats.")
     (arguments
      `(#:tests? #f      ; Some test files missing.
        #:cargo-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-rayon" ,rust-rayon-1))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
@@ -1740,7 +1740,7 @@ first-class Rust objects.")
         ("rust-wayland-client" ,rust-wayland-client-0.23)
         ("rust-wayland-protocols" ,rust-wayland-protocols-0.23))
        #:cargo-development-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-image" ,rust-image-0.21)
         ("rust-wayland-client" ,rust-wayland-client-0.23))))
     (home-page "https://github.com/smithay/client-toolkit")
@@ -1775,7 +1775,7 @@ first-class Rust objects.")
         ("rust-wayland-commons" ,rust-wayland-commons-0.21)
         ("rust-wayland-protocols" ,rust-wayland-protocols-0.21))
        #:cargo-development-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-image" ,rust-image-0.20)
         ("rust-wayland-client" ,rust-wayland-client-0.21))))))
 
@@ -1825,7 +1825,7 @@ first-class Rust objects.")
     (arguments
      `(#:tests? #f      ; not all test files included
        #:cargo-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-lzw" ,rust-lzw-0.10)
         ("rust-miniz-oxide" ,rust-miniz-oxide-0.3))))
     (home-page "https://github.com/image-rs/image-tiff")
@@ -1852,7 +1852,7 @@ first-class Rust objects.")
     (arguments
      `(#:tests? #f      ; Tests images not included with release.
        #:cargo-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-lzw" ,rust-lzw-0.10)
         ("rust-num-derive" ,rust-num-derive-0.2)
         ("rust-num-traits" ,rust-num-traits-0.2))
@@ -1875,7 +1875,7 @@ first-class Rust objects.")
          "1kn7psgpacns337vvqh272rkqwnakmjd51rc7ygwnc03ibr38j0y"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-lzw" ,rust-lzw-0.10)
         ("rust-num-derive" ,rust-num-derive-0.2)
         ("rust-num-traits" ,rust-num-traits-0.2))))))
@@ -1906,7 +1906,7 @@ first-class Rust objects.")
         ("rust-wayland-sys" ,rust-wayland-sys-0.23)
         ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))
        #:cargo-development-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis
@@ -1942,7 +1942,7 @@ the wayland protocol, client side.")
         ("rust-wayland-sys" ,rust-wayland-sys-0.21)
         ("rust-wayland-scanner" ,rust-wayland-scanner-0.21))
        #:cargo-development-inputs
-       (("rust-byteorder" ,rust-byteorder-1.3)
+       (("rust-byteorder" ,rust-byteorder-1)
         ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-wayland-commons-0.23
