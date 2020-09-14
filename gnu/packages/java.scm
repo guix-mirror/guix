@@ -9538,18 +9538,24 @@ make data-binding work.")
     (name "java-hdrhistogram")
     (version "2.1.9")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/HdrHistogram/HdrHistogram/"
-                                  "archive/HdrHistogram-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/HdrHistogram/HdrHistogram")
+                     (commit (string-append "HdrHistogram-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sicbmc3sr42nw93qbkb26q9rn33ag33k6k77phjc3j5h5gjffqv"))))
+                "1cw8aa1vk258k42xs6wpy72m4gbai540jq032qsa7c5586iawx2d"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-hdrhistogram.jar"
        #:source-dir "src/main/java"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'configure 'set-version
            (lambda _
              (let* ((version-java "src/main/java/org/HdrHistogram/Version.java")
