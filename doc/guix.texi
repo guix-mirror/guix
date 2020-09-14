@@ -27990,7 +27990,10 @@ This is the data type representing the configuration of Docker and Containerd.
 @table @asis
 
 @item @code{package} (default: @code{docker})
-The Docker package to use.
+The Docker daemon package to use.
+
+@item @code{package} (default: @code{docker-cli})
+The Docker client package to use.
 
 @item @code{containerd} (default: @var{containerd})
 The Containerd package to use.

@@ -45,6 +45,9 @@
   (docker
    (package docker)
    "Docker daemon package.")
+  (docker-cli
+   (package docker-cli)
+   "Docker client package.")
   (containerd
    (package containerd)
    "containerd package.")
@@ -136,7 +139,7 @@ bundles in Docker containers.")
                  (list
                   ;; Make sure the 'docker' command is available.
                   (service-extension profile-service-type
-                                     (compose list docker-cli))
+                                     (compose list docker-configuration-docker-cli))
                   (service-extension activation-service-type
                                      %docker-activation)
                   (service-extension shepherd-root-service-type
