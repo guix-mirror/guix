@@ -8347,6 +8347,43 @@ routines.")
 objects from the @code{graph} package.")
     (license license:epl1.0)))
 
+(define-public r-scater
+  (package
+    (name "r-scater")
+    (version "1.16.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "scater" version))
+              (sha256
+               (base32
+                "1pa5wvgjb30rw1vsjwbnn07ss3sc5n8ck5d7khdby4r2s9177s33"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocneighbors" ,r-biocneighbors)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biocsingular" ,r-biocsingular)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-ggbeeswarm" ,r-ggbeeswarm)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/davismcc/scater")
+    (synopsis "Single-cell analysis toolkit for gene expression data in R")
+    (description "This package provides a collection of tools for doing
+various analyses of single-cell RNA-seq gene expression data, with a focus on
+quality control.")
+    (license license:gpl2+)))
+
 (define-public r-scran
   (package
     (name "r-scran")
