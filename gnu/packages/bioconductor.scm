@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
+;;; Copyright © 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8242,3 +8243,47 @@ with:
 @end itemize
 ")
     (license license:gpl2+)))
+
+(define-public r-fourcseq
+  (package
+    (name "r-fourcseq")
+    (version "1.22.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "FourCSeq" version))
+       (sha256
+        (base32 "14q1ijnqnbd9xs60sfvyqjfiypjrvhacpwp2v85yfhcxw870cx5b"))))
+    (properties `((upstream-name . "FourCSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biostrings" ,r-biostrings)
+       ("r-deseq2" ,r-deseq2)
+       ("r-fda" ,r-fda)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggbio" ,r-ggbio)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gtools" ,r-gtools)
+       ("r-lsd" ,r-lsd)
+       ("r-matrix" ,r-matrix)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page
+     "https://bioconductor.org/packages/release/bioc/html/FourCSeq.html")
+    (synopsis "Analysis of multiplexed 4C sequencing data")
+    (description
+     "This package is an R package dedicated to the analysis of (multiplexed)
+4C sequencing data.  @code{r-fourcseq} provides a pipeline to detect specific
+interactions between DNA elements and identify differential interactions
+between conditions.  The statistical analysis in R starts with individual bam
+files for each sample as inputs.  To obtain these files, the package contains
+a Python script to demultiplex libraries and trim off primer sequences.  With
+a standard alignment software the required bam files can be then be
+generated.")
+    (license license:gpl3+)))
