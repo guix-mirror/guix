@@ -1823,7 +1823,7 @@ behave like a set of bitflags.")
         ("rust-clippy" ,rust-clippy-0.0)
         ("rust-constant-time-eq" ,rust-constant-time-eq-0.1))
        #:cargo-development-inputs
-       (("rust-data-encoding" ,rust-data-encoding-2.1))))
+       (("rust-data-encoding" ,rust-data-encoding-2))))
     (home-page "https://github.com/cesarb/blake2-rfc")
     (synopsis "Rust implementation of BLAKE2 based on RFC 7693")
     (description
@@ -4942,7 +4942,7 @@ reading attributes into structs when implementing custom derives.")
 reading attributes into structs when implementing custom derives.")
     (license license:expat)))
 
-(define-public rust-data-encoding-2.1
+(define-public rust-data-encoding-2
   (package
     (name "rust-data-encoding")
     (version "2.1.2")
