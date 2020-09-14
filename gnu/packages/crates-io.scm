@@ -2381,8 +2381,8 @@ little-endian.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-        ("rust-either" ,rust-either-1.5)
        (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-either" ,rust-either-1)
         ("rust-iovec" ,rust-iovec-0.1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
@@ -6089,7 +6089,7 @@ floating-point primitives to an @code{io::Write}.")
      "Levenshtein edit distance between strings, a measure for similarity.")
     (license license:asl2.0)))
 
-(define-public rust-either-1.5
+(define-public rust-either-1
   (package
     (name "rust-either")
     (version "1.5.3")
@@ -10658,7 +10658,7 @@ whether or not a given path points to an executable file.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-either" ,rust-either-1.5))
+       (("rust-either" ,rust-either-1))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-permutohedron" ,rust-permutohedron-0.2)
@@ -10696,7 +10696,7 @@ whether or not a given path points to an executable file.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-either" ,rust-either-1.5))
+       (("rust-either" ,rust-either-1))
        #:cargo-development-inputs
        (("rust-permutohedron" ,rust-permutohedron-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.7)
@@ -10717,7 +10717,7 @@ whether or not a given path points to an executable file.")
           "03cpsj26xmyamcalclqzr1i700vwx8hnbgxbpjvs354f8mnr8iqd"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-either" ,rust-either-1.5))
+       (("rust-either" ,rust-either-1))
        #:cargo-development-inputs
        (("rust-permutohedron" ,rust-permutohedron-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.5))))))
@@ -10738,7 +10738,7 @@ whether or not a given path points to an executable file.")
     (arguments
      `(#:tests? #f ; Tests fail to compile
        #:cargo-inputs
-       (("rust-either" ,rust-either-1.5))
+       (("rust-either" ,rust-either-1))
        #:cargo-development-inputs
        (("rust-permutohedron" ,rust-permutohedron-0.2)
         ("rust-quickcheck" ,rust-quickcheck-0.4))))))
@@ -18738,7 +18738,7 @@ accessors.")
      `(#:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1.0)
         ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
-        ("rust-either" ,rust-either-1.5)
+        ("rust-either" ,rust-either-1)
         ("rust-rayon-core" ,rust-rayon-core-1))
        #:cargo-development-inputs
        (("rust-docopt" ,rust-docopt-1.1)
@@ -20107,7 +20107,7 @@ It is automatically published using the compiler repository at
      `(#:tests? #f
        #:cargo-inputs
        (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
-        ("rust-either" ,rust-either-1.5)
+        ("rust-either" ,rust-either-1)
         ("rust-rustc-rayon-core" ,rust-rustc-rayon-core-0.3))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
@@ -25136,7 +25136,7 @@ backed applications.")
     (arguments
      `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.4)
-        ("rust-either" ,rust-either-1.5)
+        ("rust-either" ,rust-either-1)
         ("rust-futures" ,rust-futures-0.1))
        #:cargo-development-inputs
        (("rust-tokio-mock-task" ,rust-tokio-mock-task-0.1))))
@@ -28666,7 +28666,7 @@ formatters with per-field documentation generated for each structure.
     (arguments
       `(#:cargo-inputs
         (("rust-anyhow" ,rust-anyhow-1.0)
-         ("rust-either" ,rust-either-1.5)
+         ("rust-either" ,rust-either-1)
          ("rust-serde" ,rust-serde-1)
          ("rust-thiserror" ,rust-thiserror-1)
          ("rust-xmltree" ,rust-xmltree-0.8))
