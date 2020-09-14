@@ -136,7 +136,7 @@ bundles in Docker containers.")
                  (list
                   ;; Make sure the 'docker' command is available.
                   (service-extension profile-service-type
-                                     (list docker-cli))
+                                     (compose list docker-cli))
                   (service-extension activation-service-type
                                      %docker-activation)
                   (service-extension shepherd-root-service-type
