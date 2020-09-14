@@ -8880,7 +8880,7 @@ reading and writing git repositories.")
         ("rust-log" ,rust-log-0.4)
         ("rust-openssl-probe" ,rust-openssl-probe-0.1)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
-        ("rust-url" ,rust-url-1.7))
+        ("rust-url" ,rust-url-1))
        #:cargo-development-inputs
        (("rust-docopt" ,rust-docopt-1.1)
         ("rust-serde" ,rust-serde-1)
@@ -10139,7 +10139,7 @@ SystemTime}}.")
         ("rust-spmc" ,rust-spmc-0.3)
         ("rust-tokio-fs" ,rust-tokio-fs-0.1)
         ("rust-tokio-mockstream" ,rust-tokio-mockstream-1)
-        ("rust-url" ,rust-url-1.7))))
+        ("rust-url" ,rust-url-1))))
     (home-page "https://hyper.rs")
     (synopsis "Fast and correct HTTP library")
     (description "This package provides a fast and correct HTTP library.")
@@ -19551,7 +19551,7 @@ console applications.")
         ("rust-memchr" ,rust-memchr-2)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-time" ,rust-time-0.1)
-        ("rust-url" ,rust-url-1.7)
+        ("rust-url" ,rust-url-1)
         ("rust-uuid" ,rust-uuid-0.7))
        #:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
@@ -26595,7 +26595,7 @@ untrusted inputs in Rust.")
      "URL library for Rust, based on the WHATWG URL Standard.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-url-1.7
+(define-public rust-url-1
   (package
     (inherit rust-url-2)
     (name "rust-url")
@@ -27052,7 +27052,7 @@ If that fails, no determination is made, and calls return None.")
         ("rust-semver-parser" ,rust-semver-parser-0.9)
         ("rust-syn" ,rust-syn-0.15)
         ("rust-toml" ,rust-toml-0.5)
-        ("rust-url" ,rust-url-1.7))))
+        ("rust-url" ,rust-url-1))))
     (home-page "https://github.com/mgeisler/version-sync")
     (synopsis
      "Ensure that version numbers are updated when the crate version changes")
@@ -27089,7 +27089,7 @@ updated when the crate version changes.")
         ("rust-semver-parser" ,rust-semver-parser-0.9)
         ("rust-syn" ,rust-syn-0.15)
         ("rust-toml" ,rust-toml-0.4)
-        ("rust-url" ,rust-url-1.7))))))
+        ("rust-url" ,rust-url-1))))))
 
 (define-public rust-void-1
   (package
