@@ -973,19 +973,16 @@ work well in user interface (UI) environments.")
 (define-public font-adobe-source-serif-pro
   (package
     (name "font-adobe-source-serif-pro")
-    (version "2.007R-ro-1.007R-it")
+    (version "3.001R")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/adobe-fonts/source-serif-pro")
-             (commit (regexp-substitute/global
-                      ;; The upstream tag uses "/" between the roman and italic
-                      ;; versions, so substitute our "-" separator here.
-                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vvzfhjpi47m84bzkapylkd5fri8bdm8qng2hiylmmlw0wk4gpas"))))
+        (base32 "1z0pjvx0jpjwb8vzvc6l5gzlg0mqax4v9pizqcxx82l0ydlfh5bj"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-serif-pro")
     (synopsis
