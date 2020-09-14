@@ -627,6 +627,69 @@ Extension (MIME).")
                (base32
                 "0slzlzcr3h8jikpz5a5amqd0csqh2m40gdk910ws2hnaf5m6hjbi"))))))
 
+(define-public altermime
+  (package
+    (name "altermime")
+    (version "0.3.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://pldaniels.com/altermime/altermime-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vn3vmbcimv0n14khxr1782m76983zz9sf4j2kz5v86lammxld43"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-bugs
+           (lambda _
+             (substitute* "MIME_headers.c"
+               (("hinfo->filename, sizeof\\(hinfo->name\\)")
+                "hinfo->filename, sizeof(hinfo->filename)")
+               (("memset\\(hinfo->defects, 0, _MIMEH_DEFECT_ARRAY_SIZE\\);")
+                "memset(hinfo->defects, 0, sizeof(hinfo->defects));"))
+             (substitute* "pldstr.c"
+               (("if \\(\\(st->start\\)&&\\(st->start != '\\\\0'\\)\\)")
+                "if ((st->start)&&(*st->start != '\\0'))"))
+             (substitute* "qpe.c"
+               (("if \\(lineend != '\\\\0'\\)")
+                "if (*lineend != '\\0')"))
+             #t))
+         (add-after 'unpack 'install-to-prefix
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr/local") "${PREFIX}")
+               (("cp altermime.*") "install -D -t ${PREFIX}/bin altermime\n"))
+             #t))
+         (add-after 'unpack 'disable-Werror
+           (lambda _
+             (substitute* "Makefile"
+               (("-Werror") ""))
+             #t)))))
+    (home-page "https://pldaniels.com/altermime/")
+    (synopsis "Modify MIME-encoded messages")
+    (description
+     "alterMIME is a small program which is used to alter your mime-encoded
+mailpack.  What can alterMIME do?
+
+@enumerate
+@item Insert disclaimers,
+@item insert arbitary X-headers,
+@item modify existing headers,
+@item remove attachments based on filename or content-type,
+@item replace attachments based on filename.
+@end enumerate
+.")
+    ;; MIME_headers.c is distributed under BSD-3; the rest of the code is
+    ;; published under the alterMIME license.
+    (license (list (license:non-copyleft "file://LICENSE")
+                   license:bsd-3))))
+
 (define-public bogofilter
   (package
     (name "bogofilter")
