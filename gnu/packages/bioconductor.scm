@@ -7159,14 +7159,14 @@ data.")
 (define-public r-activedriverwgs
   (package
     (name "r-activedriverwgs")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActiveDriverWGS" version))
        (sha256
         (base32
-         "08l9dj8d3cd74z1dqn8n4yqykwvqjxsfa067wnxyh7xnfvvnm5v1"))))
+         "0l6h0f54zjvcx19ngq3kp01dypsjqf28vssjm8yzccmpyacfypag"))))
     (properties
      `((upstream-name . "ActiveDriverWGS")))
     (build-system r-build-system)
@@ -7177,8 +7177,9 @@ data.")
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
-       ("r-plyr" ,r-plyr)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ActiveDriverWGS/")
     (synopsis "Driver discovery tool for cancer whole genomes")
     (description
