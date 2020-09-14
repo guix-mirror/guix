@@ -1135,13 +1135,13 @@ aesthetic attributes.")
 (define-public r-ggdendro
   (package
     (name "r-ggdendro")
-    (version "0.1.21")
+    (version "0.1.22")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggdendro" version))
               (sha256
                (base32
-                "0jcjdkhd3wirjgv4v3gb9rw8idyymwhwnxplg3wi8wa3mwr9rhq2"))))
+                "0skbj487b6f6pj2iz4yq2b9gbgb39cv5dyzhdl3w7ay1k0s5z9ph"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
