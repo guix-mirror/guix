@@ -16049,7 +16049,7 @@ procedural macros for rust-peg.  To use rust-peg, see the peg package.")
 runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
     (license license:expat)))
 
-(define-public rust-percent-encoding-2.1
+(define-public rust-percent-encoding-2
   (package
     (name "rust-percent-encoding")
     (version "2.1.0")
@@ -16070,7 +16070,7 @@ runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
 
 (define-public rust-percent-encoding-1.0
   (package
-    (inherit rust-percent-encoding-2.1)
+    (inherit rust-percent-encoding-2)
     (name "rust-percent-encoding")
     (version "1.0.1")
     (source
@@ -26583,7 +26583,7 @@ untrusted inputs in Rust.")
        #:cargo-inputs
        (("rust-idna" ,rust-idna-0.2)
         ("rust-matches" ,rust-matches-0.1)
-        ("rust-percent-encoding" ,rust-percent-encoding-2.1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-bencher" ,rust-bencher-0.1)

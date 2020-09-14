@@ -98,7 +98,7 @@
         ("rust-native-tls" ,rust-native-tls-0.2)
         ("rust-nettle" ,rust-nettle-7)
         ("rust-parity-tokio-ipc" ,rust-parity-tokio-ipc-0.4)
-        ("rust-percent-encoding" ,rust-percent-encoding-2.1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
         ("rust-prettytable-rs" ,rust-prettytable-rs-0.8)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)

@@ -101,7 +101,7 @@
         ("rust-natord" ,rust-natord-1.0)
         ("rust-nom" ,rust-nom-5)
         ("rust-once-cell" ,rust-once-cell-1)
-        ("rust-percent-encoding" ,rust-percent-encoding-2.1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-smallvec" ,rust-smallvec-0.6)
         ("rust-url" ,rust-url-2)
