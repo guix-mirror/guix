@@ -10125,14 +10125,14 @@ to colexicographical order.")
 (define-public r-misc3d
   (package
     (name "r-misc3d")
-    (version "0.8-4")
+    (version "0.9-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "misc3d" version))
        (sha256
         (base32
-         "0qjzpw3h09qi2gfz52b7nhzd95p7yyxsd03fldc9wzzn6wi3vpkm"))))
+         "10jf5r1x588vi54bzaqgi9mgcqlkiga2c3jvmqmk3lavc8fjksd1"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/misc3d/")
     (synopsis "Miscellaneous 3D Plots")
