@@ -21292,7 +21292,7 @@ proven statistical guarantees.")
 (define-public rust-serde-1
   (package
     (name "rust-serde")
-    (version "1.0.113")
+    (version "1.0.116")
     (source
       (origin
         (method url-fetch)
@@ -21300,7 +21300,7 @@ proven statistical guarantees.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0smc5pj00nci5g9a9hrz9w7rs7f5cir7gvsqf54pj74qc62cfdb1"))))
+          "19bhld1qyjs4qr3rd6dmzmy13imb6a1qbinb2fjqd0yjh6pmgzln"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
