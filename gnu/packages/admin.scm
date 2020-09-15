@@ -514,7 +514,7 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
      (origin
        (method git-fetch)
@@ -522,15 +522,14 @@ or via the @code{facter} Ruby library.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "0kjlphdvwwbj91kk91s4ksc954d3c2bznddzx2223jmb1bn9rcsa"))
+        (base32 "1qmqhbnc5yw4brd24yrp85k09770c1c00nl03mkv5pdz2bvqivk7"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
     (native-inputs
      `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("python" ,python-wrapper)))     ; for scripts/MakeHeader.py
+       ("automake" ,automake)))
     (home-page "https://htop.dev")
     (synopsis "Interactive process viewer")
     (description
