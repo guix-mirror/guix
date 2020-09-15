@@ -635,6 +635,9 @@ from other CLXes around the net.")
 antialiased TrueType font rendering using CLX and XRender extension.")
       (license license:expat))))
 
+(define-public cl-clx-truetype
+  (sbcl-package->cl-source-package sbcl-clx-truetype))
+
 (define-public sbcl-slynk
   (let ((revision "3")
         ;; Update together with emacs-sly.
@@ -5169,6 +5172,9 @@ be faster and more extensible than Optima.")
       (home-page "https://github.com/guicho271828/trivia")
       (license license:llgpl))))
 
+(define-public cl-trivia.trivial
+  (sbcl-package->cl-source-package sbcl-trivia.trivial))
+
 (define-public sbcl-trivia
   (package
     (inherit sbcl-trivia.trivial)
@@ -5312,6 +5318,9 @@ also makes it easy to shift paradigms when necessary - the usual Lisp control
 constructs can be used interchangeably with pattern matching, and the full
 power of CXML is available when necessary.")
       (license license:bsd-3))))
+
+(define-public cl-xmlspam
+  (sbcl-package->cl-source-package sbcl-cl-xmlspam))
 
 (define-public sbcl-dbus
   (let ((commit "24b452df3a45ca5dc95015500f34baad175c981a")
@@ -6692,6 +6701,9 @@ Antikythera mechanism, one of the oldest examples of a scientific
 computer known.")
       (home-page "https://common-lisp.net/project/antik/")
       (license license:gpl3))))
+
+(define-public cl-antik-base
+  (sbcl-package->cl-source-package sbcl-antik-base))
 
 (define-public sbcl-gsll
   (let ((commit "1a8ada22f9cf5ed7372d352b2317f4ccdb6ab308")
