@@ -4468,6 +4468,36 @@ supports both of ID3v1/v2 and APEv2 tags.")
     (home-page "http://tausoft.org/")
     (license license:gpl2+)))
 
+(define-public libsoundio
+  (package
+   (name "libsoundio")
+   (version "2.0.0")
+   (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/andrewrk/libsoundio")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+         (base32
+           "12l4rvaypv87vigdrmjz48d4d6sq4gfxf5asvnc4adyabxb73i4x"))))
+   (build-system cmake-build-system)
+   (arguments
+    `(#:tests? #f)) ; no tests included
+   (inputs
+    `(("alsa-lib" ,alsa-lib)
+      ("jack" ,jack-1)
+      ("pulseaudio" ,pulseaudio)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (home-page "http://libsound.io")
+   (synopsis "C library for real-time audio input and output")
+   (description "libsoundio is a C library providing audio input and output.
+The API is suitable for real-time software such as digital audio workstations
+as well as consumer software such as music players.")
+   (license license:expat)))
+
 (define-public redkite
   (package
     (name "redkite")
