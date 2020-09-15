@@ -2542,6 +2542,63 @@ That way, you have a clear separation between your data themselves (Model)
 and how they are displayed (View).")
     (license license:lgpl3+)))
 
+(define-public gtg
+  (package
+    (name "gtg")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/getting-things-gnome/gtg")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0r28vyr88rj3kd3cg4gj7sd29wadjchi92wzmbx67d4hlg25h8kk"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/gtg"))
+                   (pylib (string-append (assoc-ref outputs "out")
+                                         "/lib/python"
+                                         ,(version-major+minor
+                                           (package-version python))
+                                         "/site-packages")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("python-dbus" ,python-dbus)
+       ("python-liblarch" ,python-liblarch)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyxdg" ,python-pyxdg)))
+    (home-page "https://wiki.gnome.org/Apps/GTG")
+    (synopsis "Personal organizer for the GNOME desktop")
+    (description
+     "Getting Things GNOME! (GTG) is a personal tasks and TODO list items
+organizer for the GNOME desktop environment inspired by the Getting Things
+Done (GTD) methodology.  GTG is designed with flexibility, adaptability,
+and ease of use in mind so it can be used as more than just GTD software.
+GTG is intended to help you track everything you need to do and need to
+know, from small tasks to large projects.")
+    (license license:gpl3+)))
+
 (define-public icon-naming-utils
   (package
     (name "icon-naming-utils")
