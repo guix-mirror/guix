@@ -14871,7 +14871,7 @@ You probably don't want to link to this crate directly; instead check out the
 (define-public rust-once-cell-1
   (package
     (name "rust-once-cell")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
@@ -14880,7 +14880,7 @@ You probably don't want to link to this crate directly; instead check out the
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "138n52yni5qym7ds8kxckvhdy4x0m0scy0gl74brmwsahmz1yqqb"))))
+         "1ba56vr8n85xgajnn78pg6iag4inwil3mqg90wi5jaz6xzkm23i6"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
