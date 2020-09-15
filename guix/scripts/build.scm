@@ -427,7 +427,7 @@ a checkout of the Git repository at the given URL."
 
 (define (show-transformation-options-help)
   (display (G_ "
-      --with-source=SOURCE
+      --with-source=[PACKAGE=]SOURCE
                          use SOURCE when building the corresponding package"))
   (display (G_ "
       --with-input=PACKAGE=REPLACEMENT
