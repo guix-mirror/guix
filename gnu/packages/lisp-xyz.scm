@@ -2498,7 +2498,6 @@ Lisp implementations.")
                        "pango/cl-cffi-gtk-pango.asd"
                        "gdk-pixbuf/cl-cffi-gtk-gdk-pixbuf.asd"
                        "gdk/cl-cffi-gtk-gdk.asd")
-         #:asd-systems '("cl-cffi-gtk")
          #:test-asd-file "test/cl-cffi-gtk-test.asd"
          ;; TODO: Tests fail with memory fault.
          ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
@@ -3399,8 +3398,7 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
           (base32 "1r46v730yf96nk2vb24qmagv9x96xvd08abqwhf02ghgydv1a7z2"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       '(#:asd-systems '("cl-utilities")
-         #:phases
+       '(#:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs #:allow-other-keys)
@@ -4668,7 +4666,6 @@ formats.")
                        "iolib.common-lisp.asd"
                        "iolib.base.asd"
                        "iolib.asd")
-         #:asd-systems '("iolib")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
@@ -5203,8 +5200,7 @@ Trivia.")
          ("lisp-namespace" ,sbcl-lisp-namespace)
          ("trivial-cltl2" ,sbcl-trivial-cltl2)))
       (arguments
-       '(#:asd-systems '("trivia.trivial")
-         #:phases
+       '(#:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-build
              (lambda _
@@ -5772,8 +5768,7 @@ on the XPTest package by Craig Brozensky and the JUnit package by Kent Beck.")
          ("periods" ,sbcl-periods)))
       (arguments
        '(#:asd-files '("fprog.asd"
-                       "cambl.asd")
-         #:asd-systems '("cambl")))
+                       "cambl.asd")))
       (synopsis "Commoditized amounts and balances for Common Lisp")
       (description
        "CAMBL is a Common Lisp library providing a convenient facility for
@@ -6837,8 +6832,7 @@ intending to program in Lisp.")
      `(("antik-base" ,sbcl-antik-base)
        ("gsll" ,sbcl-gsll)))
     (arguments
-     '(#:asd-systems '("antik")
-       #:phases
+     '(#:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-build
              (lambda _
@@ -7077,8 +7071,7 @@ sacrificing much in the way of power.")
         ("libffi" ,libffi)
         ("split-sequence" ,sbcl-split-sequence)))
      (arguments
-      `(#:asd-systems '("cl-ana")
-        #:phases
+      `(#:phases
         (modify-phases %standard-phases
           (add-after 'unpack 'fix-paths
             (lambda* (#:key inputs #:allow-other-keys)
@@ -8024,8 +8017,7 @@ them as PNG files.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-systems '("hdf5-cffi")
-         #:test-asd-file "hdf5-cffi.test.asd"
+       `(#:test-asd-file "hdf5-cffi.test.asd"
          ;; Tests depend on hdf5-cffi.examples.asd in addition to hdf5-cffi.asd,
          ;; I don't know if there is a way to tell asdf-build-system to load
          ;; an additional system first, so tests are disabled.
@@ -8076,8 +8068,7 @@ generation functions from the GSL library.")
     (home-page "https://github.com/lvaruzza/cl-randist")
     (license license:bsd-2)
     (arguments
-     `(#:asd-systems '("cl-randist")
-       #:tests? #f))))
+     `(#:tests? #f))))
 
 (define-public cl-randist
   (sbcl-package->cl-source-package sbcl-cl-randist))
@@ -8109,8 +8100,7 @@ covered by the Common Lisp standard.")
     (inputs
      `(("documentation-utils" ,sbcl-documentation-utils)))
     (arguments
-     `(#:asd-systems '("float-features")
-       #:tests? #f))))
+     `(#:tests? #f))))
 
 (define-public cl-float-features
   (sbcl-package->cl-source-package sbcl-float-features))
@@ -8148,8 +8138,7 @@ caching based on arguments (an expanded form of memoization).")
        ("symbol-munger" ,sbcl-symbol-munger)
        ("closer-mop" ,sbcl-closer-mop)))
     (arguments
-     `(#:asd-systems '("function-cache")
-       #:tests? #f))))
+     `(#:tests? #f))))
 
 (define-public cl-function-cache
   (sbcl-package->cl-source-package sbcl-function-cache))
@@ -8187,8 +8176,7 @@ the elements in compound type specifier, e.g. @code{dimensions} in
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-systems '("type-r")
-         #:test-asd-file "type-r.test.asd")))))
+       `(#:test-asd-file "type-r.test.asd")))))
 
 (define-public cl-type-r
   (sbcl-package->cl-source-package sbcl-type-r))
@@ -8266,8 +8254,7 @@ code.  The main target of this macro is speed.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-systems '("specialized-function")
-         #:asd-files '("specialized-function.asd")
+       `(#:asd-files '("specialized-function.asd")
          #:test-asd-file "specialized-function.test.asd")))))
 
 (define-public cl-specialized-function
@@ -8304,8 +8291,7 @@ additional form that is considered as a candidate for a constant.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-systems '("constantfold")
-         #:asd-files '("constantfold.asd")
+       `(#:asd-files '("constantfold.asd")
          #:test-asd-file "constantfold.test.asd")))))
 
 (define-public cl-constantfold
@@ -8344,8 +8330,7 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-systems '("gtype")
-         #:asd-files '("gtype.asd")
+       `(#:asd-files '("gtype.asd")
          #:test-asd-file "gtype.test.asd")))))
 
 (define-public cl-gtype
@@ -8391,8 +8376,7 @@ and usefulness, not speed.  Track the progress at
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
-       `(#:asd-systems '("numcl")
-         #:asd-files '("numcl.asd")
+       `(#:asd-files '("numcl.asd")
          #:test-asd-file "numcl.test.asd")))))
 
 (define-public cl-numcl
@@ -9099,8 +9083,7 @@ accompaniment to the standard ANSI facilities.")
          "0rlswkf0siaabsvvch3dgxmg45fw5w8pd9b7ri2w7a298aya52z9"))))
     (build-system asdf-build-system/sbcl)
     (arguments
-     '(#:asd-files '("quantile-estimator.asd")
-       #:asd-systems '("quantile-estimator")))
+     '(#:asd-files '("quantile-estimator.asd")))
     (inputs
      `(("alexandria" ,sbcl-alexandria)))
     (home-page "https://github.com/deadtrickster/quantile-estimator.cl")
@@ -9483,8 +9466,6 @@ weight, temperature, names of physical quantitites, etc.")
          (sha256
           (base32
            "1639msyagsswj85gc0wd90jgh8588j3qg5q70by9s2brf2q6w4lh"))))
-      (arguments
-       '(#:asd-systems '("clump")))
       (inputs
        `(("acclimation" ,sbcl-acclimation)))
       (build-system asdf-build-system/sbcl)
@@ -9528,8 +9509,6 @@ sequences of objects.")
       (inputs
        `(("acclimation" ,sbcl-acclimation)
          ("clump" ,sbcl-clump)))
-      (arguments
-       '(#:asd-systems '("cluffer")))
       (home-page "https://github.com/robert-strandh/cluffer")
       (synopsis "Common Lisp library providing a protocol for text-editor buffers")
       (description "Cluffer is a library for representing the buffer of a text
@@ -10518,8 +10497,7 @@ can separate configuration system from an implementation.")
          ("sxql" ,sbcl-sxql)
          ("uuid" ,sbcl-uuid)))
       (arguments
-       '(#:asd-systems '("mito")
-         #:phases
+       '(#:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'remove-non-functional-tests
              (lambda _
