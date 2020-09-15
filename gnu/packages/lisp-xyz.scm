@@ -3472,10 +3472,10 @@ client and server.")
   (sbcl-package->ecl-package sbcl-s-xml-rpc))
 
 (define-public sbcl-trivial-clipboard
-  (let ((commit "5af3415d1484e6d69a1b5c178f24680d9fd01796"))
+  (let ((commit "afcd3743b842f5a81fc86dba60f9db59970f49c5"))
     (package
       (name "sbcl-trivial-clipboard")
-      (version (git-version "0.0.0.0" "2" commit))
+      (version (git-version "0.0.0.0" "3" commit))
       (source
        (origin
          (method git-fetch)
@@ -3485,7 +3485,7 @@ client and server.")
          (file-name (git-file-name "trivial-clipboard" version))
          (sha256
           (base32
-           "1gb515z5yq6h5548pb1fwhmb0hhq1ssyb78pvxh4alq799xipxs9"))))
+           "1qfbvkzmvkbqpc5s3sx31c5653sy6qlcixafgzd10qpykb843prr"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("xclip" ,xclip)))
