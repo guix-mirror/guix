@@ -893,6 +893,9 @@ compressor.  It works on data produced by @code{parse-js} to generate a
 (define-public cl-uglify-js
   (sbcl-package->cl-source-package sbcl-cl-uglify-js))
 
+(define-public ecl-cl-uglify-js
+  (sbcl-package->ecl-package sbcl-cl-uglify-js))
+
 (define-public uglify-js
   (package
     (inherit sbcl-cl-uglify-js)
@@ -2274,6 +2277,9 @@ relational database engine.")
 (define-public cl-sqlite
   (sbcl-package->cl-source-package sbcl-cl-sqlite))
 
+(define-public ecl-cl-sqlite
+  (sbcl-package->ecl-package sbcl-cl-sqlite))
+
 (define-public sbcl-parenscript
   ;; Source archives are overwritten on every release, we use the Git repo instead.
   (let ((commit "7a1ac46353cecd144fc91915ba9f122aafcf4766"))
@@ -2584,6 +2590,9 @@ WebKit browsing engine.")
 
 (define-public cl-webkit
   (sbcl-package->cl-source-package sbcl-cl-webkit))
+
+(define-public ecl-cl-webkit
+  (sbcl-package->ecl-package sbcl-cl-webkit))
 
 (define-public sbcl-lparallel
   (package
@@ -2938,6 +2947,9 @@ backtrace portably.")
 (define-public cl-trivial-backtrace
   (sbcl-package->cl-source-package sbcl-trivial-backtrace))
 
+(define-public ecl-trivial-backtrace
+  (sbcl-package->ecl-package sbcl-trivial-backtrace))
+
 (define-public sbcl-rfc2388
   (let ((commit "591bcf7e77f2c222c43953a80f8c297751dc0c4e")
         (revision "1"))
@@ -2964,6 +2976,9 @@ process form data posted with HTTP POST method using enctype
 
 (define-public cl-rfc2388
   (sbcl-package->cl-source-package sbcl-rfc2388))
+
+(define-public ecl-rfc2388
+  (sbcl-package->ecl-package sbcl-rfc2388))
 
 (define-public sbcl-md5
   (package
@@ -3174,8 +3189,11 @@ WHO means \"with-html-output\" for want of a better acronym) is probably just
 as good or bad as the next one.")
       (license license:bsd-2))))
 
-(define-public cl-cl-who
+(define-public cl-who
   (sbcl-package->cl-source-package sbcl-cl-who))
+
+(define-public ecl-cl-who
+  (sbcl-package->ecl-package sbcl-cl-who))
 
 (define-public sbcl-chipz
   (let ((version "0.8")
@@ -3319,6 +3337,9 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 (define-public cl-trivial-types
   (sbcl-package->cl-source-package sbcl-trivial-types))
 
+(define-public ecl-trivial-types
+  (sbcl-package->ecl-package sbcl-trivial-types))
+
 (define-public sbcl-cl-annot
   (let ((commit "c99e69c15d935eabc671b483349a406e0da9518d")
         (revision "1"))
@@ -3381,6 +3402,9 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 (define-public cl-syntax
   (sbcl-package->cl-source-package sbcl-cl-syntax))
 
+(define-public ecl-cl-syntax
+  (sbcl-package->ecl-package sbcl-cl-syntax))
+
 (define-public sbcl-cl-utilities
   (let ((commit "dce2d2f6387091ea90357a130fa6d13a6776884b")
         (revision "1"))
@@ -3420,6 +3444,9 @@ everywhere some dumb user might make a mistake.")
 
 (define-public cl-utilities
   (sbcl-package->cl-source-package sbcl-cl-utilities))
+
+(define-public ecl-cl-utilities
+  (sbcl-package->ecl-package sbcl-cl-utilities))
 
 (define-public sbcl-map-set
   (let ((commit "7b4b545b68b8")
@@ -3556,6 +3583,9 @@ effieiently.")
 (define-public cl-xsubseq
   (sbcl-package->cl-source-package sbcl-xsubseq))
 
+(define-public ecl-xsubseq
+  (sbcl-package->ecl-package sbcl-xsubseq))
+
 (define-public sbcl-smart-buffer
   (let ((commit "09b9a9a0b3abaa37abe9a730f5aac2643dca4e62")
         (revision "1"))
@@ -3590,6 +3620,9 @@ depending on content size.")
 
 (define-public cl-smart-buffer
   (sbcl-package->cl-source-package sbcl-smart-buffer))
+
+(define-public ecl-smart-buffer
+  (sbcl-package->ecl-package sbcl-smart-buffer))
 
 (define-public sbcl-fast-http
   (let ((commit "502a37715dcb8544cc8528b78143a942de662c5a")
@@ -5001,6 +5034,9 @@ and it exports symbols from implementation-specific packages.")
 (define-public cl-trivial-cltl2
   (sbcl-package->cl-source-package sbcl-trivial-cltl2))
 
+(define-public ecl-trivial-cltl2
+  (sbcl-package->ecl-package sbcl-trivial-cltl2))
+
 (define-public sbcl-introspect-environment
   (let ((commit "fff42f8f8fd0d99db5ad6c5812e53de7d660020b")
         (revision "1"))
@@ -5082,6 +5118,13 @@ the return type of a function.")
 
 (define-public cl-type-i
   (sbcl-package->cl-source-package sbcl-type-i))
+
+(define-public ecl-type-i
+  (package
+    (inherit (sbcl-package->ecl-package sbcl-type-i))
+    (arguments
+     ;; The tests get stuck indefinitly
+     '(#:tests? #f))))
 
 (define-public sbcl-optima
   (let ((commit "373b245b928c1a5cce91a6cb5bfe5dd77eb36195")
@@ -5222,6 +5265,9 @@ be faster and more extensible than Optima.")
 (define-public cl-trivia.trivial
   (sbcl-package->cl-source-package sbcl-trivia.trivial))
 
+(define-public ecl-trivia.trivial
+  (sbcl-package->ecl-package sbcl-trivia.trivial))
+
 (define-public sbcl-trivia
   (package
     (inherit sbcl-trivia.trivial)
@@ -5256,6 +5302,9 @@ be faster and more extensible than Optima.")
 
 (define-public cl-trivia
   (sbcl-package->cl-source-package sbcl-trivia))
+
+(define-public ecl-trivia
+  (sbcl-package->ecl-package sbcl-trivia))
 
 (define-public sbcl-mk-string-metrics
   (package
@@ -5331,6 +5380,9 @@ arrows.")
 (define-public cl-str
   (sbcl-package->cl-source-package sbcl-cl-str))
 
+(define-public ecl-cl-str
+  (sbcl-package->ecl-package sbcl-cl-str))
+
 (define-public sbcl-cl-xmlspam
   (let ((commit "ea06abcca2a73a9779bcfb09081e56665f94e22a"))
     (package
@@ -5365,6 +5417,9 @@ power of CXML is available when necessary.")
 
 (define-public cl-xmlspam
   (sbcl-package->cl-source-package sbcl-cl-xmlspam))
+
+(define-public ecl-cl-xmlspam
+  (sbcl-package->ecl-package sbcl-cl-xmlspam))
 
 (define-public sbcl-dbus
   (let ((commit "24b452df3a45ca5dc95015500f34baad175c981a")
@@ -6254,6 +6309,9 @@ supplement, not a competitor, to Alexandria.")
 (define-public cl-serapeum
   (sbcl-package->cl-source-package sbcl-serapeum))
 
+(define-public ecl-serapeum
+  (sbcl-package->ecl-package sbcl-serapeum))
+
 (define-public sbcl-arrows
   (let ((commit "df7cf0067e0132d9697ac8b1a4f1b9c88d4f5382")
         (revision "0"))
@@ -6454,6 +6512,9 @@ interactive development.")
 (define-public cl-stefil
   (sbcl-package->cl-source-package sbcl-stefil))
 
+(define-public ecl-stefil
+  (sbcl-package->ecl-package sbcl-stefil))
+
 (define-public sbcl-graph
   (let ((commit "78bf9ec930d8eae4f0861b5be76765fb1e45e24f")
         (revision "0"))
@@ -6528,6 +6589,9 @@ results.")
 
 (define-public cl-trivial-indent
   (sbcl-package->cl-source-package sbcl-trivial-indent))
+
+(define-public ecl-trivial-indent
+  (sbcl-package->ecl-package sbcl-trivial-indent))
 
 (define-public sbcl-documentation-utils
   (let ((commit "98630dd5f7e36ae057fa09da3523f42ccb5d1f55")
@@ -8181,6 +8245,9 @@ the elements in compound type specifier, e.g. @code{dimensions} in
 (define-public cl-type-r
   (sbcl-package->cl-source-package sbcl-type-r))
 
+(define-public ecl-type-r
+  (sbcl-package->ecl-package sbcl-type-r))
+
 (define-public sbcl-trivialib-type-unify
   (let ((commit "62492ebf04db567dcf435ae84c50b7b8202ecf99")
         (revision "1"))
@@ -8218,6 +8285,9 @@ correctly.")
 
 (define-public cl-trivialib-type-unify
   (sbcl-package->cl-source-package sbcl-trivialib-type-unify))
+
+(define-public ecl-trivialib-type-unify
+  (sbcl-package->ecl-package sbcl-trivialib-type-unify))
 
 (define-public sbcl-specialized-function
   (let ((commit "b96b6afaf8358bf91cc0703e62a5a4ee20d2b7bc")
@@ -8296,6 +8366,9 @@ additional form that is considered as a candidate for a constant.")
 
 (define-public cl-constantfold
   (sbcl-package->cl-source-package sbcl-constantfold))
+
+(define-public ecl-constantfold
+  (sbcl-package->ecl-package sbcl-constantfold))
 
 (define-public sbcl-gtype
   (let ((commit "42275e3606242ae91e9c8dfa30c18ced50a35b66")
@@ -8595,6 +8668,22 @@ foreign libraries.
 (define-public cl-postmodern
   (sbcl-package->cl-source-package sbcl-postmodern))
 
+(define-public ecl-postmodern
+  (package
+    (inherit (sbcl-package->ecl-package sbcl-postmodern))
+    (arguments
+     `(#:tests? #f
+       #:asd-systems '("postmodern"
+                       "simple-date/postgres-glue")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build
+           (lambda _
+             (substitute* "cl-postgres.asd"
+               (("\\) \"usocket\"")
+                " :ecl) \"usocket\""))
+             #t)))))))
+
 (define-public sbcl-dbi
   ;; Master includes a breaking change which other packages depend on since
   ;; Quicklisp decided to follow it:
@@ -8857,6 +8946,9 @@ If features:
 (define-public cl-sycamore
   (sbcl-package->cl-source-package sbcl-sycamore))
 
+(define-public ecl-sycamore
+  (sbcl-package->ecl-package sbcl-sycamore))
+
 (define-public sbcl-trivial-package-local-nicknames
   (package
     (name "sbcl-trivial-package-local-nicknames")
@@ -8881,6 +8973,9 @@ in DEFPACKAGE.")
 
 (define-public cl-trivial-package-local-nicknames
   (sbcl-package->cl-source-package sbcl-trivial-package-local-nicknames))
+
+(define-public ecl-trivial-package-local-nicknames
+  (sbcl-package->ecl-package sbcl-trivial-package-local-nicknames))
 
 (define-public sbcl-enchant
   (let ((commit "6af162a7bf10541cbcfcfa6513894900329713fa"))
@@ -10532,6 +10627,9 @@ like Ruby's ActiveRecord.
 
 (define-public cl-mito
   (sbcl-package->cl-source-package sbcl-mito))
+
+(define-public ecl-mito
+  (sbcl-package->ecl-package sbcl-mito))
 
 (define-public sbcl-kebab
   (let ((commit "e7f77644c4e46131e7b8039d191d35fe6211f31b")
