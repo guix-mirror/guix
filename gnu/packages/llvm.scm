@@ -90,14 +90,14 @@ as \"x86_64-linux\"."
 (define-public llvm-10
   (package
     (name "llvm")
-    (version "10.0.0")
+    (version "10.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
-        "1pwgm6cr0xr5a0hrbqs1zvsvvjvy0yq1y47c96804wcs795s90yz"))))
+        "1wydhbp9kyjp5y0rc627imxgkgqiv3dfirbqil9dgpnbaw5y7n65"))))
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
@@ -505,11 +505,11 @@ output), and Binutils.")
 (define-public clang-runtime-10
   (clang-runtime-from-llvm
    llvm-10
-   "0x9c531k6ww21s2mkdwqx1vbdjmx6d4wmfb8gdbj0wqa796sczba"))
+   "1yjqjri753w0fzmxcyz687nvd97sbc9rsqrxzpq720na47hwh3fr"))
 
 (define-public clang-10
   (clang-from-llvm llvm-10 clang-runtime-10
-                   "08fbxa2a0kr3ni35ckppj0kyvlcyaywrhpqwcdrdy0z900mhcnw8"
+                   "091bvcny2lh32zy8f3m9viayyhb2zannrndni7325rl85cwgr6pr"
                    #:patches '("clang-10.0-libc-search-path.patch")
                    #:tools-extra
                    (origin
@@ -518,7 +518,7 @@ output), and Binutils.")
                                              (package-version llvm-10)))
                      (sha256
                       (base32
-                       "074ija5s2jsdn0k035r2dzmryjmqxdnyg4xwvaqych2bazv8rpxc")))))
+                       "06n1yp638rh24xdxv9v2df0qajxbjz4w59b7dd4ky36drwmpi4yh")))))
 
 (define-public clang-toolchain-10
   (make-clang-toolchain clang-10))
@@ -569,7 +569,7 @@ output), and Binutils.")
               (uri (llvm-download-uri "lld" version))
               (sha256
                (base32
-                "026pwcbczcg0j5c9h7hxxrn3ki81ia9m9sfn0sy0bvzffv2xg85r"))))
+                "0ynzi35r4fckvp6842alpd43qr810j3728yfslc66fk2mbh4j52r"))))
     (build-system cmake-build-system)
     (inputs
      `(("llvm" ,llvm-10)))
