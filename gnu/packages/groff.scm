@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -201,7 +201,13 @@ is usually the formatter of \"man\" documentation pages.")
              (lambda* (#:key outputs #:allow-other-keys)
                (mkdir-p (string-append (assoc-ref outputs "out")
                                        "/bin"))
-               #t)))))
+               #t))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/roffit")
+                   `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB"))))
+                 #t))))))
       (native-inputs `(("html-tree" ,perl-html-tree))) ; for test
       (inputs
        `(("perl" ,perl)))
