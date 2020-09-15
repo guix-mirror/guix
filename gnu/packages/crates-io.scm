@@ -9472,7 +9472,7 @@ the template engine that renders the official Rust website")
        #:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
         ("rust-rayon" ,rust-rayon-1)
-        ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1.0)
+        ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
@@ -20193,7 +20193,7 @@ decoding.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-rustc-std-workspace-alloc-1.0
+(define-public rust-rustc-std-workspace-alloc-1
   (package
     (name "rust-rustc-std-workspace-alloc")
     (version "1.0.0")
@@ -27299,7 +27299,7 @@ specified across Unix and Windows platforms.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-        ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1.0)
+        ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
     (home-page "https://github.com/bytecodealliance/wasi")
     (synopsis "Experimental WASI API bindings for Rust")
