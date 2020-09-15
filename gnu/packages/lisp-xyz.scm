@@ -446,11 +446,7 @@ file.")
     (inputs
      `(("zpb-ttf" ,sbcl-zpb-ttf)))
     (arguments
-     '(#:asd-files '("cl-vectors.asd"
-                     "cl-aa.asd"
-                     "cl-paths.asd"
-                     "cl-paths-ttf.asd")
-       #:asd-systems '("cl-vectors"
+     '(#:asd-systems '("cl-vectors"
                        "cl-paths-ttf")))
     (home-page "http://projects.tuxee.net/cl-vectors/")
     (synopsis "Create, transform and render anti-aliased vectorial paths")
@@ -691,7 +687,6 @@ antialiased TrueType font rendering using CLX and XRender extension.")
       (outputs '("out" "image"))
       (arguments
        `(#:tests? #f ; No test suite
-         #:asd-files '("slynk.asd")
          #:asd-systems '("slynk"
                          "slynk/arglists"
                          "slynk/util"
@@ -997,7 +992,9 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
          (sha256
           (base32 "14pcahr8r2j3idhyy216zyw8jnj1dnrx0qbkkbdqkvwzign1ah4j"))))
       (build-system asdf-build-system/sbcl)
-      (arguments '(#:tests? #f))
+      (arguments
+       '(#:asd-files '("trivial-features.asd")
+         #:tests? #f))
       (home-page "https://cliki.net/trivial-features")
       (synopsis "Ensures consistency of @code{*FEATURES*} in Common Lisp")
       (description "Trivial-features ensures that @code{*FEATURES*} is
@@ -1116,8 +1113,7 @@ GNU libiconv, but completely written in Common Lisp.")
        (file-name (string-append "cl-yacc-" version "-checkout"))))
     (build-system asdf-build-system/sbcl)
     (arguments
-     `(#:asd-files '("yacc.asd")
-       #:asd-systems '("yacc")))
+     `(#:asd-systems '("yacc")))
     (synopsis "LALR(1) parser generator for Common Lisp, similar in spirit to Yacc")
     (description
      "CL-Yacc is a LALR(1) parser generator for Common Lisp, similar in spirit
@@ -1392,9 +1388,7 @@ C, C++, Java, Python, Erlang, Haskell, Objective-C, Diff, Webkit.")
       (arguments
        ;; FIXME: We need to specify the name because the build-system thinks
        ;; "3" is a version marker.
-       `(#:asd-files '("3bmd.asd"
-                       "3bmd-ext-code-blocks.asd")
-         #:asd-systems '("3bmd"
+       `(#:asd-systems '("3bmd"
                          "3bmd-ext-code-blocks")))
       (inputs
        `(("colorize" ,sbcl-colorize)
@@ -1630,8 +1624,7 @@ writing code that contains string literals that contain code themselves.")
          "0js24x42m7b5iymb4rxz501dff19vav5pywnzv50b673rbkaaqvh"))))
     (build-system asdf-build-system/sbcl)
     (arguments
-     '(#:asd-files '("swank.asd")
-       #:asd-systems '("swank")))
+     '(#:asd-systems '("swank")))
     (home-page "https://github.com/slime/slime")
     (synopsis "Common Lisp Swank server")
     (description
@@ -1936,9 +1929,6 @@ named color.")
        `(("alexandria" ,sbcl-alexandria)
          ("cl-ppcre" ,sbcl-cl-ppcre)
          ("cl-ansi-text" ,sbcl-cl-ansi-text)))
-      (arguments
-       `(#:asd-files '("prove.asd"
-                       "prove-asdf.asd")))
       (synopsis "Yet another unit testing framework for Common Lisp")
       (description
        "This project was originally called @command{cl-test-more}.
@@ -2068,10 +2058,7 @@ values from a string in Common Lisp.")
        ;; For testing:
        `(("lisp-unit" ,sbcl-lisp-unit)))
       (arguments
-       `(#:tests? #f
-         #:asd-files '("cl-string-match.asd"
-                       "ascii-strings.asd"
-                       "simple-scanf.asd")))
+       `(#:tests? #f))
       (synopsis "Set of utilities to manipulate strings in Common Lisp")
       (description
        "@command{cl-strings} is a small, portable, dependency-free set of
@@ -2165,12 +2152,7 @@ Lisp programs.  It parses URI according to the RFC 2396 specification.")
       (inputs
        `(("bordeaux-threads" ,sbcl-bordeaux-threads)))
       (arguments
-       '(#:asd-files '("queues.asd"
-                       "queues.simple-queue.asd"
-                       "queues.simple-cqueue.asd"
-                       "queues.priority-queue.asd"
-                       "queues.priority-cqueue.asd")
-         #:asd-systems '("queues"
+       '(#:asd-systems '("queues"
                          "queues.simple-queue"
                          "queues.simple-cqueue"
                          "queues.priority-queue"
@@ -2274,8 +2256,7 @@ package.")
      `(("fiveam" ,sbcl-fiveam)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)))
     (arguments
-     `(#:asd-files '("sqlite.asd")
-       #:asd-systems '("sqlite")
+     `(#:asd-systems '("sqlite")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
@@ -2584,8 +2565,7 @@ is a library for creating graphical user interfaces.")
          ("cl-cffi-gtk" ,sbcl-cl-cffi-gtk)
          ("webkitgtk" ,webkitgtk)))
       (arguments
-       `(#:asd-files '("webkit2/cl-webkit2.asd")
-         #:asd-systems '("cl-webkit2")
+       `(#:asd-systems '("cl-webkit2")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
@@ -2781,8 +2761,6 @@ Lisp (from GBBopen project).")
        ("split-sequence" ,sbcl-split-sequence)))
     (arguments
      `(#:tests? #f ; FIXME: Tests need network access?
-       #:asd-files '("usocket.asd"
-                     "usocket-server.asd")
        #:asd-systems '("usocket"
                        "usocket-server")))
     (home-page "https://common-lisp.net/project/usocket/")
@@ -3392,10 +3370,7 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
        ("named-readtables" ,sbcl-named-readtables)
        ("trivial-types" ,sbcl-trivial-types)))
     (arguments
-     '(#:asd-files '("cl-syntax.asd"
-                     "cl-syntax-annot.asd"
-                     "cl-syntax-interpol.asd")
-       #:asd-systems '("cl-syntax"
+     '(#:asd-systems '("cl-syntax"
                        "cl-syntax-annot"
                        "cl-syntax-interpol")))
     (home-page "https://github.com/m2ym/cl-syntax")
@@ -3424,8 +3399,7 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
           (base32 "1r46v730yf96nk2vb24qmagv9x96xvd08abqwhf02ghgydv1a7z2"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       '(#:asd-files '("cl-utilities.asd")
-         #:asd-systems '("cl-utilities")
+       '(#:asd-systems '("cl-utilities")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
@@ -3743,7 +3717,8 @@ Only minimal changes required to make your CLOS objects serializable.")
        ;; Error while trying to load definition for system checkl-test from
        ;; pathname [...]/checkl-test.asd: The function CHECKL:DEFINE-TEST-OP
        ;; is undefined.
-       '(#:tests? #f))
+       '(#:asd-files '("checkl.asd")
+         #:tests? #f))
       (native-inputs
        `(("sbcl-fiveam" ,sbcl-fiveam)))
       (inputs
@@ -3784,7 +3759,8 @@ against the last run.")
       ;; Error while trying to load definition for system fast-io-test from
       ;; pathname [...]/fast-io-test.asd: The function CHECKL:DEFINE-TEST-OP
       ;; is undefined.
-      '(#:tests? #f))
+      '(#:tests? #f
+        #:asd-files '("fast-io.asd")))
      (native-inputs
       `(("sbcl-fiveam" ,sbcl-fiveam)
         ("sbcl-checkl" ,sbcl-checkl)))
@@ -3950,14 +3926,7 @@ reset to 0 and you're able to read it again.")
          ("quri" ,sbcl-quri)
          ("trivial-mimes" ,sbcl-trivial-mimes)))
       (arguments
-       '(#:asd-files '("lack.asd"
-                       "lack-request.asd"
-                       "lack-response.asd"
-                       "lack-component.asd"
-                       "lack-util.asd"
-                       "lack-middleware-backtrace.asd"
-                       "lack-middleware-static.asd")
-         #:asd-systems '("lack"
+       '(#:asd-systems '("lack"
                          "lack-request"
                          "lack-response"
                          "lack-component"
@@ -4187,11 +4156,7 @@ mostly Common Lisp implementation.")
          ("usocket" ,sbcl-usocket)
          ("quri" ,sbcl-quri)))
       (arguments
-       '(#:asd-files '("clack.asd"
-                       "clack-handler-fcgi.asd"
-                       "clack-socket.asd"
-                       "clack-handler-hunchentoot.asd")
-         #:asd-systems '("clack"
+       '(#:asd-systems '("clack"
                          "clack-handler-fcgi"
                          "clack-socket"
                          "clack-handler-hunchentoot")))
@@ -4383,8 +4348,7 @@ the CFFI approach used by burgled-batteries, but has the same goal.")
           (base32 "03g5qks4c59nmxa48pbslxkfh77h8hn8566jddp6m9pl15dzzpxd"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       `(#:asd-files '("parse-declarations-1.0.asd")
-         #:asd-systems '("parse-declarations-1.0")))
+       `(#:asd-systems '("parse-declarations-1.0")))
       (home-page "https://common-lisp.net/project/parse-declarations/")
       (synopsis "Parse, filter, and build declarations")
       (description
@@ -4592,8 +4556,7 @@ basic everyday functions and macros.")
       (arguments
        ;; Guix incorrectly assumes the "8" is part of the version
        ;; number and lobs it off.
-       `(#:asd-files '("trivial-utf-8.asd")
-         #:asd-systems '("trivial-utf-8")))
+       `(#:asd-systems '("trivial-utf-8")))
       (build-system asdf-build-system/sbcl)
       (synopsis "UTF-8 input/output library")
       (description
@@ -5187,10 +5150,6 @@ optimizing techniques widely used in the functional programming world.")
        ;; XXX: Circular dependencies: Tests depend on subsystems,
        ;; which depend on the main systems.
        `(#:tests? #f
-         #:asd-files '("fare-quasiquote.asd"
-                       "fare-quasiquote-optima.asd"
-                       "fare-quasiquote-readtable.asd"
-                       "fare-quasiquote-extras.asd")
          #:asd-systems '("fare-quasiquote"
                          "fare-quasiquote-extras")
          #:phases
@@ -5244,11 +5203,7 @@ Trivia.")
          ("lisp-namespace" ,sbcl-lisp-namespace)
          ("trivial-cltl2" ,sbcl-trivial-cltl2)))
       (arguments
-       '(#:asd-files '("trivia.level0.asd"
-                       "trivia.level1.asd"
-                       "trivia.level2.asd"
-                       "trivia.trivial.asd")
-         #:asd-systems '("trivia.trivial")
+       '(#:asd-systems '("trivia.trivial")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-build
@@ -5287,12 +5242,7 @@ be faster and more extensible than Optima.")
        ("trivia.trivial" ,sbcl-trivia.trivial)
        ("type-i" ,sbcl-type-i)))
     (arguments
-     '(#:asd-files '("trivia.balland2006.asd"
-                     "trivia.ppcre.asd"
-                     "trivia.quasiquote.asd"
-                     "trivia.cffi.asd"
-                     "trivia.asd")
-       #:asd-systems '("trivia"
+     '(#:asd-systems '("trivia"
                        "trivia.ppcre"
                        "trivia.quasiquote"
                        "trivia.cffi")
@@ -5370,8 +5320,7 @@ various string metrics in Common Lisp:
       (native-inputs
        `(("prove" ,sbcl-prove)))
       (arguments
-       `(#:asd-files '("str.asd")
-         #:asd-systems '("str")
+       `(#:asd-systems '("str")
          #:test-asd-file "str.test.asd"))
       (synopsis "Modern, consistent and terse Common Lisp string manipulation library")
       (description "A modern and consistent Common Lisp string manipulation
@@ -5660,9 +5609,7 @@ programming style and the efficiency of an iterative programming style.")
        `(("local-time" ,sbcl-local-time)
          ("series" ,sbcl-series)))
       (arguments
-       '(#:asd-files '("periods.asd"
-                       "periods-series.asd")
-         #:asd-systems '("periods"
+       '(#:asd-systems '("periods"
                          "periods-series")))
       (synopsis "Common Lisp library for manipulating date/time objects")
       (description
@@ -5732,7 +5679,8 @@ which implements a set of utilities.")
       (inputs
        `(("metatilities-base" ,sbcl-metatilities-base)))
       (arguments
-       '(#:phases
+       '(#:asd-files '("cl-containers.asd")
+         #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'relax-version-checks
              (lambda _
@@ -6540,8 +6488,7 @@ interactive development.")
          ("named-readtables" ,sbcl-named-readtables)
          ("yason" ,sbcl-yason)))
       (arguments
-       '(#:asd-files '("graph.asd")
-         #:asd-systems '("graph"
+       '(#:asd-systems '("graph"
                          "graph/dot"
                          "graph/json")))
       (synopsis "Graph data structure and algorithms for Common Lisp")
@@ -6796,11 +6743,7 @@ your own classes.")
       (native-inputs
        `(("lisp-unit" ,sbcl-lisp-unit)))
       (arguments
-       '(#:asd-files '("antik-base.asd"
-                       "foreign-array.asd"
-                       "physical-dimension.asd"
-                       "science-data.asd")
-         #:asd-systems '("antik-base"
+       '(#:asd-systems '("antik-base"
                          "foreign-array"
                          "physical-dimension"
                          "science-data")
@@ -6894,8 +6837,7 @@ intending to program in Lisp.")
      `(("antik-base" ,sbcl-antik-base)
        ("gsll" ,sbcl-gsll)))
     (arguments
-     '(#:asd-files '("antik.asd")
-       #:asd-systems '("antik")
+     '(#:asd-systems '("antik")
        #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-build
@@ -7135,58 +7077,7 @@ sacrificing much in the way of power.")
         ("libffi" ,libffi)
         ("split-sequence" ,sbcl-split-sequence)))
      (arguments
-      `(#:asd-files '("cl-ana.asd"
-                      "pathname-utils/cl-ana.pathname-utils.asd"
-                      "package-utils/cl-ana.package-utils.asd"
-                      "string-utils/cl-ana.string-utils.asd"
-                      "functional-utils/cl-ana.functional-utils.asd"
-                      "list-utils/cl-ana.list-utils.asd"
-                      "generic-math/cl-ana.generic-math.asd"
-                      "math-functions/cl-ana.math-functions.asd"
-                      "calculus/cl-ana.calculus.asd"
-                      "symbol-utils/cl-ana.symbol-utils.asd"
-                      "macro-utils/cl-ana.macro-utils.asd"
-                      "binary-tree/cl-ana.binary-tree.asd"
-                      "tensor/cl-ana.tensor.asd"
-                      "error-propogation/cl-ana.error-propogation.asd"
-                      "quantity/cl-ana.quantity.asd"
-                      "table/cl-ana.table.asd"
-                      "table-utils/cl-ana.table-utils.asd"
-                      "hdf-cffi/cl-ana.hdf-cffi.asd"
-                      "int-char/cl-ana.int-char.asd"
-                      "memoization/cl-ana.memoization.asd"
-                      "typespec/cl-ana.typespec.asd"
-                      "hdf-typespec/cl-ana.hdf-typespec.asd"
-                      "hdf-utils/cl-ana.hdf-utils.asd"
-                      "typed-table/cl-ana.typed-table.asd"
-                      "hdf-table/cl-ana.hdf-table.asd"
-                      "gsl-cffi/cl-ana.gsl-cffi.asd"
-                      "ntuple-table/cl-ana.ntuple-table.asd"
-                      "csv-table/cl-ana.csv-table.asd"
-                      "reusable-table/cl-ana.reusable-table.asd"
-                      "linear-algebra/cl-ana.linear-algebra.asd"
-                      "lorentz/cl-ana.lorentz.asd"
-                      "clos-utils/cl-ana.clos-utils.asd"
-                      "hash-table-utils/cl-ana.hash-table-utils.asd"
-                      "map/cl-ana.map.asd"
-                      "fitting/cl-ana.fitting.asd"
-                      "histogram/cl-ana.histogram.asd"
-                      "file-utils/cl-ana.file-utils.asd"
-                      "statistics/cl-ana.statistics.asd"
-                      "gnuplot-interface/cl-ana.gnuplot-interface.asd"
-                      "plotting/cl-ana.plotting.asd"
-                      "table-viewing/cl-ana.table-viewing.asd"
-                      "serialization/cl-ana.serialization.asd"
-                      "makeres/cl-ana.makeres.asd"
-                      "makeres-macro/cl-ana.makeres-macro.asd"
-                      "makeres-block/cl-ana.makeres-block.asd"
-                      "makeres-progress/cl-ana.makeres-progress.asd"
-                      "makeres-table/cl-ana.makeres-table.asd"
-                      "makeres-graphviz/cl-ana.makeres-graphviz.asd"
-                      "makeres-branch/cl-ana.makeres-branch.asd"
-                      "makeres-utils/cl-ana.makeres-utils.asd"
-                      "statistical-learning/cl-ana.statistical-learning.asd")
-        #:asd-systems '("cl-ana")
+      `(#:asd-systems '("cl-ana")
         #:phases
         (modify-phases %standard-phases
           (add-after 'unpack 'fix-paths
@@ -7536,10 +7427,7 @@ has a small codebase that's easy to understand and use.")
          ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
          ("vom" ,sbcl-vom)))
       (arguments
-       `(#:asd-files '("cl-async.asd"
-                       "cl-async-repl.asd"
-                       "cl-async-ssl.asd")
-         #:asd-systems '("cl-async"
+       `(#:asd-systems '("cl-async"
                          "cl-async-repl"
                          "cl-async-ssl")
          #:phases
@@ -7767,10 +7655,7 @@ ZeroMQ.")
      `(("imagemagick" ,imagemagick)
        ("tk" ,tk)))
     (arguments
-     `(#:asd-files '("ltk/ltk.asd"
-                     "ltk/ltk-mw.asd"
-                     "ltk/ltk-remote.asd")
-       #:asd-systems '("ltk"
+     `(#:asd-systems '("ltk"
                        "ltk-mw"
                        "ltk-remote")
        #:tests? #f
@@ -8140,7 +8025,6 @@ them as PNG files.")
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
        `(#:asd-systems '("hdf5-cffi")
-         #:asd-files '("hdf5-cffi.asd")
          #:test-asd-file "hdf5-cffi.test.asd"
          ;; Tests depend on hdf5-cffi.examples.asd in addition to hdf5-cffi.asd,
          ;; I don't know if there is a way to tell asdf-build-system to load
@@ -8193,7 +8077,6 @@ generation functions from the GSL library.")
     (license license:bsd-2)
     (arguments
      `(#:asd-systems '("cl-randist")
-       #:asd-files '("cl-randist.asd")
        #:tests? #f))))
 
 (define-public cl-randist
@@ -8227,7 +8110,6 @@ covered by the Common Lisp standard.")
      `(("documentation-utils" ,sbcl-documentation-utils)))
     (arguments
      `(#:asd-systems '("float-features")
-       #:asd-files '("float-features.asd")
        #:tests? #f))))
 
 (define-public cl-float-features
@@ -8267,7 +8149,6 @@ caching based on arguments (an expanded form of memoization).")
        ("closer-mop" ,sbcl-closer-mop)))
     (arguments
      `(#:asd-systems '("function-cache")
-       #:asd-files '("function-cache.asd")
        #:tests? #f))))
 
 (define-public cl-function-cache
@@ -8307,7 +8188,6 @@ the elements in compound type specifier, e.g. @code{dimensions} in
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
        `(#:asd-systems '("type-r")
-         #:asd-files '("type-r.asd")
          #:test-asd-file "type-r.test.asd")))))
 
 (define-public cl-type-r
@@ -8346,7 +8226,6 @@ correctly.")
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
        `(#:asd-systems '("trivialib.type-unify")
-         #:asd-files '("trivialib.type-unify.asd")
          #:test-asd-file "trivialib.type-unify.test.asd")))))
 
 (define-public cl-trivialib-type-unify
@@ -8711,10 +8590,6 @@ approach to templating.")
        ;; TODO: Fix missing dependency errors for simple-date/postgres-glue,
        ;; cl-postgres/tests and s-sql/tests.
        `(#:tests? #f
-         #:asd-files '("postmodern.asd"
-                       "simple-date.asd"
-                       "cl-postgres.asd"
-                       "s-sql.asd")
          #:asd-systems '("postmodern"
                          "simple-date/postgres-glue")))
       (synopsis "Common Lisp library for interacting with PostgreSQL")
@@ -8766,12 +8641,7 @@ foreign libraries.
          ("split-sequence" ,sbcl-split-sequence)
          ("trivial-garbage" ,sbcl-trivial-garbage)))
       (arguments
-       `(#:asd-files '("cl-dbi.asd"
-                       "dbi.asd"
-                       "dbd-mysql.asd"
-                       "dbd-postgres.asd"
-                       "dbd-sqlite3.asd")
-         #:asd-systems '("dbi"
+       `(#:asd-systems '("dbi"
                          "dbd-mysql"
                          "dbd-postgres"
                          "dbd-sqlite3")))
@@ -8804,6 +8674,7 @@ interface for MySQL, PostgreSQL and SQLite.")
     (build-system asdf-build-system/sbcl)
     (arguments
      `(#:tests? #f ; TODO: Fix use of deprecated ASDF functions
+       #:asd-files '("uffi.asd")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-permissions
@@ -8980,8 +8851,6 @@ interfaces as well as a functional and an object oriented interface.")
          (sha256
           (base32 "00bv1aj89q5vldmq92zp2364jq312zjq2mbd3iyz1s2b4widzhl7"))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       `(#:asd-files '("src/sycamore.asd")))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cl-ppcre" ,sbcl-cl-ppcre)))
@@ -9230,7 +9099,8 @@ accompaniment to the standard ANSI facilities.")
          "0rlswkf0siaabsvvch3dgxmg45fw5w8pd9b7ri2w7a298aya52z9"))))
     (build-system asdf-build-system/sbcl)
     (arguments
-     '(#:asd-systems '("quantile-estimator")))
+     '(#:asd-files '("quantile-estimator.asd")
+       #:asd-systems '("quantile-estimator")))
     (inputs
      `(("alexandria" ,sbcl-alexandria)))
     (home-page "https://github.com/deadtrickster/quantile-estimator.cl")
@@ -9614,10 +9484,7 @@ weight, temperature, names of physical quantitites, etc.")
           (base32
            "1639msyagsswj85gc0wd90jgh8588j3qg5q70by9s2brf2q6w4lh"))))
       (arguments
-       '(#:asd-files '("clump.asd"
-                       "2-3-tree/clump-2-3-tree.asd"
-                       "Binary-tree/clump-binary-tree.asd")
-         #:asd-systems '("clump")))
+       '(#:asd-systems '("clump")))
       (inputs
        `(("acclimation" ,sbcl-acclimation)))
       (build-system asdf-build-system/sbcl)
@@ -9662,13 +9529,7 @@ sequences of objects.")
        `(("acclimation" ,sbcl-acclimation)
          ("clump" ,sbcl-clump)))
       (arguments
-       '(#:asd-files '("cluffer.asd"
-                       "Base/cluffer-base.asd"
-                       "Standard-line/cluffer-standard-line.asd"
-                       "Standard-buffer/cluffer-standard-buffer.asd"
-                       "Simple-line/cluffer-simple-line.asd"
-                       "Simple-buffer/cluffer-simple-buffer.asd")
-         #:asd-systems '("cluffer")))
+       '(#:asd-systems '("cluffer")))
       (home-page "https://github.com/robert-strandh/cluffer")
       (synopsis "Common Lisp library providing a protocol for text-editor buffers")
       (description "Cluffer is a library for representing the buffer of a text
@@ -10266,6 +10127,8 @@ both from files on disk, or streams in memory.")
          ("retrospectiff" ,sbcl-retrospectiff)
          ("skippy" ,sbcl-skippy)
          ("zpng" ,sbcl-zpng)))
+      (arguments
+       '(#:asd-files '("opticl.asd")))
       (home-page "https://github.com/slyrus/opticl")
       (synopsis "Image processing library for Common Lisp")
       (description
@@ -10324,34 +10187,7 @@ and saving 2-dimensional pixel-based images.")
          ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
          ("zpb-ttf" ,sbcl-zpb-ttf)))
       (arguments
-       '(#:asd-files '("mcclim.asd"
-                       "clim-lisp.asd"
-                       "Core/clim-basic/clim-basic.asd"
-                       "Core/clim-core/clim-core.asd"
-                       "Libraries/ESA/esa-mcclim.asd"
-                       "Extensions/fonts/mcclim-fonts.asd"
-                       "Libraries/Drei/cl-automaton/automaton.asd"
-                       "Libraries/Drei/Persistent/persistent.asd"
-                       "Libraries/Drei/drei-mcclim.asd"
-                       "Core/clim/clim.asd"
-                       "Backends/common/mcclim-backend-common.asd"
-                       "Backends/CLX/mcclim-clx.asd"
-                       "Extensions/fontconfig/mcclim-fontconfig.asd"
-                       "Extensions/harfbuzz/mcclim-harfbuzz.asd"
-                       "Extensions/render/mcclim-render.asd"
-                       "Backends/CLX-fb/mcclim-clx-fb.asd"
-                       "Backends/Null/mcclim-null.asd"
-                       "Backends/PostScript/clim-postscript-font.asd"
-                       "Backends/PostScript/clim-postscript.asd"
-                       "Backends/PDF/clim-pdf.asd"
-                       "Extensions/Franz/mcclim-franz.asd"
-                       "Extensions/bezier/mcclim-bezier.asd"
-                       "Extensions/bitmap-formats/mcclim-bitmaps.asd"
-                       "Extensions/conditional-commands/conditional-commands.asd"
-                       "Extensions/layouts/mcclim-layouts.asd"
-                       "Backends/RasterImage/mcclim-raster-image.asd"
-                       "Examples/clim-examples.asd")
-         #:asd-systems '("mcclim"
+       '(#:asd-systems '("mcclim"
                          "clim-examples")
          #:phases
          (modify-phases %standard-phases
@@ -10682,11 +10518,7 @@ can separate configuration system from an implementation.")
          ("sxql" ,sbcl-sxql)
          ("uuid" ,sbcl-uuid)))
       (arguments
-       '(#:asd-files '("mito.asd"
-                       "mito-core.asd"
-                       "mito-migration.asd"
-                       "lack-middleware-mito.asd")
-         #:asd-systems '("mito")
+       '(#:asd-systems '("mito")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'remove-non-functional-tests
@@ -10902,7 +10734,8 @@ that and not limited to a certain server or text format.")
          ("prove" ,sbcl-prove)))
       (arguments
        ;; Tests depend on caveman, which in turns depends on cl-project.
-       '(#:tests? #f))
+       '(#:tests? #f
+         #:asd-files '("cl-project.asd")))
       (synopsis "Generate a skeleton for modern Common Lisp projects")
       (description "This library provides a modern project skeleton generator.
 In contract with other generators, CL-Project generates one package per file
