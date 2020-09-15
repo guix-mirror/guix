@@ -25933,7 +25933,7 @@ serializing Rust str")
 (define-public rust-tracing-core-0.1
   (package
     (name "rust-tracing-core")
-    (version "0.1.9")
+    (version "0.1.16")
     (source
       (origin
         (method url-fetch)
@@ -25941,7 +25941,7 @@ serializing Rust str")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0y0rcvvqq89yaiz0qdx88byxgz8j6hsm9slq8d5vvf3jwc8nz90k"))))
+          "16hisz8nvbav9q6r5lbar2baac097n33q7xqssifwsphy70ldksv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
