@@ -83,7 +83,7 @@
         ("rust-dirs" ,rust-dirs-2.0)
         ;;("rust-failure" included
         ("rust-filetime" ,rust-filetime-0.2)
-        ("rust-flate2" ,rust-flate2-1.0)
+        ("rust-flate2" ,rust-flate2-1)
         ("rust-fs2" ,rust-fs2-0.4)
         ("rust-futures" ,rust-futures-0.1)
         ("rust-http" ,rust-http-0.1)
