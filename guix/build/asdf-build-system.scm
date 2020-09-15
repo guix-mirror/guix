@@ -81,6 +81,13 @@ to it's binary output."
 (define (source-asd-file output name asd-file)
   (string-append (lisp-source-directory output name) "/" asd-file))
 
+(define (find-asd-files output name asd-files)
+  (if (null? asd-files)
+      (find-files (lisp-source-directory output name) "\\.asd$")
+      (map (lambda (asd-file)
+             (source-asd-file output name asd-file))
+           asd-files)))
+
 (define (copy-files-to-output out name)
   "Copy all files from the current directory to OUT.  Create an extra link to
 any system-defining files in the source to a convenient location.  This is
@@ -189,9 +196,7 @@ if it's present in the native-inputs."
          (translations (wrap-output-translations
                         `(,(output-translation source-path
                                                out))))
-         (asd-files (map (lambda (asd-file)
-                           (source-asd-file out system-name asd-file))
-                         asd-files)))
+         (asd-files (find-asd-files out system-name asd-files)))
     (setenv "ASDF_OUTPUT_TRANSLATIONS"
             (replace-escaped-macros (format #f "~S" translations)))
     (setenv "HOME" out) ; ecl's asdf sometimes wants to create $HOME/.cache
@@ -204,9 +209,7 @@ if it's present in the native-inputs."
   "Test the system."
   (let* ((out (library-output outputs))
          (system-name (main-system-name out))
-         (asd-files (map (lambda (asd-file)
-                           (source-asd-file out system-name asd-file))
-                         asd-files))
+         (asd-files (find-asd-files out system-name asd-files))
          (test-asd-file
           (and=> test-asd-file
                  (cut source-asd-file out system-name <>))))

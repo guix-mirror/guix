@@ -291,7 +291,7 @@ set up using CL source package conventions."
                   (imported-modules %asdf-build-system-modules)
                   (modules %asdf-build-modules))
 
-    ;; FIXME: The definitions of 'systems' and 'files' are pretty hacky.
+    ;; FIXME: The definition of 'systems' is pretty hacky.
     ;; Is there a more elegant way to do it?
     (define systems
       (if (null? (cadr asd-systems))
@@ -302,13 +302,6 @@ set up using CL source package conventions."
                (hyphen-separated-name->name+version name)
                (1+ (string-length lisp-type))))) ; drop the "<lisp>-" prefix.
           asd-systems))
-
-    (define files
-      (if (null? (cadr asd-files))
-          `(quote ,(map (lambda (system)
-                          (string-append system ".asd"))
-                        (cadr systems)))
-          asd-files))
 
     (define builder
       `(begin
@@ -323,7 +316,7 @@ set up using CL source package conventions."
                                     (derivation->output-path source))
                                    ((source) source)
                                    (source source))
-                       #:asd-files ,files
+                       #:asd-files ,asd-files
                        #:asd-systems ,systems
                        #:test-asd-file ,test-asd-file
                        #:system ,system
