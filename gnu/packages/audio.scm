@@ -2030,7 +2030,7 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jack-2
   (package (inherit jack-1)
     (name "jack2")
-    (version "1.9.13")
+    (version "1.9.14")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/jackaudio/jack2/releases/"
@@ -2039,7 +2039,7 @@ synchronous execution of all clients, and low latency operation.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1d1d403jn4366mqig6g8ghr8057b3rn7gs26b5p3rkal34j20qw2"))))
+               "0z11hf55a6mi8h50hfz5wry9pshlwl4mzfwgslghdh40cwv342m2"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -2049,6 +2049,10 @@ synchronous execution of all clients, and low latency operation.")
        (modify-phases %standard-phases
          (add-before 'configure 'set-linkflags
            (lambda _
+             ;; Ensure -lstdc++ is the tail of LDFLAGS or the simdtests.cpp
+             ;; will not link with undefined reference to symbol
+             ;; '__gxx_personality_v0@@CXXABI_1.3'
+             (setenv "LDFLAGS" "-lstdc++")
              ;; Add $libdir to the RUNPATH of all the binaries.
              (substitute* "wscript"
                ((".*CFLAGS.*-Wall.*" m)
