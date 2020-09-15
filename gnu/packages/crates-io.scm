@@ -4011,7 +4011,7 @@ to @code{is_x86_feature_detected}.")
 (define-public rust-criterion-0.3
   (package
     (name "rust-criterion")
-    (version "0.3.1")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -4020,7 +4020,7 @@ to @code{is_x86_feature_detected}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lgpr82rlmg6rm4gr3c3pla2xgxnakbf8w9sabjsig8jkikmbiqz"))))
+         "1n24l95pgjig4nfhgm3vn9gxb49ky5ylr8390scl7wbcxk7agnkh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -4029,13 +4029,15 @@ to @code{is_x86_feature_detected}.")
         ("rust-clap" ,rust-clap-2)
         ("rust-criterion-plot" ,rust-criterion-plot-0.4)
         ("rust-csv" ,rust-csv-1.1)
-        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-itertools" ,rust-itertools-0.9)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-oorandom" ,rust-oorandom-11.1)
         ("rust-plotters" ,rust-plotters-0.2)
         ("rust-rayon" ,rust-rayon-1)
+        ("rust-regex" ,rust-regex-1)
         ("rust-serde" ,rust-serde-1)
+        ("rust-serde-cbor" ,rust-serde-cbor-0.11)
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-tinytemplate" ,rust-tinytemplate-1)
@@ -4044,7 +4046,7 @@ to @code{is_x86_feature_detected}.")
        (("rust-approx" ,rust-approx-0.3)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://bheisler.github.io/criterion.rs/book/index.html")
     (synopsis "Statistics-driven micro-benchmarking library")
     (description
