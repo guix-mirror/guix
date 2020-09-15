@@ -336,7 +336,7 @@ Currently all documentation resides in @file{pnglite.h}.")
 (define-public libimagequant
   (package
     (name "libimagequant")
-    (version "2.12.5")
+    (version "2.12.6")
     (source
      (origin
        (method git-fetch)
@@ -345,7 +345,7 @@ Currently all documentation resides in @file{pnglite.h}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0cp68w04ja5pv77ssfafsn958w9hh9zb8crrlb5j3gsrcmdc032k"))))
+        (base32 "00w7fny3xf14cfyhbdnmqyh9ddqdh1irvgzxd35a2z65kp7vnvj0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
