@@ -17274,7 +17274,7 @@ formatted tables in terminal.")
 (define-public rust-proc-macro2-1
   (package
     (name "rust-proc-macro2")
-    (version "1.0.10")
+    (version "1.0.21")
     (source
       (origin
         (method url-fetch)
@@ -17282,7 +17282,7 @@ formatted tables in terminal.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1qxbnl8i3a5b2nxb8kdxbq6kj3pd1ckhm35wm7z3jd7n5wlns96z"))))
+          "0b1azz1c2a3rap1kfz2sjinv7narfhssazaq39axvwwlvwb8bqin"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
