@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -383,6 +384,16 @@ verbose output to the LOG port."
                         stat
                         lstat)))
 
+(define-syntax-rule (warn-on-error expr file)
+  (catch 'system-error
+    (lambda ()
+      expr)
+    (lambda args
+      (format (current-error-port)
+              "warning: failed to delete ~a: ~a~%"
+              file (strerror
+                    (system-error-errno args))))))
+
 (define* (delete-file-recursively dir
                                   #:key follow-mounts?)
   "Delete DIR recursively, like `rm -rf', without following symlinks.  Don't
@@ -393,10 +404,10 @@ errors."
                         (or follow-mounts?
                             (= dev (stat:dev stat))))
                       (lambda (file stat result)   ; leaf
-                        (delete-file file))
+                        (warn-on-error (delete-file file) file))
                       (const #t)                   ; down
                       (lambda (dir stat result)    ; up
-                        (rmdir dir))
+                        (warn-on-error (rmdir dir) dir))
                       (const #t)                   ; skip
                       (lambda (file stat errno result)
                         (format (current-error-port)
