@@ -443,6 +443,37 @@ shapes, lines and text to buffers.")
     (description "This package provides the glue for the Android JNI.")
     (license license:expat)))
 
+(define-public rust-ansi-colours-1
+  (package
+    (name "rust-ansi-colours")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ansi_colours" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1dnqmpk68mzvncj37jlv0362kdgsgjxg010c6psagimgh4m303qx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1))
+       #:cargo-development-inputs
+       (("rust-delta-e" ,rust-delta-e-0.2)
+        ("rust-lab" ,rust-lab-0.4))))
+    (home-page "https://github.com/mina86/ansi_colours")
+    (synopsis "Palette converter between true-colour and ANSI terminal")
+    (description
+     "@code{ansi_colours} is a library which converts between 24-bit sRGB
+colours and 8-bit colour palette used by ANSI terminals such as @code{xterm} on
+@code{rxvt-unicode} in 256-colour mode.
+The most common use case is when using 24-bit colours in a terminal emulator
+which only support 8-bit colour palette.  This package allows true-colours to be
+approximated by values supported by the terminal.")
+    (license license:lgpl3+)))
+
 (define-public rust-ansi-term-0.12
   (package
     (name "rust-ansi-term")
