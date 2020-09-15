@@ -124,9 +124,10 @@ if it's present in the native-inputs."
     (package-name->name+version
      (strip-store-file-name output)))
   (define (no-prefix pkgname)
-    (if (string-index pkgname #\-)
-        (string-drop pkgname (1+ (string-index pkgname #\-)))
-        pkgname))
+    (let ((index (string-index pkgname #\-)))
+      (if index
+          (string-drop pkgname (1+ index))
+          pkgname)))
   (define parent
     (match (assoc package-name inputs
                   (lambda (key alist-car)
@@ -142,8 +143,10 @@ if it's present in the native-inputs."
   (define parent-source
     (and parent
          (string-append parent "/share/common-lisp/"
-                        (string-take parent-name
-                                     (string-index parent-name #\-)))))
+                        (let ((index (string-index parent-name #\-)))
+                          (if index
+                              (string-take parent-name index)
+                              parent-name)))))
 
   (define (first-subdirectory directory) ; From gnu-build-system.
     "Return the file name of the first sub-directory of DIRECTORY."
