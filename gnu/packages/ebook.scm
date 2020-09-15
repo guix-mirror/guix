@@ -252,29 +252,7 @@
                      "--path-to-mathjax" (string-append
                                           (assoc-ref inputs "js-mathjax")
                                           "/share/javascript/mathjax"))
-             (invoke "python2" "setup.py" "rapydscript")))
-         (replace 'wrap
-           ;; Here we wrap PYTHONPATH exactly as it would be in
-           ;; python-build-system, plus the addition of
-           ;; QTWEBENGINEPROCESS_PATH, fixing a bug where Calibre would not
-           ;; find Qtwebengine.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (python (assoc-ref inputs "python"))
-                    (site-packages
-                     (cons (string-append out "/lib/python"
-                                          (python-version python)
-                                          "/site-packages")
-                           (search-path-as-string->list (getenv "PYTHONPATH"))))
-                    (qtwebengineprocess
-                     (string-append (assoc-ref inputs "qtwebengine")
-                                    "/lib/qt5/libexec/QtWebEngineProcess")))
-               (for-each (lambda (program)
-                           (wrap-program program
-                                 `("QTWEBENGINEPROCESS_PATH" = (,qtwebengineprocess))
-                                 `("PYTHONPATH" prefix ,site-packages)))
-                         (find-files bin ".")))
+             (invoke "python2" "setup.py" "rapydscript")
              #t))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
@@ -292,6 +270,28 @@
                                             "/share/fonts/truetype")))
                (delete-file-recursively font-dest)
                (symlink font-src font-dest))
+             #t))
+         ;; Make run-time dependencies available to the binaries.
+         (add-after 'wrap 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (qtwebengine (assoc-ref inputs "qtwebengine")))
+               (with-directory-excursion (string-append out "/bin")
+                 (for-each
+                  (lambda (binary)
+                    (wrap-program binary
+                      ;; Make QtWebEngineProcess available.
+                      `("QTWEBENGINEPROCESS_PATH" ":" =
+                        ,(list (string-append
+                                qtwebengine
+                                "/lib/qt5/libexec/QtWebEngineProcess")))))
+                  ;; Wrap all the binaries shipping with the package, except
+                  ;; for the wrappings created during the 'wrap standard
+                  ;; phase.  This extends existing .calibre-real wrappers
+                  ;; rather than create ..calibre-real-real-s.  For more
+                  ;; information see: https://issues.guix.gnu.org/43249.
+                  (find-files "." (lambda (file stat)
+                                    (not (wrapper? file)))))))
              #t)))))
     (home-page "https://calibre-ebook.com/")
     (synopsis "E-book library management software")
