@@ -4097,7 +4097,7 @@ to @code{is_x86_feature_detected}.")
 (define-public rust-criterion-plot-0.4
   (package
     (name "rust-criterion-plot")
-    (version "0.4.1")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
@@ -4106,7 +4106,7 @@ to @code{is_x86_feature_detected}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0id5sfww0hjxlzvkzacdlgbls3lxza8iysqljr7j7s2qxbh1a7m0"))))
+         "17c8v5fv064181yspagkdcfd6jhs7233ba6g94bbl7v0xjnzw8p0"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
