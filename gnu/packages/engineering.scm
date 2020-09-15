@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1328,21 +1329,26 @@ developed at MIT to model electromagnetic systems.")
 (define-public adms
   (package
     (name "adms")
-    (version "2.3.6")
+    (version "2.3.7")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "mirror://sourceforge/mot-adms/adms-source/"
-                (version-major+minor version) "/adms-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Qucs/ADMS")
+                    (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rn98l6jxcjhi6ai5f7p588khra9z80m0m0lql4n4sb7773fh1vk"))))
+                "0i37c9k6q1iglmzp9736rrgsnx7sw8xn3djqbbjw29zsyl3pf62c"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)
-       ("bison" ,bison)))
-    (home-page "https://sourceforge.net/projects/mot-adms")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "https://github.com/Qucs/ADMS")
     (synopsis "Automatic device model synthesizer")
     (description
      "ADMS is a code generator that converts electrical compact device models
