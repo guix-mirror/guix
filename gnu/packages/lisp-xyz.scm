@@ -638,6 +638,9 @@ antialiased TrueType font rendering using CLX and XRender extension.")
 (define-public cl-clx-truetype
   (sbcl-package->cl-source-package sbcl-clx-truetype))
 
+(define-public ecl-clx-truetype
+  (sbcl-package->ecl-package sbcl-clx-truetype))
+
 (define-public sbcl-slynk
   (let ((revision "3")
         ;; Update together with emacs-sly.
@@ -784,6 +787,9 @@ JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
 (define-public cl-parse-js
   (sbcl-package->cl-source-package sbcl-parse-js))
 
+(define-public ecl-parse-js
+  (sbcl-package->ecl-package sbcl-parse-js))
+
 (define-public sbcl-parse-number
   (package
     (name "sbcl-parse-number")
@@ -810,6 +816,9 @@ else @code{parse-number} signals an error of type @code{invalid-number}.")
 
 (define-public cl-parse-number
   (sbcl-package->cl-source-package sbcl-parse-number))
+
+(define-public ecl-parse-number
+  (sbcl-package->ecl-package sbcl-parse-number))
 
 (define-public sbcl-iterate
   (package
@@ -2551,6 +2560,9 @@ is a library for creating graphical user interfaces.")
 (define-public cl-cffi-gtk
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
 
+(define-public ecl-cl-cffi-gtk
+  (sbcl-package->ecl-package sbcl-cl-cffi-gtk))
+
 (define-public sbcl-cl-webkit
   (let ((commit "dccf9d25de4e9a69f716f8ed9578e58963ead967"))
     (package
@@ -3052,6 +3064,9 @@ Development into CL+SSL was done by David Lichteblau.")
 (define-public cl-cl+ssl
   (sbcl-package->cl-source-package sbcl-cl+ssl))
 
+(define-public ecl-cl+ssl
+  (sbcl-package->ecl-package sbcl-cl+ssl))
+
 (define-public sbcl-kmrcl
   (let ((version "1.109.0")
         (commit "5260068b2eb735af6796740c2db4955afac21636")
@@ -3084,6 +3099,9 @@ Rosenberg's CL packages.")
 
 (define-public cl-kmrcl
   (sbcl-package->cl-source-package sbcl-kmrcl))
+
+(define-public ecl-kmrcl
+  (sbcl-package->ecl-package sbcl-kmrcl))
 
 (define-public sbcl-cl-base64
   (package
@@ -3118,6 +3136,9 @@ encoding table that uses only URI-compatible characters.")
 (define-public cl-base64
   (sbcl-package->cl-source-package sbcl-cl-base64))
 
+(define-public ecl-cl-base64
+  (sbcl-package->ecl-package sbcl-cl-base64))
+
 (define-public sbcl-chunga
   (package
     (name "sbcl-chunga")
@@ -3143,6 +3164,9 @@ defined in RFC 2616.")
 
 (define-public cl-chunga
   (sbcl-package->cl-source-package sbcl-chunga))
+
+(define-public ecl-chunga
+  (sbcl-package->ecl-package sbcl-chunga))
 
 (define-public sbcl-cl-who
   (let ((version "1.1.4")
@@ -3210,6 +3234,9 @@ the format used by the popular compression tool bzip2.")
 
 (define-public cl-chipz
   (sbcl-package->cl-source-package sbcl-chipz))
+
+(define-public ecl-chipz
+  (sbcl-package->ecl-package sbcl-chipz))
 
 (define-public sbcl-drakma
   (package
@@ -3342,6 +3369,9 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 (define-public cl-annot
   (sbcl-package->cl-source-package sbcl-cl-annot))
 
+(define-public ecl-cl-annot
+  (sbcl-package->ecl-package sbcl-cl-annot))
+
 (define-public sbcl-cl-syntax
   (package
     (name "sbcl-cl-syntax")
@@ -3444,6 +3474,9 @@ addition, removal, and random selection.")
 (define-public cl-map-set
   (sbcl-package->cl-source-package sbcl-map-set))
 
+(define-public ecl-map-set
+  (sbcl-package->ecl-package sbcl-map-set))
+
 (define-public sbcl-quri
   (let ((commit "b53231c5f19446dd7c24b15a249fefa45ae94f9a")
         (revision "2"))
@@ -3479,6 +3512,9 @@ Lisp. It is intended to be a replacement of PURI.")
 (define-public cl-quri
   (sbcl-package->cl-source-package sbcl-quri))
 
+(define-public ecl-quri
+  (sbcl-package->ecl-package sbcl-quri))
+
 (define-public sbcl-myway
   (let ((commit "286230082a11f879c18b93f17ca571c5f676bfb7")
         (revision "1"))
@@ -3512,6 +3548,9 @@ Lisp. It is intended to be a replacement of PURI.")
 
 (define-public cl-myway
   (sbcl-package->cl-source-package sbcl-myway))
+
+(define-public ecl-myway
+  (sbcl-package->ecl-package sbcl-myway))
 
 (define-public sbcl-xsubseq
   (let ((commit "5ce430b3da5cda3a73b9cf5cee4df2843034422b")
@@ -3620,6 +3659,9 @@ Lisp.")
 (define-public cl-fast-http
   (sbcl-package->cl-source-package sbcl-fast-http))
 
+(define-public ecl-fast-http
+  (sbcl-package->ecl-package sbcl-fast-http))
+
 (define-public sbcl-static-vectors
   (package
     (name "sbcl-static-vectors")
@@ -3678,6 +3720,9 @@ Only minimal changes required to make your CLOS objects serializable.")
 (define-public cl-marshal
   (sbcl-package->cl-source-package sbcl-marshal))
 
+(define-public ecl-marshal
+  (sbcl-package->ecl-package sbcl-marshal))
+
 (define-public sbcl-checkl
   (let ((commit "80328800d047fef9b6e32dfe6bdc98396aee3cc9")
         (revision "1"))
@@ -3715,6 +3760,9 @@ against the last run.")
 
 (define-public cl-checkl
   (sbcl-package->cl-source-package sbcl-checkl))
+
+(define-public ecl-checkl
+  (sbcl-package->ecl-package sbcl-checkl))
 
 (define-public sbcl-fast-io
   (let ((commit "603f4903dd74fb221859da7058ae6ca3853fe64b")
@@ -3755,6 +3803,9 @@ streams (though primarily the former, while wrapping the latter).")
 (define-public cl-fast-io
   (sbcl-package->cl-source-package sbcl-fast-io))
 
+(define-public ecl-fast-io
+  (sbcl-package->ecl-package sbcl-fast-io))
+
 (define-public sbcl-jonathan
   (let ((commit "1f448b4f7ac8265e56e1c02b32ce383e65316300")
         (revision "1"))
@@ -3793,6 +3844,9 @@ CCL.")
 (define-public cl-jonathan
   (sbcl-package->cl-source-package sbcl-jonathan))
 
+(define-public ecl-jonathan
+  (sbcl-package->ecl-package sbcl-jonathan))
+
 (define-public sbcl-http-body
   (let ((commit "dd01dc4f5842e3d29728552e5163acce8386eb73")
         (revision "1"))
@@ -3830,6 +3884,9 @@ multipart/form-data.")
 (define-public cl-http-body
   (sbcl-package->cl-source-package sbcl-http-body))
 
+(define-public ecl-http-body
+  (sbcl-package->ecl-package sbcl-http-body))
+
 (define-public sbcl-circular-streams
   (let ((commit "e770bade1919c5e8533dd2078c93c3d3bbeb38df")
         (revision "1"))
@@ -3863,6 +3920,9 @@ reset to 0 and you're able to read it again.")
 
 (define-public cl-circular-streams
   (sbcl-package->cl-source-package sbcl-circular-streams))
+
+(define-public ecl-circular-streams
+  (sbcl-package->ecl-package sbcl-circular-streams))
 
 (define-public sbcl-lack
   (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
@@ -3919,6 +3979,9 @@ performance and simplicity in mind.")
 (define-public cl-lack
   (sbcl-package->cl-source-package sbcl-lack))
 
+(define-public ecl-lack
+  (sbcl-package->ecl-package sbcl-lack))
+
 (define-public sbcl-local-time
   (let ((commit "62792705245168d3fc2e04164b9a143477284142")
         (revision "1"))
@@ -3953,6 +4016,9 @@ Long Painful History of Time\".")
 
 (define-public cl-local-time
   (sbcl-package->cl-source-package sbcl-local-time))
+
+(define-public ecl-local-time
+  (sbcl-package->ecl-package sbcl-local-time))
 
 (define-public sbcl-trivial-mimes
   (let ((commit "303f8ac0aa6ca0bc139aa3c34822e623c3723fab")
@@ -4045,6 +4111,9 @@ mime-type of a file.")
 
 (define-public cl-ningle
   (sbcl-package->cl-source-package sbcl-ningle))
+
+(define-public ecl-ningle
+  (sbcl-package->ecl-package sbcl-ningle))
 
 (define-public sbcl-cl-fastcgi
   (let ((commit "d576d20eeb12f225201074b28934ba395b15781a")
@@ -4666,6 +4735,9 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
        `(("libfixposix" ,libfixposix)
          ,@(package-propagated-inputs parent))))))
 
+(define-public ecl-iolib
+  (sbcl-package->ecl-package sbcl-iolib))
+
 (define-public sbcl-ieee-floats
   (let ((commit "566b51a005e81ff618554b9b2f0b795d3b29398d")
         (revision "1"))
@@ -4693,6 +4765,9 @@ floating point values to IEEE 754 binary representation.")
 
 (define-public cl-ieee-floats
   (sbcl-package->cl-source-package sbcl-ieee-floats))
+
+(define-public ecl-ieee-floats
+  (sbcl-package->ecl-package sbcl-ieee-floats))
 
 (define sbcl-closure-common
   (let ((commit "e3c5f5f454b72b01b89115e581c3c52a7e201e5c")
@@ -4752,6 +4827,9 @@ offered, one SAX-like, the other similar to StAX.")
 (define-public cl-cxml
   (sbcl-package->cl-source-package sbcl-cxml))
 
+(define-public ecl-cxml
+  (sbcl-package->ecl-package sbcl-cxml))
+
 (define-public sbcl-cl-reexport
   (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
         (revision "1"))
@@ -4782,6 +4860,9 @@ cookie headers, cookie creation, cookie jar creation and more.")
 
 (define-public cl-reexport
   (sbcl-package->cl-source-package sbcl-cl-reexport))
+
+(define-public ecl-cl-reexport
+  (sbcl-package->ecl-package sbcl-cl-reexport))
 
 (define-public sbcl-cl-cookie
   (let ((commit "cea55aed8b9ad25fafd13defbcb9fe8f41b29546")
@@ -4819,6 +4900,9 @@ cookie headers, cookie creation, cookie jar creation and more.")
 
 (define-public cl-cookie
   (sbcl-package->cl-source-package sbcl-cl-cookie))
+
+(define-public ecl-cl-cookie
+  (sbcl-package->ecl-package sbcl-cl-cookie))
 
 (define-public sbcl-dexador
   (let ((commit "953090f04c4d1a9ee6632b90133cdc297b68badc")
@@ -4926,6 +5010,9 @@ This library offers macros to deal with symbols from any namespace.")
 (define-public cl-lisp-namespace
   (sbcl-package->cl-source-package sbcl-lisp-namespace))
 
+(define-public ecl-lisp-namespace
+  (sbcl-package->ecl-package sbcl-lisp-namespace))
+
 (define-public sbcl-trivial-cltl2
   (let ((commit "8a3bda30dc25d2f65fcf514d0eb6e6db75252c61")
         (revision "2"))
@@ -4998,6 +5085,9 @@ can and/or provide reasonable defaults.")
 (define-public cl-introspect-environment
   (sbcl-package->cl-source-package sbcl-introspect-environment))
 
+(define-public ecl-introspect-environment
+  (sbcl-package->ecl-package sbcl-introspect-environment))
+
 (define-public sbcl-type-i
   (let ((commit "d34440ab4ebf5a46a58deccb35950b15670e3667")
         (revision "2"))
@@ -5068,6 +5158,9 @@ optimizing techniques widely used in the functional programming world.")
 (define-public cl-optima
   (sbcl-package->cl-source-package sbcl-optima))
 
+(define-public ecl-optima
+  (sbcl-package->ecl-package sbcl-optima))
+
 (define-public sbcl-fare-quasiquote
   (let ((commit "640d39a0451094071b3e093c97667b3947f43639")
         (revision "1"))
@@ -5122,6 +5215,9 @@ Trivia.")
 
 (define-public cl-fare-quasiquote
   (sbcl-package->cl-source-package sbcl-fare-quasiquote))
+
+(define-public ecl-fare-quasiquote
+  (sbcl-package->ecl-package sbcl-fare-quasiquote))
 
 ;;; Split the trivia package in two to work around the circular dependency
 ;;; between guicho271828/trivia and guicho271828/type-i.
@@ -5249,6 +5345,9 @@ various string metrics in Common Lisp:
 (define-public cl-mk-string-metrics
   (sbcl-package->cl-source-package sbcl-mk-string-metrics))
 
+(define-public ecl-mk-string-metrics
+  (sbcl-package->ecl-package sbcl-mk-string-metrics))
+
 (define-public sbcl-cl-str
   (let ((commit "eb480f283e28802d67b35bf916506701152f9a2a"))
     (package
@@ -5356,6 +5455,9 @@ objects as well as send and notify other objects connected to a bus.")
 
 (define-public cl-dbus
   (sbcl-package->cl-source-package sbcl-dbus))
+
+(define-public ecl-dbus
+  (sbcl-package->ecl-package sbcl-dbus))
 
 (define-public sbcl-cl-hooks
   (let ((commit "5b638083f3b4f1221a52631d9c8a0a265565cac7")
@@ -6016,6 +6118,9 @@ of C+GObject libraries without the need of writing dedicated bindings.")
 (define-public cl-gobject-introspection
   (sbcl-package->cl-source-package sbcl-cl-gobject-introspection))
 
+(define-public ecl-cl-gobject-introspection
+  (sbcl-package->ecl-package sbcl-cl-gobject-introspection))
+
 (define-public sbcl-string-case
   (let ((commit "718c761e33749e297cd2809c7ba3ade1985c49f7")
         (revision "0"))
@@ -6450,6 +6555,9 @@ path, maximum flow, minimum spanning tree, etc.).")
 (define-public cl-graph
   (sbcl-package->cl-source-package sbcl-graph))
 
+(define-public ecl-graph
+  (sbcl-package->ecl-package sbcl-graph))
+
 (define-public sbcl-trivial-indent
   (let ((commit "2d016941751647c6cc5bd471751c2cf68861c94a")
         (revision "0"))
@@ -6542,6 +6650,9 @@ macro.  This library provides a set of simple utilities to help with that.")
 (define-public cl-form-fiddle
   (sbcl-package->cl-source-package sbcl-form-fiddle))
 
+(define-public ecl-form-fiddle
+  (sbcl-package->ecl-package sbcl-form-fiddle))
+
 (define-public sbcl-parachute
   (let ((commit "ca04dd8e43010a6dfffa26dbe1d62af86008d666")
         (revision "0"))
@@ -6574,6 +6685,9 @@ Each test can contain a bunch of test forms that make up its body.")
 (define-public cl-parachute
   (sbcl-package->cl-source-package sbcl-parachute))
 
+(define-public ecl-parachute
+  (sbcl-package->ecl-package sbcl-parachute))
+
 (define-public sbcl-array-utils
   (let ((commit "f90eb9070d0b2205af51126a35033574725e5c56")
         (revision "0"))
@@ -6605,6 +6719,9 @@ functions for arrays and vectors.  Originally from Plump.")
 
 (define-public cl-array-utils
   (sbcl-package->cl-source-package sbcl-array-utils))
+
+(define-public ecl-array-utils
+  (sbcl-package->ecl-package sbcl-array-utils))
 
 (define-public sbcl-plump
   (let ((commit "34f890fe46efdebe7bb70d218f1937e98f632bf9")
@@ -6640,6 +6757,9 @@ your own classes.")
 
 (define-public cl-plump
   (sbcl-package->cl-source-package sbcl-plump))
+
+(define-public ecl-plump
+  (sbcl-package->ecl-package sbcl-plump))
 
 ;;; Split the antik package in two to work around the circular dependency
 ;;; between antik/antik and antik/gsll.
@@ -8558,6 +8678,9 @@ approach to templating.")
 (define-public cl-mysql
   (sbcl-package->cl-source-package sbcl-cl-mysql))
 
+(define-public ecl-cl-mysql
+  (sbcl-package->ecl-package sbcl-cl-mysql))
+
 (define-public sbcl-postmodern
   (let ((commit "74469b25bbda990ec9b77e0d0eccdba0cd7e721a")
         (revision "1"))
@@ -8661,6 +8784,9 @@ interface for MySQL, PostgreSQL and SQLite.")
 
 (define-public cl-dbi
   (sbcl-package->cl-source-package sbcl-dbi))
+
+(define-public ecl-dbi
+  (sbcl-package->ecl-package sbcl-dbi))
 
 (define-public sbcl-uffi
   (package
@@ -8942,6 +9068,9 @@ multiple checkers, including Aspell and Hunspell.")
 (define-public cl-enchant
   (sbcl-package->cl-source-package sbcl-enchant))
 
+(define-public ecl-enchant
+  (sbcl-package->ecl-package sbcl-enchant))
+
 (define-public sbcl-cl-change-case
   (let ((commit "5ceff2a5f8bd845b6cb510c6364176b27a238fd3"))
     (package
@@ -8976,6 +9105,9 @@ PascalCase, snake_case, param-case, CONSTANT_CASE and more.")
 
 (define-public cl-change-case
   (sbcl-package->cl-source-package sbcl-cl-change-case))
+
+(define-public ecl-cl-change-case
+  (sbcl-package->ecl-package sbcl-cl-change-case))
 
 (define-public sbcl-moptilities
   (let ((commit "a436f16b357c96b82397ec018ea469574c10dd41"))
@@ -9046,6 +9178,9 @@ accompaniment to the standard ANSI facilities.")
 
 (define-public cl-osicat
   (sbcl-package->cl-source-package sbcl-osicat))
+
+(define-public ecl-osicat
+  (sbcl-package->ecl-package sbcl-osicat))
 
 (define-public sbcl-clx-xembed
   (let ((commit "a5c4b844d31ee68ffa58c933cc1cdddde6990743")
@@ -9427,6 +9562,9 @@ tables.")
 (define-public cl-rdkafka
   (sbcl-package->cl-source-package sbcl-cl-rdkafka))
 
+(define-public ecl-cl-rdkafka
+  (sbcl-package->ecl-package sbcl-cl-rdkafka))
+
 (define-public sbcl-acclimation
   (let ((commit "4d51150902568fcd59335f4cc4cfa022df6116a5"))
     (package
@@ -9456,6 +9594,9 @@ weight, temperature, names of physical quantitites, etc.")
 
 (define-public cl-acclimation
   (sbcl-package->cl-source-package sbcl-acclimation))
+
+(define-public ecl-acclimation
+  (sbcl-package->ecl-package sbcl-acclimation))
 
 (define-public sbcl-clump
   (let ((commit "1ea4dbac1cb86713acff9ae58727dd187d21048a"))
@@ -9498,6 +9639,9 @@ sequences of objects.")
 (define-public cl-clump
   (sbcl-package->cl-source-package sbcl-clump))
 
+(define-public ecl-clump
+  (sbcl-package->ecl-package sbcl-clump))
+
 (define-public sbcl-cluffer
   (let ((commit "4aad29c276a58a593064e79972ee4d77cae0af4a"))
     (package
@@ -9535,6 +9679,9 @@ implementations of those protocols for different purposes.")
 
 (define-public cl-cluffer
   (sbcl-package->cl-source-package sbcl-cluffer))
+
+(define-public ecl-cluffer
+  (sbcl-package->ecl-package sbcl-cluffer))
 
 (define-public sbcl-cl-libsvm-format
   (let ((commit "3300f84fd8d9f5beafc114f543f9d83417c742fb")
@@ -10129,6 +10276,9 @@ and saving 2-dimensional pixel-based images.")
 (define-public cl-opticl
   (sbcl-package->cl-source-package sbcl-opticl))
 
+(define-public ecl-opticl
+  (sbcl-package->ecl-package sbcl-opticl))
+
 (define-public sbcl-mcclim
   (let ((commit "27b4d7a667c9b3faa74cabcb57706b888314fff7")
         (revision "0"))
@@ -10242,6 +10392,9 @@ specification}, a toolkit for writing GUIs in Common Lisp.")
 
 (define-public cl-mcclim
   (sbcl-package->cl-source-package sbcl-mcclim))
+
+(define-public ecl-mcclim
+  (sbcl-package->ecl-package sbcl-mcclim))
 
 (define-public sbcl-cl-inflector
   (let ((commit "f1ab16919ccce3bd82a0042677d9616dde2034fe")
