@@ -8,6 +8,7 @@
 ;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12219,6 +12220,74 @@ script, countries and other regions.  They are commonly used in HTML and HTTP
 currently supports parsing (fully conformant parser), formatting and comparing
 language tags.")
     (license license:expat)))
+
+(define-public rust-lab-0.8
+  (package
+    (name "rust-lab")
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lab" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1ysnbviwi35mq6xyz9c59mpgigyfp4s4y2mispxzrms4vk83bx15"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
+        ("rust-rand" ,rust-rand-0.5))))
+    (home-page "https://github.com/TooManyBees/lab")
+    (synopsis "Convert RGB to CIE-LAB for Rust")
+    (description
+     "This package contains tools for converting RGB colors to the CIE-LAB color
+space, and comparing differences in color.")
+    (license license:expat)))
+
+(define-public rust-lab-0.7
+  (package
+    (inherit rust-lab-0.8)
+    (name "rust-lab")
+    (version "0.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lab" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0g692d489lq01pv3mzfhxd98j0r22lw28l6bk112m74djlfzxdmw"))))
+    (arguments
+     `(#:tests? #f  ; test suite assumes avx2 support
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
+        ("rust-rand" ,rust-rand-0.5))))))
+
+(define-public rust-lab-0.4
+  (package
+    (inherit rust-lab-0.8)
+    (name "rust-lab")
+    (version "0.4.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lab" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0h4ig5bvzmwlzd74zj7b4sh7kzi3c6mjjnw7yjz8ijxvr4mrcr1s"))))
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.3))))))
 
 (define-public rust-lalrpop-0.17
   (package
