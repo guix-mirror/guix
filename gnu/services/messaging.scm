@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -813,14 +813,15 @@ string, you could instantiate a prosody service like this:
   (match-lambda
     (($ <bitlbee-configuration> bitlbee interface port
                                 plugins extra-settings)
-     (let ((conf (mixed-text-file "bitlbee.conf"
+     (let* ((plugins (directory-union "bitlbee-plugins" plugins))
+            (conf    (mixed-text-file "bitlbee.conf"
                                   "
   [settings]
   User = bitlbee
   ConfigDir = /var/lib/bitlbee
   DaemonInterface = " interface "
   DaemonPort = " (number->string port) "
-  PluginDir = " (directory-union "bitlbee-plugins" plugins) "/lib/bitlbee
+  PluginDir = " plugins "/lib/bitlbee
 " extra-settings)))
 
        (with-imported-modules (source-module-closure
@@ -839,6 +840,11 @@ string, you could instantiate a prosody service like this:
                 (start #~(make-forkexec-constructor/container
                           (list #$(file-append bitlbee "/sbin/bitlbee")
                                 "-n" "-F" "-u" "bitlbee" "-c" #$conf)
+
+                          ;; Allow 'bitlbee-purple' to use libpurple plugins.
+                          #:environment-variables
+                          (list (string-append "PURPLE_PLUGIN_PATH="
+                                               #$plugins "/lib/purple-2"))
 
                           #:pid-file "/var/run/bitlbee.pid"
                           #:mappings (list (file-system-mapping
