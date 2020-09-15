@@ -16924,6 +16924,27 @@ visiting the bookmark, a new @code{eshell} session will be opened in the
 appropriate directory if no @code{eshell} session is active.")
     (license license:gpl3+)))
 
+(define-public emacs-eshell-syntax-highlighting
+  (package
+    (name "emacs-eshell-syntax-highlighting")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/akreisher/eshell-syntax-highlighting")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0id27874wsb5y169030x8g1ldpa1mnskv1s2j3ygqiyh5fvpfash"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/akreisher/eshell-syntax-highlighting")
+    (synopsis "Add syntax highlighting to Eshell")
+    (description
+     "This package highlights user commands at the Eshell interactive prompt
+to provide feedback on the validity of commands and syntax.")
+    (license license:gpl3+)))
+
 (define-public emacs-eshell-z
   (package
     (name "emacs-eshell-z")
