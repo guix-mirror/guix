@@ -191,17 +191,15 @@ is usually the formatter of \"man\" documentation pages.")
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
-         #:make-flags
-         (list (string-append "INSTALLDIR="
-                              (assoc-ref %outputs "out") "/bin"))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
-           (add-before 'install 'pre-install
+           (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (mkdir-p (string-append (assoc-ref outputs "out")
-                                       "/bin"))
-               #t))
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "roffit" (string-append out "/bin"))
+                 (install-file "roffit.1" (string-append out "/share/man/man1"))
+                 #t)))
            (add-after 'install 'wrap-program
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
