@@ -24977,7 +24977,7 @@ in Rust.")
 (define-public rust-tinytemplate-1
   (package
     (name "rust-tinytemplate")
-    (version "1.0.3")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
@@ -24986,7 +24986,7 @@ in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "06ipxjwl1w6synvql8b50qxbqv0w04agvmmfqcdynr9ygmkcd8sp"))))
+         "0by1k1hdz6jgv4ykd0izirwsm6p3qb6s9g1jb4ffqg500ihcfgbd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
