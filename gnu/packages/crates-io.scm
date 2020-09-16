@@ -21514,6 +21514,21 @@ proven statistical guarantees.")
      "Optimized handling of @code{&[u8]} and @code{Vec<u8>} for Serde.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-serde-bytes-0.10
+  (package
+    (inherit rust-serde-bytes-0.11)
+    (name "rust-serde-bytes")
+    (version "0.10.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_bytes" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "127c9br02ygajs4z3bw850i48nc25f4yn7kmh21wqd3z7nlbiyyy"))))))
+
 (define-public rust-serde-cbor-0.11
   (package
     (name "rust-serde-cbor")
