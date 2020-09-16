@@ -129,6 +129,7 @@
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -21979,3 +21980,45 @@ dates in almost any string formats commonly found on web pages.")
     (description "Safety checks installed dependencies for known vulnerabilities.
 By default it uses the open Python vulnerability database Safety DB.")
   (license license:expat)))
+
+(define-public python-pypandoc
+  (package
+    (name "python-pypandoc")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pypandoc" version))
+       (sha256
+        (base32
+         "1zvn9764cf7kkjkmr9gw6wc8adpk06qxr1rhxwa9pg0zmdvrk90l"))))
+    (build-system python-build-system)
+    (inputs
+     `(("pandoc" ,pandoc)
+       ("pandoc-citeproc" ,pandoc-citeproc)))
+    (propagated-inputs
+     `(("wheel" ,python-wheel)))
+    (native-inputs
+     `(("texlive" ,(texlive-union (list texlive-amsfonts
+                                        texlive-fonts-ec
+                                        texlive-latex-hyperref
+                                        texlive-latex-oberdiek
+                                        texlive-lm
+                                        texlive-xcolor)))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-tests
+           (lambda _
+             ;; Disable test requiring network access
+             (substitute* "tests.py"
+               (("test_basic_conversion_from_http_url")
+                "skip_test_basic_conversion_from_http_url"))
+             ;; Needed by texlive-union to generate fonts
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (home-page "https://github.com/bebraw/pypandoc")
+    (synopsis "Python wrapper for pandoc")
+    (description "pypandoc is a thin Python wrapper around pandoc
+and pandoc-citeproc.")
+    (license license:expat)))
