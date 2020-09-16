@@ -5275,6 +5275,29 @@ commands and highlighting.")
     ;; indicates GPL3.
     (license license:gpl3)))
 
+(define-public emacs-sbt-mode
+  (package
+    (name "emacs-sbt-mode")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hvesalai/emacs-sbt-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0lv9ridzk9x6rkf7lj21srnszypyq04vqg05vl10zhpz1yqlnbjd"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/hvesalai/emacs-sbt-mode")
+    (synopsis "Basic functionality for interacting with sbt inside Emacs")
+    (description
+     "This mode provides basic functionality required for successfully
+interacting with sbt inside Emacs.  The core functionality includes
+interacting with the sbt shell and Scala console, compiling code and
+navigation to errors.")
+    (license license:gpl3+)))
+
 (define-public emacs-scheme-complete
   (let ((commit "9b5cf224bf2a5994bc6d5b152ff487517f1a9bb5"))
     (package
