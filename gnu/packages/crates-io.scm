@@ -12211,8 +12211,33 @@ by inspecting the system for user preference.")
         ("rust-regex" ,rust-regex-1)
         ("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-lock-api-0.4
+  (package
+    (name "rust-lock-api")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lock_api" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0716z2rs0kydmd1818kqp4641dfkqzr0rpbnrpxhabxylp2pq918"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-owning-ref" ,rust-owning-ref-0.4)
+        ("rust-scopeguard" ,rust-scopeguard-1)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/Amanieu/parking_lot")
+    (synopsis "Wrappers to create fully-featured Mutex and RwLock types")
+    (description "This package provides wrappers to create fully-featured
+@code{Mutex} and @code{RwLock} types.  It is compatible with @code{no_std}.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-lock-api-0.3
   (package
+    (inherit rust-lock-api-0.4)
     (name "rust-lock-api")
     (version "0.3.4")
     (source
@@ -12224,19 +12249,7 @@ by inspecting the system for user preference.")
        (sha256
         (base32
          "0xgc5dzmajh0akbh5d6d7rj9mh5rzpk74pyrc946v2ixgakj9nn4"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-owning-ref" ,rust-owning-ref-0.4)
-        ("rust-scopeguard" ,rust-scopeguard-1)
-        ("rust-serde" ,rust-serde-1))))
-    (home-page "https://github.com/Amanieu/parking_lot")
-    (synopsis
-     "Wrappers to create fully-featured Mutex and RwLock types")
-    (description
-     "This package provides wrappers to create fully-featured @code{Mutex} and
-@code{RwLock} types.  It is compatible with @code{no_std}.")
-    (license (list license:expat license:asl2.0))))
+    (build-system cargo-build-system)))
 
 (define-public rust-lock-api-0.2
   (package
