@@ -390,6 +390,30 @@ code that is generic with regard to the algebraic entity types.")
 @code{alga} crate.")
     (license license:asl2.0)))
 
+(define-public rust-alloc-no-stdlib-2
+  (package
+    (name "rust-alloc-no-stdlib")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "alloc-no-stdlib" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19lhmi73fii1b6vrzh23vvp5yjqm33cb94h9yz17pn25b51yr4ji"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dropbox/rust-alloc-no-stdlib")
+    (synopsis "Dynamic allocator that may be used with or without the stdlib")
+    (description "This package provides a dynamic allocator that may be used
+with or without the stdlib.  This allows a package with nostd to allocate
+memory dynamically and be used either with a custom allocator, items on the
+stack, or by a package that wishes to simply use Box<>.  It also provides
+options to use calloc or a mutable global variable for pre-zeroed memory.")
+    (license license:bsd-3)))
+
+(define-public rust-alloc-no-stdlib-2.0 rust-alloc-no-stdlib-2)
+
 (define-public rust-android-glue-0.2
   (package
     (name "rust-android-glue")
