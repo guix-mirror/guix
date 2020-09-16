@@ -3812,6 +3812,25 @@ that logs panics to @code{console.error}.")
 the browser's console.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-const-fn-0.4
+  (package
+    (name "rust-const-fn")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "const-fn" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wnhzyrhfcaawnzi172k98cfawwi5zwqql7pg0nz2qlccm6dz46f"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/taiki-e/const_fn")
+    (synopsis "Generate const functions with conditional compilations")
+    (description "This package provides an attribute for easy generation of
+const functions with conditional compilations.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-constant-time-eq-0.1
   (package
     (name "rust-constant-time-eq")
