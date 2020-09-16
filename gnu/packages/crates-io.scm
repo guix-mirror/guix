@@ -3831,6 +3831,29 @@ the browser's console.")
 const functions with conditional compilations.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-const-random-0.1
+  (package
+    (name "rust-const-random")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "const-random" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sp1ang5sh27fq5b7g9fdwpq4d5s17ymj7khfzax4bbvffngj6ig"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-const-random-macro" ,rust-const-random-macro-0.1)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
+    (home-page "https://github.com/tkaitchuck/constrandom")
+    (synopsis "Compile time random number generation")
+    (description "This package provides compile time random number
+generation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-const-random-macro-0.1
   (package
     (name "rust-const-random-macro")
