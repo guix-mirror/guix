@@ -1880,6 +1880,39 @@ WebSocket usage in Python programs.")
       "Purl is a Python package for handling URLs.")
     (license license:expat)))
 
+(define-public python-apiron
+  (package
+    (name "python-apiron")
+    (version "5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "apiron" version))
+       (sha256
+        (base32 "1qwbqn47sf0aqznj1snbv37v8ijx476qqkjf5l9pac7xjkxsr8qk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv" "--cov" "-k"
+                     ;; This test tries to connect to the internet.
+                     "not test_call"))))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/ithaka/apiron")
+    (synopsis "Python wrapper for interacting with RESTful APIs")
+    (description
+     "@code{apiron} provides a declarative, structured configuration of
+services and endpoints with a unified interface for interacting with RESTful
+APIs.")
+    (license license:expat)))
+
 (define-public python-requests
   (package
     (name "python-requests")
