@@ -22019,3 +22019,30 @@ By default it uses the open Python vulnerability database Safety DB.")
     (description "pypandoc is a thin Python wrapper around pandoc
 and pandoc-citeproc.")
     (license license:expat)))
+
+(define-public python-rnc2rng
+  (package
+    (name "python-rnc2rng")
+    (version "2.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "rnc2rng" version))
+       (sha256
+        (base32
+         "1kmp3iwxxyzjsd47j2sprd47ihhkwhb3yydih3af5bbfq0ibh1w8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-rply" ,python-rply)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "test.py"))))))
+    (home-page "https://github.com/djc/rnc2rng")
+    (synopsis "Convert RELAX NG Compact to regular syntax")
+    (description
+     "This package provides the @command{rnc2rng} command-line tool as well as
+a Python library to convert RELAX NG schemata in Compact syntax (rnc) to
+equivalent schemata in the XML-based default RELAX NG syntax.")
+    (license license:expat)))
