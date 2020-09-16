@@ -38,6 +38,7 @@
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (guix profiles)
+  #:use-module (guix diagnostics)
   #:autoload   (guix http-client) (http-fetch http-get-error?)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -46,6 +47,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (gnu packages)
   #:autoload   (guix download) (download-to-store)
@@ -830,7 +832,28 @@ must be one of 'package', 'all', or 'transitive'~%")
 build---packages, gexps, derivations, and so on."
   (define (validate-type x)
     (unless (or (derivation? x) (file-like? x) (gexp? x) (procedure? x))
-      (leave (G_ "~s: not something we can build~%") x)))
+      (raise (make-compound-condition
+               (formatted-message (G_ "~s: not something we can build~%") x)
+               (condition
+                (&fix-hint
+                 (hint
+                   (if (unspecified? x)
+                       (G_ "If you build from a file, make sure the last Scheme
+expression returns a package value.  @code{define-public} defines a variable,
+but returns @code{#<unspecified>}.  To fix this, add a Scheme expression at
+the end of the file that consists only of the package's variable name you
+defined, as in this example:
+
+@example
+(define-public my-package
+  (package
+    ...))
+
+my-package
+@end example")
+                       (G_ "If you build from a file, make sure the last
+Scheme expression returns a package, gexp, derivation or a list of such
+values.")))))))))
 
   (define (ensure-list x)
     (let ((lst (match x
