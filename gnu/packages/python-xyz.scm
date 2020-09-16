@@ -22046,3 +22046,28 @@ and pandoc-citeproc.")
 a Python library to convert RELAX NG schemata in Compact syntax (rnc) to
 equivalent schemata in the XML-based default RELAX NG syntax.")
     (license license:expat)))
+
+(define-public python-citeproc-py
+  (package
+    (name "python-citeproc-py")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "citeproc-py" version))
+       (sha256
+        (base32
+         "00aaff50jy4j0nakdzq9258z1gzrac9baarli2ymgspj88jg5968"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-rnc2rng" ,python-rnc2rng)))
+    (home-page
+     "https://github.com/brechtm/citeproc-py")
+    (synopsis "Citations and bibliography formatter")
+    (description
+     "Citeproc-py is a CSL processor for Python.  It aims to implement the
+CSL 1.0.1 specification.  citeproc-py can output styled citations and
+bibliographies in a number of different output formats.  Currently supported
+are plain text, reStructuredText and HTML.")
+    (license license:bsd-2)))
