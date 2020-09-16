@@ -10,6 +10,7 @@
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -134,7 +135,7 @@ This package contains GUI widgets for baloo.")
      (list license:lgpl2.1+ license:fdl1.2+))))
 
 (define-public kdenlive
-  (let ((version "20.04.1"))
+  (let ((version "20.08.1"))
     (package
       (name "kdenlive")
       (version version)
@@ -147,7 +148,7 @@ This package contains GUI widgets for baloo.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0n0x34xmcn0k87rqnz0mk462b3al4gq56kn4m00rr428hafscdz7"))))
+           "15mpw1sysy7mky8fcj0x4zbspz0na7q76xdfj0j8hsggg9d3yq8l"))))
       (build-system cmake-build-system)
       (native-inputs
        `(("extra-cmake-modules" ,extra-cmake-modules)
