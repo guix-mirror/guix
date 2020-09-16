@@ -8438,8 +8438,8 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
          ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-numcl
-  (let ((commit "1cf7dfa59f763a24a501092870e9c5ee745d0c17")
-        (revision "1"))
+  (let ((commit "3e8d40bf774e070e7af1d3dbf01bc8c37dbebd3a")
+        (revision "2"))
     (package
       (name "sbcl-numcl")
       (version (git-version "0.1.0" revision commit))
@@ -8451,8 +8451,7 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0i3jby9hf4ii7blivgyza80g0vmjfhk8537i5i7kqqk0i5sdnym2"))))
+          (base32 "1hqpr68f6xkxaj1hjjayyh97wcdmj51k20qrd3nsv1rcpmdc5ll4"))))
       (build-system asdf-build-system/sbcl)
       (synopsis "Numpy clone in Common Lisp")
       (description
@@ -8478,10 +8477,16 @@ and usefulness, not speed.  Track the progress at
        `(("fiveam" ,sbcl-fiveam)))
       (arguments
        `(#:asd-files '("numcl.asd")
-         #:test-asd-file "numcl.test.asd")))))
+         #:test-asd-file "numcl.test.asd"
+         ;; Tests fail on SBCL with "Heap exhausted, game over",
+         ;; but they pass on ECL.
+         #:tests? #f)))))
 
 (define-public cl-numcl
   (sbcl-package->cl-source-package sbcl-numcl))
+
+(define-public ecl-numcl
+  (sbcl-package->ecl-package sbcl-numcl))
 
 (define-public sbcl-pzmq
   (let ((commit "7c7390eedc469d033c72dc497984d1536ee75826")
