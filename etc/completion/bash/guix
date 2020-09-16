@@ -181,7 +181,7 @@ _guix_complete ()
 	*)
 	    if _guix_is_command "package"
 	    then
-		if _guix_is_dash_L || _guix_is_dash_m
+		if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
 		then
 		    _guix_complete_file
 		elif _guix_is_removing
