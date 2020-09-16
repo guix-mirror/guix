@@ -919,6 +919,24 @@ standard library.")
         (sha256
          (base32
           "1s7yslcs6a28c5vz7jwj63lkfgyx8mx99fdirlhi9lbhhzhrpcyr"))))
+(define-public rust-atom-0.3
+  (package
+    (name "rust-atom")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "atom" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qig9fcdqf07mzzpkicm5wgxv0zpr28njdsqf708wxq27yf6k1iw"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/slide-rs/atom")
+    (synopsis "A safe abstraction around AtomicPtr")
+    (description "This package provides a safe abstraction around AtomicPtr.")
+    (license license:asl2.0)))
+
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
