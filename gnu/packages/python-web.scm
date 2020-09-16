@@ -1913,6 +1913,28 @@ services and endpoints with a unified interface for interacting with RESTful
 APIs.")
     (license license:expat)))
 
+(define-public python-beren
+  (package
+    (name "python-beren")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "beren" version))
+       (sha256
+        (base32 "1v3mdwfqsyza892zvs124ym9w1bkng1j56b7l4dwfjir3723xcgf"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The test tries to open a connection to a remote server.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-apiron" ,python-apiron)))
+    (home-page "https://github.com/teffalump/beren")
+    (synopsis "REST client for Orthanc DICOM servers")
+    (description
+     "@code{beren} provides a REST client for Orthanc, a DICOM server.")
+    (license license:gpl3+)))
+
 (define-public python-requests
   (package
     (name "python-requests")
