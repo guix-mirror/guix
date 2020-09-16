@@ -1621,15 +1621,16 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-wisp
   (package
     (name "guile-wisp")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://bitbucket.org/ArneBab/"
-                                  "wisp/downloads/wisp-"
-                                  version ".tar.gz"))
+              (method hg-fetch)
+              (uri (hg-reference
+                    (url "https://hg.sr.ht/~arnebab/wisp")
+                    (changeset (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03pz7pj9jyallynhflp5s7qax8dj1fs8la434wrfgz7g1kgjnvf6"))))
+                "10g97jz3ahpb5mg933ajsc3pa9jxlg14f42yf01qwx0dwq1b06d5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1643,11 +1644,9 @@ The library is shipped with documentation in Info format and usage examples.")
                            (guix build emacs-utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'support-guile-3.0
+         (replace 'bootstrap
            (lambda _
-             (substitute* "configure"
-               (("_guile_versions_to_search=\"2.2")
-                "_guile_versions_to_search=\"3.0 2.2"))
+             (invoke "autoreconf" "-vif")
              #t))
          (add-before 'configure 'patch-/usr/bin/env
            (lambda _
@@ -1689,7 +1688,9 @@ The library is shipped with documentation in Info format and usage examples.")
     (inputs
      `(("guile" ,guile-3.0)))
     (native-inputs
-     `(("emacs" ,emacs-minimal)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("emacs" ,emacs-minimal)
        ("python" ,python)
        ("pkg-config" ,pkg-config)))
     (synopsis "Whitespace to lisp syntax for Guile")
