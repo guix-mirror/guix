@@ -6814,14 +6814,15 @@ your own classes.")
        `(("lisp-unit" ,sbcl-lisp-unit)))
       (arguments
        '(#:asd-systems '("antik-base"
-                         "foreign-array"
-                         "physical-dimension"
-                         "science-data")
+                         "foreign-array")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-build
              (lambda _
-               (delete-file "antik.asd")
+               (for-each delete-file
+                         '("antik.asd"
+                           "physical-dimension.asd"
+                           "science-data.asd"))
                #t)))))
       (synopsis "Scientific and engineering computation in Common Lisp")
       (description
@@ -6837,6 +6838,21 @@ computer known.")
 
 (define-public cl-antik-base
   (sbcl-package->cl-source-package sbcl-antik-base))
+
+(define-public ecl-antik-base
+  (let ((pkg (sbcl-package->ecl-package sbcl-antik-base)))
+    (package
+      (inherit pkg)
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'fix-readtable
+               (lambda _
+                 (substitute* "input-output/readtable.lisp"
+                   (("#-ccl")
+                    "#-(or ccl ecl)"))
+                 #t)))))))))
 
 (define-public sbcl-gsll
   (let ((commit "1a8ada22f9cf5ed7372d352b2317f4ccdb6ab308")
@@ -6899,6 +6915,9 @@ intending to program in Lisp.")
 (define-public cl-gsll
   (sbcl-package->cl-source-package sbcl-gsll))
 
+(define-public ecl-gsll
+  (sbcl-package->ecl-package sbcl-gsll))
+
 (define-public sbcl-antik
   (package
     (inherit sbcl-antik-base)
@@ -6907,15 +6926,15 @@ intending to program in Lisp.")
      `(("antik-base" ,sbcl-antik-base)
        ("gsll" ,sbcl-gsll)))
     (arguments
-     '(#:phases
+     '(#:asd-systems '("antik"
+                       "science-data")
+       #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-build
              (lambda _
                (for-each delete-file
                          '("antik-base.asd"
-                           "foreign-array.asd"
-                           "physical-dimension.asd"
-                           "science-data.asd"))
+                           "foreign-array.asd"))
                #t)))))))
 
 (define-public cl-antik
