@@ -13613,7 +13613,8 @@ package that includes a number of renames and shadows. ")
        ("metabang-bind" ,sbcl-metabang-bind)))
     (home-page "http://dwim.hu/")
     (synopsis "Common Lisp library shared by other hu.dwim systems")
-    (description "")
+    (description "This package contains a support library for other
+hu.dwim systems.")
     (license license:public-domain)))
 
 (define-public cl-hu.dwim.common
