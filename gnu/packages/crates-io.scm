@@ -10949,7 +10949,37 @@ immutable interval tree.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-is-executable-0.1
+(define-public rust-ipnet-2
+  (package
+    (name "rust-ipnet")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ipnet" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0db147nh8jnxr23yxa7hwqn7dcjivdqi3aq4mgf2zgkqqqa2zgj7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde-test" ,rust-serde-test-1))))
+    (home-page "https://github.com/krisprice/ipnet")
+    (synopsis "Work with IPv4 and IPv6 network addresses")
+    (description "This package provides types and useful methods for working
+with IPv4 and IPv6 network addresses, commonly called IP prefixes.  The new
+IpNet, Ipv4Net, and Ipv6Net types build on the existing IpAddr, Ipv4Addr, and
+Ipv6Addr types already provided in Rust's standard library and align to their
+design to stay consistent.  The module also provides useful traits that extend
+Ipv4Addr and Ipv6Addr with methods for Add, Sub, BitAnd, and BitOr operations.
+The module only uses stable feature so it is guaranteed to compile using the
+stable toolchain.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-is-executable
   (package
     (name "rust-is-executable")
     (version "0.1.2")
