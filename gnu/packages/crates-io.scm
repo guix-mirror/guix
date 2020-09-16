@@ -414,6 +414,28 @@ options to use calloc or a mutable global variable for pre-zeroed memory.")
 
 (define-public rust-alloc-no-stdlib-2.0 rust-alloc-no-stdlib-2)
 
+(define-public rust-alloc-stdlib-0.2
+  (package
+    (name "rust-alloc-stdlib")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "alloc-stdlib" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hj3r1x88aajnvigdck0diygj2isc90wa271kkj1swgiq3nxfzk9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-alloc-no-stdlib" ,rust-alloc-no-stdlib-2.0))))
+    (home-page "https://github.com/dropbox/rust-alloc-no-stdlib")
+    (synopsis "A dynamic allocator example that may be used with the stdlib")
+    (description "This package provides a dynamic allocator example that may
+be used with the stdlib.")
+    (license license:bsd-3)))
+
 (define-public rust-android-glue-0.2
   (package
     (name "rust-android-glue")
