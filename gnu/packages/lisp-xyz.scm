@@ -8389,8 +8389,8 @@ additional form that is considered as a candidate for a constant.")
   (sbcl-package->ecl-package sbcl-constantfold))
 
 (define-public sbcl-gtype
-  (let ((commit "42275e3606242ae91e9c8dfa30c18ced50a35b66")
-        (revision "1"))
+  (let ((commit "2442e32485635525af278ebd8fa69a27d5b8cf18")
+        (revision "2"))
     (package
       (name "sbcl-gtype")
       (version (git-version "0.1" revision commit))
@@ -8402,8 +8402,7 @@ additional form that is considered as a candidate for a constant.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1f56dba998v945jcxhha391557n6md1ql25b7icfwwfivhmlaa9b"))))
+          (base32 "0hbkfdw00v7bsa6zbric34p5w6hfwxycccg8wc2faq0cxhsvpv9h"))))
       (build-system asdf-build-system/sbcl)
       (synopsis "C++/Julia-like parametric types in Common Lisp")
       (description
@@ -8426,6 +8425,15 @@ type correctness in Common Lisp.  It is based on CLtL2 extensions.")
 
 (define-public cl-gtype
   (sbcl-package->cl-source-package sbcl-gtype))
+
+(define-public ecl-gtype
+  (let ((pkg (sbcl-package->ecl-package sbcl-gtype)))
+    (package
+      (inherit pkg)
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ;; The tests fail on ECL with a COMPILE-FILE-ERROR for t/package.lisp.
+         ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-numcl
   (let ((commit "1cf7dfa59f763a24a501092870e9c5ee745d0c17")
