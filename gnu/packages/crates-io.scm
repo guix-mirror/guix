@@ -10245,6 +10245,25 @@ or response body.")
      "This package provides a tiny, safe, speedy, zero-copy HTTP/1.x parser.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-humansize-1
+  (package
+    (name "rust-humansize")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "humansize" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0piadmwjah1jv6q288im4za9szlgalzjyq2811w35i6gg9ib5jmn"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/LeopoldArkham/humansize")
+    (synopsis "Represent file sizes in a human-readable format")
+    (description "This package provides a configurable crate to easily
+represent file sizes in a human-readable format.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-humantime-2
   (package
     (name "rust-humantime")
