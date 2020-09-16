@@ -24560,6 +24560,24 @@ syntax extension expansion.")
     (description "Send log messages to syslog.")
     (license license:expat)))
 
+(define-public rust-take-mut-0.2
+  (package
+    (name "rust-take-mut")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "take_mut" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0q2d7w6nd5bl7bay5csq065sjg8fw0jcx6hl1983cpzf25fh0r7p"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/Sgeo/take_mut")
+    (synopsis "Take a T from a &mut T temporarily")
+    (description "This package lets you temporarily take a T from a &mut T.")
+    (license license:expat)))
+
 (define-public rust-takeable-option-0.4
   (package
     (name "rust-takeable-option")
