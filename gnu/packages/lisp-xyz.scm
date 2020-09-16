@@ -75,6 +75,7 @@
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19))
 
 (define-public sbcl-alexandria
@@ -3313,6 +3314,13 @@ connections (keep-alive), and SSL.")
 (define-public cl-hunchentoot
   (sbcl-package->cl-source-package sbcl-hunchentoot))
 
+(define-public ecl-hunchentoot
+  (package
+    (inherit (sbcl-package->ecl-package sbcl-hunchentoot))
+    (arguments
+     ;; Tests fail on ECL with 'Socket error in "socket": EINVAL'.
+     '(#:tests? #f))))
+
 (define-public sbcl-trivial-types
   (package
     (name "sbcl-trivial-types")
@@ -4200,6 +4208,9 @@ Python's WSGI and Ruby's Rack.")
 
 (define-public cl-clack
   (sbcl-package->cl-source-package sbcl-clack))
+
+(define-public ecl-clack
+  (sbcl-package->ecl-package sbcl-clack))
 
 (define-public sbcl-log4cl
   (let ((commit "611e094458504b938d49de904eab141285328c7c")
@@ -7292,6 +7303,13 @@ may contain sets, maps may be keyed by sets, etc.")
 (define-public cl-fset
   (sbcl-package->cl-source-package sbcl-fset))
 
+(define-public ecl-fset
+  (package
+    (inherit (sbcl-package->ecl-package sbcl-fset))
+    (arguments
+     ;; Tests fails on ECL with "The function FSET::MAKE-CHAR is undefined".
+     '(#:tests? #f))))
+
 (define-public sbcl-cl-cont
   (let ((commit "fc1fa7e6eb64894fdca13e688e6015fad5290d2a")
         (revision "1"))
@@ -8908,6 +8926,17 @@ interfaces as well as a functional and an object oriented interface.")
            (lambda _
              (make-file-writable "doc/html.tar.gz")
              #t)))))))
+
+(define-public ecl-clsql
+  (let ((pkg (sbcl-package->ecl-package sbcl-clsql)))
+    (package
+      (inherit pkg)
+      (inputs
+       (alist-delete "uffi" (package-inputs pkg)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ((#:asd-files asd-files '())
+          `(cons "clsql-cffi.asd" ,asd-files)))))))
 
 (define-public sbcl-sycamore
   (let ((commit "fd2820fec165ad514493426dea209728f64e6d18"))
