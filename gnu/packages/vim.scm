@@ -499,8 +499,7 @@ commit or run any Git arbitrary command.")
      '(#:install-plan
        '(("autoload" "share/vim/vimfiles/")
          ("doc" "share/vim/vimfiles/")
-         ("plugin" "share/vim/vimfiles/")
-         ("t" "share/vim/vimfiles/"))))
+         ("plugin" "share/vim/vimfiles/"))))
     (synopsis "Statusline for Vim")
     (description
      "@code{vim-airline} is an extensible statusline for Vim.
