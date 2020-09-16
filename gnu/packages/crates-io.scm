@@ -3831,6 +3831,29 @@ the browser's console.")
 const functions with conditional compilations.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-const-random-macro-0.1
+  (package
+    (name "rust-const-random-macro")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "const-random-macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ykc9riajn6bijvw46092gp18vrbky3y1cjpgjgx57a5xc3cdr15"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.1)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
+    (home-page "https://github.com/tkaitchuck/constrandom")
+    (synopsis "Procedural macro used by const-random")
+    (description "This package provides the procedural macro used by
+@code{rust-const-random}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-constant-time-eq-0.1
   (package
     (name "rust-constant-time-eq")
