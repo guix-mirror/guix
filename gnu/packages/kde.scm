@@ -191,32 +191,23 @@ This package contains GUI widgets for baloo.")
            (add-after 'install 'wrap-executable
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
-                      (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
-                      (qtquickcontrols2 (assoc-ref inputs "qtquickcontrols2"))
                       (qtbase (assoc-ref inputs "qtbase"))
-                      (qtdeclarative (assoc-ref inputs "qtdeclarative"))
                       (frei0r (assoc-ref inputs "frei0r-plugins"))
                       (ffmpeg (assoc-ref inputs "ffmpeg"))
-                      (breeze (assoc-ref inputs "breeze"))
-                      (qml "/lib/qt5/qml"))
+                      (breeze (assoc-ref inputs "breeze")))
                  (wrap-program (string-append out "/bin/kdenlive")
                    `("PATH" ":" prefix
                      ,(list (string-append ffmpeg "/bin")))
                    `("XDG_DATA_DIRS" ":" prefix
                      ,(list (string-append breeze "/share")))
                    `("QT_PLUGIN_PATH" ":" prefix
-                     ,(map (lambda (label)
-                             (string-append (assoc-ref inputs label)
-                                            "/lib/qt5/plugins/"))
-                           '("qtbase" "qtsvg")))
+                     ,(list (getenv "QT_PLUGIN_PATH")))
                    `("FREI0R_PATH" ":" =
                      (,(string-append frei0r "/lib/frei0r-1/")))
                    `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
                      (,(string-append qtbase "/lib/qt5/plugins/platforms")))
                    `("QML2_IMPORT_PATH" ":" prefix
-                     (,(string-append qtquickcontrols qml)
-                      ,(string-append qtquickcontrols2 qml)
-                      ,(string-append qtdeclarative qml)))
+                     ,(list (getenv "QML2_IMPORT_PATH")))
                    `("MLT_PREFIX" ":" =
                      (,(assoc-ref inputs "mlt")))))
                #t)))))
