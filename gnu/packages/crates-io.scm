@@ -2186,6 +2186,25 @@ UTF-8.")
         (base32
          "0nzi9vqhl56ws8gq39f3aj4qjrr4l3g5lbkkcj8xq1x4cb74wq2r"))))))
 
+(define-public rust-build-const-0.2
+  (package
+    (name "rust-build-const")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "build_const" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0faz882spx9474cszay2djmb0lghbwq51qayabcar1s7g4r2l29r"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/build_const")
+    (synopsis "Create importable constants from build.rs or a script")
+    (description "This package provides a library for creating importable
+constants from build.rs or a script.")
+    (license license:expat)))
+
 (define-public rust-bumpalo-3
   (package
     (name "rust-bumpalo")
