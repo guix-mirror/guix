@@ -4118,6 +4118,30 @@ to @code{is_x86_feature_detected}.")
      "Library for retrieving and interacting with the crates.io index.")
     (license license:asl2.0)))
 
+(define-public rust-crc-1
+  (package
+    (name "rust-crc")
+    (version "1.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nwgidcckh1gkndhi0c0zry3qv6ly2z6fp8fgy8q5cfca9jcma50"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-build-const" ,rust-build-const-0.2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.2))))
+    (home-page "https://crates.io/crates/crc")
+    (synopsis "Rust implementation of CRC(16, 32, 64)")
+    (description "This package provides a Rust implementation of CRC(16, 32,
+64) with support for various standards.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crc32fast-1
   (package
     (name "rust-crc32fast")
