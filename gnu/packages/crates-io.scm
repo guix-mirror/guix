@@ -4257,6 +4257,28 @@ to @code{is_x86_feature_detected}.")
         ("rust-rand" ,rust-rand-0.6)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-criterion-cycles-per-byte-0.1
+  (package
+    (name "rust-criterion-cycles-per-byte")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "criterion-cycles-per-byte" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15iw8zvyilx6k3a7z79vpzmpm6kkyds4c1ng3jlwfc43axd4hd4d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://crates.io/crates/criterion-cycles-per-byte")
+    (synopsis "Measure time with CPU cycles for criterion")
+    (description "This package lets you measure time with CPU cycles for
+criterion.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-criterion-plot-0.4
   (package
     (name "rust-criterion-plot")
