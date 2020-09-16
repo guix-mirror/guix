@@ -2138,6 +2138,30 @@ extension of blocks.")
 Bresenham's line algorithm.")
     (license license:expat)))
 
+(define-public rust-brotli-decompressor-2.3
+  (package
+    (name "rust-brotli-decompressor")
+    (version "2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "brotli-decompressor" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1v7l1sa63ix1aq8h0k1ijvxvb5w796hz154b9aw0xn6lp31y2lhh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-alloc-no-stdlib" ,rust-alloc-no-stdlib-2.0)
+        ("rust-alloc-stdlib" ,rust-alloc-stdlib-0.2))))
+    (home-page "https://github.com/dropbox/rust-brotli-decompressor")
+    (synopsis "Brotli decompressor")
+    (description "This package provides a brotli decompressor with no
+dependency on the rust stdlib.  This makes it suitable for embedded devices
+and kernels.")
+    (license (list license:bsd-3 license:expat))))
+
 (define-public rust-bstr-0.2
   (package
     (name "rust-bstr")
