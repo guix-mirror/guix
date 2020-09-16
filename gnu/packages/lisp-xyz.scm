@@ -8308,8 +8308,8 @@ correctly.")
   (sbcl-package->ecl-package sbcl-trivialib-type-unify))
 
 (define-public sbcl-specialized-function
-  (let ((commit "b96b6afaf8358bf91cc0703e62a5a4ee20d2b7bc")
-        (revision "1"))
+  (let ((commit "dee56d2d2b6ecd10500ad291c56217698604ec35")
+        (revision "2"))
     (package
       (name "sbcl-specialized-function")
       (version (git-version "0.0.0" revision commit))
@@ -8321,8 +8321,7 @@ correctly.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "12j45ff0n26578vmfbhb9mfbdchw4wy023k0m2ppgl9s0z4bhjaj"))))
+          (base32 "1mcc7mmpbnmgnr1cl2jl5r1ai54gn7fbisv2c14sh9za5w4sib82"))))
       (build-system asdf-build-system/sbcl)
       (synopsis "Julia-like dispatch for Common Lisp")
       (description
@@ -8347,6 +8346,9 @@ code.  The main target of this macro is speed.")
 
 (define-public cl-specialized-function
   (sbcl-package->cl-source-package sbcl-specialized-function))
+
+(define-public ecl-specialized-function
+  (sbcl-package->ecl-package sbcl-specialized-function))
 
 (define-public sbcl-constantfold
   (let ((commit "0ff1d97a3fbcb89264f6a2af6ce62b73e7b421f4")
