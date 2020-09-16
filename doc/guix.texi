@@ -59,7 +59,7 @@ Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018, 2019 Gábor Boskovits@*
-Copyright @copyright{} 2018, 2019 Florian Pelz@*
+Copyright @copyright{} 2018, 2019, 2020 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
@@ -6370,21 +6370,22 @@ this area (@pxref{Invoking guix lint}).
 
 @anchor{package-propagated-inputs}
 Lastly, @code{propagated-inputs} is similar to @code{inputs}, but the
-specified packages will be automatically installed alongside the package
+specified packages will be automatically installed to profiles
+(@pxref{Features, the role of profiles in Guix}) alongside the package
 they belong to (@pxref{package-cmd-propagated-inputs, @command{guix
 package}}, for information on how @command{guix package} deals with
 propagated inputs).
 
-For example this is necessary when a C/C++ library needs headers of
-another library to compile, or when a pkg-config file refers to another
-one @i{via} its @code{Requires} field.
+For example this is necessary when packaging a C/C++ library that needs
+headers of another library to compile, or when a pkg-config file refers
+to another one @i{via} its @code{Requires} field.
 
 Another example where @code{propagated-inputs} is useful is for languages
 that lack a facility to record the run-time search path akin to the
 @code{RUNPATH} of ELF files; this includes Guile, Python, Perl, and
-more.  To ensure that libraries written in those languages can find
-library code they depend on at run time, run-time dependencies must be
-listed in @code{propagated-inputs} rather than @code{inputs}.
+more.  When packaging libraries written in those languages, ensure they
+can find library code they depend on at run time by listing run-time
+dependencies in @code{propagated-inputs} rather than @code{inputs}.
 
 @item @code{outputs} (default: @code{'("out")})
 The list of output names of the package.  @xref{Packages with Multiple
