@@ -50,6 +50,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
@@ -987,6 +988,92 @@ environments.")
     ;; the web interface modules in gwl/ are licensed AGPL3+,
     ;; and the fonts included in this package are licensed OFL1.1.
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
+
+(define-public guix-build-coordinator
+  (let ((commit "b1c5392ce817d467730aa4c435e63e6ed7c81524")
+        (revision "0"))
+    (package
+    (name "guix-build-coordinator")
+    (version (git-version "0" revision commit))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.cbaines.net/git/guix/build-coordinator")
+                    (commit commit)))
+              (sha256
+               (base32
+                "08aaqz50vi1hxi8929jhqv26s6bv7dz11ldmm3a2jxgjzpjvg8x3"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-GUILE_AUTO_COMPILE
+           (lambda _
+             ;; To avoid warnings relating to 'guild'.
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             #t))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (guile (assoc-ref inputs "guile"))
+                    (version (target-guile-effective-version))
+                    (scm (string-append out "/share/guile/site/" version))
+                    (go  (string-append out "/lib/guile/" version "/site-ccache")))
+               (for-each
+                (lambda (file)
+                  (simple-format (current-error-port) "wrapping: ~A\n" file)
+                  (wrap-program file
+                    `("PATH" ":" prefix
+                      (,bin
+                       ;; Support building without sqitch as an input, as it
+                       ;; can't be cross-compiled yet
+                       ,@(or (and=> (assoc-ref inputs "sqitch")
+                                    list)
+                             '())))
+                    `("GUILE_LOAD_PATH" ":" prefix
+                      (,scm ,(getenv "GUILE_LOAD_PATH")))
+                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                      (,go ,(getenv "GUILE_LOAD_COMPILED_PATH")))))
+                (find-files bin)))
+             #t))
+         (delete 'strip))))             ; As the .go files aren't compatible
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+
+       ;; Guile libraries are needed here for cross-compilation.
+       ("guile-json" ,guile-json-3)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guix" ,guix)
+       ("guile-prometheus" ,guile-prometheus)
+       ("guile-fibers" ,guile-fibers)
+       ("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
+    (inputs
+     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       ("guile-fibers" ,guile-fibers)
+       ("guile-prometheus" ,guile-prometheus)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guile-json" ,guile-json-3)
+       ("guile-lzlib" ,guile-lzlib)
+       ("guile-sqlite3" ,guile-sqlite3)
+       ("guix" ,guix)
+       ("sqlite" ,sqlite)
+       ("sqitch" ,sqitch)))
+    (home-page "https://git.cbaines.net/guix/build-coordinator/")
+    (synopsis "Tool to help build derivations")
+    (description
+     "The Guix Build Coordinator helps with performing lots of builds across
+potentially many machines, and with doing something with the results and
+outputs of those builds.")
+    (license license:gpl3+))))
 
 (define-public guix-jupyter
   (package
