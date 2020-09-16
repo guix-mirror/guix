@@ -3877,26 +3877,39 @@ intrinsics.")
      "Bindings to Core Foundation for macOS.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-core-foundation-sys-0.7
+  (package
+    (name "rust-core-foundation-sys")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-foundation-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ghrg46h4ci306agr2vwm28w6gb5l455nzp61y2zkhwfs49p4nis"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/servo/core-foundation-rs")
+    (synopsis "Bindings to Core Foundation for macOS")
+    (description "This package provides bindings to Core Foundation for
+macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-core-foundation-sys-0.6
   (package
+    (inherit rust-core-foundation-sys-0.7)
     (name "rust-core-foundation-sys")
     (version "0.6.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "core-foundation-sys" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "0fzsw1j9g1x598yhwklg59l15hwzc0pyvs01w9fg2kin4598mjp7"))))
-    (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
-    (home-page "https://github.com/servo/core-foundation-rs")
-    (synopsis "Bindings to Core Foundation for OS X")
-    (description
-     "Bindings to Core Foundation for OS X.")
-    (license (list license:asl2.0
-                   license:expat))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "core-foundation-sys" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32
+         "0fzsw1j9g1x598yhwklg59l15hwzc0pyvs01w9fg2kin4598mjp7"))))))
 
 (define-public rust-core-text-13
   (package
