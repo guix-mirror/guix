@@ -3311,13 +3311,12 @@ pitfalls in Rust.")
           "0rv4yf5jlldfkynzrw687s00f4x12ypw7axv71vawhy6h4i52i23"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1))))
-    (home-page "https://nuxi.nl/cloudabi/")
+    (home-page "https://cloudabi.org/")
     (synopsis "Low level interface to CloudABI")
-    (description
-     "Low level interface to CloudABI.  Contains all syscalls and related types.")
+    (description "This package provides a low level interface to CloudABI.  It
+contains all syscalls and related types.")
     (license license:bsd-2)))
 
 (define-public rust-cloudabi-0.0
@@ -3332,11 +3331,7 @@ pitfalls in Rust.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-bitflags" ,rust-bitflags-1))))))
+          "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))))
 
 (define-public rust-cloudflare-zlib-sys-0.2
   (package
