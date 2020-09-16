@@ -10583,6 +10583,31 @@ or numerical index.  A corresponding hash set type is also provided.")
     (description "This package provides DEFLATE decoding.")
     (license license:expat)))
 
+(define-public rust-inflector-0.11
+  (package
+    (name "rust-inflector")
+    (version "0.11.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "Inflector" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lqmcni21ifzyq41fhz6k1j2b23cmsx469s4g4sf01l78miqqhzy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/whatisinternet/inflector")
+    (synopsis "String based inflections for Rust")
+    (description "This package adds String based inflections for Rust.  Snake,
+kebab, camel, sentence, class, title and table cases as well as ordinalize,
+deordinalize, demodulize, foreign key, and pluralize/singularize are supported
+as both traits and pure functions acting on String types.")
+    (license license:bsd-2)))
+
 (define-public rust-inotify-0.7
   (package
     (name "rust-inotify")
