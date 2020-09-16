@@ -1046,6 +1046,21 @@ in Rust.")
 trace (backtrace) at runtime in a Rust program.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-backtrace-0.3.35
+  (package
+    (inherit rust-backtrace-0.3)
+    (name "rust-backtrace")
+    (version "0.3.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "backtrace" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mfwbb6832rh1za304w8x37bvs9fjbybpmmz0iksqfzsaf108w8k"))))))
+
 (define-public rust-backtrace-sys-0.1
   (package
     (name "rust-backtrace-sys")
