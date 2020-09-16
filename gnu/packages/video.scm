@@ -2184,6 +2184,16 @@ To load this plugin, specify the following option when starting mpv:
      ;; 'youtube-dl.bash-completion'.
      `(#:tests? #f ; Many tests fail. The test suite can be run with pytest.
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'default-to-the-ffmpeg-input
+                    (lambda _
+                      ;; See <https://issues.guix.gnu.org/43418#5>.
+                      ;; ffmpeg is big but required to request free formats
+                      ;; from, e.g., YouTube so pull it in unconditionally.
+                      ;; Continue respecting the --ffmpeg-location argument.
+                      (substitute* "youtube_dl/postprocessor/ffmpeg.py"
+                        (("\\.get\\('ffmpeg_location'\\)" match)
+                         (format #f "~a or '~a'" match (which "ffmpeg"))))
+                      #t))
                   (add-before 'install 'fix-the-data-directories
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((prefix (assoc-ref outputs "out")))
@@ -2207,6 +2217,8 @@ To load this plugin, specify the following option when starting mpv:
                         (copy-file "youtube-dl.zsh"
                                    (string-append zsh "/_youtube-dl"))
                         #t))))))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
      "Youtube-dl is a small command-line program to download videos from
