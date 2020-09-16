@@ -9165,7 +9165,7 @@ specification.")
 (define-public python-libsass
   (package
     (name "python-libsass")
-    (version "0.20.0")
+    (version "0.20.1")
     (source
      (origin
        ;; PyPI tarball is missing some test files.
@@ -9175,7 +9175,7 @@ specification.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0h9rj4k9izkfdvli8ip72bbvh6a7bvrv5pxz6zay2bq235gpfgfc"))))
+        (base32 "1r0kgl7i6nnhgjl44sjw57k08gh2qr7l8slqih550dyxbf1akbxh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -9188,10 +9188,7 @@ specification.")
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "sasstests.py" "-k"
-                     ;; See https://github.com/sass/libsass/issues/3092.
-                     ;; This test may work in a future release of libsass.
-                     "not test_stack_trace_formatting"))))))
+             (invoke "pytest" "sasstests.py"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-werkzeug" ,python-werkzeug)))
