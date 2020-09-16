@@ -19718,6 +19718,25 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-retain-mut-0.1
+  (package
+    (name "rust-retain-mut")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "retain_mut" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cgmm1q7sr31r9wk7syh53ipgqpl37jzsvahdhmwrsi6mmcdc1g0"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/upsuper/retain_mut")
+    (synopsis "Mutable borrow for the retain predicate")
+    (description "This package provides retain_mut method that has the same
+functionality as retain but gives mutable borrow to the predicate.")
+    (license license:expat)))
+
 (define-public rust-ring-0.16
   (package
     (name "rust-ring")
