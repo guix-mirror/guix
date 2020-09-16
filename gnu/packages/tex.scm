@@ -7380,3 +7380,24 @@ subdivided bibliographies, such as bibliographies per chapter or
 section.
 @end enumerate\n")
       (license license:lppl1.3c))))
+
+(define-public texlive-todonotes
+  (let ((template (simple-texlive-package
+                   "texlive-todonotes"
+                   (list "/doc/latex/todonotes/"
+                         "/tex/latex/todonotes/")
+                   (base32
+                    "0lvxsskz4bdfxhd59hf77kiq8k4nh2spb66vc6hifdgi21z8r8wm")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-latex-pgf" ,texlive-latex-pgf)
+         ("texlive-latex-xkeyval" ,texlive-latex-xkeyval)))
+      (home-page "http://www.ctan.org/pkg/todonotes")
+      (synopsis "Marking things to do in a LaTeX document")
+      (description "The @code{todonotes} package lets the user mark
+things to do later, in a simple and visually appealing way.  The
+package takes several options to enable customization and finetuning
+of the visual appearance.")
+      (license license:lppl1.3+))))
