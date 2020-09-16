@@ -1896,8 +1896,32 @@ BLAKE2bp hash functions.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-blobby-0.3
+  (package
+    (name "rust-blobby")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "blobby" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1s2f3a7lx5rd26554d9940basff7qpyf1y8gkc309cgc8csmalpw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-hex" ,rust-hex-0.3))))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Iterator over simple binary blob storage")
+    (description "This package provides an iterator over simple binary blob
+storage.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-blobby-0.1
   (package
+    (inherit rust-blobby-0.3)
     (name "rust-blobby")
     (version "0.1.2")
     (source
@@ -1916,12 +1940,7 @@ BLAKE2bp hash functions.")
        (("rust-byteorder" ,rust-byteorder-1))
        #:cargo-development-inputs
        (("rust-byteorder" ,rust-byteorder-1)
-        ("rust-hex" ,rust-hex-0.3))))
-    (home-page "https://github.com/RustCrypto/utils")
-    (synopsis "Iterator over simple binary blob storage")
-    (description
-     "Iterator over simple binary blob storage.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-hex" ,rust-hex-0.3))))))
 
 (define-public rust-block-0.1
   (package
