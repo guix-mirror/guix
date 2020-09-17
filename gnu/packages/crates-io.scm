@@ -24155,6 +24155,24 @@ cryptographic implementations.")
     (description "Custom derive for sval.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-syn-test-suite-0
+  (package
+    (name "rust-syn-test-suite")
+    (version "0.0.0+test")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syn-test-suite" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1d9ffrbgci1qjdcpvgrsg3sh24qdsdh66zcsvn5prrk05ycn3mm0"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/syn")
+    (synopsis "Test suite of the syn crate")
+    (description "This package provides the test suite of the syn crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-syn-1
   (package
     (name "rust-syn")
