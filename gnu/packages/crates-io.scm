@@ -24076,6 +24076,27 @@ deeply recursive algorithms that may accidentally blow the stack.")
      "StackVec: vector-like facade for stack-allocated arrays.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-standback-0.2
+  (package
+    (name "rust-standback")
+    (version "0.2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "standback" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rnqv9dbq9c4nz7097v0f1d04fjwwsvvyy8rmz8lg1szxahix9rk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-version-check" ,rust-version-check-0.9))))
+    (home-page "https://github.com/jhpratt/standback")
+    (synopsis "New standard library, old compiler")
+    (description "New standard library, old compiler.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-static-assertions-1
   (package
     (name "rust-static-assertions")
