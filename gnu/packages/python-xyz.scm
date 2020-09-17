@@ -7329,13 +7329,13 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "2.4")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "networkx" version))
        (sha256
-        (base32 "0r2wr7aqay9fwjrgk35fkjzk8lvvb4i4df7ndaqzkr4ndw5zzx7q"))))
+        (base32 "00hnii2lplig2s324k1hvi29pyfab6z7i22922f67jgv4da9ay3r"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
