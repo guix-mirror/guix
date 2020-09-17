@@ -2145,24 +2145,27 @@ extension of blocks.")
         ("rust-byteorder" ,rust-byteorder-1)
         ("rust-generic-array" ,rust-generic-array-0.12))))))
 
-(define-public rust-block-padding-0.2
+(define-public rust-block-cipher-0.7
   (package
-    (name "rust-block-padding")
-    (version "0.2.0")
+    (name "rust-block-cipher")
+    (version "0.7.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "block-padding" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0x6b2dgink7rc3755r8jl4kmndydy5563h3wz7z9jqrb25ygv2y9"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "block-cipher" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "043zgfz1x4sxkdcsyabrcr440fcwhfpcqqa54jm7zp35wx4n84zs"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/RustCrypto/utils")
-    (synopsis "Padding and unpadding of messages divided into blocks")
-    (description
-     "Padding and unpadding of messages divided into blocks.")
+    (arguments
+     `(#:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.14))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Traits for description of block ciphers")
+    (description "This package provides traits for description of block
+ciphers.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-block-cipher-trait-0.4
@@ -2185,6 +2188,26 @@ extension of blocks.")
     (synopsis "Block cipher algorithms")
     (description "This package provides a collection of block cipher
 algorithms.  This package is deprecated.  Please use block-cipher instead")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-block-padding-0.2
+  (package
+    (name "rust-block-padding")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "block-padding" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0x6b2dgink7rc3755r8jl4kmndydy5563h3wz7z9jqrb25ygv2y9"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Padding and unpadding of messages divided into blocks")
+    (description
+     "Padding and unpadding of messages divided into blocks.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-block-padding-0.1
