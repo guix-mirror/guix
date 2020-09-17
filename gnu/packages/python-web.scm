@@ -2029,6 +2029,28 @@ with python-requests.")
      `(;; FIXME: Some tests require network access.
        #:tests? #f))))
 
+(define-public python-requests-ftp
+  (package
+    (name "python-requests-ftp")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests-ftp" version))
+       (sha256
+        (base32
+         "0yh5v21v36dsjsgv4y9dx4mmz35741l5jf6pbq9w19d8rfsww13m"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page
+     "https://github.com/Lukasa/requests-ftp")
+    (synopsis "FTP Transport Adapter for Requests")
+    (description
+     "Requests-FTP is an implementation of a simple FTP transport
+adapter for use with the Requests library.")
+    (license license:asl2.0)))
+
 (define-public python-oauthlib
   (package
     (name "python-oauthlib")
