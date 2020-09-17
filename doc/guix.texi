@@ -27764,6 +27764,73 @@ The complete list of possible options can be found in the man page for
 @node Guix Services
 @subsection Guix Services
 
+@subsubheading Guix Build Coordinator
+The @uref{https://git.cbaines.net/guix/build-coordinator/,Guix Build
+Coordinator} aids in distributing derivation builds among machines
+running an @dfn{agent}.  The build daemon is still used to build the
+derivations, but the Guix Build Coordinator manages allocating builds
+and working with the results.
+
+@quotation Note
+This service is considered experimental.  Configuration options may be
+changed in a backwards-incompatible manner, and not all features have
+been thorougly tested.
+@end quotation
+
+The Guix Build Coordinator consists of one @dfn{coordinator}, and one or
+more connected @dfn{agent} processes. The coordinator process handles
+clients submitting builds, and allocating builds to agents. The agent
+processes talk to a build daemon to actually perform the builds, then
+send the results back to the coordinator.
+
+There is a script to run the coordinator component of the Guix Build
+Coordinator, but the Guix service uses a custom Guile script instead, to
+provide better integration with G-expressions used in the configuration.
+
+@defvar {Scheme Variable} guix-build-coordinator-service-type
+Service type for the Guix Build Coordinator.  Its value must be a
+@code{guix-build-coordinator-configuration} object.
+@end defvar
+
+@deftp {Data Type} guix-build-coordinator-configuration
+Data type representing the configuration of the Guix Build Coordinator.
+
+@table @asis
+@item @code{package} (default: @code{guix-build-coordinator})
+The Guix Build Coordinator package to use.
+
+@item @code{user} (default: @code{"guix-build-coordinator"})
+The system user to run the service as.
+
+@item @code{group} (default: @code{"guix-build-coordinator"})
+The system group to run the service as.
+
+@item @code{database-uri-string} (default: @code{"sqlite:///var/lib/guix-build-coordinator/guix_build_coordinator.db"})
+The URI to use for the database.
+
+@item @code{agent-communication-uri} (default: @code{"http://0.0.0.0:8745"})
+The URI describing how to listen to requests from agent processes.
+
+@item @code{client-communication-uri} (default: @code{"http://127.0.0.1:8746"})
+The URI describing how to listen to requests from clients.  The client
+API allows submitting builds and currently isn't authenticated, so take
+care when configuring this value.
+
+@item @code{allocation-strategy} (default: @code{#~basic-build-allocation-strategy})
+A G-expression for the allocation strategy to be used.  This is a
+procedure that takes the datastore as an argument and populates the
+allocation plan in the database.
+
+@item @code{hooks} (default: @var{'()})
+An association list of hooks.  These provide a way to execute arbitrary
+code upon certian events, like a build result being processed.
+
+@item @code{guile} (default: @code{guile-3.0-latest})
+The Guile package with which to run the Guix Build Coordinator.
+
+@end table
+@end deftp
+
 @subsubheading Guix Data Service
 The @uref{http://data.guix.gnu.org,Guix Data Service} processes, stores
 and provides data about GNU Guix.  This includes information about

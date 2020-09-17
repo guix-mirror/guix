@@ -35,7 +35,80 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
-  #:export (%test-guix-data-service))
+  #:export (%test-guix-build-coordinator
+            %test-guix-data-service))
+
+;;;
+;;; Guix Build Coordinator
+;;;
+
+(define %guix-build-coordinator-os
+  (simple-operating-system
+   (service dhcp-client-service-type)
+   (service guix-build-coordinator-service-type)))
+
+(define (run-guix-build-coordinator-test)
+  (define os
+    (marionette-operating-system
+     %guix-build-coordinator-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define forwarded-port 8745)
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (memory-size 1024)
+     (port-forwardings `((,forwarded-port . 8745)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (gnu build marionette)
+                       (web uri)
+                       (web client)
+                       (web response))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "guix-build-coordinator")
+
+          (test-assert "service running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (match (start-service 'guix-build-coordinator)
+                  (#f #f)
+                  (('service response-parts ...)
+                   (match (assq-ref response-parts 'running)
+                     ((pid) (number? pid))))))
+             marionette))
+
+          (test-equal "http-get"
+            200
+            (let-values
+                (((response text)
+                  (http-get #$(simple-format
+                               #f "http://localhost:~A/metrics" forwarded-port)
+                            #:decode-body? #t)))
+              (response-code response)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "guix-build-coordinator-test" test))
+
+(define %test-guix-build-coordinator
+  (system-test
+   (name "guix-build-coordinator")
+   (description "Connect to a running Guix Build Coordinator.")
+   (value (run-guix-build-coordinator-test))))
 
 
 ;;;
