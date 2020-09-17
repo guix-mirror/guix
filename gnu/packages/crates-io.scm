@@ -1333,6 +1333,32 @@ and no more (caveat: black_box is still missing!).")
 tracebacks.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-bigdecimal-0.2
+  (package
+    (name "rust-bigdecimal")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bigdecimal" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fd5chyy76y4qb043w1bbgz1v22f9hw5703f5r90ac5hwqk3qh6c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/akubera/bigdecimal-rs")
+    (synopsis "Arbitrary precision decimal numbers")
+    (description "This package provides arbitrary precision decimal numbers.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bincode-1
   (package
     (name "rust-bincode")
