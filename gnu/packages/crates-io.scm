@@ -6599,19 +6599,62 @@ O(1)-in-practice, if not in theory, but obviously not as fast as a
 non-persistent vector.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-dotenv-0.15
+  (package
+    (name "rust-dotenv")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dotenv" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13ysjx7n2bqxxqydvnnbdwgik7i8n6h5c1qhr9g11x6cxnnhpjbp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-clap" ,rust-clap-2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://github.com/dotenv-rs/dotenv")
+    (synopsis "@code{dotenv} implementation for Rust")
+    (description "This package provides a @code{dotenv} implementation for
+Rust.")
+    (license license:expat)))
+
+(define-public rust-dotenv-0.10
+  (package
+    (inherit rust-dotenv-0.15)
+    (name "rust-dotenv")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dotenv" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ww0wfnilz4cy789fni06gckm45xsb9fplrih26l4qyi4jxy5w6n"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-derive-error-chain" ,rust-derive-error-chain-0.10)
+        ("rust-error-chain" ,rust-error-chain-0.10)
+        ("rust-regex" ,rust-regex-0.2))))))
+
 (define-public rust-draw-state-0.8
   (package
     (name "rust-draw-state")
     (version "0.8.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "draw_state" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0lfng4fz9x7bwsmzv9r20ply10w0iid6vfcrhx292s6hw8vrbkrk"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "draw_state" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lfng4fz9x7bwsmzv9r20ply10w0iid6vfcrhx292s6hw8vrbkrk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
