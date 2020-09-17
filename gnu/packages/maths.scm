@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3609,16 +3610,17 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.9")
+    (version "0.3.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/openblas/v" version "/OpenBLAS%20"
-                           version "%20version.tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xianyi/OpenBLAS")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "14iz9xnrb9xiwgj84j94mc74gg0zn2vsy9fmsijxxma1n7dck4w3"))))
+         "174id98ga82bhz2v7sy9yj6pqy0h0088p3mkdikip69p9rh3d17b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
