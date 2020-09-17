@@ -21618,8 +21618,70 @@ rustc compiler.")
      "Automatically apply the suggestions made by rustc.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustls-0.18
+  (package
+    (name "rust-rustls")
+    (version "0.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustls" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "108cf3bfw5high066shz9xrfv4jz7djdmnwqs3kwx4wfypf2c4ax"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.12)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-ring" ,rust-ring-0.16)
+        ("rust-sct" ,rust-sct-0.6)
+        ("rust-webpki" ,rust-webpki-0.21))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.20))))
+    (home-page "https://github.com/ctz/rustls")
+    (synopsis "Modern TLS library written in Rust.")
+    (description "This package provides a modern TLS library written in
+Rust.")
+    (license
+     (list license:asl2.0 license:isc license:expat))))
+
+(define-public rust-rustls-0.17
+  (package
+    (inherit rust-rustls-0.18)
+    (name "rust-rustls")
+    (version "0.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustls" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1q8m835viqrf4bbd2fa8rnmaj48fkd984saxf0238hb8blgs7m60"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.11)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-ring" ,rust-ring-0.16)
+        ("rust-sct" ,rust-sct-0.6)
+        ("rust-webpki" ,rust-webpki-0.21))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.19))))))
+
 (define-public rust-rustls-0.16
   (package
+    (inherit rust-rustls-0.17)
     (name "rust-rustls")
     (version "0.16.0")
     (source
@@ -21629,7 +21691,6 @@ rustc compiler.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "17n0fx3fpkg4fhpdplrdhkissnl003kj90vzbqag11vkpyqihnmj"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f ;; 1/114 tests fail (test file not found)
        #:cargo-inputs
@@ -21643,11 +21704,7 @@ rustc compiler.")
         ("rust-env-logger" ,rust-env-logger-0.6)
         ("rust-log" ,rust-log-0.4)
         ("rust-tempfile" ,rust-tempfile-3)
-        ("rust-webpki-roots" ,rust-webpki-roots-0.17))))
-    (home-page "https://github.com/ctz/rustls")
-  (synopsis "Modern TLS library written in Rust")
-  (description "This package provides a modern TLS library written in Rust.")
-  (license (list license:asl2.0 license:isc license:expat))))
+        ("rust-webpki-roots" ,rust-webpki-roots-0.17))))))
 
 (define-public rust-rustls-0.12
   (package/inherit rust-rustls-0.16
