@@ -15232,6 +15232,31 @@ with all line endings.")
      "Cross-platform file system notification library.")
     (license license:cc0)))
 
+(define-public rust-ntest-timeout-0.3
+  (package
+    (name "rust-ntest-timeout")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ntest_timeout" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0klryn3rgjxnq3cv6j8bwcsr0b7zw3x216h63144v22aja18p0g0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-timebomb" ,rust-timebomb-0.1))))
+    (home-page "https://github.com/becheran/ntest")
+    (synopsis "Timeout attribute for the ntest framework")
+    (description "This package provides a timeout attribute for the ntest
+framework.")
+    (license license:expat)))
+
 (define-public rust-num-0.3
   (package
     (name "rust-num")
