@@ -212,7 +212,7 @@ guix_get_bin_list()
         | sort -Vu)")
 
     latest_ver="$(echo "$bin_ver_ls" \
-                       | grep -oP "([0-9]{1,2}\.){2}[0-9]{1,2}" \
+                       | grep -oE "([0-9]{1,2}\.){2}[0-9]{1,2}" \
                        | tail -n1)"
 
     default_ver="guix-binary-${latest_ver}.${ARCH_OS}"
@@ -268,8 +268,7 @@ sys_create_store()
     _debug "--- [ $FUNCNAME ] ---"
 
     cd "$tmp_path"
-    tar --warning=no-timestamp \
-        --extract \
+    tar --extract \
         --file "$pkg" &&
     _msg "${PAS}unpacked archive"
 
