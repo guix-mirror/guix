@@ -18587,6 +18587,35 @@ macro use case.")
 stack pointer and inspect the properties of the stack.")
     (license (list license:isc license:asl2.0))))
 
+(define-public rust-publicsuffix-1
+  (package
+    (name "rust-publicsuffix")
+    (version "1.5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "publicsuffix" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yvmjpywfyypfr17kxiwy6ssykgv8nmcdhfakas6548pfn8a9fiv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-idna" ,rust-idna-0.2)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-rspec" ,rust-rspec-1))))
+    (home-page "https://github.com/rushmorem/publicsuffix")
+    (synopsis "Domain name parsing and email address validation")
+    (description "This package provides robust domain name parsing and RFC
+compliant email address validation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pulldown-cmark-0.4
   (package
     (name "rust-pulldown-cmark")
