@@ -9354,6 +9354,32 @@ retrieving random data from system source.")
 @acronym{GFA, Graphical Fragment Assembly} format.")
     (license license:expat)))
 
+(define-public rust-ghash-0.3
+  (package
+    (name "rust-ghash")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ghash" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c957q9sk1q93pqqfvhcmflfm1zvbr14aznfpm25kqd6i437zqnn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-polyval" ,rust-polyval-0.4)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-hex-literal" ,rust-hex-literal-0.1))))
+    (home-page "https://github.com/RustCrypto/universal-hashes")
+    (synopsis "Universal hash over GF(2^128)")
+    (description "This package provides a universal hash over GF(2^128) useful
+for constructing a Message Authentication Code (MAC), as in the AES-GCM
+authenticated encryption cipher.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-gimli-0.20
   (package
     (name "rust-gimli")
