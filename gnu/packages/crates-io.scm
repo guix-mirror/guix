@@ -4916,10 +4916,30 @@ Code} (MAC) algorithms.")
         ("rust-generic-array" ,rust-generic-array-0.12)
         ("rust-subtle" ,rust-subtle-1.0))))))
 
-(define-public rust-cssparser-0.27
+(define-public rust-crypto-mac-0.4
   (package
-    (name "rust-cssparser")
-    (version "0.27.2")
+    (name "rust-crypto-mac")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crypto-mac" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "160ixpghhz5kz16f38kzcyv6lx8wmi4cgbhlhq4nazf678iib43p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-constant-time-eq" ,rust-constant-time-eq-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.8))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Trait for Message Authentication Code (MAC) algorithms")
+    (description "This package provides traits for Message Authentication
+Code (MAC) algorithms.")
+    (license (list license:expat license:asl2.0))))
+
     (source
       (origin
         (method url-fetch)
@@ -4932,6 +4952,9 @@ Code} (MAC) algorithms.")
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; Not all files included in the tarball.
+(define-public rust-cssparser-0.27
+    (name "rust-cssparser")
+    (version "0.27.2")
        #:cargo-inputs
        (("rust-cssparser-macros" ,rust-cssparser-macros-0.6)
         ("rust-dtoa-short" ,rust-dtoa-short-0.3)
