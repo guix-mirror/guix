@@ -11633,6 +11633,32 @@ The module only uses stable feature so it is guaranteed to compile using the
 stable toolchain.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ipnetwork-0.17
+  (package
+    (name "rust-ipnetwork")
+    (version "0.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ipnetwork" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sviri9ksb3cmhx3h0rcfy8pvpx7f0cx5ba1z87ydvf07amymhq2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://crates.io/crates/ipnetwork")
+    (synopsis "Work with IP CIDRs in Rust")
+    (description "This package provides a library to work with IP CIDRs in
+Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-is-executable
   (package
     (name "rust-is-executable")
