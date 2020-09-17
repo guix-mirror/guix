@@ -20027,8 +20027,33 @@ your own implementation.")
 Rust Language Server.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ron-0.5
+  (package
+    (name "rust-ron")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ron" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256 (base32 "1mb2bavvp8jg5wx0kx9n45anrsbjwhjzddim987bjaa11hg45kif"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde-bytes" ,rust-serde-bytes-0.10)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/ron-rs/ron")
+    (synopsis "Rusty Object Notation")
+    (description "This package provides Rusty Object Notation (RON).")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ron-0.4
   (package
+    (inherit rust-ron-0.5)
     (name "rust-ron")
     (version "0.4.2")
     (source
@@ -20040,7 +20065,6 @@ Rust Language Server.")
        (sha256
         (base32
          "13ypx80ac1minrmn9w9sgnbxlknwiv7qhx5n50azh0s484j2mx8p"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -20049,12 +20073,7 @@ Rust Language Server.")
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (;("rust-serde-bytes" ,rust-serde-bytes-0.10)
-        ("rust-serde-json" ,rust-serde-json-1))))
-    (home-page "https://github.com/ron-rs/ron")
-    (synopsis "Rusty Object Notation")
-    (description "Rusty Object Notation.")
-    (license (list license:asl2.0
-                   license:expat))))
+        ("rust-serde-json" ,rust-serde-json-1))))))
 
 (define-public rust-rspec-1
   (package
