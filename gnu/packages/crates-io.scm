@@ -17305,6 +17305,29 @@ for x86.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-pq-sys-0.4
+  (package
+    (name "rust-pq-sys")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pq-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1npz9756283pjq3lcpwss8xh1rw4sx8f6dz8cxdg90h5bbp5xhka"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))
+    (home-page "https://crates.io/crates/pq-sys")
+    (synopsis "Auto-generated rust bindings for libpq")
+    (description "This package provides auto-generated rust bindings for
+libpq.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-precomputed-hash-0.1
   (package
     (name "rust-precomputed-hash")
