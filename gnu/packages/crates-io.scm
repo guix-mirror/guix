@@ -232,6 +232,40 @@ with Associated Data (AEAD) algorithms.")
 ciphers implementations.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-aes-gcm-0.6
+  (package
+    (name "rust-aes-gcm")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aes-gcm" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lga8my3zlc0b1nhcpc1hrbykfm014fqs6d64bwrjqii05w01xc6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-aead" ,rust-aead-0.3)
+        ("rust-aes" ,rust-aes-0.4)
+        ("rust-block-cipher" ,rust-block-cipher-0.7)
+        ("rust-ghash" ,rust-ghash-0.3)
+        ("rust-subtle" ,rust-subtle-2)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-criterion-cycles-per-byte"
+         ,rust-criterion-cycles-per-byte-0.1)
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))
+    (home-page "https://github.com/RustCrypto/AEADs")
+    (synopsis "AES-GCM (Galois/Counter Mode) Authenticated Encryption")
+    (description "This package provides a pure Rust implementation of the
+AES-GCM (Galois/Counter Mode) Authenticated Encryption with Associated
+Data (AEAD) Cipher with optional architecture-specific hardware
+acceleration.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-aes-soft-0.4
   (package
     (name "rust-aes-soft")
