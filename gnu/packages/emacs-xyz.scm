@@ -2985,6 +2985,27 @@ strings.")
 Stack Overflow, Super User, and other StackExchange sites.")
       (license license:gpl3+))))
 
+(define-public emacs-toc-org
+  (package
+    (name "emacs-toc-org")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/snosov1/toc-org")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0lk0rji85a1c0c5r9an0fdvsm4n4jyixsknmr8ywha3lfmc2p0l8"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/snosov1/toc-org")
+    (synopsis "Table of Contents generator for Emacs Org mode")
+    (description
+     "This package generates a table of contents when saving in Org and
+Markdown files.")
+    (license license:gpl2+)))
+
 (define-public emacs-toml-mode
   (let ((version "0.1.3")
         (revision "0")
