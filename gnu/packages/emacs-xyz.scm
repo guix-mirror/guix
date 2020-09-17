@@ -7384,7 +7384,7 @@ asynchronously, with Counsel and Ivy.  Simply call
 (define-public emacs-counsel-projectile
   (package
     (name "emacs-counsel-projectile")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7393,7 +7393,7 @@ asynchronously, with Counsel and Ivy.  Simply call
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1inc4ndl0ysfwvxk4avbgpj4qi9rc93da6476a5c81xmwpsv8wmq"))))
+                "1k4n5lw6wwbgpwv0dg9dw0bjzi0hvbgkzrs1zmq36yhfz6y8gwnh"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-counsel" ,emacs-counsel)
