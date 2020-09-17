@@ -180,6 +180,17 @@ etc/init.d/guix-daemon: etc/init.d/guix-daemon.in	\
 	       "$<" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
 
+# The service script for openrc.
+openrcservicedir = $(sysconfdir)/init.d
+nodist_openrcservice_DATA = etc/openrc/guix-daemon
+
+etc/openrc/guix-daemon: etc/openrc/guix-daemon.in	\
+			 $(top_builddir)/config.status
+	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
+	$(SED) -e 's|@''localstatedir''@|$(localstatedir)|' <	\
+	       "$<" > "$@.tmp";		\
+	mv "$@.tmp" "$@"
+
 # The '.conf' jobs for Upstart.
 upstartjobdir = $(libdir)/upstart/system
 nodist_upstartjob_DATA = etc/guix-daemon.conf etc/guix-publish.conf
@@ -194,7 +205,8 @@ etc/guix-%.conf: etc/guix-%.conf.in	\
 CLEANFILES +=					\
   $(nodist_systemdservice_DATA)			\
   $(nodist_upstartjob_DATA)			\
-  $(nodist_sysvinitservice_DATA)
+  $(nodist_sysvinitservice_DATA)		\
+  $(nodist_openrcservice_DATA)
 
 EXTRA_DIST +=					\
   %D%/AUTHORS					\
@@ -203,7 +215,8 @@ EXTRA_DIST +=					\
   etc/guix-daemon.conf.in			\
   etc/guix-publish.service.in			\
   etc/guix-publish.conf.in			\
-  etc/init.d/guix-daemon.in
+  etc/init.d/guix-daemon.in			\
+  etc/openrc/guix-daemon.in
 
 if CAN_RUN_TESTS
 

@@ -4,6 +4,7 @@
 # Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+# Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 #
 # This file is part of GNU Guix.
 #
@@ -149,6 +150,10 @@ chk_init_sys()
     elif [[ -f /etc/init.d/cron && ! -h /etc/init.d/cron ]]; then
         _msg "${INF}init system is: sysv-init"
         INIT_SYS="sysv-init"
+        return 0
+    elif [[ $(openrc --version 2>/dev/null) =~ \(OpenRC\) ]]; then
+        _msg "${INF}init system is: OpenRC"
+        INIT_SYS="openrc"
         return 0
     else
         INIT_SYS="NA"
@@ -382,6 +387,16 @@ sys_enable_guix_daemon()
                   update-rc.d guix-daemon enable &&
                   service guix-daemon start; } &&
                 _msg "${PAS}enabled Guix daemon via sysv"
+            ;;
+        openrc)
+            { mkdir -p /etc/init.d;
+              cp "${ROOT_HOME}/.config/guix/current/etc/openrc/guix-daemon" \
+                 /etc/init.d/guix-daemon;
+              chmod 775 /etc/init.d/guix-daemon;
+
+              rc-update add guix-daemon default &&
+                  rc-service guix-daemon start; } &&
+                _msg "${PAS}enabled Guix daemon via OpenRC"
             ;;
         NA|*)
             _msg "${ERR}unsupported init system; run the daemon manually:"
