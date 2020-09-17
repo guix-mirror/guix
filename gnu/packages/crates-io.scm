@@ -24062,8 +24062,32 @@ longform text (e.g., ESC becomes @code{r\x1B}) and tries to encode ill-formed
 UTF-8.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-stream-cipher-0.4
+  (package
+    (name "rust-stream-cipher")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "stream-cipher" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "120y04k3d2jyfnvyrlf38x6bf0yckyk30c7zf8v8qaq4fjcyvy09"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.1)
+        ("rust-block-cipher" ,rust-block-cipher-0.7)
+        ("rust-generic-array" ,rust-generic-array-0.14))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Stream cipher traits")
+    (description "This package provides stream cipher traits.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-stream-cipher-0.3
   (package
+    (inherit rust-stream-cipher-0.4)
     (name "rust-stream-cipher")
     (version "0.3.0")
     (source
@@ -24075,16 +24099,11 @@ UTF-8.")
        (sha256
         (base32
          "1g1nd8r6pph70rzk5yyvg7a9ji7pkap9ddiqpp4v9xa9ys0bqqc8"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-blobby" ,rust-blobby-0.1)
-        ("rust-generic-array" ,rust-generic-array-0.13))))
-    (home-page "https://github.com/RustCrypto/traits")
-    (synopsis "Stream cipher traits")
-    (description "Stream cipher traits.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-generic-array" ,rust-generic-array-0.13))))))
 
 (define-public rust-streaming-stats-0.2
   (package
