@@ -16014,10 +16014,10 @@ Magit.")
     (license license:gpl3+)))
 
 (define-public emacs-lice-el
-  (let ((commit "4339929927c62bd636f89bb39ea999d18d269250"))
+  (let ((commit "482e58ab83fff86ed754b00be27b62a219597e7c"))
     (package
       (name "emacs-lice-el")
-      (version (git-version "0.2" "1" commit))
+      (version (git-version "0.2" "2" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -16026,8 +16026,26 @@ Magit.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0879z761b7gajkhq176ps745xpdrivch349crransv8fnsc759yb"))))
+                  "0yxkjyhfk8kpr8yqz54gdx6xwkj4s8bnbz60162jh12crj0bs5n7"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-template-directory
+             (lambda* (#:key outputs #:allow-other-keys)
+               (chmod "lice.el" #o666)
+               (emacs-substitute-variables "lice.el"
+                 ("lice:system-template-directory"
+                  (string-append (assoc-ref outputs "out")
+                                 "/share/emacs-lice-el/template")))
+               #t))
+           (add-after 'install 'install-templates
+             (lambda* (#:key outputs #:allow-other-keys)
+               (copy-recursively
+                "template"
+                (string-append (assoc-ref outputs "out")
+                               "/share/emacs-lice-el/template"))
+               #t)))))
       (home-page "https://github.com/buzztaiki/lice-el")
       (synopsis "License and header template for Emacs")
       (description "@code{lice.el} provides following features:
