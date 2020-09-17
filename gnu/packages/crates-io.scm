@@ -392,6 +392,62 @@ block ciphers using AES-NI.")
         (base32
          "0g2chc18ji7qxi0d03n2ai140qdcww958v5si6rcjnnhmri1vyfb"))))))
 
+(define-public rust-ahash-0.4
+  (package
+    (name "rust-ahash")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ahash" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06bxygcis4pfx0axi1ld0lclg8mf4plywdy7fnkyw2hrhcb74rkd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-const-random" ,rust-const-random-0.1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-hex" ,rust-hex-0.3)
+        ("rust-no-panic" ,rust-no-panic-0.1)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-seahash" ,rust-seahash-3))))
+    (home-page "https://github.com/tkaitchuck/ahash")
+    (synopsis "Non-cryptographic hash function using AES-NI")
+    (description "This package provides a non-cryptographic hash function
+using AES-NI for high performance.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-ahash-0.3
+  (package
+    (inherit rust-ahash-0.4)
+    (name "rust-ahash")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ahash" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05qjnr0wccch0gg2kghg0xyh8qd5gfqd15q9dd6r1lamcs375zg8"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-const-random" ,rust-const-random-0.1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-fnv" ,rust-fnv-1)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-hex" ,rust-hex-0.3)
+        ("rust-no-panic" ,rust-no-panic-0.1)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-seahash" ,rust-seahash-3))))))
+
 (define-public rust-aho-corasick-0.7
   (package
     (name "rust-aho-corasick")
