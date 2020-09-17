@@ -59,6 +59,7 @@
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -364,7 +365,7 @@ data types.")
 (define-public python-3.8
   (package (inherit python-2)
     (name "python")
-    (version "3.8.2")
+    (version "3.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -376,7 +377,7 @@ data types.")
                         "python-3-search-paths.patch"))
               (sha256
                (base32
-                "1ps5v323cp5czfshqjmbsqw7nvrdpcbk06f62jbzaqik4gfffii6"))
+                "1c43dbv9lvlp3ynqmgdi4rh8q94swanhqarqrdx62zmigpakw073"))
               (modules '((guix build utils)))
               (snippet
                '(begin
