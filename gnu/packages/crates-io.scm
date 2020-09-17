@@ -9105,6 +9105,34 @@ futures-rs library.")
     (description "Tools for working with tasks.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-test-0.3
+  (package
+    (name "rust-futures-test")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-test" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v9r2mmgdbm0x4gppd5jzf4rss7439ivkqwi604m0r2il3zap6ci"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-executor" ,rust-futures-executor-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-task" ,rust-futures-task-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-pin-utils" ,rust-pin-utils-0.1))))
+    (home-page "https://rust-lang.github.io/futures-rs")
+    (synopsis "Test components built off futures-rs")
+    (description "This package provides common utilities for testing
+components built off futures-rs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-timer-0.1
   (package
     (name "rust-futures-timer")
