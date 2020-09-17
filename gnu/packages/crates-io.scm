@@ -29732,6 +29732,33 @@ color in a Windows console.")
     (description "Rust winpty bindings.")
     (license license:expat)))
 
+(define-public rust-winreg-0.7
+  (package
+    (name "rust-winreg")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "winreg" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sdxcyvda4v1v6a0k1j2v1400z3ng323k9a56gxvkq51x21dn801"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.3)
+        ("rust-serde-derive" ,rust-serde-derive-1))))
+    (home-page "https://github.com/gentoo90/winreg-rs")
+    (synopsis "Rust bindings to the MS Windows Registry API")
+    (description "This package provides Rust bindings to MS Windows Registry
+API.")
+    (license license:expat)))
+
 (define-public rust-winreg-0.6
   (package
     (name "rust-winreg")
