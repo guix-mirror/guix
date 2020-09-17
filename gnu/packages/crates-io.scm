@@ -5945,6 +5945,29 @@ for arbitrary structs.")
        #:cargo-development-inputs
        (("rust-pretty-assertions" ,rust-pretty-assertions-0.2))))))
 
+(define-public rust-derive-error-chain-0.10
+  (package
+    (name "rust-derive-error-chain")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive-error-chain" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jnybrpiq5jzx69xq74cwxply36js02z14y9sym8sf2iwsnsk71w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quote" ,rust-quote-0.3)
+        ("rust-syn" ,rust-syn-0.14))))
+    (home-page "https://github.com/Arnavion/derive-error-chain")
+    (synopsis "Macros 1.1 implementation of error-chain")
+    (description "This package provides a Macros 1.1 implementation of
+error-chain.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-derive-more-0.99
   (package
     (name "rust-derive-more")
