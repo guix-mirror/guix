@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,26 +27,32 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libreoffice)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -404,6 +411,104 @@ following formats:
 @item XHTML
 @end enumerate")
     (license license:gpl2+)))
+
+(define-public cozy
+  (package
+    (name "cozy")
+    (version "0.6.19")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/geigi/cozy")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f1qydjs8sz39yhlg9qdjf31vrsmdk2pxiimw4fzsy1k2zr5dr34"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-desktop-file
+           (lambda _
+             (substitute* "data/com.github.geigi.cozy.desktop.in"
+               (("com.github.geigi.cozy") "cozy"))
+             #t))
+         (add-after 'install 'patch-executable-name
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion
+                 (string-append (assoc-ref outputs "out") "/bin")
+               (rename-file "com.github.geigi.cozy" "cozy"))
+             #t))
+         (add-after 'wrap 'wrap-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out               (assoc-ref outputs "out"))
+                    (pylib             (string-append
+                                        out "/lib/python"
+                                        ,(version-major+minor
+                                          (package-version python))
+                                        "/site-packages"))
+                    (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                    (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                    (libmagic-path     (string-append
+                                        (assoc-ref %build-inputs "file")
+                                        "/lib"))
+                    (python-path     (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/cozy")
+                 `("LD_LIBRARY_PATH" ":" prefix (,libmagic-path))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+                 `("PYTHONPATH" ":" prefix (,python-path ,pylib))))
+             #t)))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("file" ,file)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gst-libav" ,gst-libav)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-plugins-ugly" ,gst-plugins-ugly)
+       ("gtk+" ,gtk+)
+       ("python-apsw" ,python-apsw)
+       ("python-distro" ,python-distro)
+       ("python-gst" ,python-gst)
+       ("python-mutagen" ,python-mutagen)
+       ("python-peewee" ,python-peewee)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pytz" ,python-pytz)
+       ("python-requests" ,python-requests)))
+    (home-page "https://cozy.geigi.de/")
+    (synopsis "Modern audiobook player using GTK+")
+    (description
+     "Cozy is a modern audiobook player written in GTK+.
+
+Some of the current features:
+
+@itemize
+@item Import your audiobooks into Cozy to browse them comfortably
+@item Sort your audio books by author, reader & name
+@item Remembers your playback position
+@item Sleep timer
+@item Playback speed control
+@item Search your library
+@item Offline mode
+@item Add multiple storage locations
+@item Drag & Drop to import new audio books
+@item Support for DRM free mp3, m4a (aac, ALAC, …), flac, ogg, opus, wav files
+@item Mpris integration (Media keys & playback info for desktop environment)
+@end itemize")
+    ;; TODO: Unbundle python-inject.
+    (license (list license:gpl3+ ;cozy
+                   license:asl2.0)))) ;python-inject (bundled dependency)
 
 (define-public xchm
   (package
