@@ -50,6 +50,21 @@
 
             guix-build-coordinator-service-type
 
+            guix-build-coordinator-agent-configuration
+            guix-build-coordinator-agent-configuration?
+            guix-build-coordinator-agent-configuration-package
+            guix-build-coordinator-agent-configuration-user
+            guix-build-coordinator-agent-configuration-coordinator
+            guix-build-coordinator-agent-configuration-uuid
+            guix-build-coordinator-agent-configuration-password
+            guix-build-coordinator-agent-configuration-password-file
+            guix-build-coordinator-agent-configuration-systems
+            guix-build-coordinator-agent-configuration-max-parallel-builds
+            guix-build-coordinator-agent-configuration-derivation-substitute-urls
+            guix-build-coordinator-agent-configuration-non-derivation-substitute-urls
+
+            guix-build-coordinator-agent-service-type
+
             <guix-data-service-configuration>
             guix-data-service-configuration
             guix-data-service-configuration?
@@ -94,6 +109,33 @@
                                    (default '()))
   (guile                           guix-build-coordinator-configuration-guile
                                    (default guile-3.0-latest)))
+
+(define-record-type* <guix-build-coordinator-agent-configuration>
+  guix-build-coordinator-agent-configuration
+  make-guix-build-coordinator-agent-configuration
+  guix-build-coordinator-agent-configuration?
+  (package             guix-build-coordinator-agent-configuration-package
+                       (default guix-build-coordinator))
+  (user                guix-build-coordinator-agent-configuration-user
+                       (default "guix-build-coordinator-agent"))
+  (coordinator         guix-build-coordinator-agent-configuration-coordinator
+                       (default "http://localhost:8745"))
+  (uuid                guix-build-coordinator-agent-configuration-uuid)
+  (password            guix-build-coordinator-agent-configuration-password
+                       (default #f))
+  (password-file       guix-build-coordinator-agent-configuration-password-file
+                       (default #f))
+  (systems             guix-build-coordinator-agent-configuration-systems
+                       (default #f))
+  (max-parallel-builds
+   guix-build-coordinator-agent-configuration-max-parallel-builds
+   (default 1))
+  (derivation-substitute-urls
+   guix-build-coordinator-agent-configuration-derivation-substitute-urls
+   (default #f))
+  (non-derivation-substitute-urls
+   guix-build-coordinator-agent-configuration-non-derivation-substitute-urls
+   (default #f)))
 
 (define* (make-guix-build-coordinator-start-script database-uri-string
                                                    allocation-strategy
@@ -238,6 +280,85 @@
      (guix-build-coordinator-configuration))
    (description
     "Run an instance of the Guix Build Coordinator.")))
+
+(define (guix-build-coordinator-agent-shepherd-services config)
+  (match-record config <guix-build-coordinator-agent-configuration>
+    (package user coordinator uuid password password-file max-parallel-builds
+             derivation-substitute-urls non-derivation-substitute-urls
+             systems)
+    (list
+     (shepherd-service
+      (documentation "Guix Build Coordinator Agent")
+      (provision '(guix-build-coordinator-agent))
+      (requirement '(networking))
+      (start #~(make-forkexec-constructor
+                (list #$(file-append package "/bin/guix-build-coordinator-agent")
+                      #$(string-append "--coordinator=" coordinator)
+                      #$(string-append "--uuid=" uuid)
+                      #$@(if password
+                             #~(#$(string-append "--password=" password))
+                             #~())
+                      #$@(if password-file
+                             #~(#$(string-append "--password-file=" password-file))
+                             #~())
+                      #$(simple-format #f "--max-parallel-builds=~A"
+                                       max-parallel-builds)
+                      #$@(if derivation-substitute-urls
+                             #~(#$(string-append
+                                   "--derivation-substitute-urls="
+                                 (string-join derivation-substitute-urls " ")))
+                             #~())
+                      #$@(if non-derivation-substitute-urls
+                             #~(#$(string-append
+                                   "--non-derivation-substitute-urls="
+                                   (string-join derivation-substitute-urls " ")))
+                             #~())
+                      #$@(map (lambda (system)
+                                (string-append "--system=" system))
+                              (or systems '())))
+                #:user #$user
+                #:pid-file "/var/run/guix-build-coordinator-agent/pid"
+                #:environment-variables
+                `(,(string-append
+                    "GUIX_LOCPATH=" #$glibc-utf8-locales "/lib/locale")
+                  "LC_ALL=en_US.utf8")
+                #:log-file "/var/log/guix-build-coordinator/agent.log"))
+      (stop #~(make-kill-destructor))))))
+
+(define (guix-build-coordinator-agent-activation config)
+  #~(begin
+      (use-modules (guix build utils))
+
+      (mkdir-p "/var/log/guix-build-coordinator")
+
+      ;; Allow writing the PID file
+      (mkdir-p "/var/run/guix-build-coordinator-agent")
+      (chown "/var/run/guix-build-coordinator-agent"
+             (passwd:uid %user)
+             (passwd:gid %user))))
+
+(define (guix-build-coordinator-agent-account config)
+  (list (user-account
+         (name (guix-build-coordinator-agent-configuration-user config))
+         (group "nogroup")
+         (system? #t)
+         (comment "Guix Build Coordinator agent user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define guix-build-coordinator-agent-service-type
+  (service-type
+   (name 'guix-build-coordinator-agent)
+   (extensions
+    (list
+     (service-extension shepherd-root-service-type
+                        guix-build-coordinator-agent-shepherd-services)
+     (service-extension activation-service-type
+                        guix-build-coordinator-agent-activation)
+     (service-extension account-service-type
+                        guix-build-coordinator-agent-account)))
+   (description
+    "Run a Guix Build Coordinator agent.")))
 
 
 ;;;
