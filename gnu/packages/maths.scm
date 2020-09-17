@@ -1183,7 +1183,7 @@ extremely large and complex data collections.")
 
 (define-public hdf5-1.10
   (package/inherit hdf5-1.8
-    (version "1.10.6")
+    (version "1.10.7")
     (source
      (origin
        (method url-fetch)
@@ -1197,7 +1197,7 @@ extremely large and complex data collections.")
                                         (take (string-split version #\.) 2))
                                  "/src/hdf5-" version ".tar.bz2")))
        (sha256
-        (base32 "1gf38x51128hn00744358w27xgzjk0ff4wra4yxh2lk804ck1mh9"))
+        (base32 "0pm5xxry55i0h7wmvc7svzdaa90rnk7h78rrjmnlkz2ygsn8y082"))
        (patches (search-patches "hdf5-config-date.patch"))))))
 
 (define-public hdf5
