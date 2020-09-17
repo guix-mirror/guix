@@ -15232,6 +15232,29 @@ with all line endings.")
      "Cross-platform file system notification library.")
     (license license:cc0)))
 
+(define-public rust-ntest-test-cases-0.3
+  (package
+    (name "rust-ntest-test-cases")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ntest_test_cases" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b67m368599b2zgwx19psqz6n3m9m5532h1257x6vz1pym3gd2na"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/becheran/ntest")
+    (synopsis "Test cases for ntest framework")
+    (description "This package provides test cases for ntest framework.")
+    (license license:expat)))
+
 (define-public rust-ntest-timeout-0.3
   (package
     (name "rust-ntest-timeout")
