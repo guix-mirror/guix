@@ -2165,6 +2165,28 @@ extension of blocks.")
      "Padding and unpadding of messages divided into blocks.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-block-cipher-trait-0.4
+  (package
+    (name "rust-block-cipher-trait")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "block-cipher-trait" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10qmg8vphqmfllb9a2yx6s7r66jh1wh33clhsawq7ikg2wgz2p6q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-generic-array" ,rust-generic-array-0.8))))
+    (home-page "https://github.com/RustCrypto/block-ciphers")
+    (synopsis "Block cipher algorithms")
+    (description "This package provides a collection of block cipher
+algorithms.  This package is deprecated.  Please use block-cipher instead")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-block-padding-0.1
   (package
     (inherit rust-block-padding-0.2)
