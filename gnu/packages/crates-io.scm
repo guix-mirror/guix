@@ -26633,6 +26633,28 @@ crate.")
 crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-timebomb-0.1
+  (package
+    (name "rust-timebomb")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "timebomb" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fl8bxi9bf5bv44i1afii63695cx4jlki869v0kp01ipnvs8c23z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-pulse" ,rust-pulse-0.5)
+        ("rust-time" ,rust-time-0.2))))
+    (home-page "https://github.com/csherratt/timebomb")
+    (synopsis "Timeout mechanism for unit tests")
+    (description "This package provides a timeout mechanism for unit tests.")
+    (license license:asl2.0)))
+
 (define-public rust-tinytemplate-1
   (package
     (name "rust-tinytemplate")
