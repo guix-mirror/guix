@@ -28276,24 +28276,55 @@ Verification.")
        #:cargo-development-inputs
        (("rust-base64" ,rust-base64-0.9))))))
 
+(define-public rust-webpki-roots-0.20
+  (package
+    (name "rust-webpki-roots")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webpki-roots" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17qpmyym1lsi967b4nc3112nb13ism8731bhjqd9hlajafkxw80g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-webpki" ,rust-webpki-0.21))))
+    (home-page "https://github.com/ctz/webpki-roots")
+    (synopsis "Mozilla's CA root certificates for use with webpki")
+    (description "This package provides Mozilla's CA root certificates for use
+with webpki.")
+    (license license:mpl2.0)))
+
+(define-public rust-webpki-roots-0.19
+  (package
+    (inherit rust-webpki-roots-0.20)
+    (name "rust-webpki-roots")
+    (version "0.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webpki-roots" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fapdqwbfv0kncplpvbgnr0bjd5a9krlpij9jdzk0mvaa6vz9vzq"))))))
+
 (define-public rust-webpki-roots-0.18
   (package
+    (inherit rust-webpki-roots-0.19)
     (name "rust-webpki-roots")
     (version "0.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "webpki-roots" version))
-      (file-name (string-append name "-" version ".tar.gz"))
-      (sha256
-       (base32 "1d4ss607rgi9pj01zzqa13c1p3m35z314yh6lmjaj4kzvwv5gkci"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs (("rust-webpki" ,rust-webpki-0.21))))
-    (home-page "https://github.com/ctz/webpki-roots")
-    (synopsis "Mozilla's CA root certificates for use with webpki")
-    (description "Mozilla's CA root certificates for use with webpki")
-    (license license:mpl2.0)))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1d4ss607rgi9pj01zzqa13c1p3m35z314yh6lmjaj4kzvwv5gkci"))))))
 
 (define-public rust-webpki-roots-0.17
   (package/inherit rust-webpki-roots-0.18
