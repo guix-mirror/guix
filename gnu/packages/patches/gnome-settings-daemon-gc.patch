@@ -1,0 +1,43 @@
+This patch adds a "guix gc" button to the low disk space notification
+that 'gsd-housekeeping' emits.
+
+diff --git a/plugins/housekeeping/gsd-disk-space.c b/plugins/housekeeping/gsd-disk-space.c
+index bd3437e..89027d8 100644
+--- a/plugins/housekeeping/gsd-disk-space.c
++++ b/plugins/housekeeping/gsd-disk-space.c
+@@ -546,6 +546,21 @@ empty_trash_callback (NotifyNotification *n,
+         notify_notification_close (n, NULL);
+ }
+ 
++static void
++guix_gc_callback (NotifyNotification *n,
++                  const char         *action)
++{
++        const gchar *argv[] = { "guix", "gc", NULL };
++
++        g_assert (action != NULL);
++        g_assert (strcmp (action, "run-guix-gc") == 0);
++
++        g_spawn_async (NULL, (gchar **) argv, NULL, G_SPAWN_SEARCH_PATH,
++                       NULL, NULL, NULL, NULL);
++
++        notify_notification_close (n, NULL);
++}
++
+ static void
+ on_notification_closed (NotifyNotification *n)
+ {
+@@ -591,6 +606,13 @@ ldsm_notify (const char *summary,
+                                                 g_free);
+         }
+ 
++        notify_notification_add_action (notification,
++                                        "run-guix-gc",
++                                        _("Collect Unused Guix Items"),
++                                        (NotifyActionCallback) guix_gc_callback,
++                                        NULL,
++                                        NULL);
++
+         has_trash = ldsm_mount_has_trash (mount_path);
+ 
+         if (has_trash) {
