@@ -22290,6 +22290,32 @@ for the serde framework.")
                ((", path = \"../serde\"") ""))
              #t)))))))
 
+(define-public rust-serde-urlencoded-0.6
+  (package
+    (name "rust-serde-urlencoded")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde_urlencoded" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15rcwfkff0md5i231m2ym5756ksw1mkh5b5g2rw72wsc5mzdgicy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dtoa" ,rust-dtoa-0.4)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-1))))
+    (home-page "https://github.com/nox/serde_urlencoded")
+    (synopsis "x-www-form-urlencoded meets serde")
+    (description "x-www-form-urlencoded meets serde.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-serde-yaml-0.8
   (package
     (name "rust-serde-yaml")
