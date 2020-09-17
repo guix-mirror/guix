@@ -3464,15 +3464,15 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/supertuxkart/SuperTuxKart/"
-                           version "/supertuxkart-" version "-src.tar.xz"))
+                           version "/SuperTuxKart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "1s0ai07g3sswck9mr0142989mrgzzq1njc1qxk5als5b245jpc79"))
+         "0dvx56hmy6wdhl7m9dw8zc1n3jqfp05gnxl6zs1rbfdyzl5dybh5"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -3480,12 +3480,9 @@ This game is based on the GPL version of the famous game TuxRacer.")
            ;; Supertuxkart uses modified versions of the Irrlicht engine
            ;; and the bullet library.  The developers gave an explanation
            ;; here: http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
-           ;; FIXME: try to unbundle angelscript and libraqm
+           ;; FIXME: try to unbundle angelscript, libmcpp and libraqm
            (for-each delete-file-recursively
-                     '("lib/zlib"
-                       "lib/libpng"
-                       "lib/jpeglib"
-                       "lib/glew"
+                     '("lib/glew"
                        "lib/wiiuse"
                        "lib/enet"))
            #t))))
@@ -3494,19 +3491,16 @@ This game is based on the GPL version of the famous game TuxRacer.")
      `(#:tests? #f ; no check target
        #:configure-flags
        (list "-DUSE_WIIUSE=0"
-             ;; Do not use the bundled zlib, glew and enet.
-             "-DNO_IRR_COMPILE_WITH_ZLIB_=TRUE"
              "-DUSE_SYSTEM_GLEW=TRUE"
              "-DUSE_SYSTEM_ENET=TRUE"
              ;; In order to use the system ENet library, IPv6 support (added in
              ;; SuperTuxKart version 1.1) must be disabled.
              "-DUSE_IPV6=FALSE"
              ;; FIXME: needs libopenglrecorder
-             "-DBUILD_RECORDER=0"
-             ;; Irrlicht returns an integer instead of a boolean
-             "-DCMAKE_C_FLAGS=-fpermissive")))
+             "-DBUILD_RECORDER=0")))
     (inputs
      `(("glew" ,glew)
+       ("sdl2" ,sdl2)
        ("zlib" ,zlib)
        ("openal" ,openal)
        ("libvorbis" ,libvorbis)
