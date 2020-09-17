@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -1015,3 +1017,50 @@ substituted, as well as collage-style photomosaics, in which rectangular parts
 of the source image at arbitrary positions (i.e. not aligned to a matrix) are
 substituted by matching images.")
       (license license:gpl2))))
+
+(define-public scantailor-advanced
+  (let ((commit "3d1e74e6ace413733511086934a66f4e3f7a6027"))
+    (package
+      (name "scantailor-advanced")
+      (version (string-append "1.0.16-" (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/4lex4/scantailor-advanced")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0kixwjb2x457dq7927hkh34c803p7yh1pmn6n61rk9shqrcg492h"))))
+      (build-system qt-build-system)
+      (native-inputs
+       `(("qttools" ,qttools)))
+      (inputs
+       `(("boost" ,boost)
+         ("libjpeg" ,libjpeg-turbo)
+         ("libpng" ,libpng)
+         ("libtiff" ,libtiff)
+         ("qtbase" ,qtbase)
+         ("qtsvg" ,qtsvg)
+         ("zlib" ,zlib)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; Some tests require a display and fail with offscreen mode.
+           (add-after 'unpack 'disable-failing-tests
+             (lambda _
+               (setenv "ARGS" "--exclude-regex \"imageproc_.*\"")
+               #t)))))
+      (home-page "https://github.com/4lex4/scantailor-advanced")
+      (synopsis "Clean up scanned pages")
+      (description "Scan Tailor is an interactive post-processing tool for
+scanned pages.  It performs operations such as page splitting, deskewing,
+adding/removing borders, and others.  You give it raw scans, and you get pages
+ready to be printed or assembled into a PDF or DJVU file.  Scanning, optical
+character recognition, and assembling multi-page documents are out of scope of
+this project.
+
+Scan Tailer Advanced is a fork of Scan Tailer that merges Scan Tailor Featured
+and Scan Tailor Enhanced versions as well as including many more bug fixes.")
+      (license license:gpl3+))))
