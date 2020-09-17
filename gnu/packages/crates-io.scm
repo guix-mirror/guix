@@ -26730,6 +26730,24 @@ with the Unicode character database.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-ufmt-write-0.1
+  (package
+    (name "rust-ufmt-write")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ufmt-write" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sdx0r6ah9xr3nydrqxj01v25sb956c0jk5rqf6f5i9fnkb2wyp8"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/japaric/ufmt")
+    (synopsis "μfmt's uWrite trait")
+    (description "This package provides @code{μfmt}'s @code{uWrite} trait.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unchecked-index-0.2
   (package
     (name "rust-unchecked-index")
