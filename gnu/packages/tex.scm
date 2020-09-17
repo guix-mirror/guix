@@ -7401,3 +7401,21 @@ things to do later, in a simple and visually appealing way.  The
 package takes several options to enable customization and finetuning
 of the visual appearance.")
       (license license:lppl1.3+))))
+
+(define-public texlive-units
+  (let ((template (simple-texlive-package
+                   "texlive-units"
+                   (list "/doc/latex/units/"
+                         "/tex/latex/units/")
+                   (base32
+                    "1ia1vzy8dp7pdvmawwnmh9lmkajmpnnh62dixrjpb6mnxq118bfd")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/units")
+      (synopsis "Typeset physical units and fractions")
+      (description "@code{units} is a package for typesetting physical
+units in a standard-looking way.  The package is based upon
+@code{nicefrac}, a package for typing fractions.  @code{nicefrac} is
+included in the @code{units} bundle.")
+      (license license:gpl3+))))
