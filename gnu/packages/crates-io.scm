@@ -4940,21 +4940,47 @@ Code} (MAC) algorithms.")
 Code (MAC) algorithms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crypto-tests-0.5
+  (package
+    (name "rust-crypto-tests")
+    (version "0.5.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "cssparser" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "02nbm690rmkaz1ca0383qq7mc1g066w3s85f17pdihnda79njjvm"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crypto-tests" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08yrh40a9ll4k29ppizg2yjf96i6s3i9pbkhxp60y8arar93134v"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-cipher-trait" ,rust-block-cipher-trait-0.4)
+        ("rust-crypto-mac" ,rust-crypto-mac-0.4)
+        ("rust-digest" ,rust-digest-0.6)
+        ("rust-generic-array" ,rust-generic-array-0.8))))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Test helpers for cryptographic algorithms")
+    (description "This package provides test helpers for cryptographic
+algorithms.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-cssparser-0.27
+  (package
+    (name "rust-cssparser")
+    (version "0.27.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cssparser" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02nbm690rmkaz1ca0383qq7mc1g066w3s85f17pdihnda79njjvm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; Not all files included in the tarball.
-(define-public rust-cssparser-0.27
-    (name "rust-cssparser")
-    (version "0.27.2")
        #:cargo-inputs
        (("rust-cssparser-macros" ,rust-cssparser-macros-0.6)
         ("rust-dtoa-short" ,rust-dtoa-short-0.3)
