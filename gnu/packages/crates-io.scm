@@ -10509,6 +10509,35 @@ compile time.")
      `(#:cargo-inputs
        (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.4))))))
 
+(define-public rust-hkdf-0.9
+  (package
+    (name "rust-hkdf")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hkdf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jdvmf8aadk3s0kn9kk3dj00nprjk9glks5f8dm55r43af34j4gy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-digest" ,rust-digest-0.9)
+        ("rust-hmac" ,rust-hmac-0.8))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-crypto-tests" ,rust-crypto-tests-0.5)
+        ("rust-hex" ,rust-hex-0.4)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))))
+    (home-page "https://github.com/RustCrypto/KDFs/")
+    (synopsis "HMAC-based Extract-and-Expand Key Derivation Function (HKDF)")
+    (description "This package provides a HMAC-based Extract-and-Expand Key
+Derivation Function (HKDF).")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hmac-0.8
   (package
     (name "rust-hmac")
