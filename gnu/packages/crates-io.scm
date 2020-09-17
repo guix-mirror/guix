@@ -4255,6 +4255,37 @@ semantics than those provided by @code{as} or @code{From}/@code{Into}.")
 numbers using the CORDIC method.")
     (license license:bsd-3)))
 
+(define-public rust-cookie-0.14
+  (package
+    (name "rust-cookie")
+    (version "0.14.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cookie" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1q56fl2cqrci9ksa80d7g220phq02nf1yfbvxkpk9g1p95ma2wqk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-aes-gcm" ,rust-aes-gcm-0.6)
+        ("rust-base64" ,rust-base64-0.12)
+        ("rust-hkdf" ,rust-hkdf-0.9)
+        ("rust-hmac" ,rust-hmac-0.8)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-time" ,rust-time-0.2))
+       #:cargo-development-inputs
+       (("rust-version-check" ,rust-version-check-0.9))))
+    (home-page "https://github.com/SergioBenitez/cookie-rs")
+    (synopsis "HTTP cookie parsing and cookie jar management")
+    (description "This package provides HTTP cookie parsing and cookie jar
+management.  It supports signed and private (encrypted, authenticated) jars.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-core-arch-0.1
   (package
     (name "rust-core-arch")
