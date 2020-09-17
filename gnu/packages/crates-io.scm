@@ -730,6 +730,29 @@ ArrayVec and ArrayString.")
         ("rust-matches" ,rust-matches-0.1)
         ("rust-serde-test" ,rust-serde-test-1))))))
 
+(define-public rust-as-slice-0.1
+  (package
+    (name "rust-as-slice")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "as-slice" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w0f56lnd9l6369jh6iv1qb08zl1lqa4y017x1gcharvq1dvdprp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-generic-array" ,rust-generic-array-0.12)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
+    (home-page "https://github.com/japaric/as-slice")
+    (synopsis "AsSlice and AsMutSlice traits")
+    (description "This package provides @code{AsSlice} and @code{AsMutSlice}
+traits.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ascii-1.0
   (package
     (name "rust-ascii")
