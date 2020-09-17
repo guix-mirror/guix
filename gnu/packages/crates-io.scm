@@ -181,19 +181,31 @@ the Rust programming language.")
     (license (list license:bsd-3
                    license:zlib))))
 
-(define-public rust-afl-0.8
+(define-public rust-aead-0.3
   (package
-    (name "rust-afl")
-    (version "0.8.0")
+    (name "rust-aead")
+    (version "0.3.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "afl" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1rw11hycfjhqbc7z1smn75m0sczq519msjwimxh7b8s6n4pzk5r7"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aead" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c8388alvivcj4qkxgh4s4l6fbczn3p8wc0pnar6crlfvcdmvjbz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.3)
+        ("rust-generic-array" ,rust-generic-array-0.14)
+        ("rust-heapless" ,rust-heapless-0.5))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Traits for Authenticated Encryption with Associated Data (AEAD)
+algorithms")
+    (description "This package provides traits for Authenticated Encryption
+with Associated Data (AEAD) algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-aes-0.4
   (package
     (name "rust-aes")
@@ -273,6 +285,19 @@ AES (Rijndael) block ciphers.")
 block ciphers using AES-NI.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-afl-0.8
+  (package
+    (name "rust-afl")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "afl" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rw11hycfjhqbc7z1smn75m0sczq519msjwimxh7b8s6n4pzk5r7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
