@@ -26180,6 +26180,32 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-time-macros-impl-0.1
+  (package
+    (name "rust-time-macros-impl")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "time-macros-impl" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ymqhvnvry3giiw45xvarlgagl8hnd6cz4alkz32fq5dvwgbxhz5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-standback" ,rust-standback-0.2)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/time-rs/time")
+    (synopsis "Procedural macros for the time crate")
+    (description "This package provides procedural macros for the time
+crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tinytemplate-1
   (package
     (name "rust-tinytemplate")
