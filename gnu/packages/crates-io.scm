@@ -194,6 +194,32 @@ the Rust programming language.")
         (sha256
          (base32
           "1rw11hycfjhqbc7z1smn75m0sczq519msjwimxh7b8s6n4pzk5r7"))))
+(define-public rust-aes-0.4
+  (package
+    (name "rust-aes")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xgsp2bn5llsppald60iw4497gaspslg0a8hknhniiz4zmki607p"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-aes-soft" ,rust-aes-soft-0.4)
+        ("rust-aesni" ,rust-aesni-0.7)
+        ("rust-block-cipher" ,rust-block-cipher-0.7))
+       #:cargo-development-inputs
+       (("rust-block-cipher" ,rust-block-cipher-0.7))))
+    (home-page "https://github.com/RustCrypto/block-ciphers")
+    (synopsis "Facade for AES (Rijndael) block ciphers implementations")
+    (description "This package provides a facade for AES (Rijndael) block
+ciphers implementations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-aes-soft-0.4
   (package
     (name "rust-aes-soft")
