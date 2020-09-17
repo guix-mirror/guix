@@ -5127,6 +5127,21 @@ services for numerous locations.")
              (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out")
                             "/lib/gnome-settings-daemon-3.0"))
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-baobab-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Hard-code the file name of Baobab instead of looking
+                      ;; it up in $PATH.  This ensures users get the "Examine"
+                      ;; button in the low disk space notification of GDM even
+                      ;; if they don't have GNOME in their main profile.
+                      (let ((baobab (assoc-ref inputs "baobab")))
+                        (substitute* "plugins/housekeeping/gsd-disk-space.c"
+                          (("g_find_program_in_path \\(DISK_SPACE_ANALYZER\\)")
+                           (string-append "g_strdup (\"" baobab
+                                          "/bin/baobab\")")))
+                        #t))))
+
        ;; Color management test can't reach the colord system service.
        #:tests? #f))
     (native-inputs
@@ -5139,6 +5154,7 @@ services for numerous locations.")
        ("docbook-xsl" ,docbook-xsl)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("baobab" ,baobab)
        ("colord" ,colord)
        ("libgudev" ,libgudev)
        ("upower" ,upower)
