@@ -26149,6 +26149,38 @@ fixed set of worker threads.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-time-0.2
+  (package
+    (name "rust-time")
+    (version "0.2.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "time" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18bhl0nmfyd8drksskw830ybw9pr47pisfn4245wabqijgys3hc0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-const-fn" ,rust-const-fn-0.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-standback" ,rust-standback-0.2)
+        ("rust-stdweb" ,rust-stdweb-0.4)
+        ("rust-time-macros" ,rust-time-macros-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-version-check" ,rust-version-check-0.9))))
+    (home-page "https://github.com/time-rs/time")
+    (synopsis "Date and time library")
+    (description "This package provides a date and time library.  It is fully
+interoperable with the standard library, and is mostly compatible with
+@code{#![no_std]}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-time-0.1
   (package
     (name "rust-time")
