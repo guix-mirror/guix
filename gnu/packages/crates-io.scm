@@ -9413,32 +9413,57 @@ the process of matching one or more glob patterns against a single candidate
 path simultaneously, and returning all of the globs that matched.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-globwalk-0.8
+  (package
+    (name "rust-globwalk")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "globwalk" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ihld70ngnri1qd8sd61099yfzcl6iqn17rfa102q1bl6ck710hp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-ignore" ,rust-ignore-0.4)
+        ("rust-walkdir" ,rust-walkdir-2))
+       #:cargo-development-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3.35)
+        ("rust-docmatic" ,rust-docmatic-0.1)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/gilnaa/globwalk")
+    (synopsis "Glob-matched recursive file system walking")
+    (description "This package provides glob-matched recursive file system
+walking.  Based on both @code{rust-walkdir} and @code{rust-ignore}, this crate
+inherits many goodies from both, such as limiting search depth and amount of
+open file descriptors.")
+    (license license:expat)))
+
 (define-public rust-globwalk-0.5
   (package
+    (inherit rust-globwalk-0.8)
     (name "rust-globwalk")
     (version "0.5.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "globwalk" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "09axyql26s09z60sgi3y3lkin9swy2b5km3b0v6mm84xhlljxyl9"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "globwalk" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09axyql26s09z60sgi3y3lkin9swy2b5km3b0v6mm84xhlljxyl9"))))
     (arguments
      `(#:cargo-inputs
        (("rust-ignore" ,rust-ignore-0.4)
         ("rust-walkdir" ,rust-walkdir-2))
        #:cargo-development-inputs
        (("rust-docmatic" ,rust-docmatic-0.1)
-        ("rust-tempdir" ,rust-tempdir-0.3))))
-    (home-page "https://github.com/gilnaa/globwalk")
-    (synopsis "Glob-matched recursive file system walking")
-    (description
-     "Glob-matched recursive file system walking.")
-    (license license:expat)))
+        ("rust-tempdir" ,rust-tempdir-0.3))))))
 
 (define-public rust-goblin-0.2
   (package
