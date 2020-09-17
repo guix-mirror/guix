@@ -17683,6 +17683,35 @@ applications.")
      "Additional trait for Read and Write to read and write Plain Old Data.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-polyval-0.4
+  (package
+    (name "rust-polyval")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "polyval" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p0765j30qxr50zh74aflafx540xkxqb7pv8kw7fvcssnm1039fr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-universal-hash" ,rust-universal-hash-0.4)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-criterion-cycles-per-byte"
+         ,rust-criterion-cycles-per-byte-0.1)
+        ("rust-hex-literal" ,rust-hex-literal-0.1))))
+    (home-page "https://github.com/RustCrypto/universal-hashes")
+    (synopsis "GHASH-like universal hash")
+    (description "POLYVAL is a GHASH-like universal hash over GF(2^128) useful
+for constructing a Message Authentication Code (MAC).")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pom-3
   (package
     (name "rust-pom")
