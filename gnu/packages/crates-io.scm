@@ -10060,6 +10060,29 @@ IEEE 754-2008 binary16 type.")
 the template engine that renders the official Rust website")
     (license license:expat)))
 
+(define-public rust-hash32-0.1
+  (package
+    (name "rust-hash32")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hash32" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k7lv7hsbzv14pz90cxay6v7avh6d6kcrra0rsc45b33dvw1l16l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1))
+       #:cargo-development-inputs
+       (("rust-hash32-derive" ,rust-hash32-derive-0.1))))
+    (home-page "https://github.com/japaric/hash32")
+    (synopsis "32-bit hashing machinery")
+    (description "This package provides 32-bit hashing machinery.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hash32-derive-0.1
   (package
     (name "rust-hash32-derive")
