@@ -18878,6 +18878,28 @@ compliant email address validation.")
        (("rust-bitflags" ,rust-bitflags-0.5)
         ("rust-getopts" ,rust-getopts-0.2))))))
 
+(define-public rust-pulse-0.5
+  (package
+    (name "rust-pulse")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pulse" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1w4skcnwmavm8ra9blf1hy7bc9grnin2kziiyc18lsnrr2v14mk5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-atom" ,rust-atom-0.3)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://github.com/csherratt/pulse")
+    (synopsis "Async wake signals library")
+    (description "This package provides a library for async wake signals.")
+    (license license:asl2.0)))
+
 (define-public rust-quantiles-0.7
   (package
     (name "rust-quantiles")
