@@ -350,49 +350,53 @@ access to servers running the Discord protocol.")
     (license license:gpl2+)))
 
 (define-public purple-mattermost
-  (package
-    (name "purple-mattermost")
-    (version "1.2")
-    (home-page "https://github.com/EionRobb/purple-mattermost")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference (url home-page)
-                                  (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0fm49iv58l09qpy8vkca3am642fxiwcrrh6ykimyc2mas210b5g2"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'configure
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      ;; Adjust the makefile to install files in the right
-                      ;; place.
-                      (let ((out (assoc-ref outputs "out")))
-                        (substitute* "Makefile"
-                          (("MATTERMOST_DEST = .*")
-                           (string-append "MATTERMOST_DEST = " out
-                                          "/lib/purple-2\n")) ;XXX: hardcoded
-                          (("MATTERMOST_ICONS_DEST = .*")
-                           (string-append "MATTERMOST_ICONS_DEST = "
-                                          out
-                                          "/share/pixmaps/pidgin/protocols\n")))
-                        #t))))
-       #:make-flags (list "CC=gcc"
-                          ,(string-append "PLUGIN_VERSION=" version))
-       #:tests? #f))
-    (inputs `(("glib" ,glib)
-              ("json-glib" ,json-glib)
-              ("discount" ,discount)
-              ("pidgin" ,pidgin)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (synopsis "Purple plug-in to access Mattermost instant messaging")
-    (description
-     "Purple-Mattermost is a plug-in for Purple, the instant messaging library
+  ;; The latest release (1.2) only supports Mattermost's /api/v3.  Choose a
+  ;; commit that supports /api/v4.
+  (let ((commit "158ce2052af9aaf3d1f6f045f0cfba276e0e91cf")
+        (revision "0"))
+    (package
+      (name "purple-mattermost")
+      (version (git-version "1.2" revision commit))
+      (home-page "https://github.com/EionRobb/purple-mattermost")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page)
+                                    (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1481zm20pnfq52ncg7hxayjq8cw3a6yh9m4jm1m5s8chsq04015l"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (replace 'configure
+                      (lambda* (#:key inputs outputs #:allow-other-keys)
+                        ;; Adjust the makefile to install files in the right
+                        ;; place.
+                        (let ((out (assoc-ref outputs "out")))
+                          (substitute* "Makefile"
+                            (("MATTERMOST_DEST = .*")
+                             (string-append "MATTERMOST_DEST = " out
+                                            "/lib/purple-2\n")) ;XXX: hardcoded
+                            (("MATTERMOST_ICONS_DEST = .*")
+                             (string-append "MATTERMOST_ICONS_DEST = "
+                                            out
+                                            "/share/pixmaps/pidgin/protocols\n")))
+                          #t))))
+         #:make-flags (list "CC=gcc"
+                            ,(string-append "PLUGIN_VERSION=" version))
+         #:tests? #f))
+      (inputs `(("glib" ,glib)
+                ("json-glib" ,json-glib)
+                ("discount" ,discount)
+                ("pidgin" ,pidgin)))
+      (native-inputs `(("pkg-config" ,pkg-config)))
+      (synopsis "Purple plug-in to access Mattermost instant messaging")
+      (description
+       "Purple-Mattermost is a plug-in for Purple, the instant messaging library
 used by Pidgin and Bitlbee, among others, to access
 @uref{https://mattermost.com/, Mattermost} servers.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public hexchat
   (package
