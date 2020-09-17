@@ -27226,6 +27226,30 @@ with the Unicode character database.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-ufmt-macros-0.1
+  (package
+    (name "rust-ufmt-macros")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ufmt-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sf0z9f6kjw5h15xd1hlj46dgri59lqwin1fxrcdradzl8s3x0gd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/japaric/ufmt")
+    (synopsis "μfmt macros")
+    (description "This package provides μfmt macros.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ufmt-write-0.1
   (package
     (name "rust-ufmt-write")
