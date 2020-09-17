@@ -5905,6 +5905,28 @@ structs and enums.")
        (("rust-blobby" ,rust-blobby-0.1)
         ("rust-generic-array" ,rust-generic-array-0.13))))))
 
+(define-public rust-digest-0.6
+  (package
+    (name "rust-digest")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "digest" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02mgf8z4hi96w9nl2zb5w3k6lqbhjgv5z8hhyv2b7x7kavqrpcp5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-generic-array" ,rust-generic-array-0.8))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Traits for cryptographic hash functions")
+    (description "This package provides traits for cryptographic hash
+functions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-directories-3
   (package
     (name "rust-directories")
