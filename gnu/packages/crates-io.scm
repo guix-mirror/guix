@@ -220,6 +220,33 @@ the Rust programming language.")
 AES (Rijndael) block ciphers.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-aesni-0.7
+  (package
+    (name "rust-aesni")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aesni" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0r6j0mjkyqnwvgib01cvrwfw8rlx1biw75234niv723n1fdx6l6h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-cipher" ,rust-block-cipher-0.7)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.2)
+        ("rust-stream-cipher" ,rust-stream-cipher-0.4))
+       #:cargo-development-inputs
+       (("rust-block-cipher" ,rust-block-cipher-0.7)
+        ("rust-stream-cipher" ,rust-stream-cipher-0.4))))
+    (home-page "https://github.com/RustCrypto/block-ciphers")
+    (synopsis "AES (Rijndael) block ciphers implementation using AES-NI")
+    (description "This package provides an implementation of AES (Rijndael)
+block ciphers using AES-NI.")
+    (license (list license:expat license:asl2.0))))
+
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
