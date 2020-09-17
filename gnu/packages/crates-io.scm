@@ -8858,6 +8858,27 @@ API library @code{gdi32}.")
         (base32
          "1v5jg7djicq34nbiv1dwaki71gkny002wyy9qfn3y0hfmrs053y6"))))))
 
+(define-public rust-generic-array-0.8
+  (package
+    (inherit rust-generic-array-0.12)
+    (name "rust-generic-array")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "generic-array" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wi6rlx3dmrvl26yxm4z5n68kyj2ikk4nllk1kazw2ik9scnkszw"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nodrop" ,rust-nodrop-0.1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-typenum" ,rust-typenum-1))
+       #:cargo-development-inputs
+       (("rust-serde-json" ,rust-serde-json-1))))))
+
 (define-public rust-genmesh-0.6
   (package
     (name "rust-genmesh")
