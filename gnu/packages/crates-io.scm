@@ -24663,6 +24663,52 @@ cryptographic implementations.")
         ("rust-walkdir" ,rust-walkdir-2))))
     (properties '())))
 
+(define-public rust-syn-0.14
+  (package
+    (inherit rust-syn-0.15)
+    (name "rust-syn")
+    (version "0.14.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syn" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hgpgi8lcvkfd5jnma5fxq41ycb9kna635b4c2wl4z1rmbnfj6i6"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.1))
+       #:cargo-development-inputs
+       (("rust-rayon" ,rust-rayon-1)
+        ("rust-walkdir" ,rust-walkdir-2))))))
+
+(define-public rust-syn-0.13
+  (package
+    (inherit rust-syn-0.14)
+    (name "rust-syn")
+    (version "0.13.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syn" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16qvx8qyb5v4vjbg9rk8848bw6x4i6vzs8v7f4n1v9pkj9ibzy8l"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.3)
+        ("rust-quote" ,rust-quote-0.5)
+        ("rust-unicode-xid" ,rust-unicode-xid-0.1))
+       #:cargo-development-inputs
+       (("rust-rayon" ,rust-rayon-1)
+        ("rust-walkdir" ,rust-walkdir-2))))))
+
 (define-public rust-syn-0.11
   (package
     (inherit rust-syn-0.15)
