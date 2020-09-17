@@ -10060,6 +10060,30 @@ IEEE 754-2008 binary16 type.")
 the template engine that renders the official Rust website")
     (license license:expat)))
 
+(define-public rust-hash32-derive-0.1
+  (package
+    (name "rust-hash32-derive")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hash32-derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18lrlxycq45kaz0l688shxnhgh3ryjp3zn0n6vfcs5sa2nyyzh7b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.3)
+        ("rust-quote" ,rust-quote-0.5)
+        ("rust-syn" ,rust-syn-0.13))))
+    (home-page "https://github.com/japaric/hash32")
+    (synopsis "Macros 1.1 implementation of @code{#[derive(Hash32)]}")
+    (description "This package provides a macros 1.1 implementation of
+@code{#[derive(Hash32)]}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hashbrown-0.5
   (package
     (name "rust-hashbrown")
