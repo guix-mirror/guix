@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -646,4 +647,25 @@ Google's C++ code base.")
     (description "The Parsing Expression Grammar Template Library (PEGTL) is
 a zero-dependency C++ header-only parser combinator library for creating
 parsers according to a Parsing Expression Grammar (PEG).")
+    (license license:expat)))
+
+(define-public cxxopts
+  (package
+    (name "cxxopts")
+    (version "2.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jarro2783/cxxopts")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0d3y747lsh1wkalc39nxd088rbypxigm991lk3j91zpn56whrpha"))))
+    (build-system cmake-build-system)
+    (synopsis "Lightweight C++ command line option parser")
+    (description
+     "A lightweight header-only C++ option parser library, supporting the
+standard GNU style syntax for options.")
+    (home-page "https://github.com/jarro2783/cxxopts/wiki")
     (license license:expat)))
