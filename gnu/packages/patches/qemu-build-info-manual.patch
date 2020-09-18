@@ -1,0 +1,139 @@
+From 07303a0a4daa83a0555ac4abad7a5d65584307ad Mon Sep 17 00:00:00 2001
+From: Maxim Cournoyer <maxim.cournoyer@gmail.com>
+Date: Thu, 17 Sep 2020 13:28:19 -0400
+Subject: [PATCH] build: Build and install the info manual.
+
+Take advantage of the Sphinx texinfo backend to generate a QEMU info
+manual.  The texinfo format allows for more structure and info readers
+provide more advanced navigation capabilities compared to manpages
+readers.
+
+* configure (infodir): Add the --infodir option, which allows
+configuring the directory under which the info manuals are installed.
+* docs/index.rst: Include the top level documents to prevent
+warnings (treated as errors by sphinx-build).
+* Makefile (sphinxdocs-info, $(MANUAL_BUILDDIR)/QEMU.texi)): New targets.
+(info): Depend on sphinxdocs-info.
+(install-doc): Install the info manual.
+---
+ Makefile       | 13 +++++++++++--
+ configure      |  7 +++++++
+ docs/index.rst |  2 ++
+ 3 files changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 13dd708c..da78612d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -864,12 +864,14 @@ endef
+ # Note that we deliberately do not install the "devel" manual: it is
+ # for QEMU developers, and not interesting to our users.
+ .PHONY: install-sphinxdocs
+-install-sphinxdocs: sphinxdocs
++install-sphinxdocs: sphinxdocs sphinxdocs-info
+ 	$(call install-manual,interop)
+ 	$(call install-manual,specs)
+ 	$(call install-manual,system)
+ 	$(call install-manual,tools)
+ 	$(call install-manual,user)
++	$(INSTALL_DIR) "$(DESTDIR)$(infodir)"
++	$(INSTALL_DATA) $(MANUAL_BUILDDIR)/QEMU.info "$(DESTDIR)$(infodir)"
+ 
+ install-doc: $(DOCS) install-sphinxdocs
+ 	$(INSTALL_DIR) "$(DESTDIR)$(qemu_docdir)"
+@@ -1067,6 +1069,13 @@ sphinxdocs: $(MANUAL_BUILDDIR)/devel/index.html \
+             $(MANUAL_BUILDDIR)/tools/index.html \
+             $(MANUAL_BUILDDIR)/user/index.html
+ 
++# Build the complete info manual.
++.PHONE: sphinxdocs-info
++sphinxdocs-info: $(MANUAL_BUILDDIR)/QEMU.info
++
++$(MANUAL_BUILDDIR)/QEMU.texi: $(call manual-deps,*) $(wildcard $(SRC_PATH)/docs/*.rst)
++	$(call build-manual,,texinfo)
++
+ # Canned command to build a single manual
+ # Arguments: $1 = manual name, $2 = Sphinx builder ('html' or 'man')
+ # Note the use of different doctree for each (manual, builder) tuple;
+@@ -1126,7 +1135,7 @@ docs/interop/qemu-ga-qapi.texi: qga/qapi-generated/qga-qapi-doc.texi
+ 	@cp -p $< $@
+ 
+ html: docs/interop/qemu-qmp-ref.html docs/interop/qemu-ga-ref.html sphinxdocs
+-info: docs/interop/qemu-qmp-ref.info docs/interop/qemu-ga-ref.info
++info: docs/interop/qemu-qmp-ref.info docs/interop/qemu-ga-ref.info sphinxdocs-info
+ pdf: docs/interop/qemu-qmp-ref.pdf docs/interop/qemu-ga-ref.pdf
+ txt: docs/interop/qemu-qmp-ref.txt docs/interop/qemu-ga-ref.txt
+ 
+diff --git a/configure b/configure
+index 2acc4d14..3691bd2e 100755
+--- a/configure
++++ b/configure
+@@ -415,6 +415,7 @@ LDFLAGS_SHARED="-shared"
+ modules="no"
+ module_upgrades="no"
+ prefix="/usr/local"
++infodir="\${prefix}/share/info"
+ mandir="\${prefix}/share/man"
+ datadir="\${prefix}/share"
+ firmwarepath="\${prefix}/share/qemu-firmware"
+@@ -987,6 +988,7 @@ if test "$mingw32" = "yes" ; then
+     LIBS="-liberty $LIBS"
+   fi
+   prefix="c:/Program Files/QEMU"
++  infodir="\${prefix}"
+   mandir="\${prefix}"
+   datadir="\${prefix}"
+   qemu_docdir="\${prefix}"
+@@ -1087,6 +1089,8 @@ for opt do
+     static="yes"
+     QEMU_PKG_CONFIG_FLAGS="--static $QEMU_PKG_CONFIG_FLAGS"
+   ;;
++  --infodir=*) infodir="$optarg"
++  ;;
+   --mandir=*) mandir="$optarg"
+   ;;
+   --bindir=*) bindir="$optarg"
+@@ -1780,6 +1784,7 @@ Advanced options (experts only):
+   --smbd=SMBD              use specified smbd [$smbd]
+   --with-git=GIT           use specified git [$git]
+   --static                 enable static build [$static]
++  --infodir=PATH           install info manual in PATH
+   --mandir=PATH            install man pages in PATH
+   --datadir=PATH           install firmware in PATH$confsuffix
+   --docdir=PATH            install documentation in PATH$confsuffix
+@@ -6836,6 +6841,7 @@ echo "include directory $(eval echo $includedir)"
+ echo "config directory  $(eval echo $sysconfdir)"
+ if test "$mingw32" = "no" ; then
+ echo "local state directory   $(eval echo $local_statedir)"
++echo "Info manual directory   $(eval echo $infodir)"
+ echo "Manual directory  $(eval echo $mandir)"
+ echo "ELF interp prefix $interp_prefix"
+ else
+@@ -7059,6 +7065,7 @@ echo "bindir=$bindir" >> $config_host_mak
+ echo "libdir=$libdir" >> $config_host_mak
+ echo "libexecdir=$libexecdir" >> $config_host_mak
+ echo "includedir=$includedir" >> $config_host_mak
++echo "infodir=$infodir" >> $config_host_mak
+ echo "mandir=$mandir" >> $config_host_mak
+ echo "sysconfdir=$sysconfdir" >> $config_host_mak
+ echo "qemu_confdir=$qemu_confdir" >> $config_host_mak
+diff --git a/docs/index.rst b/docs/index.rst
+index 763e3d04..4f155b51 100644
+--- a/docs/index.rst
++++ b/docs/index.rst
+@@ -9,6 +9,7 @@ Welcome to QEMU's documentation!
+ .. toctree::
+    :maxdepth: 2
+    :caption: Contents:
++   :glob:
+ 
+    system/index
+    user/index
+@@ -16,3 +17,4 @@ Welcome to QEMU's documentation!
+    interop/index
+    specs/index
+    devel/index
++   *
+-- 
+2.28.0
+

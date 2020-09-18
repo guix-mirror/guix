@@ -137,7 +137,8 @@
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))))
+                "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))
+              (patches (search-patches "qemu-build-info-manual.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FIXME: Disable tests on i686 to work around
@@ -233,21 +234,10 @@
                         ,(string-append "--prefix=" out)
                         ,(string-append "--sysconfdir=/etc")
                         ,@configure-flags)))))
-         (add-after 'install 'install-info
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Install the Info manual, unless Texinfo is missing.
-             (when (assoc-ref inputs "texinfo")
-               (let* ((out  (assoc-ref outputs "out"))
-                      (dir (string-append out "/share/info")))
-                 (invoke "make" "info")
-                 (for-each (lambda (info)
-                             (install-file info dir))
-                           (find-files "." "\\.info"))))
-             #t))
          ;; Create a wrapper for Samba. This allows QEMU to use Samba without
          ;; pulling it in as an input. Note that you need to explicitly install
          ;; Samba in your Guix profile for Samba support.
-         (add-after 'install-info 'create-samba-wrapper
+         (add-after 'install 'create-samba-wrapper
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref %outputs "out"))
                     (libexec (string-append out "/libexec")))
