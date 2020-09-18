@@ -30541,6 +30541,36 @@ to XDG Base Directory specification.")
     (description "An XML library in pure Rust.")
     (license license:expat)))
 
+(define-public rust-xml-rs-0.7
+  (package
+    (name "rust-xml-rs")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xml-rs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wv7izl41jf3ylhqhw23y1h0m729v2g5k4mgfw72v4kmgvvawiin"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; 'doctest' isn't stable until rust-1.40
+           (substitute* "src/lib.rs"
+             (("\\(doctest") "(test"))
+           #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1))))
+    (home-page "https://github.com/netvl/xml-rs")
+    (synopsis "XML library in pure Rust")
+    (description "An XML library in pure Rust.")
+    (license license:expat)))
+
 (define-public rust-xml5ever-0.16
   (package
     (name "rust-xml5ever")
@@ -30802,4 +30832,3 @@ formatters with per-field documentation generated for each structure.
 @end itemize")
     ;; User can choose either license.
     (license (list license:expat license:asl2.0))))
-
