@@ -166,7 +166,7 @@ configuration files.")
   (package (inherit vim)
     (name "xxd")
     (arguments
-     `(#:make-flags '("CC=gcc")
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target)))
        #:tests? #f ; there are none
        #:phases
        (modify-phases %standard-phases
