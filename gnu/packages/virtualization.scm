@@ -132,12 +132,12 @@
     (name "qemu")
     (version "5.1.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://download.qemu.org/qemu-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))))
+              (method url-fetch)
+              (uri (string-append "https://download.qemu.org/qemu-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Running tests in parallel can occasionally lead to failures, like:
@@ -207,7 +207,7 @@
              #t))
          (replace 'configure
            (lambda* (#:key inputs outputs (configure-flags '())
-                           #:allow-other-keys)
+                     #:allow-other-keys)
              ;; The `configure' script doesn't understand some of the
              ;; GNU options.  Thus, add a new phase that's compatible.
              (let ((out (assoc-ref outputs "out")))
