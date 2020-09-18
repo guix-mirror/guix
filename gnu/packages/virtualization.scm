@@ -139,6 +139,7 @@
                (base32
                 "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))
               (patches (search-patches "qemu-build-info-manual.patch"))))
+    (outputs '("out" "doc"))            ;4.7 MiB of HTML docs
     (build-system gnu-build-system)
     (arguments
      `(;; FIXME: Disable tests on i686 to work around
@@ -239,7 +240,7 @@
          ;; Samba in your Guix profile for Samba support.
          (add-after 'install 'create-samba-wrapper
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref %outputs "out"))
+             (let* ((out    (assoc-ref outputs "out"))
                     (libexec (string-append out "/libexec")))
                (call-with-output-file "samba-wrapper"
                  (lambda (port)
@@ -247,6 +248,15 @@
 exec smbd $@")))
                (chmod "samba-wrapper" #o755)
                (install-file "samba-wrapper" libexec))
+             #t))
+         (add-after 'install 'move-html-doc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc"))
+                    (qemu-doc (string-append doc "/share/doc/qemu-" ,version)))
+               (mkdir-p qemu-doc)
+               (rename-file (string-append out "/share/doc/qemu")
+                            (string-append qemu-doc "/html")))
              #t)))))
     (inputs                                       ; TODO: Add optional inputs.
      `(("alsa-lib" ,alsa-lib)
