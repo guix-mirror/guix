@@ -30857,3 +30857,32 @@ formatters with per-field documentation generated for each structure.
     (description
       "Parse an XML file into a simple tree-like structure")
     (license license:expat)))
+
+(define-public rust-svd-parser-0.9
+  (package
+    (name "rust-svd-parser")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "svd-parser" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1qhvdz3k76i3sfypcy8c84hhb8sqixrckba21kalzcpgy6an45ml"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-anyhow" ,rust-anyhow-1.0)
+         ("rust-either" ,rust-either-1.5)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-thiserror" ,rust-thiserror-1.0)
+         ("rust-xmltree" ,rust-xmltree-0.8))
+        #:cargo-development-inputs
+        (("rust-serde-json" ,rust-serde-json-1))))
+    (home-page #f)
+    (synopsis "A CMSIS-SVD file parser")
+    (description
+      "This package provides a CMSIS-SVD file parser")
+    (license (list license:expat license:asl2.0))))
