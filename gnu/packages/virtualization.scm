@@ -140,11 +140,7 @@
                 "1rd41wwlvp0vpialjp2czs6i3lsc338xc72l3zkbb7ixjfslw5y9"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; Running tests in parallel can occasionally lead to failures, like:
-       ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
-       #:parallel-tests? #f
-
-       ;; FIXME: Disable tests on i686 to work around
+     `(;; FIXME: Disable tests on i686 to work around
        ;; <https://bugs.gnu.org/40527>.
        #:tests? ,(or (%current-target-system)
                      (not (string=? "i686-linux" (%current-system))))
