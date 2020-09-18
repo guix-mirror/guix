@@ -145,7 +145,14 @@
                  ;; Blindly fix some other differences based on error output.
                  (("^\\|!") "|<")
                  (("@37") "")))
-             #t)))))
+             #t))
+         (add-after 'install 'install-guix.vim
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((vimdir (string-append (assoc-ref outputs "out") "/share/vim")))
+               (mkdir-p vimdir)
+               (copy-file (assoc-ref inputs "guix.vim")
+                          (string-append vimdir "/vimrc"))
+               #t))))))
     (inputs
      `(("gawk" ,gawk)
        ("ncurses" ,ncurses)
@@ -153,6 +160,7 @@
        ("tcsh" ,tcsh)))                 ; For runtime/tools/vim32
     (native-inputs
      `(("libtool" ,libtool)
+       ("guix.vim" ,(search-auxiliary-file "guix.vim"))
 
        ;; For tests.
        ("tzdata" ,tzdata-for-tests)))
