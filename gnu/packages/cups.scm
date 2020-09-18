@@ -28,6 +28,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fonts)     ; font-dejavu
   #:use-module (gnu packages fontutils)
@@ -127,17 +128,18 @@
                         #t)))
                   (add-after 'install 'wrap-filters
                     (lambda* (#:key inputs outputs #:allow-other-keys)
-                      ;; Some filters expect to find 'gs' in $PATH.  We cannot
-                      ;; just hard-code its absolute file name in the source
+                      ;; Some filters expect to find things in $PATH.  We cannot
+                      ;; just hard-code all absolute file names in the source
                       ;; because foomatic-rip, for example, has tests like
                       ;; 'startswith(cmd, "gs")'.
                       (let ((out         (assoc-ref outputs "out"))
-                            (ghostscript (assoc-ref inputs "ghostscript")))
+                            (ghostscript (assoc-ref inputs "ghostscript"))
+                            (grep        (assoc-ref inputs "grep")))
                         (for-each (lambda (file)
                                     (wrap-program file
                                       `("PATH" ":" prefix
-                                        (,(string-append ghostscript
-                                                         "/bin")))))
+                                        (,(string-append ghostscript "/bin:"
+                                                         grep "/bin")))))
                                   (find-files (string-append
                                                out "/lib/cups/filter")))
                         #t))))))
@@ -150,6 +152,7 @@
        ("freetype"     ,freetype)
        ("font-dejavu"  ,font-dejavu) ; also needed by test suite
        ("ghostscript"  ,ghostscript/cups)
+       ("grep"         ,grep)
        ("ijs"          ,ijs)
        ("dbus"         ,dbus)
        ("lcms"         ,lcms)
