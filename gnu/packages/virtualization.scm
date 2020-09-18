@@ -179,6 +179,24 @@
                                               '("include")
                                               input-directories)
                #t)))
+         (add-after 'unpack 'disable-unusable-tests
+           (lambda _
+             (substitute* "tests/Makefile.include"
+               ;; Comment out the test-qga test, which needs /sys and
+               ;; fails within the build environment.
+               (("check-unit-.* tests/test-qga" all)
+                (string-append "# " all))
+               ;; Comment out the test-char test, which needs networking and
+               ;; fails within the build environment.
+               (("check-unit-.* tests/test-char" all)
+                (string-append "# " all)))
+             (substitute* "tests/qtest/Makefile.include"
+               ;; Disable the following test, which triggers a crash on some
+               ;; x86 CPUs (see https://issues.guix.info/43048 and
+               ;; https://bugs.launchpad.net/qemu/+bug/1896263).
+               (("check-qtest-i386-y \\+= bios-tables-test" all)
+                (string-append "# " all)))
+             #t))
          (add-after 'patch-source-shebangs 'patch-/bin/sh-references
            (lambda _
              ;; Ensure the executables created by these source files reference
@@ -243,19 +261,6 @@
 exec smbd $@")))
                (chmod "samba-wrapper" #o755)
                (install-file "samba-wrapper" libexec))
-             #t))
-         (add-before 'check 'disable-unusable-tests
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* "tests/Makefile.include"
-               ;; Comment out the test-qga test, which needs /sys and
-               ;; fails within the build environment.
-               (("check-unit-.* tests/test-qga" all)
-                (string-append "# " all)))
-             (substitute* "tests/Makefile.include"
-               ;; Comment out the test-char test, which needs networking and
-               ;; fails within the build environment.
-               (("check-unit-.* tests/test-char" all)
-                (string-append "# " all)))
              #t)))))
     (inputs                                       ; TODO: Add optional inputs.
      `(("alsa-lib" ,alsa-lib)
