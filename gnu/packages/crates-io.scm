@@ -30832,3 +30832,28 @@ formatters with per-field documentation generated for each structure.
 @end itemize")
     ;; User can choose either license.
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-xmltree-0.8
+  (package
+    (name "rust-xmltree")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "xmltree" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0w0y0jz7lhxg05ca6ngfj0lj8sbrjh4vaqv13q7qaqkhs7lsx3pz"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-indexmap" ,rust-indexmap-1)
+         ("rust-xml-rs" ,rust-xml-rs-0.7))))
+    (home-page #f)
+    (synopsis
+      "Parse an XML file into a simple tree-like structure")
+    (description
+      "Parse an XML file into a simple tree-like structure")
+    (license license:expat)))
