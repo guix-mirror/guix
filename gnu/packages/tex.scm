@@ -7419,3 +7419,27 @@ units in a standard-looking way.  The package is based upon
 @code{nicefrac}, a package for typing fractions.  @code{nicefrac} is
 included in the @code{units} bundle.")
       (license license:gpl3+))))
+
+(define-public texlive-microtype
+  (let ((template (simple-texlive-package
+                   "texlive-microtype"
+                   (list "/doc/latex/microtype/"
+                         "/tex/latex/microtype/")
+                   (base32
+                    "0xmjpzbj4nqmnl5m7xx1bshdk2c8n57rmbvn0j479ypj4wdlq9iy")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/microtype")
+      (synopsis "Subliminal refinements towards typographical perfection")
+      (description "@code{microtype} provides a LaTeX interface to the
+micro-typographic extensions that were introduced by pdfTeX and have
+since propagated to XeTeX and LuaTeX: most prominently character
+protrusion and font expansion, the adjustment of kerning and interword
+spacing, hyphenatable letterspacing and the possibility to disable all
+or selected ligatures.  These features may be applied to customisable
+sets of fonts.  All micro-typographic aspects of the fonts can be
+configured in a straight-forward and flexible way.  Settings for
+various fonts are provided.  An alternative package @code{letterspace},
+which also works with plain TeX, is included in the bundle.")
+      (license license:lppl1.3c))))
