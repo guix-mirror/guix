@@ -803,37 +803,25 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.9.6")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                            "knot-" version ".tar.xz"))
        (sha256
-        (base32 "1rxjjisr6rz1wa4279ghvj5zzhgyjhncmb9dkzqm8nw2qs1jhx5z"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Delete bundled libraries.
-           (with-directory-excursion "src/contrib"
-             (delete-file-recursively "lmdb"))
-           #t))))
+        (base32 "1i76zflc49jbsaj3idxx7a6x87c0lzal294c3fdjyfl7dvznmjgi"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("fstrm" ,fstrm)
-       ("gnutls" ,gnutls)
-       ("jansson" ,jansson)
-       ("libcap-ng" ,libcap-ng)
-       ("libedit" ,libedit)
-       ("libidn" ,libidn)
-       ("liburcu" ,liburcu)
-       ("lmdb" ,lmdb)
-       ("ncurses" ,ncurses)
-       ("protobuf-c" ,protobuf-c)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--sysconfdir=/etc"
+             "--localstatedir=/var"
+             "--enable-dnstap"          ; let tools read/write capture files
+             "--with-module-dnstap=yes" ; detailed query capturing & logging
+             (string-append "--with-bash-completions="
+                            (assoc-ref %outputs "out")
+                            "/etc/bash_completion.d"))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-directory-pre-creation
            (lambda _
@@ -848,15 +836,20 @@ Extensions} (DNSSEC).")
                     (etc (string-append doc "/examples/etc")))
                (invoke "make"
                        (string-append "config_dir=" etc)
-                       "install")))))
-       #:configure-flags
-       (list "--sysconfdir=/etc"
-             "--localstatedir=/var"
-             "--enable-dnstap"          ; let tools read/write capture files
-             "--with-module-dnstap=yes" ; detailed query capturing & logging
-             (string-append "--with-bash-completions="
-                            (assoc-ref %outputs "out")
-                            "/etc/bash_completion.d"))))
+                       "install")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fstrm" ,fstrm)
+       ("gnutls" ,gnutls)
+       ("jansson" ,jansson)
+       ("libcap-ng" ,libcap-ng)
+       ("libedit" ,libedit)
+       ("libidn" ,libidn)
+       ("liburcu" ,liburcu)
+       ("lmdb" ,lmdb)
+       ("ncurses" ,ncurses)
+       ("protobuf-c" ,protobuf-c)))
     (home-page "https://www.knot-dns.cz/")
     (synopsis "Authoritative DNS name server")
     (description "Knot DNS is an authoritative name server for the @dfn{Domain
