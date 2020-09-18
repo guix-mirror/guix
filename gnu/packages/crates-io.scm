@@ -30907,3 +30907,37 @@ formatters with per-field documentation generated for each structure.
     (description
       "High performance inflection transformation library for changing properties of words like the case.")
     (license license:expat)))
+
+(define-public svd2rust
+  (package
+    (name "svd2rust")
+    (version "0.17.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "svd2rust" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0850pn92a5pmrlavdsm4s9wgrgx9gz0vylf9i594nj8sixmddjd9"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-cast" ,rust-cast-0.2)
+         ("rust-clap" ,rust-clap-2)
+         ("rust-env-logger" ,rust-env-logger-0.7)
+         ("rust-error-chain" ,rust-error-chain-0.12)
+         ("rust-inflections" ,rust-inflections-1.1)
+         ("rust-log" ,rust-log-0.4)
+         ("rust-proc-macro2" ,rust-proc-macro2-0.4)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-svd-parser" ,rust-svd-parser-0.9)
+         ("rust-syn" ,rust-syn-1))))
+    (home-page #f)
+    (synopsis
+      "Generate Rust register maps (`struct`s) from SVD files")
+    (description
+      "Generate Rust register maps (`struct`s) from SVD files")
+    (license (list license:expat license:asl2.0))))
+
