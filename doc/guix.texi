@@ -27880,6 +27880,51 @@ input store items aren't already available.
 @end table
 @end deftp
 
+The Guix Build Coordinator package contains a script to query an
+instance of the Guix Data Service for derivations to build, and then
+submit builds for those derivations to the coordinator.  The service
+type below assists in running this script.  This is an additional tool
+that may be useful when building derivations contained within an
+instance of the Guix Data Service.
+
+@defvar {Scheme Variable} guix-build-coordinator-queue-builds-service-type
+Service type for the
+guix-build-coordinator-queue-builds-from-guix-data-service script.  Its
+value must be a @code{guix-build-coordinator-queue-builds-configuration}
+object.
+@end defvar
+
+@deftp {Data Type} guix-build-coordinator-queue-builds-configuration
+Data type representing the options to the queue builds from guix data
+service script.
+
+@table @asis
+@item @code{package} (default: @code{guix-build-coordinator})
+The Guix Build Coordinator package to use.
+
+@item @code{user} (default: @code{"guix-build-coordinator-queue-builds"})
+The system user to run the service as.
+
+@item @code{coordinator} (default: @code{"http://localhost:8745"})
+The URI to use when connecting to the coordinator.
+
+@item @code{systems} (default: @code{#f})
+The systems for which to fetch derivations to build.
+
+@item @code{systems-and-targets} (default: @code{#f})
+An association list of system and target pairs for which to fetch
+derivations to build.
+
+@item @code{guix-data-service} (default: @code{"https://data.guix.gnu.org"})
+The Guix Data Service instance from which to query to find out about
+derivations to build.
+
+@item @code{processed-commits-file} (default: @code{"/var/cache/guix-build-coordinator-queue-builds/processed-commits"})
+A file to record which commits have been processed, to avoid needlessly
+processing them again if the service is restarted.
+
+@end table
+@end deftp
 
 @subsubheading Guix Data Service
 The @uref{http://data.guix.gnu.org,Guix Data Service} processes, stores
