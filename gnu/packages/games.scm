@@ -1811,58 +1811,63 @@ Every puzzle has a complete solution, although there may be more than one.")
    (license license:gpl2+)))
 
 (define-public retux
-  (package
-    (name "retux")
-    (version "1.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/retux-game/retux/"
-                                  "releases/download/v"
-                                  (version-major+minor version) "/retux-"
-                                  version "-src.tar.gz"))
-              (sha256
-               (base32
-                "1hxy1pvlxhk0ci3wh2i3mmr82faqdjnnxsiwwr5gcr93nfnw9w5f"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f ; no check target
-       #:phases
-       (modify-phases %standard-phases
-         ;; no setup.py script
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref outputs "out"))
-                    (bin    (string-append out "/bin"))
-                    (data   (string-append out "/share/retux")))
-               (mkdir-p bin)
+  (let ((release "1.4.1")
+        (revision 1))
+    (package
+      (name "retux")
+      (version (if (zero? revision)
+                   release
+                   (string-append release "-"
+                                  (number->string revision))))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/retux-game/retux/"
+                                    "releases/download/v"
+                                    version "/retux-"
+                                    release "-src.tar.gz"))
+                (sha256
+                 (base32
+                  "1vrldg2qh2gqfswj7vkpc589ldrrjd903j6cnfdik9zh0jhlq4h2"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:tests? #f                    ; no check target
+         #:phases
+         (modify-phases %standard-phases
+           ;; no setup.py script
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out    (assoc-ref outputs "out"))
+                      (bin    (string-append out "/bin"))
+                      (data   (string-append out "/share/retux")))
+                 (mkdir-p bin)
 
-               (substitute* "retux.py"
-                 ;; Use the correct data directory.
-                 (("os\\.path\\.join\\(os\\.path\\.dirname\\(__file__\\), \"data\"\\),")
-                  (string-append "\"" data "\",")))
+                 (substitute* "retux.py"
+                   ;; Use the correct data directory.
+                   (("os\\.path\\.join\\(os\\.path\\.dirname\\(__file__\\), \"data\"\\),")
+                    (string-append "\"" data "\",")))
 
-               (copy-file "retux.py" (string-append bin "/retux"))
-               (copy-recursively "data" data)
-               #t))))))
-    (inputs
-     `(("python-sge-pygame" ,python-sge-pygame)
-       ("python-six" ,python-six)
-       ("python-xsge" ,python-xsge)))
-    (home-page "https://retux-game.github.io/")
-    (synopsis "Action platformer game")
-    (description
-     "ReTux is an action platformer loosely inspired by the Mario games,
+                 (copy-file "retux.py" (string-append bin "/retux"))
+                 (copy-recursively "data" data)
+                 #t))))))
+      (inputs
+       `(("python-sge-pygame" ,python-sge-pygame)
+         ("python-six" ,python-six)
+         ("python-xsge" ,python-xsge)))
+      (home-page "https://retux-game.github.io/")
+      (synopsis "Action platformer game")
+      (description
+       "ReTux is an action platformer loosely inspired by the Mario games,
 utilizing the art assets from the @code{SuperTux} project.")
-    ;; GPL version 3 or later is the license for the code and some art.
-    ;; The rest of the licenses are for the art exclusively, as listed in
-    ;; data/LICENSES.
-    (license (list license:cc0
-                   license:cc-by3.0
-                   license:cc-by-sa3.0
-                   license:cc-by-sa4.0
-                   license:gpl2+
-                   license:gpl3+))))
+      ;; GPL version 3 or later is the license for the code and some art.
+      ;; The rest of the licenses are for the art exclusively, as listed in
+      ;; data/LICENSES.
+      (license (list license:cc0
+                     license:cc-by3.0
+                     license:cc-by-sa3.0
+                     license:cc-by-sa4.0
+                     license:gpl2+
+                     license:gpl3+)))))
 
 (define-public roguebox-adventures
   (package
