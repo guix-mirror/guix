@@ -15763,34 +15763,37 @@ downloading manager for Emacs.")
       (license license:gpl3+))))
 
 (define-public emacs-helpful
-  (package
-    (name "emacs-helpful")
-    (version "0.17")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Wilfred/helpful")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0v2y0x9pwi08y2mgjjiw5brfb5haa7pbmy4540glw904ffxxcblj"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-elisp-refs" ,emacs-elisp-refs)
-       ("emacs-dash" ,emacs-dash)
-       ("emacs-s" ,emacs-s)
-       ("emacs-f" ,emacs-f)
-       ("emacs-shut-up" ,emacs-shut-up)))
-    (native-inputs
-     `(("emacs-ert-runner" ,emacs-ert-runner)
-       ("emacs-undercover" ,emacs-undercover)))
-    (arguments
-     `(#:tests? #t
-       #:test-command '("ert-runner")))
-    (home-page "https://github.com/Wilfred/helpful")
-    (synopsis "More contextual information in Emacs help")
-    (description "@code{helpful} is an alternative to the built-in Emacs help
+  (let ((version "0.17")
+        (commit "b0e937fff71dc0a5d34066bfd25310e76f284621")
+        (revision "1"))
+    (package
+      (name "emacs-helpful")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Wilfred/helpful")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "048qvlyj2vkgi872z8l07diwqnq21ziycv8slxzzy7rflw3wx0b2"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-elisp-refs" ,emacs-elisp-refs)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)
+         ("emacs-f" ,emacs-f)
+         ("emacs-shut-up" ,emacs-shut-up)))
+      (native-inputs
+       `(("emacs-ert-runner" ,emacs-ert-runner)
+         ("emacs-undercover" ,emacs-undercover)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner")))
+      (home-page "https://github.com/Wilfred/helpful")
+      (synopsis "More contextual information in Emacs help")
+      (description "@code{helpful} is an alternative to the built-in Emacs help
 that provides much more contextual information.
 
 @itemize
@@ -15809,7 +15812,7 @@ functions.
 @item Trace, disassemble functions from inside Helpful.  This is discoverable
 and doesn't require memorisation of commands.
 @end itemize\n")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-logview
   (package
