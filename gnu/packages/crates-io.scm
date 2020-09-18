@@ -30886,3 +30886,24 @@ formatters with per-field documentation generated for each structure.
     (description
       "This package provides a CMSIS-SVD file parser")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-inflections-1.1
+  (package
+    (name "rust-inflections")
+    (version "1.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "inflections" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0yl3gas612q25c72lwf04405i87yxr02vgv3ckcnz2fyvhpmhmx2"))))
+    (build-system cargo-build-system)
+    (home-page #f)
+    (synopsis
+      "High performance inflection transformation library for changing properties of words like the case.")
+    (description
+      "High performance inflection transformation library for changing properties of words like the case.")
+    (license license:expat)))
