@@ -340,7 +340,7 @@ image ~a {
 
 (define* (system-iso9660-image image
                                #:key
-                               (name "iso9660-image")
+                               (name "image.iso")
                                bootcfg
                                bootloader
                                register-closures?
