@@ -7363,11 +7363,12 @@ persistent over reboots.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (inputs
+    (propagated-inputs
+     ;; In Requires.private of libbpf.pc.
      `(("libelf" ,libelf)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:make-flags
        (list
         (string-append "PREFIX=''")
