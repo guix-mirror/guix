@@ -27889,6 +27889,38 @@ pool.")
     (description "Unix Domain sockets for Tokio.")
     (license license:expat)))
 
+(define-public rust-tokio-util-0.3
+  (package
+    (name "rust-tokio-util")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-util" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16b48dl6sbc9x944jgjvsd65ab1w2c2qcziddbrbwv1b3y4l50my"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-futures-sink" ,rust-futures-sink-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
+        ("rust-tokio" ,rust-tokio-0.2))
+       #:cargo-development-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-test" ,rust-tokio-test-0.2))))
+    (home-page "https://tokio.rs")
+    (synopsis "Additional utilities for working with Tokio")
+    (description "This package provides additional utilities for working with
+Tokio.")
+    (license license:expat)))
+
 (define-public rust-toml-0.5
   (package
     (name "rust-toml")
@@ -27962,6 +27994,13 @@ serializing Rust structures.")
         ("rust-serde" ,rust-serde-0.8))))
     (home-page "https://github.com/alexcrichton/toml-rs")
     (synopsis "Rust encoder and decoder of TOML-formatted files and streams")
+    (description
+     "This package provides a native Rust encoder and decoder of TOML-formatted
+files and streams.  Provides implementations of the standard
+Serialize/Deserialize traits for TOML data to facilitate deserializing and
+serializing Rust structures.")
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-tower-layer-0.3
   (package
@@ -28036,12 +28075,6 @@ request/response based, client or server.")
 server @code{Service} tests.")
     (license license:expat)))
 
-    (description
-     "This package provides a native Rust encoder and decoder of TOML-formatted
-files and streams.  Provides implementations of the standard
-Serialize/Deserialize traits for TOML data to facilitate deserializing and
-serializing Rust str")
-    (license (list license:expat license:asl2.0))))
 (define-public rust-tower-util-0.3
   (package
     (name "rust-tower-util")
