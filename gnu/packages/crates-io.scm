@@ -24941,6 +24941,28 @@ are met.")
 in @code{stb_truetype.h} from C to Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-std-prelude-0.2
+  (package
+    (name "rust-std-prelude")
+    (version "0.2.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "std_prelude" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ghcwnhnqn3rphyhlknmxpj5clzqva46z1vh25k5bpzzan2ff1w2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/vitiral/std_prelude")
+    (synopsis
+     "Prelude that the rust stdlib should have always had")
+    (description
+     "A package that simply uses all of the items often included in a Rust
+codebase.")
+    (license license:expat)))
+
 (define-public rust-stdweb-0.4
   (package
     (name "rust-stdweb")
