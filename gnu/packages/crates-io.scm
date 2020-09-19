@@ -27571,8 +27571,33 @@ using Rustls.")
 futures.")
     (license license:expat)))
 
+(define-public rust-tokio-sync-0.2
+  (package
+    (name "rust-tokio-sync")
+    (version "0.2.0-alpha.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-sync" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lirf9s9pibgv8cypqzlddy8q9bxfp4z29qfx83p83slhnvaw6jg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fnv" ,rust-fnv-1)
+        ("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
+        ("rust-futures-sink-preview" ,rust-futures-sink-preview-0.3)
+        ("rust-futures-util-preview" ,rust-futures-util-preview-0.3))))
+    (home-page "https://tokio.rs")
+    (synopsis "Synchronization utilities")
+    (description "This package provides synchronization utilities.")
+    (license license:expat)))
+
 (define-public rust-tokio-sync-0.1
   (package
+    (inherit rust-tokio-sync-0.2)
     (name "rust-tokio-sync")
     (version "0.1.6")
     (source
@@ -27584,7 +27609,6 @@ futures.")
        (sha256
         (base32
          "1ryalh7dcmnz46xj1va8aaw3if6vd4mj87r67dqvrqhpyf7j8qi1"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -27594,11 +27618,7 @@ futures.")
        (("rust-env-logger" ,rust-env-logger-0.6)
         ("rust-loom" ,rust-loom-0.1)
         ("rust-tokio" ,rust-tokio-0.1)
-        ("rust-tokio-mock-task" ,rust-tokio-mock-task-0.1))))
-    (home-page "https://tokio.rs")
-    (synopsis "Synchronization utilities")
-    (description "Synchronization utilities.")
-    (license license:expat)))
+        ("rust-tokio-mock-task" ,rust-tokio-mock-task-0.1))))))
 
 (define-public rust-tokio-test-0.2
   (package
