@@ -24660,3 +24660,35 @@ publically-accessible HTTP server.")
 label references and citations in LaTeX.  It is based on RefTeX, which is
 included with Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-html-to-hiccup
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "50a52e2b0d13d865187acdf775b8203d5003f2f1")
+        (revision "0"))
+    (package
+      (name "emacs-html-to-hiccup")
+      (version (git-version "1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/plexus/html-to-hiccup")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1qi092mw2n08v6yr0j6hlpx0pnlcnhxjqbsrlw9pn4yin6zk91yp"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("dash" ,emacs-dash)
+         ("s" ,emacs-s)))
+      (home-page "https://github.com/plexus/html-to-hiccup")
+      (synopsis "Turn HTML into Hiccup syntax")
+      (description
+       "This is an Emacs package that turns HTML into Hiccup syntax
+which is a popular notation to use when doing Clojure/ClojureScript
+web development.")
+      ;; There is a conflict between the repository official LICENSE
+      ;; file and the header of the main elisp file which indicates
+      ;; that it is licensed under the GPL version 3 or later.
+      (license (list license:mpl2.0 license:gpl3+)))))
