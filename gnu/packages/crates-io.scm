@@ -27966,6 +27966,35 @@ files and streams.  Provides implementations of the standard
 Serialize/Deserialize traits for TOML data to facilitate deserializing and
 serializing Rust str")
     (license (list license:expat license:asl2.0))))
+(define-public rust-tower-util-0.3
+  (package
+    (name "rust-tower-util")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tower-util" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x4np2s7h891spvxaarcyainj12a7gvnh7jif9y80cvdh8ckq2fi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-tower-service" ,rust-tower-service-0.3))
+       #:cargo-development-inputs
+       (("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-test" ,rust-tokio-test-0.2)
+        ("rust-tower-test" ,rust-tower-test-0.3))))
+    (home-page "https://github.com/tower-rs/tower")
+    (synopsis "Utilities for working with @code{Service}")
+    (description "This package provides utilities for working with
+@code{Service}.")
+    (license license:expat)))
+
 
 (define-public rust-tracing-core-0.1
   (package
