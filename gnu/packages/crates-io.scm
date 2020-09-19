@@ -1125,18 +1125,49 @@ standard library.")
     (description "This package provides a libsyntax ast builder.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-atty-0.2
+(define-public rust-async-compression-0.3
   (package
-    (name "rust-atty")
-    (version "0.2.14")
+    (name "rust-async-compression")
+    (version "0.3.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "atty" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "1s7yslcs6a28c5vz7jwj63lkfgyx8mx99fdirlhi9lbhhzhrpcyr"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-compression" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "164dfy1wrl9qbj95rvcpkfbrkpz3c1s7mk288sv9cwp7rj5pc8ch"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-brotli" ,rust-brotli-3)
+        ("rust-bytes" ,rust-bytes-0.5)
+        ("rust-bzip2" ,rust-bzip2-0.3)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-io" ,rust-futures-io-0.3)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-xz2" ,rust-xz2-0.1)
+        ("rust-zstd" ,rust-zstd-0.5)
+        ("rust-zstd-safe" ,rust-zstd-safe-2))
+       #:cargo-development-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-test" ,rust-futures-test-0.3)
+        ("rust-ntest" ,rust-ntest-0.3)
+        ("rust-proptest" ,rust-proptest-0.9)
+        ("rust-proptest-derive" ,rust-proptest-derive-0.1)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-timebomb" ,rust-timebomb-0.1)
+        ("rust-tokio" ,rust-tokio-0.2))))
+    (home-page "https://github.com/Nemo157/async-compression")
+    (synopsis "Adaptors between compression crates and Rust's modern asynchronous IO types")
+    (description "This package provides adaptors between compression crates
+and Rust's modern asynchronous IO types.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-atom-0.3
   (package
     (name "rust-atom")
@@ -1155,6 +1186,18 @@ standard library.")
     (description "This package provides a safe abstraction around AtomicPtr.")
     (license license:asl2.0)))
 
+(define-public rust-atty-0.2
+  (package
+    (name "rust-atty")
+    (version "0.2.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "atty" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32
+         "1s7yslcs6a28c5vz7jwj63lkfgyx8mx99fdirlhi9lbhhzhrpcyr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
