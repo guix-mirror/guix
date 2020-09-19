@@ -30657,6 +30657,37 @@ implementation that works everywhere, even WASM!")
      "This package provides a library for parsing compiled zoneinfo files.")
     (license license:expat)))
 
+(define-public rust-zstd-sys-1
+  (package
+    (name "rust-zstd-sys")
+    (version "1.4.17+zstd.1.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zstd-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06zhk1j5v1sm04xxrw72lgzyi1wcq7kvj6vbd4ibamph9mj4k4mq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-bindgen" ,rust-bindgen-0.54)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-itertools" ,rust-itertools-0.9)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (home-page "https://github.com/gyscos/zstd-rs")
+    (synopsis "Low-level bindings to the zstd compression library")
+    (description "This package provides low-level Rust bindings to the zstd
+compression library.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-zstd-sys-1.4.17 rust-zstd-sys-1)
+
 (define-public rust-packed-struct
   (package
     (name "rust-packed-struct")
@@ -30804,4 +30835,3 @@ formatters with per-field documentation generated for each structure.
     (description
       "Generate Rust register maps (`struct`s) from SVD files")
     (license (list license:expat license:asl2.0))))
-
