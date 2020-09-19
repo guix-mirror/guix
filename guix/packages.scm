@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -692,6 +693,8 @@ specifies modules in scope when evaluating SNIPPET."
 
             (setenv "PATH" (string-append #+xz "/bin" ":"
                                           #+decomp "/bin"))
+
+            (setenv "XZ_DEFAULTS" (string-join (%xz-parallel-args)))
 
             ;; SOURCE may be either a directory or a tarball.
             (if (file-is-directory? #+source)

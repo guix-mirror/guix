@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,7 @@
   #:use-module (guix memoization)
   #:use-module ((guix build utils)
                 #:select (dump-port mkdir-p delete-file-recursively
-                          call-with-temporary-output-file))
+                          call-with-temporary-output-file %xz-parallel-args))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (guix diagnostics)           ;<location>, &error-location, etc.
   #:use-module (ice-9 format)
@@ -220,7 +221,7 @@ a symbol such as 'xz."
   (match compression
     ((or #f 'none) (values input '()))
     ('bzip2        (filtered-port `(,%bzip2 "-dc") input))
-    ('xz           (filtered-port `(,%xz "-dc") input))
+    ('xz           (filtered-port `(,%xz "-dc" ,@(%xz-parallel-args)) input))
     ('gzip         (filtered-port `(,%gzip "-dc") input))
     ('lzip         (values (lzip-port 'make-lzip-input-port input)
                            '()))
@@ -232,7 +233,7 @@ a symbol such as 'xz."
   (match compression
     ((or #f 'none) (values input '()))
     ('bzip2        (filtered-port `(,%bzip2 "-c") input))
-    ('xz           (filtered-port `(,%xz "-c") input))
+    ('xz           (filtered-port `(,%xz "-c" ,@(%xz-parallel-args)) input))
     ('gzip         (filtered-port `(,%gzip "-c") input))
     ('lzip         (values (lzip-port 'make-lzip-input-port/compressed input)
                            '()))
@@ -291,7 +292,8 @@ program--e.g., '(\"--fast\")."
   (match compression
     ((or #f 'none) (values output '()))
     ('bzip2        (filtered-output-port `(,%bzip2 "-c" ,@options) output))
-    ('xz           (filtered-output-port `(,%xz "-c" ,@options) output))
+    ('xz           (filtered-output-port `(,%xz "-c" ,@(%xz-parallel-args)
+                                                ,@options) output))
     ('gzip         (filtered-output-port `(,%gzip "-c" ,@options) output))
     ('lzip         (values (lzip-port 'make-lzip-output-port output)
                            '()))

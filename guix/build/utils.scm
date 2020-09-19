@@ -113,7 +113,9 @@
 
             make-desktop-entry-file
 
-            locale-category->string))
+            locale-category->string
+
+            %xz-parallel-args))
 
 
 ;;;
@@ -1483,6 +1485,17 @@ returned."
              LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY
              LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE
              LC_TIME)))
+
+
+;;;
+;;; Others.
+;;;
+
+(define (%xz-parallel-args)
+  "The xz arguments required to enable bit-reproducible, multi-threaded
+compression."
+  (list "--memlimit=50%"
+        (format #f "--threads=~a" (max 2 (parallel-job-count)))))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)
