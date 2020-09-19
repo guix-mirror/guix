@@ -699,13 +699,13 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   (version "2.31")
+   (version "2.32")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"))
+              "0di848ibffrnwq7g2dvgqrnn4xqhj3h96csn69q4da51ymafl9qn"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -796,6 +796,11 @@ the store.")
             ,@(if (hurd-target?)
                   '("--disable-werror")
                   '()))
+
+      ;; Arrange so that /etc/rpc & co. go to $out/etc.
+      #:make-flags (list (string-append "sysconfdir="
+                                        (assoc-ref %outputs "out")
+                                        "/etc"))
 
       #:tests? #f                                 ; XXX
       #:phases (modify-phases %standard-phases
