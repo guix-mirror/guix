@@ -30319,6 +30319,34 @@ to XDG Base Directory specification.")
      "Push based streaming parser for xml.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-xz2-0.1
+  (package
+    (name "rust-xz2")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xz2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v4jb0193gx8s1kvd2ajsgh0ffmwhqhfmrrw1n1h2z7w6jgqcyf1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-lzma-sys" ,rust-lzma-sys-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.7)
+        ("rust-rand" ,rust-rand-0.5)
+        ("rust-tokio-core" ,rust-tokio-core-0.1))))
+    (home-page "https://github.com/alexcrichton/xz2-rs")
+    (synopsis "Rust bindings to liblzma")
+    (description "This package provides Rust bindings to liblzma providing
+Read/Write streams as well as low-level in-memory encoding and decoding.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-yaml-rust-0.4
   (package
     (name "rust-yaml-rust")
