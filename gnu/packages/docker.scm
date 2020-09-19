@@ -520,6 +520,7 @@ built-in registry server of Docker.")
              #t))
          (replace 'configure
            (lambda _
+             (setenv "DOCKER_BUILDTAGS" "seccomp")
              (setenv "DOCKER_GITCOMMIT" (string-append "v" ,%docker-version))
              (setenv "VERSION" (string-append ,%docker-version "-ce"))
              ;; Automatically use bundled dependencies.
