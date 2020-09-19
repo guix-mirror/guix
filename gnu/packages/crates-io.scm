@@ -3458,8 +3458,41 @@ depending on a large number of #[cfg] parameters.  Structured like an
      "This package provides current CI environment information.")
     (license license:asl2.0)))
 
+(define-public rust-clang-sys-1
+  (package
+    (name "rust-clang-sys")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "clang-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0695kfrqx7n091fzm6msbqg2q2kyhka64q08lm63f3l9d964i8cx"))))
+    (build-system cargo-build-system)
+    (inputs
+     `(("clang" ,clang)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-glob" ,rust-glob-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libloading" ,rust-libloading-0.6))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'configure-clang
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "LIBCLANG_PATH" (string-append (assoc-ref inputs "clang")
+                                                    "/lib"))
+             #t)))))
+    (home-page "https://github.com/KyleMayes/clang-sys")
+    (synopsis "Rust bindings for libclang")
+    (description "This package provides Rust bindings for libclang.")
+    (license license:asl2.0)))
+
 (define-public rust-clang-sys-0.29
   (package
+    (inherit rust-clang-sys-1)
     (name "rust-clang-sys")
     (version "0.29.3")
     (source
@@ -3483,14 +3516,9 @@ depending on a large number of #[cfg] parameters.  Structured like an
              (let ((clang (assoc-ref inputs "libclang")))
                (setenv "LIBCLANG_PATH"
                        (string-append clang "/lib")))
-             #t)))))
     (inputs
      `(("libclang" ,clang)))
-    (home-page "https://github.com/KyleMayes/clang-sys")
-    (synopsis "Rust bindings for libclang")
-    (description
-     "This package provides Rust bindings for @code{libclang}.")
-    (license license:asl2.0)))
+             #t)))))))
 
 (define-public rust-clang-sys-0.28
   (package
