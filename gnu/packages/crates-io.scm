@@ -30657,6 +30657,31 @@ implementation that works everywhere, even WASM!")
      "This package provides a library for parsing compiled zoneinfo files.")
     (license license:expat)))
 
+(define-public rust-zstd-safe-2
+  (package
+    (name "rust-zstd-safe")
+    (version "2.0.5+zstd.1.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zstd-safe" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m8h1x030cj5bj7zxxf6gdp91bp0ays2vi9rlqllgxi71lp69yqw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-zstd-sys" ,rust-zstd-sys-1.4.17))))
+    (home-page "https://github.com/gyscos/zstd-rs")
+    (synopsis "Safe low-level bindings to the zstd compression library")
+    (description "This package provides afe low-level bindings to the zstd
+compression library.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-zstd-safe-2.0.5 rust-zstd-safe-2)
+
 (define-public rust-zstd-sys-1
   (package
     (name "rust-zstd-sys")
