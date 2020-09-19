@@ -202,7 +202,6 @@ MODULES =					\
   guix/build/union.scm				\
   guix/build/profiles.scm			\
   guix/build/compile.scm			\
-  guix/build/rpath.scm				\
   guix/build/cvs.scm				\
   guix/build/svn.scm				\
   guix/build/syscalls.scm                       \
