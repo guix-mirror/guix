@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1436,8 +1437,9 @@ handling network namespaces in Go.")
 
 (define-public go-sctp
   ;; docker-libnetwork-cmd-proxy requires this exact commit.
-  (let ((commit "07191f837fedd2f13d1ec7b5f885f0f3ec54b1cb")
-        (revision "1"))
+  ;; This commit is mentioned in docker-libnetwork-cmd-proxy's vendor.conf.
+  (let ((commit "6e2cb1366111dcf547c13531e3a263a067715847")
+        (revision "2"))
     (package
       (name "go-sctp")
       (version (git-version "0.0.0" revision commit))
@@ -1449,10 +1451,11 @@ handling network namespaces in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1mk9ncm10gwi5pn5wcw4skbyf4qg7n5qdf1mim4gf3mrckvi6g6h"))))
+                  "1ba90fmpdwxa1ba4hrsjhi3gfy3pwmz7x8amw1p5dc9p5a7nnqrb"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/ishidawataru/sctp"))
+       `(#:tests? #f    ; Test suite is flakey.
+         #:import-path "github.com/ishidawataru/sctp"))
       (home-page "https://github.com/ishidawataru/sctp")
       (synopsis "SCTP library for the Go programming language")
       (description "This library provides methods for using the stream control
