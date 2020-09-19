@@ -1011,7 +1011,7 @@ full-featured UI aimed at clinical researchers.")
       (description "Metapixel is a program for generating photomosaics.  It can
 generate classical photomosaics, in which the source image is viewed as a
 matrix of equally sized rectangles for each of which a matching image is
-substitued, as well as collage-style photomosaics, in which rectangular parts
+substituted, as well as collage-style photomosaics, in which rectangular parts
 of the source image at arbitrary positions (i.e. not aligned to a matrix) are
 substituted by matching images.")
       (license license:gpl2))))
