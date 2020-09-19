@@ -53,6 +53,7 @@
             directory-exists?
             executable-file?
             symbolic-link?
+            call-with-temporary-output-file
             call-with-ascii-input-file
             elf-file?
             ar-file?
@@ -197,6 +198,22 @@ introduce the version part."
 (define (symbolic-link? file)
   "Return #t if FILE is a symbolic link (aka. \"symlink\".)"
   (eq? (stat:type (lstat file)) 'symlink))
+
+(define (call-with-temporary-output-file proc)
+  "Call PROC with a name of a temporary file and open output port to that
+file; close the file and delete it when leaving the dynamic extent of this
+call."
+  (let* ((directory (or (getenv "TMPDIR") "/tmp"))
+         (template  (string-append directory "/guix-file.XXXXXX"))
+         (out       (mkstemp! template)))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        (proc template out))
+      (lambda ()
+        (false-if-exception (close out))
+        (false-if-exception (delete-file template))))))
 
 (define (call-with-ascii-input-file file proc)
   "Open FILE as an ASCII or binary file, and pass the resulting port to

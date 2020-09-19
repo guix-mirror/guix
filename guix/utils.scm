@@ -35,7 +35,9 @@
   #:use-module (rnrs io ports)                    ;need 'port-position' etc.
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix memoization)
-  #:use-module ((guix build utils) #:select (dump-port mkdir-p delete-file-recursively))
+  #:use-module ((guix build utils)
+                #:select (dump-port mkdir-p delete-file-recursively
+                          call-with-temporary-output-file))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (guix diagnostics)           ;<location>, &error-location, etc.
   #:use-module (ice-9 format)
@@ -59,7 +61,9 @@
 
                &fix-hint
                fix-hint?
-               condition-fix-hint)
+               condition-fix-hint
+
+               call-with-temporary-output-file)
   #:export (strip-keyword-arguments
             default-keyword-arguments
             substitute-keyword-arguments
@@ -94,7 +98,6 @@
             tarball-sans-extension
             compressed-file?
             switch-symlinks
-            call-with-temporary-output-file
             call-with-temporary-directory
             with-atomic-file-output
 
@@ -676,22 +679,6 @@ REPLACEMENT."
                 (cons* replacement
                        (substring str start index)
                        pieces))))))))
-
-(define (call-with-temporary-output-file proc)
-  "Call PROC with a name of a temporary file and open output port to that
-file; close the file and delete it when leaving the dynamic extent of this
-call."
-  (let* ((directory (or (getenv "TMPDIR") "/tmp"))
-         (template  (string-append directory "/guix-file.XXXXXX"))
-         (out       (mkstemp! template)))
-    (dynamic-wind
-      (lambda ()
-        #t)
-      (lambda ()
-        (proc template out))
-      (lambda ()
-        (false-if-exception (close out))
-        (false-if-exception (delete-file template))))))
 
 (define (call-with-temporary-directory proc)
   "Call PROC with a name of a temporary directory; close the directory and
