@@ -27,6 +27,7 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (rnrs bytevectors)
+  #:autoload   (guix describe) (current-profile)
   #:autoload   (system repl repl) (start-repl)
   #:autoload   (system repl server)
                   (make-tcp-server-socket make-unix-domain-server-socket)
@@ -176,6 +177,13 @@ call THUNK."
       ;; Run script
       (save-module-excursion
        (lambda ()
+         ;; Invoke 'current-profile' so that it memoizes the correct value
+         ;; based on (program-arguments), before we call
+         ;; 'set-program-arguments'.  This in turn ensures that
+         ;; (%package-module-path) will contain entries for the channels
+         ;; available in the current profile.
+         (current-profile)
+
          (set-program-arguments script)
          (set-user-module)
 
