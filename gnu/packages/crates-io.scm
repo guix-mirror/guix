@@ -27571,6 +27571,36 @@ using Rustls.")
 futures.")
     (license license:expat)))
 
+(define-public rust-tokio-socks-0.2
+  (package
+    (name "rust-tokio-socks")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-socks" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bwdjafbbs0907w42dl899inykflz4gbm026wh097q151s57i5qr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-either" ,rust-either-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-tokio" ,rust-tokio-0.2))
+       #:cargo-development-inputs
+       (("rust-hyper" ,rust-hyper-0.13)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-tokio" ,rust-tokio-0.2))))
+    (home-page "https://github.com/sticnarf/tokio-socks")
+    (synopsis "Asynchronous SOCKS proxy support for Rust")
+    (description "This package provides asynchronous SOCKS proxy support for
+Rust.")
+    (license license:expat)))
+
 (define-public rust-tokio-sync-0.2
   (package
     (name "rust-tokio-sync")
