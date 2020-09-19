@@ -4167,7 +4167,7 @@ the speedbar window.")
 (define-public emacs-shx
   (package
     (name "emacs-shx")
-    (version "1.4.0")
+    (version "1.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4175,15 +4175,10 @@ the speedbar window.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0p9b621rgy34r1hl9xfzxh4xpx9gpsr3n330ypfxhlr0s5754j73"))))
+               (base32 "1cb5w6p9gnfxgh8qp7yj2f5ibpk1b4b5af3ynldaaj6yfpa8hqzn"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; A docstring provides examples of mapping hosts to programs in /bin.
-         ;; These examples are valid as-is.
-         (delete 'patch-el-files))
-       #:tests? #t
+     `(#:tests? #t
        #:test-command
        '("emacs" "--batch" "--quiet"
          "--script" "test/script.el")))
