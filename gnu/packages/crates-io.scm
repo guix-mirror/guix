@@ -27886,6 +27886,29 @@ serializing Rust structures.")
         ("rust-serde" ,rust-serde-0.8))))
     (home-page "https://github.com/alexcrichton/toml-rs")
     (synopsis "Rust encoder and decoder of TOML-formatted files and streams")
+
+(define-public rust-tower-service-0.3
+  (package
+    (name "rust-tower-service")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tower-service" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0q4q53w82w1wd71x7vbspg2l3jicb6al2w1qdwxmnjrz8jzvd1z9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-http" ,rust-http-0.1))))
+    (home-page "https://github.com/tower-rs/tower")
+    (synopsis "Asynchronous, request / response based, client or server.")
+    (description "This package provides a trait representing an asynchronous,
+request/response based, client or server.")
+    (license license:expat)))
+
     (description
      "This package provides a native Rust encoder and decoder of TOML-formatted
 files and streams.  Provides implementations of the standard
