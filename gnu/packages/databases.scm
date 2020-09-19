@@ -1343,7 +1343,7 @@ for example from a shell script.")
 (define-public sqitch
   (package
     (name "sqitch")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
@@ -1351,7 +1351,7 @@ for example from a shell script.")
              "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-v"
              version ".tar.gz"))
        (sha256
-        (base32 "0p4wraqiscvwmmsvfqfy65blgsilwpvd9zj4d2zvm2xdx70ncr7l"))))
+        (base32 "1ayiwg9kh3w0nbacbcln7h944z94vq5vnnd5diz86033bpbnq57f"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -1383,6 +1383,7 @@ for example from a shell script.")
        ("perl-test-file" ,perl-test-file)
        ("perl-test-file-contents" ,perl-test-file-contents)
        ("perl-test-mockmodule" ,perl-test-mockmodule)
+       ("perl-test-mockobject" ,perl-test-mockobject)
        ("perl-test-nowarnings" ,perl-test-nowarnings)
        ("perl-test-warn" ,perl-test-warn)))
     (inputs
