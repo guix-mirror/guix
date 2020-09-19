@@ -22808,10 +22808,32 @@ proven statistical guarantees.")
      "Security.framework bindings for macOS and iOS")
     (description
      "Security.framework bindings for macOS and iOS.")
+(define-public rust-security-framework-sys-1
+  (package
+    (name "rust-security-framework-sys")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "security-framework-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1iynsjz53lqkkw4zbq8l99xn799chbx90lsmrlfnsyxii14v1kji"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.7)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://lib.rs/crates/security-framework-sys")
+    (synopsis "Low-level FFI bindings to Apple @code{Security.framework}")
+    (description "This package provides low level FFI bindings to Apple
+@code{Security.framework}.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-security-framework-sys-0.3
   (package
+    (inherit rust-security-framework-sys-1)
     (name "rust-security-framework-sys")
     (version "0.3.3")
     (source
@@ -22825,16 +22847,11 @@ proven statistical guarantees.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6))))
-    (home-page "https://lib.rs/crates/security-framework-sys")
-    (synopsis "Apple `Security.framework` low-level FFI bindings")
-    (description
-     "Apple @code{Security.framework} low-level FFI bindings.")
-    (license (list license:asl2.0
-                   license:expat))))
+       (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6))))))
 
 (define-public rust-security-framework-sys-0.2
   (package
+    (inherit rust-security-framework-sys-0.3)
     (name "rust-security-framework-sys")
     (version "0.2.4")
     (source
@@ -22845,16 +22862,10 @@ proven statistical guarantees.")
        (sha256
         (base32
          "07zv0szz2kfy1hn251h0qsq0q9i1zia768d8vzril1g6xarj7mcj"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
-        ("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://lib.rs/crates/security-framework-sys")
-    (synopsis "Low level FFI bindings to Apple Security.framework")
-    (description "This packages provides low level FFI bindings to Apple
-Security.framework.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-selectors-0.22
   (package
