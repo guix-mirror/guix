@@ -28682,7 +28682,15 @@ The type of a bootloader configuration declaration.
 @cindex BIOS, bootloader
 The bootloader to use, as a @code{bootloader} object. For now
 @code{grub-bootloader}, @code{grub-efi-bootloader},
-@code{extlinux-bootloader} and @code{u-boot-bootloader} are supported.
+@code{grub-efi-netboot-bootloader}, @code{extlinux-bootloader} and
+@code{u-boot-bootloader} are supported.
+
+@cindex ARM, bootloaders
+@cindex AArch64, bootloaders
+Available bootloaders are described in @code{(gnu bootloader @dots{})}
+modules.  In particular, @code{(gnu bootloader u-boot)} contains definitions
+of bootloaders for a wide range of ARM and AArch64 systems, using the
+@uref{https://www.denx.de/wiki/U-Boot/, U-Boot bootloader}.
 
 @vindex grub-efi-bootloader
 @code{grub-efi-bootloader} allows to boot on modern systems using the
@@ -28694,12 +28702,52 @@ when you boot it on your system.
 @code{grub-bootloader} allows you to boot in particular Intel-based machines
 in ``legacy'' BIOS mode.
 
-@cindex ARM, bootloaders
-@cindex AArch64, bootloaders
-Available bootloaders are described in @code{(gnu bootloader @dots{})}
-modules.  In particular, @code{(gnu bootloader u-boot)} contains definitions
-of bootloaders for a wide range of ARM and AArch64 systems, using the
-@uref{https://www.denx.de/wiki/U-Boot/, U-Boot bootloader}.
+@vindex grub-efi-netboot-bootloader
+@code{grub-efi-netboot-bootloader} allows you to boot your system over network
+through TFTP.  In combination with an NFS root file system this allows you to
+build a diskless Guix system.
+
+The installation of the @code{grub-efi-netboot-bootloader} generates the content
+of the TFTP root directory at @code{target}
+(@pxref{Bootloader Configuration, @code{target}}), to be served by a TFTP server.
+ You may want to mount your TFTP server directory onto @code{target} to move the
+required files to the TFTP server automatically.
+
+If you plan to use an NFS root file system as well (actually if you mount the
+store from an NFS share), then the TFTP server needs to serve the file
+@file{/boot/grub/grub.cfg} and other files from the store (like GRUBs background
+image, the kernel (@pxref{operating-system Reference, @code{kernel}}) and the
+initrd (@pxref{operating-system Reference, @code{initrd}})), too.  All these
+files from the store will be accessed by GRUB through TFTP with their normal
+store path, for example as
+@file{tftp://tftp-server/gnu/store/…-initrd/initrd.cpio.gz}.
+
+Two symlinks are created to make this possible.  The first symlink is
+@code{target}@file{/efi/Guix/boot/grub/grub.cfg} pointing to
+@file{../../../boot/grub/grub.cfg},
+where @code{target} may be @file{/boot}.  In this case the link is not leaving
+the served TFTP root directory, but otherwise it does.  The second link is
+@code{target}@file{/gnu/store} and points to @file{../gnu/store}.  This link
+is leaving the served TFTP root directory.
+
+The assumption behind all this is that you have an NFS server exporting the root
+file system for your Guix system, and additionally a TFTP server exporting your
+@code{target} directory—usually @file{/boot}—from that same root file system for
+your Guix system.  In this constellation the symlinks will work.
+
+For other constellations you will have to program your own bootloader installer,
+which then takes care to make necessary files from the store accessible through
+TFTP, for example by copying them into the TFTP root directory at @code{target}.
+
+It is important to note that symlinks pointing outside the TFTP root directory
+may need to be allowed in the configuration of your TFTP server.  Further the
+store link exposes the whole store through TFTP.  Both points need to be
+considered carefully for security aspects.
+
+Beside the @code{grub-efi-netboot-bootloader}, the already mentioned TFTP and
+NFS servers, you also need a properly configured DHCP server to make the booting
+over netboot possible.  For all this we can currently only recommend you to look
+for instructions about @acronym{PXE, Preboot eXecution Environment}.
 
 @item @code{target}
 This is a string denoting the target onto which to install the
@@ -28710,7 +28758,9 @@ The interpretation depends on the bootloader in question.  For
 the bootloader @command{installer} command, such as @code{/dev/sda} or
 @code{(hd0)} (@pxref{Invoking grub-install,,, grub, GNU GRUB Manual}).  For
 @code{grub-efi-bootloader}, it should be the mount point of the EFI file
-system, usually @file{/boot/efi}.
+system, usually @file{/boot/efi}.  For @code{grub-efi-netboot-bootloader},
+@code{target} should be the mount point corresponding to the TFTP root
+directory of your TFTP server.
 
 @item @code{menu-entries} (default: @code{()})
 A possibly empty list of @code{menu-entry} objects (see below), denoting
