@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -121,9 +122,11 @@ loop-back communications.")
                            #$@(if debug?
                                   '("--debug" "--log-level=debug")
                                   '())
-                           (if #$enable-proxy? "--userland-proxy" "")
-                           "--userland-proxy-path" (string-append #$proxy
-                                                                  "/bin/proxy")
+                           #$@(if enable-proxy?
+                                  '("--userland-proxy=true"
+                                    (string-append
+                                      "--userland-proxy-path=" proxy "/bin/proxy"))
+                                  '("--userland-proxy=false"))
                            (if #$enable-iptables?
                                "--iptables"
                                "--iptables=false"))
