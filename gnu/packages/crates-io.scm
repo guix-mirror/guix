@@ -27887,6 +27887,28 @@ serializing Rust structures.")
     (home-page "https://github.com/alexcrichton/toml-rs")
     (synopsis "Rust encoder and decoder of TOML-formatted files and streams")
 
+(define-public rust-tower-layer-0.3
+  (package
+    (name "rust-tower-layer")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tower-layer" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p6i9rn5d98wsx6hi4hbxh2xqh2clwz0blcm6jrqiciq4rpnapd3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-tower-service" ,rust-tower-service-0.3))))
+    (home-page "https://github.com/tower-rs/tower")
+    (synopsis "Easy composition between @code{Service}s")
+    (description "This package decorates a @code{Service} to allow easy
+composition between @code{Service}s.")
+    (license license:expat)))
+
 (define-public rust-tower-service-0.3
   (package
     (name "rust-tower-service")
