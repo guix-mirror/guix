@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +40,16 @@
             elf-dynamic-info-rpath
             elf-dynamic-info-runpath
             expand-origin
+
+            file-dynamic-info
+            file-runpath
+            file-needed
+
+            missing-runpath-error?
+            missing-runpath-error-file
+            runpath-too-long-error?
+            runpath-too-long-error-file
+            set-file-runpath
 
             validate-needed-in-runpath
             strip-runpath))
@@ -232,6 +242,23 @@ string table if the type is a string."
                                               dynamic-entry-value))
                               '()))))))
 
+(define (file-dynamic-info file)
+  "Return the <elf-dynamic-info> record of FILE, or #f if FILE lacks dynamic
+info."
+  (call-with-input-file file
+    (lambda (port)
+      (elf-dynamic-info (parse-elf (get-bytevector-all port))))))
+
+(define (file-runpath file)
+  "Return the DT_RUNPATH dynamic entry of FILE as a list of string, or #f if
+FILE lacks dynamic info."
+  (and=> (file-dynamic-info file) elf-dynamic-info-runpath))
+
+(define (file-needed file)
+  "Return the list of DT_NEEDED dynamic entries of FILE, or #f if FILE lacks
+dynamic info."
+  (and=> (file-dynamic-info file) elf-dynamic-info-needed))
+
 (define %libc-libraries
   ;; List of libraries as of glibc 2.21 (there are more but those are
   ;; typically mean to be LD_PRELOADed and thus do not appear as NEEDED.)
@@ -364,4 +391,49 @@ according to DT_NEEDED."
       (false-if-exception (close-port port))
       (apply throw key args))))
 
-;;; gremlin.scm ends here
+
+(define-condition-type &missing-runpath-error &elf-error
+  missing-runpath-error?
+  (file      missing-runpath-error-file))
+
+(define-condition-type &runpath-too-long-error &elf-error
+  runpath-too-long-error?
+  (file      runpath-too-long-error-file))
+
+(define (set-file-runpath file path)
+  "Set the value of the DT_RUNPATH dynamic entry of FILE, which must name an
+ELF file, to PATH, a list of strings.  Raise a &missing-runpath-error or
+&runpath-too-long-error when appropriate."
+  (define (call-with-input+output-file file proc)
+    (let ((port (open-file file "r+b")))
+      (guard (c (#t (close-port port) (raise c)))
+        (proc port)
+        (close-port port))))
+
+  (call-with-input+output-file file
+    (lambda (port)
+      (let* ((elf     (parse-elf (get-bytevector-all port)))
+             (entries (dynamic-entries elf (dynamic-link-segment elf)))
+             (runpath (find (lambda (entry)
+                              (= DT_RUNPATH (dynamic-entry-type entry)))
+                            entries))
+             (path    (string->utf8 (string-join path ":"))))
+        (unless runpath
+          (raise (condition (&missing-runpath-error (elf elf)
+                                                    (file file)))))
+
+        ;; There might be padding left beyond RUNPATH in the string table, but
+        ;; we don't know, so assume there's no padding.
+        (unless (<= (bytevector-length path)
+                    (bytevector-length
+                     (string->utf8 (dynamic-entry-value runpath))))
+          (raise (condition (&runpath-too-long-error (elf #f #;elf)
+                                                     (file file)))))
+
+        (seek port (dynamic-entry-offset runpath) SEEK_SET)
+        (put-bytevector port path)
+        (put-u8 port 0)))))
+
+;;; Local Variables:
+;;; eval: (put 'call-with-input+output-file 'scheme-indent-function 1)
+;;; End:

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (guix build gremlin)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 popen)
@@ -91,6 +92,33 @@
               (not (member "/foo" new))
               (not (member "/bar" new))
               (equal? new* new)
+              (let* ((pipe (open-input-pipe "./a.out"))
+                     (str  (get-string-all pipe)))
+                (close-pipe pipe)
+                str)))))))
+
+(unless c-compiler
+  (test-skip 1))
+(test-equal "set-file-runpath + file-runpath"
+  "hello\n"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (with-directory-excursion directory
+       (call-with-output-file "t.c"
+         (lambda (port)
+           (display "int main () { puts(\"hello\"); }" port)))
+
+       (invoke c-compiler "t.c"
+               "-Wl,--enable-new-dtags" "-Wl,-rpath=/xxxxxxxxx")
+
+       (let ((original-runpath (file-runpath "a.out")))
+         (and (member "/xxxxxxxxx" original-runpath)
+              (guard (c ((runpath-too-long-error? c)
+                         (string=? "a.out" (runpath-too-long-error-file c))))
+                (set-file-runpath "a.out" (list (make-string 777 #\y))))
+              (let ((runpath (delete "/xxxxxxxxx" original-runpath)))
+                (set-file-runpath "a.out" runpath)
+                (equal? runpath (file-runpath "a.out")))
               (let* ((pipe (open-input-pipe "./a.out"))
                      (str  (get-string-all pipe)))
                 (close-pipe pipe)
