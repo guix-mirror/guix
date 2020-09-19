@@ -32,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -182,6 +183,7 @@ external dependencies.")
                            "samba-" version ".tar.gz"))
        (sha256
         (base32 "1lkgih0vrarf5zy6chspkwarqdylzwr63nxr3qjkpazrs86nlm9h"))
+       (patches (search-patches "samba-fix-fcntl-hint-detection.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin

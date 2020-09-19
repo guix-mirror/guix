@@ -1406,6 +1406,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pango-skip-libthai-test.patch		\
   %D%/packages/patches/pciutils-hurd-configure.patch		\
   %D%/packages/patches/ppsspp-disable-upgrade-and-gold.patch		\
+  %D%/packages/patches/samba-fix-fcntl-hint-detection.patch		\
   %D%/packages/patches/sdl-pango-api_additions.patch		\
   %D%/packages/patches/sdl-pango-blit_overflow.patch		\
   %D%/packages/patches/sdl-pango-fillrect_crash.patch		\
