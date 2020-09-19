@@ -2376,7 +2376,6 @@ exec " gcc "/bin/" program
     (version (package-version gcc-4.9))
     (source (bootstrap-origin (package-source gcc-4.9)))
     (native-inputs `(("gcc-wrapper" ,gcc-mesboot1-wrapper)
-                     ("gcc" ,gcc-mesboot1)
                      ("headers" ,glibc-headers-mesboot)
                      ,@(%boot-mesboot4-inputs)))
     (arguments
