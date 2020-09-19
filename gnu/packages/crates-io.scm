@@ -32,6 +32,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-graphics)
@@ -12724,6 +12725,39 @@ macros on libc without stdlib.")
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))))
+
+(define-public rust-libloading-0.6
+  (package
+    (name "rust-libloading")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libloading" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ygliqa518jjxwa5ih4b2f8m984ib596vxmjb28pa5lb8zqdhhr4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Enable unstable features
+           (substitute* "src/lib.rs"
+             (("//! A memory" all)
+              (string-append "#![feature(non_exhaustive)]\n" all)))))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-static-assertions" ,rust-static-assertions-1))))
+    (home-page "https://github.com/nagisa/rust_libloading/")
+    (synopsis "Safer binding to dynamic library loading utilities")
+    (description "This package provides a safer binding to dynamic library
+loading utilities.")
+    (license license:isc)))
 
 (define-public rust-libloading-0.5
   (package
