@@ -871,14 +871,14 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "4.3.0")
+    (version "5.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "09ffmqx79lv5psr433x4n946njgsn071b9b7161pcb9bmrqz380c"))))
+                "12s5070nqqf599s1mb6rjas2as481rjf751qk5yrz6p34y885k90"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Ddoc=enabled")
@@ -925,11 +925,7 @@ synthesis, and on-the-fly re-configuration.")
        ("lmdb" ,lmdb)
        ("luajit" ,luajit)
        ;; TODO: Add optional lua modules: basexx and psl.
-       ("lua-bitop" ,lua5.1-bitop)
-       ("lua-cqueues" ,lua5.1-cqueues)
-       ("lua-filesystem" ,lua5.1-filesystem)
-       ("lua-sec" ,lua5.1-sec)
-       ("lua-socket" ,lua5.1-socket)))
+       ("lua-bitop" ,lua5.1-bitop)))
     (home-page "https://www.knot-resolver.cz/")
     (synopsis "Caching validating DNS resolver")
     (description
