@@ -58,7 +58,7 @@ In the above, FILTERS are optional.
       one of the elements in the list.
     - With `#:include-regexp`, install subpaths matching the regexps in the list.
     - The `#:exclude*` FILTERS work similarly.  Without `#:include*` flags,
-      install every subpath but the files matching the `#:exlude*` filters.
+      install every subpath but the files matching the `#:exclude*` filters.
       If both `#:include*` and `#:exclude*` are specified, the exclusion is done
       on the inclusion list.
 

@@ -217,7 +217,7 @@ any dependent crates. This can be a benefits:
  - It avoids waiting for quadratic builds from source: cargo always builds
  dependencies within the current workspace. This is largely due to Rust not
  having a stable ABI and other resolutions that cargo applies. This means that
- if we have a depencency chain of X -> Y -> Z and we build each definition
+ if we have a dependency chain of X -> Y -> Z and we build each definition
  independently the following will happen:
   * Cargo will build and test crate Z
   * Cargo will build crate Z in Y's workspace, then build and test Y
