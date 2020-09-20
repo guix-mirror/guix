@@ -28191,6 +28191,37 @@ server @code{Service} tests.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tracing-futures-0.2
+  (package
+    (name "rust-tracing-futures")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tracing-futures" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0k4vd3jyqz9cx8rbwbp0p93qfp1w6rfk7sc6c1jh1ai18zqvcyxb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-task" ,rust-futures-task-0.3)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tracing" ,rust-tracing-0.1))
+       #:cargo-development-inputs
+       (("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-test" ,rust-tokio-test-0.2)
+        ("rust-tracing-core" ,rust-tracing-core-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Utilities for instrumenting @code{futures} with @code{tracing}")
+    (description "This package provides utilities for instrumenting
+@code{futures} with @code{tracing}.")
+    (license license:expat)))
+
 (define-public rust-traitobject-0.1
   (package
     (name "rust-traitobject")
