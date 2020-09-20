@@ -829,7 +829,7 @@ Shell (pdksh).")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (setenv "CC" "gcc")
+               (setenv "CC" ,(cc-for-target))
                (substitute* "configure"
                  ((" cc ") " $CC "))
                (invoke "./configure" (string-append "--prefix=" out)
