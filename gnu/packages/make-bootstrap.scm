@@ -375,10 +375,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                              (package-arguments binutils))
                                   ((#:configure-flags flags _ ...)
                                    flags)))
-       #:make-flags ,(match (memq #:make-flags (package-arguments binutils))
-                       ((#:make-flags flags _ ...)
-                        flags)
-                       (_ ''()))
        #:strip-flags '("--strip-all")
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'all-static

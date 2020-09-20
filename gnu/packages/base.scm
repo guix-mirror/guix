@@ -504,14 +504,14 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.34")
+   (version "2.35.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "1rin1f5c7wm4n3piky6xilcrpf2s0n3dd5vqq8irrxkcic3i1w49"))
+              "0hhrigj2ai1hcdm6rsvdrqmvn8xydhhnw17i2gsdkz261wfpl3ij"))
             (patches (search-patches "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
 
@@ -536,17 +536,7 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 
                           ;; Make sure 'ar' and 'ranlib' produce archives in a
                           ;; deterministic fashion.
-                          "--enable-deterministic-archives")
-
-      ;; XXX: binutils 2.34 was mistakenly released without generated manuals:
-      ;; <https://sourceware.org/bugzilla/show_bug.cgi?id=25491>.  To avoid a
-      ;; circular dependency on texinfo, prevent the build system from creating
-      ;; the manuals by calling "true" instead of "makeinfo"...
-      #:make-flags '("MAKEINFO=true")))
-
-   ;; ...and "hide" this package so that users who install binutils get the
-   ;; version with documentation defined below.
-   (properties '((hidden? . #t)))
+                          "--enable-deterministic-archives")))
 
    (synopsis "Binary utilities: bfd gas gprof ld")
    (description
@@ -558,18 +548,6 @@ the strings in a binary file, and utilities for working with archives.  The
 included.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/binutils/")))
-
-;; Work around a problem with binutils 2.34 whereby manuals are missing from
-;; the release tarball.  Remove this and the related code above when updating.
-(define-public binutils+documentation
-  (package/inherit
-   binutils
-   (native-inputs
-    `(("texinfo" ,texinfo)))
-   (arguments
-    (substitute-keyword-arguments (package-arguments binutils)
-      ((#:make-flags _ ''()) ''())))
-   (properties '())))
 
 ;; FIXME: ath9k-firmware-htc-binutils.patch do not apply on 2.34 because of a
 ;; big refactoring of xtensa-modules.c (commit 567607c11fbf7105 upstream).
@@ -591,7 +569,7 @@ included.")
    (properties '())))
 
 (define-public binutils-gold
-  (package/inherit binutils+documentation
+  (package/inherit binutils
     (name "binutils-gold")
     (arguments
      `(#:phases
