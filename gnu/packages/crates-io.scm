@@ -19926,6 +19926,29 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
          "0yhnnix4dzsv8y4wwz4csbnqjfh73al33j35msr10py6cl5r4vks"))))
     (arguments '())))
 
+(define-public rust-r2d2
+  (package
+    (name "rust-r2d2")
+    (version "0.8.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "r2d2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vxjgh83bss63mkx308p16iwl33s80c781p422f3r5w0p315np2l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-parking-lot" ,rust-parking-lot-0.11)
+        ("rust-scheduled-thread-pool" ,rust-scheduled-thread-pool-0.2))))
+    (home-page "https://github.com/sfackler/r2d2")
+    (synopsis "A generic connection pool")
+    (description "This package provides a generic connection pool.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-racer-cargo-metadata-0.1
   (package
     (name "rust-racer-cargo-metadata")
