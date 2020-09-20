@@ -215,6 +215,62 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define-public gupnp-igd
+  (package
+    (name "gupnp-igd")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1q9bw12ibih3yxpha3gm1dabyqg9gx6yxacbh4kxsgm1i84j0lab"))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:glib-or-gtk? #t     ; To wrap binaries and compile schemas
+       #:configure-flags (list "-Dgtk_doc=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "doc"
+               (substitute* "gupnp-igd-docs.xml"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml-4.1.2")
+                                 "/xml/dtd/docbook/"))))
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc"))
+               #t))))))
+    (native-inputs
+     `(("docbook-xml-4.1.2" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("gssdp" ,gssdp)
+       ("gupnp" ,gupnp)
+       ("libsoup" ,libsoup)))
+    (synopsis "UPnP IGD for GNOME")
+    (description "GUPnP-IGD is a library to handle UPnP IGD port mapping.")
+    (home-page "https://gitlab.gnome.org/GNOME/gupnp-igd")
+    (license license:lgpl2.1+)))
+
 (define-public brasero
   (package
     (name "brasero")
