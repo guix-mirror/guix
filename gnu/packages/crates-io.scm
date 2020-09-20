@@ -18694,6 +18694,29 @@ both WASM and native applications")
      "Lazily evaluated, order-independent plugins for extensible types.")
     (license license:expat)))
 
+(define-public rust-pmutil-0.5
+  (package
+    (name "rust-pmutil")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pmutil" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0170zgziivri4qsch682pga3qq3z4wpr4wngzr5f9jyc97ayb51q"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/kdy1/rust-pmutil")
+    (synopsis "Utils for proc-macro")
+    (description "This package provides utils for proc-macro.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pnacl-build-helper-1.4
   (package
     (name "rust-pnacl-build-helper")
