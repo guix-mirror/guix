@@ -27370,6 +27370,37 @@ Foundation for the rest of the tokio crates.")
 the current thread.")
     (license license:expat)))
 
+(define-public rust-tokio-executor-0.2
+  (package
+    (name "rust-tokio-executor")
+    (version "0.2.0-alpha.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-executor" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1j67p4g9y20bvlbphjmpfzc0yy8clhmz6wza6hw94iciyvncxscy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crossbeam-channel" ,rust-crossbeam-channel-0.3)
+        ("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
+        ("rust-futures-util-preview" ,rust-futures-util-preview-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio-sync" ,rust-tokio-sync-0.2)
+        ("rust-tracing" ,rust-tracing-0.1))))
+    (home-page "https://github.com/tokio-rs/tokio")
+    (synopsis "Future execution primitives")
+    (description "This package provides future execution primitives.")
+    (license license:expat)))
+
 ;; Cyclic dependency with rust-tokio.
 (define-public rust-tokio-executor-0.1
   (package
