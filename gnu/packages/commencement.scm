@@ -2635,7 +2635,7 @@ exec " gcc "/bin/" program
 
 (define gawk-boot0
   (package
-    (inherit patch)
+    (inherit gawk)
     (source (bootstrap-origin (package-source gawk)))
     (name "gawk-boot0")
     (native-inputs '())
