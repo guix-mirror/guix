@@ -15278,6 +15278,30 @@ statically-sized or dynamically-sized matrices.")
 IO of Windows's named pipes.")
     (license (list license:expat license:asl2.0))))
 
+
+(define-public rust-napi-derive-0.5
+  (package
+    (name "rust-napi-derive")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "napi-derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kkgpzw4i6f0zkg80v9vhr7y5rg25q3kv67029i1gcgsrxlqx4zi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/napi-rs/napi-rs")
+    (synopsis "N-API procedural macros")
+    (description "This package provides N-API procedural macros.")
+    (license license:expat)))
+
 (define-public rust-native-tls-0.2
   (package
     (name "rust-native-tls")
