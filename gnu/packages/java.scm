@@ -8146,6 +8146,37 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
     (propagated-inputs
      `(("stringtemplate" ,java-stringtemplate-3)))))
 
+(define-public java-treelayout
+  (package
+    (name "java-treelayout")
+    (version "1.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/abego/treelayout")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18my8ql9b1y0n0zrvkih7xfhf3dpgfhyfifvkcfhmwcvw3divxak"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir "org.abego.treelayout/src/main/java"
+       #:test-dir "org.abego.treelayout/src/test"))
+    (inputs
+     `(("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://treelayout.sourceforge.net")
+    (synopsis "Tree Layout Algorithm in Java")
+    (description "TreeLayout creates tree layouts for arbitrary trees.  It is
+not restricted to a specific output or format, but can be used for any kind of
+two dimensional diagram.  Examples are Swing based components, SVG files, etc.
+This is possible because TreeLayout separates the layout of a tree from the
+actual rendering.")
+    (license license:bsd-3)))
+
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
   (package
