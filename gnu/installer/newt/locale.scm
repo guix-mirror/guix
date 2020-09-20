@@ -106,7 +106,7 @@ symbol.")
 territory, codeset and modifier. Use SUPPORTED-LOCALES as the list of glibc
 available locales. ISO639-LANGUAGES is an association list associating a
 locale code to a locale name. ISO3166-TERRITORIES is an association list
-associating a territory code with a territory name. The formated locale, under
+associating a territory code with a territory name. The formatted locale, under
 glibc format is returned."
 
   (define (break-on-locale-found locales)
