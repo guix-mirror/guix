@@ -17184,6 +17184,33 @@ deserialization, and interpreter in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-parking-lot-0.11
+  (package
+    (name "rust-parking-lot")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parking_lot" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cw73942xhxb7a49mp9gkjnlwc8acr30wpfs8zk758icz92ki2d4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-instant" ,rust-instant-0.1)
+        ("rust-lock-api" ,rust-lock-api-0.4)
+        ("rust-parking-lot-core" ,rust-parking-lot-core-0.8))
+       #:cargo-development-inputs
+       (("rust-bincode" ,rust-bincode-1)
+        ("rust-rand" ,rust-rand-0.7))))
+    (home-page "https://github.com/Amanieu/parking_lot")
+    (synopsis "More compact and efficient implementations of the standard synchronization primitives")
+    (description "This package provides more compact and efficient
+implementations of the standard synchronization primitives.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-parking-lot-0.10
   (package
     (name "rust-parking-lot")
