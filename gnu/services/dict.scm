@@ -187,7 +187,7 @@ of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
 
 The optional @var{config} argument specifies the configuration for
 @command{dicod}, which should be a @code{<dicod-configuration>} object, by
-default it serves the GNU Collaborative International Dictonary of English.
+default it serves the GNU Collaborative International Dictionary of English.
 
 You can add @command{open localhost} to your @file{~/.dico} file to make
 @code{localhost} the default server for @command{dico}
