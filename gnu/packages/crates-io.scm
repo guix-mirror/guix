@@ -17192,8 +17192,7 @@ deserialization, and interpreter in Rust.")
      (origin
        (method url-fetch)
        (uri (crate-uri "parking_lot" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "0pjhcbyk6n0g6jsr6s9nf4x8wribm1b2yf8fgc8drbqa77mh99yk"))))
@@ -17288,8 +17287,40 @@ synchronization primitives.")
         ("rust-rand" ,rust-rand-0.4)
         ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
+(define-public rust-parking-lot-core-0.8
+  (package
+    (name "rust-parking-lot-core")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parking_lot_core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16yazfg3sq9mz6cfdkhgbv8yvc1kkasyhys4y7r3g16hgmralqf3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cloudabi" ,rust-cloudabi-0.1)
+        ("rust-instant" ,rust-instant-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-petgraph" ,rust-petgraph-0.5)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-thread-id" ,rust-thread-id-3)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/Amanieu/parking_lot")
+    (synopsis "API for creating custom synchronization primitives")
+    (description "This package provides an advanced API for creating custom
+synchronization primitives.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-parking-lot-core-0.7
   (package
+    (inherit rust-parking-lot-core-0.8)
     (name "rust-parking-lot-core")
     (version "0.7.2")
     (source
@@ -17301,7 +17332,6 @@ synchronization primitives.")
        (sha256
         (base32
          "18s0cw5y32447c06fhg2mp3xfng22fn1h9fpx3il98sbimv7r36m"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
@@ -17312,12 +17342,7 @@ synchronization primitives.")
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-smallvec" ,rust-smallvec-1)
         ("rust-thread-id" ,rust-thread-id-3)
-        ("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/Amanieu/parking_lot")
-    (synopsis "API for creating custom synchronization primitives")
-    (description
-     "An advanced API for creating custom synchronization primitives in Rust.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-parking-lot-core-0.6
   (package
