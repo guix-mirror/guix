@@ -22779,6 +22779,27 @@ paths point to the same file.")
 server functionality.")
     (license license:expat)))
 
+(define-public rust-scheduled-thread-pool-0.2
+  (package
+    (name "rust-scheduled-thread-pool")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "scheduled-thread-pool" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mz7s21q1d7xn9j15dlhhv1y86q2r2z6hpax5nh3y1q42byp8vyw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-parking-lot" ,rust-parking-lot-0.11))))
+    (home-page "https://github.com/sfackler/scheduled-thread-pool")
+    (synopsis "A scheduled thread pool")
+    (description "This package provides a scheduled thread pool.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-scoped-threadpool-0.1
   (package
     (name "rust-scoped-threadpool")
