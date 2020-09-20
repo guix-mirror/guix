@@ -1724,14 +1724,14 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
 (define-public emacs-bluetooth
   (package
     (name "emacs-bluetooth")
-    (version "0.1.2")
+    (version "0.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "bluetooth-" version ".el"))
        (sha256
-        (base32 "1vp2vpyq0ybjni35ics1mg1kiwgvc7x12dlmvygy78sqp52sfkcv"))))
+        (base32 "1dq04p6ms0zx4awlypp4crkz7dzal4xg8ac7p8fqacz196rczssp"))))
     (build-system emacs-build-system)
     (inputs
      `(("bluez" ,bluez)))
