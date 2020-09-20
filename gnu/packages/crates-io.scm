@@ -14364,6 +14364,28 @@ for Rust structs.")
     (description "Rust bindings for Metal.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-mimalloc-0.1
+  (package
+    (name "rust-mimalloc")
+    (version "0.1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mimalloc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x74b6jv6pxfl6bh44bnch6ajm3l5z3zq8w8mqlscbq8d77rnx80"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libmimalloc-sys" ,rust-libmimalloc-sys-0.1))))
+    (home-page "https://crates.io/crates/mimalloc")
+    (synopsis "Performance and security oriented drop-in allocator")
+    (description "This package provides a performance and security oriented
+drop-in allocator.")
+    (license license:expat)))
+
 (define-public rust-mime-0.3
   (package
     (name "rust-mime")
