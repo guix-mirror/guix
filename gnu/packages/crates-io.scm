@@ -27687,8 +27687,67 @@ futures.")
      "Event loop that drives Tokio I/O resources.")
     (license license:expat)))
 
+(define-public rust-tokio-rustls-0.14
+  (package
+    (name "rust-tokio-rustls")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-rustls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16l8kx3j7i3jxq36qs3hnmys6cd2zqcixc1n0kf3kymwanr32a71"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-rustls" ,rust-rustls-0.18)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-webpki" ,rust-webpki-0.21))
+       #:cargo-development-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.20))))
+    (home-page "https://github.com/tokio-rs/tls")
+    (synopsis "Asynchronous TLS/SSL streams for Tokio")
+    (description "This package provides asynchronous TLS/SSL streams for Tokio
+using Rustls.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-tokio-rustls-0.13
+  (package
+    (inherit rust-tokio-rustls-0.14)
+    (name "rust-tokio-rustls")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-rustls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1d2iy01v5psvm0ygcflzjna7zwgwk36w36bfr6mqf1vpsah65jqm"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-rustls" ,rust-rustls-0.17)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-webpki" ,rust-webpki-0.21))
+       #:cargo-development-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.19))))
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-rustls-0.12
   (package
+    (inherit rust-tokio-rustls-0.13)
     (name "rust-tokio-rustls")
     (version "0.12.2")
     (source
@@ -27698,7 +27757,6 @@ futures.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1k6rpw4nmgsamh8vbf8xqrf4rr5sqs18i93561bydflajz0gw6hl"))))
-    (build-system cargo-build-system)
     (arguments
      `(;; These tests require network access.
        #:cargo-test-flags '("--release" "--" "--skip=tls12" "--skip=modern")
@@ -27713,10 +27771,6 @@ futures.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-tokio" ,rust-tokio-0.2)
         ("rust-webpki-roots" ,rust-webpki-roots-0.18))))
-    (home-page "https://github.com/quininer/tokio-rustls")
-    (synopsis "Asynchronous TLS/SSL streams for Tokio using Rustls")
-    (description "This package provides asynchronous TLS/SSL streams for Tokio
-using Rustls.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-tokio-signal-0.2
