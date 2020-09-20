@@ -376,7 +376,7 @@ secure operations. ")
              (lambda _
                (invoke "./worgen" "8-12" "top1000.txt" "3-10" "top400nouns.txt"
                        "3-6" "top150adjectives.txt" "3-6")
-               (invoke "./eschalot" "-r" "^guix|^guixsd")
+               (invoke "./eschalot" "-r" "^guix|^GuixSystem")
                (invoke "./eschalot" "-r" "^gnu|^free")
                (invoke "./eschalot" "-r" "^cyber|^hack")
                (invoke "./eschalot" "-r" "^troll")))

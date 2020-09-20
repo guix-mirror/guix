@@ -812,8 +812,8 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
                     (output-dir
                      (assoc-ref outputs "out"))
 
-                    ;; Just a default... not so useful on guixsd though
-                    ;; You probably want to a service with file(s) to point to.
+                    ;; Just a default... not so useful on Guix Systems though.
+                    ;; You probably want a service with file(s) to point to.
                     (confdir "/etc/dirvish")
 
                     (perl (string-append (assoc-ref %build-inputs "perl")

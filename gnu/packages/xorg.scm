@@ -5400,13 +5400,11 @@ over Xlib, including:
              ;; The default is to use "uname -srm", which captures the kernel
              ;; version and makes builds non-reproducible.
              "--with-os-name=GNU"
-
-             "--with-os-vendor=GuixSD"    ;not strictly needed, but looks nice
-
+             "--with-os-vendor=Guix"    ; not strictly needed, but looks nice
 
              ;; For the log file, etc.
              "--localstatedir=/var"
-             ;; For sddm
+             ;; For sddm.
              "--enable-kdrive"
              "--enable-xephyr")
 

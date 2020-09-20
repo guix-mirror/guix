@@ -123,7 +123,10 @@
                        "--no-install-kde"
                        "--no-install-gnome-shell-extensions"
 
-                       "--distro=guixsd"
+                       ;; Don't pass --distro= despite setup.py's complaints.
+                       ;; Guix isn't recognised, and if it ever would be we'd
+                       ;; rather ask upstream to follow standards instead.
+
                        "--wicdgroup=netdev"
                        "--loggroup=root"
                        "--logperms=0640"
