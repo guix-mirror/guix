@@ -21355,6 +21355,29 @@ uses finite automata and guarantees linear time matching on all inputs.")
        (("rust-quickcheck" ,rust-quickcheck-0.2)
         ("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-relative-path-1
+  (package
+    (name "rust-relative-path")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "relative_path" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "152zdks8chgsq4vmp562bx6whvixm7gzivab1cf8rs1r634ggbv5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde" ,rust-serde-1))))
+    (home-page "https://docs.rs/crate/relative-path/")
+    (synopsis "Portable, relative paths for Rust")
+    (description "This package provides portable, relative paths for Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-remove-dir-all-0.5
   (package
     (name "rust-remove-dir-all")
