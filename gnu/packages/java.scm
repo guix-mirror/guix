@@ -8211,6 +8211,167 @@ actual rendering.")
 sources by ANTLR.")
     (license license:bsd-3)))
 
+(define-public antlr4
+  (package
+    (inherit java-antlr4-runtime)
+    (name "antlr4")
+    (arguments
+     `(#:jar-name "antlr4.jar"
+       #:source-dir "tool/src"
+       #:test-dir "tool-testsuite/test:runtime-testsuite/test:runtime-testsuite/annotations/src"
+       #:test-include (list "**/Test*.java")
+       #:test-exclude (list
+                        ;; no runnable method
+                        "**/TestOutputReading.java"
+                        ;; no @Test methods
+                        "**/TestParserErrors.java"
+                        "**/TestSemPredEvalParser.java"
+                        "**/TestSets.java"
+                        "**/TestListeners.java"
+                        "**/TestParseTrees.java"
+                        "**/TestParserExec.java"
+                        "**/TestLexerErrors.java"
+                        "**/TestPerformance.java"
+                        "**/TestCompositeParsers.java"
+                        "**/TestLexerExec.java"
+                        "**/TestSemPredEvalLexer.java"
+                        "**/TestLeftRecursion.java"
+                        "**/TestFullContextParsing.java"
+                        "**/TestCompositeLexers.java"
+                        ;; Null pointer exception
+                        "**/TestCompositeGrammars.java"
+                        ;; Wrong assumption on emoji
+                        "**/TestUnicodeData.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-build.xml
+           (lambda _
+             ;; tests are not in a java subdirectory
+             (substitute* "build.xml"
+               (("\\$\\{test.home\\}/java") "${test.home}"))
+             #t))
+         ;; tests require to have a working antlr4 binary
+         (delete 'check)
+         (add-after 'bin-install 'check
+           (lambda _
+             (invoke "ant" "compile-tests")
+             (invoke "ant" "check" "-Dtest.home=runtime-testsuite/annotations/src")
+             (invoke "ant" "check" "-Dtest.home=runtime-testsuite/test")
+             (invoke "ant" "check" "-Dtest.home=tool-testsuite/test")
+             #t))
+         (add-before 'check 'remove-unrelated-languages
+           (lambda _
+             ;; There are tests for other languages that ANTLR can generate, but
+             ;; we don't have the infrastructure for that yet.  Let's test Java
+             ;; generation only.
+             (for-each
+               (lambda (language)
+                 (delete-file-recursively
+                   (string-append "runtime-testsuite/test/org/antlr/v4/test/runtime/"
+                                  language)))
+               '("cpp" "csharp" "go" "javascript" "php" "python" "python2"
+                 "python3" "swift"))
+             #t))
+         (add-before 'check 'generate-test-parsers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (run-antlr dir filename package)
+               (invoke "antlr4" "-lib" dir "-visitor" "-no-listener"
+                       "-package" package (string-append dir "/" filename)
+                       "-Xlog"))
+             (setenv "PATH" (string-append (getenv "PATH") ":"
+                                           (assoc-ref outputs "out") "/bin"))
+             (run-antlr "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api"
+                        "Java.g4" "org.antlr.v4.test.runtime.java.api")
+             (run-antlr "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api"
+                        "VisitorBasic.g4" "org.antlr.v4.test.runtime.java.api")
+             (run-antlr "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api"
+                        "VisitorCalc.g4" "org.antlr.v4.test.runtime.java.api")
+             #t))
+         (add-before 'check 'remove-graphemes
+           (lambda _
+             ;; When running antlr on grahemes.g4, we get a runtime exception:
+             ;; set is empty.  So delete the file that depends on it.
+             (delete-file
+               "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api/perf/TimeLexerSpeed.java")
+             #t))
+         (add-after 'install 'bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
+                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/antlr4")
+                 (lambda _
+                   (display
+                     (string-append "#!" (which "sh") "\n"
+                                    "java -cp " jar "/antlr4.jar:"
+                                    (string-join
+                                      (apply
+                                        append
+                                        (map
+                                          (lambda (input)
+                                            (find-files (assoc-ref inputs input)
+                                                  ".*\\.jar"))
+                                          '("antlr3" "java-stringtemplate"
+                                            "java-antlr4-runtime" "java-treelayout"
+                                            "java-jsonp-api" "java-icu4j")))
+                                      ":")
+                                    " org.antlr.v4.Tool $*"))))
+               (chmod (string-append bin "/antlr4") #o755)
+               #t)))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "tool/resources/" "build/classes")
+             #t))
+         (add-before 'build 'generate-unicode
+           (lambda _
+             ;; First: build the generator
+             (invoke "javac" "-cp" (getenv "CLASSPATH")
+                     "tool/src/org/antlr/v4/unicode/UnicodeRenderer.java"
+                     "tool/src/org/antlr/v4/unicode/UnicodeDataTemplateController.java")
+             ;; Then use it
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                 ":tool/src:runtime/Java")
+                     "org.antlr.v4.unicode.UnicodeRenderer"
+                     "tool/resources/org/antlr/v4/tool/templates"
+                     "unicodedata"
+                     "tool/src/org/antlr/v4/unicode/UnicodeData.java")
+             ;; It seems there is a bug with our ST4
+             (substitute* "tool/src/org/antlr/v4/unicode/UnicodeData.java"
+               (("\\\\>") ">"))
+             ;; Remove the additional file
+             (delete-file "tool/src/org/antlr/v4/unicode/UnicodeRenderer.java")
+             #t))
+         (add-before 'build 'generate-grammar
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "tool/src/org/antlr/v4/parse"
+               (for-each (lambda (file)
+                           (display file)
+                           (newline)
+                           (invoke "antlr3" file))
+                         '("ANTLRLexer.g" "ANTLRParser.g" "BlockSetTransformer.g"
+                           "GrammarTreeVisitor.g" "ATNBuilder.g"
+                           "ActionSplitter.g" "LeftRecursiveRuleWalker.g")))
+             (with-directory-excursion "tool/src/org/antlr/v4/codegen"
+               (install-file "../parse/ANTLRParser.tokens" ".")
+               (display "SourceGenTriggers.g\n")
+               (invoke "antlr3" "SourceGenTriggers.g"))
+             #t)))))
+    (inputs
+     `(("antlr3" ,antlr3)
+       ("java-antlr4-runtime" ,java-antlr4-runtime)
+       ("java-icu4j" ,java-icu4j)
+       ("java-jsonp-api" ,java-jsonp-api)
+       ("java-stringtemplate" ,java-stringtemplate)
+       ("java-treelayout" ,java-treelayout)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (synopsis "Parser and lexer generator in Java")
+    (description "ANTLR (ANother Tool for Language Recognition) is a powerful
+parser generator for reading, processing, executing, or translating structured
+text or binary files.  It's widely used to build languages, tools, and
+frameworks.  From a grammar, ANTLR generates a parser that can build and walk
+parse trees.")))
+
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
   (package
