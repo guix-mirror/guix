@@ -13036,24 +13036,36 @@ values of all the exported APIs match the platform that libc is compiled for.")
 macros on libc without stdlib.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-libgit2-sys-0.10
+(define-public rust-libflate-1
   (package
-    (name "rust-libgit2-sys")
-    (version "0.10.0")
+    (name "rust-libflate")
+    (version "1.0.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "libgit2-sys" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0l9fvki7qxsl97vgzqwlv75nl213a5vxw7b1jaik97ala356pv6r"))
-        (modules '((guix build utils)))
-        (snippet
-         '(begin (delete-file-recursively "libgit2") #t))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libflate" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jarv5ildsm0ci4prd4gz7fqypifhp9xk34z9w49rchx7q1ckfp9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-adler32" ,rust-adler32-1)
+        ("rust-crc32fast" ,rust-crc32fast-1)
+        ("rust-libflate-lz77" ,rust-libflate-lz77-1)
+        ("rust-rle-decode-fast" ,rust-rle-decode-fast-1))
+       #:cargo-development-inputs
+       (("rust-clap" ,rust-clap-2))))
+    (home-page "https://github.com/sile/libflate")
+    (synopsis "DEFLATE algorithm and related formats (ZLIB, GZIP)")
+    (description "This package provides a Rust implementation of DEFLATE
+algorithm and related formats (ZLIB, GZIP).")
+    (license license:expat)))
 
 (define-public rust-libflate-0.1
   (package
+    (inherit rust-libflate-1)
     (name "rust-libflate")
     (version "0.1.27")
     (source
@@ -13072,12 +13084,7 @@ macros on libc without stdlib.")
         ("rust-rle-decode-fast" ,rust-rle-decode-fast-1)
         ("rust-take-mut" ,rust-take-mut-0.2))
        #:cargo-development-inputs
-       (("rust-clap" ,rust-clap-2))))
-    (home-page "https://github.com/sile/libflate")
-    (synopsis "DEFLATE algorithm and related formats (ZLIB, GZIP)")
-    (description "This package provides a Rust implementation of DEFLATE
-algorithm and related formats (ZLIB, GZIP).")
-    (license license:expat)))
+       (("rust-clap" ,rust-clap-2))))))
 
 (define-public rust-libflate-lz77-1
   (package
@@ -13100,6 +13107,21 @@ algorithm and related formats (ZLIB, GZIP).")
     (description "This package provides a LZ77 encoder for libflate crate.")
     (license license:expat)))
 
+(define-public rust-libgit2-sys-0.10
+  (package
+    (name "rust-libgit2-sys")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libgit2-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l9fvki7qxsl97vgzqwlv75nl213a5vxw7b1jaik97ala356pv6r"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin (delete-file-recursively "libgit2") #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
