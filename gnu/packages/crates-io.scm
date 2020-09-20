@@ -11428,8 +11428,59 @@ SystemTime}}.")
         ("rust-rand" ,rust-rand-0.4)
         ("rust-time" ,rust-time-0.1))))))
 
+(define-public rust-hyper-0.13
+  (package
+    (name "rust-hyper")
+    (version "0.13.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1symcnba2y03b8lj6xp2wd994lk3xyk3wizacjg5s60njzfshs1y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-h2" ,rust-h2-0.2)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-http-body" ,rust-http-body-0.3)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-pin-project" ,rust-pin-project-0.4)
+        ("rust-socket2" ,rust-socket2-0.3)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tower-service" ,rust-tower-service-0.3)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-want" ,rust-want-0.3))
+       #:cargo-development-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-spmc" ,rust-spmc-0.3)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-test" ,rust-tokio-test-0.2)
+        ("rust-tokio-util" ,rust-tokio-util-0.3)
+        ("rust-tower-util" ,rust-tower-util-0.3)
+        ("rust-url" ,rust-url-1))))
+    (home-page "https://hyper.rs")
+    (synopsis "Fast and correct HTTP library.")
+    (description "This package provides a fast and correct HTTP library.")
+    (license license:expat)))
+
 (define-public rust-hyper-0.12
   (package
+    (inherit rust-hyper-0.13)
     (name "rust-hyper")
     (version "0.12.35")
     (source
@@ -11439,7 +11490,6 @@ SystemTime}}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1xnm8zi4bdjqhlnx3238kx8yjf29jjd1ww54apcql7wf8g8nxglx"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t ;; fails due to some missing example file
        #:cargo-inputs
@@ -11475,11 +11525,7 @@ SystemTime}}.")
         ("rust-spmc" ,rust-spmc-0.3)
         ("rust-tokio-fs" ,rust-tokio-fs-0.1)
         ("rust-tokio-mockstream" ,rust-tokio-mockstream-1)
-        ("rust-url" ,rust-url-1))))
-    (home-page "https://hyper.rs")
-    (synopsis "Fast and correct HTTP library")
-    (description "This package provides a fast and correct HTTP library.")
-    (license license:expat)) )
+        ("rust-url" ,rust-url-1))))))
 
 (define-public rust-hyper-tls-0.3
   (package
