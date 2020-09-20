@@ -13017,6 +13017,30 @@ functions and static variables these libraries contain.")
         (base32
          "16pc0gx4gkg0q2s1ssq8268brn14j8344623vwhadmivc4lsmivz"))))))
 
+(define-public rust-libmimalloc-sys-0.1
+  (package
+    (name "rust-libmimalloc-sys")
+    (version "0.1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libmimalloc-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "127x7v82y227x2gkcnbay6lx2b505dq9ny47dd4p5g8lkgklnz37"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cty" ,rust-cty-0.2))
+       #:cargo-development-inputs
+       (("rust-cmake" ,rust-cmake-0.1))))
+    (home-page "https://github.com/purpleprotocol/mimalloc_rust")
+    (synopsis "Sys crate wrapping the mimalloc allocator")
+    (description "This package provides a sys crate wrapping the mimalloc
+allocator.")
+    (license license:expat)))
+
 (define-public rust-libnghttp2-sys-0.1
   (package
     (name "rust-libnghttp2-sys")
