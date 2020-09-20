@@ -30043,6 +30043,32 @@ specified across Unix and Windows platforms.")
         ("rust-rand" ,rust-rand-0.3)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
 
+(define-public rust-want-0.3
+  (package
+    (name "rust-want")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "want" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "181b2zmwfq389x9n2g1n37cvcvvdand832zz6v8i1l8wrdlaks0w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-try-lock" ,rust-try-lock-0.2))
+       #:cargo-development-inputs
+       (("rust-tokio-executor" ,rust-tokio-executor-0.2)
+        ("rust-tokio-sync" ,rust-tokio-sync-0.2))))
+    (home-page "https://github.com/seanmonstar/want")
+    (synopsis "Detect when another future wants a result")
+    (description "This package lets you detect when another future wants a
+result.")
+    (license license:expat)))
+
 (define-public rust-want-0.2
   (package
     (name "rust-want")
