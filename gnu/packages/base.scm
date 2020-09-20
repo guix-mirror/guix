@@ -956,6 +956,17 @@ with the Linux kernel.")
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
+(define-public glibc-2.31
+  (package
+    (inherit glibc)
+    (version "2.31")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"))))))
+
 (define-public glibc-2.30
   (package
     (inherit glibc)
