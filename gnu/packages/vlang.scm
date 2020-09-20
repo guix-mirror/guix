@@ -23,9 +23,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
-(define-public v
+(define-public vlang
   (package
-   (name "v")
+   (name "vlang")
    (version "0.1.27")
    (source
     (origin
@@ -111,3 +111,7 @@
     "V is a systems programming language.  It provides memory safety and thread
 safety guarantees with minimal abstraction.")
    (license license:expat)))
+
+(define-public v
+  ;; We used to provide 'vlang' under the name 'v'.
+  (deprecated-package "v" vlang))
