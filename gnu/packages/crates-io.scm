@@ -1168,6 +1168,36 @@ standard library.")
 and Rust's modern asynchronous IO types.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-async-trait-0.1
+  (package
+    (name "rust-async-trait")
+    (version "0.1.40")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-trait" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10x7jcg8xqvkmqyz11117aw959p4af5gq1cpf022b9f0hl6j6z38"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-rustversion" ,rust-rustversion-1)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-tracing-attributes" ,rust-tracing-attributes-0.1)
+        ("rust-tracing-futures" ,rust-tracing-futures-0.2)
+        ("rust-trybuild" ,rust-trybuild-1))))
+    (home-page "https://github.com/dtolnay/async-trait")
+    (synopsis "Type erasure for async trait methods")
+    (description "This package provides type erasure for async trait
+methods.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-atom-0.3
   (package
     (name "rust-atom")
