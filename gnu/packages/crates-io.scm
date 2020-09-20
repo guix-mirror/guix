@@ -5657,6 +5657,25 @@ Transparency logs for use with sct crate.")
      "This package provides an easy Ctrl-C handler for Rust projects.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cty-0.2
+  (package
+    (name "rust-cty")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cty" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qvkdnkxmd7g6fwhmv26zxqi0l7b9cd4d7h1knylvjyh43bc04vk"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/japaric/cty")
+    (synopsis "Type aliases to C types")
+    (description "This package provides type aliases to C types like c_int for
+use with bindgen.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-curl-sys-0.4
   (package
     (name "rust-curl-sys")
