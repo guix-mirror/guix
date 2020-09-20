@@ -13051,6 +13051,34 @@ macros on libc without stdlib.")
         (modules '((guix build utils)))
         (snippet
          '(begin (delete-file-recursively "libgit2") #t))))
+
+(define-public rust-libflate-0.1
+  (package
+    (name "rust-libflate")
+    (version "0.1.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libflate" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p8z839c5lpl0g01mf8iglys9lgcjxw6xjw56crhwp8z7gs5s4yr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-adler32" ,rust-adler32-1)
+        ("rust-crc32fast" ,rust-crc32fast-1)
+        ("rust-rle-decode-fast" ,rust-rle-decode-fast-1)
+        ("rust-take-mut" ,rust-take-mut-0.2))
+       #:cargo-development-inputs
+       (("rust-clap" ,rust-clap-2))))
+    (home-page "https://github.com/sile/libflate")
+    (synopsis "DEFLATE algorithm and related formats (ZLIB, GZIP)")
+    (description "This package provides a Rust implementation of DEFLATE
+algorithm and related formats (ZLIB, GZIP).")
+    (license license:expat)))
+
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
