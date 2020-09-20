@@ -6374,6 +6374,51 @@ structs and enums.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-tempfile" ,rust-tempfile-2))))))
 
+(define-public rust-diesel-1
+  (package
+    (name "rust-diesel")
+    (version "1.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "diesel" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "134dy6gdbv30q388gsp5777w2qh63hdqsim1j8s1aylpmggfjb9y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bigdecimal" ,rust-bigdecimal-0.2)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-diesel-derives" ,rust-diesel-derives-1.4)
+        ("rust-ipnetwork" ,rust-ipnetwork-0.17)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.15)
+        ("rust-mysqlclient-sys" ,rust-mysqlclient-sys-0.2)
+        ("rust-num-bigint" ,rust-num-bigint-0.3)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-pq-sys" ,rust-pq-sys-0.4)
+        ("rust-quickcheck" ,rust-quickcheck-0.4)
+        ("rust-r2d2" ,rust-r2d2)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-url" ,rust-url-1)
+        ("rust-uuid" ,rust-uuid-0.7))
+       #:cargo-development-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-dotenv" ,rust-dotenv-0.10)
+        ("rust-quickcheck" ,rust-quickcheck-0.4)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://diesel.rs")
+    (synopsis "A safe, extensible ORM and Query Builder")
+    (description "This package provides a safe, extensible ORM and Query
+Builder for PostgreSQL, SQLite, and MySQL.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-diesel-derives-1.4
   (package
     (name "rust-diesel-derives")
