@@ -6374,6 +6374,34 @@ structs and enums.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-tempfile" ,rust-tempfile-2))))))
 
+(define-public rust-diesel-derives-1.4
+  (package
+    (name "rust-diesel-derives")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "diesel_derives" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lsq133fwk0zj8xvxhdxqgg0xs31zf3abnwdyshaf0ldca7hkxa5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-diesel" ,rust-diesel-1)
+        ("rust-dotenv" ,rust-dotenv-0.10))))
+    (home-page "https://diesel.rs")
+    (synopsis "Crate internal to Diesel")
+    (description "You should not use this crate directly, it is internal to
+Diesel.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-diff-0.1
   (package
     (name "rust-diff")
