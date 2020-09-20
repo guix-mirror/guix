@@ -25448,6 +25448,31 @@ are met.")
          (base32
           "1lw33i89888yb3x29c6dv4mrkg3534n0rlg3r7qzh4p58xmv6gkz"))))))
 
+(define-public rust-static-map-macro-0.2
+  (package
+    (name "rust-static-map-macro")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "static-map-macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zcm28d46dggdpbn06xlpa274z25l228cmzxpc8qh8s8y43kwl6m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-pmutil" ,rust-pmutil-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/kdy1/rust-static-map")
+    (synopsis "Macro to create a stack-alocated map")
+    (description "This package provides a macro to create a stack-alocated
+map.")
+    (license license:expat)))
+
 (define-public rust-stb-truetype-0.3
   (package
     (name "rust-stb-truetype")
