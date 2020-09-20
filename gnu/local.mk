@@ -1158,6 +1158,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/jamvm-2.0.0-disable-branch-patching.patch	\
   %D%/packages/patches/jamvm-arm.patch				\
+  %D%/packages/patches/java-antlr4-Add-standalone-generator.patch	\
+  %D%/packages/patches/java-antlr4-fix-code-too-large.java	\
   %D%/packages/patches/java-apache-ivy-port-to-latest-bouncycastle.patch	\
   %D%/packages/patches/java-commons-collections-fix-java8.patch \
   %D%/packages/patches/java-jeromq-fix-tests.patch		\

@@ -8177,6 +8177,40 @@ This is possible because TreeLayout separates the layout of a tree from the
 actual rendering.")
     (license license:bsd-3)))
 
+(define-public java-antlr4-runtime
+  (package
+    (name "java-antlr4-runtime")
+    (version "4.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/antlr/antlr4")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qal3add26qxskm85nk7r758arladn5rcyjinmhlhznmpbbv9j8m"))
+              (patches
+                (search-patches "java-antlr4-Add-standalone-generator.patch"
+                                "java-antlr4-fix-code-too-large.java"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-antlr4-runtime.jar"
+       #:source-dir "runtime/Java/src/org"
+       #:tests? #f; tests depend on java-antlr4 itself
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "runtime/Java/src/main/dot"
+                               "build/classes")
+             #t)))))
+    (home-page "https://antlr.org")
+    (synopsis "ANTLR runtime library")
+    (description "This package contains the runtime library used with generated
+sources by ANTLR.")
+    (license license:bsd-3)))
+
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
   (package
