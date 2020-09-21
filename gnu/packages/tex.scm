@@ -7444,3 +7444,27 @@ various fonts are provided.  An alternative package
 @code{letterspace}, which also works with plain TeX, is included in
 the bundle.")
       (license license:lppl1.3c))))
+
+(define-public texlive-caption
+  (let ((template (simple-texlive-package
+                   "texlive-caption"
+                   (list "/doc/latex/caption/"
+                         "/tex/latex/caption/")
+                   (base32
+                    "09gmh8yjj9f5zak8r18g87w9p5jn7flnvmlhxmvdq6992mbdc6hg")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/caption")
+      (synopsis "Customising captions in floating environments")
+      (description "The @code{caption} package provides many ways to
+customise the captions in floating environments like figure and table.
+Facilities include rotating captions, sideways captions and continued
+captions (for tables or figures that come in several parts).  A list
+of compatibility notes, for other packages, is provided in the
+documentation.  The package also provides the \"caption outside
+float\" facility, in the same way that simpler packages like
+@code{capt-ofcapt-of} do.  The package supersedes @code{caption2}.
+Packages @code{bicaption}, @code{ltcaption}, @code{newfloat},
+@code{subcaption} and @code{totalcount} are included in the bundle.")
+      (license license:lppl1.3+))))
