@@ -30,6 +30,7 @@
 (define-module (gnu packages crates-io)
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -26658,6 +26659,101 @@ cryptographic implementations.")
     (synopsis "Custom derive for sval")
     (description "Custom derive for sval.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-swc-1
+  (package
+    (name "rust-swc")
+    (version "1.2.24")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swc-project/swc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1w9al035x0gmard80vqvah8sy8szs6bnd1ynnyssiiylzg7vhyyv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-base64" ,rust-base64-0.12)
+        ("rust-console-error-panic-hook" ,rust-console-error-panic-hook-0.1)
+        ("rust-crc" ,rust-crc-1)
+        ("rust-darling" ,rust-darling-0.10)
+        ("rust-dashmap" ,rust-dashmap-3)
+        ("rust-either" ,rust-either-1)
+        ("rust-fxhash" ,rust-fxhash-0.2)
+        ("rust-is-macro" ,rust-is-macro-0.1)
+        ("rust-jemallocator" ,rust-jemallocator-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mimalloc" ,rust-mimalloc-0.1)
+        ("rust-napi" ,rust-napi-0.5)
+        ("rust-napi-build" ,rust-napi-build-0.2)
+        ("rust-napi-derive" ,rust-napi-derive-0.5)
+        ("rust-nom" ,rust-nom-5)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.7)
+        ("rust-path-clean" ,rust-path-clean-0.1)
+        ("rust-petgraph" ,rust-petgraph-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-radix-fmt" ,rust-radix-fmt-1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-relative-path" ,rust-relative-path-1)
+        ("rust-retain-mut" ,rust-retain-mut-0.1)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0)
+        ("rust-st-map" ,rust-st-map-0.1)
+        ("rust-string-cache" ,rust-string-cache-0.8)
+        ("rust-walkdir" ,rust-walkdir-2)
+        ("rust-wasm-bindgen-futures" ,rust-wasm-bindgen-futures-0.4))
+       #:cargo-development-inputs
+       (("rust-anyhow" ,rust-anyhow-1.0)
+        ("rust-env-logger" ,rust-env-logger-0.7)
+        ("rust-num-bigint" ,rust-num-bigint-0.2)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
+        ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.3)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-sourcemap" ,rust-sourcemap-6)
+        ("rust-string-cache-codegen" ,rust-string-cache-codegen-0.5)
+        ("rust-tempfile" ,rust-tempfile-3))
+       #:tests? #f ;; tests env_query_chrome_71 and project_env fail
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enable-unstable-features
+           (lambda _
+             (setenv "RUSTC_BOOTSTRAP" "1")
+             (substitute* "ecmascript/jsdoc/src/lib.rs"
+               (("pub use self" all)
+                (string-append "#![feature(non_exhaustive)]\n" all)))
+             (substitute* "ecmascript/parser/src/lib.rs"
+               (("//! es2019" all)
+                (string-append "#![feature(non_exhaustive)]
+#![feature(mem_take)]
+#![feature(proc_macro_hygiene)]
+" all)))
+             (substitute* "ecmascript/transforms/src/lib.rs"
+               (("#!\\[cfg_attr" all)
+                (string-append "#![feature(mem_take)]\n" all)))
+             #t))
+         (add-after 'enable-unstable-features 'patch-build-failures
+           (lambda _
+             (chmod ".cargo/config" 420)
+             (substitute* "ecmascript/transforms/macros/src/lib.rs"
+               (("use proc_macro::")
+                "extern crate proc_macro;\nuse proc_macro::"))
+             (substitute* "common/src/errors/emitter.rs"
+               (("        #\\[cfg\\(feature = \"tty-emitter\"\\)\\]\n") ""))
+             #t)))))
+    (home-page "https://swc.rs/")
+    (synopsis "Typescript/javascript compiler")
+    (description "@code{rust-swc} is a typescript/javascript compiler.  It
+consumes a javascript or typescript file which uses recently added features
+like async-await and emits javascript code which can be executed on old
+browsers.")
+    (license (list license:expat
+                   license:asl2.0))))
 
 (define-public rust-syn-test-suite-0
   (package
