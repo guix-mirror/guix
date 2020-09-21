@@ -15363,6 +15363,27 @@ statically-sized or dynamically-sized matrices.")
 IO of Windows's named pipes.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-napi-build-0.2
+  (package
+    (name "rust-napi-build")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "napi-build" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z02mlw1wa01fjpjnqns3f3vxacbg1jnk98hcg3pgwp5xy3zdyqq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-reqwest" ,rust-reqwest-0.10))))
+    (home-page "https://github.com/napi-rs/napi-rs")
+    (synopsis "N-API build support")
+    (description "This package provides N-API build support.")
+    (license license:expat)))
 
 (define-public rust-napi-derive-0.5
   (package
