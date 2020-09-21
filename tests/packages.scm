@@ -1172,15 +1172,24 @@
   (let* ((dep       (dummy-package "chbouib"
                       (native-inputs `(("x" ,grep)))))
          (p0        (dummy-package "example"
+                      (source 77)
                       (inputs `(("foo" ,coreutils)
                                 ("bar" ,grep)
                                 ("baz" ,dep)))))
          (transform (lambda (p)
                       (package (inherit p) (source 42))))
          (rewrite   (package-mapping transform))
-         (p1        (rewrite p0)))
+         (p1        (rewrite p0))
+         (bag0      (package->bag p0))
+         (bag1      (package->bag p1)))
     (and (eq? p1 (rewrite p0))
          (eqv? 42 (package-source p1))
+
+         ;; Implicit inputs should be left unchanged (skip "source", "foo",
+         ;; "bar", and "baz" in this comparison).
+         (equal? (drop (bag-direct-inputs bag0) 4)
+                 (drop (bag-direct-inputs bag1) 4))
+
          (match (package-inputs p1)
            ((("foo" dep1) ("bar" dep2) ("baz" dep3))
             (and (eq? dep1 (rewrite coreutils))   ;memoization
@@ -1193,6 +1202,31 @@
                    ((("x" dep))
                     (and (eq? dep (rewrite grep))
                          (package-source dep))))))))))
+
+(test-equal "package-mapping, deep"
+  '(42)
+  (let* ((p0        (dummy-package "example"
+                      (inputs `(("foo" ,coreutils)
+                                ("bar" ,grep)))))
+         (transform (lambda (p)
+                      (package (inherit p) (source 42))))
+         (rewrite   (package-mapping transform #:deep? #t))
+         (p1        (rewrite p0))
+         (bag       (package->bag p1)))
+    (and (eq? p1 (rewrite p0))
+         (match (bag-direct-inputs bag)
+           ((("source" 42) ("foo" dep1) ("bar" dep2) rest ..1)
+            (and (eq? dep1 (rewrite coreutils))   ;memoization
+                 (eq? dep2 (rewrite grep))
+                 (= 42 (package-source dep1))
+                 (= 42 (package-source dep2))
+
+                 ;; Check that implicit inputs of P0 also got rewritten.
+                 (delete-duplicates
+                  (map (match-lambda
+                         ((_ package . _)
+                          (package-source package)))
+                       rest))))))))
 
 (test-assert "package-input-rewriting"
   (let* ((dep     (dummy-package "chbouib"

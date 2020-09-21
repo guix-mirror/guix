@@ -968,10 +968,31 @@ packages they depend on, recursively."
                    (vhash-consq package #t visited)
                    (fold set-insert closure dependencies))))))))
 
-(define* (package-mapping proc #:optional (cut? (const #f)))
+(define (build-system-with-package-mapping bs rewrite)
+  "Return a variant of BS, a build system, that rewrites a bag's inputs by
+passing them through REWRITE, a procedure that takes an input tuplet and
+returns a \"rewritten\" input tuplet."
+  (define lower
+    (build-system-lower bs))
+
+  (define (lower* . args)
+    (let ((lowered (apply lower args)))
+      (bag
+        (inherit lowered)
+        (build-inputs (map rewrite (bag-build-inputs lowered)))
+        (host-inputs (map rewrite (bag-host-inputs lowered)))
+        (target-inputs (map rewrite (bag-target-inputs lowered))))))
+
+  (build-system
+    (inherit bs)
+    (lower lower*)))
+
+(define* (package-mapping proc #:optional (cut? (const #f))
+                          #:key deep?)
   "Return a procedure that, given a package, applies PROC to all the packages
 depended on and returns the resulting package.  The procedure stops recursion
-when CUT? returns true for a given package."
+when CUT? returns true for a given package.  When DEEP? is true, PROC is
+applied to implicit inputs as well."
   (define (rewrite input)
     (match input
       ((label (? package? package) outputs ...)
@@ -980,21 +1001,35 @@ when CUT? returns true for a given package."
       (_
        input)))
 
+  (define mapping-property
+    ;; Property indicating whether the package has already been processed.
+    (gensym " package-mapping-done"))
+
   (define replace
     (mlambdaq (p)
-      ;; Return a variant of P with PROC applied to P and its explicit
-      ;; dependencies, recursively.  Memoize the transformations.  Failing to
-      ;; do that, we would build a huge object graph with lots of duplicates,
-      ;; which in turns prevents us from benefiting from memoization in
-      ;; 'package-derivation'.
-      (let ((p (proc p)))
-        (package
-          (inherit p)
-          (location (package-location p))
-          (inputs (map rewrite (package-inputs p)))
-          (native-inputs (map rewrite (package-native-inputs p)))
-          (propagated-inputs (map rewrite (package-propagated-inputs p)))
-          (replacement (and=> (package-replacement p) proc))))))
+      ;; If P is the result of a previous call, return it.
+      (if (assq-ref (package-properties p) mapping-property)
+          p
+
+          ;; Return a variant of P with PROC applied to P and its explicit
+          ;; dependencies, recursively.  Memoize the transformations.  Failing
+          ;; to do that, we would build a huge object graph with lots of
+          ;; duplicates, which in turns prevents us from benefiting from
+          ;; memoization in 'package-derivation'.
+          (let ((p (proc p)))
+            (package
+              (inherit p)
+              (location (package-location p))
+              (build-system (if deep?
+                                (build-system-with-package-mapping
+                                 (package-build-system p) rewrite)
+                                (package-build-system p)))
+              (inputs (map rewrite (package-inputs p)))
+              (native-inputs (map rewrite (package-native-inputs p)))
+              (propagated-inputs (map rewrite (package-propagated-inputs p)))
+              (replacement (and=> (package-replacement p) proc))
+              (properties `((,mapping-property . #t)
+                            ,@(package-properties p))))))))
 
   replace)
 

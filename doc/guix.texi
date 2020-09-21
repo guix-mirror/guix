@@ -6296,10 +6296,11 @@ A more generic procedure to rewrite a package dependency graph is
 @code{package-mapping}: it supports arbitrary changes to nodes in the
 graph.
 
-@deffn {Scheme Procedure} package-mapping @var{proc} [@var{cut?}]
+@deffn {Scheme Procedure} package-mapping @var{proc} [@var{cut?}] [#:deep? #f]
 Return a procedure that, given a package, applies @var{proc} to all the packages
 depended on and returns the resulting package.  The procedure stops recursion
-when @var{cut?} returns true for a given package.
+when @var{cut?} returns true for a given package.  When @var{deep?} is true, @var{proc} is
+applied to implicit inputs as well.
 @end deffn
 
 @menu
