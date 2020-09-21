@@ -14706,6 +14706,32 @@ drop-in allocator.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-mime-guess-2
+  (package
+    (name "rust-mime-guess")
+    (version "2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mime_guess" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04pjpbl90z4yn0cmifvwgf4mqznciw6b095k626q96bxx71d9116"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-mime" ,rust-mime-0.3)
+        ("rust-unicase" ,rust-unicase-2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-unicase" ,rust-unicase-2))))
+    (home-page "https://github.com/abonander/mime_guess")
+    (synopsis "Detect a file's MIME type by its extension")
+    (description "This package provides a simple crate for detection of a
+file's MIME type by its extension.")
+    (license license:expat)))
+
 (define-public rust-miniz-oxide-0.3
   (package
     (name "rust-miniz-oxide")
