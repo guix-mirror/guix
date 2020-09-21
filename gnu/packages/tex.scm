@@ -7440,6 +7440,7 @@ spacing, hyphenatable letterspacing and the possibility to disable all
 or selected ligatures.  These features may be applied to customisable
 sets of fonts.  All micro-typographic aspects of the fonts can be
 configured in a straight-forward and flexible way.  Settings for
-various fonts are provided.  An alternative package @code{letterspace},
-which also works with plain TeX, is included in the bundle.")
+various fonts are provided.  An alternative package
+@code{letterspace}, which also works with plain TeX, is included in
+the bundle.")
       (license license:lppl1.3c))))
