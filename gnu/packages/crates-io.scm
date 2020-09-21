@@ -8433,6 +8433,29 @@ streams.")
      "This package provides a total ordering for floating-point numbers.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-fluid-0.4
+  (package
+    (name "rust-fluid")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fluid" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04qgdc4lx934158icx9rvs0v6lyvirmb0brllvz38hj9fsaqfbsp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-colored" ,rust-colored-1)
+        ("rust-fluid-attributes" ,rust-fluid-attributes-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://crates.io/crates/fluid")
+    (synopsis "Human readable test library")
+    (description "This package provides a human readable test library.")
+    (license license:asl2.0)))
+
 (define-public rust-fluid-attributes-0.4
   (package
     (name "rust-fluid-attributes")
