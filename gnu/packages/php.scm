@@ -311,7 +311,11 @@
                          ;; ("ISO-8859-1"=>"UTF-8") unknown error.
                          "ext/standard/tests/file/bug43008.phpt"
                          ;; Table data not created in sqlite(?).
-                         "ext/pdo_sqlite/tests/bug_42589.phpt"))
+                         "ext/pdo_sqlite/tests/bug_42589.phpt"
+
+                         ;; This tests whether microseconds ‘differ enough’ and
+                         ;; fails inconsistently on ‘fast’ machines.
+                         "ext/date/tests/bug73837.phpt"))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")
