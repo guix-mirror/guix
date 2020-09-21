@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,14 +98,14 @@ by the different predictive algorithms.")
 (define-public fcitx
   (package
     (name "fcitx")
-    (version "4.2.9.7")
+    (version "4.2.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.fcitx-im.org/fcitx/"
                                   "fcitx-" version "_dict.tar.xz"))
               (sha256
                (base32
-                "13vg7yzfq0vj2r8zdf9ly3n243nwwggkhd5qv3z6yqdyj0m3ncyg"))))
+                "1iik80l7g8yk9iwsls6nl9whwgm0sj8i7s6s0bz4c5anl35iaddw"))))
     (build-system cmake-build-system)
     (outputs '("out" "gtk2" "gtk3"))
     (arguments
