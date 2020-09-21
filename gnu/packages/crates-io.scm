@@ -15387,6 +15387,38 @@ IO of Windows's named pipes.")
     (description "This package provides N-API procedural macros.")
     (license license:expat)))
 
+(define-public rust-napi-sys-0.4
+  (package
+    (name "rust-napi-sys")
+    (version "0.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "napi-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cjirf6n4i2lw65iaww8d4hahv3cbfm5ka9hlansvnbfgzwadzq9"))))
+    (build-system cargo-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bindgen" ,rust-bindgen-0.55)
+        ("rust-semver" ,rust-semver-0.10)
+        ("rust-tar" ,rust-tar-0.4))
+       #:cargo-development-inputs
+       (("rust-flate2" ,rust-flate2-1)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-reqwest" ,rust-reqwest-0.10))))
+    (home-page "https://github.com/napi-rs/napi-rs")
+    (synopsis "NodeJS N-API raw binding")
+    (description "This package provides a NodeJS N-API raw binding.")
+    (license license:expat)))
+
 (define-public rust-native-tls-0.2
   (package
     (name "rust-native-tls")
