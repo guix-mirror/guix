@@ -362,7 +362,7 @@ secure operations. ")
        `(("openssl" ,openssl-1.0)))     ; for openssl/{bn,pem,rsa,sha}.h
       (build-system gnu-build-system)
       (arguments
-       `(#:make-flags (list "CC=gcc"
+       `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
                             (string-append "PREFIX=" (assoc-ref %outputs "out"))
                             (string-append "INSTALL=" "install"))
          ;; XXX: make test would run a !VERY! long hashing of names with the use
