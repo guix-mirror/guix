@@ -11600,8 +11600,41 @@ SystemTime}}.")
         ("rust-tokio-mockstream" ,rust-tokio-mockstream-1)
         ("rust-url" ,rust-url-1))))))
 
+(define-public rust-hyper-tls-0.4
+  (package
+    (name "rust-hyper-tls")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper-tls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vcfyz7dxavf4brns15afmj5fxz88lbn05rrpbfqsnybdp2sqyfr"))))
+    (build-system cargo-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-hyper" ,rust-hyper-0.13)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-tokio-tls" ,rust-tokio-tls-0.3))
+       #:cargo-development-inputs
+       (("rust-tokio" ,rust-tokio-0.2))))
+    (home-page "https://hyper.rs")
+    (synopsis "Default TLS implementation for use with hyper")
+    (description "This package provides the default TLS implementation for use
+with hyper.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hyper-tls-0.3
   (package
+    (inherit rust-hyper-tls-0.4)
     (name "rust-hyper-tls")
     (version "0.3.2")
     (source
@@ -11611,11 +11644,6 @@ SystemTime}}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0kqp4sz8613j6nv375wfj3gh95ff4nb6a3rb1f2vbx0almm0v01s"))))
-    (build-system cargo-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("openssl" ,openssl)))
     (arguments
      `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.4)
@@ -11624,11 +11652,7 @@ SystemTime}}.")
         ("rust-native-tls" ,rust-native-tls-0.2)
         ("rust-tokio-io" ,rust-tokio-io-0.1))
        #:cargo-development-inputs
-       (("rust-tokio" ,rust-tokio-0.1))))
-    (home-page "https://hyper.rs")
-    (synopsis "Default TLS implementation for use with hyper")
-    (description "Default TLS implementation for use with hyper")
-    (license (list license:expat license:asl2.0))))
+       (("rust-tokio" ,rust-tokio-0.1))))))
 
 (define-public rust-ident-case-1
   (package
