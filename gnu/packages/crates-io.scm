@@ -8433,6 +8433,31 @@ streams.")
      "This package provides a total ordering for floating-point numbers.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-fluid-attributes-0.4
+  (package
+    (name "rust-fluid-attributes")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fluid_attributes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i67vcas0gr64bc8spprlfp7m7msv1jyspghgq1q8f0qrnvy8px8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-0.4)
+        ("rust-quote" ,rust-quote-0.6)
+        ("rust-syn" ,rust-syn-0.15)
+        ("rust-uuid" ,rust-uuid-0.7))))
+    (home-page "https://gitlab.com/Boiethios/fluid-rs/wikis")
+    (synopsis "Proc macro attributes for the fluid crate")
+    (description "This package provides proc macro attributes for the fluid
+crate.")
+    (license license:asl2.0)))
+
 (define-public rust-fnv-1
   (package
     (name "rust-fnv")
