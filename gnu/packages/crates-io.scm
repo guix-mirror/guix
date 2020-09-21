@@ -25566,6 +25566,50 @@ track of where each new file and line starts.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-sourcemap-6
+  (package
+    (name "rust-sourcemap")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sourcemap" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sv1rxc6d2rfvd5xrqzqq0i2y0z1q7sqj3wm9krxbggcccj1y0vf"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Enable unstable features
+           (substitute* "src/lib.rs"
+             (("//! This library" all)
+              (string-append "#![feature(inner_deref)]" "\n" all)))
+           #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.11)
+        ("rust-if-chain" ,rust-if-chain-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-scroll" ,rust-scroll-0.10)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-url" ,rust-url-2))
+       #:cargo-development-inputs
+       (("rust-rustc-version" ,rust-rustc-version-0.2))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enable-unstable-features
+           (lambda _
+             (setenv "RUSTC_BOOTSTRAP" "1")
+             #t)))))
+    (home-page "https://github.com/getsentry/rust-sourcemap")
+    (synopsis "Basic sourcemap handling for Rust")
+    (description "This package provides basic sourcemap handling for Rust.")
+    (license license:bsd-3)))
+
 (define-public rust-speculate-0.1
   (package
     (name "rust-speculate")
