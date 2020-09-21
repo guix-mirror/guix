@@ -25765,6 +25765,28 @@ initializers are available.")
      "This package provides a single-producer single-consumer lock-free buffer.")
     (license license:expat)))
 
+(define-public rust-st-map-0.1
+  (package
+    (name "rust-st-map")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "st-map" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l820pisfi134v3wy0na480wl7rf69kgxzvmgc560ngqb0xb3biw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-arrayvec" ,rust-arrayvec-0.5)
+        ("rust-static-map-macro" ,rust-static-map-macro-0.2))))
+    (home-page "https://github.com/kdy1/rust-static-map")
+    (synopsis "Runtime for a stack-alocated map")
+    (description "This package provides a runtime for a stack-alocated map.")
+    (license license:expat)))
+
 (define-public rust-stable-deref-trait-1
   (package
     (name "rust-stable-deref-trait")
