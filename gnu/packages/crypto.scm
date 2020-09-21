@@ -359,7 +359,7 @@ secure operations. ")
           (base32
            "0lj38ldh8vzi11wp4ghw4k0fkwp0s04zv8k8d473p1snmbh7mx98"))))
       (inputs
-       `(("openssl" ,openssl))) ; It needs: openssl/{bn,pem,rsa,sha}.h
+       `(("openssl" ,openssl-1.0)))     ; for openssl/{bn,pem,rsa,sha}.h
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags (list "CC=gcc"
