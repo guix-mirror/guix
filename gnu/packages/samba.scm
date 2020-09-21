@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -173,14 +174,14 @@ external dependencies.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.12.3")
+    (version "4.12.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "09w7aap1cjc41ayhaksm1igc7p7gl40fad4a1l6q4ds9a2jbrb9z"))
+        (base32 "1lkgih0vrarf5zy6chspkwarqdylzwr63nxr3qjkpazrs86nlm9h"))
        (modules '((guix build utils)))
        (snippet
         '(begin
