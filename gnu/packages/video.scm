@@ -134,6 +134,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ocr)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
@@ -878,14 +879,14 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public mkvtoolnix
   (package
     (name "mkvtoolnix")
-    (version "37.0.0")
+    (version "50.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mkvtoolnix.download/sources/"
                            "mkvtoolnix-" version ".tar.xz"))
        (sha256
-        (base32 "0r4d9318ymb9a0mkc0shi9p4kjy3m70s49v4f8dmjhvj63silhix"))
+        (base32 "09485qfbdirr9g536shglzdm271yipb1669r3dm3hxp46k0x59aq"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled libraries.
@@ -911,6 +912,7 @@ H.264 (MPEG-4 AVC) video streams.")
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
        ("lzo" ,lzo)
+       ("pcre2" ,pcre2)
        ("pugixml" ,pugixml)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
