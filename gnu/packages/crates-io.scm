@@ -12194,6 +12194,32 @@ immutable interval tree.")
 network configuration for Windows.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-is-macro-0.1
+  (package
+    (name "rust-is-macro")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "is-macro" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vjh4sdpvx1kdf1znyk3b54gkyk7f8lsasc47ypkksp3r4ypz004"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-inflector" ,rust-inflector-0.11)
+        ("rust-pmutil" ,rust-pmutil-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/kdy1/is-macro")
+    (synopsis "Create methods to use custom enum like Option/Result")
+    (description "This package lets you easily create methods to use a custom
+enum like Option/Result.")
+    (license license:expat)))
+
 (define-public rust-ipnet-2
   (package
     (name "rust-ipnet")
