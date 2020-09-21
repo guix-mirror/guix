@@ -26392,7 +26392,7 @@ cryptographic implementations.")
 (define-public rust-syn-1
   (package
     (name "rust-syn")
-    (version "1.0.17")
+    (version "1.0.40")
     (source
       (origin
         (method url-fetch)
@@ -26400,7 +26400,7 @@ cryptographic implementations.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "00xvf772ys4fj9fr8kplmsqb9if215dsipi3nv54aw9q7xkfpw0d"))))
+          "0l437lsnv289y64pgl2mfvr1vgrb2hix5bb5a4rbjncvqly7sgwn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -26410,12 +26410,13 @@ cryptographic implementations.")
         ("rust-quote" ,rust-quote-1))
        #:cargo-development-inputs
        (("rust-anyhow" ,rust-anyhow-1.0)
-        ;("rust-insta" ,rust-insta-0.12)
         ("rust-flate2" ,rust-flate2-1)
+        ("rust-insta" ,rust-insta-0.16)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-ref-cast" ,rust-ref-cast-1.0)
         ("rust-regex" ,rust-regex-1)
-        ;("rust-reqwest" ,rust-reqwest-0.10)
+        ("rust-reqwest" ,rust-reqwest-0.10)
+        ("rust-syn-test-suite" ,rust-syn-test-suite-0)
         ("rust-tar" ,rust-tar-0.4)
         ("rust-termcolor" ,rust-termcolor-1)
         ("rust-walkdir" ,rust-walkdir-2))))
