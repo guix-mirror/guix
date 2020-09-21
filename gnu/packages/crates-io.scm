@@ -17969,6 +17969,25 @@ and would-block I/O operations.")
      "Implementation detail of the paste crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-path-clean-0.1
+  (package
+    (name "rust-path-clean")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "path-clean" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pcgqxw0mgg3ha5hi5xkjhyjf488bw5rw1g3qlr9awbq4szh3fpc"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/danreeves/path-clean")
+    (synopsis "Rust implementation of cleanname or path.Clean")
+    (description "This package provides a Rust implementation of cleanname or
+path.Clean.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pbkdf2-0.4
   (package
     (name "rust-pbkdf2")
