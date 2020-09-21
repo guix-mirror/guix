@@ -20447,6 +20447,28 @@ Racer.")
 fashion.  It is mostly used in Racer.")
     (license license:expat)))
 
+(define-public rust-radix-fmt-1
+  (package
+    (name "rust-radix-fmt")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "radix_fmt" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09jlq152iwn56215kghqby4pi8vamhg0nzcb9any5b5782cjl26f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-fluid" ,rust-fluid-0.4))))
+    (home-page "https://gitlab.com/Boiethios/radix_fmt_rs")
+    (synopsis "Format a number in an arbitrary radix")
+    (description "This package lets you format a number in an arbitrary
+radix.")
+    (license license:asl2.0)))
+
 (define-public rust-rand-0.7
   (package
     (name "rust-rand")
