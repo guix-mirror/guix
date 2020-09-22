@@ -16514,7 +16514,7 @@ under its new name.")
 (define-public rust-owning-ref-0.4
   (package
     (name "rust-owning-ref")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
       (origin
         (method url-fetch)
@@ -16522,7 +16522,7 @@ under its new name.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "04zgwy77lin8qz398s6g44467pd6kjhbrlqifkia5rkr47mbi929"))))
+          "1kjj9m28wjv452jw49p1mp3d8ql058x78v4bz00avr7rvsnmpxbg"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
