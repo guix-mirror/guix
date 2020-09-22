@@ -7579,15 +7579,13 @@ multiprecision arithmetic.")
 (define-public python-sympy
   (package
     (name "python-sympy")
-    (version "1.1.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://github.com/sympy/sympy/releases/download/sympy-"
-             version "/sympy-" version ".tar.gz"))
+       (uri (pypi-uri "sympy" version))
        (sha256
-        (base32 "190n29sppw7g8ihilc5451y7jlfcaw56crqiqbf1jff43dlmfnxc"))))
+        (base32 "0247skhkxanczpqqdz6n9k1axgpwl665b25hyn9vgr060p4dryhw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -7598,7 +7596,9 @@ multiprecision arithmetic.")
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "python3" "-c" "import sympy; sympy.test(\"/core\")")
+             (invoke
+               (or (which "python3") (which "python"))
+               "-c" "import sympy; sympy.test(\"/core\")")
              #t)))))
     (propagated-inputs
      `(("python-mpmath" ,python-mpmath)))
@@ -7613,17 +7613,13 @@ as possible in order to be comprehensible and easily extensible.")
 (define-public python2-sympy
   (package
     (inherit (package-with-python2 python-sympy))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Run the core tests after installation.  By default it would run
-         ;; *all* tests, which take a very long time to complete and are known
-         ;; to be flaky.
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "python" "-c" "import sympy; sympy.test(\"/core\")")
-             #t)))))))
+    (version "1.5.1")  ; last release for python2
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sympy" version))
+       (sha256
+        (base32 "0zjfbxlkazzh9z22gf62azrkipb2xw7mpzjz3wl1az9893bh2yfp"))))))
 
 (define-public python-q
   (package
