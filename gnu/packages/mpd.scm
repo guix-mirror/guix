@@ -258,9 +258,9 @@ sort playlists, and a local file system browser.")
                (base32
                 "0f0ybx380x2z2g1qvdndpvcrhkrgsfqckhz3ryydq2w3pl12v27z"))))
     (build-system gnu-build-system)
-    (inputs `(("libmpdclient" ,libmpdclient)
-              ("curl" ,curl)
-              ("glib" ,glib)))
+    (inputs `(("curl" ,curl)
+              ("glib" ,glib)
+              ("libmpdclient" ,libmpdclient)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (synopsis "MPD client for track scrobbling")
     (description "mpdscribble is a Music Player Daemon client which submits
