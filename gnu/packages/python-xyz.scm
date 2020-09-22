@@ -7525,15 +7525,17 @@ and statistical routines from scipy and statsmodels.")
 (define-public python-mpmath
   (package
   (name "python-mpmath")
-  (version "0.19")
+  (version "1.1.0")
   (source (origin
             (method url-fetch)
-            (uri (string-append "http://mpmath.org/files/mpmath-"
-                                version ".tar.gz"))
+            (uri (pypi-uri "mpmath" version))
+            (file-name (git-file-name name version))
             (sha256
              (base32
-              "08ijsr4ifrqv3cjc26mkw0dbvyygsa99in376hr4b96ddm1gdpb8"))))
+              "1xlrcja213jpfhw25q1jl5pl10w1a2cc68x1c4mkicxsbzhan5zw"))))
   (build-system python-build-system)
+  (native-inputs
+   `(("python-pytest" ,python-pytest)))
   (arguments
    '(#:phases
      (modify-phases %standard-phases
