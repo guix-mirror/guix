@@ -22627,8 +22627,32 @@ library's old @code{scoped_thread_local!} macro for providing scoped access to
          (base32
           "0a2bn9d2mb07c6l16sadijy4p540g498zddfxyiq4rsqpwrglbrk"))))))
 
+(define-public rust-scopeguard-1
+  (package
+    (name "rust-scopeguard")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scopeguard" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1kbqm85v43rq92vx7hfiay6pmcga03vrjbbfwqpyj3pwsg3b16nj"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/bluss/scopeguard")
+    (synopsis "Scope guard which will run a closure even out of scope")
+    (description "This package provides a RAII scope guard that will run a
+given closure when it goes out of scope, even if the code between panics
+(assuming unwinding panic).  Defines the macros @code{defer!},
+@code{defer_on_unwind!}, @code{defer_on_success!} as shorthands for guards
+with one of the implemented strategies.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-scopeguard-1.0
   (package
+    (inherit rust-scopeguard-1)
     (name "rust-scopeguard")
     (version "1.0.0")
     (source
@@ -22639,17 +22663,7 @@ library's old @code{scoped_thread_local!} macro for providing scoped access to
         (sha256
          (base32
           "03aay84r1f6w87ckbpj6cc4rnsxkxcfs13n5ynxjia0qkgjiabml"))))
-    (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
-    (home-page "https://github.com/bluss/scopeguard")
-    (synopsis "Scope guard which will run a closure even out of scope")
-    (description "This package provides a RAII scope guard that will run a
-given closure when it goes out of scope, even if the code between panics
-(assuming unwinding panic).  Defines the macros @code{defer!},
-@code{defer_on_unwind!}, @code{defer_on_success!} as shorthands for guards
-with one of the implemented strategies.")
-    (license (list license:asl2.0
-                   license:expat))))
+    (arguments '(#:skip-build? #t))))
 
 (define-public rust-scopeguard-0.3
   (package
