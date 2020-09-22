@@ -92,7 +92,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.21.25")
+    (version "0.21.26")
     (source (origin
               (method url-fetch)
               (uri
@@ -101,7 +101,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "00f2cm3sg0vi9gxb1yk35lyyh3fbabwim3mfnsz2syrjpw0sv810"))))
+                "1sjfx9ln2zik5fr5mdjy1w184hgjn89v67i85z09x0m6qwhq5rpr"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
