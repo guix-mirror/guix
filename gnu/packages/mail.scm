@@ -3109,10 +3109,6 @@ which sends emails to HyperKitty, the official Mailman3 web archiver.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; It is unclear why this test fails.
-             (substitute* "hyperkitty/tests/commands/test_import.py"
-               (("def test_bad_content_type_part_two")
-                "@SkipTest\n    def test_bad_content_type_part_two"))
              (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
              (invoke "example_project/manage.py" "test"
                      "--settings=hyperkitty.tests.settings_test"))))))
