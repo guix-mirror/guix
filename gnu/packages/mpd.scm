@@ -37,6 +37,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages readline)
@@ -249,17 +250,18 @@ sort playlists, and a local file system browser.")
 (define-public mpdscribble
   (package
     (name "mpdscribble")
-    (version "0.22")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.musicpd.org/download/mpdscribble/"
-                                  version "/mpdscribble-" version ".tar.gz"))
+                                  version "/mpdscribble-" version ".tar.xz"))
               (sha256
                (base32
-                "0f0ybx380x2z2g1qvdndpvcrhkrgsfqckhz3ryydq2w3pl12v27z"))))
-    (build-system gnu-build-system)
-    (inputs `(("curl" ,curl)
-              ("glib" ,glib)
+                "0s66zqscb44p88cl3kcv5jkjcqsskcnrv7xgrjhzrchf2kcpwf53"))))
+    (build-system meson-build-system)
+    (inputs `(("boost" ,boost)
+              ("curl" ,curl)
+              ("libgcrypt" ,libgcrypt)
               ("libmpdclient" ,libmpdclient)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (synopsis "MPD client for track scrobbling")
