@@ -1780,7 +1780,7 @@ module, and nothing else.")
     (synopsis "Parse and utilize MySQL's /etc/my.cnf and ~/.my.cnf files")
     (description
      "@code{MySQL::Config} emulates the @code{load_defaults} function from
-libmysqlclient.  It will fill an aray with long options, ready to be parsed by
+libmysqlclient.  It will fill an array with long options, ready to be parsed by
 @code{Getopt::Long}.")
     (license license:perl-license)))
 

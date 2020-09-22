@@ -303,7 +303,7 @@ work with most software requiring Type 1 fonts.")
     (inputs
      `(("brotli" ,google-brotli)))
     (synopsis "Libraries and tools for WOFF2 font format")
-    (description "WOFF2 provides libraires and tools to handle the Web Open
+    (description "WOFF2 provides libraries and tools to handle the Web Open
 Font Format (WOFF).")
     (home-page "https://w3c.github.io/woff/woff2/")
     (license license:expat)))

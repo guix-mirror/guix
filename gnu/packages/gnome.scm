@@ -357,8 +357,8 @@ services.")
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)))
     (synopsis "Glib library for feeds")
-    (description "LibGRSS is a Glib abstaction to handle feeds in RSS, Atom and
-other formats.")
+    (description "LibGRSS is a Glib abstraction to handle feeds in RSS, Atom,
+and other formats.")
     (home-page "https://wiki.gnome.org/Projects/Libgrss")
     (license license:lgpl3+)))
 

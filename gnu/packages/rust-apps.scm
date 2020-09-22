@@ -465,7 +465,7 @@ Example use cases:
 
 Features:
 @itemize @bullet
-@item Coalesces multiple filesystem events into one, for editors that
+@item Coalesces multiple file system events into one, for editors that
 use swap/backup files during saving
 @item By default, uses @code{.gitignore} and @code{.ignore} to determine which
 files to ignore notifications for

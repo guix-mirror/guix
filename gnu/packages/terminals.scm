@@ -426,7 +426,7 @@ to all types of devices that provide serial consoles.")
 allowing different sounds to indicate different events.  While it can be run
 quite happily on the command line, its intended place of residence is within
 scripts, notifying the user when something interesting occurs.  Of course, it
-has no notion of what's interesing, but it's very good at that notifying part.")
+has no notion of what's interesting, but it's very good at that notifying part.")
     (home-page "https://github.com/spkr-beep/beep")
     (license license:gpl2+)))
 

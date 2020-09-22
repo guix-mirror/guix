@@ -648,8 +648,8 @@ outcomes of a code example.")
     (synopsis "Ripper-style abstract syntax tree to Ruby source generator")
     (description "Sorcerer generates Ruby code from a Ripper-like abstract
 syntax tree (i.e. S-Expressions).  Sorcerer is targeted mainly at small
-snippets of Ruby code, expressable in a single line.  Longer examples may be
-re-sourced, but they will be rendered in a single line format.")
+snippets of Ruby code, expressible in a single line.  Longer examples may be
+re-sourced, but they will be rendered in a single-line format.")
     (home-page "https://github.com/rspec-given/sorcerer")
     (license license:expat)))
 

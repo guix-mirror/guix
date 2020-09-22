@@ -2822,7 +2822,7 @@ cross-compilation.")
     (synopsis "Walk a value in Go using reflection")
     (description "reflectwalk is a Go library for \"walking\" a value in Go
 using reflection, in the same way a directory tree can be \"walked\" on the
-filesystem.  Walking a complex structure can allow you to do manipulations on
+file system.  Walking a complex structure can allow you to do manipulations on
 unknown structures such as those decoded from JSON.")
     (license license:expat)))
 
@@ -5237,11 +5237,11 @@ errors (warnings).")
     (native-inputs
      `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
     (home-page "https://github.com/go-git/go-billy/")
-    (synopsis "Filesystem abstraction for Go")
-    (description "Billy implements an interface based on the os standard
-library, allowing to develop applications without dependency on the underlying
-storage.  Makes it virtually free to implement mocks and testing over
-filesystem operations.")
+    (synopsis "File system abstraction for Go")
+    (description "Billy implements an interface based on the OS's standard
+library to develop applications without depending on the underlying storage.
+This makes it virtually free to implement mocks and testing over
+file system operations.")
     (license license:asl2.0)))
 
 (define-public go-github-com-jbenet-go-context

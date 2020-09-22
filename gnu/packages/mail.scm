@@ -1712,7 +1712,7 @@ scripts to prevent embarrassing errors later on.")
      "Technology for Resting Email Encrypted Storage (TREES) is a NaCL-based
 Dovecot encryption plugin.  This plugin adds individually encrypted mail
 storage to the Dovecot IMAP server.  It is inspired by Posteo's scrambler
-which uses OpenSSL and RSA keypairs.  TREES works in a similar way, but uses
+which uses OpenSSL and RSA key pairs.  TREES works in a similar way, but uses
 the Sodium crypto library (based on NaCL).
 
 How it works:
@@ -2590,7 +2590,7 @@ transfer protocols.")
     (description
      "Sieve-connect lets you view, upload, edit, delete, and otherwise manage
 Sieve scripts on any mail server that speaks the @dfn{ManageSieve} protocol,
-as specifed in RFC 5804.
+as specified in RFC 5804.
 
 @dfn{Sieve} (RFC 5228) is a specialised language for e-mail filtering.  Sieve
 scripts are stored on the server and run whenever mail arrives.  They can

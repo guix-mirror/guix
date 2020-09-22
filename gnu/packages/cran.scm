@@ -3401,7 +3401,7 @@ Optimization problems by using the simplex algorithm.")
        ("r-rcpp" ,r-rcpp)
        ("r-rcppprogress" ,r-rcppprogress)))
     (home-page "http://geometry.r-forge.r-project.org/")
-    (synopsis "Mesh generation and surface tesselation")
+    (synopsis "Mesh generator and surface tessellator")
     (description
      "This package makes the qhull library available in R, in a similar manner
 as in Octave.  Qhull computes convex hulls, Delaunay triangulations, halfspace
@@ -3743,7 +3743,7 @@ color labels, layout, etc.")
     (description
      "This package implements an approximate string matching version of R's
 native @code{match} function.  It can calculate various string distances based
-on edits (Damerau-Levenshtein, Hamming, Levenshtein, optimal sting alignment),
+on edits (Damerau-Levenshtein, Hamming, Levenshtein, optimal string alignment),
 qgrams (q- gram, cosine, jaccard distance) or heuristic metrics (Jaro,
 Jaro-Winkler).  An implementation of soundex is provided as well.  Distances
 can be computed between character vectors while taking proper care of encoding
@@ -16497,7 +16497,7 @@ guaranteeing well-connected communities.\" <arXiv:1810.08473>.")
      "The @code{ggplot2} package provides a strong API for sequentially
 building up a plot, but does not concern itself with composition of multiple
 plots.  Patchwork is a package that expands the API to allow for arbitrarily
-complex composition of plots by providing mathmatical operators for combining
+complex composition of plots by providing mathematical operators for combining
 multiple plots.")
     (license license:expat)))
 
@@ -19616,7 +19616,7 @@ on distances rather than on unit x variables.")
      "This package provides tools for depth functions methodology applied to
 multivariate analysis.  Besides allowing calculation of depth values and
 depth-based location estimators, the package includes functions or drawing
-contour plots and perspective plots of depth functions.  Euclidian and
+contour plots and perspective plots of depth functions.  Euclidean and
 spherical depths are supported.")
     (license license:gpl2)))
 
@@ -22103,7 +22103,7 @@ general, via different versions of bridge sampling.")
     (description
      "This package provides different approaches for selecting the threshold
 in generalized Pareto distributions.  Most of them are based on minimizing the
-AMSE-criterion or atleast by reducing the bias of the assumed GPD-model.
+AMSE-criterion or at least by reducing the bias of the assumed GPD-model.
 Others are heuristically motivated by searching for stable sample paths, i.e.
 a nearly constant region of the tail index estimator with respect to k, which
 is the number of data in the tail.  The third class is motivated by graphical

@@ -57,7 +57,7 @@
 Word 9, 8, 7, and 6) to HTML or LaTeX.  Word 2 documents can still be converted
 to plain text but will lack formatting.
 
-Othe programs can use wv as a library to convert Word documents to other
+Other programs can use wv as a library to convert Word documents to other
 formats.  AbiWord uses it as its Word importer, and KWord uses concepts and
 code from wv in theirs.")
     (home-page "http://wvware.sourceforge.net/")

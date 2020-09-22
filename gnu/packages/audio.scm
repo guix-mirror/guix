@@ -1046,7 +1046,7 @@ tools (analyzer, mono/stereo tools, crossovers).")
      `(("lv2" ,lv2)))
     ;; home-page of the original LADSPA version: http://quitte.de/dsp/caps.html
     (home-page "https://github.com/moddevices/caps-lv2")
-    (synopsis "LV2 port of the CAPS audio plugin colection")
+    (synopsis "LV2 port of the CAPS audio plugin collection")
     (description
      "LV2 port of CAPS, a collection of audio plugins comprising basic virtual
 guitar amplification and a small range of classic effects, signal processors and

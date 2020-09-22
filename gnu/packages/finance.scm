@@ -1061,7 +1061,7 @@ amongst which a great number of VAT and other tax numbers,
 personal identity and company identification codes,
 international standard numbers (ISBN, IBAN, EAN, etc.)
 and various other formats.
-The module also inclused implementations of the Verhoeff,
+The module also includes implementations of the Verhoeff,
 Luhn and family of ISO/IEC 7064 check digit algorithms. ")
     (license license:lgpl2.1+)))
 

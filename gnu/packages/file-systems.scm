@@ -917,5 +917,5 @@ Dropbox API v2.")
   (synopsis "User-space file system for Dropbox")
   (description
    "@code{dbxfs} allows you to mount your Dropbox folder as if it were a
-local filesystem using FUSE.")
+local file system using FUSE.")
   (license license:gpl3+)))

@@ -3713,7 +3713,7 @@ https schemed URLs with LWP.")
     (home-page "https://metacpan.org/release/LWP-UserAgent-Cached")
     (synopsis "Simple caching for LWP::UserAgent")
     (description "LWP::UserAgent::Cached is an LWP::UserAgent subclass with
-cache support.  It returns responses from the local filesystem if available
+cache support.  It returns responses from the local file system, if available,
 instead of making an HTTP request.")
     (license license:perl-license)))
 

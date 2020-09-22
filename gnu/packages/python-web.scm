@@ -730,9 +730,9 @@ both of which are installed automatically if you install this library.")
     (home-page
       "https://github.com/html5lib/html5lib-python")
     (synopsis
-      "Python HTML parser based on the WHATWG HTML specifcation")
+      "Python HTML parser based on the WHATWG HTML specification")
     (description
-      "Html5lib is an HTML parser based on the WHATWG HTML specifcation
+      "Html5lib is an HTML parser based on the WHATWG HTML specification
 and written in Python.")
     (license license:expat)))
 
@@ -4723,7 +4723,7 @@ major web browsers.")
        ("python-pytest-cov" ,python-pytest-cov)))
     (arguments '(#:test-target "pytest"))
     (home-page "https://docs.pylonsproject.org/projects/venusian")
-    (synopsis "Library for defering decorator actions")
+    (synopsis "Library for deferring decorator actions")
     (description
      "Venusian is a library which allows framework authors to defer decorator
 actions.  Instead of taking actions when a function (or class) decorator is

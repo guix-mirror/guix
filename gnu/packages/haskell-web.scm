@@ -1349,7 +1349,7 @@ from Yesod.")
         ("ghc-hspec" ,ghc-hspec)))
     (home-page "https://www.yesodweb.com")
     (synopsis "Form handling support for Yesod Web Framework")
-    (description "This Haskell package provies a set of basic form inputs such
+    (description "This Haskell package provides a set of basic form inputs such
 as text, number, time, checkbox, select, textarea, etc through the
 @code{Yesod.Form.Fields} module.  Also, there is @code{Yesod.Form.Nic} module
 providing richtext field using Nic editor. ")

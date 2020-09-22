@@ -2800,7 +2800,7 @@ running Extempore process, and more.")
       (description "This package provides many, but not all of the editing
 primitives in the Kakoune editor.  Unlike Evil mode for Vim, this is a very
 shallow emulation, which seeks to do as little work as possible, leveraging
-Emacs native editing commmands and the work of other packages wherever
+Emacs native editing commands and the work of other packages wherever
 possible.")
       (license license:expat))))
 
@@ -11105,7 +11105,7 @@ function to be used by other frontend programs.")
     (home-page "https://github.com/tumashu/pyim-basedict")
     (synopsis "Input method dictionary of pyim")
     (description "Pyim-basedict is the default pinyin input method dictionary,
-containing words from the rime project.")
+containing words from the Rime project.")
     (license license:gpl2+)))
 
 (define-public emacs-pyim
@@ -12974,7 +12974,7 @@ buffer.")
     (description "@code{eless} provides a combination of Bash script
 and a minimal Emacs view-mode.
 
-Feautures:
+Features:
 
 @itemize
 @item Independent of a user’s Emacs config.
@@ -24633,7 +24633,7 @@ displayed for sharing.")
 buffer on an active webserver to which the user has SSH access.
 It is similar in purpose to services such as Gist or Pastebin,
 but is much simpler since it assumes the user has access to a
-publically-accessible HTTP server.")
+publicly-accessible HTTP server.")
       (license license:gpl3+))))
 
 (define-public emacs-company-reftex

@@ -1029,7 +1029,7 @@ Django projects, which allows association of a number of tags with any
     (synopsis "Toolkit for building Web APIs with Django")
     (description
      "The Django REST framework is for building Web APIs with Django.  It
-provides features like a web browseable API and authentication policies.")
+provides features like a Web-browsable API and authentication policies.")
     (license license:bsd-2)))
 
 (define-public python-django-sekizai

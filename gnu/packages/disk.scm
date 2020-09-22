@@ -1038,6 +1038,6 @@ of choice for all light thinking Unix addicts!")
     (home-page "https://savannah.nongnu.org/projects/hddtemp/")
     (synopsis "Report the temperature of hard drives from S.M.A.R.T. information")
     (description "@command{hddtemp} is a small utility that gives you the
-temperature of your hard drive by reading S.M.A.R.T. informations (for drives
+temperature of your hard drive by reading S.M.A.R.T. information (for drives
 that support this feature).")
     (license license:gpl2+)))

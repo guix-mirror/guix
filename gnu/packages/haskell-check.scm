@@ -1033,7 +1033,7 @@ library's promised without anyone noticing.
 
 This package provides a disciplined way of specifying such properties, and
 have them checked by the compiler.  This way, this checking can be part of the
-ususal development cycle and regressions caught early.
+regular development cycle and regressions caught early.
 
 See the documentation in \"Test.Inspection\" or the project webpage for more
 examples and more information.")

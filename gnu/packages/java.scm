@@ -10949,7 +10949,7 @@ application components to create, send, receive, and read messages.")
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://javaee.github.io/javamail/")
-    (synopsis "Mail-related functionnalities in Java")
+    (synopsis "Mail-related functionality in Java")
     (description "The JavaMail API provides a platform-independent and
 protocol-independent framework to build mail and messaging applications.")
     ;; General Public License Version 2 only ("GPL") or the Common Development
@@ -12226,7 +12226,7 @@ Java method invocation.")
     (inputs
      `(("java-native-access" ,java-native-access)))
     (synopsis "Cross-platform mappings for jna")
-    (description "java-native-access-platfrom has cross-platform mappings
+    (description "java-native-access-platform has cross-platform mappings
 and mappings for a number of commonly used platform functions, including a
 large number of Win32 mappings as well as a set of utility classes that
 simplify native access.")))

@@ -1100,7 +1100,7 @@ noun phrases, verb phrases, etc.).")
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.fon.hum.uva.nl/praat/")
     (synopsis "Doing phonetics by computer")
-    (description "Praat is a tool to perform phonetics tasks.  It can do speach
-analysis (pitch, formant, intensity, ...), speach synthesis, labeling, segmenting
+    (description "Praat is a tool to perform phonetics tasks.  It can do speech
+analysis (pitch, formant, intensity, ...), speech synthesis, labelling, segmenting
 and manipulation.")
     (license gpl2+)))

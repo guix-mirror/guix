@@ -694,7 +694,7 @@ manipulating key files.")
         (base32
          "0q7fblaczb7kwbsz0gdy9267z0sllzgmf0c7z5c9mf88wv74ycn6"))))
     (build-system gnu-build-system)
-    (description "sshpass is a tool for non-interactivly performing password
+    (description "sshpass is a tool for non-interactively performing password
 authentication with SSH's so-called @dfn{interactive keyboard password
 authentication}.")
     (license license:gpl2+)))

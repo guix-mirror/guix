@@ -13656,7 +13656,7 @@ simplify class and condition declarations.  Features include:
 
 @itemize
 @item Automatically export all or select slots at compile time.
-@item Define the @code{:initarg} and @code{:accesor} automatically.
+@item Define the @code{:initarg} and @code{:accessor} automatically.
 @item Specify a name transformer for both the @code{:initarg} and
 @code{:accessor}, etc.
 @item Specify the @code{:initform} as second slot value.

@@ -141,7 +141,7 @@ Originally Ed25519 consists of three modules:
 @itemize
 @item digital signature algorithm itself
 @item SHA512 hash function
-@item random number generator, to generate keypairs
+@item random number generator, to generate key pairs
 @end itemize
 
 This project offers at least two different C implementations for every

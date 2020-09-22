@@ -1961,7 +1961,7 @@ the caller.")
     (synopsis "Extract data from Macintosh BinHex files")
     (description
      "BinHex is a format for transporting files safely through electronic
-mail, as short-lined, 7-bit, semi-compressed data streams.  Ths module
+mail, as short-lined, 7-bit, semi-compressed data streams.  This module
 provides a means of converting those data streams back into into binary
 data.")
     (license license:perl-license)))

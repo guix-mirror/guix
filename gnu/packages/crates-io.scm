@@ -984,9 +984,9 @@ Mac, and Unix.")
        #:cargo-development-inputs
        (("rust-docmatic" ,rust-docmatic-0.1))))
     (home-page "https://github.com/assert-rs/assert_fs")
-    (synopsis "Filesystem fixtures and assertions for testing")
+    (synopsis "File system fixtures and assertions for testing")
     (description
-     "Filesystem fixtures and assertions for testing.")
+     "File system fixtures and assertions for testing.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-assert-matches-1.3
@@ -1977,7 +1977,7 @@ BLAKE2bp hash functions.")
     (home-page "https://github.com/blas-lapack-rs/blas-sys")
     (synopsis "Bindings to BLAS (Fortran)")
     (description
-     "Ths package provides bindings to BLAS (Fortran).")
+     "This package provides bindings to BLAS (Fortran).")
     (license (list license:asl2.0
                    license:expat))))
 
@@ -7945,7 +7945,7 @@ duplication.")
     (build-system cargo-build-system)
     (arguments '(#:skip-build? #t))
     (home-page "https://github.com/webdesus/fs_extra")
-    (synopsis "Extra filesystem methods")
+    (synopsis "Extra file system methods")
     (description "Expanding opportunities standard library @code{std::fs} and
 @code{std::io}.  Recursively copy folders with recept information about
 process and much more.")
@@ -15245,9 +15245,9 @@ with all line endings.")
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/passcod/notify")
-    (synopsis "Cross-platform filesystem notification library")
+    (synopsis "Cross-platform file system notification library")
     (description
-     "Cross-platform filesystem notification library.")
+     "Cross-platform file system notification library.")
     (license license:cc0)))
 
 (define-public rust-num-0.2
@@ -27178,8 +27178,8 @@ the current thread.")
         ("rust-tokio-codec" ,rust-tokio-codec-0.1)
         ("rust-tokio-io" ,rust-tokio-io-0.1))))
     (home-page "https://tokio.rs")
-    (synopsis "Filesystem API for Tokio")
-    (description "Filesystem API for Tokio.")
+    (synopsis "File system API for Tokio")
+    (description "File system API for Tokio.")
     (license license:expat)))
 
 ;; Cyclic dependencies with tokio and tokio-current-thread
@@ -30508,7 +30508,7 @@ color in a Windows console.")
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/Stebalien/xattr")
-    (synopsis "Unix extended filesystem attributes")
+    (synopsis "Unix extended file system attributes")
     (description
      "This package provide a small library for setting, getting, and listing
 extended attributes.")

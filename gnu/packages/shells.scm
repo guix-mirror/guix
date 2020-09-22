@@ -701,8 +701,9 @@ Its features include:
       (home-page "https://github.com/rain-1/s")
       (synopsis "Extremely minimal shell with the simplest syntax possible")
       (description
-       "S is a new shell that aims to be extremely simple.
-S does not implemnt the POSIX shell standard.
+       "S is a new shell that aims to be extremely simple.  It does not
+implement the POSIX shell standard.
+
 There are no globs or \"splatting\" where a variable $FOO turns into multiple
 command line arguments.  One token stays one token forever.
 This is a \"no surprises\" straightforward approach.

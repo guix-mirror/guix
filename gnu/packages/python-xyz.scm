@@ -18940,7 +18940,7 @@ with a non-list @code{cdr}.")
     (description
      "This Python module provides line editing functions similar to the default
 Emacs-style ones of GNU Readline.  Unlike the Python standard library's
-@code{readline} package, this one allows access to those capabilties in settings
+@code{readline} package, this one allows access to those capabilities in settings
 outside of a standard command-line interface.  It is especially well-suited to
 interfacing with Urwid, due to a shared syntax for describing key inputs.
 
@@ -20087,11 +20087,11 @@ load balancing.")
      `(("python-pytest" ,python-pytest)
        ("which" ,which)))
     (home-page "https://pypi.org/project/pox/")
-    (synopsis "Python utilities for filesystem exploration and automated builds")
+    (synopsis "Python utilities for file system exploration and automated builds")
     (description
      "Pox provides a collection of utilities for navigating and manipulating
-filesystems.  This module is designed to facilitate some of the low level
-operating system interactions that are useful when exploring a filesystem on a
+file systems.  This module is designed to facilitate some of the low-level
+operating system interactions that are useful when exploring a file system on a
 remote host.  Pox provides Python equivalents of several shell commands such
 as @command{which} and @command{find}.  These commands allow automated
 discovery of what has been installed on an operating system, and where the
@@ -20440,7 +20440,7 @@ tests.")
     (description
      "Python-GSSAPI provides both low-level and high level wrappers around the
 GSSAPI C libraries.  While it focuses on the Kerberos mechanism, it should
-also be useable with other GSSAPI mechanisms.")
+also be usable with other GSSAPI mechanisms.")
     (license license:isc)))
 
 (define-public python-check-manifest
@@ -20516,8 +20516,8 @@ files.  These files are used to translate strings in android apps.")
      `(("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-timeout" ,python-pytest-timeout)))
     (home-page "https://github.com/gorakhargosh/watchdog")
-    (synopsis "Filesystem events monitoring")
-    (description "This package provides a way to monitor filesystem events
+    (synopsis "File system events monitoring")
+    (description "This package provides a way to monitor file system events
 such as a file modification and trigger an action.  This is similar to inotify,
 but portable.")
     (license license:asl2.0)))
@@ -20817,9 +20817,9 @@ content models.")
      `(("python-cffi" ,python-cffi)))
     (home-page "https://github.com/xattr/xattr")
     (synopsis
-     "Python wrapper for extended filesystem attributes")
+     "Python wrapper for extended file system attributes")
     (description "This package provides a Python wrapper for using extended
-filesystem attributes.  Extended attributes extend the basic attributes of files
+file system attributes.  Extended attributes extend the basic attributes of files
 and directories in the file system.  They are stored as name:data pairs
 associated with file system objects (files, directories, symlinks, etc).")
     (license license:expat)))
@@ -21832,10 +21832,10 @@ RFC 3464.")
     (home-page "https://flufli18n.readthedocs.io")
     (synopsis "API for Python internationalization")
     (description
-     "This package provides a high level, convenient API for managing
-internationalization translation contexts in Python application.  There is a
+     "This package provides a high-level, convenient API for managing
+internationalization/translation contexts in Python applications.  There is a
 simple API for single-context applications, such as command line scripts which
-only need to translate into one language during the entire course of thei
+only need to translate into one language during the entire course of their
 execution.  There is a more flexible, but still convenient API for multi-context
 applications, such as servers, which may need to switch language contexts for
 different tasks.")

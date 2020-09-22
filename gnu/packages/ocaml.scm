@@ -429,7 +429,7 @@ repository-wide uninstallability checks.")
     (home-page "https://opam.ocaml.org")
     (synopsis "Parser and printer for the opam file syntax")
     (description "This package contains a parser and a pretty-printer for
-the opam file fomat.")
+the opam file format.")
     ;; With static-linking exception
     (license license:lgpl2.1+)))
 
@@ -2577,9 +2577,9 @@ from the oasis build log
     (home-page "https://github.com/mjambon/cppo")
     (synopsis "Equivalent of the C preprocessor for OCaml programs")
     (description "Cppo is an equivalent of the C preprocessor for OCaml
-programs.  It allows the definition of simple macros and file inclusion.  Cpp ois:
+programs.  It allows the definition of simple macros and file inclusion.  Cppo is:
 @enumerate
-@item more OCaml-friendly than cpp
+@item more OCaml-friendly than @command{cpp}
 @item easy to learn without consulting a manual
 @item reasonably fast
 @item simple to install and to maintain.
@@ -4369,7 +4369,7 @@ definitions.")
       "https://github.com/janestreet/ppx_variants_conv")
     (synopsis "Generation of accessor and iteration functions for OCaml variant types")
     (description
-      "This package generates accessors and interation functions for OCaml
+      "This package generates accessors and iteration functions for OCaml
 variant types.")
     (license license:asl2.0)))
 

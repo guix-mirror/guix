@@ -3903,7 +3903,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
     (home-page "http://dev.openttdcoop.org/projects/opengfx")
     (synopsis "Base graphics set for OpenTTD")
     (description
-     "The OpenGFX projects is an implementation of the OpenTTD base grahics
+     "The OpenGFX project is an implementation of the OpenTTD base graphics
 set that aims to ensure the best possible out-of-the-box experience.
 
 OpenGFX provides you with...

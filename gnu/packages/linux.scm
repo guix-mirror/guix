@@ -6008,10 +6008,8 @@ under GNU/Linux.  Features include:
 @item Light can automatically figure out the best controller to use, making
 full use of underlying hardware.
 @item It is possible to set a minimum brightness value, as some controllers
-set the screen to be pitch black at a vaĺue of 0 (or higher).
-@end itemize
-
-Light is the successor of lightscript.")
+set the screen to be pitch black at a value of 0 (or higher).
+@end itemize\n")
     (license license:gpl3+)))
 
 (define-public brightnessctl
