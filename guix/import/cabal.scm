@@ -718,7 +718,7 @@ If #f use the function 'port-filename' to obtain it."
   (dependencies cabal-custom-setup-dependencies)) ; list of <cabal-dependency>
 
 (define (cabal-flags->alist flag-list)
-    "Retrun an alist associating the flag name to its default value from a
+    "Return an alist associating the flag name to its default value from a
 list of <cabal-flag> objects."
   (map (lambda (flag) (cons (cabal-flag-name flag) (cabal-flag-default flag)))
        flag-list))
