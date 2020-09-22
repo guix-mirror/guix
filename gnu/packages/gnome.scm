@@ -10046,7 +10046,7 @@ photo-booth-like software, such as Cheese.")
 (define-public cheese
   (package
     (name "cheese")
-    (version "3.34.0")
+    (version "3.38.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -10054,7 +10054,7 @@ photo-booth-like software, such as Cheese.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0wvyc9wb0avrprvm529m42y5fkv3lirdphqydc9jw0c8mh05d1ni"))))
+                "0vyim2avlgq3a48rgdfz5g21kqk11mfb53b2l883340v88mp7ll8"))))
     (arguments
      `(#:glib-or-gtk? #t
        ;; Tests require GDK.
@@ -10067,6 +10067,15 @@ photo-booth-like software, such as Cheese.")
              (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") (which "true")))
              #t))
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Avoid a network connection attempt during the build.
+             (substitute* '("docs/reference/cheese.xml"
+                            "docs/reference/cheese-docs.xml")
+               (("http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/docbookx.dtd")))
+             #t))
          (add-after 'install 'wrap-cheese
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out             (assoc-ref outputs "out"))
@@ -10077,6 +10086,7 @@ photo-booth-like software, such as Cheese.")
     (build-system meson-build-system)
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml-4.3)
        ("glib:bin" ,glib "bin")
        ("gtk-doc" ,gtk-doc)
        ("intltool" ,intltool)
