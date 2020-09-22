@@ -756,16 +756,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.3.9")
+    (version "2.3.10")
     (source
-     (let ((build "8497"))
+     (let ((build "9729"))
        (origin
          (method url-fetch)
          (uri
           (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
                          "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "0xvyr91sfgzkpw6g3h893ldbwnki3w2472n56rr18w67qghs1sa5")))))
+          (base32 "0azaignqmylfdzr4x02s8y3pkn4f0xkpz3d1pkiiz8mwk92zgybn")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
