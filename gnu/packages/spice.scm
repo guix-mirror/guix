@@ -144,11 +144,8 @@ which allows users to view a desktop computing environment.")
     (build-system gnu-build-system)
     (propagated-inputs
       `(("gstreamer" ,gstreamer)
-        ("gst-libav" ,gst-libav)
         ("gst-plugins-base" ,gst-plugins-base)
         ("gst-plugins-good" ,gst-plugins-good)
-        ("gst-plugins-bad" ,gst-plugins-bad)
-        ("gst-plugins-ugly" ,gst-plugins-ugly)
         ("spice-protocol" ,spice-protocol)
 
         ;; These are required by the pkg-config files.
