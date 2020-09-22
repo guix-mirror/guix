@@ -3552,10 +3552,10 @@ colorization.")
 pitfalls in Rust.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-cloudabi-0.0
+(define-public rust-cloudabi-0.1
   (package
     (name "rust-cloudabi")
-    (version "0.0.3")
+    (version "0.1.0")
     (source
       (origin
         (method url-fetch)
@@ -3563,7 +3563,7 @@ pitfalls in Rust.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))
+          "0rv4yf5jlldfkynzrw687s00f4x12ypw7axv71vawhy6h4i52i23"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -3574,6 +3574,24 @@ pitfalls in Rust.")
     (description
      "Low level interface to CloudABI.  Contains all syscalls and related types.")
     (license license:bsd-2)))
+
+(define-public rust-cloudabi-0.0
+  (package
+    (inherit rust-cloudabi-0.1)
+    (name "rust-cloudabi")
+    (version "0.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cloudabi" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1))))))
 
 (define-public rust-cloudflare-zlib-sys-0.2
   (package
