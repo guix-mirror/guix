@@ -10023,7 +10023,7 @@ automatically and it can stream songs from online music services and charts.")
 (define-public gnome-video-effects
   (package
     (name "gnome-video-effects")
-    (version "0.4.3")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -10031,14 +10031,10 @@ automatically and it can stream songs from online music services and charts.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "06c2f1kihyhawap1s3zg5w7q7fypsybkp7xry4hxkdz4mpsy0zjs"))))
-    (build-system glib-or-gtk-build-system)
-    (arguments
-     `(#:out-of-source? #f))
+                "1j6h98whgkcxrh30bwvnxvyqxrxchgpdgqhl0j71xz7x72dqxijd"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("intltool" ,intltool)
-       ("gettext" ,gettext-minimal)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (home-page "https://wiki.gnome.org/Projects/GnomeVideoEffects")
     (synopsis "Video effects for Cheese and other GNOME applications")
