@@ -4531,7 +4531,7 @@ Some things HTTP Core does do:
 (define-public python-httpx
   (package
     (name "python-httpx")
-    (version "0.14.3")
+    (version "0.15.0")
     (source
      (origin
        ;; PyPI tarball does not contain tests.
@@ -4541,7 +4541,7 @@ Some things HTTP Core does do:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mn8gqkgaij3s2pbwgrih20iq34f3f82dfvypaw3nnh7n63vna43"))))
+        (base32 "06w50br6b825sd70l6rm2s0fca1lnjbyx9n8nmcdlwg673z25kc6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4549,8 +4549,16 @@ Some things HTTP Core does do:
          (replace 'check
            (lambda _
              (invoke "pytest" "-vv" "-k"
-                     ;; This test tries to open an outgoing connection.
-                     "not test_connect_timeout[asyncio]"))))))
+                     ;; These tests try to open an outgoing connection.
+                     (string-append
+                      "not test_connect_timeout"
+                      " and not test_that_send_cause_async_client_to_be_not_"
+                      "closed"
+                      " and not test_that_async_client_caused_warning_when_"
+                      "being_deleted"
+                      " and not test_that_send_cause_client_to_be_not_closed"
+                      " and not test_async_proxy_close"
+                      " and not test_sync_proxy_close")))))))
     (native-inputs
      `(("python-autoflake" ,python-autoflake)
        ("python-black" ,python-black)
