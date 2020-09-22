@@ -4568,7 +4568,7 @@ sequencing tag position and orientation.")
        ("gawk" ,gawk)
        ("grep" ,grep)
        ("coreutils" ,coreutils)))
-    (home-page "http://mafft.cbrc.jp/alignment/software/")
+    (home-page "https://mafft.cbrc.jp/alignment/software/")
     (synopsis "Multiple sequence alignment program")
     (description
      "MAFFT offers a range of multiple alignment methods for nucleotide and
@@ -4576,7 +4576,7 @@ protein sequences.  For instance, it offers L-INS-i (accurate; for alignment
 of <~200 sequences) and FFT-NS-2 (fast; for alignment of <~30,000
 sequences).")
     (license (license:non-copyleft
-              "http://mafft.cbrc.jp/alignment/software/license.txt"
+              "https://mafft.cbrc.jp/alignment/software/license.txt"
               "BSD-3 with different formatting"))))
 
 (define-public mash
