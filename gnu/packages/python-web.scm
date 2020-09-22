@@ -4456,7 +4456,7 @@ and serve updated contents upon changes to the directory.")
 (define-public python-httpcore
   (package
     (name "python-httpcore")
-    (version "0.10.2")
+    (version "0.11.0")
     (source
      (origin
        ;; PyPI tarball does not contain tests.
@@ -4466,7 +4466,7 @@ and serve updated contents upon changes to the directory.")
              (commit  version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00gn8nfv814rg6fj7xv97mrra3fvx6fzjcgx9y051ihm6hxljdsi"))))
+        (base32 "01bhajcxqgkdzg7b7x0fqs2lwcfsajlgqwi1nlxx58jss7g2kxn9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
