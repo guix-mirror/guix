@@ -7590,16 +7590,11 @@ multiprecision arithmetic.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Run the core tests after installation.  By default it would run
-         ;; *all* tests, which take a very long time to complete and are known
-         ;; to be flaky.
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke
                (or (which "python3") (which "python"))
-               "-c" "import sympy; sympy.test(\"/core\")")
-             #t)))))
+               "-c" "import sympy; sympy.test(\"/core\")"))))))
     (propagated-inputs
      `(("python-mpmath" ,python-mpmath)))
     (home-page "https://www.sympy.org/")
