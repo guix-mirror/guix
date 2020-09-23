@@ -470,6 +470,7 @@ site} for more information."
                                   ,(bluetooth-directory config)))))
           (service-extension shepherd-root-service-type
                              (compose list bluetooth-shepherd-service))))
+   (default-value (bluetooth-configuration))
    (description "Run the @command{bluetoothd} daemon, which manages all the
 Bluetooth devices and provides a number of D-Bus interfaces.")))
 
