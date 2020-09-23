@@ -240,13 +240,13 @@ Android, and ChromeOS.")
        ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("gstreamer" ,gstreamer)
+     `(("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("libnsl" ,libnsl)))
     (propagated-inputs
      `(("glib" ,glib)
-       ("glib-networking" ,glib-networking)))
+       ("glib-networking" ,glib-networking)
+       ("gnutls" ,gnutls)))
     (synopsis "GLib ICE implementation")
     (description "LibNice is a library that implements the Interactive
 Connectivity Establishment (ICE) standard (RFC 5245 & RFC 8445).  It provides a
