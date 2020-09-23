@@ -6238,12 +6238,12 @@ transformation is @dfn{input rewriting}, whereby the dependency tree of
 a package is rewritten by replacing specific inputs by others:
 
 @deffn {Scheme Procedure} package-input-rewriting @var{replacements} @
-           [@var{rewrite-name}]
+           [@var{rewrite-name}] [#:deep? #t]
 Return a procedure that, when passed a package, replaces its direct and
-indirect dependencies (but not its implicit inputs) according to
-@var{replacements}.  @var{replacements} is a list of package pairs; the
-first element of each pair is the package to replace, and the second one
-is the replacement.
+indirect dependencies, including implicit inputs when @var{deep?} is
+true, according to @var{replacements}.  @var{replacements} is a list of
+package pairs; the first element of each pair is the package to replace,
+and the second one is the replacement.
 
 Optionally, @var{rewrite-name} is a one-argument procedure that takes
 the name of a package and returns its new name after rewrite.

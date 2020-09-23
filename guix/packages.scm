@@ -1044,22 +1044,37 @@ applied to implicit inputs as well."
   replace)
 
 (define* (package-input-rewriting replacements
-                                  #:optional (rewrite-name identity))
+                                  #:optional (rewrite-name identity)
+                                  #:key (deep? #t))
   "Return a procedure that, when passed a package, replaces its direct and
-indirect dependencies (but not its implicit inputs) according to REPLACEMENTS.
-REPLACEMENTS is a list of package pairs; the first element of each pair is the
-package to replace, and the second one is the replacement.
+indirect dependencies, including implicit inputs when DEEP? is true, according
+to REPLACEMENTS.  REPLACEMENTS is a list of package pairs; the first element
+of each pair is the package to replace, and the second one is the replacement.
 
 Optionally, REWRITE-NAME is a one-argument procedure that takes the name of a
 package and returns its new name after rewrite."
-  (define (rewrite p)
-    (match (assq-ref replacements p)
-      (#f  (package
-             (inherit p)
-             (name (rewrite-name (package-name p)))))
-      (new new)))
+  (define replacement-property
+    ;; Property to tag right-hand sides in REPLACEMENTS.
+    (gensym " package-replacement"))
 
-  (package-mapping rewrite (cut assq <> replacements)))
+  (define (rewrite p)
+    (if (assq-ref (package-properties p) replacement-property)
+        p
+        (match (assq-ref replacements p)
+          (#f  (package/inherit p
+                 (name (rewrite-name (package-name p)))))
+          (new (if deep?
+                   (package/inherit new
+                     (properties `((,replacement-property . #t)
+                                   ,@(package-properties new))))
+                   new)))))
+
+  (define (cut? p)
+    (or (assq-ref (package-properties p) replacement-property)
+        (assq-ref replacements p)))
+
+  (package-mapping rewrite cut?
+                   #:deep? deep?))
 
 (define* (package-input-rewriting/spec replacements #:key (deep? #t))
   "Return a procedure that, given a package, applies the given REPLACEMENTS to

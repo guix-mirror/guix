@@ -1239,7 +1239,8 @@
                               ("baz" ,dep)))))
          (rewrite (package-input-rewriting `((,coreutils . ,sed)
                                              (,grep . ,findutils))
-                                           (cut string-append "r-" <>)))
+                                           (cut string-append "r-" <>)
+                                           #:deep? #f))
          (p1      (rewrite p0))
          (p2      (rewrite p0)))
     (and (not (eq? p1 p0))
@@ -1253,7 +1254,22 @@
                  (eq? dep3 (rewrite dep))         ;memoization
                  (match (package-native-inputs dep3)
                    ((("x" dep))
-                    (eq? dep findutils)))))))))
+                    (eq? dep findutils))))))
+
+         ;; Make sure implicit inputs were left unchanged.
+         (equal? (drop (bag-direct-inputs (package->bag p1)) 3)
+                 (drop (bag-direct-inputs (package->bag p0)) 3)))))
+
+(test-eq "package-input-rewriting, deep"
+  (derivation-file-name (package-derivation %store sed))
+  (let* ((p0      (dummy-package "chbouib"
+                    (build-system python-build-system)
+                    (arguments `(#:python ,python))))
+         (rewrite (package-input-rewriting `((,python . ,sed))))
+         (p1      (rewrite p0)))
+    (match (bag-direct-inputs (package->bag p1))
+      ((("python" python) _ ...)
+       (derivation-file-name (package-derivation %store python))))))
 
 (test-assert "package-input-rewriting/spec"
   (let* ((dep     (dummy-package "chbouib"
