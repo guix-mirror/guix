@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,11 +46,13 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages libbsd)
@@ -211,8 +214,16 @@ living in the same process.")
              "--without-p11-kit")
 
        #:phases (modify-phases %standard-phases
-                  (add-after
-                   'install 'move-doc
+                  ;; fastopen.sh fails to connect to the server in the builder
+                  ;; environment (see:
+                  ;; https://gitlab.com/gnutls/gnutls/-/issues/1095).
+                  (add-after 'unpack 'disable-failing-tests
+                    (lambda _
+                      (delete-file "configure")
+                      (substitute* "tests/Makefile.am"
+                        (("fastopen.sh") ""))
+                      #t))
+                  (add-after 'install 'move-doc
                    (lambda* (#:key outputs #:allow-other-keys)
                      ;; Copy the 4.1 MiB of section 3 man pages to "doc".
                      (let* ((out    (assoc-ref outputs "out"))
@@ -229,7 +240,12 @@ living in the same process.")
     (native-inputs
      `(,@(if (hurd-target?) '()
              `(("net-tools" ,net-tools)))
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)
        ("which" ,which)
        ,@(if (hurd-target?) '()
              `(("datefudge" ,datefudge)))         ;tests rely on 'datefudge'
