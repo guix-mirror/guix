@@ -1037,7 +1037,7 @@ applied to implicit inputs as well."
               (inputs (map rewrite (package-inputs p)))
               (native-inputs (map rewrite (package-native-inputs p)))
               (propagated-inputs (map rewrite (package-propagated-inputs p)))
-              (replacement (and=> (package-replacement p) proc))
+              (replacement (and=> (package-replacement p) replace))
               (properties `((,mapping-property . #t)
                             ,@(package-properties p))))))))
 

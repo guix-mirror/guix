@@ -1364,6 +1364,33 @@
     (match (delete-duplicates pythons eq?)
       ((p) (eq? p (rewrite python))))))
 
+(test-equal "package-input-rewriting/spec, graft"
+  (derivation-file-name (package-derivation %store sed))
+
+  ;; Make sure replacements are rewritten.
+  (let* ((dep0 (dummy-package "dep"
+                 (version "1")
+                 (build-system trivial-build-system)
+                 (inputs `(("coreutils" ,coreutils)))))
+         (dep1 (dummy-package "dep"
+                 (version "0")
+                 (build-system trivial-build-system)
+                 (replacement dep0)))
+         (p0   (dummy-package "p"
+                 (build-system trivial-build-system)
+                 (inputs `(("dep" ,dep1)))))
+         (rewrite (package-input-rewriting/spec
+                   `(("coreutils" . ,(const sed)))))
+         (p1      (rewrite p0)))
+    (match (package-inputs p1)
+      ((("dep" dep))
+       (match (package-inputs (package-replacement dep))
+         ((("coreutils" coreutils))
+          ;; COREUTILS is not 'eq?' to SED, so the most reliable way to check
+          ;; for equality is to lower to a derivation.
+          (derivation-file-name
+           (package-derivation %store coreutils))))))))
+
 (test-equal "package-patched-vulnerabilities"
   '(("CVE-2015-1234")
     ("CVE-2016-1234" "CVE-2018-4567")
