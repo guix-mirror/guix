@@ -1882,13 +1882,13 @@ WebSocket usage in Python programs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.23.0")
+    (version "2.24.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "1rhpg0jb08v0gd7f19jjiwlcdnxpmqi1fhvw7r4s9avddi4kvx5k"))))
+               "06r3017hz0hzxv42gpg73l8xvdjbzw7q904ljvp36b5p3l9rlmdk"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
@@ -2113,7 +2113,6 @@ authenticated session objects providing things like keep-alive.")
        ("python-certifi" ,python-certifi)
        ("python-cryptography" ,python-cryptography)
        ("python-idna" ,python-idna)
-       ("python-ipaddress" ,python-ipaddress)
        ("python-pyopenssl" ,python-pyopenssl)
        ("python-pysocks" ,python-pysocks)))
     (home-page "https://urllib3.readthedocs.io/")
@@ -2122,6 +2121,7 @@ authenticated session objects providing things like keep-alive.")
      "Urllib3 supports features left out of urllib and urllib2 libraries.  It
 can reuse the same socket connection for multiple requests, it can POST files,
 supports url redirection and retries, and also gzip and deflate decoding.")
+    (properties `((python2-variant . ,(delay python2-urllib3))))
     (license license:expat)))
 
 ;; Some software requires an older version of urllib3, notably Docker.
@@ -2137,7 +2137,12 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 
 (define-public python2-urllib3
-  (package-with-python2 python-urllib3))
+  (let ((base (package-with-python2 (strip-python2-variant python-urllib3))))
+    (package/inherit
+     base
+     (propagated-inputs
+      `(("python-ipaddress" ,python2-ipaddress)
+        ,@(package-propagated-inputs base))))))
 
 (define-public awscli
   (package

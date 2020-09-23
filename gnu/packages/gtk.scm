@@ -824,7 +824,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.24.20")
+   (version "3.24.21")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -832,7 +832,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1wqxkd3xnqwihcawncp9mkf9bv5a5fg5i4ahm6klpl782vvnkb1d"))
+              "0llgq2adzn9p3bfq9rv2dhscmvzs35jp3glrfvy3vs1mrpknmsmf"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (propagated-inputs
@@ -1613,7 +1613,7 @@ and routines to assist in editing internationalized text.")
        (sha256
         (base32 "08rpw9hkaprm4r853xy1d35i2af1pji8c3mzzl01mmwmyr9p0x8k"))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("check" ,check)
+                     ("check" ,check-0.14)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
                      ("xorg-server" ,xorg-server-for-tests)))

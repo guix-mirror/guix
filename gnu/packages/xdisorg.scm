@@ -497,7 +497,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.101")
+    (version "2.4.102")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -505,8 +505,7 @@ rasterisation.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "19vqbhqljhln0lrpnv3s7y3lkhsdcp76dl8bhqj3cis9ism1pwyx"))
-              (patches (search-patches "libdrm-realpath-virtio.patch"))))
+                "0nx0bd9dhymdsd99v4ifib77yjirkvkxf5hzdkbr7qr8dhrzkjwb"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags

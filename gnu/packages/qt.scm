@@ -346,7 +346,6 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtbase
   (package
     (name "qtbase")
-    ;; TODO Remove ((gnu packages kde) qtbase-for-krita) when upgrading qtbase.
     (version "5.14.2")
     (source (origin
              (method url-fetch)
@@ -359,7 +358,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "12mjsahlma9rw3vz9a6b5h2s6ylg8b34hxc2vnlna5ll429fgfa8"))
              ;; Use TZDIR to avoid depending on package "tzdata".
              (patches (search-patches "qtbase-use-TZDIR.patch"
-                                      "qtbase-moc-ignore-gcc-macro.patch"))
+                                      "qtbase-moc-ignore-gcc-macro.patch"
+                                      "qtbase-absolute-runpath.patch"
+                                      "qtbase-fix-krita-deadlock.patch"))
              (modules '((guix build utils)))
              (snippet
                ;; corelib uses bundled harfbuzz, md4, md5, sha3
@@ -371,6 +372,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                   "zlib"))
                   #t)))))
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (propagated-inputs
      `(("mesa" ,mesa)
        ;; Use which the package, not the function
@@ -476,6 +478,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                   out "/share/doc/qt5/examples")
                  "-opensource"
                  "-confirm-license"
+
+                 ;; Later stripped into the :debug output.
+                 "-force-debug-info"
 
                  ;; These features require higher versions of Linux than the
                  ;; minimum version of the glibc.  See
@@ -600,27 +605,6 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 
 ;; qt used to refer to the monolithic Qt 5.x package
 (define-deprecated qt qtbase)
-
-;; This variable is required by 'python-pyside-2-tools', which copies some
-;; qtbase executables that fail to run because RUNPATH refers to the
-;; wrong $ORIGIN.  TODO: Merge with qtbase in the next rebuild cycle.
-(define qtbase/next
-  (package
-    (inherit qtbase)
-    (source
-     (origin
-       (inherit (package-source qtbase))
-       (patches (append (origin-patches (package-source qtbase))
-                        (search-patches "qtbase-absolute-runpath.patch")))))))
-
-(define-public qtbase-for-krita
-  (hidden-package
-    (package
-      (inherit qtbase)
-      (source (origin
-                (inherit (package-source qtbase))
-                (patches (append (origin-patches (package-source qtbase))
-                                 (search-patches "qtbase-fix-krita-deadlock.patch"))))))))
 
 (define-public qtsvg
   (package (inherit qtbase)
@@ -2779,7 +2763,7 @@ generate Python bindings for your C or C++ code.")
     (inputs
      `(("python-pyside-2" ,python-pyside-2)
        ("python-shiboken-2" ,python-shiboken-2)
-       ("qtbase" ,qtbase/next)))
+       ("qtbase" ,qtbase)))
     (native-inputs
      `(("python" ,python-wrapper)))
     (arguments

@@ -4201,17 +4201,16 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.34.0")
+    (version "0.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://gnome/sources/" name "/"
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
-              (patches (search-patches "dconf-meson-0.52.patch"))
               (sha256
                (base32
-                "0lnsl85cp2vpzgp8pkf6l6yd2i3lp02jdvga1icfa78j2smr8fll"))))
+                "0bfs069pjv6lhp7xrzmrhz3876ay2ryqxzc6mlva1hhz34ibprlz"))))
     (build-system meson-build-system)
     (propagated-inputs
      ;; In Requires of dconf.pc.
@@ -4230,10 +4229,17 @@ and RDP protocols.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (arguments
-     `(#:tests? #f ; To contact dbus it needs to load /var/lib/dbus/machine-id
-                   ; or /etc/machine-id.
-       #:glib-or-gtk? #t
-       #:configure-flags '("-Denable-gtk-doc=true")))
+     `(#:glib-or-gtk? #t
+       #:configure-flags '("-Denable-gtk-doc=true")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'increase-test-timeout
+                    (lambda _
+                      ;; On big-memory systems, the engine test may take
+                      ;; much longer than the default of 30 seconds.
+                      (substitute* "tests/meson.build"
+                        (("test\\(unit_test\\[0\\], exe" all)
+                         (string-append all ", timeout : 90")))
+                      #t)))))
     (home-page "https://developer.gnome.org/dconf/")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
@@ -7844,7 +7850,7 @@ libxml2.")
        ("xmllint" ,libxml2)))
     (inputs
      `(("accountsservice" ,accountsservice)
-       ("check" ,check) ; for testing
+       ("check" ,check-0.14)            ;for testing
        ("elogind" ,elogind)
        ("gnome-session" ,gnome-session)
        ("gnome-settings-daemon" ,gnome-settings-daemon)

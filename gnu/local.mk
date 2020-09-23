@@ -894,7 +894,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
   %D%/packages/patches/dbus-c++-threading-mutex.patch		\
   %D%/packages/patches/dbxfs-remove-sentry-sdk.patch		\
-  %D%/packages/patches/dconf-meson-0.52.patch			\
   %D%/packages/patches/debops-constants-for-external-program-names.patch \
   %D%/packages/patches/debops-debops-defaults-fall-back-to-less.patch \
   %D%/packages/patches/dee-vapi.patch			\
@@ -1155,8 +1154,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/json-c-0.13-CVE-2020-12762.patch	\
   %D%/packages/patches/json-c-0.12-CVE-2020-12762.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
+  %D%/packages/patches/jamvm-1.5.1-aarch64-support.patch	\
+  %D%/packages/patches/jamvm-1.5.1-armv7-support.patch	\
+  %D%/packages/patches/jamvm-2.0.0-aarch64-support.patch	\
   %D%/packages/patches/jamvm-2.0.0-disable-branch-patching.patch	\
-  %D%/packages/patches/jamvm-arm.patch				\
+  %D%/packages/patches/jamvm-2.0.0-opcode-guard.patch		\
   %D%/packages/patches/java-apache-ivy-port-to-latest-bouncycastle.patch	\
   %D%/packages/patches/java-commons-collections-fix-java8.patch \
   %D%/packages/patches/java-jeromq-fix-tests.patch		\
@@ -1219,7 +1221,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
-  %D%/packages/patches/libdrm-realpath-virtio.patch		\
   %D%/packages/patches/libgeotiff-adapt-test-script-for-proj-6.2.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgnome-encoding.patch			\

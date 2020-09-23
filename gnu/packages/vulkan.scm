@@ -183,7 +183,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.2.141")
+    (version "1.2.148")
     (source
      (origin
        (method git-fetch)
@@ -193,7 +193,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "10nmx6y4llllfcczyfz76amd0vkqv09dj952d19zkzmmgcval7zq"))))
+         "1c877npvmkv2qxac308m3x0ij3il7hy5xk3fwsfi7s9dcsaxi63j"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -207,7 +207,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version "1.2.140")
+    (version "1.2.148")
     (source
      (origin
        (method git-fetch)
@@ -217,7 +217,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0rhyz0qgp0i7pcx6wlvgwy7j33d4cs0xx39f0b6igpfk0vk70r1w"))))
+         "0rxh4q09k0pdl3xlvxdv5qkak4d7az25gijxr5w170fjnd8yfrhk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -261,7 +261,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version "1.2.140")
+    (version "1.2.148")
     (source
      (origin
        (method git-fetch)
@@ -271,7 +271,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08dk0q77kpycn4vv19jh3ig73gbq3psan246a7fss0nfxpiddg0j"))))
+         "1908fw4rvg5iaim8ph0c0bzhac6jplg8dhfs6dpxd1dapzwqllkf"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)

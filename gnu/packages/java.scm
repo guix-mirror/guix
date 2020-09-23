@@ -290,7 +290,8 @@ language.")
               (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
                                   "JamVM%20" version "/jamvm-"
                                   version ".tar.gz"))
-              (patches (search-patches "jamvm-arm.patch"))
+              (patches (search-patches "jamvm-1.5.1-aarch64-support.patch"
+                                       "jamvm-1.5.1-armv7-support.patch"))
               (sha256
                (base32
                 "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))
@@ -306,13 +307,30 @@ language.")
                             (assoc-ref %build-inputs "classpath"))
              "--disable-int-caching"
              "--enable-runtime-reloc-checks"
-             "--enable-ffi")))
+             "--enable-ffi")
+       #:phases
+       ,(if (string-prefix? "aarch64" (or (%current-system)
+                                          (%current-target-system)))
+            ;; Makefiles and the configure script need to be regenerated to
+            ;; incorporate support for AArch64.
+            '(modify-phases %standard-phases
+               (replace 'bootstrap
+                 (lambda _ (invoke "autoreconf" "-vif"))))
+            '%standard-phases)))
     (inputs
      `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
        ("libffi" ,libffi)
        ("zip" ,zip)
        ("zlib" ,zlib)))
+    (native-inputs
+     (if (string-prefix? "aarch64" (or (%current-system)
+                                       (%current-target-system)))
+         ;; Additional packages needed for autoreconf.
+         `(("autoconf" ,autoconf)
+           ("automake" ,automake)
+           ("libtool" ,libtool))
+         '()))
     (home-page "http://jamvm.sourceforge.net/")
     (synopsis "Small Java Virtual Machine")
     (description "JamVM is a Java Virtual Machine conforming to the JVM
@@ -697,7 +715,8 @@ machine.")))
                 (file-name (string-append "classpath-" version "-checkout"))
                 (sha256
                  (base32
-                  "1v2rww76ww322mpg3s12a1kkc6gkp31bm9gcxs532h0wq285fiw4"))))
+                  "1v2rww76ww322mpg3s12a1kkc6gkp31bm9gcxs532h0wq285fiw4"))
+                (patches (search-patches "classpath-aarch64-support.patch"))))
       (arguments
        `(#:make-flags
          ;; Ensure that the initial heap size is smaller than the maximum
@@ -763,7 +782,9 @@ machine.")))
                (base32
                 "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))
               (patches
-               (search-patches "jamvm-2.0.0-disable-branch-patching.patch"))
+               (search-patches "jamvm-2.0.0-disable-branch-patching.patch"
+                               "jamvm-2.0.0-opcode-guard.patch"
+                               "jamvm-2.0.0-aarch64-support.patch"))
               (snippet
                '(begin
                   ;; Remove precompiled software.
@@ -771,9 +792,10 @@ machine.")))
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "--with-classpath-install-dir="
-                            (assoc-ref %build-inputs "classpath")))))
+     (substitute-keyword-arguments (package-arguments jamvm-1-bootstrap)
+       ((#:configure-flags _)
+        '(list (string-append "--with-classpath-install-dir="
+                              (assoc-ref %build-inputs "classpath"))))))
     (inputs
      `(("classpath" ,classpath-devel)
        ("ecj-javac-wrapper" ,ecj-javac-wrapper)

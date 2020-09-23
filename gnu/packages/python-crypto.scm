@@ -497,14 +497,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.9.2")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1d4iykcv7cn9j399hczlxm5pzxmqy6d80h3j16dkjwlmv3293b4r"))))
+         "0fa26ggksyhknb43cja1g0jwp35qkdbavivdq6yynj1igd2z1vsj"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -519,14 +519,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.9.2")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "0af25w5mkd6vwns3r6ai1w5ip9xp0ms9s261zzssbpadzdr05hx0"))))
+         "0lr06a9317n2iwfqwz9mpalqm99acqwk1478arvyj1jj0ay4v4lf"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -741,7 +741,7 @@ ECB and OFB).")
 (define-public python-asn1crypto
   (package
     (name "python-asn1crypto")
-    (version "0.24.0")
+    (version "1.3.0")
     (source
       (origin
        (method git-fetch)
@@ -751,8 +751,13 @@ ECB and OFB).")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "10lai2cs5mnz3gpaffbw1m7b885ls8328q5wxm35vfmcip1f0xmb"))))
+          "0c7rj3hs9fplrj4bv63ppvnnr8fay727w3a9zx3jfkz63wklvm1w"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "run.py" "tests"))))))
     (home-page "https://github.com/wbond/asn1crypto")
     (synopsis "ASN.1 parser and serializer in Python")
     (description "asn1crypto is an ASN.1 parser and serializer with definitions

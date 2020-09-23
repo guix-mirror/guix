@@ -15881,7 +15881,7 @@ than is possible with plain-text methods alone.")
     (propagated-inputs
      `(("libxml2" ,libxml2)))
     (native-inputs
-     `(("check" ,check)
+     `(("check" ,check-0.14)
        ("swig" ,swig)))
     (home-page "http://sbml.org/Software/libSBML")
     (synopsis "Process SBML files and data streams")

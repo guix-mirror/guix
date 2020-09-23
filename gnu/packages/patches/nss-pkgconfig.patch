@@ -217,9 +217,12 @@ Later adapted to apply cleanly to nss-3.21.
 +
 --- nss-3.21/nss/manifest.mn
 +++ nss-3.21/nss/manifest.mn
-@@ -10,4 +10,4 @@
+@@ -10,7 +10,7 @@
  
  RELEASE = nss
  
 -DIRS = coreconf lib cmd cpputil gtests
 +DIRS = coreconf lib cmd cpputil gtests config
+ 
+ lib: coreconf
+ cmd: lib

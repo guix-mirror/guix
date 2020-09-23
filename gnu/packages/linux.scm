@@ -1271,7 +1271,7 @@ application by hooking GStreamer into the loopback device.")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
@@ -1280,7 +1280,7 @@ application by hooking GStreamer into the loopback device.")
              version "/Linux-PAM-" version ".tar.xz"))
        (sha256
         (base32
-         "1nyh9kdi3knhxcbv5v4snya0g3gff0m671lnvqcbygw3rm77mx7g"))
+         "0d6hvz6lpkac08hw5wnlhfdm0fhqd0n6jf6v7fz3jhg6a6694vfd"))
        (patches (search-patches "linux-pam-no-setfsuid.patch"))))
 
     (build-system gnu-build-system)
@@ -2023,7 +2023,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.2.2")
+    (version "1.2.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2031,7 +2031,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1v5kb8jyvrpkvvq7dq8hfbmcj68lml97i4s0prxpfx2mh3c57s6q"))))
+               "05dyk856ppvqymazyk1cmpln53g88cq1wjpnsygqrvnamyvwa7z8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -2047,14 +2047,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1wz460by17rmxrcydn583rd4lhj6wlvqs6x1j5pdzxn5g3app024"))))
+               "1ai1z4kf91b1m3qrpwqkc1af5vm2fkdkknqv95xdwf19q94aw6gz"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
