@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Jesse Dowell <jessedowell@gmail.com>
+;;; Copyright © 2020 Hamzeh Nasajpour <h.nasajpour@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -419,7 +420,8 @@ at the link-layer level.")
     (arguments
      `(#:configure-flags
        (list "-DNNG_ENABLE_COVERAGE=ON"
-             "-DNNG_ENABLE_TLS=ON")
+             "-DNNG_ENABLE_TLS=ON"
+             "-DBUILD_SHARED_LIBS=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
