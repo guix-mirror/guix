@@ -3,8 +3,10 @@ and popen(3) need to be tweaked to use the right shell.  For the bootstrap
 glibc, we just use whatever `sh' can be found in $PATH.  The final glibc
 instead uses the hard-coded absolute file name of `bash'.
 
+In addition, status should be initialized to 0 and not -1.
+
 diff --git a/libio/iopopen.c b/libio/iopopen.c
-index ebc381ed..e0d3ed1b 100644
+index ebc381ed7c..e0d3ed1bc3 100644
 --- a/libio/iopopen.c
 +++ b/libio/iopopen.c
 @@ -85,7 +85,7 @@ spawn_process (posix_spawn_file_actions_t *fa, FILE *fp, const char *command,
@@ -17,9 +19,18 @@ index ebc381ed..e0d3ed1b 100644
  		     (char *) command, NULL }, __environ) != 0)
      return false;
 diff --git a/sysdeps/posix/system.c b/sysdeps/posix/system.c
-index a03f478f..9530404e 100644
+index a03f478fc7..94da6facf3 100644
 --- a/sysdeps/posix/system.c
 +++ b/sysdeps/posix/system.c
+@@ -101,7 +101,7 @@ cancel_handler (void *arg)
+ static int
+ do_system (const char *line)
+ {
+-  int status = -1;
++  int status = 0;
+   int ret;
+   pid_t pid;
+   struct sigaction sa;
 @@ -145,7 +145,7 @@ do_system (const char *line)
    __posix_spawnattr_setflags (&spawn_attr,
  			      POSIX_SPAWN_SETSIGDEF | POSIX_SPAWN_SETSIGMASK);
