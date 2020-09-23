@@ -9271,6 +9271,28 @@ guix build --with-branch=guile-sqlite3=master cuirass
 This is similar to @option{--with-branch}, except that it builds from
 @var{commit} rather than the tip of a branch.  @var{commit} must be a valid
 Git commit SHA1 identifier or a tag.
+
+@cindex test suite, skipping
+@item --without-tests=@var{package}
+Build @var{package} without running its tests.  This can be useful in
+situations where you want to skip the lengthy test suite of a
+intermediate package, or if a package's test suite fails in a
+non-deterministic fashion.  It should be used with care because running
+the test suite is a good way to ensure a package is working as intended.
+
+Turning off tests leads to a different store item.  Consequently, when
+using this option, anything that depends on @var{package} must be
+rebuilt, as in this example:
+
+@example
+guix install --without-tests=python python-notebook
+@end example
+
+The command above installs @code{python-notebook} on top of
+@code{python} built without running its test suite.  To do so, it also
+rebuilds everything that depends on @code{python}, including
+@code{python-notebook} itself.
+
 @end table
 
 @node Additional Build Options

@@ -264,5 +264,19 @@
                        ((("x" dep3))
                         (map package-source (list dep1 dep3))))))))))))
 
+(test-assert "options->transformation, without-tests"
+  (let* ((dep (dummy-package "dep"))
+         (p   (dummy-package "foo"
+                (inputs `(("dep" ,dep)))))
+         (t   (options->transformation '((without-tests . "dep")
+                                         (without-tests . "tar")))))
+    (with-store store
+      (let ((new (t store p)))
+        (match (bag-direct-inputs (package->bag new))
+          ((("dep" dep) ("tar" tar) _ ...)
+           ;; TODO: Check whether TAR has #:tests? #f when transformations
+           ;; apply to implicit inputs.
+           (equal? (package-arguments dep)
+                   '(#:tests? #f))))))))
 
 (test-end)

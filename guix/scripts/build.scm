@@ -393,6 +393,25 @@ a checkout of the Git repository at the given URL."
         (rewrite obj)
         obj)))
 
+(define (transform-package-tests specs)
+  "Return a procedure that, when passed a package, sets #:tests? #f in its
+'arguments' field."
+  (define (package-without-tests p)
+    (package/inherit p
+      (arguments
+       (substitute-keyword-arguments (package-arguments p)
+         ((#:tests? _ #f) #f)))))
+
+  (define rewrite
+    (package-input-rewriting/spec (map (lambda (spec)
+                                         (cons spec package-without-tests))
+                                       specs)))
+
+  (lambda (store obj)
+    (if (package? obj)
+        (rewrite obj)
+        obj)))
+
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
   ;; key used in the option alist, and the cdr is the transformation
@@ -403,7 +422,8 @@ a checkout of the Git repository at the given URL."
     (with-graft  . ,transform-package-inputs/graft)
     (with-branch . ,transform-package-source-branch)
     (with-commit . ,transform-package-source-commit)
-    (with-git-url . ,transform-package-source-git-url)))
+    (with-git-url . ,transform-package-source-git-url)
+    (without-tests . ,transform-package-tests)))
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
@@ -423,7 +443,9 @@ a checkout of the Git repository at the given URL."
           (option '("with-commit") #t #f
                   (parser 'with-commit))
           (option '("with-git-url") #t #f
-                  (parser 'with-git-url)))))
+                  (parser 'with-git-url))
+          (option '("without-tests") #t #f
+                  (parser 'without-tests)))))
 
 (define (show-transformation-options-help)
   (display (G_ "
@@ -443,7 +465,10 @@ a checkout of the Git repository at the given URL."
                          build PACKAGE from COMMIT"))
   (display (G_ "
       --with-git-url=PACKAGE=URL
-                         build PACKAGE from the repository at URL")))
+                         build PACKAGE from the repository at URL"))
+  (display (G_ "
+      --without-tests=PACKAGE
+                         build PACKAGE without running its tests")))
 
 
 (define (options->transformation opts)
