@@ -6724,7 +6724,7 @@ output.")
     (synopsis "Set up the Linux console font and keyboard")
     (description
      "console-setup provides the console with the same keyboard
-configuration scheme that X Window System has.  In particular, the
+configuration scheme that the X Window System has.  In particular, the
 @command{ckbcomp} program compiles an XKB keyboard description to a keymap
 suitable for @command{loadkeys} or @command{kbdcontrol}.  As a result, there
 is no need to duplicate or change the console keyboard files just to make
