@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,7 @@
 (define-module (test-scripts-build)
   #:use-module (guix tests)
   #:use-module (guix store)
+  #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix scripts build)
@@ -163,11 +164,16 @@
                ((("foo" dep1) ("bar" dep2))
                 (and (string=? (package-full-name dep1)
                                (package-full-name grep))
-                     (eq? (package-replacement dep1) findutils)
+                     (string=? (package-full-name (package-replacement dep1))
+                               (package-full-name findutils))
                      (string=? (package-name dep2) "chbouib")
                      (match (package-native-inputs dep2)
                        ((("x" dep))
-                        (eq? (package-replacement dep) findutils)))))))))))
+                        (with-store store
+                          (string=? (derivation-file-name
+                                     (package-derivation store findutils))
+                                    (derivation-file-name
+                                     (package-derivation store dep))))))))))))))
 
 (test-equal "options->transformation, with-branch"
   (git-checkout (url "https://example.org")

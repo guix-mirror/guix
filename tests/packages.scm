@@ -38,6 +38,7 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix memoization)
   #:use-module (guix profiles)
   #:use-module (guix scripts package)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1)
@@ -1262,7 +1264,8 @@
                               ("baz" ,dep)))))
          (rewrite (package-input-rewriting/spec
                    `(("coreutils" . ,(const sed))
-                     ("grep" . ,(const findutils)))))
+                     ("grep" . ,(const findutils)))
+                   #:deep? #f))
          (p1      (rewrite p0))
          (p2      (rewrite p0)))
     (and (not (eq? p1 p0))
@@ -1279,7 +1282,11 @@
                  (match (package-native-inputs dep3)
                    ((("x" dep))
                     (string=? (package-full-name dep)
-                              (package-full-name findutils))))))))))
+                              (package-full-name findutils)))))))
+
+         ;; Make sure implicit inputs were left unchanged.
+         (equal? (drop (bag-direct-inputs (package->bag p1)) 3)
+                 (drop (bag-direct-inputs (package->bag p0)) 3)))))
 
 (test-assert "package-input-rewriting/spec, partial match"
   (let* ((dep     (dummy-package "chbouib"
@@ -1290,7 +1297,8 @@
                               ("bar" ,dep)))))
          (rewrite (package-input-rewriting/spec
                    `(("chbouib@123" . ,(const sed)) ;not matched
-                     ("grep" . ,(const findutils)))))
+                     ("grep" . ,(const findutils)))
+                   #:deep? #f))
          (p1      (rewrite p0)))
     (and (not (eq? p1 p0))
          (string=? "example" (package-name p1))
@@ -1303,6 +1311,58 @@
                    ((("x" dep))
                     (string=? (package-full-name dep)
                               (package-full-name findutils))))))))))
+
+(test-assert "package-input-rewriting/spec, deep"
+  (let* ((dep     (dummy-package "chbouib"))
+         (p0      (dummy-package "example"
+                    (build-system gnu-build-system)
+                    (inputs `(("dep" ,dep)))))
+         (rewrite (package-input-rewriting/spec
+                   `(("tar"  . ,(const sed))
+                     ("gzip" . ,(const findutils)))))
+         (p1      (rewrite p0))
+         (p2      (rewrite p0)))
+    (and (not (eq? p1 p0))
+         (eq? p1 p2)                              ;memoization
+         (string=? "example" (package-name p1))
+         (match (package-inputs p1)
+           ((("dep" dep1))
+            (and (string=? (package-full-name dep1)
+                           (package-full-name dep))
+                 (eq? dep1 (rewrite dep)))))      ;memoization
+
+         ;; Make sure implicit inputs were replaced.
+         (match (bag-direct-inputs (package->bag p1))
+           ((("dep" dep1) ("tar" tar) ("gzip" gzip) _ ...)
+            (and (eq? dep1 (rewrite dep))
+                 (string=? (package-full-name tar)
+                           (package-full-name sed))
+                 (string=? (package-full-name gzip)
+                           (package-full-name findutils))))))))
+
+(test-assert "package-input-rewriting/spec, no duplicates"
+  ;; Ensure that deep input rewriting does not forget implicit inputs.  Doing
+  ;; so could lead to duplicates in a package's inputs: in the example below,
+  ;; P0's transitive inputs would contain one rewritten "python" and one
+  ;; original "python".  These two "python" packages are thus not 'eq?' but
+  ;; they lower to the same derivation.  See <https://bugs.gnu.org/42156>,
+  ;; which can be reproduced by passing #:deep? #f.
+  (let* ((dep0    (dummy-package "dep0"
+                    (build-system trivial-build-system)
+                    (propagated-inputs `(("python" ,python)))))
+         (p0      (dummy-package "chbouib"
+                    (build-system python-build-system)
+                    (arguments `(#:python ,python))
+                    (inputs `(("dep0" ,dep0)))))
+         (rewrite (package-input-rewriting/spec '() #:deep? #t))
+         (p1      (rewrite p0))
+         (bag1    (package->bag p1))
+         (pythons (filter-map (match-lambda
+                                (("python" python) python)
+                                (_ #f))
+                              (bag-transitive-inputs bag1))))
+    (match (delete-duplicates pythons eq?)
+      ((p) (eq? p (rewrite python))))))
 
 (test-equal "package-patched-vulnerabilities"
   '(("CVE-2015-1234")

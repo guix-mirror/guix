@@ -259,6 +259,17 @@ drv1=`guix build guile -d`
 drv2=`guix build guile --with-input=gimp=ruby -d`
 test "$drv1" = "$drv2"
 
+# See <https://bugs.gnu.org/42156>.
+drv1=`guix build glib -d`
+drv2=`guix build glib -d --with-input=libreoffice=inkscape`
+test "$drv1" = "$drv2"
+
+# Rewriting implicit inputs.
+drv1=`guix build hello -d`
+drv2=`guix build hello -d --with-input=gcc=gcc-toolchain`
+test "$drv1" != "$drv2"
+guix gc -R "$drv2" | grep `guix build -d gcc-toolchain`
+
 if guix build guile --with-input=libunistring=something-really-silly
 then false; else true; fi
 

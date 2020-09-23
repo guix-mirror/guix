@@ -422,6 +422,16 @@ name of its URI."
                                                        package)
                                                       16)))))
 
+(define-syntax-rule (package/inherit p overrides ...)
+  "Like (package (inherit P) OVERRIDES ...), except that the same
+transformation is done to the package replacement, if any.  P must be a bare
+identifier, and will be bound to either P or its replacement when evaluating
+OVERRIDES."
+  (let loop ((p p))
+    (package (inherit p)
+      overrides ...
+      (replacement (and=> (package-replacement p) loop)))))
+
 (define (package-upstream-name package)
   "Return the upstream name of PACKAGE, which could be different from the name
 it has in Guix."
@@ -1051,12 +1061,12 @@ package and returns its new name after rewrite."
 
   (package-mapping rewrite (cut assq <> replacements)))
 
-(define (package-input-rewriting/spec replacements)
+(define* (package-input-rewriting/spec replacements #:key (deep? #t))
   "Return a procedure that, given a package, applies the given REPLACEMENTS to
-all the package graph (excluding implicit inputs).  REPLACEMENTS is a list of
-spec/procedures pair; each spec is a package specification such as \"gcc\" or
-\"guile@2\", and each procedure takes a matching package and returns a
-replacement for that package."
+all the package graph, including implicit inputs unless DEEP? is false.
+REPLACEMENTS is a list of spec/procedures pair; each spec is a package
+specification such as \"gcc\" or \"guile@2\", and each procedure takes a
+matching package and returns a replacement for that package."
   (define table
     (fold (lambda (replacement table)
             (match replacement
@@ -1081,22 +1091,27 @@ replacement for that package."
                  (package-name package)
                  table))
 
-  (define (rewrite package)
-    (match (find-replacement package)
-      (#f package)
-      (proc (proc package))))
+  (define replacement-property
+    (gensym " package-replacement"))
 
-  (package-mapping rewrite find-replacement))
+  (define (rewrite p)
+    (if (assq-ref (package-properties p) replacement-property)
+        p
+        (match (find-replacement p)
+          (#f p)
+          (proc
+           (let ((new (proc p)))
+             ;; Mark NEW as already processed.
+             (package/inherit new
+               (properties `((,replacement-property . #t)
+                             ,@(package-properties new)))))))))
 
-(define-syntax-rule (package/inherit p overrides ...)
-  "Like (package (inherit P) OVERRIDES ...), except that the same
-transformation is done to the package replacement, if any.  P must be a bare
-identifier, and will be bound to either P or its replacement when evaluating
-OVERRIDES."
-  (let loop ((p p))
-    (package (inherit p)
-      overrides ...
-      (replacement (and=> (package-replacement p) loop)))))
+  (define (cut? p)
+    (or (assq-ref (package-properties p) replacement-property)
+        (find-replacement p)))
+
+  (package-mapping rewrite cut?
+                   #:deep? deep?))
 
 
 ;;;

@@ -6272,12 +6272,13 @@ This is exactly what the @option{--with-input} command-line option does
 The following variant of @code{package-input-rewriting} can match packages to
 be replaced by name rather than by identity.
 
-@deffn {Scheme Procedure} package-input-rewriting/spec @var{replacements}
-Return a procedure that, given a package, applies the given @var{replacements} to
-all the package graph (excluding implicit inputs).  @var{replacements} is a list of
-spec/procedures pair; each spec is a package specification such as @code{"gcc"} or
-@code{"guile@@2"}, and each procedure takes a matching package and returns a
-replacement for that package.
+@deffn {Scheme Procedure} package-input-rewriting/spec @var{replacements} [#:deep? #t]
+Return a procedure that, given a package, applies the given
+@var{replacements} to all the package graph, including implicit inputs
+unless @var{deep?} is false.  @var{replacements} is a list of
+spec/procedures pair; each spec is a package specification such as
+@code{"gcc"} or @code{"guile@@2"}, and each procedure takes a matching
+package and returns a replacement for that package.
 @end deffn
 
 The example above could be rewritten this way:
