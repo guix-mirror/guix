@@ -78,6 +78,7 @@
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
+;;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7488,6 +7489,29 @@ used both as a first-in last-out (FILO) and as a first-in first-out (FIFO)
 stack, i.e. elements can be added to the front or back of the queue, and can
 be removed from the front.  This type of data structure is sometimes called an
 \"output-restricted deque\".")
+    (license license:gpl3+)))
+
+(define-public emacs-quickrun
+  (package
+    (name "emacs-quickrun")
+    (version "2.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacsorphanage/quickrun")
+             (commit version)))
+       (sha256
+        (base32 "0a1n2v09h0n7d9p2izflqqang4ny0b46dlqvmxvkkik4bb6f4wcz"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacsorphanage/quickrun")
+    (synopsis "Execute editing buffer and show its output quickly")
+    (description
+     "This package evaluates the content of a buffer, or region, and displays
+the result.  Quickrun executes not only script languages (Perl, Ruby, Python
+etc), but also compiling languages (C, C++, Go, Java etc) and markup
+languages.")
     (license license:gpl3+)))
 
 (define-public emacs-pkg-info
