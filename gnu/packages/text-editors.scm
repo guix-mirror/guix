@@ -227,7 +227,7 @@ bindings and many of the powerful features of GNU Emacs.")
 (define-public jucipp
   (package
     (name "jucipp")
-    (version "1.6.0")
+    (version "1.6.1")
     (home-page "https://gitlab.com/cppit/jucipp")
     (source (origin
               (method git-fetch)
@@ -239,7 +239,7 @@ bindings and many of the powerful features of GNU Emacs.")
                                   (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "177myy6qvjlb6j3f3i3xmfml5r3p9in8xzpvm0n59dn56s81gpnr"))))
+               (base32 "0lb477acqrm3fy3j6i7j9l68j48cnkrzi80588npwwjssqicy4g6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON"
