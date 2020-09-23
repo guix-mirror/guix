@@ -1084,7 +1084,7 @@ from devices on the 433 MHz, 868 MHz, 315 MHz, 345 MHz and 915 MHz ISM bands.")
 (define-public multimon-ng
   (package
     (name "multimon-ng")
-    (version "1.1.8")
+    (version "1.1.9")
     (source
      (origin
        (method git-fetch)
@@ -1093,13 +1093,13 @@ from devices on the 433 MHz, 868 MHz, 315 MHz, 345 MHz and 915 MHz ISM bands.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1973xfyvzl1viz19zr83cgqlx5laxbjrca35rqabn6dlb6xb5xk8"))))
+        (base32 "01716cfhxfzsab9zjply9giaa4nn4b7rm3p3vizrwi7n253yiwm2"))))
     (build-system cmake-build-system)
     (inputs
      `(("libx11" ,libx11)
        ("pulseaudio" ,pulseaudio)))
     (arguments
-     '(#:tests? #f)) ; No test suite
+     '(#:tests? #f))                    ; no test suite
     (home-page "https://github.com/EliasOenal/multimon-ng")
     (synopsis "Decoder for digital radio transmission modes")
     (description "Multimon-ng can decode several digital radio transmission
