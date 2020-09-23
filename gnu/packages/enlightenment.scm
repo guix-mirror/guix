@@ -576,7 +576,8 @@ directories.
     (arguments
      '(#:tests? #f))                    ; no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("efl" ,efl)))
     (home-page "https://www.enlightenment.org")
