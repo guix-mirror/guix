@@ -3178,15 +3178,14 @@ and multipart/form-data.")
 (define-public perl-http-cookiejar
   (package
     (name "perl-http-cookiejar")
-    (version "0.008")
+    (version "0.010")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
                            "HTTP-CookieJar-" version ".tar.gz"))
        (sha256
-        (base32
-         "0rfw6avcralggs7bf7n86flvhaahxjnqzvpwszp0sk4z4wwy01wm"))))
+        (base32 "1l7mqsca4fmls7agzwmp6yq1x16y9jwq4114i6i75n654gl37qsn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
