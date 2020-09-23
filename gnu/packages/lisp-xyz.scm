@@ -8511,7 +8511,12 @@ and usefulness, not speed.  Track the progress at
   (sbcl-package->cl-source-package sbcl-numcl))
 
 (define-public ecl-numcl
-  (sbcl-package->ecl-package sbcl-numcl))
+  (let ((pkg (sbcl-package->ecl-package sbcl-numcl)))
+    (package
+      (inherit pkg)
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ((#:tests? _ #f) #t))))))
 
 (define-public sbcl-pzmq
   (let ((commit "7c7390eedc469d033c72dc497984d1536ee75826")
