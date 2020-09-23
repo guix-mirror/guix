@@ -2165,7 +2165,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.07.28")
+    (version "2020.09.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -2173,7 +2173,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1if7xyi7g9rpni1jbs7gv5m12s34qdb15dpfbbjn8120h16y7cqz"))))
+                "1827hcp9bvwq7p2f5r0wgkg6yb5fgvr4miyi3d99hkah2afw12za"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -4440,16 +4440,16 @@ transcode or reformat the videos in any way, producing perfect backups.")
 (define-public svt-av1
   (package
     (name "svt-av1")
-    (version "0.8.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/OpenVisualCloud/SVT-AV1")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0xad35q9sv5w0iihcf9q1f1m7br5anl3vsyx9svnx128iqf0n997"))))
+    (version "0.8.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenVisualCloud/SVT-AV1")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gfxdmdql090p7c8ln1z344g467l41p45287lmwy590hv8gw6bfg"))))
     (build-system cmake-build-system)
     ;; SVT-AV1 only supports Intel-compatible CPUs.
     (supported-systems '("x86_64-linux" "i686-linux"))

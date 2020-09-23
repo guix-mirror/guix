@@ -698,6 +698,49 @@ rounds that are calibrated to the chosen timer.")
 service processes for your tests with pytest.")
     (license license:expat)))
 
+(define-public python-pytest-toolbox
+  (package
+    (name "python-pytest-toolbox")
+    (version "0.4")
+    (source
+     (origin
+       ;; No tests in the PyPI tarball.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/samuelcolvin/pytest-toolbox")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wqkr3g5gmqdxmhzfsxbwy8pm3cadaj6a8cxq58w9bacly4hqbh0"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-docutils" ,python-docutils)
+       ("python-flake8" ,python-flake8)
+       ("python-isort" ,python-isort)
+       ("python-pydantic" ,python-pydantic)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-pygments" ,python-pygments)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest-sugar" ,python-pytest-sugar)))
+    (home-page "https://github.com/samuelcolvin/pytest-toolbox")
+    (synopsis "Numerous useful plugins for Pytest")
+    (description
+     "Pytest Toolbox contains many useful plugins for Pytest.  Among them are
+new fixtures, new methods and new comparison objects.")
+    (license license:expat)))
+
 (define-public python-pytest-aiohttp
   (package
     (name "python-pytest-aiohttp")

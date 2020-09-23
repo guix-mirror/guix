@@ -7341,3 +7341,42 @@ collect all requests from all packages and write them to an external
 XML file.
 @end enumerate\n")
       (license license:lppl1.3c))))
+
+(define-public texlive-biblatex
+  (let ((template (simple-texlive-package
+                   "texlive-biblatex"
+                   (list "/doc/latex/biblatex/"
+                         "/tex/latex/biblatex/")
+                   (base32
+                    "11kzvny50iklzkamr0rqd5x532q8rxny1xhmf96jl8mzj1d2zmay")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-logreq" ,texlive-logreq)
+         ("texlive-url" ,texlive-url)))
+      (home-page "https://www.ctan.org/pkg/biblatex")
+      (synopsis "Sophisticated bibliographies in LaTeX")
+      (description "BibLaTeX is a complete reimplementation of the
+bibliographic facilities provided by LaTeX.  Formatting of the
+bibliography is entirely controlled by LaTeX macros, facilitating the
+design of new bibliography and citation styles.  BibLaTeX uses its own
+data backend program \"biber\" to read and process the bibliographic
+data.  With biber, the range of features provided by biblatex
+includes:
+
+@enumerate
+@item
+full unicode support,
+
+@item
+customisable bibliography labels,
+
+@item
+multiple bibliographies in the same document, and
+
+@item
+subdivided bibliographies, such as bibliographies per chapter or
+section.
+@end enumerate\n")
+      (license license:lppl1.3c))))

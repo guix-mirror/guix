@@ -161,14 +161,23 @@ dnl GUIX_CHECK_GUILE_JSON
 dnl
 dnl Check whether a recent-enough Guile-JSON is available.
 AC_DEFUN([GUIX_CHECK_GUILE_JSON], [
-  dnl Check whether we're using Guile-JSON 3.x, which uses a JSON-to-Scheme
-  dnl mapping different from that of earlier versions.
+  dnl Check whether we're using Guile-JSON 4.3+, which provides
+  dnl 'define-json-mapping'.
   AC_CACHE_CHECK([whether Guile-JSON is available and recent enough],
     [guix_cv_have_recent_guile_json],
     [GUILE_CHECK([retval],
-      [(use-modules (json) (ice-9 match))
-       (match (json-string->scm \"[[ { \\\"a\\\": 42 } ]]\")
-         (#((("a" . 42))) #t))])
+      [(use-modules (json))
+
+       (define-json-mapping <frob> make-frob
+         frob?
+	 json->frob
+	 (a frob-a)
+	 (b frob-b \"bee\"))
+
+       (exit
+        (equal? (json->frob
+                 (open-input-string \"{ \\\"a\\\": 1, \\\"bee\\\": 2 }\"))
+                (make-frob 1 2)))])
      if test "$retval" = 0; then
        guix_cv_have_recent_guile_json="yes"
      else

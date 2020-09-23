@@ -395,7 +395,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.11")
+    (version "6.4.12")
     (source
      (origin
        (method url-fetch)
@@ -403,7 +403,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "177276dha2pchsvlki0skf460kmjnixqmzc6nj33fz4hd7c1sj1y"))))
+        (base32 "11s83af63gs9nnrjb66yq58xriyvi8hzj4ykxp3kws5z3nby111b"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -928,20 +928,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.30-0.31rc1")  ; Ensure it is ordered before "0.31"
+    (version "0.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
-                                  ;; version
-                                  "0.31~rc1" ;FIXME: Remove on the next update
-                                  ".tar.xz"))
-              ;; FIXME: The 'file-name' field below is needed only because of
-              ;; the tilde "~" in the URL base name.  Remove it when the tilde
-              ;; is no longer there.
-              (file-name (string-append name "-" version ".tar.xz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "11f10r9pp3p22afpfsrlz0xa0raas4w7fg2jkscgkjj5710ws8fw"))))
+                "1543l57viqzqikjgfzp2abpwz3p0k2iq0b1b3wmn31lwaghs07sp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -973,7 +967,7 @@ invoking @command{notifymuch} from the post-new hook.")
                                 (string-append "--emacsetcdir=" elisp)))))
                   (add-before 'check 'disable-failing-tests
                     ;; FIXME: Investigate why these tests are failing,
-                    ;; and try removing this for notmuch versions >= 0.31.
+                    ;; and try removing this for notmuch versions > 0.31.
                     (lambda _
                       (substitute* "test/T356-protected-headers.sh"
                         (("\\$NOTMUCH_GMIME_X509_CERT_VALIDITY") "0"))
@@ -1149,7 +1143,7 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.9.3")
+    (version "1.9.4")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -1157,7 +1151,7 @@ useful features.")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
-               (base32 "19g4qskg71jv7sxfxsdkjmrxk9mk5kf9b6fhw06g6wvm3205n95f"))))
+               (base32 "0g7an003simfdn7ihg9yjv7hl2czsmjsndjrp39i7cad8icixscn"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)

@@ -36,6 +36,7 @@
 # Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 # Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 # Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+# Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 #
 # This file is part of GNU Guix.
 #
@@ -342,6 +343,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/lout.scm				\
   %D%/packages/logging.scm			\
   %D%/packages/logo.scm				\
+  %D%/packages/loko.scm				\
   %D%/packages/lolcode.scm                      \
   %D%/packages/lsof.scm				\
   %D%/packages/lua.scm				\
@@ -430,6 +432,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/photo.scm			\
   %D%/packages/phabricator.scm 			\
   %D%/packages/php.scm				\
+  %D%/packages/piet.scm			\
   %D%/packages/pkg-config.scm			\
   %D%/packages/plotutils.scm			\
   %D%/packages/poedit.scm				\
@@ -1015,6 +1018,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-brect-bounds.patch			\
   %D%/packages/patches/gdb-hurd.patch				\
   %D%/packages/patches/gdm-default-session.patch		\
+  %D%/packages/patches/genimage-signedness.patch		\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch	\
   %D%/packages/patches/ghc-testsuite-dlopen-pie.patch		\
@@ -1552,7 +1556,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rust-openssl-sys-no-vendor.patch	\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
-  %D%/packages/patches/sbcl-graph-asdf-definitions.patch	\
   %D%/packages/patches/scalapack-blacs-mpi-deprecations.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-build-parallelism.patch		\

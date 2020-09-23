@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 (define-module (guix build asdf-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
+  #:use-module (guix build union)
   #:use-module (guix build lisp-utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -41,13 +43,21 @@
 ;;
 ;; Code:
 
-(define %object-prefix "/lib")
+(define %object-prefix "/lib/common-lisp")
 
 (define (%lisp-source-install-prefix)
-  (string-append %source-install-prefix "/" (%lisp-type) "-source"))
+  (string-append %source-install-prefix "/" (%lisp-type)))
 
 (define %system-install-prefix
   (string-append %source-install-prefix "/systems"))
+
+(define (main-system-name output)
+  (let ((package-name (package-name->name+version
+                       (strip-store-file-name output)))
+        (lisp-prefix (string-append (%lisp-type) "-")))
+    (if (string-prefix? lisp-prefix package-name)
+        (string-drop package-name (string-length lisp-prefix))
+        package-name)))
 
 (define (lisp-source-directory output name)
   (string-append output (%lisp-source-install-prefix) "/" name))
@@ -70,6 +80,13 @@ to it's binary output."
 
 (define (source-asd-file output name asd-file)
   (string-append (lisp-source-directory output name) "/" asd-file))
+
+(define (find-asd-files output name asd-files)
+  (if (null? asd-files)
+      (find-files (lisp-source-directory output name) "\\.asd$")
+      (map (lambda (asd-file)
+             (source-asd-file output name asd-file))
+           asd-files)))
 
 (define (copy-files-to-output out name)
   "Copy all files from the current directory to OUT.  Create an extra link to
@@ -107,9 +124,10 @@ if it's present in the native-inputs."
     (package-name->name+version
      (strip-store-file-name output)))
   (define (no-prefix pkgname)
-    (if (string-index pkgname #\-)
-        (string-drop pkgname (1+ (string-index pkgname #\-)))
-        pkgname))
+    (let ((index (string-index pkgname #\-)))
+      (if index
+          (string-drop pkgname (1+ index))
+          pkgname)))
   (define parent
     (match (assoc package-name inputs
                   (lambda (key alist-car)
@@ -125,9 +143,10 @@ if it's present in the native-inputs."
   (define parent-source
     (and parent
          (string-append parent "/share/common-lisp/"
-                        (string-take parent-name
-                                     (string-index parent-name #\-))
-                        "-source")))
+                        (let ((index (string-index parent-name #\-)))
+                          (if index
+                              (string-take parent-name index)
+                              parent-name)))))
 
   (define (first-subdirectory directory) ; From gnu-build-system.
     "Return the file name of the first sub-directory of DIRECTORY."
@@ -146,122 +165,83 @@ if it's present in the native-inputs."
   (with-directory-excursion source-directory
     (copy-files-to-output output package-name)))
 
-(define* (copy-source #:key outputs asd-system-name #:allow-other-keys)
+(define* (copy-source #:key outputs asd-systems #:allow-other-keys)
   "Copy the source to the library output."
   (let* ((out (library-output outputs))
-         (install-path (string-append out %source-install-prefix)))
-    (copy-files-to-output out asd-system-name)
+         (install-path (string-append out %source-install-prefix))
+         (system-name (main-system-name out)))
+    (copy-files-to-output out system-name)
     ;; Hide the files from asdf
     (with-directory-excursion install-path
-      (rename-file "source" (string-append (%lisp-type) "-source"))
+      (rename-file "source" (%lisp-type))
       (delete-file-recursively "systems")))
   #t)
 
-(define* (build #:key outputs inputs asd-file asd-system-name
+(define* (configure #:key inputs #:allow-other-keys)
+  ;; Create a directory having the configuration files for
+  ;; all the dependencies in 'etc/common-lisp/'.
+  (let ((out (string-append (getcwd) "/.cl-union")))
+    (match inputs
+      (((name . directories) ...)
+       (union-build out (filter directory-exists? directories)
+                    #:create-all-directories? #t
+                    #:log-port (%make-void-port "w"))))
+    (setenv "CL_UNION" out)
+    (setenv "XDG_CONFIG_DIRS" (string-append out "/etc")))
+  #t)
+
+(define* (build #:key outputs inputs asd-files asd-systems
                 #:allow-other-keys)
   "Compile the system."
   (let* ((out (library-output outputs))
-         (source-path (lisp-source-directory out asd-system-name))
+         (system-name (main-system-name out))
+         (source-path (string-append out (%lisp-source-install-prefix)))
          (translations (wrap-output-translations
                         `(,(output-translation source-path
                                                out))))
-         (asd-file (source-asd-file out asd-system-name asd-file)))
-
+         (asd-files (find-asd-files out system-name asd-files)))
     (setenv "ASDF_OUTPUT_TRANSLATIONS"
             (replace-escaped-macros (format #f "~S" translations)))
-
     (setenv "HOME" out) ; ecl's asdf sometimes wants to create $HOME/.cache
-
-    (compile-system asd-system-name asd-file)
-
-    ;; As above, ecl will sometimes create this even though it doesn't use it
-
-    (let ((cache-directory (string-append out "/.cache")))
-      (when (directory-exists? cache-directory)
-        (delete-file-recursively cache-directory))))
+    (compile-systems asd-systems asd-files))
   #t)
 
-(define* (check #:key tests? outputs inputs asd-file asd-system-name
+(define* (check #:key tests? outputs inputs asd-files asd-systems
                 test-asd-file
                 #:allow-other-keys)
   "Test the system."
   (let* ((out (library-output outputs))
-         (asd-file (source-asd-file out asd-system-name asd-file))
+         (system-name (main-system-name out))
+         (asd-files (find-asd-files out system-name asd-files))
          (test-asd-file
           (and=> test-asd-file
-                 (cut source-asd-file out asd-system-name <>))))
+                 (cut source-asd-file out system-name <>))))
     (if tests?
-        (test-system asd-system-name asd-file test-asd-file)
+        (test-system (first asd-systems) asd-files test-asd-file)
         (format #t "test suite not run~%")))
   #t)
 
-(define* (create-asd-file #:key outputs
-                          inputs
-                          asd-file
-                          asd-system-name
-                          #:allow-other-keys)
-  "Create a system definition file for the built system."
-  (let*-values (((out) (library-output outputs))
-                ((_ version) (package-name->name+version
-                              (strip-store-file-name out)))
-                ((new-asd-file) (string-append
-                                 (library-directory out)
-                                 "/" (normalize-string asd-system-name)
-                                 ".asd")))
-
-    (make-asd-file new-asd-file
-                   #:system asd-system-name
-                   #:version version
-                   #:inputs inputs
-                   #:system-asd-file asd-file))
-  #t)
-
-(define* (symlink-asd-files #:key outputs #:allow-other-keys)
-  "Create an extra reference to the system in a convenient location."
-  (let* ((out (library-output outputs)))
-    (for-each
-     (lambda (asd-file)
-       (receive (new-asd-file asd-file-directory)
-           (bundle-asd-file out asd-file)
-         (mkdir-p asd-file-directory)
-         (symlink asd-file new-asd-file)
-         ;; Update the source registry for future phases which might want to
-         ;; use the newly compiled system.
-         (prepend-to-source-registry
-          (string-append asd-file-directory "/"))))
-
-     (find-files (string-append out %object-prefix) "\\.asd$")))
-  #t)
+(define* (create-asdf-configuration #:key inputs outputs #:allow-other-keys)
+  "Create the ASDF configuration files for the built systems."
+  (let* ((system-name (main-system-name (assoc-ref outputs "out")))
+         (out (library-output outputs))
+         (conf-dir (string-append out "/etc/common-lisp"))
+         (deps-conf-dir (string-append (getenv "CL_UNION") "/etc/common-lisp"))
+         (source-dir (lisp-source-directory out system-name))
+         (lib-dir (string-append (library-directory out) "/" system-name)))
+    (make-asdf-configuration system-name conf-dir deps-conf-dir
+                             source-dir lib-dir)
+    #t))
 
 (define* (cleanup-files #:key outputs
                         #:allow-other-keys)
   "Remove any compiled files which are not a part of the final bundle."
-  (let ((out (library-output outputs)))
-    (match (%lisp-type)
-      ("sbcl"
-       (for-each
-        (lambda (file)
-          (unless (string-suffix? "--system.fasl" file)
-            (delete-file file)))
-        (find-files out "\\.fasl$")))
-      ("ecl"
-       (for-each delete-file
-                 (append (find-files out "\\.fas$")
-                         (find-files out "\\.o$")))))
-
-    (with-directory-excursion (library-directory out)
-      (for-each
-       (lambda (file)
-         (rename-file file
-                      (string-append "./" (basename file))))
-       (find-files "."))
-      (for-each delete-file-recursively
-                (scandir "."
-                         (lambda (file)
-                           (and
-                            (directory-exists? file)
-                            (string<> "." file)
-                            (string<> ".." file)))))))
+  (let* ((out (library-output outputs))
+         (cache-directory (string-append out "/.cache")))
+    ;; Remove the cache directory in case the lisp implementation wrote
+    ;; something in there when compiling or testing a system.
+    (when (directory-exists? cache-directory)
+      (delete-file-recursively cache-directory)))
   #t)
 
 (define* (strip #:rest args)
@@ -280,15 +260,14 @@ if it's present in the native-inputs."
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'bootstrap)
-    (delete 'configure)
-    (delete 'install)
+    (replace 'configure configure)
+    (add-before 'configure 'copy-source copy-source)
     (replace 'build build)
-    (add-before 'build 'copy-source copy-source)
     (replace 'check check)
-    (replace 'strip strip)
-    (add-after 'check 'create-asd-file create-asd-file)
-    (add-after 'create-asd-file 'cleanup cleanup-files)
-    (add-after 'cleanup 'create-symlinks symlink-asd-files)))
+    (add-after 'check 'create-asdf-configuration create-asdf-configuration)
+    (add-after 'create-asdf-configuration 'cleanup cleanup-files)
+    (delete 'install)
+    (replace 'strip strip)))
 
 (define* (asdf-build #:key inputs
                      (phases %standard-phases)

@@ -751,7 +751,9 @@ Use '~/.config/guix/channels.scm' instead."))
         channels)))
 
 
-(define (guix-pull . args)
+(define-command (guix-pull . args)
+  (synopsis "pull the latest revision of Guix")
+
   (with-error-handling
     (with-git-error-handling
      (let* ((opts         (parse-command-line args %options

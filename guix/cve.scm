@@ -19,7 +19,6 @@
 (define-module (guix cve)
   #:use-module (guix utils)
   #:use-module (guix http-client)
-  #:use-module (guix json)
   #:use-module (guix i18n)
   #:use-module ((guix diagnostics) #:select (formatted-message))
   #:use-module (json)

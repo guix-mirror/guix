@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix scripts authenticate)
-  #:use-module (guix config)
+  #:use-module (guix scripts)
   #:use-module (guix base16)
   #:use-module (gcrypt pk-crypto)
   #:use-module (guix pki)
@@ -39,16 +39,9 @@
   ;; Read a gcrypt sexp from a port and return it.
   (compose string->canonical-sexp read-string))
 
-(define (read-hash-data port key-type)
-  "Read sha256 hash data from PORT and return it as a gcrypt sexp.  KEY-TYPE
-is a symbol representing the type of public key algo being used."
-  (let* ((hex (read-string port))
-         (bv  (base16-string->bytevector (string-trim-both hex))))
-    (bytevector->hash-data bv #:key-type key-type)))
-
-(define (sign-with-key key-file port)
-  "Sign the hash read from PORT with KEY-FILE, and write an sexp that includes
-both the hash and the actual signature."
+(define (sign-with-key key-file sha256)
+  "Sign the hash SHA256 (a bytevector) with KEY-FILE, and write an sexp that
+includes both the hash and the actual signature."
   (let* ((secret-key (call-with-input-file key-file read-canonical-sexp))
          (public-key (if (string-suffix? ".sec" key-file)
                          (call-with-input-file
@@ -58,18 +51,18 @@ both the hash and the actual signature."
                          (leave
                           (G_ "cannot find public key for secret key '~a'~%")
                           key-file)))
-         (data       (read-hash-data port (key-type public-key)))
+         (data       (bytevector->hash-data sha256
+                                            #:key-type (key-type public-key)))
          (signature  (signature-sexp data secret-key public-key)))
     (display (canonical-sexp->string signature))
     #t))
 
-(define (validate-signature port)
-  "Read the signature from PORT (which is as produced above), check whether
-its public key is authorized, verify the signature, and print the signed data
-to stdout upon success."
-  (let* ((signature (read-canonical-sexp port))
-         (subject   (signature-subject signature))
-         (data      (signature-signed-data signature)))
+(define (validate-signature signature)
+  "Validate SIGNATURE, a canonical sexp.  Check whether its public key is
+authorized, verify the signature, and print the signed data to stdout upon
+success."
+  (let* ((subject (signature-subject signature))
+         (data    (signature-signed-data signature)))
     (if (and data subject)
         (if (authorized-key? subject)
             (if (valid-signature? signature)
@@ -85,12 +78,13 @@ to stdout upon success."
 
 
 ;;;
-;;; Entry point with 'openssl'-compatible interface.  We support this
-;;; interface because that's what the daemon expects, and we want to leave it
-;;; unmodified currently.
+;;; Entry point.
 ;;;
 
-(define (guix-authenticate . args)
+(define-command (guix-authenticate . args)
+  (category internal)
+  (synopsis "sign or verify signatures on normalized archives (nars)")
+
   ;; Signature sexps written to stdout may contain binary data, so force
   ;; ISO-8859-1 encoding so that things are not mangled.  See
   ;; <http://bugs.gnu.org/17312> for details.
@@ -101,22 +95,14 @@ to stdout upon success."
   (with-fluids ((%default-port-encoding "ISO-8859-1")
                 (%default-port-conversion-strategy 'error))
     (match args
-      ;; As invoked by guix-daemon.
-      (("rsautl" "-sign" "-inkey" key "-in" hash-file)
-       (call-with-input-file hash-file
-         (lambda (port)
-           (sign-with-key key port))))
-      ;; As invoked by Nix/Crypto.pm (used by Hydra.)
-      (("rsautl" "-sign" "-inkey" key)
-       (sign-with-key key (current-input-port)))
-      ;; As invoked by guix-daemon.
-      (("rsautl" "-verify" "-inkey" _ "-pubin" "-in" signature-file)
+      (("sign" key-file hash)
+       (sign-with-key key-file (base16-string->bytevector hash)))
+      (("verify" signature-file)
        (call-with-input-file signature-file
          (lambda (port)
-           (validate-signature port))))
-      ;; As invoked by Nix/Crypto.pm (used by Hydra.)
-      (("rsautl" "-verify" "-inkey" _ "-pubin")
-       (validate-signature (current-input-port)))
+           (validate-signature (string->canonical-sexp
+                                (read-string port))))))
+
       (("--help")
        (display (G_ "Usage: guix authenticate OPTION...
 Sign or verify the signature on the given file.  This tool is meant to

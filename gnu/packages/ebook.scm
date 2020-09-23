@@ -246,6 +246,29 @@
                                           (assoc-ref inputs "js-mathjax")
                                           "/share/javascript/mathjax"))
              (invoke "python2" "setup.py" "rapydscript")))
+         (replace 'wrap
+           ;; Here we wrap PYTHONPATH exactly as it would be in
+           ;; python-build-system, plus the addition of
+           ;; QTWEBENGINEPROCESS_PATH, fixing a bug where Calibre would not
+           ;; find Qtwebengine.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (python (assoc-ref inputs "python"))
+                    (site-packages
+                     (cons (string-append out "/lib/python"
+                                          (python-version python)
+                                          "/site-packages")
+                           (search-path-as-string->list (getenv "PYTHONPATH"))))
+                    (qtwebengineprocess
+                     (string-append (assoc-ref inputs "qtwebengine")
+                                    "/lib/qt5/libexec/QtWebEngineProcess")))
+               (for-each (lambda (program)
+                           (wrap-program program
+                                 `("QTWEBENGINEPROCESS_PATH" = (,qtwebengineprocess))
+                                 `("PYTHONPATH" prefix ,site-packages)))
+                         (find-files bin ".")))
+             #t))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
              (copy-recursively

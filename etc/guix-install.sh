@@ -111,7 +111,7 @@ chk_gpg_keyring()
     # systems where gpg has never been used, causing errors and confusion.
     gpg --dry-run --list-keys ${OPENPGP_SIGNING_KEY_ID} >/dev/null 2>&1 || (
         _err "${ERR}Missing OpenPGP public key.  Fetch it with this command:"
-        echo "  wget https://sv.gnu.org/people/viewgpg.php?user_id=15145 -qO - | sudo -i gpg --import -"
+        echo "  wget 'https://sv.gnu.org/people/viewgpg.php?user_id=15145' -qO - | sudo -i gpg --import -"
         exit 1
     )
 }

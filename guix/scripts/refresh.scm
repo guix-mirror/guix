@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -496,7 +496,10 @@ all are dependent packages: ~{~a~^ ~}~%")
 ;;; Entry point.
 ;;;
 
-(define (guix-refresh . args)
+(define-command (guix-refresh . args)
+  (category packaging)
+  (synopsis "update existing package definitions")
+
   (define (parse-options)
     ;; Return the alist of option values.
     (parse-command-line args %options (list %default-options)

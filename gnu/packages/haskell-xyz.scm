@@ -20,7 +20,7 @@
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019,2020 John Soo <jsoo1@asu.edu>
-;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2019, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 JoJo <jo@jo.zone>
@@ -14711,6 +14711,30 @@ the @code{conduit} package.")
     (description "This package provides basic types for representing XML
 documents.")
     (license license:expat)))
+
+(define-public ghc-xml-hamlet
+  (package
+    (name "ghc-xml-hamlet")
+    (version "0.5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/xml-hamlet/"
+                           "xml-hamlet-" version ".tar.gz"))
+       (sha256
+        (base32 "0jrhcjy7ww59dafg857f2g2df1fw2jmbwcs1q379ph0pc5rxj3lj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-shakespeare" ,ghc-shakespeare)
+       ("ghc-xml-conduit" ,ghc-xml-conduit)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://www.yesodweb.com/")
+    (synopsis "Hamlet-style quasiquoter for XML content")
+    (description "This package provides a type-safe tool for generating XML
+code via quasi-quoting built on top of @code{ghc-shakespeare}.")
+    (license license:bsd-3)))
 
 (define-public ghc-yaml
   (package

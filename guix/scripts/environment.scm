@@ -678,7 +678,10 @@ message if any test fails."
 ;;; Entry point.
 ;;;
 
-(define (guix-environment . args)
+(define-command (guix-environment . args)
+  (category development)
+  (synopsis "spawn one-off software environments")
+
   (with-error-handling
     (let* ((opts       (parse-args args))
            (pure?      (assoc-ref opts 'pure))

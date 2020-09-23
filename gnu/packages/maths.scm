@@ -2668,7 +2668,7 @@ bindings to almost all functions of SLEPc.")
 (define-public metamath
   (package
     (name "metamath")
-    (version "0.183")
+    (version "0.192")
     (source
      (origin
        (method git-fetch)
@@ -2677,7 +2677,7 @@ bindings to almost all functions of SLEPc.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jjf4fy6j53i40dh0yv0f9sngnw4gs24cig99vsg3q0303pwrhg7"))))
+        (base32 "1k31zw36h2b0w5r6sbn9qc0v4hj42vw53qlhf5l7q2h3p5qlzvic"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

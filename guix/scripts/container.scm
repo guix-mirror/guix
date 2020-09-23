@@ -20,6 +20,7 @@
 (define-module (guix scripts container)
   #:use-module (ice-9 match)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:export (guix-container))
 
 (define (show-help)
@@ -46,7 +47,10 @@ Build and manipulate Linux containers.\n"))
         (proc (string->symbol (string-append "guix-container-" name))))
     (module-ref module proc)))
 
-(define (guix-container . args)
+(define-command (guix-container . args)
+  (category development)
+  (synopsis "run code in containers created by 'guix environment -C'")
+
   (with-error-handling
     (match args
       (()

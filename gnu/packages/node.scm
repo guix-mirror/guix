@@ -25,6 +25,7 @@
 
 (define-module (gnu packages node)
   #:use-module ((guix licenses) #:select (expat))
+  #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix download)
@@ -47,14 +48,14 @@
 (define-public node
   (package
     (name "node")
-    (version "10.22.0")
+    (version "10.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "1nz18fa550li10r0kzsm28c2rvvq61nq8bqdygip0rmvbi2paxg0"))
+                "0cvjwnl0wkcsyw3kannbdv01s235wrnp11n2s6swzjx95gpichfi"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -186,7 +187,7 @@
        ("http-parser" ,http-parser)
        ("icu4c" ,icu4c)
        ("libuv" ,libuv)
-       ("nghttp2" ,nghttp2-1.41 "lib")
+       ("nghttp2" ,nghttp2 "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
@@ -199,6 +200,24 @@ devices.")
     (license expat)
     (properties '((max-silent-time . 7200)     ;2h, needed on ARM
                   (timeout . 21600)))))        ;6h
+
+;; TODO: Make this the default node on core-updates.  This cannot be done on
+;; master since this version of node requires a newer nghttp2 library at link
+;; time.
+(define-public node-10.22
+  (package
+    (inherit node)
+    (version "10.22.0")
+    (source (origin
+              (inherit (package-source node))
+              (uri (string-append "https://nodejs.org/dist/v" version
+                                  "/node-v" version ".tar.xz"))
+              (sha256
+               (base32
+                "1nz18fa550li10r0kzsm28c2rvvq61nq8bqdygip0rmvbi2paxg0"))))
+    (inputs
+     (alist-replace "nghttp2" (list nghttp2-1.41 "lib")
+                    (package-inputs node)))))
 
 (define-public libnode
   (package

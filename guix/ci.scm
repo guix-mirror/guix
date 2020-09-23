@@ -19,7 +19,6 @@
 
 (define-module (guix ci)
   #:use-module (guix http-client)
-  #:use-module (guix json)
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)

@@ -137,7 +137,10 @@ call THUNK."
              (loop)))))))
 
 
-(define (guix-repl . args)
+(define-command (guix-repl . args)
+  (category plumbing)
+  (synopsis "read-eval-print loop (REPL) for interactive programming")
+
   (define opts
     (args-fold* args %options
                 (lambda (opt name arg result)

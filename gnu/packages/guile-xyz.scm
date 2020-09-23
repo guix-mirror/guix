@@ -798,6 +798,7 @@ using Guile's foreign function interface.")
     (build-system guile-build-system)
     (arguments
      '(#:source-directory "src"
+       #:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'move-files-around
                     (lambda _
@@ -806,8 +807,7 @@ using Guile's foreign function interface.")
                       (mkdir-p "src/pfds")
                       (for-each (lambda (file)
                                   (rename-file file
-                                               (string-append "src/pfds/"
-                                                              file)))
+                                    (string-append "src/pfds/" file)))
                                 '("bbtrees.sls"
                                   "deques"
                                   "deques.sls"
@@ -821,15 +821,6 @@ using Guile's foreign function interface.")
                                   "queues.sls"
                                   "sequences.sls"
                                   "sets.sls"))
-
-                      ;; In Guile <= 2.2.4, there's no way to tell 'guild
-                      ;; compile' to accept the ".sls" extension.  So...
-                      (for-each (lambda (file)
-                                  (rename-file file
-                                               (string-append
-                                                (string-drop-right file 4)
-                                                ".scm")))
-                                (find-files "." "\\.sls$"))
                       #t)))))
     (native-inputs
      `(("guile" ,guile-3.0)))
@@ -853,6 +844,36 @@ Vicare Scheme and IronScheme.  Right now it contains:
 @end itemize\n")
     (license license:bsd-3)))
 
+(define-public guile-prometheus
+  (let ((commit "cbc6e1b03512443a03d66414c426adb8470b5f2b")
+        (revision "0"))
+    (package
+    (name "guile-prometheus")
+    (version (git-version "0" revision commit))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.cbaines.net/git/guile/prometheus")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1k1qg4ia87w2ipnf8cpikdc67lxi5bmahkhgk2x0i9ibdyvqb7np"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://git.cbaines.net/guile/prometheus")
+    (synopsis "Prometheus client library for Guile")
+    (description
+     "This Guile library provides instrumentation code intended to be used
+with the Prometheus time series service.  Counter, gauge and histogram metric
+types are supported.")
+    (license license:gpl3+))))
+
 (define-public guile2.2-pfds
   (package
     (inherit guile-pfds)
@@ -862,7 +883,18 @@ Vicare Scheme and IronScheme.  Right now it contains:
      (substitute-keyword-arguments (package-arguments guile-pfds)
        ((#:phases phases)
         `(modify-phases ,phases
-           (delete 'work-around-guile-bug)))))))
+           (delete 'work-around-guile-bug)
+           (add-after 'move-files-around 'sls->scm
+             (lambda _
+               ;; In Guile <= 2.2.4, there's no way to tell 'guild
+               ;; compile' to accept the ".sls" extension.  So...
+               (for-each (lambda (file)
+                           (rename-file file
+                                        (string-append
+                                         (string-drop-right file 4)
+                                         ".scm")))
+                         (find-files "." "\\.sls$"))
+               #t))))))))
 
 (define-public guile3.0-pfds
   (deprecated-package "guile3.0-pfds" guile-pfds))
@@ -1729,19 +1761,20 @@ capabilities.")
     (license license:gpl3+)))
 
 (define-public g-golf
-  (let ((commit "5d2903afb4b6b65c22f587835d8fdff91916e5ee"))
+  (let ((commit   "84e894eb7945c3bcdf7f8d5135c1be3efa524c92")
+        (revision "822"))
     (package
       (name "g-golf")
-      (version (git-version "1" "804" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/g-golf.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1xkb6a5d3i9s8lpb5cf06bd64p5srqnnhn5l0b2f5csbvyz8hmmh"))))
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/g-golf.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1pkcij65zy2lkip5yrfzj85nq17pp9mrf0d4sk6hpjqr4kd0bxd5"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -3009,20 +3042,20 @@ in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
 
 (define-public emacsy-minimal
-  (let ((commit "v0.4.1-28-gd459ca1"))
+  (let ((commit "v0.4.1-31-g415d96f"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
       (version (string-drop commit 1))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/emacsy.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1ps15w8cxj9kc18gmvys9jv9xa1qqa7m43ismv34l3cmhddrn0sr"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/emacsy.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1cs1i1hxwrv0a512j54yrvfh743nci1chx6qjgp4jyzq98ncvxgg"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)
@@ -3033,10 +3066,10 @@ in C using Gtk+-3 and WebKitGtk.")
        `(#:configure-flags '("--without-examples")
          #:phases
          (modify-phases %standard-phases
-         (add-before 'configure 'setenv
-           (lambda _
-             (setenv "GUILE_AUTO_COMPILE" "0")
-             #t))))))))
+           (add-before 'configure 'setenv
+             (lambda _
+               (setenv "GUILE_AUTO_COMPILE" "0")
+               #t))))))))
 
 (define-public guile-jpeg
   (let ((commit "6a1673578b297c2c1b28e44a76bd5c49e76a5046")
@@ -3075,16 +3108,16 @@ perform geometrical transforms on JPEG images.")
 (define-public nomad
   (package
     (name "nomad")
-    (version "0.2.0-alpha")
+    (version "0.2.0-alpha-100-g6a565d3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://git.savannah.gnu.org/git/nomad.git")
+                    (url "https://git.savannah.gnu.org/git/nomad.git/")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1z2z5x37v1qrk2vb8qlz2yj030iirzzd0maa9fjxzlqkrg6krbaj"))))
+                "0anmprm63a88kii251rl296v1g4iq62r6n4nssx5jbc0hzkknanz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3095,36 +3128,35 @@ perform geometrical transforms on JPEG images.")
        ("guile" ,guile-2.2)
        ("glib:bin" ,glib "bin")
        ("texinfo" ,texinfo)
+       ("gettext" ,gnu-gettext)
        ("perl" ,perl)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(;; Guile
+       ("guile" ,guile-2.2)
        ("guile-lib" ,guile2.2-lib)
        ("guile-readline" ,guile2.2-readline)
        ("guile-gcrypt" ,guile2.2-gcrypt)
        ("gnutls" ,gnutls)
+       ("g-golf" ,g-golf)
        ("shroud" ,shroud)
        ("emacsy" ,emacsy-minimal)
+       ;; Gtk
        ("glib" ,glib)
        ("dbus-glib" ,dbus-glib)
+       ("glib-networking" ,glib-networking)
        ("gtk+" ,gtk+)
        ("gtk+:bin" ,gtk+ "bin")
-       ("gtksourceview" ,gtksourceview)
        ("webkitgtk" ,webkitgtk)
-       ("g-golf" ,g-golf)
-       ("xorg-server" ,xorg-server)))
-    (propagated-inputs
-     `(("glib" ,glib)
-       ("glib-networking" ,glib-networking)
+       ("gtksourceview" ,gtksourceview)
+       ("vte" ,vte)
+       ;; Gstreamer
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-bad" ,gst-plugins-bad)
        ("gst-plugins-ugly" ,gst-plugins-ugly)
-       ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
-       ("vte" ,vte)
-       ("webkitgtk" ,webkitgtk)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+       ;; Util
+       ("xorg-server" ,xorg-server)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -3142,49 +3174,40 @@ perform geometrical transforms on JPEG images.")
              #t))
          (add-after 'install 'wrap-binaries
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (gio-deps (map (cut assoc-ref inputs <>)
-                                   '("glib-networking"
-                                     "glib"
-                                     "gstreamer"
-                                     "gst-plugins-base"
-                                     "gst-plugins-good"
-                                     "gst-plugins-bad"
-                                     "gst-plugins-ugly")))
-                    (gio-mod-path (map (cut string-append <>
-                                            "/lib/gio/modules")
-                                       gio-deps))
-                    (effective (read-line (open-pipe*
-                                           OPEN_READ
-                                           "guile" "-c"
-                                           "(display (effective-version))")))
-                    (deps (map (cut assoc-ref inputs <>)
-                               '("emacsy" "guile-lib" "guile-readline"
-                                 "g-golf" "shroud")))
-                    (scm-path (map (cut string-append <>
-                                        "/share/guile/site/" effective)
-                                   `(,out ,@deps)))
-                    (go-path (map (cut string-append <>
-                                       "/lib/guile/" effective "/site-ccache")
-                                  `(,out ,@deps)))
-                    (progs (map (cut string-append out "/bin/" <>)
-                                '("nomad"))))
-               (map (cut wrap-program <>
-                         `("GIO_EXTRA_MODULES" ":" prefix ,gio-mod-path)
-                         `("GUILE_LOAD_PATH" ":" prefix ,scm-path)
-                         `("GUILE_LOAD_COMPILED_PATH" ":"
-                           prefix ,go-path))
-                    progs)
+             (let* ((out        (assoc-ref outputs "out"))
+                    (effective  (read-line (open-pipe*
+                                            OPEN_READ
+                                            "guile" "-c"
+                                            "(display (effective-version))")))
+                    (gst-plugins (map (lambda (i)
+                                        (string-append (assoc-ref inputs i)
+                                                       "/lib/gstreamer-1.0"))
+                                      `("gstreamer"
+                                        "gst-plugins-base"
+                                        "gst-plugins-good"
+                                        "gst-plugins-bad"
+                                        "gst-plugins-ugly")))
+                    (out-append (lambda (. args)
+                                  (apply string-append out args)))
+                    (gi-path    (out-append "/lib/girepository-1.0"))
+                    (load-path  (out-append "/share/guile/site/" effective))
+                    (comp-path  (out-append "/lib/guile/"
+                                            effective "/site-ccache"))
+                    (ext-path   (out-append "/libexec/nomad")))
+               (wrap-program (string-append out "/bin/nomad")
+                 `("GUILE_LOAD_PATH" ":" prefix
+                   (,load-path
+                    ,(getenv "GUILE_LOAD_PATH")))
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                   (,comp-path
+                    ,(getenv "GUILE_LOAD_COMPILED_PATH")))
+                 `("GI_TYPELIB_PATH" ":" prefix
+                   (,gi-path ,(getenv "GI_TYPELIB_PATH")))
+                 `("GIO_EXTRA_MODULES" ":" prefix
+                   (,(getenv "GIO_EXTRA_MODULES")))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix ,gst-plugins)
+                 `("NOMAD_WEB_EXTENSION_DIR" ":" prefix (,ext-path)))
                #t))))))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "GI_TYPELIB_PATH")
-            (separator ":")
-            (files '("lib/girepository-1.0")))
-           (search-path-specification
-            (variable "NOMAD_WEB_EXTENSION_DIR")
-            (separator ":")
-            (files '("libexec/nomad")))))
     (home-page "https://savannah.nongnu.org/projects/nomad/")
     (synopsis "Extensible Web Browser in Guile Scheme")
     (description "Nomad is a Emacs-like web browser that consists of a modular
@@ -3844,3 +3867,141 @@ between data, in a way that is very similar to WikiData or RDF for instance.
 An object can have relations (in the form of an IRI) that relates it to one or
 more objects or strings, represented by a Json object or an IRI.")
     (license license:gpl3+)))
+
+(define-public guile-struct-pack
+  (package
+    (name "guile-struct-pack")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/weinholt/struct-pack")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hd72m821pahjphzyjn26i55542v8makr55xzjll2cycja4wsbc1"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
+       #:modules ((guix build guile-build-system)
+                  (guix build utils)
+                  (srfi srfi-26)
+                  (ice-9 ftw))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'move-sls-files
+                    (lambda _
+                      ;; Move files under a struct/ directory to reflect the
+                      ;; module hierarchy.
+                      (define dst-folder "struct")
+                      (define (target file)
+                        (string-append dst-folder "/" file))
+                      (define files
+                        (scandir "." (negate (cut member <> '("." "..")))))
+                      (mkdir dst-folder)
+                      (for-each (lambda (file)
+                                  (rename-file file (target file)))
+                                files)
+                      #t)))))
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://github.com/weinholt/struct-pack")
+    (synopsis "R6RS library for working with packed byte structures")
+    (description
+     "This is an R6RS library for working with packed byte structures.  It is
+similar to struct in Python or pack and unpack in Perl.")
+    (license license:expat)))
+
+(define-public guile-machine-code
+  (package
+    (name "guile-machine-code")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/weinholt/machine-code")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wzj3caj2jypzyjqfkfqkvr3kkbjabsnhldv9kvnx9w9qnria5yd"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
+       #:modules ((guix build guile-build-system)
+                  (guix build utils)
+                  (srfi srfi-26)
+                  (ice-9 ftw))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'move-sls-files
+                    (lambda _
+                      ;; Move files under a struct/ directory to reflect the
+                      ;; module hierarchy.
+                      (define dst-folder "machine-code")
+                      (define (target file)
+                        (string-append dst-folder "/" file))
+                      (define files
+                        (scandir "." (negate (cut member <> '("." "..")))))
+                      (mkdir dst-folder)
+                      (for-each (lambda (file)
+                                  (rename-file file (target file)))
+                                files)
+                      #t)))))
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     `(("guile-struct-pack" ,guile-struct-pack)))
+    (home-page "https://github.com/weinholt/machine-code")
+    (synopsis "Tools that relate to machine code and object formats")
+    (description
+     "This project is about the development of tools that relate to machine
+code and object formats; for all architectures.  Here you'll find libraries
+for working with binary code: assembly, disassembly, instruction tables,
+object formats and related areas.")
+    (license license:expat)))
+
+(define-public guile-laesare
+  (package
+    (name "guile-laesare")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/weinholt/laesare")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15q619gzw717r8r1ql23zfdaibpnp9qqs96032vdc3rj74msxc92"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
+       #:modules ((guix build guile-build-system)
+                  (guix build utils)
+                  (srfi srfi-26)
+                  (ice-9 ftw))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'move-sls-files
+                    (lambda _
+                      ;; Move files under a laesare directory to reflect
+                      ;; the module hierarchy.
+                      (define dst-folder "laesare")
+                      (define (target file)
+                        (string-append dst-folder "/" file))
+                      (define files
+                        (scandir "." (negate (cut member <> '("." "..")))))
+                      (mkdir dst-folder)
+                      (for-each (lambda (file)
+                                  (rename-file file (target file)))
+                                files)
+                      #t)))))
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (home-page "https://github.com/weinholt/laesare")
+    (synopsis "R6RS Scheme library that provides a reader")
+    (description
+     "This is an R6RS Scheme library that provides a reader with some extra
+features not found in the standard read procedure such as a compatible mode
+with support for other RnRS standards and a tolerant mode that continues on
+errors.")
+    (license license:expat)))

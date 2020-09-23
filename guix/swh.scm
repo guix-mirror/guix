@@ -22,7 +22,6 @@
   #:use-module (guix build utils)
   #:use-module ((guix build syscalls) #:select (mkdtemp!))
   #:use-module (web uri)
-  #:use-module (guix json)
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (json)

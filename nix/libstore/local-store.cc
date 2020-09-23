@@ -1277,21 +1277,13 @@ void LocalStore::exportPath(const Path & path, bool sign,
 
         writeInt(1, hashAndWriteSink);
 
-        Path tmpDir = createTempDir();
-        AutoDelete delTmp(tmpDir);
-        Path hashFile = tmpDir + "/hash";
-        writeFile(hashFile, printHash(hash));
-
         Path secretKey = settings.nixConfDir + "/signing-key.sec";
         checkSecrecy(secretKey);
 
         Strings args;
-        args.push_back("rsautl");
-        args.push_back("-sign");
-        args.push_back("-inkey");
+        args.push_back("sign");
         args.push_back(secretKey);
-        args.push_back("-in");
-        args.push_back(hashFile);
+        args.push_back(printHash(hash));
 
         string signature = runAuthenticationProgram(args);
 
@@ -1376,12 +1368,7 @@ Path LocalStore::importPath(bool requireSignature, Source & source)
             writeFile(sigFile, signature);
 
             Strings args;
-            args.push_back("rsautl");
-            args.push_back("-verify");
-            args.push_back("-inkey");
-            args.push_back(settings.nixConfDir + "/signing-key.pub");
-            args.push_back("-pubin");
-            args.push_back("-in");
+            args.push_back("verify");
             args.push_back(sigFile);
             string hash2 = runAuthenticationProgram(args);
 

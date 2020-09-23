@@ -719,7 +719,7 @@ using password-store through rofi interface:
 (define-public browserpass-native
   (package
     (name "browserpass-native")
-    (version "3.0.6")
+    (version "3.0.7")
     (source
      (origin
        (method git-fetch)
@@ -729,7 +729,7 @@ using password-store through rofi interface:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0q3bsla07zjl6i69nj1axbkg2ia89pvh0jg6nlqgbm2kpzzbn0pz"))))
+         "1jkjslbbac49xjyjkc2b07phdm3i64z40kh6h55cl22dxjmpp1nb"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/browserpass/browserpass-native"

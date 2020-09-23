@@ -80,6 +80,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
+  #:use-module (gnu packages mpd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pcre)
@@ -94,6 +95,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -119,6 +121,59 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public poezio
+  (package
+    (name "poezio")
+    (version "0.13.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://lab.louiz.org/poezio/poezio.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "041y61pcbdb86s04qwp8s1g6bp84yskc7vdizwpi2hz18y01x5fy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "setup.py"
+               (("'CC', 'cc'")
+                "'CC', 'gcc'"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)))
+    (inputs
+     `(("python-mpd2" ,python-mpd2)
+       ("python-potr" ,python-potr)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
+       ("python-pygments" ,python-pygments)
+       ("python-pyinotify" ,python-pyinotify)
+       ;("python" ,python)
+       ("python-qrcode" ,python-qrcode)
+       ("python-slixmpp" ,python-slixmpp)))
+    (synopsis "Console Jabber/XMPP Client")
+    (description "Poezio is a free console XMPP client (the protocol on which
+the Jabber IM network is built).
+Its goal is to let you connect very easily (no account creation needed) to the
+network and join various chatrooms, immediately.  It tries to look like the
+most famous IRC clients (weechat, irssi, etc).  Many commands are identical and
+you won't be lost if you already know these clients.  Configuration can be
+made in a configuration file or directly from the client.
+You'll find the light, fast, geeky and anonymous spirit of IRC while using a
+powerful, standard and open protocol.")
+    (home-page "https://poez.io/en/")
+    (license license:zlib)))
 
 (define-public libotr
   (package
@@ -593,14 +648,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hb1v167aa6gv5bcwz352l6b8gnd74ymjw92y4x882l099hzg59i"))))
+                "03fyi0j44zcanj1rsdx93hkdskwfvhbywjiwd17f9q1a7yp8l8zz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -1575,15 +1630,14 @@ protocol allows.")
 (define-public mcabber
   (package
     (name "mcabber")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mcabber.com/files/"
                            name "-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1ggh865p1rf10ffsnf4g6qv9i8bls36dxdb1nzs5r9vdqci2rz04"))))
+        (base32 "0ngrcc8nzpzk4vw36ni3w073149zsi0yjh922xy9cy5a7srwx2fp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "--enable-otr"
@@ -2043,13 +2097,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.10")
+    (version "0.4.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "0ww9z9kcb02pwnr8q1ll31wkzspc1fci1ly8ifrwzxysp4rxy3j5"))))
+        (base32 "165lravvlsgkv6pp3vgg785ihycvs43qzqxw2d2yygrc6pbhqlyv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2293,5 +2347,34 @@ support for high performance Telegram Bot creation.")
 as well as on desktop platforms.  It's based on libpurple and ModemManager.")
    (home-page "https://source.puri.sm/Librem5/chatty")
    (license license:gpl3+)))
+
+(define-public mosquitto
+  (package
+    (name "mosquitto")
+    (version "1.6.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mosquitto.org/files/source/mosquitto-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1yq7y329baa1ly488rw125c3mvsnsa7kjkik602xv1xpkz8p73al"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (synopsis "Message broker")
+    (description "This package provides Eclipse Mosquitto, a message broker
+that implements the MQTT protocol versions 5.0, 3.1.1 and 3.1.  Mosquitto
+is lightweight and is suitable for use on all devices from low power single
+board computers to full servers.
+
+The MQTT protocol provides a lightweight method of carrying out messaging
+using a publish/subscribe model. This makes it suitable for Internet of
+Things messaging such as with low power sensors or mobile devices such
+as phones, embedded computers or microcontrollers.")
+    (home-page "https://mosquitto.org/")
+    ;; Dual licensed.
+    (license (list license:epl1.0 license:edl1.0))))
 
 ;;; messaging.scm ends here

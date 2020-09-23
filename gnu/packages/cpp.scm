@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -360,7 +361,7 @@ intuitive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.6.17")
+    (version "0.6.18")
     (source (origin
               (method git-fetch)
               (uri
@@ -369,7 +370,7 @@ intuitive syntax and trivial integration.")
                 (commit version)))
               (sha256
                (base32
-                "136djmx4l34ff5z4fw1c866x52vp7k4f8zcnbs49whymxzhzwpw0"))
+                "0s9gnv1wq0cmpw878dmx0lnci86895hhdrwyc9x8lfbc1hr7ypnh"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)
@@ -492,6 +493,36 @@ for style issues following Google’s C++ style guide.  While Google maintains
 it's own version of the tool, this is a fork that aims to be more responsive
 and make @code{cpplint} usable in wider contexts.")
     (license license:bsd-3)))
+
+(define-public reproc
+  (package
+    (name "reproc")
+    (version "14.1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/DaanDeMeyer/reproc")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1n71wb50qv2dmhjgw7azx5gigbrp19l2n3d41g9p05l5l0y1qg0q"))))
+   (build-system cmake-build-system)
+   (arguments
+      ;; No tests.
+    `(#:tests? #f
+      ;; Enable building of shared library.
+      #:configure-flags `("-DBUILD_SHARED_LIBS=1")))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (synopsis "Process IO library")
+   (description "reproc (Redirected Process) is a C/C++ library that
+simplifies starting, stopping and communicating with external programs.  The
+main use case is executing command line applications directly from C or C++
+code and retrieving their output.")
+   (home-page "https://github.com/DaanDeMeyer/reproc")
+   (license license:expat)))
 
 (define-public sobjectizer
   (package

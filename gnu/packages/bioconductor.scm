@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1762,6 +1763,7 @@ expressed genes in DNA microarray experiments.")
 fitting of some classes of graphical Markov models.")
     (license license:gpl2+)))
 
+;; This is a CRAN package, but it depends on a Bioconductor package.
 (define-public r-codedepends
   (package
     (name "r-codedepends")
@@ -8153,3 +8155,89 @@ user's input and automatically retrieving results from GREAT web server.")
 simulation to eliminate overestimation of @code{K} and can reject the null
 hypothesis @code{K=1}.")
     (license license:agpl3+)))
+
+(define-public r-icens
+  (package
+    (name "r-icens")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Icens" version))
+       (sha256
+        (base32
+         "0fh7wgkrw20f61p06i87nccnbig9wv4m0jcg7cx1rw7g2ndnabgp"))))
+    (properties `((upstream-name . "Icens")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-survival" ,r-survival)))
+    (home-page "https://bioconductor.org/packages/Icens")
+    (synopsis "NPMLE for censored and truncated data")
+    (description
+     "This package provides many functions for computing the
+@dfn{nonparametric maximum likelihood estimator} (NPMLE) for censored and
+truncated data.")
+    (license license:artistic2.0)))
+
+;; This is a CRAN package but it depends on r-icens, which is published on
+;; Bioconductor.
+(define-public r-interval
+  (package
+    (name "r-interval")
+    (version "1.1-0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "interval" version))
+       (sha256
+        (base32
+         "1lln9jkli28i4wivwzqrsxvv2n15560f7msjy5gssrm45vxrxms8"))))
+    (properties `((upstream-name . "interval")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-icens" ,r-icens)
+       ("r-mlecens" ,r-mlecens)
+       ("r-perm" ,r-perm)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/interval/")
+    (synopsis "Weighted Logrank tests and NPMLE for interval censored data")
+    (description
+     "This package provides functions to fit nonparametric survival curves,
+plot them, and perform logrank or Wilcoxon type tests.")
+    (license license:gpl2+)))
+
+;; This is a CRAN package, but it depends on r-interval, which depends on a
+;; Bioconductor package.
+(define-public r-fhtest
+  (package
+    (name "r-fhtest")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "FHtest" version))
+       (sha256
+        (base32
+         "1wsn0j9ydpp9nfswiqg21p09kgkvaq8fh0y0h8syqgizah7i8vs2"))))
+    (properties `((upstream-name . "FHtest")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-interval" ,r-interval)
+       ("r-kmsurv" ,r-kmsurv)
+       ("r-mass" ,r-mass)
+       ("r-perm" ,r-perm)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/FHtest/")
+    (synopsis "Tests for survival data based on the Fleming-Harrington class")
+    (description
+     "This package provides functions to compare two or more survival curves
+with:
+
+@itemize
+@item The Fleming-Harrington test for right-censored data based on
+  permutations and on counting processes.
+@item An extension of the Fleming-Harrington test for interval-censored data
+  based on a permutation distribution and on a score vector distribution.
+@end itemize
+")
+    (license license:gpl2+)))

@@ -135,6 +135,20 @@ USERS."
                        (_ #f))))))
               pids)))
 
+(define (call-with-mnt-container thunk)
+  "This is a variant of call-with-container. Run THUNK in a new container
+process, within a separate MNT namespace. The container is not jailed so that
+it can interact with the rest of the system."
+  (let ((pid (run-container "/" '() '(mnt) 1 thunk)))
+    ;; Catch SIGINT and kill the container process.
+    (sigaction SIGINT
+      (lambda (signum)
+        (false-if-exception
+         (kill pid SIGKILL))))
+
+    (match (waitpid pid)
+      ((_ . status) status))))
+
 (define* (install-system locale #:key (users '()))
   "Create /etc/shadow and /etc/passwd on the installation target for USERS.
 Start COW-STORE service on target directory and launch guix install command in
@@ -181,7 +195,7 @@ or #f.  Return #t on success and #f on failure."
     ;; To avoid this situation, mount the store overlay inside a container,
     ;; and run the installation from within that container.
     (zero?
-     (call-with-container '()
+     (call-with-mnt-container
        (lambda ()
          (dynamic-wind
            (lambda ()
@@ -218,5 +232,4 @@ or #f.  Return #t on success and #f on failure."
 
              ;; Finally umount the cow-store and exit the container.
              (unmount-cow-store (%installer-target-dir) backing-directory)
-             (assert-exit ret))))
-       #:namespaces '(mnt)))))
+             (assert-exit ret))))))))

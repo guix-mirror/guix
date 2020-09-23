@@ -24,7 +24,6 @@
   #:use-module ((guix download) #:prefix download:)
   #:use-module (gcrypt hash)
   #:use-module (guix http-client)
-  #:use-module (guix json)
   #:use-module (guix import json)
   #:use-module (guix import utils)
   #:use-module ((guix licenses) #:prefix license:)

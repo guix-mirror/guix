@@ -2107,14 +2107,14 @@ HTTP proxies.")
 (define-public enet
   (package
     (name "enet")
-    (version "1.3.15")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://enet.bespin.org/download/"
-                                  "enet-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1yxxf9bkx6dx3j8j70fj17c05likyfibb1419ls74hp58qrzdgas"))))
+    (version "1.3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://enet.bespin.org/download/"
+                           "enet-" version ".tar.gz"))
+       (sha256
+        (base32 "1lggc82rbzscci057dqqyhkbq4j6mr5k01hbrvn06jkzc2xpxdxv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3428,14 +3428,14 @@ maximum extent possible.")
 (define-public batctl
   (package
    (name "batctl")
-   (version "2020.1")
+   (version "2020.3")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
                          version "/batctl-" version ".tar.gz"))
      (sha256
-      (base32 "0fy252q1my3a57v6pfz8i97h6zv7v03di01dhwjkj47pqnx1rqm3"))))
+      (base32 "0r2w2v4sy6wgr7mp9lc7yj9k4ldsbsm3425rjil7p0b17zmzf4rm"))))
    (inputs
     `(("libnl" ,libnl)))
    (native-inputs
@@ -3461,7 +3461,7 @@ module @code{batman-adv}, for Layer 2.")
 (define-public pagekite
   (package
     (name "pagekite")
-    (version "1.5.2.200603")
+    (version "1.5.2.200725")
     (source
      (origin
        (method git-fetch)
@@ -3470,7 +3470,7 @@ module @code{batman-adv}, for Layer 2.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08rcyr54dssnpand6y26f8x9cjmd91hr44my08kxw70s5iqiwizv"))))
+        (base32 "0lig1i42bn9isw848vnml5qhcaa04x1dr2hb075bm0a3439kv3rr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3673,15 +3673,14 @@ thousands of connections is clearly realistic with today's hardware.")
 (define-public lldpd
   (package
     (name "lldpd")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://media.luffy.cx/files/lldpd/lldpd-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "16fbqrs3l976gdslx647nds8x7sz4h5h3h4l4yxzrayvyh9b5lrd"))
+        (base32 "1v5fd8vwxracvzvgrsswvhppwyx5c4srj89g1cnvy73w831mpq95"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3762,3 +3761,28 @@ hashcash stamps efficiently.
 This package contains a command-line tool for computing and verifying hashcash
 stamps.")
     (license license:public-domain)))
+
+(define-public nbd
+  (package
+    (name "nbd")
+    (version "3.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/nbd/nbd/3.20/nbd-" version
+                            ".tar.xz"))
+        (sha256
+         (base32
+          "1kfnyx52nna2mnw264njk1dl2zc8m78sz031yp65mbmpi99v7qg0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (home-page "https://nbd.sourceforge.io/")
+    (synopsis "NBD client and server")
+    (description "This package provides the NBD (Network Block Devices)
+client and server.  It allows you to use remote block devices over a TCP/IP
+network.")
+    (license license:gpl2)))

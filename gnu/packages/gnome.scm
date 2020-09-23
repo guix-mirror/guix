@@ -6184,7 +6184,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.36.4")
+    (version "3.36.6")
     (source
      (origin
        (method url-fetch)
@@ -6192,7 +6192,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "09gmzrlljdqkj3w6wa1c27wypy6j8z9dw3jzv9izfqvp38liibsn"))))
+        (base32 "0x9hzqnji5l966yy2k5gppl8hqasn3sd5an4sr8srjmncxcs80ys"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
@@ -10495,7 +10495,7 @@ advanced image management tool")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "0.90.0")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -10504,7 +10504,7 @@ advanced image management tool")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zpfbn2x27lp69w819afxf3ylkgfz9k44srfgmkbb2c33r14ajwy"))))
+        (base32 "193y09yy0302x8fkyrnq591m805xp68bkd93fl5qggxi52k8pj0v"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags

@@ -128,7 +128,7 @@ header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -136,7 +136,7 @@ header.")
                            version ".tar.lz"))
        (sha256
         (base32
-         "0ypk1c72q778cixfa52vjxzbd5m4qc6hfjgnipy16sfa7mnspmyf"))))
+         "07di6zx2irc5q0zyymx2951ydzxdfjmzd3az5qnk67ncf3hknvj5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))

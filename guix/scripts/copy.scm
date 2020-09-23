@@ -170,7 +170,10 @@ Copy ITEMS to or from the specified host over SSH.\n"))
 ;;; Entry point.
 ;;;
 
-(define (guix-copy . args)
+(define-command (guix-copy . args)
+  (category plumbing)
+  (synopsis "copy store items remotely over SSH")
+
   (with-error-handling
     (let* ((opts     (parse-command-line args %options (list %default-options)))
            (source   (assoc-ref opts 'source))

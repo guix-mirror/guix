@@ -18,6 +18,7 @@
 ;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1045,6 +1046,30 @@ Features include:
       (synopsis "Atomic boolean library for Go code")
       (description "This package is atomic boolean library for Go code,
 optimized for performance yet simple to use.")
+      (license license:expat))))
+
+(define-public go-github-com-tv42-httpunix
+  (let ((commit "2ba4b9c3382c77e7b9ea89d00746e6111d142a22")
+        (revision "0"))
+    (package
+      (name "go-github-com-tv42-httpunix")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tv42/httpunix.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0xbwpip2hsfhd2kd878jn5ndl8y1i9658lggha4x3xb5m1rsds9w"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/tv42/httpunix"))
+      (home-page "https://github.com/tv42/httpunix")
+      (synopsis "Go library to talk HTTP over Unix domain sockets")
+      (description "This package is a Go library to talk HTTP over Unix domain
+sockets.")
       (license license:expat))))
 
 (define-public go-github-com-blang-semver
@@ -4180,7 +4205,7 @@ data serialization format.")
 (define-public go-github-com-mattn-go-zglob
   (package
     (name "go-github-com-mattn-go-zglob")
-    (version "0.0.1")
+    (version "0.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4189,7 +4214,7 @@ data serialization format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sncdyq5fbd42al4amyy91h7vlzm3wm6c9vl8za2pjgfgsd581fz"))))
+                "1923lvakm66mzy62jmngdvcmbmiqclinsvnghs3907rgygnx1qc1"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/mattn/go-zglob"))

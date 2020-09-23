@@ -682,6 +682,30 @@ Alternatively the menu can be bound globally, for example:
 @code{(global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)}.")
     (license license:gpl3+)))
 
+(define-public emacs-moody
+  (package
+    (name "emacs-moody")
+    (version "0.5.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tarsius/moody")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1xyw4l42053595r76lj8safsx6pj25as0107wd96by3h7dg9m586"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tarsius/moody")
+    (synopsis "Tabs and ribbons for Emacs mode-line")
+    (description
+     "@code{emacs-moody} provides utilities for displaying elements of
+the mode line as tabs and ribbons.  It also provides replacements for a few
+built-in elements.  The biggest difference to similar packages is that
+this one is much simpler and much more consistent.  When using this package,
+then only the color of the mode line changes when a window becomes in-/active.")
+    (license license:gpl3+)))
+
 (define-public emacs-treepy
   (package
     (name "emacs-treepy")
@@ -2078,7 +2102,7 @@ Lock key.")
 (define-public emacs-chronometrist
   (package
     (name "emacs-chronometrist")
-    (version "0.5.3")
+    (version "0.5.5")
     (source
      (origin
        (method git-fetch)
@@ -2087,7 +2111,7 @@ Lock key.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jz35972m372kx9x8mgf42zhzdw2w9wv2ri52chfb2fin4bh1biy"))))
+        (base32 "1zccyfpgq68ixrcl8jq2r38165ngkqrb42y2hkyab6gxhvh4wkpl"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -2111,7 +2135,8 @@ Lock key.")
                                   (find-files "." "\\.md$")))))
              #t)))))
     (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
+     `(("emacs-anaphora" ,emacs-anaphora)
+       ("emacs-dash" ,emacs-dash)
        ("emacs-s" ,emacs-s)
        ("emacs-ts" ,emacs-ts)))
     (home-page "https://github.com/contrapunctus-1/chronometrist")
@@ -2133,7 +2158,7 @@ Its features are:
 (define-public emacs-direnv
   (package
     (name "emacs-direnv")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -2142,8 +2167,7 @@ Its features are:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "005ibyzsx1fdyrl5iyhqpb1bg83mphzahq7zvw58x00syyqi2z49"))))
+        (base32 "0xkqn4604k2imas6azy1www56br8ls4iv9a44pxcd8h94j1fp44d"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("dash" ,emacs-dash)
@@ -3009,7 +3033,7 @@ files and directories.")
 (define-public emacs-fountain-mode
   (package
     (name "emacs-fountain-mode")
-    (version "3.1.0")
+    (version "3.2.2")
     (source
      (origin
        (method git-fetch)
@@ -3018,7 +3042,7 @@ files and directories.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08giwg0jwk8zzj2i4cm08322qr6znrnv9a49za7c6j47bykpwj6s"))))
+        (base32 "0rwdwbw9cq8ljvbmgmz9izank8dqjki79l1bw127lli69fs72gyi"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rnkn/fountain-mode")
     (synopsis "Major mode for screenwriting in Fountain markup")
@@ -3208,6 +3232,29 @@ project.
 This package also includes relevant snippets for yasnippet.")
       (license license:expat))))
 
+(define-public emacs-gdscript-mode
+  (package
+    (name "emacs-gdscript-mode")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/godotengine/emacs-gdscript-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02by4bvdayldbjlz6jkp36m5rgcy2h5bwhqx2cj7wma6xf6cw3lf"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/godotengine/emacs-gdscript-mode")
+    (synopsis "GDScript support and syntax highlighting in Emacs")
+    (description
+     "This package adds support for the GDScript programming language from the
+Godot game engine in Emacs. It features all the essentials, e.g., syntax
+highlighting, code folding, indentation, automatic pairing, auto-completion,
+and code formatting.")
+    (license license:gpl3+)))
+
 (define-public emacs-el-mock
   (package
     (name "emacs-el-mock")
@@ -3358,8 +3405,9 @@ keep pressing the key until it selects what you want.  There's also
          ;; byte-compilation is finished
          #:parallel-tests? #f))
       (home-page "https://github.com/lastquestion/explain-pause-mode")
-      (synopsis "Provides a top like interface to determine why Emacs paused")
-      (description "Monitors Emacs function calls and records their execution
+      (synopsis "Top-like interface to determine why Emacs paused")
+      (description
+       "This package monitors Emacs function calls and records their execution
 time.  This information can be reviewed to determine what is causing the user
 interface to pause.")
       (license license:gpl3+))))
@@ -6479,7 +6527,7 @@ regexp that matches all known keywords.")
 (define-public emacs-perspective
   (package
     (name "emacs-perspective")
-    (version "2.10")
+    (version "2.11")
     (source
      (origin
        (method git-fetch)
@@ -6489,7 +6537,7 @@ regexp that matches all known keywords.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1xfcm69nd6f9chwlqfz5vd8nnyl5mwharxjrn1m515568dqrk62x"))))
+         "0nka5z6226r174ligja023qx2bb1pfyjbanafxprbyxkr17b2794"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -8710,7 +8758,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.26.0")
+    (version "0.26.1")
     (source
      (origin
        (method git-fetch)
@@ -8719,7 +8767,7 @@ target will call @code{compile} on it.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qwizvmm9ln75ph1jg2rfqv3hd9p4zaz8kp2i6yr3vq99c3a00i7"))))
+        (base32 "0m77jbxl380dp1wyj12m82bb06r80js8yxl530ryp1mwvy74f00d"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ;don't exclude 'cider-test.el'
@@ -8750,9 +8798,9 @@ CIDER).")
 ;; There hasn't been a tag or release since 2016, so we take the latest
 ;; commit.
 (define-public emacs-sly
-  (let ((commit "6a2f543cb21f14104c2253af5a1427b884a987ae")
+  (let ((commit "8e22c1f62667434ec1acd1e0c6b7ec1c22dc0958")
         ;; Update together with sbcl-slynk-boot0.
-        (revision "5"))
+        (revision "6"))
     (package
       (name "emacs-sly")
       (version (git-version "1.0.0" revision commit))
@@ -8765,7 +8813,7 @@ CIDER).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0wbpg9p9yg2hd62l15pvy50fk3hndq5zzyqlyyf04g368s895144"))))
+           "09wyqixsn7k889i54amf8bwjg6iyirp89xmcrgfwal010kh1ixcl"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)))
@@ -8921,8 +8969,8 @@ file.")
       (license license:gpl3+))))
 
 (define-public emacs-sly-macrostep
-  (let ((commit "be2d24545092d164be1a91031d8881afd29c9ec0")
-        (revision "1"))
+  (let ((commit "5113e4e926cd752b1d0bcc1508b3ebad5def5fad")
+        (revision "2"))
     (package
       (name "emacs-sly-macrostep")
       (version (git-version "0.1" revision commit))
@@ -8936,7 +8984,7 @@ file.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0v8m3zkccpqd2l8m9340y672l2mm3mrry8422nva5kfvpcwdayqb"))))
+           "1nxf28gn4f3n0wnv7nb5sgl36fz175y470zs9hig4kq8cp0yal0r"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-sly" ,emacs-sly)
@@ -9603,13 +9651,13 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update it as
     ;; well.
-    (version "9.3.6")
+    (version "9.3.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
        (sha256
-        (base32 "0jwpgfzjvf1hd3mx582pw86hysdryaqzp69hk6azi9kmq4bzk87d"))))
+        (base32 "1az00pi9rw3ibx4061jyqr6ll27kvs99yvd7nk5dckjh0ajd0gni"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -9634,14 +9682,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20200213")
+    (version "20200907")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://orgmode.org/elpa/"
                            "org-plus-contrib-" version ".tar"))
        (sha256
-        (base32 "0g6rrrwplrifz4ip0jg638m4kvpvdg03hwnyghd813w0lm935mh5"))))
+        (base32 "1rgk3pwhsmbmwlncg60ahwrrkm1ks4xpwy2wzv9q7myl1aihjj54"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -11918,7 +11966,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.4.0")
+    (version "3.5.0")
     (source
      (origin
        (method git-fetch)
@@ -11927,7 +11975,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ahgb7dqdc75farkl0fg0a6hvx2067gdvjq99cd3z2dz56km0p05"))))
+        (base32 "13lgjsm9pwgjsxg7lzc1c9sw2bzssxikfj6grnshqfll8kz8yr4r"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -12507,14 +12555,14 @@ write applications that use WebSockets, and is not useful by itself.")
 (define-public emacs-oauth2
   (package
     (name "emacs-oauth2")
-    (version "0.13")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "oauth2-" version ".el"))
        (sha256
-        (base32 "0y5nbdwxz2hfr09xgsqgyv60vgx0rsaisibcpkz00klvgg26w33r"))))
+        (base32 "0ij17g6i8d4cyzc8v6sy2qglwhzd767331gavll6d507krdh3ca3"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/oauth2.html")
     (synopsis "OAuth 2.0 authorization protocol implementation")
@@ -22004,14 +22052,14 @@ federated microblogging social network.")
 (define-public emacs-ebdb
   (package
     (name "emacs-ebdb")
-    (version "0.6.18")
+    (version "0.6.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "ebdb-" version ".tar"))
        (sha256
-        (base32 "0znbv3c7wdgak1f1zb051vg4r29fksqh53k1j77jfmqcvwkpz2mw"))))
+        (base32 "0ch5vzhxa8h5v75lg3blsmrln497lr3ylivx6w28aiyb6cv5016l"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/girzel/ebdb")
     (synopsis "EIEIO port of BBDB, Emacs's contact-management package")
@@ -22631,7 +22679,7 @@ Google guidelines.")
 (define-public emacs-helm-fish-completion
   (package
     (name "emacs-helm-fish-completion")
-    (version "0.5")
+    (version "0.6")
     (home-page "https://github.com/emacs-helm/helm-fish-completion")
     (source
      (origin
@@ -22641,7 +22689,7 @@ Google guidelines.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hpsm39kx8vpz2zmarjrkvy1capkk5lwpsmdg2xnklsck6xsn922"))))
+        (base32 "1j2vfngq3512naaayv9kx0d1q2zg1xgs69l8afc7swg72h0l0imw"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("helm" ,emacs-helm)

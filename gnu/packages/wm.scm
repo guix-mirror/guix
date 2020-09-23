@@ -1598,10 +1598,10 @@ compositors that support the layer-shell protocol.")
               ("alexandria" ,sbcl-alexandria)))
     (outputs '("out" "lib"))
     (arguments
-     '(#:asd-system-name "stumpwm"
+     '(#:asd-systems '("stumpwm")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'create-symlinks 'build-program
+         (add-after 'create-asdf-configuration 'build-program
            (lambda* (#:key outputs #:allow-other-keys)
              (build-program
               (string-append (assoc-ref outputs "out") "/bin/stumpwm")
@@ -1670,20 +1670,15 @@ productive, customizable lisp based systems.")
                       (program (string-append out "/bin/stumpwm")))
                  (build-program program outputs
                                 #:entry-program '((stumpwm:stumpwm) 0)
-                                #:dependencies '("stumpwm"
-                                                 ,@(@@ (gnu packages lisp-xyz) slynk-systems))
+                                #:dependencies '("stumpwm" "slynk")
                                 #:dependency-prefixes
                                 (map (lambda (input) (assoc-ref inputs input))
                                      '("stumpwm" "slynk")))
-                 ;; Remove unneeded file.
-                 (delete-file (string-append out "/bin/stumpwm-exec.fasl"))
                  #t)))
            (delete 'copy-source)
            (delete 'build)
            (delete 'check)
-           (delete 'create-asd-file)
-           (delete 'cleanup)
-           (delete 'create-symlinks)))))))
+           (delete 'cleanup)))))))
 
 (define stumpwm-contrib
   (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d63")
@@ -1745,7 +1740,7 @@ productive, customizable lisp based systems.")
      `(("stumpwm" ,stumpwm "lib")
        ("clx-truetype" ,sbcl-clx-truetype)))
     (arguments
-     '(#:asd-system-name "ttf-fonts"
+     '(#:asd-systems '("ttf-fonts")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1762,7 +1757,7 @@ rendering.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-pass")
     (arguments
-     '(#:asd-system-name "pass"
+     '(#:asd-systems '("pass")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1779,7 +1774,7 @@ password-store into StumpWM.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-globalwindows")
     (arguments
-     '(#:asd-system-name "globalwindows"
+     '(#:asd-systems '("globalwindows")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1796,7 +1791,7 @@ windows in the current X session.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-swm-gaps")
     (arguments
-     '(#:asd-system-name "swm-gaps"
+     '(#:asd-systems '("swm-gaps")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1813,7 +1808,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-net")
     (arguments
-     '(#:asd-system-name "net"
+     '(#:asd-systems '("net")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1831,7 +1826,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-wifi")
     (arguments
-     '(#:asd-system-name "wifi"
+     '(#:asd-systems '("wifi")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1849,7 +1844,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-stumptray")
     (arguments
-     '(#:asd-system-name "stumptray"
+     '(#:asd-systems '("stumptray")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -1871,7 +1866,7 @@ between windows.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-kbd-layouts")
     (arguments
-     '(#:asd-system-name "kbd-layouts"
+     '(#:asd-systems '("kbd-layouts")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases

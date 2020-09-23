@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -85,7 +85,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                               'tar)))))
 
   (define guile-json
-    (module-ref (resolve-interface '(gnu packages guile)) 'guile-json-3))
+    (module-ref (resolve-interface '(gnu packages guile)) 'guile-json-4))
 
   (define guile-zlib
     (module-ref (resolve-interface '(gnu packages guile)) 'guile-zlib))

@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -956,9 +957,11 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
       --save-provenance  save provenance information"))
   (display (G_ "
-      --share=SPEC       for 'vm', share host file system according to SPEC"))
+      --share=SPEC       for 'vm' and 'container', share host file system with
+                         read/write access according to SPEC"))
   (display (G_ "
-      --expose=SPEC      for 'vm', expose host file system according to SPEC"))
+      --expose=SPEC      for 'vm' and 'container', expose host file system
+                         directory as read-only according to SPEC"))
   (display (G_ "
   -N, --network          for 'container', allow containers to access the network"))
   (display (G_ "
@@ -1250,7 +1253,9 @@ argument list and OPTS is the option alist."
     ;; need an operating system configuration file.
     (else (process-action command args opts))))
 
-(define (guix-system . args)
+(define-command (guix-system . args)
+  (synopsis "build and deploy full operating systems")
+
   (define (parse-sub-command arg result)
     ;; Parse sub-command ARG and augment RESULT accordingly.
     (if (assoc-ref result 'action)

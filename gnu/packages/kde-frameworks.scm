@@ -27,6 +27,7 @@
 (define-module (gnu packages kde-frameworks)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -57,6 +58,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages kde-plasma)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
@@ -324,6 +326,63 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
     ;; directories are lgpl3, while the top directory contains the lgpl2.1.
     ;; text.
     (license license:lgpl3+)))
+
+(define-public breeze-assets
+  (package
+    (inherit breeze-icons)
+    (name "breeze-assets")
+    (version "5.19.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/plasma/" version
+                    "/breeze-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0dpk1w7zcafrzf46j060i1qb0fwqpsflkfzr6gcar81llmjnc4b1"))))
+    (inputs
+     `(,@(package-inputs breeze-icons)
+       ("ki18n" ,ki18n)
+       ("kpackage" ,kpackage)
+       ("kguiaddons" ,kguiaddons)
+       ("kdecoration" ,kdecoration)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kiconthemes" ,kiconthemes)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://github.com/KDE/breeze")
+    (synopsis "Artwork, styles and assets for the Breeze visual style")
+    (description "This package contains artwork, styles and assets associated
+with the Breeze visual style.")
+    (license license:gpl2+)))
+
+(define-public breeze
+  (package
+    (name "breeze")
+    (version (package-version breeze-assets))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build union))
+       #:builder
+       (begin
+         (use-modules (ice-9 match)
+                      (guix build union))
+         (match %build-inputs
+           (((names . directories) ...)
+            (union-build (assoc-ref %outputs "out")
+                         directories)
+            #t)))))
+    (inputs
+     `(("breeze-icons" ,breeze-icons)
+       ("breeze-assets" ,breeze-assets)))
+    (home-page "https://github.com/KDE/breeze-icons")
+    (synopsis "Full KDE Breeze theme")
+    (description
+     "This package contains the full Breeze visual style for KDE:
+assets and icons.")
+    (license (list license:gpl2 license:gpl3+))))
 
 (define-public kapidox
   (package

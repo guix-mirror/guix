@@ -195,7 +195,7 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
           (method url-fetch)
           (uri (string-append "https://linux-libre.fsfla.org"
                               "/pub/linux-libre/releases/" version "-gnu/"
-                              "deblob-" (version-major+minor version)))
+                              "deblob-" version))
           (file-name (string-append "linux-libre-deblob-"
                                     (version-major+minor version)))
           (sha256 deblob-hash))
@@ -204,45 +204,8 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
           (uri (string-append "https://linux-libre.fsfla.org"
                               "/pub/linux-libre/releases/" version "-gnu/"
                               "deblob-check"))
-          (file-name (string-append "linux-libre-deblob-check-"
-                                    (version-major+minor version)))
+          (file-name (string-append "linux-libre-deblob-check-" version))
           (sha256 deblob-check-hash))))
-
-(define deblob-scripts-5.8
-  (linux-libre-deblob-scripts
-   "5.8.6"
-   (base32 "07z7sglyrfh0706icqqf3shadf638pvyid9386r661ds5lbsa2mw")
-   (base32 "0j6jba5fcddqlb42f95gjl78jisfla4nswqila074gglcrbnl9q7")))
-
-(define deblob-scripts-5.4
-  (linux-libre-deblob-scripts
-   "5.4.62"
-   (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "1b3q88i2qfdxyvpi9f7jds0qlb8hfpw87mgia096ax6822c2cmyb")))
-
-(define deblob-scripts-4.19
-  (linux-libre-deblob-scripts
-   "4.19.143"
-   (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
-   (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
-
-(define deblob-scripts-4.14
-  (linux-libre-deblob-scripts
-   "4.14.196"
-   (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
-   (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
-
-(define deblob-scripts-4.9
-  (linux-libre-deblob-scripts
-   "4.9.235"
-   (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
-   (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
-
-(define deblob-scripts-4.4
-  (linux-libre-deblob-scripts
-   "4.4.235"
-   (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
-   (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 
 (define* (computed-origin-method gexp-promise hash-algo hash
                                  #:optional (name "source")
@@ -384,39 +347,69 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.8-version "5.8.6")
+;; The current "stable" kernel. That is, the most recently released major
+;; version.
+(define-public linux-libre-5.8-version "5.8.8")
+(define deblob-scripts-5.8
+  (linux-libre-deblob-scripts
+   "5.8.7"
+   (base32 "07z7sglyrfh0706icqqf3shadf638pvyid9386r661ds5lbsa2mw")
+   (base32 "0j6jba5fcddqlb42f95gjl78jisfla4nswqila074gglcrbnl9q7")))
 (define-public linux-libre-5.8-pristine-source
   (let ((version linux-libre-5.8-version)
-        (hash (base32 "180bka8a0f2ykaifgb323pzgh0n909mlrsk08l08zmifggnh19cc")))
+        (hash (base32 "0xm901zvvrwsb9k88la6pb65nybi43bygiyz1z68njwsx6ripxik")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.8)))
 
-(define-public linux-libre-5.4-version "5.4.62")
+;; The "longterm" kernels — the older releases with long-term upstream support.
+;; Here are the support timelines:
+;; <https://www.kernel.org/category/releases.html>
+(define-public linux-libre-5.4-version "5.4.64")
+(define deblob-scripts-5.4
+  (linux-libre-deblob-scripts
+   "5.4.63"
+   (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
+   (base32 "1b3q88i2qfdxyvpi9f7jds0qlb8hfpw87mgia096ax6822c2cmyb")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0w49y8lymz23x4mr5byaxnrkhm56lwfhnqkra07hqyfr5y63v216")))
+        (hash (base32 "1vymhl6p7i06gfgpw9iv75bvga5sj5kgv46i1ykqiwv6hj9w5lxr")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.143")
+(define-public linux-libre-4.19-version "4.19.144")
+(define deblob-scripts-4.19
+  (linux-libre-deblob-scripts
+   "4.19.143"
+   (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
+   (base32 "1jiaw0as1ippkrjdpd52657w5mz9qczg3y2hlra7m9k0xawwiqlf")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1383yfwb962mhn25b3b3zqrwnpyp01g5xclsv14wra0fdz33ahra")))
+        (hash (base32 "0jnj65bdy5y9lcj5zhrn4iaszpww8z41ac66j00l75sd931l1g9k")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.196")
+(define-public linux-libre-4.14-version "4.14.197")
+(define deblob-scripts-4.14
+  (linux-libre-deblob-scripts
+   "4.14.196"
+   (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
+   (base32 "1qij18inijj6c3ma8hv98yjagnzxdxyn134da9fd23ky8q6hbvky")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "16mhqymwkgqi8zalcij5c754smc8ysvfw6l2cwshr4scipsv4qay")))
+        (hash (base32 "029h46yki2hxdbn7afmnf3yar1pnwrpszx76irsa5mf8gnrasyp0")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
 (define-public linux-libre-4.9-version "4.9.235")
+(define deblob-scripts-4.9
+  (linux-libre-deblob-scripts
+   linux-libre-4.9-version
+   (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
+   (base32 "0fxajshb75siq39lj5h8xvhdj8lcmddkslwlyj65rhlwk6g2r4b2")))
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
         (hash (base32 "1hqcb3zw4546h6x5xy2mywdznha8813lx15mxbgfbvwm4qhsc9g6")))
@@ -425,6 +418,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              deblob-scripts-4.9)))
 
 (define-public linux-libre-4.4-version "4.4.235")
+(define deblob-scripts-4.4
+  (linux-libre-deblob-scripts
+   linux-libre-4.4-version
+   (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
+   (base32 "0hhin1jpfkd6nwrb6xqxjzl3hdxy4pn8a15hy2d3d83yw6pflbsf")))
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
         (hash (base32 "0w5pkv936zb0shjgnpv17gcp5n8f91djznzq54p6j1bl5q2qdyqd")))
@@ -7521,3 +7519,30 @@ tracing (uprobes), and tracepoints.  The bpftrace language is inspired by awk
 and C, and predecessor tracers such as DTrace and SystemTap.  bpftrace was
 created by Alastair Robertson.")
     (license license:asl2.0)))
+
+(define-public ttyebus-linux-module
+  (let ((revision "0")
+        (commit "fe4332a2281cf79804ef4d8516aa848ca1c58d1f"))
+    (package
+      (name "ttyebus-linux-module")
+      (version (git-version "1.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eBUS/ttyebus.git")
+               (commit "fe4332a2281cf79804ef4d8516aa848ca1c58d1f")))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1i66xjs9vln5cca6wx7aiiw7jihrlsk9hjdqyczp36fvm1b1bani"))))
+      (supported-systems '("armhf-linux" "aarch64-linux"))
+      (build-system linux-module-build-system)
+      (arguments
+       `(#:tests? #f))
+      (home-page "https://github.com/eBUS/ttyebus")
+      (synopsis "Low-latency Raspberry Pi UART driver")
+      (description "This package provides a Linux kernel module that will
+provide a serial device @code{/dev/ttyebus} with almost no latency upon
+receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
+      (license license:gpl3+))))

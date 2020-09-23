@@ -116,7 +116,10 @@ and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
 ;;; Entry point.
 ;;;
 
-(define (guix-hash . args)
+(define-command (guix-hash . args)
+  (category packaging)
+  (synopsis "compute the cryptographic hash of a file")
+
   (define (parse-options)
     ;; Return the alist of option values.
     (parse-command-line args %options (list %default-options)

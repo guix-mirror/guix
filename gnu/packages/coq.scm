@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,11 +97,18 @@
          (add-after 'install 'remove-duplicate
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
+                    (bin (string-append out "/bin"))
+                    (coqtop (string-append bin "/coqtop"))
+                    (coqidetop (string-append bin "/coqidetop"))
+                    (coqtop.opt (string-append coqtop ".opt"))
+                    (coqidetop.opt (string-append coqidetop ".opt")))
                ;; These files are exact copies without `.opt` extension.
                ;; Removing these saves 35 MiB in the resulting package.
-               (delete-file (string-append bin "/coqtop.opt"))
-               (delete-file (string-append bin "/coqidetop.opt")))
+               ;; Unfortunately, completely deleting them breaks coqide.
+               (delete-file coqtop.opt)
+               (delete-file coqidetop.opt)
+               (symlink coqtop coqtop.opt)
+               (symlink coqidetop coqidetop.opt))
              #t))
          (add-after 'install 'install-ide
            (lambda* (#:key outputs #:allow-other-keys)
@@ -553,11 +561,11 @@ uses Ltac to synthesize the substitution operation.")
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/mattam82/Coq-Equations")
-                    (commit (string-append "v" version "-8.10"))))
+                    (commit (string-append "v" version "-8.10-2"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "023q5dww3drw35dm9bi9p9d0wrj9k7vax7hfdsprf8l340pb4s0k"))))
+                "0j3z4l5nrbyi9zbbyqkc6kassjanwld2188mwmrbqspaypm2ys68"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml"  ,ocaml)
@@ -588,7 +596,7 @@ kernel.")
 (define-public coq-stdpp
   (package
     (name "coq-stdpp")
-    (version "1.2.1")
+    (version "1.4.0")
     (synopsis "Alternative Coq standard library std++")
     (source (origin
               (method git-fetch)
@@ -598,7 +606,7 @@ kernel.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lczybg1jq9drbi8nzrlb0k199x4n07aawjwfzrl3qqc0w8kmvdz"))))
+                "1m6c7ibwc99jd4cv14v3r327spnfvdf3x2mnq51f9rz99rffk68r"))))
     (build-system gnu-build-system)
     (inputs
      `(("coq" ,coq)))
