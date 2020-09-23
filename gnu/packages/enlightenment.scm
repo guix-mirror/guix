@@ -31,7 +31,6 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
-  #:use-module (gnu packages avahi)
   #:use-module (gnu packages bittorrent)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
@@ -69,7 +68,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.24.3")
+    (version "1.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -77,7 +76,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0ajwc8lmay5ai7nsrp778g393h0p4h98p4c22gic2w61fgkcd5fy"))))
+                "0vlmf0rp2qxdl06pdmrd1xdfa10sdz30vnxzc98inpdg1n8iz52k"))))
     (build-system meson-build-system)
     (native-inputs
      `(("check" ,check)
@@ -115,8 +114,7 @@
     (propagated-inputs
      ;; All these inputs are in package config files in section
      ;; Requires.private.
-     `(("avahi" ,avahi)
-       ("dbus" ,dbus)
+     `(("dbus" ,dbus)
        ("elogind" ,elogind)
        ("eudev" ,eudev)
        ("fontconfig" ,fontconfig)
@@ -137,13 +135,9 @@
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (arguments
-     `(#:configure-flags '("-Dsystemd=false"
-                           "-Delogind=true"
-                           "-Dembedded-lz4=false"
-                           "-Devas-loaders-disabler=json"
+     `(#:configure-flags '("-Dembedded-lz4=false"
                            "-Dbuild-examples=false"
                            "-Decore-imf-loaders-disabler=scim"
-                           "-Davahi=true"
                            "-Dglib=true"
                            "-Dmount-path=/run/setuid-programs/mount"
                            "-Dunmount-path=/run/setuid-programs/umount"
@@ -164,6 +158,7 @@
              (let ((curl    (assoc-ref inputs "curl"))
                    (pulse   (assoc-ref inputs "pulseaudio"))
                    (sndfile (assoc-ref inputs "libsndfile"))
+                   (elogind (assoc-ref inputs "elogind"))
                    (lib     "/lib/"))
                (substitute* "src/lib/ecore_con/ecore_con_url_curl.c"
                  (("libcurl.so.?" libcurl) ; libcurl.so.[45]
@@ -173,6 +168,9 @@
                   (string-append pulse lib libpulse))
                  (("libsndfile.so.1" libsnd)
                   (string-append sndfile lib libsnd)))
+               (substitute* "src/lib/elput/elput_logind.c"
+                 (("libelogind.so.0" libelogind)
+                  (string-append elogind "/lib/" libelogind)))
                #t)))
          (add-after 'unpack 'fix-install-paths
            (lambda _
