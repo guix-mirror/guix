@@ -14367,18 +14367,15 @@ timestamps by providing a @code{ts} struct.")
 (define-public emacs-peg
   (package
     (name "emacs-peg")
-    (version "0.6")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/emacsmirror/peg")
-                    (commit version)))
-              (sha256
-               (base32
-                "0kjz7ch4bn0m4v9zgqyqcrsasnqc5c5drv2hp22j7rnbb7ny0q3n"))
-              (file-name (git-file-name name version))))
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/peg-" version ".tar"))
+       (sha256
+        (base32 "0skr5dz9k34r409hisnj37n1b7n62l3md0glnfx578xkbmxlpcxl"))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/emacsmirror/peg/")
+    (home-page "https://elpa.gnu.org/packages/peg.html")
     (synopsis "Parsing Expression Grammars in Elisp")
     (description "This package provides a macro that parses the current buffer
 according to a parsing expression grammar.")
