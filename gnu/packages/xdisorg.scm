@@ -508,7 +508,7 @@ following the mouse.")
 (define-public pixman
   (package
     (name "pixman")
-    (version "0.38.4")
+    (version "0.40.0")
     (source
      (origin
        (method url-fetch)
@@ -517,7 +517,7 @@ following the mouse.")
          "https://www.cairographics.org/releases/pixman-"
          version ".tar.gz"))
        (sha256
-        (base32 "1ryxzdf048x7wsx4dlvrr1p00gzwfs7lybnhgc7ygbj0dvyxcrns"))
+        (base32 "1z13n96m7x91j25qq9wlkxsbq04wfwjhw66ir17frna06zn0s83d"))
        (patches
         (search-patches
          "pixman-CVE-2016-5296.patch"))))
@@ -538,7 +538,7 @@ following the mouse.")
 manipulation, providing features such as image compositing and trapezoid
 rasterisation.")
     (home-page "http://www.pixman.org/")
-    (license license:x11)))
+    (license license:expat)))
 
 (define-public libdrm
   (package
