@@ -309,7 +309,7 @@ devices have vendorId:productId = 0c45:7403 or 0c45:7404.")
     (arguments
      `(#:tests? #f ; none included
        #:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
