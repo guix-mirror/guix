@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -54,6 +54,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages mate)
+  #:use-module (gnu packages nfs)
   #:use-module (gnu packages enlightenment)
   #:use-module (guix deprecation)
   #:use-module (guix records)
@@ -1205,6 +1206,12 @@ or setting its password with passwd.")))
          ;; Add polkit rules, so that non-root users in the wheel group can
          ;; perform administrative tasks (similar to "sudo").
          polkit-wheel-service
+
+         ;; Allow desktop users to also mount NTFS and NFS file systems
+         ;; without root.
+         (simple-service 'mount-setuid-helpers setuid-program-service-type
+                         (list (file-append nfs-utils "/sbin/mount.nfs")
+                               (file-append ntfs-3g "/sbin/mount.ntfs-3g")))
 
          ;; The global fontconfig cache directory can sometimes contain
          ;; stale entries, possibly referencing fonts that have been GC'd,
