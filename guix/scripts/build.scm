@@ -63,6 +63,7 @@
 
             %transformation-options
             options->transformation
+            manifest-entry-with-transformations
             show-transformation-options-help
 
             guix-build
@@ -427,6 +428,14 @@ a checkout of the Git repository at the given URL."
     (with-git-url . ,transform-package-source-git-url)
     (without-tests . ,transform-package-tests)))
 
+(define (transformation-procedure key)
+  "Return the transformation procedure associated with KEY, a symbol such as
+'with-source', or #f if there is none."
+  (any (match-lambda
+         ((k . proc)
+          (and (eq? k key) proc)))
+       %transformations))
+
 (define %transformation-options
   ;; The command-line interface to the above transformations.
   (let ((parser (lambda (symbol)
@@ -481,32 +490,69 @@ derivation, etc.), applies the transformations specified by OPTS."
     ;; order in which they appear on the command line.
     (filter-map (match-lambda
                   ((key . value)
-                   (match (any (match-lambda
-                                 ((k . proc)
-                                  (and (eq? k key) proc)))
-                               %transformations)
+                   (match (transformation-procedure key)
                      (#f
                       #f)
                      (transform
                       ;; XXX: We used to pass TRANSFORM a list of several
                       ;; arguments, but we now pass only one, assuming that
                       ;; transform composes well.
-                      (cons key (transform (list value)))))))
+                      (list key value (transform (list value)))))))
                 (reverse opts)))
 
+  (define (package-with-transformation-properties p)
+    (package/inherit p
+      (properties `((transformations
+                     . ,(map (match-lambda
+                               ((key value _)
+                                (cons key value)))
+                             applicable))
+                    ,@(package-properties p)))))
+
   (lambda (store obj)
-    (fold (match-lambda*
-            (((name . transform) obj)
-             (let ((new (transform store obj)))
-               (when (eq? new obj)
-                 (warning (G_ "transformation '~a' had no effect on ~a~%")
-                          name
-                          (if (package? obj)
-                              (package-full-name obj)
-                              obj)))
-               new)))
-          obj
-          applicable)))
+    (define (tagged-object new)
+      (if (and (not (eq? obj new))
+               (package? new) (not (null? applicable)))
+          (package-with-transformation-properties new)
+          new))
+
+    (tagged-object
+     (fold (match-lambda*
+             (((name value transform) obj)
+              (let ((new (transform store obj)))
+                (when (eq? new obj)
+                  (warning (G_ "transformation '~a' had no effect on ~a~%")
+                           name
+                           (if (package? obj)
+                               (package-full-name obj)
+                               obj)))
+                new)))
+           obj
+           applicable))))
+
+(define (package-transformations package)
+  "Return the transformations applied to PACKAGE according to its properties."
+  (match (assq-ref (package-properties package) 'transformations)
+    (#f '())
+    (transformations transformations)))
+
+(define (manifest-entry-with-transformations entry)
+  "Return ENTRY with an additional 'transformations' property if it's not
+already there."
+  (let ((properties (manifest-entry-properties entry)))
+    (if (assq 'transformations properties)
+        entry
+        (let ((item (manifest-entry-item entry)))
+          (manifest-entry
+            (inherit entry)
+            (properties
+             (match (and (package? item)
+                         (package-transformations item))
+               ((or #f '())
+                properties)
+               (transformations
+                `((transformations . ,transformations)
+                  ,@properties)))))))))
 
 
 ;;;

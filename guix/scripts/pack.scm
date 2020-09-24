@@ -1140,19 +1140,24 @@ Create a bundle of PACKAGE.\n"))
                manifest))
             identity))
 
+      (define (with-transformations manifest)
+        (map-manifest-entries manifest-entry-with-transformations
+                              manifest))
+
       (with-provenance
-       (cond
-        ((and (not (null? manifests)) (not (null? packages)))
-         (leave (G_ "both a manifest and a package list were given~%")))
-        ((not (null? manifests))
-         (concatenate-manifests
-          (map (lambda (file)
-                 (let ((user-module (make-user-module
-                                     '((guix profiles) (gnu)))))
-                   (load* file user-module)))
-               manifests)))
-        (else
-         (packages->manifest packages))))))
+       (with-transformations
+        (cond
+         ((and (not (null? manifests)) (not (null? packages)))
+          (leave (G_ "both a manifest and a package list were given~%")))
+         ((not (null? manifests))
+          (concatenate-manifests
+           (map (lambda (file)
+                  (let ((user-module (make-user-module
+                                      '((guix profiles) (gnu)))))
+                    (load* file user-module)))
+                manifests)))
+         (else
+          (packages->manifest packages)))))))
 
   (with-error-handling
     (with-store store

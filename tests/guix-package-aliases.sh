@@ -39,6 +39,12 @@ test -x "$profile/bin/guile"
 ! guix install -r guile-bootstrap -p "$profile" --bootstrap
 test -x "$profile/bin/guile"
 
+# Use a package transformation option and make sure it's recorded.
+guix install --bootstrap guile-bootstrap -p "$profile" \
+     --with-input=libreoffice=inkscape
+test -x "$profile/bin/guile"
+grep "libreoffice=inkscape" "$profile/manifest"
+
 guix upgrade --version
 guix upgrade -n
 guix upgrade gui.e -n

@@ -864,12 +864,13 @@ processed, #f otherwise."
 
   (define (transform-entry entry)
     (let ((item (transform store (manifest-entry-item entry))))
-      (manifest-entry
-        (inherit entry)
-        (item item)
-        (version (if (package? item)
-                     (package-version item)
-                     (manifest-entry-version entry))))))
+      (manifest-entry-with-transformations
+       (manifest-entry
+         (inherit entry)
+         (item item)
+         (version (if (package? item)
+                      (package-version item)
+                      (manifest-entry-version entry)))))))
 
   (when (equal? profile %current-profile)
     ;; Normally the daemon created %CURRENT-PROFILE when we connected, unless
