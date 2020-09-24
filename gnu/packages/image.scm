@@ -810,31 +810,33 @@ test suite, including conformance tests (following Rec. ITU-T T.803 | ISO/IEC
   (package
     (name "openjpeg")
     (version "2.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/uclouvain/openjpeg")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "openjpeg" version))
-              (sha256
-               (base32
-                "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/uclouvain/openjpeg")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name "openjpeg" version))
+       (sha256
+        (base32 "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f                   ;TODO: requires a 1.1 GiB data repository
+     '(#:tests? #f           ;TODO: requires a 1.1 GiB data repository
        #:configure-flags '("-DBUILD_STATIC_LIBS=OFF")))
     (inputs
-      `(("lcms" ,lcms)
-        ("libpng" ,libpng)
-        ("libtiff" ,libtiff)
-        ("zlib" ,zlib)))
+     `(("lcms" ,lcms)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
     (synopsis "JPEG 2000 codec")
     (description
-      "The OpenJPEG library is a JPEG 2000 codec written in C.  It has
+     "The OpenJPEG library is a JPEG 2000 codec written in C.  It has
 been developed in order to promote the use of JPEG 2000, the new
 still-image compression standard from the Joint Photographic Experts
 Group (JPEG).
-
 In addition to the basic codec, various other features are under
 development, among them the JP2 and MJ2 (Motion JPEG 2000) file formats,
 an indexing tool useful for the JPIP protocol, JPWL-tools for
