@@ -56,6 +56,9 @@
                     (default "/var/log/cuirass-web.log"))
   (queries-log-file cuirass-configuration-queries-log-file ;string
                     (default #f))
+  (web-queries-log-file
+                    cuirass-configuration-web-queries-log-file ;string
+                    (default #f))
   (cache-directory  cuirass-configuration-cache-directory ;string (dir-name)
                     (default "/var/cache/cuirass"))
   (ttl              cuirass-configuration-ttl     ;integer
@@ -90,6 +93,8 @@
         (web-log-file     (cuirass-configuration-web-log-file config))
         (log-file         (cuirass-configuration-log-file config))
         (queries-log-file (cuirass-configuration-queries-log-file config))
+        (web-queries-log-file
+                          (cuirass-configuration-web-queries-log-file config))
         (user             (cuirass-configuration-user config))
         (group            (cuirass-configuration-group config))
         (interval         (cuirass-configuration-interval config))
@@ -147,9 +152,9 @@
                            "--port" #$(number->string port)
                            "--listen" #$host
                            "--interval" #$(number->string interval)
-                           #$@(if queries-log-file
+                           #$@(if web-queries-log-file
                                   (list (string-append "--log-queries="
-                                                       queries-log-file))
+                                                       web-queries-log-file))
                                   '())
                            #$@(if use-substitutes? '("--use-substitutes") '())
                            #$@(if fallback? '("--fallback") '())
@@ -198,11 +203,16 @@
 
 (define (cuirass-log-rotations config)
   "Return the list of log rotations that corresponds to CONFIG."
-  (let ((queries-log-file (cuirass-configuration-queries-log-file config)))
+  (let ((queries-log-file (cuirass-configuration-queries-log-file config))
+        (web-queries-log-file
+         (cuirass-configuration-web-queries-log-file config)))
     (list (log-rotation
            (files `(,(cuirass-configuration-log-file config)
                     ,@(if queries-log-file
                           (list queries-log-file)
+                          '())
+                    ,@(if web-queries-log-file
+                          (list web-queries-log-file)
                           '())))
            (frequency 'weekly)
            (options '("rotate 40"))))))              ;worth keeping
