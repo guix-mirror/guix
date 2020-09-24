@@ -508,28 +508,31 @@ following the mouse.")
   (package
     (name "pixman")
     (version "0.38.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.cairographics.org/releases/pixman-"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "1ryxzdf048x7wsx4dlvrr1p00gzwfs7lybnhgc7ygbj0dvyxcrns"))
-              (patches (search-patches "pixman-CVE-2016-5296.patch"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://www.cairographics.org/releases/pixman-"
+         version ".tar.gz"))
+       (sha256
+        (base32 "1ryxzdf048x7wsx4dlvrr1p00gzwfs7lybnhgc7ygbj0dvyxcrns"))
+       (patches
+        (search-patches
+         "pixman-CVE-2016-5296.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libpng" ,libpng)
        ("zlib" ,zlib)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.pixman.org/")
     (synopsis "Low-level pixel manipulation library")
     (description "Pixman is a low-level software library for pixel
 manipulation, providing features such as image compositing and trapezoid
 rasterisation.")
+    (home-page "http://www.pixman.org/")
     (license license:x11)))
 
 (define-public libdrm
