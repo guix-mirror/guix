@@ -848,16 +848,12 @@ test suite, including conformance tests (following Rec. ITU-T T.803 | ISO/IEC
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("zlib" ,zlib)))
-    (synopsis "JPEG 2000 codec")
-    (description
-     "The OpenJPEG library is a JPEG 2000 codec written in C.  It has
-been developed in order to promote the use of JPEG 2000, the new
-still-image compression standard from the Joint Photographic Experts
-Group (JPEG).
-In addition to the basic codec, various other features are under
-development, among them the JP2 and MJ2 (Motion JPEG 2000) file formats,
-an indexing tool useful for the JPIP protocol, JPWL-tools for
-error-resilience, a Java-viewer for j2k-images, ...")
+    (synopsis "OPENJPEG Library and Applications")
+    (description "OpenJPEG is an implementation of JPEG 2000 codec written in C
+language.  It has been developed in order to promote the use of JPEG 2000, a
+still-image compression standard from the Joint Photographic Experts Group
+(JPEG).  Since April 2015, it is officially recognized by ISO/IEC and ITU-T as a
+JPEG 2000 Reference Software.")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
 
