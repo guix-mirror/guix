@@ -6692,24 +6692,25 @@ of running programs and invoke methods on those interfaces.")
   (package
     (name "yelp-xsl")
     (version "3.34.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1bdpgkzawhqmw52l6zx8czzg1ndfgcf1p44m2bxjdpqkc4afcgqc"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1bdpgkzawhqmw52l6zx8czzg1ndfgcf1p44m2bxjdpqkc4afcgqc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext-minimal" ,gettext-minimal)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)))
-    (home-page "https://wiki.gnome.org/Apps/Yelp")
     (synopsis "XSL stylesheets for Yelp")
     (description
      "Yelp-xsl contains XSL stylesheets that are used by the yelp help browser
 to format Docbook and Mallard documents.")
+    (home-page "https://wiki.gnome.org/Apps/Yelp")
     (license license:gpl2+)))
 
 (define-public yelp
