@@ -186,6 +186,9 @@
         (db    (dirname (cuirass-configuration-database config)))
         (user  (cuirass-configuration-user config))
         (log   "/var/log/cuirass")
+        (queries-log-file (cuirass-configuration-queries-log-file config))
+        (web-queries-log-file
+         (cuirass-configuration-web-queries-log-file config))
         (group (cuirass-configuration-group config)))
     (with-imported-modules '((guix build utils))
       #~(begin
@@ -199,7 +202,13 @@
                 (gid (group:gid (getgr #$group))))
             (chown #$cache uid gid)
             (chown #$db uid gid)
-            (chown #$log uid gid))))))
+            (chown #$log uid gid)
+
+            (call-with-output-file #$queries-log-file (const #t))
+            (call-with-output-file #$web-queries-log-file (const #t))
+
+            (chown #$queries-log-file uid gid)
+            (chown #$web-queries-log-file uid gid))))))
 
 (define (cuirass-log-rotations config)
   "Return the list of log rotations that corresponds to CONFIG."
