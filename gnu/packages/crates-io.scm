@@ -520,6 +520,22 @@ text or blue underlined text, on ANSI terminals.")
        #:cargo-inputs
        (("rust-winapi" ,rust-winapi-0.3))))))
 
+(define-public rust-ansi-term-0.9
+  (package
+    (inherit rust-ansi-term-0.11)
+    (name "rust-ansi-term")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ansi_term" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xif1bh938qpfc3d0f9xgidibpm65xix11w9gszwqnia00q7rb13"))))
+    (arguments `())))
+
 (define-public rust-antidote-1.0
   (package
     (name "rust-antidote")
