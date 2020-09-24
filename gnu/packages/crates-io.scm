@@ -25207,6 +25207,37 @@ crate.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-stfu8-0.2
+  (package
+    (name "rust-stfu8")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "stfu8" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xyv4axwc9rihg3f5fjdy7s0ahnz1iq6lq06blwkq2ihwcrh9xsb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-regex" ,rust-regex-0.2))
+       #:cargo-development-inputs
+       (("rust-pretty-assertions" ,rust-pretty-assertions-0.4)
+        ("rust-proptest" ,rust-proptest-0.3))))
+    (home-page "https://github.com/vitiral/stfu8")
+    (synopsis "Sorta Text Format in UTF-8")
+    (description
+     "STFU-8 is a hacky text encoding/decoding protocol for files that
+partially uses UTF-8.  Its primary purpose is to allow a human to visualize and
+edit data that is mostly UTF-8.  It will encode all non-UTF8-compliant bytes as
+longform text (e.g., ESC becomes @code{r\x1B}) and tries to encode ill-formed
+UTF-8.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-stream-cipher-0.3
   (package
     (name "rust-stream-cipher")
