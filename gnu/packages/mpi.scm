@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
@@ -220,6 +220,10 @@ bind processes, and much more.")
                            "--with-valgrind"
                            "--with-hwloc=external"
                            "--with-libevent"
+
+                           ;; Help 'orterun' and 'mpirun' find their tools
+                           ;; under $prefix by default.
+                           "--enable-mpirun-prefix-by-default"
 
                            ;; InfiniBand support
                            "--enable-openib-control-hdr-padding"
