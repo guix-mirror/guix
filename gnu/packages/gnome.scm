@@ -6702,10 +6702,17 @@ of running programs and invoke methods on those interfaces.")
        (sha256
         (base32 "1hsfj3q3a3kca0cf9i02xlq2qd4vy12qsjb89hh4r6mp6c11rrag"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--enable-doc")))
     (native-inputs
-     `(("gettext-minimal" ,gettext-minimal)
+     `(("ducktype" ,mallard-ducktype)
+       ("gettext-minimal" ,gettext-minimal)
+       ("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("xmllint" ,libxml2)))
+       ("xmllint" ,libxml2)
+       ("xsltproc" ,libxslt)))
     (synopsis "XSL stylesheets for Yelp")
     (description
      "Yelp-xsl contains XSL stylesheets that are used by the yelp help browser
