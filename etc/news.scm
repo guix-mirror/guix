@@ -2,10 +2,14 @@
 ;;
 ;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
+;; Copyright © 2019, 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;; Copyright © 2019, 2020 Julien Lepiller <julien@lepiller.eu>
+;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
