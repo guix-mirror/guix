@@ -6768,31 +6768,31 @@ freedesktop.org help system specification.")
   (package
     (name "yelp-tools")
     (version "3.32.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1yg8f5g5wadhmy4yfd9yjhvd8vll4gq4l86ibp0b42qbxnsmcf0q"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1yg8f5g5wadhmy4yfd9yjhvd8vll4gq4l86ibp0b42qbxnsmcf0q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("yelp-xsl" ,yelp-xsl)))
     (propagated-inputs
-     ;; Needed by `yelp-build', `yelp-check' or 'yelp.m4'.
      `(("itstool" ,itstool)
        ("xmllint" ,libxml2)
        ("xsltproc" ,libxslt)))
-    (inputs
-     `(("yelp-xsl" ,yelp-xsl)))
-    (home-page "https://wiki.gnome.org/Apps/Yelp/Tools")
     (synopsis "Yelp documentation tools")
     (description
      "Yelp-tools is a collection of scripts and build utilities to help create,
 manage, and publish documentation for Yelp and the web.  Most of the heavy
 lifting is done by packages like yelp-xsl and itstool.  This package just
 wraps things up in a developer-friendly way.")
+    (home-page "https://wiki.gnome.org/Apps/Yelp/Tools")
     (license license:gpl2+)))
 
 (define-public libgee
