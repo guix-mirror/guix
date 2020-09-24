@@ -824,8 +824,25 @@ test suite, including conformance tests (following Rec. ITU-T T.803 | ISO/IEC
         (base32 "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f           ;TODO: requires a 1.1 GiB data repository
-       #:configure-flags '("-DBUILD_STATIC_LIBS=OFF")))
+     `(#:configure-flags
+       (list
+        "-DBUILD_STATIC_LIBS=OFF"
+        "-DBUILD_UNIT_TESTS=ON"
+        "-DBUILD_TESTING=ON"
+        (string-append "-DOPJ_DATA_ROOT="
+                       (assoc-ref %build-inputs "openjpeg-data")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; To be re-enabled after upstream fixes the bug,
+         ;; https://github.com/uclouvain/openjpeg/issues/1264
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "tests/CMakeLists.txt"
+               (("add_subdirectory\\(nonregression\\)")
+                ""))
+             #t)))))
+    (native-inputs
+     `(("openjpeg-data" ,openjpeg-data))) ; Files for test-suite
     (inputs
      `(("lcms" ,lcms)
        ("libpng" ,libpng)
