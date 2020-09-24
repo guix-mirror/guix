@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
@@ -850,14 +850,14 @@ Filter, list, or split a tar file.
     (name "java-rsyntaxtextarea")
     (version "2.6.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bobbylight/"
-                                  "RSyntaxTextArea/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/bobbylight/RSyntaxTextArea")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c5mqg2klj5rvf8fhycrli8rf6s37l9p7a8knw9gpp65r1c120q2"))))
+                "0dyflzvxq2wvs0rgqfyi5yzzrb6r4bzw2dm8cl304dakxk38ddys"))))
     (build-system ant-build-system)
     (arguments
      `(;; FIXME: some tests fail because locale resources cannot be found.
