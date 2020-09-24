@@ -18903,6 +18903,27 @@ dependency to expose a precomputed hash.")
 replacements, adding colorful diffs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-pretty-assertions-0.4
+  (package
+    (inherit rust-pretty-assertions-0.6)
+    (name "rust-pretty-assertions")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pretty_assertions" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1llxlnhh4qz9kda27v6nllgzvgi1fv08i3djfk4zn6zlw8c53si8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.9)
+        ("rust-difference" ,rust-difference-1))))))
+
 (define-public rust-pretty-assertions-0.2
   (package
     (name "rust-pretty-assertions")
