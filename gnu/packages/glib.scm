@@ -462,15 +462,19 @@ dynamic loading, and an object system.")
        (variable "GI_TYPELIB_PATH")
        (files '("lib/girepository-1.0")))))
     (search-paths native-search-paths)
-    (synopsis "Generate interface introspection data for GObject libraries")
-    (description
-     "GObject introspection is a middleware layer between C libraries (using
-GObject) and language bindings.  The C library can be scanned at compile time
-and generate a metadata file, in addition to the actual native C library.  Then
-at runtime, language bindings can read this metadata and automatically provide
-bindings to call into the C library.")
-    (home-page "https://wiki.gnome.org/GObjectIntrospection")
-    (license license:gpl2+)))
+    (synopsis "GObject introspection tools and libraries")
+    (description "GObject introspection is a middleware layer between
+C libraries (using GObject) and language bindings.  The C library can be scanned
+at compile time and generate metadata files, in addition to the actual native
+C library.  Then language bindings can read this metadata and automatically
+provide bindings to call into the C library.")
+    (home-page "https://wiki.gnome.org/Projects/GObjectIntrospection")
+    (license
+     (list
+      ;; For library.
+      license:lgpl2.0+
+      ;; For tools.
+      license:gpl2+))))
 
 (define intltool
   (package
