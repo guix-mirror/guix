@@ -1481,7 +1481,10 @@ providing the system administrator with some help in common tasks.")
                "static"))       ;2.9 MiB static .a libraries
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
-                               "--enable-fs-paths-default=/run/current-system/profile/sbin"
+                               (string-append
+                                "--enable-fs-paths-default="
+                                "/run/setuid-programs"
+                                ":/run/current-system/profile/sbin")
                                ;; Don't try to chown root:root mount and umount
                                "--disable-makeinstall-chown"
                                "--localstatedir=/var"
