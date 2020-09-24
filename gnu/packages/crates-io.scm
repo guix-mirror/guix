@@ -1761,6 +1761,27 @@ that uses Serde for transforming structs into bytes and vice versa!")
      "This package provides a set of bits.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-bit-set-0.4
+  (package
+    (inherit rust-bit-set-0.5)
+    (name "rust-bit-set")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bit-set" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0320hhcbr73yzjpj2237vw2zq728yg7vmzb8dardg04ff4263gyr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bit-vec" ,rust-bit-vec-0.4))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.3))))))
+
 (define-public rust-bit-vec-0.5
   (package
     (name "rust-bit-vec")
