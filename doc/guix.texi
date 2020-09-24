@@ -68,7 +68,7 @@ Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
-Copyright @copyright{} 2019 Guillaume Le Vaillant@*
+Copyright @copyright{} 2019, 2020 Guillaume Le Vaillant@*
 Copyright @copyright{} 2020 Leo Prikler@*
 Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
@@ -6751,30 +6751,27 @@ Additionally, the corresponding source package should be labeled using
 the same convention as python packages (see @ref{Python Modules}), using
 the @code{cl-} prefix.
 
-For binary packages, each system should be defined as a Guix package.
-If one package @code{origin} contains several systems, package variants
-can be created in order to build all the systems.  Source packages,
-which use @code{asdf-build-system/source}, may contain several systems.
-
 In order to create executable programs and images, the build-side
 procedures @code{build-program} and @code{build-image} can be used.
-They should be called in a build phase after the @code{create-symlinks}
-phase, so that the system which was just built can be used within the
-resulting image.  @code{build-program} requires a list of Common Lisp
-expressions to be passed as the @code{#:entry-program} argument.
+They should be called in a build phase after the
+@code{create-asdf-configuration} phase, so that the system which was
+just built can be used within the resulting image.  @code{build-program}
+requires a list of Common Lisp expressions to be passed as the
+@code{#:entry-program} argument.
 
-If the system is not defined within its own @file{.asd} file of the same
-name, then the @code{#:asd-file} parameter should be used to specify
-which file the system is defined in.  Furthermore, if the package
-defines a system for its tests in a separate file, it will be loaded
-before the tests are run if it is specified by the
+By default, all the @file{.asd} files present in the sources are read to
+find system definitions.  The @code{#:asd-files} parameter can be used
+to specify the list of @file{.asd} files to read.  Furthermore, if the
+package defines a system for its tests in a separate file, it will be
+loaded before the tests are run if it is specified by the
 @code{#:test-asd-file} parameter.  If it is not set, the files
 @code{<system>-tests.asd}, @code{<system>-test.asd}, @code{tests.asd},
 and @code{test.asd} will be tried if they exist.
 
 If for some reason the package must be named in a different way than the
-naming conventions suggest, the @code{#:asd-system-name} parameter can
-be used to specify the name of the system.
+naming conventions suggest, or if several systems must be compiled, the
+@code{#:asd-systems} parameter can be used to specify the list of system
+names.
 
 @end defvr
 
