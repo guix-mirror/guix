@@ -23904,6 +23904,10 @@ Location of the log file.
 @item @code{web-log-file} (default: @code{"/var/log/cuirass-web.log"})
 Location of the log file used by the web interface.
 
+@item @code{queries-log-file} (default: @code{#f})
+Location of the SQL queries log file. By default, SQL queries logging is
+disabled.
+
 @item @code{cache-directory} (default: @code{"/var/cache/cuirass"})
 Location of the repository cache.
 
