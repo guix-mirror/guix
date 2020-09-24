@@ -6714,9 +6714,12 @@ of running programs and invoke methods on those interfaces.")
        ("xmllint" ,libxml2)
        ("xsltproc" ,libxslt)))
     (synopsis "XSL stylesheets for Yelp")
-    (description
-     "Yelp-xsl contains XSL stylesheets that are used by the yelp help browser
-to format Docbook and Mallard documents.")
+    (description "Yelp-XSL is a collection of programs and data files to help
+you build, maintain, and distribute documentation.  It provides XSLT stylesheets
+that can be built upon for help viewers and publishing systems.  These
+stylesheets output JavaScript and CSS content, and reference images
+provided by yelp-xsl. It also redistributes copies of the jQuery and
+jQuery.Syntax JavaScript libraries.")
     (home-page "https://wiki.gnome.org/Apps/Yelp")
     (license license:gpl2+)))
 
