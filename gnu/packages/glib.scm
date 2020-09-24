@@ -428,7 +428,7 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.62.0")
+    (version "1.64.1")
     (source
      (origin
        (method url-fetch)
@@ -437,7 +437,7 @@ dynamic loading, and an object system.")
                        "gobject-introspection/" (version-major+minor version)
                        "/gobject-introspection-" version ".tar.xz"))
        (sha256
-        (base32 "18lhglg9v6y83lhqzyifc1z0wrlawzrhzzxx0a3h1g7xaz97xvmi"))
+        (base32 "19vz7vp10h0zj3f491yk72dp89bix6rgkzxg4qcm4d6151ksxgl0"))
        (patches
         (search-patches
          "gobject-introspection-cc.patch"
@@ -445,25 +445,17 @@ dynamic loading, and an object system.")
          "gobject-introspection-absolute-shlib-path.patch"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'do-not-use-/usr/bin/env
-           (lambda _
-             (substitute* "tools/g-ir-tool-template.in"
-               (("#!@PYTHON_CMD@")
-                (string-append "#!" (which "python3"))))
-             #t)))))
+     `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
     (native-inputs
-     `(("glib" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
-    (inputs
      `(("bison" ,bison)
        ("flex" ,flex)
-       ("glib" ,glib)
-       ("python" ,python-wrapper)
-       ("zlib" ,zlib)))
+       ("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python-wrapper)))
     (propagated-inputs
-     `(("libffi" ,libffi)))
+     `(("glib" ,glib)
+       ("libffi" ,libffi)))
     (native-search-paths
      (list
       (search-path-specification
