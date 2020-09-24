@@ -6721,7 +6721,14 @@ stylesheets output JavaScript and CSS content, and reference images
 provided by yelp-xsl. It also redistributes copies of the jQuery and
 jQuery.Syntax JavaScript libraries.")
     (home-page "https://wiki.gnome.org/Apps/Yelp")
-    (license license:gpl2+)))
+    (license
+     (list
+      ;; XSLT
+      license:gpl2+
+      ;; Images
+      license:lgpl2.1+
+      ;; JavaScript
+      license:expat))))
 
 (define-public yelp
   (package
