@@ -19353,6 +19353,30 @@ macro use case.")
        #:cargo-development-inputs
        (("rust-regex" ,rust-regex-0.2))))))
 
+(define-public rust-proptest-0.3
+  (package
+    (inherit rust-proptest-0.7)
+    (name "rust-proptest")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proptest" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15633iq8x3x0im5vyij2gr8ncpflv4fa9w63rh94k20xhzv4m308"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bit-set" ,rust-bit-set-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-0.2)
+        ("rust-quick-error" ,rust-quick-error-1.2)
+        ("rust-rand" ,rust-rand-0.3)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.4))
+       #:cargo-development-inputs
+       (("rust-regex" ,rust-regex-0.2))))))
+
 (define-public rust-psm-0.1
   (package
     (name "rust-psm")
