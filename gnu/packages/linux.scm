@@ -5268,7 +5268,8 @@ supported.")
               ("fuse" ,fuse)))                    ;libuuid
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:configure-flags (list "--exec-prefix=${prefix}"
+     '(#:configure-flags (list "--disable-static"
+                               "--exec-prefix=${prefix}"
                                "--with-fuse=external" ;use our own FUSE
                                "--enable-mount-helper"
                                "--enable-posix-acls"
