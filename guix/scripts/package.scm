@@ -585,14 +585,8 @@ upgrading, #f otherwise."
 (define (package->manifest-entry* package output)
   "Like 'package->manifest-entry', but attach PACKAGE provenance meta-data to
 the resulting manifest entry."
-  (define (provenance-properties package)
-    (match (package-provenance package)
-      (#f   '())
-      (sexp `((provenance ,@sexp)))))
-
-  (package->manifest-entry package output
-                           #:properties (provenance-properties package)))
-
+  (manifest-entry-with-provenance
+   (package->manifest-entry package output)))
 
 (define (options->installable opts manifest transaction)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
