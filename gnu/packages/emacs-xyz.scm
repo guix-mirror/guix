@@ -79,6 +79,7 @@
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
 ;;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
+;;; Copyright © 2020 Marco Grassi <marco.au.grassi98@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23029,6 +23030,27 @@ Telegram messaging platform.")
 by the Doom theme collection.  This modeline features support for mode-specific
 icon support, git integration, and several other utilities.")
     (home-page "https://github.com/seagle0128/doom-modeline/")
+    (license license:gpl3+)))
+
+(define-public emacs-mood-line
+  (package
+    (name "emacs-mood-line")
+    (version "1.2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/jessieh/mood-line")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fh9j9fkgl433nykfzjnzap5labi4sdndfk1nv4f904ij69pmvxb"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/jessieh/mood-line")
+    (synopsis "Minimal mode-line for Emacs")
+    (description
+     "Mood-line is a minimal Emacs mode-line configuration that aims to
+replicate some of the features of the Doom modeline package.")
     (license license:gpl3+)))
 
 (define-public emacs-shrink-path
