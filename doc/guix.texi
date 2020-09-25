@@ -179,6 +179,7 @@ Installation
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
 * Application Setup::           Application-specific setup.
+* Upgrading Guix::              Upgrading Guix and its build daemon.
 
 Setting Up the Daemon
 
@@ -197,8 +198,6 @@ System Installation
 * After System Installation::   When installation succeeded.
 * Installing Guix in a VM::     Guix System playground.
 * Building the Installation Image::  How this comes to be.
-
-Getting Started
 
 Manual Installation
 
@@ -233,6 +232,7 @@ Development
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix pack::          Creating software bundles.
 * The GCC toolchain::           Working with languages supported by GCC.
+* Invoking guix git authenticate:: Authenticating Git repositories.
 
 Programming Interface
 
@@ -301,6 +301,7 @@ Services
 * Scheduled Job Execution::     The mcron service.
 * Log Rotation::                The rottlog service.
 * Networking Services::         Network setup, SSH daemon, etc.
+* Unattended Upgrades::         Automated system upgrades.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
@@ -311,6 +312,7 @@ Services
 * Telephony Services::          Telephony services.
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
+* LDAP Services::               LDAP services.
 * Web Services::                Web servers.
 * Certificate Services::        TLS certificates via Let's Encrypt.
 * DNS Services::                DNS daemons.
@@ -325,7 +327,7 @@ Services
 * PAM Mount Service::           Service to mount volumes when logging in.
 * Guix Services::               Services relating specifically to Guix.
 * Linux Services::              Services tied to the Linux kernel.
-* Hurd Services::               Services specific to a Hurd System.
+* Hurd Services::               Services specific for a Hurd System.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -334,6 +336,11 @@ Defining Services
 * Service Types and Services::  Types and services.
 * Service Reference::           API reference.
 * Shepherd Services::           A particular type of service.
+
+Bootstrapping
+
+* Reduced Binary Seed Bootstrap::  A Bootstrap worthy of GNU.
+* Preparing to Use the Bootstrap Binaries:: Building that what matters most.
 
 @end detailmenu
 @end menu
