@@ -25566,7 +25566,7 @@ the @code{--snapshot} flag using something along these lines:
 (service hurd-vm-service-type
          (hurd-vm-configuration
           (image   (const "/out/of/store/writable/hurd.img"))
-          (options '("--hda"))))
+          (options '())))
 @end lisp
 
 @subsubheading Ganeti
