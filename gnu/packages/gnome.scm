@@ -11125,6 +11125,49 @@ designed to work with various laser/ink-jet peel-off label and business
 card sheets that you’ll find at most office supply stores.")
     (license license:gpl3+)))
 
+;; Version 3.38.0 is out but requires tepl>=5 which requires glib>=2.64.
+(define-public gnome-latex
+  (package
+    (name "gnome-latex")
+    (version "3.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version)  "/"
+                           "gnome-latex-" version ".tar.xz"))
+       (sha256
+        (base32 "1869kr1zhcp04mzbi67lwgk497w840dbbc7427i9yh9b9s7j6mqn"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("amtk" ,amtk)
+       ("dconf" ,dconf)
+       ("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("libgee" ,libgee)
+       ("tepl" ,tepl)
+       ("uchardet" ,uchardet)))
+    (home-page "https://wiki.gnome.org/Apps/GNOME-LaTeX")
+    (synopsis "LaTeX editor for the GNOME desktop")
+    (description
+     "GNOME LaTeX is a LaTeX editor for the GNOME desktop.  It has features
+such as build tools, completion of LaTeX commands, structure navigation,
+symbol tables, document templates, project management, spell-checking, menus
+and toolbars.")
+    (license license:gpl3+)))
+
 (define-public libratbag
   (package
     (name "libratbag")
