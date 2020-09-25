@@ -61,6 +61,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -183,8 +184,11 @@ living in the same process.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? ,(not (hurd-target?))
-       ;; Ensure we don't keep a reference to net-tools.
-       #:disallowed-references ,(if (hurd-target?) '() (list net-tools))
+
+       ;; Ensure we don't keep a reference to the tools used for testing.
+       #:disallowed-references ,(if (hurd-target?)
+                                    '()
+                                    (list net-tools iproute socat))
        #:configure-flags
        (list
              ;; GnuTLS doesn't consult any environment variables to specify
@@ -236,12 +240,16 @@ living in the same process.")
                "debug"
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
-     `(,@(if (hurd-target?) '()
-             `(("net-tools" ,net-tools)))
+     `(,@(if (hurd-target?)
+             '()
+             `(("net-tools" ,net-tools)
+               ("iproute" ,iproute)               ;for 'ss'
+               ("socat" ,socat)))                 ;several tests rely on it
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
+
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
        ("which" ,which)
