@@ -25424,16 +25424,41 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 @cindex childhurd
 
 Service @code{hurd-vm} provides support for running GNU/Hurd in a
-virtual machine (VM), a so-called ``Childhurd''.  The virtual machine is
-a Shepherd service that can be referred to by the names @code{hurd-vm}
-and @code{childhurd} and be controlled with commands such as:
+virtual machine (VM), a so-called @dfn{childhurd}.  This service is meant
+to be used on GNU/Linux and the given GNU/Hurd operating system
+configuration is cross-compiled.  The virtual machine is a Shepherd
+service that can be referred to by the names @code{hurd-vm} and
+@code{childhurd} and be controlled with commands such as:
 
 @example
 herd start hurd-vm
 herd stop childhurd
 @end example
 
-The given GNU/Hurd operating system configuration is cross-compiled.
+When the service is running, you can view its console by connecting to
+it with a VNC client, for example with:
+
+@example
+guix environment --ad-hoc tigervnc-client -- \
+         vncviewer localhost:5900
+@end example
+
+The default configuration (see @code{hurd-vm-configuration} below)
+spawns a secure shell (SSH) server in your GNU/Hurd system, which QEMU
+(the virtual machine emulator) redirects to port 10222 on the host.
+Thus, you can connect over SSH to the childhurd with:
+
+@example
+ssh root@@localhost -p 10022
+@end example
+
+The childhurd is volatile and stateless: it starts with a fresh root
+file system every time you restart it.  By default though, all the files
+under @file{/etc/childhurd} on the host are copied as is to the root
+file system of the childhurd when it boots.  This allows you to
+initialize ``secrets'' inside the VM: SSH host keys, authorized
+substitute keys, and so on---see the explanation of @code{secret-root}
+below.
 
 @defvr {Scheme Variable} hurd-vm-service-type
 This is the type of the Hurd in a Virtual Machine service.  Its value
