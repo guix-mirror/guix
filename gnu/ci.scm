@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
@@ -511,20 +511,16 @@ Return #f if no such checkout is found."
                              (cross-jobs store system)))
                     ((hello)
                      ;; Build hello package only.
-                     (if (string=? system (%current-system))
-                         (let ((hello (specification->package "hello")))
-                           (list (package-job store (job-name hello) hello system)))
-                         '()))
+                     (let ((hello (specification->package "hello")))
+                       (list (package-job store (job-name hello) hello system))))
                     ((list)
                      ;; Build selected list of packages only.
-                     (if (string=? system (%current-system))
-                         (let* ((names (assoc-ref arguments 'subset))
-                                (packages (map specification->package names)))
-                           (map (lambda (package)
-                                    (package-job store (job-name package)
-                                                 package system))
-                                  packages))
-                         '()))
+                     (let* ((names (assoc-ref arguments 'subset))
+                            (packages (map specification->package names)))
+                       (map (lambda (package)
+                              (package-job store (job-name package)
+                                           package system))
+                            packages)))
                     ((manifests)
                      ;; Build packages in the list of manifests.
                      (let* ((manifests (arguments->manifests arguments))
