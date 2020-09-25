@@ -60,7 +60,7 @@ guix graph -t references guile-bootstrap | grep guile-bootstrap
 guix graph -e '(@ (gnu packages bootstrap) %bootstrap-guile)' \
     | grep guile-bootstrap
 
-if guix graph -e +; then false; else true; fi
+! guix graph -e +
 
 # Try passing store file names.
 
@@ -77,14 +77,13 @@ cmp "$tmpfile1" "$tmpfile2"
 # Try package transformation options.
 guix graph git | grep 'label = "openssl'
 guix graph git --with-input=openssl=libressl | grep 'label = "libressl'
-if guix graph git --with-input=openssl=libressl | grep 'label = "openssl'
-then false; else true; fi
+! guix graph git --with-input=openssl=libressl | grep 'label = "openssl'
 
 # Try --load-path
 guix graph -L $module_dir dummy | grep 'label = "dummy'
 
 # Displaying shortest paths (or lack thereof).
-if guix graph --path emacs vim; then false; else true; fi
+! guix graph --path emacs vim
 
 path="\
 emacs

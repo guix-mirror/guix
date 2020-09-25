@@ -36,11 +36,11 @@ unset out
 # For some operations, passing extra arguments is an error.
 for option in "" "-C 500M" "--verify" "--optimize" "--list-roots"
 do
-    if guix gc $option whatever; then false; else true; fi
+    ! guix gc $option whatever
 done
 
 # This should fail.
-if guix gc --verify=foo; then false; else true; fi
+! guix gc --verify=foo
 
 # Check the references of a .drv.
 drv="`guix build guile-bootstrap -d`"
@@ -51,8 +51,7 @@ guix gc --references "$drv" | grep -e -bash
 guix gc --references "$out"
 guix gc --references "$out/bin/guile"
 
-if guix gc --references /dev/null;
-then false; else true; fi
+! guix gc --references /dev/null;
 
 # Check derivers.
 guix gc --derivers "$out" | grep "$drv"
@@ -72,8 +71,7 @@ test -f "$drv" && test -L guix-gc-root
 guix gc --list-roots | grep "$PWD/guix-gc-root"
 
 guix gc --list-live | grep "$drv"
-if guix gc --delete "$drv";
-then false; else true; fi
+! guix gc --delete "$drv";
 
 rm guix-gc-root
 guix gc --list-dead | grep "$drv"
@@ -84,8 +82,7 @@ guix gc --delete "$drv"
 guix gc -C 1KiB
 
 # Check trivial error cases.
-if guix gc --delete /dev/null;
-then false; else true; fi
+! guix gc --delete /dev/null;
 
 # Bug #19757
 out="`guix build guile-bootstrap`"

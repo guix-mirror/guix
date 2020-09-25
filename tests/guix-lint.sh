@@ -58,24 +58,19 @@ grep_warning ()
 # 3) the description has a single space following the end-of-sentence period.
 
 out=`guix lint -c synopsis,description dummy 2>&1`
-if [ `grep_warning "$out"` -ne 3 ]
-then false; else true; fi
+test `grep_warning "$out"` -eq 3
 
 out=`guix lint -c synopsis dummy 2>&1`
-if [ `grep_warning "$out"` -ne 2 ]
-then false; else true; fi
+test `grep_warning "$out"` -eq 2
 
 out=`guix lint -c description dummy 2>&1`
-if [ `grep_warning "$out"` -ne 1 ]
-then false; else true; fi
+test `grep_warning "$out"` -eq 1
 
 out=`guix lint -c description,synopsis dummy 2>&1`
-if [ `grep_warning "$out"` -ne 3 ]
-then false; else true; fi
+test `grep_warning "$out"` -eq 3
 
-if guix lint -c synopsis,invalid-checker dummy 2>&1 | \
+guix lint -c synopsis,invalid-checker dummy 2>&1 | \
    grep -q 'invalid-checker: invalid checker'
-then true; else false; fi
 
 # Make sure specifying multiple packages works.
 guix lint -c inputs-should-be-native dummy dummy@42 dummy
@@ -85,8 +80,7 @@ guix lint -c inputs-should-be-native dummy dummy@42 dummy
 unset GUIX_PACKAGE_PATH
 
 out=`guix lint -L $module_dir -c synopsis,description dummy 2>&1`
-if [ `grep_warning "$out"` -ne 3 ]
-then false; else true; fi
+test `grep_warning "$out"` -eq 3
 
 # Make sure specifying multiple packages works.
 guix lint -L $module_dir -c inputs-should-be-native dummy dummy@42 dummy

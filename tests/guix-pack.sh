@@ -45,8 +45,7 @@ guix gc -R "$drv" | grep "`guix build coreutils -d --no-grafts`"
 drv="`guix pack idutils -d --no-grafts --target=arm-linux-gnueabihf`"
 guix gc -R "$drv" | \
     grep "`guix build idutils --target=arm-linux-gnueabihf -d --no-grafts`"
-if guix gc -R "$drv" | grep "`guix build idutils -d --no-grafts`";
-then false; else true; fi
+! guix gc -R "$drv" | grep "`guix build idutils -d --no-grafts`"
 
 # Build a tarball with no compression.
 guix pack --compression=none --bootstrap guile-bootstrap

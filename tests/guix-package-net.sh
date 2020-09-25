@@ -95,10 +95,8 @@ test "`guix package -p "$profile" -l | cut -f1 | grep guile | head -n1`" \
      = "  guile-bootstrap"
 
 # Exit with 1 when a generation does not exist.
-if guix package -p "$profile" --list-generations=42;
-then false; else true; fi
-if guix package -p "$profile" --switch-generation=99;
-then false; else true; fi
+! guix package -p "$profile" --list-generations=42
+! guix package -p "$profile" --switch-generation=99
 
 # Remove a package.
 guix package --bootstrap -p "$profile" -r "guile-bootstrap"
@@ -174,8 +172,7 @@ test -z "`guix package -p "$profile" -l 3`"
 rm "$profile"
 guix package --bootstrap -p "$profile" -i guile-bootstrap
 guix package --bootstrap -p "$profile_alt" -i gcc-bootstrap
-if guix package -p "$profile" --search-paths | grep LIBRARY_PATH
-then false; fi
+! guix package -p "$profile" --search-paths | grep LIBRARY_PATH
 guix package -p "$profile" -p "$profile_alt" --search-paths \
      | grep "LIBRARY_PATH.*$profile/lib.$profile_alt/lib"
 

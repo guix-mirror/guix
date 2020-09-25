@@ -58,5 +58,4 @@ guix gc -R "$v0_1_0_drv" | grep guile-gcrypt-8fe64e8 # this is the tag ID
 test "$v0_1_0_drv" != "$latest_drv"
 test "$v0_1_0_drv" != "$orig_drv"
 
-if guix build guix --with-commit=guile-gcrypt=000 -d
-then false; else true; fi
+! guix build guix --with-commit=guile-gcrypt=000 -d

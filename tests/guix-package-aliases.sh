@@ -36,26 +36,22 @@ guix install --bootstrap guile-bootstrap -p "$profile"
 test -x "$profile/bin/guile"
 
 # Make sure '-r' isn't passed as-is to 'guix package'.
-if guix install -r guile-bootstrap -p "$profile" --bootstrap
-then false; else true; fi
+! guix install -r guile-bootstrap -p "$profile" --bootstrap
 test -x "$profile/bin/guile"
 
 guix upgrade --version
 guix upgrade -n
 guix upgrade gui.e -n
-if guix upgrade foo bar -n;
-then false; else true; fi
+! guix upgrade foo bar -n;
 
 guix remove --version
 guix remove --bootstrap guile-bootstrap -p "$profile"
 ! test -x "$profile/bin/guile"
 test `guix package -p "$profile" -I | wc -l` -eq 0
 
-if guix remove -p "$profile" this-is-not-installed --bootstrap
-then false; else true; fi
+! guix remove -p "$profile" this-is-not-installed --bootstrap
 
-if guix remove -i guile-bootstrap -p "$profile" --bootstrap
-then false; else true; fi
+! guix remove -i guile-bootstrap -p "$profile" --bootstrap
 
 guix search '\<board\>' game | grep '^name: gnubg'
 
@@ -64,7 +60,7 @@ guix show guile
 guix show python@3 | grep "^name: python"
 
 # "python@2" exists but is deprecated; make sure it doesn't show up.
-if guix show python@2; then false; else true; fi
+! guix show python@2
 
 # Specifying multiple packages.
 output="`guix show sed grep | grep ^name:`"
