@@ -64,7 +64,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (home-page "https://savannah.nongnu.org/projects/nyacc")
     (license (list gpl3+ lgpl3+))))
 
-(define-public nyacc
+(define-public nyacc-0.99
   (package
     (inherit nyacc-0.86)
     (version "0.99.0")
@@ -94,6 +94,20 @@ extensive examples, including parsers for the Javascript and C99 languages.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)))))
+
+(define-public nyacc
+  (package
+    (inherit nyacc-0.99)
+    (version "1.03.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/nyacc/nyacc-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1vdiqpm3p0ndmpmkzcpkpjvgklfsk4wxrhkixdxbczpafdfl635p"))))
+    (inputs
+     `(("guile" ,guile-3.0)))))
 
 (define-public mes-0.19
   ;; Mes used for bootstrap.
@@ -153,7 +167,7 @@ Guile.")
                 "0p1jsrrmcbc0zrvbvnjbb6iyxr0in71km293q8qj6gnar6bw09av"))))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
-       ("nyacc" ,nyacc)))
+       ("nyacc" ,nyacc-0.99)))
     (native-search-paths
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
@@ -185,7 +199,7 @@ Guile.")
        ("make" ,gnu-make)
        ("mes" ,mes)
        ("mescc-tools" ,mescc-tools)
-       ("nyacc" ,nyacc)
+       ("nyacc" ,nyacc-0.99)
        ("sed" ,sed)
        ("tar" ,tar)))
     (supported-systems '("i686-linux"))
