@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -614,7 +615,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                      (lambda (file) (delete-manifest-file out file))
                      '("install.log"
                        "manifest-rust-docs"
-                       "manifest-rust-std-x86_64-unknown-linux-gnu"
+                       ,(string-append "manifest-rust-std-"
+                                       (nix-system->gnu-triplet-for-rust))
                        "manifest-rustc"))
                    (for-each
                      (lambda (file) (delete-manifest-file cargo-out file))
