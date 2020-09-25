@@ -300,7 +300,7 @@ Japanese language input in most graphical applications.")
 (define-public librime
   (package
     (name "librime")
-    (version "1.5.3")
+    (version "1.6.1")
     (source
      (origin
        (method git-fetch)
@@ -310,7 +310,7 @@ Japanese language input in most graphical applications.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0xskhdhk7dgpc71r39pfzxi5vrlzy90aqj1gzv8nnapq91p2awhv"))
+         "1avmy2yyag22cl2j8085n5czsk93sxv440pdb3a2diwcxwwmzm9v"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -330,6 +330,7 @@ Japanese language input in most graphical applications.")
              #t)))))
     (inputs
      `(("boost" ,boost)
+       ("capnproto" ,capnproto)
        ("glog" ,glog)
        ("leveldb" ,leveldb)
        ("marisa" ,marisa)
@@ -337,6 +338,7 @@ Japanese language input in most graphical applications.")
        ("yaml-cpp" ,yaml-cpp)))
     (native-inputs
      `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)
        ("xorgproto" ,xorgproto))) ; keysym.h
     (home-page "https://rime.im/")
     (synopsis "The core library of Rime Input Method Engine")
