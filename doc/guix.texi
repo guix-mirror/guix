@@ -25519,15 +25519,17 @@ By default, it produces
 @lisp
 '("--device" "rtl8139,netdev=net0"
   "--netdev" "user,id=net0\
-              ,hostfwd=tcp:127.0.0.1:<secrets-port>-:1004\
-              ,hostfwd=tcp:127.0.0.1:<ssh-port>-:2222\
-              ,hostfwd=tcp:127.0.0.1:<vnc-port>-:5900")
+              ,hostfwd=tcp:127.0.0.1:@var{secrets-port}-:1004\
+              ,hostfwd=tcp:127.0.0.1:@var{ssh-port}-:2222\
+              ,hostfwd=tcp:127.0.0.1:@var{vnc-port}-:5900")
 @end lisp
-with forwarded ports
+
+with forwarded ports:
+
 @example
-<ssh-port>: @code{(+ 11004 (* 1000 @var{ID}))}
-<ssh-port>: @code{(+ 10022 (* 1000 @var{ID}))}
-<vnc-port>: @code{(+ 15900 (* 1000 @var{ID}))}
+@var{ssh-port}: @code{(+ 11004 (* 1000 @var{ID}))}
+@var{ssh-port}: @code{(+ 10022 (* 1000 @var{ID}))}
+@var{vnc-port}: @code{(+ 15900 (* 1000 @var{ID}))}
 @end example
 
 @item @code{secret-root} (default: @file{/etc/childhurd})
