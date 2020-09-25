@@ -218,12 +218,13 @@ non-zero relevance score."
         (output (manifest-entry-output old)))
       transaction)))
 
-  (define (upgrade entry)
+  (define (upgrade entry transform)
     (match entry
       (($ <manifest-entry> name version output (? string? path))
        (match (find-best-packages-by-name name #f)
          ((pkg . rest)
-          (let ((candidate-version (package-version pkg)))
+          (let* ((pkg               (transform store pkg))
+                 (candidate-version (package-version pkg)))
             (match (package-superseded pkg)
               ((? package? new)
                (supersede entry new))
@@ -231,12 +232,14 @@ non-zero relevance score."
                (case (version-compare candidate-version version)
                  ((>)
                   (manifest-transaction-install-entry
-                   (package->manifest-entry* pkg output)
+                   (manifest-entry-with-transformations
+                    (package->manifest-entry* pkg output))
                    transaction))
                  ((<)
                   transaction)
                  ((=)
-                  (let* ((new (package->manifest-entry* pkg output)))
+                  (let* ((new (manifest-entry-with-transformations
+                               (package->manifest-entry* pkg output))))
                     ;; Here we want to determine whether the NEW actually
                     ;; differs from ENTRY, but we need to intercept
                     ;; 'build-things' calls because they would prevent us from
@@ -255,7 +258,14 @@ non-zero relevance score."
 
   (if (manifest-transaction-removal-candidate? entry transaction)
       transaction
-      (upgrade entry)))
+
+      ;; Upgrade ENTRY, preserving transformation options listed in its
+      ;; properties.
+      (let ((transform (options->transformation
+                        (or (assq-ref (manifest-entry-properties entry)
+                                      'transformations)
+                            '()))))
+        (upgrade entry transform))))
 
 
 ;;;

@@ -184,6 +184,21 @@ grep -E 'emacs[[:blank:]]+42\.5\.9rc7' "$tmpfile"
 rm "$emacs_tarball" "$tmpfile"
 rmdir "$module_dir"
 
+# Install with package transformations.
+guix install --bootstrap -p "$profile" sed --with-input=sed=guile-bootstrap
+grep "sed=guile-bootstrap" "$profile/manifest"
+test "$(readlink -f "$profile/bin/guile")" \
+     = "$(guix build guile-bootstrap)/bin/guile"
+test ! -f "$profile/bin/sed"
+
+# Make sure the package transformation is preserved.
+guix package --bootstrap -p "$profile" -u
+grep "sed=guile-bootstrap" "$profile/manifest"
+test "$(readlink -f "$profile/bin/guile")" \
+     = "$(guix build guile-bootstrap)/bin/guile"
+test ! -f "$profile/bin/sed"
+rm "$profile" "$profile"-[0-9]-link
+
 # Profiles with a relative file name.  Make sure we don't create dangling
 # symlinks--see bug report at
 # <https://lists.gnu.org/archive/html/guix-devel/2018-07/msg00036.html>.

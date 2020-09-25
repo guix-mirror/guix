@@ -187,6 +187,29 @@
                  (string=? (manifest-pattern-version pattern) "1")
                  (string=? (manifest-pattern-output pattern) "out")))))))
 
+(test-equal "transaction-upgrade-entry, transformation options preserved"
+  (derivation-file-name (package-derivation %store grep))
+
+  (let* ((old   (dummy-package "emacs" (version "1")))
+         (props '((transformations . ((with-input . "emacs=grep")))))
+         (tx    (transaction-upgrade-entry
+                 %store
+                 (manifest-entry
+                   (inherit (package->manifest-entry old))
+                   (properties props)
+                   (item (string-append (%store-prefix) "/"
+                                        (make-string 32 #\e) "-foo-1")))
+                 (manifest-transaction))))
+    (match (manifest-transaction-install tx)
+      (((? manifest-entry? entry))
+       (and (string=? (manifest-entry-version entry)
+                      (package-version grep))
+            (string=? (manifest-entry-name entry)
+                      (package-name grep))
+            (equal? (manifest-entry-properties entry) props)
+            (derivation-file-name
+             (package-derivation %store (manifest-entry-item entry))))))))
+
 (test-assert "transaction-upgrade-entry, grafts"
   ;; Ensure that, when grafts are enabled, 'transaction-upgrade-entry' doesn't
   ;; try to build stuff.

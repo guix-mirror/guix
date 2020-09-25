@@ -3101,6 +3101,29 @@ in the distribution currently installed.  To update your distribution,
 you should regularly run @command{guix pull} (@pxref{Invoking guix
 pull}).
 
+@cindex package transformations, upgrades
+When upgrading, package transformations that were originally applied
+when creating the profile are automatically re-applied (@pxref{Package
+Transformation Options}).  For example, assume you first installed Emacs
+from the tip of its development branch with:
+
+@example
+guix install emacs-next --with-branch=emacs-next=master
+@end example
+
+Next time you run @command{guix upgrade}, Guix will again pull the tip
+of the Emacs development branch and build @code{emacs-next} from that
+checkout.
+
+Note that transformation options such as @option{--with-branch} and
+@option{--with-source} depend on external state; it is up to you to
+ensure that they work as expected.  You can also discard a
+transformations that apply to a package by running:
+
+@example
+guix install @var{package}
+@end example
+
 @item --do-not-upgrade[=@var{regexp} @dots{}]
 When used together with the @option{--upgrade} option, do @emph{not}
 upgrade any packages whose name matches a @var{regexp}.  For example, to
@@ -9192,6 +9215,10 @@ variants}---for instance, packages built from different source code.
 This is a convenient way to create customized packages on the fly
 without having to type in the definitions of package variants
 (@pxref{Defining Packages}).
+
+Package transformation options are preserved across upgrades:
+@command{guix upgrade} attempts to apply transformation options
+initially used when creating the profile to the upgraded packages.
 
 @table @code
 
