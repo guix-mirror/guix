@@ -46,13 +46,11 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
-  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages gawk)
-  #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages libbsd)
@@ -221,9 +219,9 @@ living in the same process.")
                   ;; https://gitlab.com/gnutls/gnutls/-/issues/1095).
                   (add-after 'unpack 'disable-failing-tests
                     (lambda _
-                      (delete-file "configure")
-                      (substitute* "tests/Makefile.am"
-                        (("fastopen.sh") ""))
+                      (substitute* "tests/fastopen.sh"
+                        (("^unset RETCODE")
+                         "exit 77\n"))            ;skip
                       #t))
                   (add-after 'install 'move-doc
                    (lambda* (#:key outputs #:allow-other-keys)
@@ -245,11 +243,6 @@ living in the same process.")
              `(("net-tools" ,net-tools)
                ("iproute" ,iproute)               ;for 'ss'
                ("socat" ,socat)))                 ;several tests rely on it
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("libtool" ,libtool)
-
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
        ("which" ,which)
