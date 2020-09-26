@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -1763,7 +1763,7 @@ Clzip is intended to be fully compatible with the regular lzip package.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              "--enable-shared")))       ; only static (.a) is built by default
     (home-page "https://www.nongnu.org/lzip/lzlib.html")
     (synopsis "Lzip data compression C library")
