@@ -1000,4 +1000,5 @@ is added to the OS specified in CONFIG."
                                         (const %hurd-vm-accounts))))
    (default-value (hurd-vm-configuration))
    (description
-    "Provide a Virtual Machine running the GNU/Hurd.")))
+    "Provide a virtual machine (VM) running GNU/Hurd, also known as a
+@dfn{childhurd}.")))
