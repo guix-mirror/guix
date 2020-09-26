@@ -2431,14 +2431,14 @@ new Date();"))
 (define-public ant/java8
   (package (inherit ant-bootstrap)
     (name "ant")
-    (version "1.10.1")
+    (version "1.10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/ant/source/apache-ant-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "10p3dh77lkzzzcy32dk9azljixzadp46fggjfbvgkl8mmb8cxxv8"))
+                "066k2isig5xm70cihj9p73hkp5w7h5zbfqz5kxb6cwr9cb86xl2k"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2466,7 +2466,7 @@ new Date();"))
                ;; "check" phase, because the dependency on "test-jar" would always
                ;; result in the tests to be run.
                (substitute* "build.xml"
-                 (("depends=\"jars,test-jar\"") "depends=\"jars\""))
+                 (("depends=\"jars,test-jar") "depends=\"jars"))
                (invoke "bash" "bootstrap.sh"
                        (string-append "-Ddist.dir="
                                       (assoc-ref outputs "out")))))))))
