@@ -415,7 +415,7 @@ following formats:
 (define-public cozy
   (package
     (name "cozy")
-    (version "0.6.19")
+    (version "0.7.1")
     (source
      (origin
        (method git-fetch)
@@ -424,7 +424,7 @@ following formats:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1f1qydjs8sz39yhlg9qdjf31vrsmdk2pxiimw4fzsy1k2zr5dr34"))))
+        (base32 "1ra3s3nh5vzs15zhwq61bx3k8yd8xzjmmvn3wamxb4bsb6kfb57f"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -433,7 +433,7 @@ following formats:
          (add-after 'unpack 'patch-desktop-file
            (lambda _
              (substitute* "data/com.github.geigi.cozy.desktop.in"
-               (("com.github.geigi.cozy") "cozy"))
+               (("Exec=com.github.geigi.cozy") "Exec=cozy"))
              #t))
          (add-after 'install 'patch-executable-name
            (lambda* (#:key outputs #:allow-other-keys)
