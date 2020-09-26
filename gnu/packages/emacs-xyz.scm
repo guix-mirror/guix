@@ -7917,7 +7917,7 @@ in Emacs.")
     (synopsis "Edit regions in separate buffers")
     (description "This package allows you to edit regions in separate buffers,
 like @code{org-edit-src-code} but for arbitrary regions.")
-    (license license:gpl3+)))
+    (license license:bsd-2)))
 
 (define-public emacs-projectile
   (package
