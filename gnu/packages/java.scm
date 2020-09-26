@@ -8460,6 +8460,30 @@ text or binary files.  It's widely used to build languages, tools, and
 frameworks.  From a grammar, ANTLR generates a parser that can build and walk
 parse trees.")))
 
+(define-public java-antlr4-runtime-4.1
+  (package
+    (inherit java-antlr4-runtime)
+    (version "4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/antlr/antlr4")
+                     (commit version)))
+              (file-name (git-file-name "antlr4" version))
+              (sha256
+               (base32
+                "1i8hmx5an58cjyvhji0xgpvd6lq00z1k1mjys025q2wqc25wv4c1"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-antlr4-runtime)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'chmod
+             (lambda _
+               (chmod "build.xml" #o644)
+               #t))))))
+    (inputs
+     `(("java-treelayout" ,java-treelayout)))))
+
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
   (package
