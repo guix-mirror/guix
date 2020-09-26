@@ -8517,6 +8517,44 @@ parse trees.")))
         "java-antlr4-runtime" (list java-antlr4-runtime-4.1)
         (package-inputs antlr4)))))
 
+(define-public java-tunnelvisionlabs-antlr4-runtime-annotations
+  (package
+    (inherit java-antlr4-runtime)
+    (name "java-tunnelvisionlabs-antlr4-runtime-annotations")
+    (version "4.7.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/tunnelvisionlabs/antlr4")
+                     (commit (string-append version "-opt"))))
+              (file-name (git-file-name "java-tunnelvisionlabs-antlr4" version))
+              (sha256
+               (base32
+                "1mf2lvvsszpialsk23ma83pwp50nd32lrbjpa847zlm5gmranbr8"))
+              (patches
+                (search-patches "java-antlr4-Add-standalone-generator.patch"
+                                "java-tunnelvisionlabs-antlr-code-too-large.patch"))))
+    (arguments
+     `(#:jar-name "java-antlr4-runtime-annotations.jar"
+       #:source-dir "runtime/JavaAnnotations/src"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'copy-resources
+           (lambda _
+             (copy-recursively "runtime/JavaAnnotations/resources"
+                               "build/classes")
+             #t))
+         (add-after 'copy-resources 'rebuild-jar
+           (lambda _
+             (invoke "ant" "jar")
+             #t)))))
+    (inputs '())
+    (native-inputs '())
+    (synopsis "Annotations for ANTLR's runtime library")
+    (description "This package contains annotations used during the build of
+the runtime library of ANTLR.")))
+
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
   (package
