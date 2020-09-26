@@ -54,11 +54,14 @@ local PORT.  If connect fails, sleep 1s and retry RETRY times."
         (lambda (key . args)
           (when (zero? retry)
             (apply throw key args))
-          (format (current-error-port) "retrying connection~%")
+          (format (current-error-port)
+                  "secret service: retrying connection [~a attempts left]~%"
+                  (- retry 1))
           (sleep 1)
           (loop (1- retry)))))
 
-    (format (current-error-port) "connected!  sending files in ~s %~"
+    (format (current-error-port)
+            "secret service: connected; sending files in ~s~%"
             secret-root)
     (let* ((files (if secret-root (find-files secret-root) '()))
            (files-sizes-modes (map file->file+size+mode files))
@@ -82,11 +85,12 @@ Write them to the file system."
       (bind sock AF_INET INADDR_ANY port)
       (listen sock 1)
       (format (current-error-port)
-              "waiting for secrets on port ~a...~%"
+              "secret service: waiting for secrets on port ~a...~%"
               port)
       (match (accept sock)
         ((client . address)
-         (format (current-error-port) "client connection from ~a~%"
+         (format (current-error-port)
+                 "secret service: client connection from ~a~%"
                  (inet-ntop (sockaddr:fam address)
                             (sockaddr:addr address)))
          (close-port sock)
@@ -116,7 +120,8 @@ Write them to the file system."
                  ('files ((files sizes modes) ...)))
        (for-each (lambda (file size mode)
                    (format (current-error-port)
-                           "installing file '~a' (~a bytes)...~%"
+                           "secret service: \
+installing file '~a' (~a bytes)...~%"
                            file size)
                    (mkdir-p (dirname file))
                    (call-with-output-file file
@@ -126,7 +131,7 @@ Write them to the file system."
                  files sizes modes))
       (_
        (format (current-error-port)
-               "invalid secrets received~%")
+               "secret service: invalid secrets received~%")
        #f)))
 
   (let* ((port (wait-for-client port))
