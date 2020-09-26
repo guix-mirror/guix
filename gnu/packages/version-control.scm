@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015, 2018, 2020 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
@@ -2268,6 +2268,43 @@ fetching updates) over a collection of version control repositories.  It
 supports a large number of version control systems: Git, Subversion,
 Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
     (license license:gpl2+)))
+
+(define-public grokmirror
+  (package
+    (name "grokmirror")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append "https://git.kernel.org/pub/scm/"
+                                 "utils/grokmirror/grokmirror.git"))
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "1cs43vf87x8x5k5ncgiwiclc92a1dvxpg2z6lh6psaiip808gylp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-manpages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((man (string-append (assoc-ref outputs "out")
+                                        "/man/man1/")))
+               (mkdir-p man)
+               (for-each (lambda (file) (install-file file man))
+                         (find-files "." "\\.1$")))
+             #t)))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page
+     "https://git.kernel.org/pub/scm/utils/grokmirror/grokmirror.git")
+    (synopsis "Framework to smartly mirror git repositories")
+    (description "Grokmirror enables replicating large git repository
+collections efficiently.  Mirrors decide to clone and update repositories
+based on a manifest file published by servers.")
+    (license license:gpl3+)))
 
 (define-public git-annex-remote-rclone
   (package
