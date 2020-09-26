@@ -5140,6 +5140,30 @@ including java-asm.")
        ((#:tests? _) #f)))
     (native-inputs `())))
 
+(define-public java-asm-8
+  (package
+    (inherit java-asm)
+    (version "8.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gitlab.ow2.org/asm/asm")
+                     (commit (string-append
+                               "ASM_" (string-join (string-split version #\.)
+                                                   "_")))))
+              (file-name (git-file-name "java-asm" version))
+              (sha256
+               (base32
+                "1s6j27zc1i76gh891w2g48b1c3abp9w8zp5j54yb1vm5h8djkd69"))))
+    (arguments
+     `(#:jar-name "asm8.jar"
+       #:source-dir "asm/src/main/java"
+       #:test-dir "asm/src/test"
+       ;; tests depend on junit5
+       #:tests? #f))
+    (propagated-inputs '())
+    (native-inputs '())))
+
 (define-public java-cglib
   (package
     (name "java-cglib")
