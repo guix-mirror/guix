@@ -8631,6 +8631,14 @@ the runtime library of ANTLR.")))
         "antlr4" (list java-tunnelvisionlabs-antlr4-bootstrap)
         (package-native-inputs java-tunnelvisionlabs-antlr4-runtime-bootstrap)))))
 
+(define-public java-tunnelvisionlabs-antlr4
+  (package
+    (inherit java-tunnelvisionlabs-antlr4-bootstrap)
+    (inputs
+      (alist-replace
+        "java-antlr4-runtime" (list java-tunnelvisionlabs-antlr4-runtime)
+        (package-inputs java-tunnelvisionlabs-antlr4-bootstrap)))))
+
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
   (package
