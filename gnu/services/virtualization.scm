@@ -959,28 +959,45 @@ is added to the OS specified in CONFIG."
        (with-imported-modules
            (source-module-closure '((gnu build secret-service)
                                     (guix build utils)))
-         #~(let ((spawn (make-forkexec-constructor #$vm-command)))
-             (lambda _
-               (let ((pid (spawn))
-                     (port #$(hurd-vm-port config %hurd-vm-secrets-port))
-                     (root #$(hurd-vm-configuration-secret-root config)))
-                 (catch #t
-                   (lambda _
-                     (secret-service-send-secrets port root))
-                   (lambda (key . args)
-                     (kill (- pid) SIGTERM)
-                     (apply throw key args)))
-                 pid)))))
+         #~(lambda ()
+             (let ((pid  (fork+exec-command #$vm-command
+                                            #:user "childhurd"
+                                            #:group "childhurd"
+                                            #:environment-variables
+                                            ;; QEMU tries to write to /var/tmp
+                                            ;; by default.
+                                            '("TMPDIR=/tmp")))
+                   (port #$(hurd-vm-port config %hurd-vm-secrets-port))
+                   (root #$(hurd-vm-configuration-secret-root config)))
+               (catch #t
+                 (lambda _
+                   (secret-service-send-secrets port root)
+                   pid)
+                 (lambda (key . args)
+                   (kill (- pid) SIGTERM)
+                   (apply throw key args)))))))
       (modules `((gnu build secret-service)
                  (guix build utils)
                  ,@%default-modules))
       (stop  #~(make-kill-destructor))))))
 
+(define %hurd-vm-accounts
+  (list (user-group (name "childhurd") (system? #t))
+        (user-account
+         (name "childhurd")
+         (group "childhurd")
+         (comment "Privilege separation user for the childhurd")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin"))
+         (system? #t))))
+
 (define hurd-vm-service-type
   (service-type
    (name 'hurd-vm)
    (extensions (list (service-extension shepherd-root-service-type
-                                        hurd-vm-shepherd-service)))
+                                        hurd-vm-shepherd-service)
+                     (service-extension account-service-type
+                                        (const %hurd-vm-accounts))))
    (default-value (hurd-vm-configuration))
    (description
     "Provide a Virtual Machine running the GNU/Hurd.")))
