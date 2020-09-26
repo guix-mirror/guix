@@ -937,13 +937,14 @@ is added to the OS specified in CONFIG."
         (provisions  '(hurd-vm childhurd)))
 
     (define vm-command
-      #~(list
-         (string-append #$qemu "/bin/qemu-system-i386")
-         #$@(if (file-exists? "/dev/kvm") '("--enable-kvm") '())
-         "-m" (number->string #$memory-size)
-         #$@net-options
-         #$@options
-         "--hda" #+image))
+      #~(append (list #$(file-append qemu "/bin/qemu-system-i386")
+                      "-m" (number->string #$memory-size)
+                      #$@net-options
+                      #$@options
+                      "--hda" #+image)
+                (if (file-exists? "/dev/kvm")
+                    '("--enable-kvm")
+                    '())))
 
     (list
      (shepherd-service
