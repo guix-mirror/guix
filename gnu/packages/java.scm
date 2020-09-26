@@ -37,6 +37,7 @@
   #:use-module (guix hg-download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
@@ -8483,6 +8484,38 @@ parse trees.")))
                #t))))))
     (inputs
      `(("java-treelayout" ,java-treelayout)))))
+
+(define-public antlr4-4.1
+  (package
+    (inherit antlr4)
+    (version (package-version java-antlr4-runtime-4.1))
+    (source (package-source java-antlr4-runtime-4.1))
+    (arguments
+      (substitute-keyword-arguments (package-arguments antlr4)
+        ((#:test-dir _)
+         "tool/test")
+        ((#:test-exclude excludes)
+         `(list "**/TestParseErrors.java"
+                "**/TestTopologicalSort.java"
+                ,@excludes))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (delete 'generate-unicode)
+            (replace 'check
+              (lambda _
+                (invoke "ant" "check")
+                #t))
+            (add-before 'configure 'chmod
+              (lambda _
+                (chmod "build.xml" #o644)
+                #t))
+            (delete 'remove-graphemes)
+            (delete 'remove-unrelated-languages)
+            (delete 'generate-test-parsers)))))
+    (inputs
+      (alist-replace
+        "java-antlr4-runtime" (list java-antlr4-runtime-4.1)
+        (package-inputs antlr4)))))
 
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
