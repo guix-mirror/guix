@@ -13444,3 +13444,98 @@ in Java, usable from Groovy, Kotlin, Scala, etc.")
 used in JVM-based languages.  They serve as an additional documentation and
 can be interpreted by IDEs and static analysis tools to improve code analysis.")
     (license license:expat)))
+
+(define-public java-javaparser
+  (package
+    (name "java-javaparser")
+    (version "3.16.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/javaparser/javaparser")
+                     (commit (string-append "javaparser-parent-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1a4jk12ffa31fa0y8vda0739vpfj1206p0nha842b7bixbvwamv9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; tests require jbehave and junit5
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fill-template
+           (lambda _
+             (with-directory-excursion "javaparser-core/src/main"
+               (copy-file "java-templates/com/github/javaparser/JavaParserBuild.java"
+                          "java/com/github/javaparser/JavaParserBuild.java")
+               (substitute* "java/com/github/javaparser/JavaParserBuild.java"
+                 (("\\$\\{project.version\\}") ,version)
+                 (("\\$\\{project.name\\}") "javaparser")
+                 (("\\$\\{project.build.finalName\\}") "javaparser")
+                 (("\\$\\{maven.version\\}") "fake")
+                 (("\\$\\{maven.build.version\\}") "fake")
+                 (("\\$\\{build.timestamp\\}") "0")
+                 (("\\$\\{java.vendor\\}") "Guix")
+                 (("\\$\\{java.vendor.url\\}") "https://gnu.org/software/guix")
+                 (("\\$\\{java.version\\}") "1.8")
+                 (("\\$\\{os.arch\\}") "any")
+                 (("\\$\\{os.name\\}") "GuixSD")
+                 (("\\$\\{os.version\\}") "not available")))
+             #t))
+         (add-before 'build 'generate-javacc
+           (lambda _
+             (with-directory-excursion "javaparser-core/src/main/java"
+               (invoke "java" "javacc" "../javacc/java.jj"))
+             #t))
+         (add-before 'build 'copy-javacc-support
+           (lambda _
+             (with-directory-excursion "javaparser-core/src/main"
+               (copy-recursively "javacc-support" "java"))
+             #t))
+         (replace 'build
+           (lambda _
+             (define (build name)
+               (format #t "Building ~a~%" name)
+               (delete-file-recursively "build/classes")
+               (mkdir-p "build/classes")
+               (apply invoke "javac"
+                      "-cp" (string-append (getenv "CLASSPATH") ":"
+                                           (string-join (find-files "build/jar" ".")
+                                                        ":"))
+                      "-d" "build/classes"
+                      (find-files (string-append name "/src/main/java")
+                                  ".*.java"))
+               (invoke "jar" "-cf" (string-append "build/jar/" name ".jar")
+                       "-C" "build/classes" "."))
+             (mkdir-p "build/classes")
+             (mkdir-p "build/test-classes")
+             (mkdir-p "build/jar")
+             (build "javaparser-core")
+             (build "javaparser-core-serialization")
+             (build "javaparser-core-generators")
+             (build "javaparser-core-metamodel-generator")
+             (build "javaparser-symbol-solver-core")
+             #t))
+         (replace 'install
+           (install-jars "build/jar")))))
+    (inputs
+     `(("java-guava" ,java-guava)
+       ("java-jboss-javassist" ,java-jboss-javassist)
+       ("java-jsonp-api" ,java-jsonp-api)))
+    (native-inputs
+     `(("javacc" ,javacc)))
+    (home-page "http://javaparser.org/")
+    (synopsis "Parser for Java")
+    (description
+     "This project contains a set of libraries implementing a Java 1.0 - Java
+11 Parser with advanced analysis functionalities.")
+    (license (list
+               ;; either lgpl or asl
+               license:lgpl3+
+               license:asl2.0))))
