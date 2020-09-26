@@ -5784,78 +5784,81 @@ Java package that provides routines for various statistical distributions.")
     (license license:gpl2+)))
 
 (define-public emacs-ess
-  (package
-    (name "emacs-ess")
-    (version "18.10.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/emacs-ess/ESS")
-                    (commit (string-append "v" version))))
-              (sha256
-               (base32
-                "1yq41l2bicwjrc0b731iic20cpcnz6ppigri1jn621qv2qv22vy3"))
-              (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Stop ESS from trying to bundle an external julia-mode.el.
-                  (substitute* "lisp/Makefile"
-                    (("^ess-julia.elc: julia-mode.elc") "")
-                    (("^all: julia-mode.el")
-                     "all:"))
-                  ;; Include *.el files in install target.
-                  (substitute* "lisp/Makefile"
-                    (("\t\\$\\(INSTALL) \\$\\(ELC\\) \\$\\(LISPDIR\\)" elc)
-                     (string-append "\t$(INSTALL) $(ELS) ess-autoloads.el "
-                                    "$(LISPDIR)\n" elc)))
-                  ;; Only build docs in info format.
-                  (substitute* "doc/Makefile"
-                    (("all  : info text")
-                     "all  : info")
-                    (("install: install-info install-other-docs")
-                     "install: install-info"))
-                  ;; Stop install-info from trying to update the info directory.
-                  (substitute* "doc/Makefile"
-                    ((".*\\$\\(INFODIR\\)/dir.*") ""))
-                  ;; Fix roxygen preview test.
-                  (substitute* "test/ess-r-tests.el"
-                               (("Add together two numbers.\n")
-                                "Add together two numbers. ")
-                               (("##' add\\(10, 1\\)") "add(10, 1)"))
-                  #t))))
-    (build-system gnu-build-system)
-    (arguments
-     (let ((base-directory "/share/emacs/site-lisp"))
-       `(#:make-flags (list (string-append "PREFIX=" %output)
-                            (string-append "ETCDIR=" %output
-                                           ,base-directory "/etc")
-                            (string-append "LISPDIR=" %output
-                                           ,base-directory))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-before 'build 'more-shebang-patching
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "Makeconf"
-                 (("SHELL = /bin/sh")
-                  (string-append "SHELL = " (which "sh"))))
-               #t))
-           (replace 'check
-             (lambda _
-               (invoke "make" "test")))))))
-    (inputs
-     `(("emacs" ,emacs-minimal)
-       ("r-minimal" ,r-minimal)))
-    (native-inputs
-     `(("perl" ,perl)
-       ("r-roxygen2" ,r-roxygen2)
-       ("texinfo" ,texinfo)))
-    (propagated-inputs
-     `(("emacs-julia-mode" ,emacs-julia-mode)))
-    (home-page "https://ess.r-project.org/")
-    (synopsis "Emacs mode for statistical analysis programs")
-    (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
-Emacs.  It is designed to support editing of scripts and interaction with
-various statistical analysis programs such as R, Julia, and JAGS.")
-    (license license:gpl2+)))
+  ;; Latest release is old.  This is not the latest commit either due to bug
+  ;; reported here: <https://github.com/emacs-ess/ESS/issues/987>.
+  (let ((commit "24da603184ce39246611dd5b8602e769d7ebd5bf")
+        (version "18.10.2")
+        (revision "0"))
+    (package
+      (name "emacs-ess")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-ess/ESS")
+               (commit commit)))
+         (sha256
+          (base32 "0j98lv07nzwzd54d4dgcfz01wy5gj48m0mnirxzh5r45ik2myh1r"))
+         (file-name (git-file-name name version))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Stop ESS from trying to bundle an external julia-mode.el.
+             (substitute* "lisp/Makefile"
+               ((" \\$\\(JULIAS)") "")
+               (("\ttest.*julia-mode.*\\.el") ""))
+             ;; Only build docs in info format.
+             (substitute* "doc/Makefile"
+               (("all  : info text")
+                "all  : info")
+               (("install: install-info install-other-docs")
+                "install: install-info"))
+             ;; Stop install-info from trying to update the info directory.
+             (substitute* "doc/Makefile"
+               ((".*/dir.*") ""))
+             ;; Fix r-help-mode test.
+             (substitute* "test/ess-test-r.el"
+               (("\\(equal ess-help-object \"plot.default\")") "t"))
+             ;; Avoid generating ess-autoloads.el twice.
+             (substitute* "Makefile"
+               (("all: lisp doc etc autoloads")
+                "all: lisp doc etc"))
+             ;; Install to correct directories.
+             (substitute* "Makefile"
+               (("mkdir -p \\$\\(ESSDESTDIR)")
+                "$(MAKE) -C lisp install; $(MAKE) -C doc install")
+               (("\\$\\(INSTALL) -R \\./\\* \\$\\(ESSDESTDIR)/")
+                "$(MAKE) -C etc install"))
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       (let ((base-directory "/share/emacs/site-lisp"))
+         `(#:make-flags (list (string-append "PREFIX=" %output)
+                              (string-append "ETCDIR=" %output
+                                             ,base-directory "/etc")
+                              (string-append "LISPDIR=" %output
+                                             ,base-directory)
+                              (string-append "INFODIR=" %output
+                                             "/share/info"))
+           #:phases
+           (modify-phases %standard-phases
+             (delete 'configure)
+             (replace 'check
+               (lambda _ (invoke "make" "test")))))))
+      (native-inputs
+       `(("perl" ,perl)
+         ("r-roxygen2" ,r-roxygen2)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("emacs" ,emacs-minimal)
+         ("r-minimal" ,r-minimal)))
+      (propagated-inputs
+       `(("emacs-julia-mode" ,emacs-julia-mode)))
+      (home-page "https://ess.r-project.org/")
+      (synopsis "Emacs mode for statistical analysis programs")
+      (description
+       "Emacs Speaks Statistics (ESS) is an add-on package for GNU Emacs.  It
+is designed to support editing of scripts and interaction with various
+statistical analysis programs such as R, Julia, and JAGS.")
+      (license license:gpl3+))))
