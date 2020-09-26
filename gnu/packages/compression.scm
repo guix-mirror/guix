@@ -1764,6 +1764,7 @@ Clzip is intended to be fully compatible with the regular lzip package.")
     (arguments
      `(#:configure-flags
        (list (string-append "CC=" ,(cc-for-target))
+             "--disable-static"
              "--enable-shared")))       ; only static (.a) is built by default
     (home-page "https://www.nongnu.org/lzip/lzlib.html")
     (synopsis "Lzip data compression C library")
