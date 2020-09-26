@@ -7546,3 +7546,40 @@ created by Alastair Robertson.")
 provide a serial device @code{/dev/ttyebus} with almost no latency upon
 receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
       (license license:gpl3+))))
+
+(define-public ipset
+  (package
+    (name "ipset")
+    (version "7.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ipset.netfilter.org/ipset-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ny2spcm6bmpj8vnazssg99k59impr7n84jzkdmdjly1m7548z8f"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libmnl" ,libmnl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags '("--with-kmod=no")))
+    (home-page "http://ipset.netfilter.org/")
+    (synopsis "Administration tool for IP sets")
+    (description "IP sets are a framework inside the Linux 2.4.x and 2.6.x kernel which
+can be administered by the ipset utility.  Depending on the type,
+currently an IP set may store IP addresses, (TCP/UDP) port numbers or
+IP addresses with MAC addresses in a way which ensures lightning speed
+when matching an entry against a set.
+
+If you want to
+@itemize @bullet
+@item store multiple IP addresses or port numbers and match against the entire
+collection using a single iptables rule.
+@item dynamically update iptables rules against IP addresses or ports without
+performance penalty.
+@item express complex IP address and ports based rulesets with a single
+iptables rule and benefit from the speed of IP sets.
+@end itemize\n
+then IP sets may be the proper tool for you.")
+    (license license:gpl2+)))
