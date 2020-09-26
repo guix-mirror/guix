@@ -5177,6 +5177,20 @@ including java-asm.")
     (inputs
      `(("java-asm" ,java-asm-8)))))
 
+(define-public java-asm-analysis-8
+  (package
+    (inherit java-asm-8)
+    (name "java-asm-analysis")
+    (arguments
+     `(#:jar-name "asm-analysis.jar"
+       #:source-dir "asm-analysis/src/main/java"
+       #:test-dir "asm-analysis/src/test"
+       ;; tests depend on junit5
+       #:tests? #f))
+    (inputs
+     `(("java-asm" ,java-asm-8)
+       ("java-asm-tree" ,java-asm-tree-8)))))
+
 (define-public java-cglib
   (package
     (name "java-cglib")
