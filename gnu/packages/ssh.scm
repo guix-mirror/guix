@@ -57,6 +57,8 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
@@ -852,3 +854,39 @@ program doesn't depend on any cryptographic libraries.  It's a simple,
 single-threaded, standalone C program.  It uses @code{poll()} to trap multiple
 clients at a time.")
     (license license:unlicense)))
+
+(define-public webssh
+  (package
+    (name "webssh")
+    (version "1.5.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/huashengdun/webssh")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1l4bwzaifsd6pl120d400qkhvaznj2ck1lvwg76ycb08jsk6gpaz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-paramiko" ,python-paramiko)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://webssh.huashengdun.org/")
+    (synopsis "Web application to be used as an SSH client")
+    (description "This package provides a web application to be used as an SSH
+client.
+
+Features:
+@itemize @bullet
+@item SSH password authentication supported, including empty password.
+@item SSH public-key authentication supported, including DSA RSA ECDSA
+Ed25519 keys.
+@item Encrypted keys supported.
+@item Two-Factor Authentication (time-based one-time password) supported.
+@item Fullscreen terminal supported.
+@item Terminal window resizable.
+@item Auto detect the ssh server's default encoding.
+@item Modern browsers are supported.
+@end itemize")
+    (license license:expat)))
