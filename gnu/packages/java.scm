@@ -2479,14 +2479,14 @@ new Date();"))
 ;; requires Java 8.
 (define-public ant
   (package (inherit ant/java8)
-    (version "1.9.9")
+    (version "1.9.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/ant/source/apache-ant-"
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))))
+                "1xy30f1w5gaqk6g3f0vw7ygix4rb6032qkcw42y4z8wd9jihgygd"))))
     (native-inputs
      `(("jdk" ,icedtea-7 "jdk")
        ("zip" ,zip)
