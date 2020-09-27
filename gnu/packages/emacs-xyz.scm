@@ -23051,7 +23051,7 @@ icon support, git integration, and several other utilities.")
     (description
      "Mood-line is a minimal Emacs mode-line configuration that aims to
 replicate some of the features of the Doom modeline package.")
-    (license license:gpl3+)))
+    (license license:gpl2+)))
 
 (define-public emacs-shrink-path
   (package
