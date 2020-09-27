@@ -75,7 +75,8 @@ local PORT.  If connect fails, sleep 1s and retry RETRY times."
 
 (define (secret-service-receive-secrets port)
   "Listen to local PORT and wait for a secret service client to send secrets.
-Write them to the file system."
+Write them to the file system.  Return the list of files installed on success,
+and #f otherwise."
 
   (define (wait-for-client port)
     ;; Wait for a TCP connection on PORT.  Note: We cannot use the
@@ -87,14 +88,20 @@ Write them to the file system."
       (format (current-error-port)
               "secret service: waiting for secrets on port ~a...~%"
               port)
-      (match (accept sock)
-        ((client . address)
+      (match (select (list sock) '() '() 60)
+        (((_) () ())
+         (match (accept sock)
+           ((client . address)
+            (format (current-error-port)
+                    "secret service: client connection from ~a~%"
+                    (inet-ntop (sockaddr:fam address)
+                               (sockaddr:addr address)))
+            (close-port sock)
+            client)))
+        ((() () ())
          (format (current-error-port)
-                 "secret service: client connection from ~a~%"
-                 (inet-ntop (sockaddr:fam address)
-                            (sockaddr:addr address)))
-         (close-port sock)
-         client))))
+                 "secret service: did not receive any secrets; time out~%")
+         #f))))
 
   ;; TODO: Remove when (@ (guix build utils) dump-port) has a 'size'
   ;; parameter.
@@ -128,15 +135,17 @@ installing file '~a' (~a bytes)...~%"
                      (lambda (output)
                        (dump port output size)
                        (chmod file mode))))
-                 files sizes modes))
+                 files sizes modes)
+       files)
       (_
        (format (current-error-port)
                "secret service: invalid secrets received~%")
        #f)))
 
-  (let* ((port (wait-for-client port))
-         (result (read-secrets port)))
-    (close-port port)
+  (let* ((port   (wait-for-client port))
+         (result (and=> port read-secrets)))
+    (when port
+      (close-port port))
     result))
 
 ;;; secret-service.scm ends here
