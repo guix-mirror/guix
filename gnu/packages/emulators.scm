@@ -1890,7 +1890,7 @@ framework based on QEMU.")
 (define-public ppsspp
   (package
     (name "ppsspp")
-    (version "1.10")
+    (version "1.10.3")
     (source
      (origin
        (method git-fetch)
@@ -1898,7 +1898,7 @@ framework based on QEMU.")
              (url "https://github.com/hrydgard/ppsspp")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "02yx1w0ygclnmdl0imsvgj24lkzi55wvxkf47q617j0jgrqhy8yl"))
+        (base32 "0znxlbj6cfw7gn0naay0mzhc0k5saw8nrwpspcn7gap1023p06w2"))
        (file-name (git-file-name name version))
        (patches
         (search-patches "ppsspp-disable-upgrade-and-gold.patch"))
@@ -1949,7 +1949,7 @@ framework based on QEMU.")
                              " spirv-cross-reflect spirv-cross-util")))
            (substitute* "ext/CMakeLists.txt"
              (("add_subdirectory\\(glew\\)") "")
-             (("add_subdirectory\\(glslang\\)") "")
+             (("add_subdirectory\\(glslang( [A-Z_]*)*\\)") "")
              (("add_subdirectory\\(snappy\\)") "")
              (("add_subdirectory\\(SPIRV-Cross-build\\)") ""))
            ;; Finally, we can delete the bundled sources.
@@ -1992,14 +1992,14 @@ framework based on QEMU.")
        ;; TODO: unbundle armips.
        ("armips-source" ,(package-source armips))
        ("lang"
-        ,(let ((commit "d184ba2b607a03435be579406b816c90add334e6"))
+        ,(let ((commit "1c64b8fbd3cb6bd87935eb53f302f7de6f86e209"))
            (origin
              (method git-fetch)
              (uri (git-reference
                    (url "https://github.com/hrydgard/ppsspp-lang")
                    (commit commit)))
              (sha256
-              (base32 "0s003x6247nx09qd6a1jz1l2hsk5d6k1zmh8mg3m6hjjhvbvd9j9"))
+              (base32 "0rprn3yd8xfrvi0fm62sgpqa8n73jk7zmlscp8cp0h2fawqpiamd"))
              (file-name (git-file-name "ppsspp-lang" commit)))))
        ("tests"
         ,(let ((commit "328b839c7243e7f733f9eae88d059485e3d808e7"))
