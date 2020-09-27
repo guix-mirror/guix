@@ -4531,7 +4531,7 @@ Some things HTTP Core does do:
 (define-public python-httpx
   (package
     (name "python-httpx")
-    (version "0.15.0")
+    (version "0.15.4")
     (source
      (origin
        ;; PyPI tarball does not contain tests.
@@ -4541,7 +4541,7 @@ Some things HTTP Core does do:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06w50br6b825sd70l6rm2s0fca1lnjbyx9n8nmcdlwg673z25kc6"))))
+        (base32 "1qr91xw6jxynvihmw953bi5446ssm9ffmb2c4nhfa77v7883sp21"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4584,7 +4584,7 @@ Some things HTTP Core does do:
        ("python-idna" ,python-idna)
        ("python-rfc3986" ,python-rfc3986)
        ("python-sniffio" ,python-sniffio)))
-    (home-page "https://github.com/encode/httpx")
+    (home-page "https://www.python-httpx.org/")
     (synopsis "HTTP client for Python")
     (description
      "HTTPX is a fully featured HTTP client for Python 3, which provides sync
