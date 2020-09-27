@@ -105,6 +105,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gimp)
@@ -1662,6 +1663,44 @@ configuration files for the GNOME menu, as well as a simple menu editor.")
 uses duplicity as the backend, which supports incremental backups and storage
 either on a local, or remote machine via a number of methods.")
     (license license:gpl3+)))
+
+(define-public gnome-commander
+  (package
+    (name "gnome-commander")
+    (version "1.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version)  "/"
+                           "gnome-commander-" version ".tar.xz"))
+       (sha256
+        (base32 "0bis36awb73vhkncq8yr0qlnyaxynqkvmyqbg57ijqwd0m8hh4zg"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gcc" ,gcc-8) ;required for -Wcast-function-type
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("googletest" ,googletest)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gconf" ,gconf)
+       ("gnome-vfs" ,gnome-vfs)
+       ("gtk+" ,gtk+-2)
+       ("libxml2" ,libxml2)))
+    (home-page "https://gcmd.github.io/")
+    (synopsis "Two-pane graphical file manager for the GNOME desktop")
+    (description
+     "GNOME Commander is a two-pane graphical file manager using GNOME
+libraries.  It aims to fulfill the demands of more advanced users who
+like to focus on file management, their work through special applications
+and running smart commands.")
+    (license license:gpl2+)))
 
 (define-public gnome-user-docs
   (package
