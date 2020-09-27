@@ -872,14 +872,14 @@ is Python’s.")
 (define-public python-openid
   (package
     (name "python-openid")
-    (version "3.1.0")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python3-openid" version))
        (sha256
         (base32
-         "00l5hrjh19740w00b3fnsqldnla41wbr2rics09dl4kyd1fkd3b2"))))
+         "1bxf9a3ny1js422j962zfzl4a9dhj192pvai05whn7j0iy9gdyrk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
