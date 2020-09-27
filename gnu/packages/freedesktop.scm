@@ -909,41 +909,39 @@ multiplexer to the KMS/DRM Linux kernel devices.")
     (license license:expat)))
 
 (define-public wev
-  ;; There simple tool has no version or release yet.
-  (let ((commit "cee3dfb2a8b40ee303611018c68ae182d84a7f46"))
-    (package
-      (name "wev")
-      (version (string-append "2020-02-06-" (string-take commit 8)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.sr.ht/~sircmpwn/wev")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0l71v3fzgiiv6xkk365q1l08qvaymxd4kpaya6r2g8yzkr7i2hms"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f ; no tests
-         #:make-flags
-         (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure))))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("scdoc" ,scdoc)))
-      (inputs
-       `(("libxkbcommon" ,libxkbcommon)
-         ("wayland" ,wayland)
-         ("wayland-protocols" ,wayland-protocols)))
-      (home-page "https://git.sr.ht/~sircmpwn/wev")
-      (synopsis "Wayland event viewer")
-      (description "Wev is a tool that opens a window, printing all events
+  (package
+    (name "wev")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.sr.ht/~sircmpwn/wev")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0l71v3fzgiiv6xkk365q1l08qvaymxd4kpaya6r2g8yzkr7i2hms"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)))
+    (inputs
+     `(("libxkbcommon" ,libxkbcommon)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://git.sr.ht/~sircmpwn/wev")
+    (synopsis "Wayland event viewer")
+    (description "Wev is a tool that opens a window, printing all events
 sent to a Wayland window, such as key presses.  It is analogous to the X11 tool
 XEv.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public exempi
   (package
