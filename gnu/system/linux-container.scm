@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Google LLC
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,15 @@ doing anything.")
            (start #~(const #t))))
    #f))
 
+(define %nscd-container-caches
+  ;; Similar to %nscd-default-caches but with smaller cache sizes. This allows
+  ;; many containers to coexist on the same machine without exhausting RAM.
+  (map (lambda (cache)
+         (nscd-cache
+          (inherit cache)
+          (max-database-size (expt 2 18)))) ;256KiB
+       %nscd-default-caches))
+
 (define* (containerized-operating-system os mappings
                                          #:key
                                          shared-network?
@@ -100,21 +110,38 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
     (file-system (inherit (file-system-mapping->bind-mount fs))
       (needed-for-boot? #t)))
 
-  (define useless-services
-    ;; Services that make no sense in a container.  Those that attempt to
-    ;; access /dev/tty[0-9] in particular cannot work in a container.
+  (define services-to-drop
+    ;; Service types to filter from the original operating-system. Some of
+    ;; these make no sense in a container (e.g., those that access
+    ;; /dev/tty[0-9]), while others just need to be reinstantiated with
+    ;; different configs that are better suited to containers.
     (append (list console-font-service-type
                   mingetty-service-type
-                  agetty-service-type)
-            ;; Remove nscd service if network is shared with the host.
+                  agetty-service-type
+                  ;; Reinstantiated below with smaller caches.
+                  nscd-service-type)
             (if shared-network?
-                (list nscd-service-type
-                      static-networking-service-type
-                      dhcp-client-service-type
-                      network-manager-service-type
-                      connman-service-type
-                      wicd-service-type)
+                ;; Replace these with dummy-networking-service-type below.
+                (list
+                 static-networking-service-type
+                 dhcp-client-service-type
+                 network-manager-service-type
+                 connman-service-type
+                 wicd-service-type)
                 (list))))
+
+  (define services-to-add
+    (append
+     ;; Many Guix services depend on a 'networking' shepherd
+     ;; service, so make sure to provide a dummy 'networking'
+     ;; service when we are sure that networking is already set up
+     ;; in the host and can be used.  That prevents double setup.
+     (if shared-network?
+         (list (service dummy-networking-service-type))
+         '())
+     (list
+      (nscd-service (nscd-configuration
+                     (caches %nscd-container-caches))))))
 
   (operating-system
     (inherit os)
@@ -124,15 +151,9 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
                          #:shared-network? shared-network?))
     (services (append (remove (lambda (service)
                                 (memq (service-kind service)
-                                      useless-services))
+                                      services-to-drop))
                               (operating-system-user-services os))
-                      ;; Many Guix services depend on a 'networking' shepherd
-                      ;; service, so make sure to provide a dummy 'networking'
-                      ;; service when we are sure that networking is already set up
-                      ;; in the host and can be used.  That prevents double setup.
-                      (if shared-network?
-                          (list (service dummy-networking-service-type))
-                          '())))
+                      services-to-add))
     (file-systems (append (map mapping->fs
                                (if shared-network?
                                    (append %network-file-mappings mappings)
