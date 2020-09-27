@@ -358,7 +358,8 @@ system applications; currently that includes Wayland, kmscon, GTK+, Qt,
 Clutter, and more.  Despite the name, it is not currently used by anything
 X11 (yet).")
     (license (license:x11-style "file://COPYING"
-                                "See 'COPYING' in the distribution."))))
+                                "See 'COPYING' in the distribution."))
+    (properties '((cpe-name . "xkbcommon")))))
 
 (define-public libfakekey
   (package
