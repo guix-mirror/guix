@@ -4852,11 +4852,11 @@ introduction from a trusted source since that is the root of your trust.
 
 If you're curious about the authentication mechanics, read on!
 
-@cindex personal packages (channels)
-@cindex channels, for personal packages
 @node Creating a Channel
 @section Creating a Channel
 
+@cindex personal packages (channels)
+@cindex channels, for personal packages
 Let's say you have a bunch of custom package variants or personal packages
 that you think would make little sense to contribute to the Guix project, but
 would like to have these packages transparently available to you at the
@@ -4919,10 +4919,10 @@ Authentication}, and @ref{Specifying Channel Authorizations}, for info
 on how to do it.
 
 
-@cindex subdirectory, channels
 @node Package Modules in a Sub-directory
 @section Package Modules in a Sub-directory
 
+@cindex subdirectory, channels
 As a channel author, you may want to keep your channel modules in a
 sub-directory.  If your modules are in the sub-directory @file{guix}, you must
 add a meta-data file @file{.guix-channel} that contains:
@@ -4933,11 +4933,11 @@ add a meta-data file @file{.guix-channel} that contains:
   (directory "guix"))
 @end lisp
 
-@cindex dependencies, channels
-@cindex meta-data, channels
 @node Declaring Channel Dependencies
 @section Declaring Channel Dependencies
 
+@cindex dependencies, channels
+@cindex meta-data, channels
 Channel authors may decide to augment a package collection provided by other
 channels.  They can declare their channel to be dependent on other channels in
 a meta-data file @file{.guix-channel}, which is to be placed in the root of
@@ -4975,10 +4975,10 @@ For the sake of reliability and maintainability, you should avoid dependencies
 on channels that you don't control, and you should aim to keep the number of
 dependencies to a minimum.
 
-@cindex channel authorizations
 @node Specifying Channel Authorizations
 @section Specifying Channel Authorizations
 
+@cindex channel authorizations
 @anchor{channel-authorizations}
 As we saw above, Guix ensures the source code it pulls from channels
 comes from authorized developers.  As a channel author, you need to
@@ -5076,10 +5076,10 @@ authentication!  Pay attention to merges in particular: merge commits
 are considered authentic if and only if they are signed by a key present
 in the @file{.guix-authorizations} file of @emph{both} branches.
 
-@cindex primary URL, channels
 @node Primary URL
 @section Primary URL
 
+@cindex primary URL, channels
 Channel authors can indicate the primary URL of their channel's Git
 repository in the @file{.guix-channel} file, like so:
 
@@ -5099,10 +5099,10 @@ This feature only makes sense for authenticated repositories, such as
 the official @code{guix} channel, for which @command{guix pull} ensures
 the code it fetches is authentic.
 
-@cindex news, for channels
 @node Writing Channel News
 @section Writing Channel News
 
+@cindex news, for channels
 Channel authors may occasionally want to communicate to their users
 information about important changes in the channel.  You'd send them all
 an email, but that's not convenient.
