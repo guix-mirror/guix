@@ -23363,6 +23363,60 @@ disables caching.
 @item @code{negative-cache?} (default: @code{#t})
 When false, disable negative caching.
 
+@item @code{tftp-enable?} (default: @code{#f})
+Whether to enable the built-in TFTP server.
+
+@item @code{tftp-no-fail?} (default: @code{#f})
+If true, does not fail dnsmasq if the TFTP server could not start up.
+
+@item @code{tftp-single-port?} (default: @code{#f})
+Whether to use only one single port for TFTP.
+
+@item @code{tftp-secure?} (default: @code{#f})
+If true, only files owned by the user running the dnsmasq process are accessible.
+
+If dnsmasq is being run as root, different rules apply:
+@code{tftp-secure?} has no effect, but only files which have the
+world-readable bit set are accessible.
+
+@item @code{tftp-max} (default: @code{#f})
+If set, sets the maximal number of concurrent connections allowed.
+
+@item @code{tftp-mtu} (default: @code{#f})
+If set, sets the MTU for TFTP packets to that value.
+
+@item @code{tftp-no-blocksize?} (default: @code{#f})
+If true, stops the TFTP server from negotiating the blocksize with a client.
+
+@item @code{tftp-lowercase?} (default: @code{#f})
+Whether to convert all filenames in TFTP requests to lowercase.
+
+@item @code{tftp-port-range} (default: @code{#f})
+If set, fixes the dynamical ports (one per client) to the given range
+(@code{"<start>,<end>"}).
+
+@item @code{tftp-root} (default: @code{/var/empty,lo})
+Look for files to transfer using TFTP relative to the given directory.
+When this is set, TFTP paths which include ".." are rejected, to stop clients
+getting outside the specified root. Absolute paths (starting with /) are
+allowed, but they must be within the tftp-root. If the optional interface
+argument is given, the directory is only used for TFTP requests via that
+interface.
+
+@item @code{tftp-unique-root} (default: @code{#f})
+If set, add the IP or hardware address of the TFTP client as a path component
+on the end of the TFTP-root.  Only valid if a TFTP root is set and the
+directory exists.  Defaults to adding IP address (in standard dotted-quad
+format).
+
+For instance, if --tftp-root is "/tftp" and client 1.2.3.4 requests file
+"myfile" then the effective path will be "/tftp/1.2.3.4/myfile" if
+/tftp/1.2.3.4 exists or /tftp/myfile otherwise. When "=mac" is specified
+it will append the MAC address instead, using lowercase zero padded digits
+separated by dashes, e.g.: 01-02-03-04-aa-bb Note that resolving MAC
+addresses is only possible if the client is in the local network or obtained
+a DHCP lease from dnsmasq.
+
 @end table
 @end deftp
 
