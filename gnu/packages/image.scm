@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -129,7 +129,7 @@ code is Valgrind-clean and unit tested.")
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.37")
+   (version "1.6.37")  ; Remember to also update libpng-apng if possible!
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -162,7 +162,7 @@ library.  It supports almost all PNG features and is extensible.")
 (define-public libpng-apng
   (package
     (name "libpng-apng")
-    (version "1.6.28")
+    (version "1.6.37")
     (source
      (origin
        (method url-fetch)
@@ -176,7 +176,7 @@ library.  It supports almost all PNG features and is extensible.")
                    "/libpng16/libpng-" version ".tar.xz")))
        (sha256
         (base32
-         "0ylgyx93hnk38haqrh8prd3ax5ngzwvjqw5cxw7p9nxmwsfyrlyq"))))
+         "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -210,7 +210,7 @@ library.  It supports almost all PNG features and is extensible.")
                                   version "/libpng-" version "-apng.patch.gz"))
                   (sha256
                    (base32
-                    "0m5nv70n9903x3xzxw9qqc6sgf2rp106ha0x6gix0xf8wcrljaab"))))))
+                    "1dh0250mw9b2hx7cdmnb2blk7ddl49n6vx8zz7jdmiwxy38v4fw2"))))))
     (native-inputs
      `(("libtool" ,libtool)))
     ;; libpng.la says "-lz", so propagate it.
