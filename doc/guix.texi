@@ -233,11 +233,11 @@ Channels
 * Using a Custom Guix Channel::  Using a customized Guix.
 * Replicating Guix::            Running the @emph{exact same} Guix.
 * Channel Authentication::      How Guix verifies what it fetches.
-* Primary URL::                 Distinguishing mirror to original.
 * Creating a Channel::          How to write your custom channel.
 * Package Modules in a Sub-directory::  Specifying the channel's package modules location.
 * Declaring Channel Dependencies::  How to depend on other channels.
 * Specifying Channel Authorizations::  Defining channel authors authorizations.
+* Primary URL::                 Distinguishing mirror to original.
 * Writing Channel News::        Communicating information to channel's users.
 
 Development
@@ -4691,11 +4691,11 @@ updates.
 * Using a Custom Guix Channel::  Using a customized Guix.
 * Replicating Guix::            Running the @emph{exact same} Guix.
 * Channel Authentication::      How Guix verifies what it fetches.
-* Primary URL::                 Distinguishing mirror to original.
 * Creating a Channel::          How to write your custom channel.
 * Package Modules in a Sub-directory::  Specifying the channel's package modules location.
 * Declaring Channel Dependencies::  How to depend on other channels.
 * Specifying Channel Authorizations::  Defining channel authors authorizations.
+* Primary URL::                 Distinguishing mirror to original.
 * Writing Channel News::        Communicating information to channel's users.
 @end menu
 
@@ -4851,29 +4851,6 @@ the channel introduction provided by the channel authors in your
 introduction from a trusted source since that is the root of your trust.
 
 If you're curious about the authentication mechanics, read on!
-
-@cindex primary URL, channels
-@node Primary URL
-@section Primary URL
-
-Channel authors can indicate the primary URL of their channel's Git
-repository in the @file{.guix-channel} file, like so:
-
-@lisp
-(channel
-  (version 0)
-  (url "https://example.org/guix.git"))
-@end lisp
-
-This allows @command{guix pull} to determine whether it is pulling code
-from a mirror of the channel; when that is the case, it warns the user
-that the mirror might be stale and displays the primary URL.  That way,
-users cannot be tricked into fetching code from a stale mirror that does
-not receive security updates.
-
-This feature only makes sense for authenticated repositories, such as
-the official @code{guix} channel, for which @command{guix pull} ensures
-the code it fetches is authentic.
 
 @cindex personal packages (channels)
 @cindex channels, for personal packages
@@ -5098,6 +5075,29 @@ users from pulling from your channel---well, that's the whole point of
 authentication!  Pay attention to merges in particular: merge commits
 are considered authentic if and only if they are signed by a key present
 in the @file{.guix-authorizations} file of @emph{both} branches.
+
+@cindex primary URL, channels
+@node Primary URL
+@section Primary URL
+
+Channel authors can indicate the primary URL of their channel's Git
+repository in the @file{.guix-channel} file, like so:
+
+@lisp
+(channel
+  (version 0)
+  (url "https://example.org/guix.git"))
+@end lisp
+
+This allows @command{guix pull} to determine whether it is pulling code
+from a mirror of the channel; when that is the case, it warns the user
+that the mirror might be stale and displays the primary URL.  That way,
+users cannot be tricked into fetching code from a stale mirror that does
+not receive security updates.
+
+This feature only makes sense for authenticated repositories, such as
+the official @code{guix} channel, for which @command{guix pull} ensures
+the code it fetches is authentic.
 
 @cindex news, for channels
 @node Writing Channel News
