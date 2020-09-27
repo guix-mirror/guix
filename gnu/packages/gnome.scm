@@ -10930,6 +10930,44 @@ versions of Adwaita, Adwaita-dark and HighContrast themes.  It also provides
 index files needed for Adwaita to be used outside of GNOME.")
     (license license:lgpl2.1+)))
 
+(define-public gnote
+  (package
+    (name "gnote")
+    (version "3.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version)  "/"
+                           "gnote-" version ".tar.xz"))
+       (sha256
+        (base32 "1ingbaw4d8vpjn083xvzqw7kz8z0k2bx7msk78pbzd68bwgkadpx"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("unittest-cpp" ,unittest-cpp))) ;FIXME: not found by pkg-config
+    (inputs
+     `(("glibmm" ,glibmm)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("gtkmm" ,gtkmm)
+       ("libsecret" ,libsecret)
+       ("libuuid" ,util-linux "lib")
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (synopsis "Note-taking application for the GNOME desktop")
+    (description
+     "Gnote is a note-taking application written for the GNOME desktop
+environment.")
+    (home-page "https://wiki.gnome.org/Apps/Gnote")
+    (license license:gpl3+)))
+
 (define-public polari
   (package
     (name "polari")
