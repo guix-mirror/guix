@@ -11539,7 +11539,7 @@ integrated profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "0.21.0")
+    (version "0.21.1")
     (source
      (origin
        (method git-fetch)
@@ -11549,7 +11549,7 @@ integrated profiler via Sysprof, debugging support, and more.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bl2wcvshhp7pwwk6blrq6rzvrlb13jhhif5afwpqdznzyqfh2ka"))))
+         "17ss5k2hnymk6xyx1dy3q0y2pwcld78cw7d0cs9c0hnhskh5dirh"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
