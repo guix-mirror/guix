@@ -37,6 +37,23 @@ guix build --with-graft=glibc=glibc@@2.31 hello
 Run @command{info \"(guix) Package Transformation Options\"} for more
 info.")))
 
+ (entry (commit "f458cfbcc54ed87b1a87dd9e150ea276f17eab74")
+        (title (en "New @option{--without-tests} transformation option"))
+        (body
+         (en "The new @option{--without-tests} package transformation option
+instructs Guix to skip the test suite of a given package.  In the example
+below, @code{guile-gcrypt} is built using a variant of @code{automake} itself
+built without running its (lengthy) test suite:
+
+@example
+guix build guile-gcrypt --without-tests=automake
+@end example
+
+This is primarily useful as a way to speed up development cycles, or to work
+around flaky test suites---skipping tests can hide real issues, so use with
+care.  Run @command{info \"(guix) Package Transformation Options\"} for more
+info.")))
+
  (entry (commit "a98712785e0b042a290420fd74e5a4a5da4fc68f")
         (title (en "New @command{guix git authenticate} command")
                (de "Neuer Befehl @command{guix git authenticate}")
