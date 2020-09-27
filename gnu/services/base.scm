@@ -1653,10 +1653,15 @@ proxy of 'guix-daemon'...~%")
      ;; otherwise call 'chown' here, but the problem is that on a COW overlayfs,
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
-     ;; Optionally authorize substitute server keys.
-     (if authorize-key?
-         (substitute-key-authorization keys guix)
-         #~#f))))
+     ;; Generate a key pair and optionally authorize substitute server keys.
+     #~(begin
+         (unless (file-exists? "/etc/guix/signing-key.pub")
+           (system* #$(file-append guix "/bin/guix") "archive"
+                    "--generate-key"))
+
+         #$(if authorize-key?
+               (substitute-key-authorization keys guix)
+               #~#f)))))
 
 (define* (references-file item #:optional (name "references"))
   "Return a file that contains the list of references of ITEM."
