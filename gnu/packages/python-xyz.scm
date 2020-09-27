@@ -15404,14 +15404,14 @@ perform the operations required for synchronizing plain text.")
 (define-public python-dirsync
   (package
     (name "python-dirsync")
-    (version "2.2.3")
+    (version "2.2.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dirsync" version))
         (sha256
          (base32
-          "1r40fkanksagcszf1ag85mdr8w7rgc7196n6s1qlsk2abw6i7v0z"))))
+          "1gm82jddm1lkazdi8lfsl1b3vi1z0252ng60mzjym8irnv94qfhy"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("six" ,python-six)))
