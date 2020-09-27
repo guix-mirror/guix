@@ -556,6 +556,7 @@ using the above tables.")
   (package
     (name "libspiro")
     (version "20190731")
+    (replacement libspiro-20200505)
     (source
      (origin
       (method url-fetch)
@@ -573,6 +574,19 @@ using the above tables.")
 smooth contours with constant curvature at the spline joins.")
     (license license:gpl2+)
     (home-page "http://libspiro.sourceforge.net/")))
+
+(define libspiro-20200505
+  (package
+    (inherit libspiro)
+    (version "20200505")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/fontforge/libspiro/releases"
+                          "/download/" version "/libspiro-dist-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0j8fmyj4wz6mqk17dqs6f8jx0i52n68gv5px17qbrjnbilg9mih6"))))))
 
 (define-public libuninameslist
   (package
