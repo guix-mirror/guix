@@ -23,6 +23,7 @@
   #:use-module (gnu bootloader grub)
   #:use-module (gnu image)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu services base)
@@ -992,13 +993,77 @@ is added to the OS specified in CONFIG."
          (shell (file-append shadow "/sbin/nologin"))
          (system? #t))))
 
+(define (initialize-hurd-vm-substitutes)
+  "Initialize the Hurd VM's key pair and ACL and store it on the host."
+  (define run
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils)
+                       (ice-9 match))
+
+          (define host-key
+            "/etc/guix/signing-key.pub")
+
+          (define host-acl
+            "/etc/guix/acl")
+
+          (match (command-line)
+            ((_ guest-config-directory)
+             (setenv "GUIX_CONFIGURATION_DIRECTORY"
+                     guest-config-directory)
+             (invoke #+(file-append guix "/bin/guix") "archive"
+                     "--generate-key")
+
+             (when (file-exists? host-acl)
+               ;; Copy the host ACL.
+               (copy-file host-acl
+                          (string-append guest-config-directory
+                                         "/acl")))
+
+             (when (file-exists? host-key)
+               ;; Add the host key to the childhurd's ACL.
+               (let ((key (open-fdes host-key O_RDONLY)))
+                 (close-fdes 0)
+                 (dup2 key 0)
+                 (execl #+(file-append guix "/bin/guix")
+                        "guix" "archive" "--authorize"))))))))
+
+  (program-file "initialize-hurd-vm-substitutes" run))
+
+(define (hurd-vm-activation config)
+  "Return a gexp to activate the Hurd VM according to CONFIG."
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (define secret-directory
+          #$(hurd-vm-configuration-secret-root config))
+
+        (define ssh-directory
+          (string-append secret-directory "/etc/ssh"))
+
+        (define guix-directory
+          (string-append secret-directory "/etc/guix"))
+
+        (unless (file-exists? ssh-directory)
+          ;; Generate SSH host keys under SSH-DIRECTORY.
+          (mkdir-p ssh-directory)
+          (invoke #$(file-append openssh "/bin/ssh-keygen")
+                  "-A" "-f" secret-directory))
+
+        (unless (file-exists? guix-directory)
+          (invoke #$(initialize-hurd-vm-substitutes)
+                  guix-directory)))))
+
 (define hurd-vm-service-type
   (service-type
    (name 'hurd-vm)
    (extensions (list (service-extension shepherd-root-service-type
                                         hurd-vm-shepherd-service)
                      (service-extension account-service-type
-                                        (const %hurd-vm-accounts))))
+                                        (const %hurd-vm-accounts))
+                     (service-extension activation-service-type
+                                        hurd-vm-activation)))
    (default-value (hurd-vm-configuration))
    (description
     "Provide a virtual machine (VM) running GNU/Hurd, also known as a

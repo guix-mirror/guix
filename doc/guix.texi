@@ -25445,6 +25445,8 @@ emulation of program binaries built for different architectures---e.g.,
 it allows you to transparently execute an ARMv7 program on an x86_64
 machine.  It achieves this by combining the @uref{https://www.qemu.org,
 QEMU} emulator and the @code{binfmt_misc} feature of the kernel Linux.
+This feature only allows you to emulate GNU/Linux on a different
+architecture, but see below for GNU/Hurd support.
 
 @defvr {Scheme Variable} qemu-binfmt-service-type
 This is the type of the QEMU/binfmt service for transparent emulation.
@@ -25647,10 +25649,11 @@ If the @file{/etc/childhurd} directory does not exist, the
 @code{secret-service} running in the Childhurd will be sent an empty
 list of secrets.
 
-Typical use to populate @file{"/etc/childhurd"} with a tree of
-non-volatile secrets, like so
+By default, the service automatically populates @file{/etc/childhurd}
+with the following non-volatile secrets, unless they already exist:
 
 @example
+/etc/childhurd/etc/guix/acl
 /etc/childhurd/etc/guix/signing-key.pub
 /etc/childhurd/etc/guix/signing-key.sec
 /etc/childhurd/etc/ssh/ssh_host_ed25519_key
@@ -25659,8 +25662,32 @@ non-volatile secrets, like so
 /etc/childhurd/etc/ssh/ssh_host_ecdsa_key.pub
 @end example
 
-to be sent to the Childhurd, including permissions.
+These files are automatically sent to the guest Hurd VM when it boots,
+including permissions.
 
+@cindex childhurd, offloading
+@cindex Hurd, offloading
+Having these files in place means that only a couple of things are
+missing to allow the host to offload @code{i586-gnu} builds to the
+childhurd:
+
+@enumerate
+@item
+Authorizing the childhurd's key on the host so that the host accepts
+build results coming from the childhurd, which can be done like so:
+
+@example
+guix archive --authorize < \
+  /etc/childhurd/etc/guix/signing-key.pub
+@end example
+
+@item
+Adding the childhurd to @file{/etc/guix/machines.scm} (@pxref{Daemon
+Offload Setup}).
+@end enumerate
+
+We're working towards making that happen automatically---get in touch
+with us at @email{guix-devel@@gnu.org} to discuss it!
 @end table
 @end deftp
 
