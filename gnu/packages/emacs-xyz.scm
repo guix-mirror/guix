@@ -4142,6 +4142,30 @@ read from small to large monitors by using colors, a prefix feature, and smart
 truncation.")
     (license license:gpl2+)))
 
+(define-public emacs-sqlite
+  ;; XXX: There is no tagged commit.
+  (let ((commit "dad42b8bbca4994be1871343dd18fd6528ee5797")
+	(revision "0"))
+    (package
+      (name "emacs-sqlite")
+      (build-system emacs-build-system)
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+	       (url "https://gitlab.com/cnngimenez/sqlite.el")
+	       (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "06ln4vijl8kii3nzc5cscgsadx1fqgxksflijd3ain83bn8g4wrd"))))
+      (home-page "https://gitlab.com/cnngimenez/sqlite.el")
+      (synopsis "SQLite interface for Emacs Lisp")
+      (description "Emacs SQLite is a simple SQLite interface for connecting
+and retrieving information using the SQLite program through Elisp programming.
+It is not intended as a user interface.")
+      (license license:gpl3+))))
+
 (define-public emacs-sr-speedbar
   (let ((commit "77a83fb50f763a465c021eca7343243f465b4a47")
         (revision "0"))
