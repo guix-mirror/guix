@@ -1430,12 +1430,12 @@ standards of the IceCat project.")
                 #t))))))))
 
 ;; Update this together with icecat!
-(define %icedove-build-id "20200825000000") ;must be of the form YYYYMMDDhhmmss
+(define %icedove-build-id "20200924000000") ;must be of the form YYYYMMDDhhmmss
 (define-public icedove
   (package
     (name "icedove")
-    (version "68.12.0")
-    (source icecat-68-source)
+    (version "78.3.0")
+    (source icecat-source)
     (properties
      `((cpe-name . "thunderbird_esr")))
     (build-system gnu-build-system)
@@ -1460,10 +1460,15 @@ standards of the IceCat project.")
            (lambda _
              (use-modules (guix build cargo-utils))
              (let ((null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
-               (substitute* '("Cargo.lock" "gfx/wr/Cargo.lock")
-                 (("(\"checksum .* = )\".*\"" all name)
-                  (string-append name "\"" null-hash "\"")))
-               (generate-all-checksums "third_party/rust"))
+               (for-each (lambda (file)
+                           (format #t "patching checksums in ~a~%" file)
+                           (substitute* file
+                             (("^checksum = \".*\"")
+                              (string-append "checksum = \"" null-hash "\""))))
+                         (find-files "." "Cargo.lock$"))
+               (for-each generate-all-checksums
+                         '("third_party/rust"
+                           "toolkit/library/rust")))
              #t))
          ;; Fixes issue where each installation directory generates its own profile.
          ;; See e.g. https://trac.torproject.org/projects/tor/ticket/31457
@@ -1505,12 +1510,10 @@ standards of the IceCat project.")
                  (("mozilla.org") "guix.gnu.org")))
              ;; Remove other mentions of Thunderbird in user-visible text.
              (with-directory-excursion "comm/mail/base/content"
-               (substitute* '("newInstallPage.xhtml"
-                              "overrides/app-license-name.html"
-                              "newInstall.xul")
+               (substitute* '("overrides/app-license-name.html")
                  (("Thunderbird") "Icedove")))
              (with-directory-excursion "comm/mail/components/"
-               (substitute* '("mailGlue.js"
+               (substitute* '("MailGlue.jsm"
                               "extensions/schemas/addressBook.json"
                               "extensions/schemas/tabs.json"
                               "extensions/schemas/cloudFile.json"
@@ -1520,14 +1523,9 @@ standards of the IceCat project.")
                               "im/messages/mail/Info.plist"
                               "enterprisepolicies/moz.build"
                               "enterprisepolicies/helpers/moz.build"
-                              "enterprisepolicies/schemas/moz.build"
-                              "preferences/chat.inc.xul")
+                              "enterprisepolicies/schemas/moz.build")
                  (("Thunderbird") "Icedove")))
-             (substitute* "comm/calendar/lightning/lightning-packager.mk"
-               (("ifeq \\(thunderbird")
-                "ifeq (icedove"))
              (substitute* '("comm/mailnews/base/prefs/content/accountUtils.js"
-                            "comm/mailnews/extensions/newsblog/content/feed-subscriptions.js"
                             "comm/common/src/customizeToolbar.js")
                (("AppConstants.MOZ_APP_NAME (.)= \"thunderbird" _ e)
                 (format #f "AppConstants.MOZ_APP_NAME ~a= \"icedove" e)))
@@ -1600,8 +1598,7 @@ standards of the IceCat project.")
                      "ac_add_options --disable-debug\n"
                      "ac_add_options --disable-debug-symbols\n"
                      "ac_add_options --disable-elf-hack\n"
-                     "ac_add_options --disable-gconf\n"
-                     "ac_add_options --disable-ion\n"
+                     "ac_add_options --disable-jit\n"
                      "ac_add_options --disable-necko-wifi\n"
                      "ac_add_options --disable-official-branding\n"
                      "ac_add_options --disable-tests\n"
@@ -1609,16 +1606,13 @@ standards of the IceCat project.")
                      "ac_add_options --disable-webrtc\n"
                      "ac_add_options --enable-application=comm/mail\n"
                      "ac_add_options --enable-calendar\n"
-                     "ac_add_options --enable-content-sandbox\n"
                      "ac_add_options --enable-default-toolkit=\"cairo-gtk3\"\n"
                      "ac_add_options --enable-optimize\n"
                      "ac_add_options --enable-pulseaudio\n"
                      "ac_add_options --enable-release\n"
-                     "ac_add_options --enable-startup-notification\n"
                      "ac_add_options --enable-strip\n"
                      "ac_add_options --enable-system-ffi\n"
                      "ac_add_options --enable-system-pixman\n"
-                     "ac_add_options --enable-system-sqlite\n"
                      "ac_add_options --prefix=" out "\n"
                      "ac_add_options --with-clang-path=" (assoc-ref %build-inputs "clang") "/bin/clang\n"
                      "ac_add_options --with-distribution-id=org.gnu\n"
@@ -1689,7 +1683,7 @@ standards of the IceCat project.")
        ("gtk+" ,gtk+)
        ("gtk+-2" ,gtk+-2)
        ("hunspell" ,hunspell)
-       ("icu4c" ,icu4c)
+       ("icu4c" ,icu4c-67)
        ("libcanberra" ,libcanberra)
        ("libevent" ,libevent)
        ("libffi" ,libffi)
@@ -1705,7 +1699,7 @@ standards of the IceCat project.")
        ("mesa" ,mesa)
        ("mit-krb5" ,mit-krb5)
        ("nspr" ,nspr)
-       ("nss" ,nss)
+       ("nss" ,nss-3.56)
        ("pango" ,pango)
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
@@ -1720,28 +1714,28 @@ standards of the IceCat project.")
         ;; in the Thunderbird release tarball.  We don't use the release
         ;; tarball because it duplicates the Icecat sources and only adds the
         ;; "comm" directory, which is provided by this repository.
-        ,(let ((changeset "b41cdff70b185358d9c4c1d4a36cfad15a24f001"))
+        ,(let ((changeset "35e647ebd4fa09407a0fe151d3823b1b58172a2a"))
            (origin
              (method hg-fetch)
              (uri (hg-reference
-                   (url "https://hg.mozilla.org/releases/comm-esr68")
+                   (url "https://hg.mozilla.org/releases/comm-esr78")
                    (changeset changeset)))
              (file-name (string-append "thunderbird-" version "-checkout"))
              (sha256
               (base32
-               "1xvky8p5r41mxdyg9amydy94p51wmmdwdz0zq2vzspr9viixf7xm")))))
+               "0g27rapn1xf19i5pl2g12hndb55shzsk4vrrc6bnj4vf2q49zcwy")))))
        ("autoconf" ,autoconf-2.13)
-       ("cargo" ,rust "cargo")
+       ("cargo" ,rust-1.41 "cargo")
        ("clang" ,clang)
        ("llvm" ,llvm)
        ("nasm" ,nasm)
-       ("node" ,node)
+       ("node" ,node-10.22)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
        ("python2" ,python-2.7)
-       ("rust" ,rust)
-       ("rust-cbindgen" ,rust-cbindgen)
+       ("rust" ,rust-1.41)
+       ("rust-cbindgen" ,rust-cbindgen-0.14)
        ("which" ,which)
        ("yasm" ,yasm)))
     (home-page "https://www.thunderbird.net")
