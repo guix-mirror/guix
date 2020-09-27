@@ -13,6 +13,30 @@
 (channel-news
  (version 0)
 
+ (entry (commit "8819551c8d2a12cd4e84e09b51e434d05a012c9d")
+        (title (en "Package transformations now apply to implicit inputs"))
+        (body
+         (en "Package transformation options such as @option{--with-branch},
+@option{--with-input}, and so on now apply to implicit inputs---previously
+only a package's explicit inputs would be affected.  This allows for things
+such as replacing the Python dependency of a package that uses
+@code{python-build-system}:
+
+@example
+guix install --with-input=python=python2 python-itsdangerous
+@end example
+
+Another example is grafting a different version of the GNU C
+Library (@code{glibc} is an implicit input of almost all the packages and is
+``deep down'' in the dependency graph):
+
+@example
+guix build --with-graft=glibc=glibc@@2.31 hello
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more
+info.")))
+
  (entry (commit "a98712785e0b042a290420fd74e5a4a5da4fc68f")
         (title (en "New @command{guix git authenticate} command")
                (de "Neuer Befehl @command{guix git authenticate}")
