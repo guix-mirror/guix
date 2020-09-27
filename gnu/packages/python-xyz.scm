@@ -15415,7 +15415,7 @@ perform the operations required for synchronizing plain text.")
     (build-system python-build-system)
     (propagated-inputs
      `(("six" ,python-six)))
-    (home-page "https://bitbucket.org/tkhyn/dirsync")
+    (home-page "https://github.com/tkhyn/dirsync")
     (synopsis "Advanced directory tree synchronisation tool")
     (description "Advanced directory tree synchronisation tool.")
     (license license:expat)))
