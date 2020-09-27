@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2680,20 +2681,21 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.9")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1saywsda9m124rmjp7i3n0llryaliabjxhqhvqr6dm983qy7pypk"))))
+                "0zbb4jlx56qvcqyhx34mbagkqf3wbxgj84hk0ppf5cmcrxv67d4x"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)
+       ("portaudio" ,portaudio)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
