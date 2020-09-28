@@ -3856,8 +3856,12 @@ COREUTILS-FINAL vs. COREUTILS, etc."
                                                      "libc-static")))
                        #t))))
 
-      (native-search-paths (package-native-search-paths gcc))
-      (search-paths (package-search-paths gcc))
+      (native-search-paths
+       (append (package-native-search-paths gcc)
+               (package-native-search-paths libc))) ;GUIX_LOCPATH
+      (search-paths
+       (append (package-search-paths gcc)
+               (package-search-paths libc)))
 
       (license (package-license gcc))
       (synopsis "Complete GCC tool chain for C/C++ development")
