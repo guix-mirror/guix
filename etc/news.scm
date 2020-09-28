@@ -14,7 +14,8 @@
  (version 0)
 
  (entry (commit "8819551c8d2a12cd4e84e09b51e434d05a012c9d")
-        (title (en "Package transformations now apply to implicit inputs"))
+        (title (en "Package transformations now apply to implicit inputs")
+               (de "Paketumwandlungen betreffen jetzt auch implizite Eingaben"))
         (body
          (en "Package transformation options such as @option{--with-branch},
 @option{--with-input}, and so on now apply to implicit inputs---previously
@@ -35,10 +36,31 @@ guix build --with-graft=glibc=glibc@@2.31 hello
 @end example
 
 Run @command{info \"(guix) Package Transformation Options\"} for more
-info.")))
+info.")
+         (de "Paketumwandlungsoptionen wie @option{--with-branch},
+@option{--with-input} und so weiter betreffen nun auch implizite Eingaben —
+zuvor haben sie sich nur auf die expliziten Eingaben eines Pakets
+ausgewirkt. Dadurch kann jetzt zum Beispiel die Python-Abhängigkeit eines
+Pakets, welches @code{python-build-system} benutzt, ersetzt werden:
+
+@example
+guix install --with-input=python=python2 python-itsdangerous
+@end example
+
+Ein weiteres Beispiel ist, mit einer anderen Version der GNU-C-Bibliothek zu
+veredeln (@code{glibc} ist eine implizite Eingabe fast aller Pakete und steckt
+„ganz tief“ im Abhängigkeitsgraphen):
+
+@example
+guix build --with-graft=glibc=glibc@@2.31 hello
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")))
 
  (entry (commit "f458cfbcc54ed87b1a87dd9e150ea276f17eab74")
-        (title (en "New @option{--without-tests} transformation option"))
+        (title (en "New @option{--without-tests} transformation option")
+               (de "Neue Paketumwandlungsoption @option{--without-tests}"))
         (body
          (en "The new @option{--without-tests} package transformation option
 instructs Guix to skip the test suite of a given package.  In the example
@@ -52,7 +74,22 @@ guix build guile-gcrypt --without-tests=automake
 This is primarily useful as a way to speed up development cycles, or to work
 around flaky test suites---skipping tests can hide real issues, so use with
 care.  Run @command{info \"(guix) Package Transformation Options\"} for more
-info.")))
+info.")
+         (de "Mit der neuen Paketumwandlungsoption @option{--without-tests}
+wird Guix angewiesen, den Testkatalog des angegebenen Pakets zu
+überspringen. Im folgenden Beispiel wird @code{guile-gcrypt} mit einer
+Variante von @code{automake} erstellt, die wiederum ohne Durchlauf ihres (viel
+Zeit in Anspruch nehmenden) Testkatalogs erstellt wird:
+
+@example
+guix build guile-gcrypt --without-tests=automake
+@end example
+
+Der hauptsächliche Nutzen liegt in der Beschleunigung von Entwicklungszyklen
+oder im Umgehen unzuverlässiger Testkataloge. Allerdings kann das Überspringen
+dazu führen, dass echte Probleme verborgen bleiben. Setzen Sie es mit Bedacht
+ein. Führen Sie @command{info \"(guix.de) Paketumwandlungsoptionen\"} aus, um
+mehr Informationen zu erhalten.")))
 
  (entry (commit "a98712785e0b042a290420fd74e5a4a5da4fc68f")
         (title (en "New @command{guix git authenticate} command")
