@@ -20424,6 +20424,22 @@ tests.")
         (base32
          "02i5s7998dg5kcr4m0xwamd8vjqk1816xbzldyp68l91f6bynwcr"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Work around
+         ;; https://github.com/pythongssapi/python-gssapi/issues/220.
+         (add-before 'check 'disable-failing-tests
+           (lambda _
+             (let ((reason "Disabled failing test (see: \
+https://github.com/pythongssapi/python-gssapi/issues/220)."))
+               (substitute* "gssapi/tests/test_high_level.py"
+                 ((".*def test_add_with_impersonate.*" all)
+                  (string-append all "        self.skipTest('" reason "')\n")))
+               (substitute* "gssapi/tests/test_raw.py"
+                 ((".*def test_.*impersonate_name.*" all)
+                  (string-append all "        self.skipTest('" reason "')\n")))
+               #t))))))
     (propagated-inputs
      `(("python-decorator" ,python-decorator)
        ("python-six" ,python-six)))
