@@ -11413,6 +11413,14 @@ It should enable you to implement low-level X11 applications.")
 of XELB.")
     (license license:gpl3+)))
 
+(define-public emacs-xelb-no-x-toolkit
+  (package
+    (inherit emacs-xelb)
+    (name "emacs-xelb-no-x-toolkit")
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs-xelb)
+       ((#:emacs emacs) `,emacs-no-x-toolkit)))))
+
 (define-public emacs-switch-window
   (package
     (name "emacs-switch-window")
