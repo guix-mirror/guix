@@ -9364,6 +9364,44 @@ must be compatible.  If @var{replacement} is somehow incompatible with
 @var{package}, then the resulting package may be unusable.  Use with
 care!
 
+@cindex tool chain, changing the build tool chain of a package
+@item --with-c-toolchain=@var{package}=@var{toolchain}
+This option changes the compilation of @var{package} and everything that
+depends on it so that they get built with @var{toolchain} instead of the
+default GNU tool chain for C/C++.
+
+Consider this example:
+
+@example
+guix build octave-cli \
+  --with-c-toolchain=fftw=gcc-toolchain@@10 \
+  --with-c-toolchain=fftwf=gcc-toolchain@@10
+@end example
+
+The command above builds a variant of the @code{fftw} and @code{fftwf}
+packages using version 10 of @code{gcc-toolchain} instead of the default
+tool chain, and then builds a variant of the GNU@tie{}Octave
+command-line interface using them.  GNU@tie{}Octave itself is also built
+with @code{gcc-toolchain@@10}.
+
+This other example builds the Hardware Locality (@code{hwloc}) library
+and its dependents up to @code{intel-mpi-benchmarks} with the Clang C
+compiler:
+
+@example
+guix build --with-c-toolchain=hwloc=clang-toolchain \
+           intel-mpi-benchmarks
+@end example
+
+@quotation Note
+There can be application binary interface (ABI) incompatibilities among
+tool chains.  This is particularly true of the C++ standard library and
+run-time support libraries such as that of OpenMP.  By rebuilding all
+dependents with the same tool chain, @option{--with-c-toolchain} minimizes
+the risks of incompatibility but cannot entirely eliminate them.  Choose
+@var{package} wisely.
+@end quotation
+
 @item --with-git-url=@var{package}=@var{url}
 @cindex Git, using the latest commit
 @cindex latest commit, building
