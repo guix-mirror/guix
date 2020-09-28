@@ -823,7 +823,7 @@ Guile's foreign function interface.")
 (define-public guile-lzlib
   (package
     (name "guile-lzlib")
-    (version "0.0.1")
+    (version "0.0.2")
     (source
      (origin
        (method url-fetch)
@@ -833,7 +833,7 @@ Guile's foreign function interface.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rdmszn1qix085ci2mddwq5cypipc004fk7arrrkgn9bv39hazza"))))
+         "11sggvncyx08ssp1s5xii4d6nskh1qwqihnbpzzvkrs7sivxn8w6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
