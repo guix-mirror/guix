@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
@@ -70,7 +72,10 @@
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("tcl" ,tcl)))                   ;required for some tests
+    (inputs
+     `(("openssl" ,openssl)))
     (arguments
      `(;; XXX: On 32-bit systems, 'kdb5_util' hangs on an fcntl/F_SETLKW call
        ;; while running the tests in 'src/tests'. Also disable tests when
