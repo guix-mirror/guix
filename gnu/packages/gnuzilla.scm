@@ -751,7 +751,7 @@ from forcing GEXP-PROMISE."
        ("libffi" ,libffi)
        ("ffmpeg" ,ffmpeg)
        ;; UNBUNDLE-ME! ("libvpx" ,libvpx)
-       ;; UNBUNDLE-ME! ("icu4c" ,icu4c)
+       ("icu4c" ,icu4c-67)
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
        ("mesa" ,mesa)
@@ -854,8 +854,8 @@ from forcing GEXP-PROMISE."
                            ;; UNBUNDLE-ME! "--with-system-vorbis"
                            ;; UNBUNDLE-ME! "--with-system-theora" ; wants theora-1.2, not yet released
                            ;; UNBUNDLE-ME! "--with-system-libvpx"
-                           ;; UNBUNDLE-ME! "--with-system-icu"
-                           
+                           "--with-system-icu"
+
                            ;; See <https://bugs.gnu.org/32833>
                            ;;   and related comments in the
                            ;;   'remove-bundled-libraries' phase below.
