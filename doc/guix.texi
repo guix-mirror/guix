@@ -15547,6 +15547,81 @@ may cause undefined behaviour.
 @end table
 @end deftp
 
+@cindex WebSSH
+@deffn {Scheme Variable} webssh-service-type
+This is the type for the @uref{https://webssh.huashengdun.org/, WebSSH}
+program that runs a web SSH client.  WebSSH can be run manually from the
+command-line by passing arguments to the binary @command{wssh} from the
+package @code{webssh}, but it can also be run as a Guix service.  This
+latter use case is documented here.
+
+For example, to specify a service running WebSSH on loopback interface
+on port @code{8888} with reject policy with a list of allowed to
+connection hosts, and NGINX as a reverse-proxy to this service listening
+for HTTPS connection, add this call to the operating system's
+@code{services} field:
+
+@lisp
+(service webssh-service-type
+  (webssh-configuration (address "127.0.0.1")
+                        (port 8888)
+                        (policy 'reject)
+                        (known-hosts '("localhost ecdsa-sha2-nistp256 AAAA…"
+                                       "127.0.0.1 ecdsa-sha2-nistp256 AAAA…"))))
+
+(service nginx-service-type
+         (nginx-configuration
+          (server-blocks
+           (list
+            (nginx-server-configuration
+             (inherit %webssh-configuration-nginx)
+             (server-name '("webssh.example.com"))
+             (listen '("443 ssl"))
+             (ssl-certificate (letsencrypt-certificate "webssh.example.com"))
+             (ssl-certificate-key (letsencrypt-key "webssh.example.com"))
+             (locations
+              (cons (nginx-location-configuration
+                     (uri "/.well-known")
+                     (body '("root /var/www;")))
+                    (nginx-server-configuration-locations %webssh-configuration-nginx))))))))
+@end lisp
+@end deffn
+
+@deftp {Data Type} webssh-configuration
+Data type representing the configuration for @code{webssh-service}.
+
+@table @asis
+@item @code{package} (default: @var{webssh})
+@code{webssh} package to use.
+
+@item @code{user-name} (default: @var{"webssh"})
+User name or user ID that file transfers to and from that module should take
+place.
+
+@item @code{group-name} (default: @var{"webssh"})
+Group name or group ID that will be used when accessing the module.
+
+@item @code{address} (default: @var{#f})
+IP address on which @command{webssh} listens for incoming connections.
+
+@item @code{port} (default: @var{8888})
+TCP port on which @command{webssh} listens for incoming connections.
+
+@item @code{policy} (default: @var{#f})
+Connection policy.  @var{reject} policy requires to specify @var{known-hosts}.
+
+@item @code{known-hosts} (default: @var{'()})
+List of hosts which allowed for SSH connection from @command{webssh}.
+
+@item @code{log-file} (default: @file{"/var/log/webssh.log"})
+Name of the file where @command{rsync} writes its log file.
+
+@item @code{log-level} (default: @var{#f})
+Logging level.
+
+@end table
+@end deftp
+
 @defvr {Scheme Variable} %facebook-host-aliases
 This variable contains a string for use in @file{/etc/hosts}
 (@pxref{Host Names,,, libc, The GNU C Library Reference Manual}).  Each
