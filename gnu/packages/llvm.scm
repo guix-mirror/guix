@@ -484,7 +484,11 @@ code analysis tools.")
                                                    "libc-static")))
                      #t))))
 
-    (native-search-paths (package-native-search-paths clang))
+    (native-search-paths
+     (append (package-native-search-paths clang)
+             (list (search-path-specification     ;copied from glibc
+                    (variable "GUIX_LOCPATH")
+                    (files '("lib/locale"))))))
     (search-paths (package-search-paths clang))
 
     (license (package-license clang))
