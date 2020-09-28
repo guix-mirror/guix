@@ -1623,18 +1623,18 @@ of @code{xmlfile}.")
 (define-public python-openpyxl
   (package
     (name "python-openpyxl")
-    (version "2.6.2")
+    (version "3.0.5")
     (source
      (origin
        ;; We use the upstream repository, as the tests are not included in the
        ;; PyPI releases.
        (method hg-fetch)
        (uri (hg-reference
-             (url "https://bitbucket.org/openpyxl/openpyxl")
+             (url "https://foss.heptapod.net/openpyxl/openpyxl")
              (changeset version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "1qhij6kcvdxqjy4g6193nsv4q7fy8n4fwyd3c2z047idlm6s3j4w"))))
+        (base32 "0s6fgwwkcfz1bnrp5gjd4g2lcbl4a76147ylkrmkbabi2nf4xlli"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
