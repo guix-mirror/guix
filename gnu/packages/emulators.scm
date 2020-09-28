@@ -53,6 +53,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
