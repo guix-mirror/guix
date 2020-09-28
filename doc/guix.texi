@@ -12830,8 +12830,19 @@ User accounts and groups are entirely managed through the
                           "audio"   ;sound card
                           "video"   ;video devices such as webcams
                           "cdrom")) ;the good ol' CD-ROM
-  (comment "Bob's sister")
-  (home-directory "/home/alice"))
+  (comment "Bob's sister"))
+@end lisp
+
+Here's a user account that uses a different shell and a custom home
+directory (the default would be @file{"/home/bob"}):
+
+@lisp
+(user-account
+  (name "bob")
+  (group "users")
+  (comment "Alice's bro")
+  (shell (file-append zsh "/bin/zsh"))
+  (home-directory "/home/robert"))
 @end lisp
 
 When booting or upon completion of @command{guix system reconfigure},
@@ -12876,7 +12887,19 @@ if it does not exist yet.
 
 @item @code{shell} (default: Bash)
 This is a G-expression denoting the file name of a program to be used as
-the shell (@pxref{G-Expressions}).
+the shell (@pxref{G-Expressions}).  For example, you would refer to the
+Bash executable like this:
+
+@lisp
+(file-append bash "/bin/bash")
+@end lisp
+
+@noindent
+... and to the Zsh executable like that:
+
+@lisp
+(file-append zsh "/bin/zsh")
+@end lisp
 
 @item @code{system?} (default: @code{#f})
 This Boolean value indicates whether the account is a ``system''
