@@ -123,15 +123,15 @@ greatest common divisor operations.")
 (define-public cm
   (package
    (name "cm")
-   (version "0.3")
+   (version "0.3.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://www.multiprecision.org/cm/download/cm-"
+                  "http://www.multiprecision.org/downloads/cm-"
                   version ".tar.gz"))
             (sha256
              (base32
-              "1nf5kr0nqmhbzrsrinky18z0ighjpsmb5cr8zyg8jf04bfbyrfmc"))))
+              "0qq6b1kwb1byj8ws33ya5awq0ilkpm32037pi1l4cf2737fg9m42"))))
    (build-system gnu-build-system)
    (propagated-inputs
      `(("mpfrcx" ,mpfrcx)
