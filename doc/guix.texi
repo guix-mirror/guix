@@ -6558,6 +6558,35 @@ cross-compiling:
 It is an error to refer to @code{this-package} outside a package definition.
 @end deffn
 
+Because packages are regular Scheme objects that capture a complete
+dependency graph and associated build procedures, it is often useful to
+write procedures that take a package and return a modified version
+thereof according to some parameters.  Below are a few examples.
+
+@cindex tool chain, choosing a package's tool chain
+@deffn {Scheme Procedure} package-with-c-toolchain @var{package} @var{toolchain}
+Return a variant of @var{package} that uses @var{toolchain} instead of
+the default GNU C/C++ toolchain.  @var{toolchain} must be a list of
+inputs (label/package tuples) providing equivalent functionality, such
+as the @code{gcc-toolchain} package.
+
+The example below returns a variant of the @code{hello} package built
+with GCC@tie{}10.x and the rest of the GNU tool chain (Binutils and the
+GNU C Library) instead of the default tool chain:
+
+@lisp
+(let ((toolchain (specification->package "gcc-toolchain@@10")))
+  (package-with-c-toolchain hello `(("toolchain" ,toolchain))))
+@end lisp
+
+The build tool chain is part of the @dfn{implicit inputs} of
+packages---it's usually not listed as part of the various ``inputs''
+fields and is instead pulled in by the build system.  Consequently, this
+procedure works by changing the build system of @var{package} so that it
+pulls in @var{toolchain} instead of the defaults.  @ref{Build Systems},
+for more on build systems.
+@end deffn
+
 @node origin Reference
 @subsection @code{origin} Reference
 
@@ -6694,6 +6723,9 @@ ornamentation---in other words, a bag is a lower-level representation of
 a package, which includes all the inputs of that package, including some
 that were implicitly added by the build system.  This intermediate
 representation is then compiled to a derivation (@pxref{Derivations}).
+The @code{package-with-c-toolchain} is an example of a way to change the
+implicit inputs that a package's build system pulls in (@pxref{package
+Reference, @code{package-with-c-toolchain}}).
 
 Build systems accept an optional list of @dfn{arguments}.  In package
 definitions, these are passed @i{via} the @code{arguments} field

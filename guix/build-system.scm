@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +18,7 @@
 
 (define-module (guix build-system)
   #:use-module (guix records)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (build-system
             build-system?
@@ -37,7 +38,9 @@
             bag-arguments
             bag-build
 
-            make-bag))
+            make-bag
+
+            build-system-with-c-toolchain))
 
 (define-record-type* <build-system> build-system make-build-system
   build-system?
@@ -98,3 +101,31 @@ intermediate representation just above derivations."
             #:outputs outputs
             #:target target
             arguments))))
+
+(define (build-system-with-c-toolchain bs toolchain)
+  "Return a variant of BS, a build system, that uses TOOLCHAIN instead of the
+default GNU C/C++ toolchain.  TOOLCHAIN must be a list of
+inputs (label/package tuples) providing equivalent functionality, such as the
+'gcc-toolchain' package."
+  (define lower
+    (build-system-lower bs))
+
+  (define toolchain-packages
+    ;; These are the GNU toolchain packages pulled in by GNU-BUILD-SYSTEM and
+    ;; all the build systems that inherit from it.  Keep the list in sync with
+    ;; 'standard-packages' in (guix build-system gnu).
+    '("gcc" "binutils" "libc" "libc:static" "ld-wrapper"))
+
+  (define (lower* . args)
+    (let ((lowered (apply lower args)))
+      (bag
+        (inherit lowered)
+        (build-inputs
+         (append (fold alist-delete
+                       (bag-build-inputs lowered)
+                       toolchain-packages)
+                 toolchain)))))
+
+  (build-system
+    (inherit bs)
+    (lower lower*)))

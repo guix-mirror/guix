@@ -124,6 +124,7 @@
             package-patched-vulnerabilities
             package-with-patches
             package-with-extra-patches
+            package-with-c-toolchain
             package/inherit
 
             transitive-input-references
@@ -789,6 +790,14 @@ specifies modules in scope when evaluating SNIPPET."
   (package-with-patches original
                         (append (origin-patches (package-source original))
                                 patches)))
+
+(define (package-with-c-toolchain package toolchain)
+  "Return a variant of PACKAGE that uses TOOLCHAIN instead of the default GNU
+C/C++ toolchain.  TOOLCHAIN must be a list of inputs (label/package tuples)
+providing equivalent functionality, such as the 'gcc-toolchain' package."
+  (let ((bs (package-build-system package)))
+    (package/inherit package
+      (build-system (build-system-with-c-toolchain bs toolchain)))))
 
 (define (transitive-inputs inputs)
   "Return the closure of INPUTS when considering the 'propagated-inputs'
