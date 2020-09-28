@@ -11421,6 +11421,17 @@ of XELB.")
      (substitute-keyword-arguments (package-arguments emacs-xelb)
        ((#:emacs emacs) `,emacs-no-x-toolkit)))))
 
+(define-public emacs-exwm-no-x-toolkit
+  (package
+    (inherit emacs-exwm)
+    (name "emacs-exwm-no-x-toolkit")
+    (synopsis "Emacs X window manager (without an X toolkit)")
+    (propagated-inputs
+     `(("emacs-xelb-no-x-toolkit" ,emacs-xelb-no-x-toolkit)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs-exwm)
+       ((#:emacs emacs) `,emacs-no-x-toolkit)))))
+
 (define-public emacs-switch-window
   (package
     (name "emacs-switch-window")
