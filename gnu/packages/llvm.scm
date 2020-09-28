@@ -476,6 +476,12 @@ code analysis tools.")
                        (((names . directories) ...)
                         (union-build out directories)))
 
+                     ;; Create 'cc' and 'c++' so that one can use it as a
+                     ;; drop-in replacement for the default tool chain and
+                     ;; have configure scripts find the compiler.
+                     (symlink "clang" (string-append out "/bin/cc"))
+                     (symlink "clang++" (string-append out "/bin/c++"))
+
                      (union-build (assoc-ref %outputs "debug")
                                   (list (assoc-ref %build-inputs
                                                    "libc-debug")))
