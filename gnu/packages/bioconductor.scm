@@ -1797,14 +1797,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.22.3")
+    (version "3.22.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "0q3f55hh0a2hl96272js6gagmgps9cxs8s13pf6fii64rzaz5m7y"))))
+         "0wxgjdikinkqj7jvs2725ak0291q6zhikyf1c93w8cngwvd9i1gq"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
