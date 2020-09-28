@@ -596,64 +596,66 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
 (define-record-type* <elogind-configuration> elogind-configuration
   make-elogind-configuration
   elogind-configuration?
-  (elogind                         elogind-package
-                                   (default elogind))
-  (kill-user-processes?            elogind-kill-user-processes?
-                                   (default #f))
-  (kill-only-users                 elogind-kill-only-users
-                                   (default '()))
-  (kill-exclude-users              elogind-kill-exclude-users
-                                   (default '("root")))
-  (inhibit-delay-max-seconds       elogind-inhibit-delay-max-seconds
-                                   (default 5))
-  (handle-power-key                elogind-handle-power-key
-                                   (default 'poweroff))
-  (handle-suspend-key              elogind-handle-suspend-key
-                                   (default 'suspend))
-  (handle-hibernate-key            elogind-handle-hibernate-key
-                                   ;; (default 'hibernate)
-                                   ;; XXX Ignore it for now, since we don't
-                                   ;; yet handle resume-from-hibernation in
-                                   ;; our initrd.
-                                   (default 'ignore))
-  (handle-lid-switch               elogind-handle-lid-switch
-                                   (default 'suspend))
-  (handle-lid-switch-docked        elogind-handle-lid-switch-docked
-                                   (default 'ignore))
-  (power-key-ignore-inhibited?     elogind-power-key-ignore-inhibited?
-                                   (default #f))
-  (suspend-key-ignore-inhibited?   elogind-suspend-key-ignore-inhibited?
-                                   (default #f))
-  (hibernate-key-ignore-inhibited? elogind-hibernate-key-ignore-inhibited?
-                                   (default #f))
-  (lid-switch-ignore-inhibited?    elogind-lid-switch-ignore-inhibited?
-                                   (default #t))
-  (holdoff-timeout-seconds         elogind-holdoff-timeout-seconds
-                                   (default 30))
-  (idle-action                     elogind-idle-action
-                                   (default 'ignore))
-  (idle-action-seconds             elogind-idle-action-seconds
-                                   (default (* 30 60)))
-  (runtime-directory-size-percent  elogind-runtime-directory-size-percent
-                                   (default 10))
-  (runtime-directory-size          elogind-runtime-directory-size
-                                   (default #f))
-  (remove-ipc?                     elogind-remove-ipc?
-                                   (default #t))
+  (elogind                          elogind-package
+                                    (default elogind))
+  (kill-user-processes?             elogind-kill-user-processes?
+                                    (default #f))
+  (kill-only-users                  elogind-kill-only-users
+                                    (default '()))
+  (kill-exclude-users               elogind-kill-exclude-users
+                                    (default '("root")))
+  (inhibit-delay-max-seconds        elogind-inhibit-delay-max-seconds
+                                    (default 5))
+  (handle-power-key                 elogind-handle-power-key
+                                    (default 'poweroff))
+  (handle-suspend-key               elogind-handle-suspend-key
+                                    (default 'suspend))
+  (handle-hibernate-key             elogind-handle-hibernate-key
+                                    ;; (default 'hibernate)
+                                    ;; XXX Ignore it for now, since we don't
+                                    ;; yet handle resume-from-hibernation in
+                                    ;; our initrd.
+                                    (default 'ignore))
+  (handle-lid-switch                elogind-handle-lid-switch
+                                    (default 'suspend))
+  (handle-lid-switch-docked         elogind-handle-lid-switch-docked
+                                    (default 'ignore))
+  (handle-lid-switch-external-power elogind-handle-lid-switch-external-power
+                                    (default 'ignore))
+  (power-key-ignore-inhibited?      elogind-power-key-ignore-inhibited?
+                                    (default #f))
+  (suspend-key-ignore-inhibited?    elogind-suspend-key-ignore-inhibited?
+                                    (default #f))
+  (hibernate-key-ignore-inhibited?  elogind-hibernate-key-ignore-inhibited?
+                                    (default #f))
+  (lid-switch-ignore-inhibited?     elogind-lid-switch-ignore-inhibited?
+                                    (default #t))
+  (holdoff-timeout-seconds          elogind-holdoff-timeout-seconds
+                                    (default 30))
+  (idle-action                      elogind-idle-action
+                                    (default 'ignore))
+  (idle-action-seconds              elogind-idle-action-seconds
+                                    (default (* 30 60)))
+  (runtime-directory-size-percent   elogind-runtime-directory-size-percent
+                                    (default 10))
+  (runtime-directory-size           elogind-runtime-directory-size
+                                    (default #f))
+  (remove-ipc?                      elogind-remove-ipc?
+                                    (default #t))
 
-  (suspend-state                   elogind-suspend-state
-                                   (default '("mem" "standby" "freeze")))
-  (suspend-mode                    elogind-suspend-mode
-                                   (default '()))
-  (hibernate-state                 elogind-hibernate-state
-                                   (default '("disk")))
-  (hibernate-mode                  elogind-hibernate-mode
-                                   (default '("platform" "shutdown")))
-  (hybrid-sleep-state              elogind-hybrid-sleep-state
-                                   (default '("disk")))
-  (hybrid-sleep-mode               elogind-hybrid-sleep-mode
-                                   (default
-                                     '("suspend" "platform" "shutdown"))))
+  (suspend-state                    elogind-suspend-state
+                                    (default '("mem" "standby" "freeze")))
+  (suspend-mode                     elogind-suspend-mode
+                                    (default '()))
+  (hibernate-state                  elogind-hibernate-state
+                                    (default '("disk")))
+  (hibernate-mode                   elogind-hibernate-mode
+                                    (default '("platform" "shutdown")))
+  (hybrid-sleep-state               elogind-hybrid-sleep-state
+                                    (default '("disk")))
+  (hybrid-sleep-mode                elogind-hybrid-sleep-mode
+                                    (default
+                                      '("suspend" "platform" "shutdown"))))
 
 (define (elogind-configuration-file config)
   (define (yesno x)
@@ -705,6 +707,7 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
    ("HandleHibernateKey" (handle-action elogind-handle-hibernate-key))
    ("HandleLidSwitch" (handle-action elogind-handle-lid-switch))
    ("HandleLidSwitchDocked" (handle-action elogind-handle-lid-switch-docked))
+   ("HandleLidSwitchExternalPower" (handle-action elogind-handle-lid-switch-external-power))
    ("PowerKeyIgnoreInhibited" (yesno elogind-power-key-ignore-inhibited?))
    ("SuspendKeyIgnoreInhibited" (yesno elogind-suspend-key-ignore-inhibited?))
    ("HibernateKeyIgnoreInhibited" (yesno elogind-hibernate-key-ignore-inhibited?))
