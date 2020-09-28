@@ -7003,19 +7003,25 @@ the superuser to make device nodes.")
 (define-public fakeroot
   (package
     (name "fakeroot")
-    (version "1.24")
+    (version "1.25.1")
     (source (origin
+              ;; There are no tags in the repository, so take this snapshot.
               (method url-fetch)
               (uri (string-append "https://deb.debian.org/debian/pool/main/f/"
                                   "fakeroot/fakeroot_" version ".orig.tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vb6f93hjyqnwx8dc8mm3dgma7axgqk8s7sdsjs8l2rpc0qmn11f"))))
+                "1ianaacwpjcw02shfiyybkqh5r6il4lvxin10n4y66kw0p7i3kcm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _
+             ;; The "preroll" script takes care of Autoconf and also
+             ;; prepares the translated manuals.
+             (invoke "sh" "./preroll")))
         (add-after 'configure 'patch-Makefile
           (lambda _
             ;; Note: The root of the problem is already in "Makefile.am".
@@ -7055,21 +7061,21 @@ the superuser to make device nodes.")
             ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
             (substitute* "test/compare-tar"
              (("tar -tvf") "tar --numeric-owner -tvf"))
-
-            ;; coreutils 8.32 changed 'ls' to use the statx() syscall instead
-            ;; of lstat().  fakeroot 1.24 does not support the former, so
-            ;; adjust these tests to use 'test -b' instead of 'ls' to test for
-            ;; block device.  See <https://bugs.gnu.org/41090>.
-            (substitute* '("test/t.mknod" "test/t.chmod_dev")
-              (("ls -ld? \\$tmp/hda3")
-               "test -b $tmp/hda3 && echo block || echo fail"))
             #t)))))
     (native-inputs
-     `(("acl" ,acl)
-       ("sharutils" ,sharutils) ; for the tests
-       ("xz" ,xz))) ; for the tests
+     `(;; For bootstrapping the package.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("gettext" ,gettext-minimal)
+       ("po4a" ,po4a)
+
+       ;; For tests.
+       ("sharutils" ,sharutils)
+       ("xz" ,xz)))
     (inputs
-     `(("libcap" ,libcap/next)
+     `(("acl" ,acl)
+       ("libcap" ,libcap/next)
        ("util-linux" ,util-linux)
        ("sed" ,sed)
        ("coreutils" ,coreutils)))
