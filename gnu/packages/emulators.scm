@@ -1327,34 +1327,20 @@ multi-system game/emulator system.")
 (define-public scummvm
   (package
     (name "scummvm")
-    (version "2.1.2")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.scummvm.org/frs/scummvm/" version
                            "/scummvm-" version ".tar.xz"))
        (sha256
-        (base32 "1c4fz1nfg0nqnqx9iipayhzcsiqdmfxm2i95nw9dbhshhsdnrhf4"))))
+        (base32 "11vknasm5dna2vqr6gk343qynh7nhsq3kf60zayarn1vb5z6as8l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                 ;require "git"
        #:configure-flags (list "--enable-release") ;for optimizations
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build
-           ;; XXX: The following works around a build failure introduced when
-           ;; Fluidsynth was updated to version 2.1.  It has been applied
-           ;; upstream as 68758a879e0c8ecc0d40962516d4e808aa4e15e5 and can be
-           ;; removed once this commit makes it into a release.
-           (lambda _
-             (substitute* "audio/softsynth/fluidsynth.cpp"
-               (("#include <fluidsynth.h>") "")
-               (("#include \"common/scummsys.h\"") "#include \"config.h\"")
-               (("#include \"common/config-manager.h\"" line)
-                (string-append "#include <fluidsynth.h>\n"
-                               "#include \"common/scummsys.h\"\n"
-                               line)))
-             #t))
          (replace 'configure
            ;; configure does not work followed by both "SHELL=..." and
            ;; "CONFIG_SHELL=..."; set environment variables instead
@@ -1374,6 +1360,7 @@ multi-system game/emulator system.")
        ("faad2" ,faad2)
        ("fluidsynth" ,fluidsynth)
        ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
        ("liba52" ,liba52)
        ("libflac" ,flac)
        ("libjpeg-turbo" ,libjpeg-turbo)
