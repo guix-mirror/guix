@@ -3007,11 +3007,12 @@ be used for realtime video capture via Linux-specific APIs.")
                 "09y57b3c88szl3wyx3cxq8jrm3pfnyg2n25hxl1ynkq3rgaavdq2"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; no test suite
-       #:configure-flags
-       (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version))))
+     `(#:configure-flags
+       (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version)
+             "-DENABLE_UNIT_TESTS=TRUE")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("curl" ,curl)
