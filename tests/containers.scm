@@ -134,6 +134,14 @@
        (primitive-exit 0)))))
 
 (skip-if-unsupported)
+(test-assert "call-with-container, mnt namespace, root permissions"
+  (zero?
+   (call-with-container '()
+     (lambda ()
+       (assert-exit (= #o755 (stat:perms (lstat "/")))))
+     #:namespaces '(user mnt))))
+
+(skip-if-unsupported)
 (test-assert "container-excursion"
   (call-with-temporary-directory
    (lambda (root)

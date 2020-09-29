@@ -170,7 +170,8 @@ for the process."
     (pivot-root root put-old)
     (chdir "/")
     (umount "real-root" MNT_DETACH)
-    (rmdir "real-root")))
+    (rmdir "real-root")
+    (chmod "/" #o755)))
 
 (define* (initialize-user-namespace pid host-uids
                                     #:key (guest-uid 0) (guest-gid 0))
