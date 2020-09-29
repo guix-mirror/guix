@@ -50,6 +50,12 @@ vBSFjNSiVHsuAA==
 =AAAA
 -----END PGP MESSAGE-----\n")
 
+(define %binary-sample
+  ;; Same message as %radix-64-sample, decoded into bytevector.
+  (base16-string->bytevector
+  "c838013b6d96c411efecef17ecefe3ca0004ce8979ea250a897995f979a9\
+0ad9a9a9050a890ac5a9c945a940c1a2fcd2bc14858cd4a2547b2e00"))
+
 (define %civodul-fingerprint
   "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5")
 
@@ -154,6 +160,12 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
         (call-with-input-string %radix-64-sample/crc-mismatch
           read-radix-64))
     list))
+
+(test-assert "port-ascii-armored?, #t"
+  (call-with-input-string %radix-64-sample port-ascii-armored?))
+
+(test-assert "port-ascii-armored?, #f"
+  (not (port-ascii-armored? (open-bytevector-input-port %binary-sample))))
 
 (test-assert "get-openpgp-keyring"
   (let* ((key (search-path %load-path "tests/civodul.key"))

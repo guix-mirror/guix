@@ -110,7 +110,7 @@
 (define-alias fx/ /)
 (define-alias fxdiv quotient)
 (define-alias fxand logand)
-(define-alias fxbit-set? bit-set?)
+(define-inlinable (fxbit-set? n index) (bit-set? index n))
 (define-alias fxbit-field bit-field)
 (define-alias bitwise-bit-field bit-field)
 (define-alias fxarithmetic-shift-left ash)
