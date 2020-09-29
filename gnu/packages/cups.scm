@@ -749,20 +749,19 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
 (define-public escpr
   (package
     (name "escpr")
-    (version "1.6.30")
+    (version "1.7.7")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
     ;; preserved.  An alternative source will be added as soon as
     ;; available.
-    (source (origin
-              (method url-fetch)
-              ;; The uri has to be chopped up in order to satisfy guix lint.
-              (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/08/18/20/"
-                                  "e94de600e28e510c1cfa158929d8b2c0aadc8aa0/"
-                                  "epson-inkjet-printer-escpr-1.6.30-1lsb3.2.tar.gz"))
-              (sha256
-               (base32
-                "0m8pyfkixisp0vclwxj340isn15zzisal0v2xvv66kxfd68dzf12"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/10/49/18/"
+                           "f3016be6120a7271a6d9cb64872f817bce1920b8/"
+                           "epson-inkjet-printer-escpr-1.7.7-1lsb3.2.tar.gz"))
+       (sha256
+        (base32 "0khdf2a9iwh9aplj2gzyzl53yyfnfv0kszk3p018jnirl5l475ld"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -771,8 +770,25 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
          ,(string-append "--with-cupsfilterdir="
                          (assoc-ref %outputs "out") "/lib/cups/filter")
          ,(string-append "--with-cupsppddir="
-                         (assoc-ref %outputs "out") "/share/cups/model"))))
-    (inputs `(("cups" ,cups-minimal)))
+                         (assoc-ref %outputs "out") "/share/cups/model"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-autotools-version-requirement
+           (lambda _
+             (substitute* "aclocal.m4"
+               (("1\\.15")
+                ,(package-version automake)))
+             (substitute* "configure"
+               (("^(ACLOCAL=).*" _ match)
+                (string-append match "aclocal"))
+               (("^(AUTOMAKE=).*" _ match)
+                (string-append match "automake")))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("cups" ,cups-minimal)))
     (synopsis "ESC/P-R printer driver")
     (description
      "This package provides a filter for the Common UNIX Printing
