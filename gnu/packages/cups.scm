@@ -791,9 +791,9 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
      `(("cups" ,cups-minimal)))
     (synopsis "ESC/P-R printer driver")
     (description
-     "This package provides a filter for the Common UNIX Printing
-System (CUPS).  It offers high-quality printing with Seiko Epson color ink jet
-printers.  It can only be used with printers that support the Epson ESC/P-R
+     "This package provides a filter for @acronym{CUPS, the Common UNIX Printing
+System} that offers high-quality printing with Seiko@tie{}Epson color ink jet
+printers.  It can be used only with printers that support the Epson@tie{}ESC/P-R
 language.")
     (home-page "http://download.ebz.epson.net/dsc/search/01/search")
     (license license:gpl2+)))
