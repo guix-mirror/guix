@@ -330,8 +330,6 @@ networks) based on simulation of (stochastic) flow in graphs.")
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
            (lambda _
-             (substitute* "configure"
-               (("/bin/sh") (which "sh")))
              (substitute* "setup.ml"
                (("LDFLAGS=-fPIC")
                 (string-append "LDFLAGS=-fPIC\"; \"SHELL=" (which "sh")))
