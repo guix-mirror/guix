@@ -16110,8 +16110,36 @@ You probably don't want to link to this crate directly; instead check out the
 @code{onig} crate.")
     (license license:expat)))
 
+(define-public rust-once-cell-1
+  (package
+    (name "rust-once-cell")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "once-cell" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "138n52yni5qym7ds8kxckvhdy4x0m0scy0gl74brmwsahmz1yqqb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-parking-lot" ,rust-parking-lot-0.10))
+       #:cargo-development-inputs
+       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/matklad/once_cell")
+    (synopsis "Single assignment cells and lazy values")
+    (description
+     "Single assignment cells and lazy values.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-once-cell-1.2
   (package
+    (inherit rust-once-cell-1)
     (name "rust-once-cell")
     (version "1.2.0")
     (source
@@ -16123,7 +16151,6 @@ You probably don't want to link to this crate directly; instead check out the
        (sha256
         (base32
          "1vdz8xlg3r05w3wfjimnc347hgm54i5nrqf72r4mlp0fcdplh7w9"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -16131,12 +16158,7 @@ You probably don't want to link to this crate directly; instead check out the
        #:cargo-development-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-regex" ,rust-regex-1))))
-    (home-page "https://github.com/matklad/once_cell")
-    (synopsis "Single assignment cells and lazy values")
-    (description
-     "Single assignment cells and lazy values.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-regex" ,rust-regex-1))))))
 
 (define-public rust-once-cell-0.1
   (package
