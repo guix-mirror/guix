@@ -3862,7 +3862,7 @@ Fresnel integrals, and similar related functions as well.")
 (define-public suitesparse
   (package
     (name "suitesparse")
-    (version "5.7.1")
+    (version "5.8.1")
     (source
      (origin
        (method git-fetch)
@@ -3872,7 +3872,7 @@ Fresnel integrals, and similar related functions as well.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "174p3l78kv9gaa0i5hflyai2ydwnjzh34k9938sl4aa3li0543s8"))
+         "0qjlyfxs8s48rs63c2fzspisgq1kk4bwkgnhmh125hgkdhrq2w1c"))
        (patches (search-patches "suitesparse-mongoose-cmake.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -3885,7 +3885,6 @@ Fresnel integrals, and similar related functions as well.")
      '(#:tests? #f  ;no "check" target
        #:make-flags
        (list "CC=gcc"
-             "BLAS=-lblas"
              "TBB=-ltbb"
              "MY_METIS_LIB=-lmetis"
              ;; Flags for cmake (required to build GraphBLAS and Mongoose)
@@ -3907,6 +3906,8 @@ Fresnel integrals, and similar related functions as well.")
     (inputs
      `(("tbb" ,tbb)
        ("lapack" ,lapack)
+       ("gmp" ,gmp)
+       ("mpfr" ,mpfr)
        ("metis" ,metis)))
     (native-inputs
      `(("cmake" ,cmake-minimal)
