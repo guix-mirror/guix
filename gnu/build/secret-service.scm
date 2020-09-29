@@ -35,6 +35,18 @@
 ;;;
 ;;; Code:
 
+(define-syntax log
+  (lambda (s)
+    "Log the given message."
+    (syntax-case s ()
+      ((_ fmt args ...)
+       (with-syntax ((fmt (string-append "secret service: "
+                                         (syntax->datum #'fmt))))
+         ;; Log to the current output port.  That way, when
+         ;; 'secret-service-send-secrets' is called from shepherd, output goes
+         ;; to syslog.
+         #'(format (current-output-port) fmt args ...))))))
+
 (define* (secret-service-send-secrets port secret-root
                                       #:key (retry 60)
                                       (handshake-timeout 120))
@@ -60,7 +72,7 @@ wait for at most HANDSHAKE-TIMEOUT seconds for handshake to complete.  Return
                       (dump-port input sock))))
                 files)))
 
-  (format (current-error-port) "sending secrets to ~a~%" port)
+  (log "sending secrets to ~a~%" port)
   (let ((sock (socket AF_INET SOCK_STREAM 0))
         (addr (make-socket-address AF_INET INADDR_LOOPBACK port)))
     ;; Connect to QEMU on the forwarded port.  The 'connect' call succeeds as
@@ -72,14 +84,12 @@ wait for at most HANDSHAKE-TIMEOUT seconds for handshake to complete.  Return
         (lambda (key . args)
           (when (zero? retry)
             (apply throw key args))
-          (format (current-error-port)
-                  "secret service: retrying connection [~a attempts left]~%"
-                  (- retry 1))
+          (log "retrying connection [~a attempts left]~%"
+               (- retry 1))
           (sleep 1)
           (loop (1- retry)))))
 
-    (format (current-error-port)
-            "secret service: connected; waiting for handshake...~%")
+    (log "connected; waiting for handshake...~%")
 
     ;; Wait for "hello" message from the server.  This is the only way to know
     ;; that we're really connected to the server inside the guest.
@@ -87,25 +97,17 @@ wait for at most HANDSHAKE-TIMEOUT seconds for handshake to complete.  Return
       (((_) () ())
        (match (read sock)
          (('secret-service-server ('version version ...))
-          (format (current-error-port)
-                  "secret service: sending files from ~s...~%"
-                  secret-root)
+          (log "sending files from ~s...~%" secret-root)
           (send-files sock)
-          (format (current-error-port)
-                  "secret service: done sending files to port ~a~%"
-                  port)
+          (log "done sending files to port ~a~%" port)
           (close-port sock)
           secret-root)
          (x
-          (format (current-error-port)
-                  "secret service: invalid handshake ~s~%"
-                  x)
+          (log "invalid handshake ~s~%" x)
           (close-port sock)
           #f)))
       ((() () ())                                 ;timeout
-       (format (current-error-port)
-               "secret service: timeout while sending files to ~a~%"
-               port)
+       (log "timeout while sending files to ~a~%" port)
        (close-port sock)
        #f))))
 
@@ -121,17 +123,14 @@ and #f otherwise."
     (let ((sock (socket AF_INET SOCK_STREAM 0)))
       (bind sock AF_INET INADDR_ANY port)
       (listen sock 1)
-      (format (current-error-port)
-              "secret service: waiting for secrets on port ~a...~%"
-              port)
+      (log "waiting for secrets on port ~a...~%" port)
       (match (select (list sock) '() '() 60)
         (((_) () ())
          (match (accept sock)
            ((client . address)
-            (format (current-error-port)
-                    "secret service: client connection from ~a~%"
-                    (inet-ntop (sockaddr:fam address)
-                               (sockaddr:addr address)))
+            (log "client connection from ~a~%"
+                 (inet-ntop (sockaddr:fam address)
+                            (sockaddr:addr address)))
 
             ;; Send a "hello" message.  This allows the client running on the
             ;; host to know that it's now actually connected to server running
@@ -141,8 +140,7 @@ and #f otherwise."
             (close-port sock)
             client)))
         ((() () ())
-         (format (current-error-port)
-                 "secret service: did not receive any secrets; time out~%")
+         (log "did not receive any secrets; time out~%")
          (close-port sock)
          #f))))
 
@@ -169,20 +167,18 @@ and #f otherwise."
       (('secrets ('version 0)
                  ('files ((files sizes modes) ...)))
        (for-each (lambda (file size mode)
-                   (format (current-error-port)
-                           "secret service: \
-installing file '~a' (~a bytes)...~%"
-                           file size)
+                   (log "installing file '~a' (~a bytes)...~%"
+                        file size)
                    (mkdir-p (dirname file))
                    (call-with-output-file file
                      (lambda (output)
                        (dump port output size)
                        (chmod file mode))))
                  files sizes modes)
+       (log "received ~a secret files~%" (length files))
        files)
       (_
-       (format (current-error-port)
-               "secret service: invalid secrets received~%")
+       (log "invalid secrets received~%")
        #f)))
 
   (let* ((port   (wait-for-client port))
