@@ -31,7 +31,8 @@
   #:use-module (gnu system image)
   #:export (hurd-barebones-os
             hurd-disk-image
-            hurd-barebones-disk-image))
+            hurd-barebones-disk-image
+            hurd-barebones-qcow2-image))
 
 (define hurd-barebones-os
   (operating-system
@@ -87,3 +88,9 @@
    (inherit hurd-disk-image)
    (name 'hurd-barebones-disk-image)
    (operating-system hurd-barebones-os)))
+
+(define hurd-barebones-qcow2-image
+  (image
+   (inherit hurd-barebones-disk-image)
+   (name 'hurd-barebones.qcow2)
+   (format 'compressed-qcow2)))
