@@ -354,7 +354,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.6.0-7")
+    (version "1.6.0-23")
     (source
      (origin
        (method url-fetch)
@@ -366,7 +366,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "1pvgp137zcl0rbhdn1j41xxfml7fp771a7x4ph8qrhhlx0hxzn3p"))))
+        (base32 "0bgc3jw9r0f2bkqv0m4hla7r7mxi3fzscnkjfc5cvffp3nk2gwvf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -377,7 +377,8 @@ precision.")
          (add-after 'unpack 'patch-bin-cp
            ;; Some Makefiles contain hard-coded "/bin/cp".
            (lambda _
-             (substitute* (find-files "doc" "^Makefile")
+             (substitute* (cons "micropython-1.12/xcas/Makefile"
+                                (find-files "doc" "^Makefile"))
                (("/bin/cp") (which "cp")))
              #t))
          (add-after 'unpack 'disable-failing-test
@@ -406,7 +407,7 @@ precision.")
                (delete-file (string-append out "/bin/xcasnew"))
                #t))))))
     (inputs
-;;; TODO: Add libnauty.
+     ;; TODO: Add libnauty, unbundle "libmicropython.a".
      `(("fltk" ,fltk)
        ("glpk" ,glpk)
        ("gmp" ,gmp)
@@ -430,6 +431,7 @@ precision.")
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("python" ,python-wrapper)
        ("readline" ,readline)
        ("texlive" ,texlive-tiny)))
     (home-page "https://www-fourier.ujf-grenoble.fr/~parisse/giac.html")
