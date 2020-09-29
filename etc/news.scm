@@ -78,8 +78,8 @@ paquets et se trouve « tout en bas » du graphe de dépendance) :
 guix build --with-graft=glibc=glibc@@2.31 hello
 @end example
 
-Voir @command{info \"(guix) Options de transformation de paquets\"} pour plus
-de détails.")))
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
 
  (entry (commit "f458cfbcc54ed87b1a87dd9e150ea276f17eab74")
         (title (en "New @option{--without-tests} transformation option")
