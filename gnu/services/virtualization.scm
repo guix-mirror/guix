@@ -841,8 +841,12 @@ can only be accessed by their host.")))
 that will be listening to receive secret keys on port 1004, TCP."
   (operating-system
     (inherit os)
-    (services (cons (service secret-service-type 1004)
-                    (operating-system-user-services os)))))
+    ;; Arrange so that the secret service activation snippet shows up before
+    ;; the OpenSSH and Guix activation snippets.  That way, we receive OpenSSH
+    ;; and Guix keys before the activation snippets try to generate fresh keys
+    ;; for nothing.
+    (services (append (operating-system-user-services os)
+                      (list (service secret-service-type 1004))))))
 
 
 ;;;
