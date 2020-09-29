@@ -2075,6 +2075,7 @@ There is support for:
   (package
     (name "quaternion")
     (version "0.0.9.4e")
+    (outputs '("out" "debug"))
     (source
      (origin
        (method git-fetch)
