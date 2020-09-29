@@ -905,6 +905,7 @@ is added to the OS specified in CONFIG."
     (system-image
      (image
       (inherit hurd-disk-image)
+      (format 'compressed-qcow2)
       (size disk-size)
       (operating-system os)))))
 
