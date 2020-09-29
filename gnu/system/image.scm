@@ -47,11 +47,13 @@
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mtools)
+  #:use-module (gnu packages virtualization)
   #:use-module ((srfi srfi-1) #:prefix srfi-1:)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-35)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:export (root-offset
             root-label
@@ -207,8 +209,8 @@ used in the image."
     (define (format->image-type format)
       ;; Return the genimage format corresponding to FORMAT.  For now, only
       ;; the hdimage format (raw disk-image) is supported.
-      (case format
-        ((disk-image) "hdimage")
+      (cond
+       ((memq format '(disk-image compressed-qcow2)) "hdimage")
         (else
          (raise (condition
                  (&message
@@ -306,25 +308,24 @@ image ~a {
          (name (if image-name
                    (symbol->string image-name)
                    name))
+         (format (image-format image))
          (substitutable? (image-substitutable? image))
          (builder
           (with-imported-modules*
-           (let ((inputs '#+(list genimage coreutils findutils))
+           (let ((inputs '#+(list genimage coreutils findutils qemu-minimal))
                  (bootloader-installer
-                  #+(bootloader-disk-image-installer bootloader)))
+                  #+(bootloader-disk-image-installer bootloader))
+                 (out-image (string-append "images/" #$genimage-name)))
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
-             (genimage #$(image->genimage-cfg image) #$output)
+             (genimage #$(image->genimage-cfg image))
              ;; Install the bootloader directly on the disk-image.
              (when bootloader-installer
                (bootloader-installer
                 #+(bootloader-package bootloader)
                 #$(root-partition-index image)
-                (string-append #$output "/" #$genimage-name))))))
-         (image-dir (computed-file "image-dir" builder)))
-    (computed-file name
-                   #~(symlink
-                      (string-append #$image-dir "/" #$genimage-name)
-                      #$output)
+                out-image))
+             (convert-disk-image out-image '#$format #$output)))))
+    (computed-file name builder
                    #:options `(#:substitutable? ,substitutable?))))
 
 
@@ -523,19 +524,20 @@ image, depending on IMAGE format."
   (with-parameters ((%current-target-system target))
     (let* ((os (operating-system-for-image image))
            (image* (image-with-os image os))
+           (image-format (image-format image))
            (register-closures? (has-guix-service-type? os))
            (bootcfg (operating-system-bootcfg os))
            (bootloader (bootloader-configuration-bootloader
                         (operating-system-bootloader os))))
-      (case (image-format image)
-        ((disk-image)
+      (cond
+       ((memq image-format '(disk-image compressed-qcow2))
          (system-disk-image image*
                             #:bootcfg bootcfg
                             #:bootloader bootloader
                             #:register-closures? register-closures?
                             #:inputs `(("system" ,os)
                                        ("bootcfg" ,bootcfg))))
-        ((iso9660)
+       ((memq image-format '(iso9660))
          (system-iso9660-image
           image*
           #:bootcfg bootcfg
