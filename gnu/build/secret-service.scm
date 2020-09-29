@@ -69,8 +69,10 @@ local PORT.  If connect fails, sleep 1s and retry RETRY times."
                       (version 0)
                       (files ,files-sizes-modes))))
       (write secrets sock)
-      (for-each (compose (cute dump-port <> sock)
-                         (cute open-input-file <>))
+      (for-each (lambda (file)
+                  (call-with-input-file file
+                    (lambda (input)
+                      (dump-port input sock))))
                 files))))
 
 (define (secret-service-receive-secrets port)
