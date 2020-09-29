@@ -2,7 +2,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -850,6 +850,26 @@ also ensuring that the notebooks are running without errors.")
     (description
      "This is a @code{py.test} plugin that enables you to set environment
 variables in the @file{pytest.ini} file.")
+    (license license:expat)))
+
+(define-public python-pyux
+  (package
+    (name "python-pyux")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyux" version))
+       (sha256
+        (base32
+         "1i17xh4dy238ibrjdgh8vn78fk5q6dj37mcznpvdfzidj57js7ca"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                  ;the mini test suite fails
+    (home-page "https://github.com/farizrahman4u/pyux")
+    (synopsis "Utility to check API integrity in Python libraries")
+    (description "The pyux utility allows to detect API changes in Python
+libraries.")
     (license license:expat)))
 
 (define-public python-codacy-coverage
