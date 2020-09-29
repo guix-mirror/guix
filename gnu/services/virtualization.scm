@@ -982,8 +982,15 @@ is added to the OS specified in CONFIG."
                    (root #$(hurd-vm-configuration-secret-root config)))
                (catch #t
                  (lambda _
-                   (secret-service-send-secrets port root)
-                   pid)
+                   ;; XXX: 'secret-service-send-secrets' won't complete until
+                   ;; the guest has booted and its secret service server is
+                   ;; running, which could take 20+ seconds during which PID 1
+                   ;; is stuck waiting.
+                   (if (secret-service-send-secrets port root)
+                       pid
+                       (begin
+                         (kill (- pid) SIGTERM)
+                         #f)))
                  (lambda (key . args)
                    (kill (- pid) SIGTERM)
                    (apply throw key args)))))))

@@ -35,19 +35,37 @@
 ;;;
 ;;; Code:
 
-(define* (secret-service-send-secrets port secret-root #:key (retry 60))
+(define* (secret-service-send-secrets port secret-root
+                                      #:key (retry 60)
+                                      (handshake-timeout 120))
   "Copy all files under SECRET-ROOT using TCP to secret-service listening at
-local PORT.  If connect fails, sleep 1s and retry RETRY times."
-
+local PORT.  If connect fails, sleep 1s and retry RETRY times; once connected,
+wait for at most HANDSHAKE-TIMEOUT seconds for handshake to complete.  Return
+#f on failure."
   (define (file->file+size+mode file-name)
     (let ((stat (stat file-name))
           (target (substring file-name (string-length secret-root))))
       (list target (stat:size stat) (stat:mode stat))))
 
+  (define (send-files sock)
+    (let* ((files (if secret-root (find-files secret-root) '()))
+           (files-sizes-modes (map file->file+size+mode files))
+           (secrets `(secrets
+                      (version 0)
+                      (files ,files-sizes-modes))))
+      (write secrets sock)
+      (for-each (lambda (file)
+                  (call-with-input-file file
+                    (lambda (input)
+                      (dump-port input sock))))
+                files)))
+
   (format (current-error-port) "sending secrets to ~a~%" port)
   (let ((sock (socket AF_INET SOCK_STREAM 0))
         (addr (make-socket-address AF_INET INADDR_LOOPBACK port)))
-    ;; connect to wait for port
+    ;; Connect to QEMU on the forwarded port.  The 'connect' call succeeds as
+    ;; soon as QEMU is ready, even if there's no server listening on the
+    ;; forward port inside the guest.
     (let loop ((retry retry))
       (catch 'system-error
         (cute connect sock addr)
@@ -61,19 +79,35 @@ local PORT.  If connect fails, sleep 1s and retry RETRY times."
           (loop (1- retry)))))
 
     (format (current-error-port)
-            "secret service: connected; sending files in ~s~%"
-            secret-root)
-    (let* ((files (if secret-root (find-files secret-root) '()))
-           (files-sizes-modes (map file->file+size+mode files))
-           (secrets `(secrets
-                      (version 0)
-                      (files ,files-sizes-modes))))
-      (write secrets sock)
-      (for-each (lambda (file)
-                  (call-with-input-file file
-                    (lambda (input)
-                      (dump-port input sock))))
-                files))))
+            "secret service: connected; waiting for handshake...~%")
+
+    ;; Wait for "hello" message from the server.  This is the only way to know
+    ;; that we're really connected to the server inside the guest.
+    (match (select (list sock) '() '() handshake-timeout)
+      (((_) () ())
+       (match (read sock)
+         (('secret-service-server ('version version ...))
+          (format (current-error-port)
+                  "secret service: sending files from ~s...~%"
+                  secret-root)
+          (send-files sock)
+          (format (current-error-port)
+                  "secret service: done sending files to port ~a~%"
+                  port)
+          (close-port sock)
+          secret-root)
+         (x
+          (format (current-error-port)
+                  "secret service: invalid handshake ~s~%"
+                  x)
+          (close-port sock)
+          #f)))
+      ((() () ())                                 ;timeout
+       (format (current-error-port)
+               "secret service: timeout while sending files to ~a~%"
+               port)
+       (close-port sock)
+       #f))))
 
 (define (secret-service-receive-secrets port)
   "Listen to local PORT and wait for a secret service client to send secrets.
@@ -98,11 +132,18 @@ and #f otherwise."
                     "secret service: client connection from ~a~%"
                     (inet-ntop (sockaddr:fam address)
                                (sockaddr:addr address)))
+
+            ;; Send a "hello" message.  This allows the client running on the
+            ;; host to know that it's now actually connected to server running
+            ;; in the guest.
+            (write '(secret-service-server (version 0)) client)
+            (force-output client)
             (close-port sock)
             client)))
         ((() () ())
          (format (current-error-port)
                  "secret service: did not receive any secrets; time out~%")
+         (close-port sock)
          #f))))
 
   ;; TODO: Remove when (@ (guix build utils) dump-port) has a 'size'
