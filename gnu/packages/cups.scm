@@ -771,7 +771,7 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
          ,(string-append "--with-cupsfilterdir="
                          (assoc-ref %outputs "out") "/lib/cups/filter")
          ,(string-append "--with-cupsppddir="
-                         (assoc-ref %outputs "out") "/share/ppd"))))
+                         (assoc-ref %outputs "out") "/share/cups/model"))))
     (inputs `(("cups" ,cups-minimal)))
     (synopsis "ESC/P-R printer driver")
     (description
