@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,9 +27,16 @@
   #:use-module (gnu services networking)
   #:use-module (gnu services virtualization)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages ssh)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:export (%test-libvirt))
+  #:export (%test-libvirt
+            %test-childhurd))
+
+
+;;;
+;;; Libvirt.
+;;;
 
 (define %libvirt-os
   (simple-operating-system
@@ -93,3 +101,134 @@
    (name "libvirt")
    (description "Connect to the running LIBVIRT service.")
    (value (run-libvirt-test))))
+
+
+;;;
+;;; GNU/Hurd virtual machines, aka. childhurds.
+;;;
+
+(define %childhurd-os
+  (simple-operating-system
+   (service dhcp-client-service-type)
+   (service hurd-vm-service-type)))
+
+(define (run-childhurd-test)
+  (define os
+    (marionette-operating-system
+     %childhurd-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (memory-size (* 1024 3))))
+
+  (define run-uname-over-ssh
+    ;; Program that runs 'uname' over SSH and prints the result on standard
+    ;; output.
+    (let ()
+      (define run
+        (with-extensions (list guile-ssh)
+          #~(begin
+              (use-modules (ssh session)
+                           (ssh auth)
+                           (ssh popen)
+                           (ice-9 match)
+                           (ice-9 textual-ports))
+
+              (let ((session (make-session #:user "root"
+                                           #:port 10022
+                                           #:host "localhost"
+                                           #:log-verbosity 'rare)))
+                (match (connect! session)
+                  ('ok
+                   (userauth-password! session "")
+                   (display
+                    (get-string-all
+                     (open-remote-input-pipe* session "uname" "-on"))))
+                  (status
+                   (error "could not connect to childhurd over SSH"
+                          session status)))))))
+
+      (program-file "run-uname-over-ssh" run)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (srfi srfi-64)
+                       (ice-9 match))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "childhurd")
+
+          (test-assert "service running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (match (start-service 'childhurd)
+                  (#f #f)
+                  (('service response-parts ...)
+                   (match (assq-ref response-parts 'running)
+                     ((pid) (number? pid))))))
+             marionette))
+
+          (test-equal "childhurd SSH server replies"
+            "SSH"
+            ;; Check from within the guest whether its childhurd's SSH
+            ;; server is reachable.  Do that from the guest: port forwarding
+            ;; to the host won't work because QEMU listens on 127.0.0.1.
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 match))
+
+                (let loop ((n 60))
+                  (if (zero? n)
+                      'all-attempts-failed
+                      (let ((s (socket PF_INET SOCK_STREAM 0))
+                            (a (make-socket-address AF_INET
+                                                    INADDR_LOOPBACK
+                                                    10022)))
+                        (format #t "connecting to childhurd SSH server...~%")
+                        (connect s a)
+                        (match (get-string-n s 3)
+                          ((? eof-object?)
+                           (close-port s)
+                           (sleep 1)
+                           (loop (- n 1)))
+                          (str
+                           (close-port s)
+                           str))))))
+             marionette))
+
+          (test-equal "SSH up and running"
+            "childhurd GNU\n"
+
+            ;; Connect from the guest to the chidhurd over SSH and run the
+            ;; 'uname' command.
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 popen))
+
+                (get-string-all
+                 (open-input-pipe #$run-uname-over-ssh)))
+             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "childhurd-test" test))
+
+(define %test-childhurd
+  (system-test
+   (name "childhurd")
+   (description
+    "Connect to the GNU/Hurd virtual machine service, aka. a childhurd, making
+sure that the childhurd boots and runs its SSH server.")
+   (value (run-childhurd-test))))
