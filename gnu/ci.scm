@@ -195,7 +195,7 @@ SYSTEM."
   '("x86_64-linux" "i686-linux"))
 
 (define %guix-system-images
-  (list hurd-barebones-disk-image))
+  (list hurd-barebones-qcow2-image))
 
 (define (image-jobs store system)
   "Return a list of jobs that build images for SYSTEM."
