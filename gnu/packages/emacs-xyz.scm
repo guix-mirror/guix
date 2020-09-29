@@ -768,6 +768,34 @@ GraphQL is a data query language and runtime designed and used to request and
 deliver data to mobile and web apps.")
     (license license:gpl3+)))
 
+(define-public emacs-graphql-mode
+  ;; No tagged commit.
+  (let ((commit "9bed568ec86242dbe30bdbab324aa0eb2cd9bf08")
+        (revision "1"))
+    (package
+      (name "emacs-graphql-mode")
+      (version commit)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/davazp/graphql-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0x9y7qq6y0zg8ncamzvk68ccmdyzh7xsj0xs0ykyl20d5wdpplj4"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/davazp/graphql-mode")
+      (synopsis "Emacs mode to edit GraphQL schema and queries")
+      (description
+       "This package implements a major mode to edit GraphQL schemas and
+query.  The basic functionality includes syntax highlight and indentation.
+Additionally, it is able to send GraphQL queries to an end-point URL.
+
+Files with the @file{.graphql} and @file{.gql} extensions are
+automatically opened with this mode.")
+      (license license:gpl3+))))
+
 (define-public emacs-ghub
   (package
     (name "emacs-ghub")
