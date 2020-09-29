@@ -3038,7 +3038,6 @@ video recording and live streaming.  OBS supports capturing audio and video
 from many input sources such as webcams, X11 (for screencasting), PulseAudio,
 and JACK.")
     (home-page "https://obsproject.com")
-    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:gpl2+)))
 
 (define-public libvdpau
