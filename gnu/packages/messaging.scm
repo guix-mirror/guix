@@ -878,6 +878,7 @@ on Axolotl and PEP.")
   (package
     (name "dino")
     (version "0.1.0")
+    (outputs '("out" "debug"))
     (source
      (origin
        (method url-fetch)
