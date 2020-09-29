@@ -703,7 +703,7 @@ text or blue underlined text, on ANSI terminals.")
         ("rust-itertools" ,rust-itertools-0.8)
         ("rust-model" ,rust-model-0.1)
         ("rust-num-cpus" ,rust-num-cpus-1)
-        ("rust-once-cell" ,rust-once-cell-1.2)
+        ("rust-once-cell" ,rust-once-cell-1)
         ("rust-proptest" ,rust-proptest-0.8)
         ("rust-version-sync" ,rust-version-sync-0.8))))
     (home-page "https://github.com/vorner/arc-swap")
@@ -6391,7 +6391,7 @@ floating-point primitives to an @code{io::Write}.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-once-cell" ,rust-once-cell-1.2)
+        ("rust-once-cell" ,rust-once-cell-1)
         ("rust-os-pipe" ,rust-os-pipe-0.8)
         ("rust-shared-child" ,rust-shared-child-0.3))
        #:cargo-development-inputs
@@ -16137,32 +16137,9 @@ You probably don't want to link to this crate directly; instead check out the
      "Single assignment cells and lazy values.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-once-cell-1.2
-  (package
-    (inherit rust-once-cell-1)
-    (name "rust-once-cell")
-    (version "1.2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "once-cell" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1vdz8xlg3r05w3wfjimnc347hgm54i5nrqf72r4mlp0fcdplh7w9"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-parking-lot" ,rust-parking-lot-0.9))
-       #:cargo-development-inputs
-       (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-regex" ,rust-regex-1))))))
-
 (define-public rust-once-cell-0.1
   (package
-    (inherit rust-once-cell-1.2)
+    (inherit rust-once-cell-1)
     (name "rust-once-cell")
     (version "0.1.8")
     (source
