@@ -27,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix sets)
   #:use-module (guix modules)
+  #:use-module ((guix utils) #:select (version-major+minor))
   #:use-module ((guix build utils) #:select (find-files))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -62,6 +63,7 @@
       ("xz"         (ref '(gnu packages compression) 'xz))
       ("po4a"       (ref '(gnu packages gettext) 'po4a))
       ("gettext"       (ref '(gnu packages gettext) 'gettext-minimal))
+      ("gcc-toolchain" (ref '(gnu packages commencement) 'gcc-toolchain))
       (_            #f))))                        ;no such package
 
 
@@ -580,6 +582,48 @@ that provide Guile modules."
 
   (computed-file name build))
 
+(define (quiet-guile guile)
+  "Return a wrapper that does the same as the 'guile' executable of GUILE,
+except that it does not complain about locales and falls back to 'en_US.utf8'
+instead of 'C'."
+  (define gcc
+    (specification->package "gcc-toolchain"))
+
+  (define source
+    (search-path %load-path
+                 "gnu/packages/aux-files/guile-launcher.c"))
+
+  (define effective
+    (version-major+minor (package-version guile)))
+
+  (define build
+    ;; XXX: Reuse <c-compiler> from (guix scripts pack) instead?
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils)
+                       (srfi srfi-26))
+
+          (mkdir-p (string-append #$output "/bin"))
+
+          (setenv "PATH" #$(file-append gcc "/bin"))
+          (setenv "C_INCLUDE_PATH"
+                  (string-join
+                   (map (cut string-append <> "/include")
+                        '#$(match (bag-transitive-build-inputs
+                                   (package->bag guile))
+                             (((labels packages . _) ...)
+                              (filter package? packages))))
+                   ":"))
+          (setenv "LIBRARY_PATH" #$(file-append gcc "/lib"))
+
+          (invoke "gcc" #$(local-file source) "-Wall" "-g0" "-O2"
+                  "-I" #$(file-append guile "/include/guile/" effective)
+                  "-L" #$(file-append guile "/lib")
+                  #$(string-append "-lguile-" effective)
+                  "-o" (string-append #$output "/bin/guile")))))
+
+  (computed-file "guile-wrapper" build))
+
 (define* (guix-command modules
                        #:key source (dependencies '())
                        guile (guile-version (effective-version)))
@@ -634,7 +678,9 @@ load path."
                       ;; XXX: It would be more convenient to change it to:
                       ;;   (exit (apply guix-main (command-line)))
                       (apply guix-main (command-line))))
-                #:guile guile))
+
+                ;; Use a 'guile' variant that doesn't complain about locales.
+                #:guile (quiet-guile guile)))
 
 (define (miscellaneous-files source)
   "Return data files taken from SOURCE."

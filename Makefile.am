@@ -330,6 +330,7 @@ dist_noinst_DATA =				\
 
 # Auxiliary files for packages.
 AUX_FILES =						\
+  gnu/packages/aux-files/guile-launcher.c		\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
   gnu/packages/aux-files/linux-libre/5.8-arm.conf       \
