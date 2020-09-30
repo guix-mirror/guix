@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017, 2019, 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
@@ -415,7 +415,7 @@ following formats:
 (define-public cozy
   (package
     (name "cozy")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method git-fetch)
@@ -424,7 +424,7 @@ following formats:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ra3s3nh5vzs15zhwq61bx3k8yd8xzjmmvn3wamxb4bsb6kfb57f"))))
+        (base32 "0fmbddi4ga0bppwg3rm3yjmf7jgqc6zfslmavnr1pglbzkjhy9fs"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -481,6 +481,7 @@ following formats:
        ("python-distro" ,python-distro)
        ("python-gst" ,python-gst)
        ("python-mutagen" ,python-mutagen)
+       ("python-packaging" ,python-packaging)
        ("python-peewee" ,python-peewee)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
