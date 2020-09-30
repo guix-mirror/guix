@@ -14116,3 +14116,32 @@ web applications.  Caveman2 has three design goals:
 
 (define-public ecl-caveman
   (sbcl-package->ecl-package sbcl-caveman))
+
+(define-public sbcl-lambda-fiddle
+  (let ((commit "d16bba55acf6065b412f64ab8fdff679a4a32b1e") ;; no tagged branch
+	(revision "1"))
+    (package
+      (name "sbcl-lambda-fiddle")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/lambda-fiddle")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1zarj1pqjqmk95kdx1axkgpwy2wq3canczk7f9z5hvaw5an6gand"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/Shinmera/lambda-fiddle")
+      (synopsis "Collection of utilities to process lambda-lists")
+      (description "This collection of utilities is useful in contexts where
+you want a macro that uses lambda-lists in some fashion but need more precise
+processing.")
+      (license license:zlib))))
+
+(define-public cl-lambda-fiddle
+  (sbcl-package->cl-source-package sbcl-lambda-fiddle))
+
+(define-public ecl-lambda-fiddle
+  (sbcl-package->ecl-package sbcl-lambda-fiddle))
