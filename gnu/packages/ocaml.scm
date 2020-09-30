@@ -329,7 +329,7 @@ Software distribution.")
 (define-public ocaml-mccs
   (package
     (name "ocaml-mccs")
-    (version "1.1+9")
+    (version "1.1+11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -338,7 +338,7 @@ Software distribution.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1i0hhkrqi7rqlainlg5pc4hibbx6b5dp3x99gmav8c3sbfvlk9mc"))))
+                "1gsad5cj03256i36wdjqk5pg51pyd48rpjazf0gfaakrn8lk438g"))))
     (build-system dune-build-system)
     (propagated-inputs `(("ocaml-cudf" ,ocaml-cudf)))
     (home-page "https://www.i3s.unice.fr/~cpjm/misc/")
