@@ -861,12 +861,13 @@ libpanel, librsvg and quartz.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bykiyc0dc5pkw8x370qkg2kygq9pq7yqzsgczd3y13b6ivm4sdq"))))
+                "1bykiyc0dc5pkw8x370qkg2kygq9pq7yqzsgczd3y13b6ivm4sdq"))
+              (patches (search-patches "unison-fix-ocaml-4.08.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                  ; 1.9 MiB of documentation
     (native-inputs
-     `(("ocaml" ,ocaml-4.07)
+     `(("ocaml" ,ocaml-4.09)
        ;; For documentation
        ("ghostscript" ,ghostscript)
        ("texlive" ,texlive-tiny)
