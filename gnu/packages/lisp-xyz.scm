@@ -14145,3 +14145,34 @@ processing.")
 
 (define-public ecl-lambda-fiddle
   (sbcl-package->ecl-package sbcl-lambda-fiddle))
+
+(define-public sbcl-xmls
+  (let ((commit "18546f0850b1338e03997ffd1696add1cb1800d1") ;; no tagged branch
+	(revision "1"))
+    (package
+      (name "sbcl-xmls")
+      (version (git-version "3.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rpgoldman/xmls")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1lmvfml2ldbb1wkhm25jqqk2bhwsz52hhcgljbnzj1xr8xhc3anp"))))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/rpgoldman/xmls")
+      (synopsis "Non-validating XML parser for Common Lisp")
+      (description "Xmls is a self-contained, easily embedded parser that
+recognizes a useful subset of the XML spec.  It provides a simple mapping from
+XML to Lisp structures or s-expressions and back.")
+      (license license:bsd-2))))
+
+(define-public cl-xmls
+  (sbcl-package->cl-source-package sbcl-xmls))
+
+(define-public ecl-xmls
+  (sbcl-package->ecl-package sbcl-xmls))
