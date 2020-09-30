@@ -11734,7 +11734,7 @@ in Rust.")
 (define-public rust-instant-0.1
   (package
     (name "rust-instant")
-    (version "0.1.2")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
@@ -11743,13 +11743,15 @@ in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1bwca9fr29a1pyimfl94q6m6k2l57ljw1hhhvjafzs1zkqlnqd3c"))))
+         "10k1170waz1na056wvjvkps3lz28z9pc8kp8vpy4kpp53i5a4xvp"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f  ; Issue during the wasm test.
        #:cargo-inputs
-       (("rust-stdweb" ,rust-stdweb-0.4)
+       (("rust-js-sys" ,rust-js-sys-0.3)
+        ("rust-stdweb" ,rust-stdweb-0.4)
         ("rust-time" ,rust-time-0.1)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
         ("rust-web-sys" ,rust-web-sys-0.3))
        #:cargo-development-inputs
        (("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))
