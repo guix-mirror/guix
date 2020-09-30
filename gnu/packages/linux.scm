@@ -49,6 +49,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7585,3 +7586,38 @@ iptables rule and benefit from the speed of IP sets.
 @end itemize\n
 then IP sets may be the proper tool for you.")
     (license license:gpl2+)))
+
+(define-public liburing
+  (package
+    (name "liburing")
+    (version "0.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.kernel.dk/liburing")
+                    (commit (string-append "liburing-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15z44l7y4c6s6dlf7v8lq4znlsjbja2r4ifbni0l8cdcnq0w3zh3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; Tests are dependent on kernel version and features
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; configure fails if it is followed by SHELL, CONFIG_SHELL,
+           ;; --enable-fast-install, and --build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "SHELL" (which "sh"))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (invoke "./configure" (string-append "--prefix=" out))))))))
+    (home-page "https://github.com/axboe/liburing")
+    (synopsis "Interface to the Linux kernel @code{io_uring} interface")
+    (description "This is the io_uring library, liburing. liburing provides
+helpers to setup and teardown io_uring instances, and also a simplified
+interface for applications that don't need (or want) to deal with the full
+kernel side implementation.")
+    (license license:expat)))
