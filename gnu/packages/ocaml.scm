@@ -2233,7 +2233,7 @@ multitude of other network protocols (FTP/SMTP/RTSP/etc).")
 (define-public ocaml-base64
   (package
     (name "ocaml-base64")
-    (version "3.2.0")
+    (version "3.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2242,8 +2242,19 @@ multitude of other network protocols (FTP/SMTP/RTSP/etc).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                 "1ilw3zj0w6cq7i4pvr8m2kv5l5f2y9aldmv72drlwwns013b1gwy"))))
+                "0aa1m1sr8p1hgc10p96mij7p22r3qcysvzy6fz2jqamfgswchgqc"))))
     (build-system dune-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-dune
+           (lambda _
+             ;; This package expects dune 2, which unbundled its configurator
+             ;; module.  We still use dune 1, so we need to let it know we need
+             ;; its internal module.
+             (substitute* "config/dune"
+               (("dune-configurator") "dune.configurator"))
+             #t)))))
     (native-inputs
      `(("ocaml-alcotest" ,ocaml-alcotest)
        ("ocaml-bos" ,ocaml-bos)
