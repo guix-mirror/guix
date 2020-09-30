@@ -1594,23 +1594,23 @@ most of the POSIX and GNU conventions.")
 (define-public ocaml-fmt
   (package
     (name "ocaml-fmt")
-    (version "0.8.5")
+    (version "0.8.9")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://erratique.ch/software/fmt/releases/fmt-"
                             version ".tbz"))
         (sha256 (base32
-                  "1zj9azcxcn6skmb69ykgmi9z8c50yskwg03wqgh87lypgjdcz060"))))
+                  "0gkkkj4x678vxdda4xaw2dd44qjacavsvn5nx8gydfwah6pjbkxk"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
        ("opam" ,opam)
        ("topkg" ,ocaml-topkg)))
     (propagated-inputs
-     `(("result" ,ocaml-result)
-       ("ocaml-uchar" ,ocaml-uchar)
-       ("cmdliner" ,ocaml-cmdliner)))
+     `(("cmdliner" ,ocaml-cmdliner)
+       ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)
+       ("ocaml-uchar" ,ocaml-uchar)))
     (arguments `(#:tests? #f
                  #:build-flags (list "build" "--with-base-unix" "true"
                                      "--with-cmdliner" "true")
