@@ -1399,7 +1399,7 @@ entity management.")
 (define-public bitcoin-unlimited
   (package
     (name "bitcoin-unlimited")
-    (version "1.9.0.0")
+    (version "1.9.0.1")
     (source
      (origin
        (method git-fetch)
@@ -1408,7 +1408,7 @@ entity management.")
              (commit (string-append "BCHunlimited" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a64h7mcqdra4ahnw1nycp4ysx308ymgbl4yn5fj5jfaszdzvy0h"))))
+        (base32 "1pan24g3d5csa004d7zvlizj4mv58ly5i579341isp944phl3g5v"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1443,31 +1443,19 @@ entity management.")
                        "/bin/lrelease")
         (string-append "ac_cv_path_LUPDATE="
                        (assoc-ref %build-inputs "qttools")
-                       "/bin/lupdate"))
+                       "/bin/lupdate")
+        "--disable-static")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build
-           (lambda _
-             ;; The 'stack' header was not included in unlimited.cpp, which
-             ;; caused the build to fail.
-             (substitute* "src/unlimited.cpp"
-               (("#include <queue>" all)
-                (string-append all "\n#include <stack>")))
-             #t))
          (add-after 'unpack 'fix-tests
            (lambda _
-             ;; TODO: Find why txvalidationcache_tests fails and
-             ;; utilprocess_tests never ends. Disable for now.
+             ;; Disable utilprocess_tests because it never ends.
+             ;; It looks like it tries to start /bin/sleep and waits until it
+             ;; is in the list of running processes, but /bin/sleep doesn't
+             ;; exist.
              (substitute* "src/Makefile.test.include"
-               (("test/txvalidationcache_tests.cpp")
-                "")
                (("test/utilprocess_tests.cpp")
                 ""))
-             #t))
-         (add-before 'configure 'make-qt-deterministic
-           (lambda _
-             ;; Make Qt deterministic.
-             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
              #t))
          (add-before 'check 'set-home
            (lambda _
