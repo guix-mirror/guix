@@ -974,7 +974,9 @@ is added to the OS specified in CONFIG."
          #~(lambda ()
              (let ((pid  (fork+exec-command #$vm-command
                                             #:user "childhurd"
-                                            #:group "childhurd"
+                                            ;; XXX TODO: use "childhurd" after
+                                            ;; updating Shepherd
+                                            #:group "kvm"
                                             #:environment-variables
                                             ;; QEMU tries to write to /var/tmp
                                             ;; by default.
@@ -1005,6 +1007,7 @@ is added to the OS specified in CONFIG."
         (user-account
          (name "childhurd")
          (group "childhurd")
+         (supplementary-groups '("kvm"))
          (comment "Privilege separation user for the childhurd")
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin"))
