@@ -4864,8 +4864,7 @@ useful errors on failure.")
                 "1wawsbjfkri4sw52n8xqrzihxc3xfpdicv3ahz83a1rsn4lb8j5q"))))
     (build-system dune-build-system)
     (arguments
-     `(#:jbuild? #t
-       #:ocaml ,ocaml-4.07
+     `(#:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib))
     (propagated-inputs
       `(("ocaml-base" ,ocaml4.07-base)
