@@ -4793,7 +4793,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.3.2")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4802,7 +4802,7 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "1nvi277cazsw36b6nhd5nmk0cjvm71rlxasy24mf18j7fsvq9vp8"))))
+                "0jz2lgvmp299nks6ajg2yxbx4xcaxlc4cpfr61861p7m7z2nv84y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
