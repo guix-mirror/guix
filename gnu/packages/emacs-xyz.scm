@@ -1770,6 +1770,32 @@ always indented.  It reindents after every change, making it more reliable
 than @code{electric-indent-mode}.")
     (license license:gpl2+)))
 
+(define-public emacs-gcmh
+  ;; No tagged release upstream.
+  (let ((commit "84c43a4c0b41a595ac6e299fa317d2831813e580")
+        (revision "0"))
+    (package
+      (name "emacs-gcmh")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/koral/gcmh")
+               (commit commit)))
+         (sha256
+          (base32 "1r3wiqhrzh7wvqy484nl031fd4bn4cpvkv9646s4cjgvnnnv7jz3"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/koral/gcmh")
+      (synopsis "Emacs Garbage Collector Magic Hack")
+      (description
+       "This package enforces a sneaky @dfn{garbage collector} (GC) strategy
+to minimize GC interference with the activity.  During normal use a high GC
+threshold is set.  When idling GC is immediately triggered and a low threshold
+is set.")
+      (license license:gpl3+))))
+
 (define-public emacs-ctrlf
   (package
     (name "emacs-ctrlf")
