@@ -5370,7 +5370,7 @@ stream, and convert everything to UTF-8.")
        ("ocaml-markup" ,ocaml-markup)))
     (native-inputs
      `(("ocaml-alcotest" ,ocaml-alcotest)))
-    (arguments `(#:jbuild? #t))
+    (arguments `(#:package "tyxml"))
     (home-page "https://github.com/ocsigen/tyxml/")
     (synopsis "TyXML is a library for building correct HTML and SVG documents")
     (description "TyXML provides a set of convenient combinators that uses the
