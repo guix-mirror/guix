@@ -2452,13 +2452,13 @@ etc., and an SQL engine for performing simple SQL queries.")
 (define-public python-lmdb
   (package
     (name "python-lmdb")
-    (version "0.99")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lmdb" version))
               (sha256
                (base32
-                "12fwlzfd82471ss9xzbqwcqc6f5miy51y72y2yya9j5cm9589szr"))
+                "1di1gj2agbxwqqwrpk4w58dpfah0kl10ha20s63dlqdd1bgzydj1"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled lmdb source files.
@@ -2477,6 +2477,7 @@ etc., and an SQL engine for performing simple SQL queries.")
          (add-before 'build 'use-system-lmdb
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((lmdb (assoc-ref inputs "lmdb")))
+               (setenv "LMDB_PURE" "set") ; don't apply env-copy-txn.patch
                (setenv "LMDB_FORCE_SYSTEM" "set")
                (setenv "LMDB_INCLUDEDIR" (string-append lmdb "/include"))
                (setenv "LMDB_LIBDIR" (string-append lmdb "/lib"))
