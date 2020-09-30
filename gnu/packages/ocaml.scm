@@ -436,7 +436,7 @@ the opam file format.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.0.6")
+    (version "2.0.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -445,7 +445,7 @@ the opam file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vyga2jllsfsikppxyzljm4isfnnnl8k0rb44h8xaddjzdg1d4m8"))))
+                "1p719ccn9wnzk6impsnwr809yh507h8f37dx9nn64b1hsyb5z8ax"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:configure-flags
