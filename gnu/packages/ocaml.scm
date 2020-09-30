@@ -1659,14 +1659,14 @@ immutability.")
 (define-public ocaml-alcotest
   (package
     (name "ocaml-alcotest")
-    (version "0.8.5")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mirage/alcotest/releases/"
                                   "download/" version "/alcotest-" version ".tbz"))
               (sha256
                 (base32
-                  "0szwjxvaahgynsx0apj81jxj3ki6yz4is9mh2wkcbx66qy7n6fvb"))))
+                  "1a43ilhwnj58pq3bi78ni46l9wh6klmmgfc93i94mvyx48bzzayx"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "alcotest"
@@ -1677,8 +1677,10 @@ immutability.")
      `(("ocaml-astring" ,ocaml-astring)
        ("ocaml-cmdliner" ,ocaml-cmdliner)
        ("ocaml-fmt" ,ocaml-fmt)
-       ("ocaml-result" ,ocaml-result)
-       ("ocaml-uuidm" ,ocaml-uuidm)))
+       ("ocaml-re" ,ocaml-re)
+       ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)
+       ("ocaml-uuidm" ,ocaml-uuidm)
+       ("ocaml-uutf" ,ocaml-uutf)))
     (home-page "https://github.com/mirage/alcotest")
     (synopsis "Lightweight OCaml test framework")
     (description "Alcotest exposes simple interface to perform unit tests.  It
