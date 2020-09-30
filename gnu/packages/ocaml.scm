@@ -3211,8 +3211,7 @@ instead of bindings to a C library.")
         (base32 "1bl4943qpi3qy152dbdm5glhx19zsiylmn4rcxi8l66g58hikyjp"))))
     (build-system dune-build-system)
     (arguments
-     `(#:jbuild? #t
-       #:test-target "."
+     `(#:test-target "."
        #:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib))
     (native-inputs
