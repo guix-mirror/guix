@@ -318,48 +318,6 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;;     except for two source files which are bsd-4 licensed.
     (license (list license:bsd-2 license:expat license:bsd-3 license:bsd-4))))
 
-(define nginx-xslscript
-  (let ((revision 11)
-        (changeset "01dc9ba12e1b"))
-    (package
-      (name "nginx-xslscript")
-      (version
-       (simple-format #f "2014-03-31-~A-~A" revision changeset))
-      (source (origin
-                (method hg-fetch)
-                (uri (hg-reference
-                      (url "http://hg.nginx.org/xslscript")
-                      (changeset changeset)))
-                (file-name (string-append name "-" version))
-                (sha256
-                 (base32
-                  "0am8zvdx3jmiwkg5q07qjaw5r26r4i2v5i4yr8a1k0jgib6ii08g"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:tests? #f  ; No test suite
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out-bin (string-append
-                               (assoc-ref outputs "out")
-                               "/bin")))
-                 (mkdir-p out-bin)
-                 (copy-file "xslscript.pl"
-                            (string-append
-                             out-bin
-                             "/xslscript.pl"))
-                 #t))))))
-      (home-page "http://hg.nginx.org/xslscript")
-      (synopsis "XSLScript with NGinx specific modifications")
-      (description
-       "XSLScript is a terse notation for writing complex XSLT stylesheets.
-This is modified version, specifically intended for use with the NGinx
-documentation.")
-      (license license:bsd-2))))
-
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
   (let ((version "1.19.3")
@@ -548,6 +506,48 @@ supported at your website.")
                       ;; therefore nginx’ other licenses may also apply to its
                       ;; binary:
                       (package-license nginx)))))))
+
+(define nginx-xslscript
+  (let ((revision 11)
+        (changeset "01dc9ba12e1b"))
+    (package
+      (name "nginx-xslscript")
+      (version
+       (simple-format #f "2014-03-31-~A-~A" revision changeset))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "http://hg.nginx.org/xslscript")
+                      (changeset changeset)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0am8zvdx3jmiwkg5q07qjaw5r26r4i2v5i4yr8a1k0jgib6ii08g"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f  ; No test suite
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out-bin (string-append
+                               (assoc-ref outputs "out")
+                               "/bin")))
+                 (mkdir-p out-bin)
+                 (copy-file "xslscript.pl"
+                            (string-append
+                             out-bin
+                             "/xslscript.pl"))
+                 #t))))))
+      (home-page "http://hg.nginx.org/xslscript")
+      (synopsis "XSLScript with NGinx specific modifications")
+      (description
+       "XSLScript is a terse notation for writing complex XSLT stylesheets.
+This is modified version, specifically intended for use with the NGinx
+documentation.")
+      (license license:bsd-2))))
 
 (define-public lighttpd
   (package
