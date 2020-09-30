@@ -1321,7 +1321,7 @@ functions to the next and/or previous version.")
 (define-public ocaml-ppx-tools-versioned
   (package
     (name "ocaml-ppx-tools-versioned")
-    (version "5.2.3")
+    (version "5.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1330,7 +1330,7 @@ functions to the next and/or previous version.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hcmpnw26zf70a71r3d2c2c0mn8q084gdn1r36ynng6fv9hq6j0y"))))
+                "07lnj4yzwvwyh5fhpp1dxrys4ddih15jhgqjn59pmgxinbnddi66"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
