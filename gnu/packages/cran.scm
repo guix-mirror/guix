@@ -21899,7 +21899,7 @@ appropriate dog and cat images for many status codes.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-stringr" ,r-stringr)
-       ("r-magrittr", r-magrittr)))
+       ("r-magrittr" ,r-magrittr)))
     (home-page "https://github.com/stefano-meschiari/latex2exp/")
     (synopsis "Use LaTeX expressions in plots")
     (description "@code{latex2exp} parses and converts LaTeX math formulas to

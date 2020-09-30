@@ -21255,7 +21255,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (arguments
      `(#:cargo-inputs
        (("rust-bytemuck" ,rust-bytemuck-1)
-        ("rust-serde", rust-serde-1))
+        ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-serde-json" ,rust-serde-json-1))))
     (home-page "https://lib.rs/crates/rgb")

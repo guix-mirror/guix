@@ -1553,7 +1553,7 @@ structure constants of Schubert polynomials.")
          "0akwhhz9b40bz6lrfxpamp7r7wkk48p455qbn04mfnl9a1l6db8x"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gmp", gmp)
+     `(("gmp" ,gmp)
        ("cblas" ,openblas))) ; or any other BLAS library; the documentation
                              ; mentions ATLAS in particular
     (arguments

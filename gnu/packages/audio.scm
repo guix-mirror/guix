@@ -4519,7 +4519,7 @@ workstations as well as consumer software such as music players.")
     (inputs
      `(("cairo" ,cairo)))
     (native-inputs
-     `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (synopsis "Small GUI toolkit")
     (description "Redkite is a small GUI toolkit developed in C++17 and
 inspired from other well known GUI toolkits such as Qt and GTK.  It is
@@ -4665,7 +4665,7 @@ in the package.")
     `(("libsamplerate" ,libsamplerate)
       ("libsndfile" ,libsndfile)))
    (native-inputs
-     `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
    (synopsis "Library for reading and resampling audio files")
    (description "libaudec is a wrapper library over ffmpeg, sndfile and
 libsamplerate for reading and resampling audio files, based on Robin Gareus'
@@ -4693,11 +4693,11 @@ libsamplerate for reading and resampling audio files, based on Robin Gareus'
        `("-Delf-tests=true" ; for checking symbol visibility
          "-Donline-tests=true"))) ; for checking URI existence
     (inputs
-      `(("curl", curl)
-        ("libelf", libelf)
-        ("lilv", lilv)))
+      `(("curl" ,curl)
+        ("libelf" ,libelf)
+        ("lilv" ,lilv)))
     (native-inputs
-      `(("pkg-config", pkg-config)))
+      `(("pkg-config" ,pkg-config)))
     (synopsis "LV2 plugin lint tool")
     (description "lv2lint is an LV2 lint-like tool that checks whether a
 given plugin and its UI(s) match up with the provided metadata and adhere
@@ -4728,11 +4728,11 @@ to well-known best practices.")
       (modify-phases %standard-phases
         (delete 'configure))))
     (inputs
-      `(("jalv", jalv)
-        ("lilv", lilv)))
+      `(("jalv" ,jalv)
+        ("lilv" ,lilv)))
     (native-inputs
-      `(("help2man", help2man)
-        ("pkg-config", pkg-config)))
+      `(("help2man" ,help2man)
+        ("pkg-config" ,pkg-config)))
     (synopsis "Documentation generator for LV2 plugins")
     (description
       "lv2toweb allows the user to create an xhtml page with information

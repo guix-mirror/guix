@@ -307,7 +307,7 @@ systems and other constrained environments, but they work everywhere.")))
     (build-system gnu-build-system)
     (inputs
      `(("execline" ,execline)
-       ("s6", s6)
+       ("s6" ,s6)
        ("skalibs" ,skalibs)))
     (arguments
      '(#:configure-flags

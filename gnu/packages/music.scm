@@ -1391,9 +1391,9 @@ B.Choppr is the successor of B.Slizr.")
         (base32
          "0kl6hrxmqrdf0195bfnzsa2h1073fgiqrfhg2276fm1954sm994v"))))
     (inputs
-     `(("cairo", cairo)
-       ("libsndfile", libsndfile)
-       ("lv2", lv2)))
+     `(("cairo" ,cairo)
+       ("libsndfile" ,libsndfile)
+       ("lv2" ,lv2)))
     (synopsis "Pattern-controlled audio stream/sample re-sequencer LV2 plugin")
     (description "B.Jumblr is a pattern-controlled audio stream / sample
 re-sequencer LV2 plugin.")
@@ -1416,11 +1416,11 @@ re-sequencer LV2 plugin.")
         (base32
          "1c09acqrbd387ba41f8ch1qykdap5h6cg9if5pgd16i4dmjnpghj"))))
     (inputs
-     `(("cairo", cairo)
+     `(("cairo" ,cairo)
        ("fontconfig" ,fontconfig)
-       ("libsndfile", libsndfile)
+       ("libsndfile" ,libsndfile)
        ("libx11" ,libx11)
-       ("lv2", lv2)))
+       ("lv2" ,lv2)))
     (home-page "https://github.com/sjaehn/BSchaffl")
     (synopsis "Pattern-controlled MIDI amp & time stretch LV2 plugin")
     (description "This package provides an LV2 plugin that allows for
@@ -5098,15 +5098,15 @@ and reverb.")
          (delete 'configure))   ; no configure
        #:test-target "test"))
     (inputs
-     `(("cairo", cairo)
-       ("hicolor-icon-theme", hicolor-icon-theme)
-       ("jack", jack-1)
-       ("ladspa", ladspa)
-       ("libsndfile", libsndfile)
-       ("lv2", lv2)
-       ("mesa", mesa)))
+     `(("cairo" ,cairo)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("libsndfile" ,libsndfile)
+       ("lv2" ,lv2)
+       ("mesa" ,mesa)))
     (native-inputs
-     `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (synopsis "Audio plugin collection")
     (description "LSP (Linux Studio Plugins) is a collection of audio
 plugins available as LADSPA/LV2 plugins and as standalone JACK
@@ -5216,12 +5216,12 @@ as a whole to realisticly reproduce the features and flaws of the real deal.")
      `(("pkg-config" ,pkg-config)
        ("xxd" ,xxd)))
     (inputs
-     `(("cairo", cairo)
-       ("fftw", fftw)
-       ("fftwf", fftwf)
-       ("jack", jack-1)
-       ("lv2", lv2)
-       ("mesa", mesa)))
+     `(("cairo" ,cairo)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("mesa" ,mesa)))
     (synopsis "Realtime graphical spectrum analyzer")
     (description "Spectacle is a real-time spectral analyzer using the
 short-time Fourier transform, available as LV2 audio plugin and JACK client.")
@@ -5515,12 +5515,12 @@ MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
        ("freetype2" ,freetype)
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("libxcursor" ,libxcursor)
-       ("libxinerama", libxinerama)
-       ("jack", jack-1)
+       ("libxinerama" ,libxinerama)
+       ("jack" ,jack-1)
        ("mesa" ,mesa)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("lv2", lv2)))
+       ("lv2" ,lv2)))
     (home-page "https://tytel.org/helm/")
     (synopsis "Polyphonic synth with lots of modulation")
     (description "Helm is a cross-platform polyphonic synthesizer available standalone
@@ -5845,9 +5845,9 @@ plugin and a standalone JACK application.")
                               "/lib/lv2")
                        "install"))))))
       (inputs
-        `(("lv2", lv2)))
+        `(("lv2" ,lv2)))
       (native-inputs
-        `(("pkg-config", pkg-config)))
+        `(("pkg-config" ,pkg-config)))
       (synopsis "Audio plugin collection")
       (description "TAP (Tom's Audio Processing) plugins is a collection of
   audio effect plugins originally released as LADSPA plugins.  This package
@@ -5903,9 +5903,9 @@ plugin and a standalone JACK application.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-      `(("jack", jack-1)
-        ("lv2", lv2)
-        ("mesa", mesa)))
+      `(("jack" ,jack-1)
+        ("lv2" ,lv2)
+        ("mesa" ,mesa)))
     (synopsis "Waveshaper plugin")
     (description "Wolf Shaper is a waveshaper plugin with a graph editor.
 It is provided as an LV2 plugin and as a standalone Jack application.")
@@ -5985,12 +5985,12 @@ It is provided as an LV2 plugin and as a standalone Jack application.")
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs
-        `(("cairo", cairo)
-          ("glu", glu)
-          ("jack", jack-1)
-          ("lv2", lv2)
-          ("mesa", mesa)
-          ("pango", pango)))
+        `(("cairo" ,cairo)
+          ("glu" ,glu)
+          ("jack" ,jack-1)
+          ("lv2" ,lv2)
+          ("mesa" ,mesa)
+          ("pango" ,pango)))
       (synopsis "Audio plugin collection")
       (description "Shiru plugins is a collection of audio plugins created
   by Shiru, ported to LV2 by the Linux MAO project using the DISTRHO plugin

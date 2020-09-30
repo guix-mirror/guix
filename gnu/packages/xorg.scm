@@ -6339,7 +6339,7 @@ basic eye-candy effects.")
               ("python-pillow" ,python-pillow)
               ;; Optional dependencies.
               ("python-rencode" ,python-rencode) ; For speed.
-              ("python-numpy", python-numpy)
+              ("python-numpy" ,python-numpy)
               ("python-pyopengl" ,python-pyopengl) ; Drawing acceleration.
               ("python-pyopengl-accelerate" ,python-pyopengl-accelerate) ; Same.
               ("python-paramiko" ,python-paramiko) ; Tunneling over SSH.

@@ -3275,9 +3275,9 @@ communication over HTTP.")
        ("pcre2" ,pcre2)
        ("sobjectizer" ,sobjectizer)))
     (propagated-inputs
-     `(("asio", asio)
+     `(("asio" ,asio)
        ("fmt" ,fmt)
-       ("http-parser", http-parser)))
+       ("http-parser" ,http-parser)))
     (arguments
      `(#:configure-flags '("-DRESTINIO_INSTALL=on")
        #:tests? #f ; TODO: The tests are called from the root CMakelist, need RESTINIO_TEST=on.

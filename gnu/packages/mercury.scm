@@ -138,7 +138,7 @@
     (native-inputs
      `(("texinfo" ,texinfo)
        ("flex" ,flex)
-       ("tcsh", tcsh)
+       ("tcsh" ,tcsh)
        ("bison" ,bison)
        ("readline" ,readline)
        ("libatomic-ops" ,(package-source

@@ -59,7 +59,7 @@
 
        ;; Parallel builds are not supported, as noted in README.
        #:parallel-build? #f))
-    (propagated-inputs `(("gcc-toolchain", gcc-toolchain)))
+    (propagated-inputs `(("gcc-toolchain" ,gcc-toolchain)))
     (home-page "https://www.call-cc.org/")
     (synopsis "R5RS Scheme implementation that compiles native code via C")
     (description

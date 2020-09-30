@@ -5764,10 +5764,10 @@ compiled against the nauty library.")
          "1j5aji1g2vmdvc0gqz45n2ll2l2f6czca04wiyfl5g3sm3a6vhvb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("m4", m4)))
+     `(("m4" ,m4)))
     (inputs
      `(("glpk" ,glpk)
-       ("gmp", gmp)))
+       ("gmp" ,gmp)))
     (home-page "https://www.bugseng.com/parma-polyhedra-library")
     (synopsis
      "Parma Polyhedra Library for computations with polyhedra")

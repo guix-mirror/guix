@@ -4118,7 +4118,7 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
              #t)))))
     (native-inputs
      `(("binutils" ,binutils)  ;; for ctypes.util.find_library()
-       ("python-aiohttp", python-aiohttp)
+       ("python-aiohttp" ,python-aiohttp)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-sphinx" ,python-sphinx)

@@ -405,7 +405,7 @@ private network between hosts on the internet.")
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
        ;; For tests only.
-       ("python-flake8", python-flake8)
+       ("python-flake8" ,python-flake8)
        ("python-mock" ,python-mock)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)))

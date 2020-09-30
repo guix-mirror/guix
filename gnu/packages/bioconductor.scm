@@ -1115,7 +1115,7 @@ how the coverage distributed across the genome.")
    (propagated-inputs
     `(("r-biobase" ,r-biobase)
       ("r-biocgenerics" ,r-biocgenerics)
-      ("r-fastcluster", r-fastcluster)
+      ("r-fastcluster" ,r-fastcluster)
       ("r-ggplot2" ,r-ggplot2)
       ("r-gviz" ,r-gviz)
       ("r-plyr" ,r-plyr)

@@ -944,7 +944,7 @@ Language.")
      `(("bison" ,bison)
        ;; XXX: On armhf, use GCC 5 to work around <https://bugs.gnu.org/37605>.
        ,@(if (string-prefix? "armhf" (%current-system))
-             `(("gcc@5", gcc-5))
+             `(("gcc@5" ,gcc-5))
              '())
        ("perl" ,perl)))
     (inputs

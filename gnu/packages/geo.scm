@@ -1776,7 +1776,7 @@ track your position right from your laptop.")
           (base32 "1fwsm99kz0bxvjk7442qq1h45ikrmhba8bqclafb61gqg1q6ymrk"))))
       (build-system gnu-build-system)
       (inputs
-       `(("bzip2", bzip2)
+       `(("bzip2" ,bzip2)
          ("cairo" ,cairo)
          ("fftw" ,fftw)
          ("freetype" ,freetype)

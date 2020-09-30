@@ -2437,7 +2437,7 @@ After selection, the clip is put onto the PRIMARY and CLIPBOARD X selections.")
        ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("dbus-glib", dbus-glib)
+     `(("dbus-glib" ,dbus-glib)
        ("glib" ,glib)
        ("libx11" ,libx11)))
     (home-page "https://github.com/qnikst/kbdd")
