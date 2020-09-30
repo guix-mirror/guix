@@ -317,14 +317,13 @@ provide connectivity for client applications written in any language.")
 (define-public nml
   (package
     (name "nml")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nml" version))
        (sha256
-        (base32
-         "1lwf5sc5qqzrkxfx5wkkj3yh2j2nzh5r599ly5psy8yw92km24hy"))))
+        (base32 "0l5pfs8q7jrl3xscqq7pnwh5h5d17fsyjy7xspkc73sa0ayjm9jx"))))
     (build-system python-build-system)
     ;; TODO: Fix test that fails with
     ;; "AttributeError: partially initialized module 'nml.nmlop' has no
