@@ -6829,15 +6829,14 @@ line program.")
 (define-public emacs-rudel
   (package
     (name "emacs-rudel")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/rudel-"
                            version ".tar"))
        (sha256
-        (base32
-         "0glqa68g509p0s2vcc0i8kzlddnc9brd9jqhnm5rzxz4i050cvnz"))))
+        (base32 "03hcvpp6ykavidwn5x48gs986w1i5icvh7ks6p74pdaagpgw4jmk"))))
     (build-system emacs-build-system)
     (home-page "http://rudel.sourceforge.net/")
     (synopsis "Collaborative editing framework")
