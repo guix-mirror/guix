@@ -12,6 +12,26 @@
 
 (channel-news
  (version 0)
+ (entry (commit "313f492657f1d0863c641fa5ee7f5b7028e27c94")
+        (title (en "New @option{--image-type} option for @command{guix system disk-image}.")
+               (fr "Nouvelle option @option{--image-type} pour @command{guix system disk-image}."))
+        (body
+         (en "The @option{--file-system-type} option for @command{guix system
+disk-image} command has been replaced by the new @option{--image-type} option.
+By default, @code{raw} disk images are produced, but @code{hurd-qcow2},
+@code{hurd-raw}, @code{uncompressed-iso9660} and @code{iso9660} image types
+are also available.
+
+The @option{--list-image-types} option lists all the available image types.")
+         (fr "L'option @option{--file-system-type} pour la commande
+@command{guix system disk-image} a été remplacée par la nouvelle option
+@option{--image-type}. Par défaut, l'option @code{raw}, produisant des images
+disque brutes est sélectionnée. Les options @code{hurd-qcow2},
+@code{hurd-raw}, @code{uncompressed-iso9660} et @code{iso9660} sont également
+disponibles.
+
+La nouvelle option @option{--list-image-types} énumère les types d'image
+disponibles.")))
 
  (entry (commit "8819551c8d2a12cd4e84e09b51e434d05a012c9d")
         (title (en "Package transformations now apply to implicit inputs")
