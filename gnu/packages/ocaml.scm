@@ -1866,8 +1866,7 @@ locks or other synchronization primitives.")
                 "1n12i1rmn9cjn6p8yr6qn5dwbrwvym7ckr7bla04a1xnq8qlcyj7"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f; require lwt_ppx
-       #:jbuild? #t))
+     `(#:tests? #f)); require lwt_ppx
     (propagated-inputs
      `(("lwt" ,ocaml-lwt)))
     (properties `((upstream-name . "lwt_log")))
