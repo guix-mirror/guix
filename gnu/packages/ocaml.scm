@@ -3146,8 +3146,7 @@ function that follows the prototype of POSIX's wcwidth.")
         (base32 "0pa9awinqr0plp4b2az78dwpvh01pwaljnn5ydg8mc6hi7rmir55"))))
     (build-system dune-build-system)
     (arguments
-     `(#:jbuild? #t
-       #:test-target "."
+     `(#:test-target "."
        #:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib))
     (propagated-inputs
