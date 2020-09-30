@@ -29395,6 +29395,32 @@ in Rust.")
      "Backend code generation of the wasm-bindgen tool.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-wasm-bindgen-console-logger-0.1
+  (package
+    (name "rust-wasm-bindgen-console-logger")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "wasm-bindgen-console-logger" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1vc506dhrk2yl0snkcn45s5adndq9wj7ipxb7awbbxzswxss4c3m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.4)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
+    (home-page "https://github.com/blm768/wasm-bindgen-console-logger")
+    (synopsis "Rust log and JavaScript console logging integration")
+    (description
+     "This package provides a logging facility that integrates the
+log crate with JavaScript console logging functions with the help of
+wasm-bindgen.")
+    (license license:cc0)))
+
 (define-public rust-wasm-bindgen-futures-0.4
   (package
     (name "rust-wasm-bindgen-futures")
