@@ -1292,7 +1292,7 @@ following a very simple s-expression syntax.")
 (define-public ocaml-migrate-parsetree
   (package
     (name "ocaml-migrate-parsetree")
-    (version "1.4.0")
+    (version "1.7.3")
     (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
     (source
      (origin
@@ -1303,7 +1303,7 @@ following a very simple s-expression syntax.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0sv1p4615l8gpbah4ya2c40yr6fbvahvv3ks7zhrsgcwcq2ljyr2"))))
+         "0336vz0galjnsazbmkxjwdv1qvdqsx2rgrvp778xgq2fzasz45cx"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f))
