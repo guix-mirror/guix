@@ -2758,13 +2758,13 @@ this library provides functions to facilitate such comparisons.")
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
-        (base32 "1gsdrzx9h7wfva200qvvsc9sn4w79mk2vs0bbnzjhxi1jw2b0nh3"))))
+        (base32 "0if2dgb088clk738p26bwk50735h6jpd2kacdgc5capv2hiz6d2k"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
