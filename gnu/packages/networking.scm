@@ -308,7 +308,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
 (define-public srt
   (package
     (name "srt")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method git-fetch)
@@ -318,7 +318,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01xaq44j95kbgqfl41pnybvqy0yq6wd4wdw88ckylzf0nzp977xz"))))
+        (base32 "01nx3a35hzq2x0dvp2n2b86phpdy1z83kdraag7aq3hmc7f8iagg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
