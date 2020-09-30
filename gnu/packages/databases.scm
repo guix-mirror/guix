@@ -2123,14 +2123,14 @@ database.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.853")
+  (version "1.854")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/DB_File-"
                           version ".tar.gz"))
       (sha256
-        (base32 "1y967si45vj0skip1hnhicbv9da29fv6qcfwnsbnvj06n36mkj6h"))))
+        (base32 "0fv0any5am6vr6h1wcwhnraj70hd55fs4d8c2y7chsc9alf9di5y"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
@@ -2143,8 +2143,7 @@ database.")
                        (("/usr/local/BerkeleyDB") (assoc-ref inputs "bdb")))
                      #t)))))
   (home-page "https://metacpan.org/release/DB_File")
-  (synopsis
-    "Perl5 access to Berkeley DB version 1.x")
+  (synopsis "Perl5 access to Berkeley DB version 1.x")
   (description
     "The DB::File module provides Perl bindings to the Berkeley DB version 1.x.")
   (license license:perl-license)))
