@@ -1475,7 +1475,8 @@ library.")
     (build-system dune-build-system)
     (arguments
      `(#:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib))
+       #:findlib ,ocaml4.07-findlib
+       #:dune ,ocaml4.07-dune))
     (native-inputs
      `(("ocaml-base" ,ocaml4.07-base)
        ("ocaml-stdio" ,ocaml4.07-stdio)
