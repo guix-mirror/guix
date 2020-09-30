@@ -23215,7 +23215,7 @@ proven statistical guarantees.")
 (define-public rust-serde-1
   (package
     (name "rust-serde")
-    (version "1.0.105")
+    (version "1.0.113")
     (source
       (origin
         (method url-fetch)
@@ -23223,11 +23223,10 @@ proven statistical guarantees.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1zrj157dxvmymp5ii60anap2qqks4pkr3fwsp71wi3sv4nzzn1z7"))))
+          "0smc5pj00nci5g9a9hrz9w7rs7f5cir7gvsqf54pj74qc62cfdb1"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-serde-derive" ,rust-serde-derive-1))
        #:cargo-development-inputs
        (("rust-serde-derive" ,rust-serde-derive-1))))
@@ -23471,7 +23470,7 @@ for the serde framework.")
 (define-public rust-serde-derive-1
   (package
     (name "rust-serde-derive")
-    (version "1.0.105")
+    (version "1.0.113")
     (source
       (origin
         (method url-fetch)
@@ -23479,11 +23478,10 @@ for the serde framework.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1y5gzwpy8yjv9pwh1js11vr18nfz4gg1g2kmyr6p58hvavy00pdc"))))
+          "0cdf4r6bwxw6cwg2fj93kwd7mypwhjfzxzyw3i4cnm09gnhymick"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))
@@ -23620,7 +23618,7 @@ for the serde framework.")
 (define-public rust-serde-test-1
   (package
     (name "rust-serde-test")
-    (version "1.0.105")
+    (version "1.0.113")
     (source
      (origin
        (method url-fetch)
@@ -23629,11 +23627,10 @@ for the serde framework.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vnp0wld20z1wjr8qp2hxcy6yh2zhicg1mfb0qrzxgwq2a4n6raa"))))
+         "02s7zjs12m5abk13j5farc00rzissk1anpl015vawpzz914jsan3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-serde" ,rust-serde-1)
