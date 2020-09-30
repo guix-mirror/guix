@@ -3103,7 +3103,7 @@ reasonable substitute.")
 (define-public python-rq
   (package
     (name "python-rq")
-    (version "1.5.1")
+    (version "1.5.2")
     (source
      (origin
        (method git-fetch)
@@ -3112,7 +3112,7 @@ reasonable substitute.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i7yyw828wdvl7ap4gb7jhm4p94502is3xxrgrdgwwp0l1rac004"))))
+        (base32 "0ikqmpq0g1qiqwd7ar1286l4hqjb6aj2wr844gihhb8ijzwhp8va"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
