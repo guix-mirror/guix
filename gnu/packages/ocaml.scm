@@ -1376,7 +1376,7 @@ powerful.")
 (define-public ocaml-result
   (package
     (name "ocaml-result")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1385,7 +1385,7 @@ powerful.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hir97k9i72nfkm6kncxnqpyk400wlsxysbldgcvk0fd9pjnsc3p"))))
+                "166laj8qk7466sdl037c6cjs4ac571hglw4l5qpyll6df07h6a7q"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
