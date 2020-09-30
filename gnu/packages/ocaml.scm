@@ -1253,10 +1253,10 @@ full_split, cut, rcut, etc..")
     ;; where it says `mit'.
     (license license:expat)))
 
-(define-public dune
+(define dune-bootstrap
   (package
     (name "dune")
-    (version "1.11.3")
+    (version "2.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1265,17 +1265,19 @@ full_split, cut, rcut, etc..")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0l4x0x2fz135pljv88zj8y6w1ninsqw0gn1mdxzprd6wbxbyn8wr"))))
+                "10qgx83fq8b522y9mpllrp0l5cgmr2bs5s7aix5img21hlbm34in"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; require odoc
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+       #:make-flags (list "release"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           (string-append "LIBDIR=" (assoc-ref %outputs "out")
                                          "/lib/ocaml/site-lib"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p "src/dune")
              (invoke "./configure")
              #t)))))
     (home-page "https://github.com/ocaml/dune")
@@ -1285,8 +1287,41 @@ release of Jane Street packages.  It reads metadata from @file{dune} files
 following a very simple s-expression syntax.")
     (license license:expat)))
 
+(define-public dune-configurator
+  (package
+    (inherit dune-bootstrap)
+    (name "dune-configurator")
+    (build-system dune-build-system)
+    (arguments
+     `(#:package "dune-configurator"
+       #:dune ,dune-bootstrap
+       ; require ppx_expect
+       #:tests? #f))
+    (propagated-inputs
+     `(("ocaml-csexp" ,ocaml-csexp)))
+    (synopsis "")
+    (description "")))
+
+(define-public dune
+  (package
+    (inherit dune-bootstrap)
+    (propagated-inputs
+     `(("dune-configurator" ,dune-configurator)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-dune))))))
+
 (define-public ocaml4.07-dune
-  (package-with-ocaml4.07 dune))
+  (package
+    (inherit (package-with-ocaml4.07 dune-bootstrap))
+    (version "1.11.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml/dune")
+                     (commit version)))
+              (file-name (git-file-name "dune" version))
+              (sha256
+               (base32
+                "0l4x0x2fz135pljv88zj8y6w1ninsqw0gn1mdxzprd6wbxbyn8wr"))))))
 
 (define-public ocaml-csexp
   (package
@@ -1304,6 +1339,7 @@ following a very simple s-expression syntax.")
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f; FIXME: needs ppx_expect, but which version?
+       #:dune ,dune-bootstrap
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'chmod
@@ -1311,8 +1347,7 @@ following a very simple s-expression syntax.")
              (for-each (lambda (file) (chmod file #o644)) (find-files "." ".*"))
              #t)))))
     (propagated-inputs
-     `(("dune" ,dune)
-       ("ocaml-result" ,ocaml-result)))
+     `(("ocaml-result" ,ocaml-result)))
     (home-page "https://github.com/ocaml-dune/csexp")
     (synopsis "Parsing and printing of S-expressions in Canonical form")
     (description "This library provides minimal support for Canonical
@@ -1404,7 +1439,13 @@ ocaml-migrate-parsetree")
      `(("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
     (arguments
      `(#:package "bitstring"
-       #:tests? #f)); Tests fail to build
+       #:tests? #f; Tests fail to build
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'upgrade
+           (lambda _
+             (invoke "dune" "upgrade")
+             #t)))))
     (home-page "https://github.com/xguerin/bitstring")
     (synopsis "Bitstrings and bitstring matching for OCaml")
     (description "Adds Erlang-style bitstrings and matching over bitstrings as
@@ -1429,7 +1470,8 @@ powerful.")
                 "166laj8qk7466sdl037c6cjs4ac571hglw4l5qpyll6df07h6a7q"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."))
+     `(#:test-target "."
+       #:dune ,dune-bootstrap))
     (home-page "https://github.com/janestreet/result")
     (synopsis "Compatibility Result module")
     (description "Uses the new result type defined in OCaml >= 4.03 while
@@ -3789,6 +3831,13 @@ serializers and deserializers from type definitions.")
         (base32
          "197xjp4vmzdymf2ndinw271ihpf45h04mx8gqj8ypspxdr5fj1a5"))))
     (build-system dune-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'upgrade
+           (lambda _
+             (invoke "dune" "upgrade")
+             #t)))))
     (inputs
      `(("ocaml-fmt" ,ocaml-fmt)
        ("ocaml-astring" ,ocaml-astring)
