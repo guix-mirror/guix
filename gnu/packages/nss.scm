@@ -193,10 +193,10 @@ PKCS #5, PKCS #7, PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates, and other
 security standards.")
     (license license:mpl2.0)))
 
-(define-public nss-3.56
+(define-public nss-3.57
   (package
     (inherit nss)
-    (version "3.56")
+    (version "3.57")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -207,7 +207,7 @@ security standards.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "174f0ki2f8szkgv02jlsg2ci332sl9dabr2vcwnyjp1vxplf0xgq"))
+                "10n3pncg6k81ikjz12la147rppwqn57bkrdl9gb820w6pq0nra2m"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-3.56-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))
