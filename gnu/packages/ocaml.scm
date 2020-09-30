@@ -2817,7 +2817,7 @@ JSON.")
                 "1fc95q2ypck6m6rv3kiawwilh5ac93v2hcp823mj608d5kj79xkb"))))
     (build-system dune-build-system)
     (arguments
-     `(#:jbuild? #t
+     `(#:package "easy-format"
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'make-writable
