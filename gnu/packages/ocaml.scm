@@ -1213,8 +1213,7 @@ instances and printing them.")
                 "0gddzan4vzs0vklsxhirdjrvx3rp7hhh2yr20vi13nq8rwkn9w29"))))
     (build-system dune-build-system)
     (arguments
-     `(#:jbuild? #t
-       #:test-target "tests"))
+     `(#:test-target "tests"))
     (propagated-inputs
      `(("ounit" ,ocaml-ounit)
        ("qcheck" ,ocaml-qcheck)))
