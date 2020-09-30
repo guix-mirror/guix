@@ -7468,3 +7468,24 @@ float\" facility, in the same way that simpler packages like
 Packages @code{bicaption}, @code{ltcaption}, @code{newfloat},
 @code{subcaption} and @code{totalcount} are included in the bundle.")
       (license license:lppl1.3+))))
+
+(define-public texlive-symbol
+  (package
+    (inherit (simple-texlive-package
+              "texlive-symbol"
+              (list "/dvips/symbol/"
+                    "/fonts/afm/adobe/symbol/"
+                    "/fonts/afm/urw/symbol/"
+                    "/fonts/tfm/adobe/symbol/"
+                    "/fonts/tfm/urw35vf/symbol/"
+                    "/fonts/type1/urw/symbol/"
+                    "/fonts/map/dvips/symbol/"
+                    "/tex/latex/symbol/")
+              (base32
+               "01xiygb88xwi7rfvh1zrlxzi5pqb5fvylws5zzszg379iz4pyzwj")
+              #:trivial? #t))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description "This package provides a drop-in replacement for the
+Symbol font from Adobe's basic set.")
+    (license license:gpl2)))
