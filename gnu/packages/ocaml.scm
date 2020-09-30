@@ -1288,6 +1288,47 @@ following a very simple s-expression syntax.")
 (define-public ocaml4.07-dune
   (package-with-ocaml4.07 dune))
 
+(define-public ocaml-csexp
+  (package
+    (name "ocaml-csexp")
+    (version "1.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml-dune/csexp")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "190zppgvdjgghmrnx67ayzzk86qdjy3yn5fcrcw08wsh93384pl0"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #f; FIXME: needs ppx_expect, but which version?
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'chmod
+           (lambda _
+             (for-each (lambda (file) (chmod file #o644)) (find-files "." ".*"))
+             #t)))))
+    (propagated-inputs
+     `(("dune" ,dune)
+       ("ocaml-result" ,ocaml-result)))
+    (home-page "https://github.com/ocaml-dune/csexp")
+    (synopsis "Parsing and printing of S-expressions in Canonical form")
+    (description "This library provides minimal support for Canonical
+S-expressions.  Canonical S-expressions are a binary encoding of
+S-expressions that is super simple and well suited for communication
+between programs.
+
+This library only provides a few helpers for simple applications.  If
+you need more advanced support, such as parsing from more fancy input
+sources, you should consider copying the code of this library given
+how simple parsing S-expressions in canonical form is.
+
+To avoid a dependency on a particular S-expression library, the only
+module of this library is parameterised by the type of S-expressions.")
+    (license license:expat)))
+
 (define-public ocaml-migrate-parsetree
   (package
     (name "ocaml-migrate-parsetree")
