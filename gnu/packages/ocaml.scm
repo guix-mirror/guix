@@ -1362,8 +1362,8 @@ ocaml-migrate-parsetree")
     (propagated-inputs
      `(("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
     (arguments
-     `(#:tests? #f; Tests fail to build
-       #:jbuild? #t))
+     `(#:package "bitstring"
+       #:tests? #f)); Tests fail to build
     (home-page "https://github.com/xguerin/bitstring")
     (synopsis "Bitstrings and bitstring matching for OCaml")
     (description "Adds Erlang-style bitstrings and matching over bitstrings as
