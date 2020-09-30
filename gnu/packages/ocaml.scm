@@ -3761,7 +3761,7 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
     (native-inputs
      `(("ocaml-findlib" ,ocaml-findlib)))
     (arguments
-     `(#:jbuild? #t
+     `(#:package "merlin"
        #:tests? #f ;; Errors in tests in version 3.2.2
        #:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib))
