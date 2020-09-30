@@ -5221,9 +5221,8 @@ thousands of times faster than fork.
                 "0pzl8n09z4f3i7z2wq4cjxfqrr8mj6xcdp7rbg0nxap2zdhjgvrq"))))
     (build-system dune-build-system)
     (arguments
-     `(#:jbuild? #t
-       ;; Require a cyclic dependency: core_extended
-       #:tests? #f
+     `(#:package "core"
+       #:tests? #f; Require a cyclic dependency: core_extended
        #:ocaml ,ocaml-4.07
        #:findlib ,ocaml4.07-findlib))
     (propagated-inputs
