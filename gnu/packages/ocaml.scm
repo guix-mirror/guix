@@ -1879,14 +1879,14 @@ ocaml lwt.")
 (define-public ocaml-logs
   (package
     (name "ocaml-logs")
-    (version "0.6.2")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/logs/releases/"
                                   "logs-" version ".tbz"))
               (sha256
                 (base32
-                  "1khbn7jqpid83zn8rvyh1x1sirls7zc878zj4fz985m5xlsfy853"))))
+                  "1jnmd675wmsmdwyb5mx5b0ac66g4c6gpv5s4mrx2j6pb0wla1x46"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
