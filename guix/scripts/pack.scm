@@ -817,11 +817,17 @@ last resort for relocation."
 
                             (string-append "-DLOADER_AUDIT_MODULE=\""
                                            #$(audit-module) "\"")
+
+                            ;; XXX: Normally (runpath #$(audit-module)) is
+                            ;; enough.  However, to work around
+                            ;; <https://sourceware.org/bugzilla/show_bug.cgi?id=26634>
+                            ;; (glibc <= 2.32), pass the whole search path of
+                            ;; PROGRAM, which presumably is a superset of that
+                            ;; of the audit module.
                             (string-append "-DLOADER_AUDIT_RUNPATH={ "
                                            (string-join
                                             (map object->string
-                                                 (runpath
-                                                  #$(audit-module)))
+                                                 (runpath program))
                                             ", " 'suffix)
                                            "NULL }")
                             (if gconv
