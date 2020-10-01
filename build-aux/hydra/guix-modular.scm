@@ -43,17 +43,19 @@ for SYSTEM.  Use VERSION as the version identifier."
     (define build
       (primitive-load (string-append source "/build-aux/build-self.scm")))
 
-    `((derivation . ,(derivation-file-name
-                      (run-with-store store
-                        (build source #:version version #:system system
-                               #:pull-version 1
-                               #:guile-version "2.2")))) ;the latest 2.2.x
-      (description . "Modular Guix")
-      (long-description
-       . "This is the modular Guix package as produced by 'guix pull'.")
-      (license . ,license:gpl3+)
-      (home-page . ,%guix-home-page-url)
-      (maintainers . (,%guix-bug-report-address)))))
+    (let ((drv (run-with-store store
+                 (build source #:version version #:system system
+                        #:pull-version 1
+                        #:guile-version "2.2"))))
+      `((derivation . ,(derivation-file-name drv)) ;the latest 2.2.x
+        (nix-name . ,(derivation-name drv))
+        (system . ,(derivation-system drv))
+        (description . "Modular Guix")
+        (long-description
+         . "This is the modular Guix package as produced by 'guix pull'.")
+        (license . ,license:gpl3+)
+        (home-page . ,%guix-home-page-url)
+        (maintainers . (,%guix-bug-report-address))))))
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
