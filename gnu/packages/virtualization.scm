@@ -1592,16 +1592,16 @@ Open Container Initiative (OCI) image layout and its tagged images.")
 (define-public skopeo
   (package
     (name "skopeo")
-    (version "0.1.40")
+    (version "1.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/projectatomic/skopeo")
+                    (url "https://github.com/containers/skopeo")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bagirzdzjhicn5dr691092ac3q6lhz3xngjzgqiqkxnvpz7p6cn"))))
+                "1v7k3ki10i6082r7zswblyirx6zck674y6bw3plssw4p1l2611rd"))))
     (build-system go-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1615,7 +1615,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
        ("glib" ,glib)
        ("gpgme" ,gpgme)))
     (arguments
-     '(#:import-path "github.com/projectatomic/skopeo"
+     '(#:import-path "github.com/containers/skopeo"
        #:install-source? #f
        #:tests? #f ; The tests require Docker
        #:phases
@@ -1624,13 +1624,13 @@ Open Container Initiative (OCI) image layout and its tagged images.")
            (lambda* (#:key import-path #:allow-other-keys)
              (chdir (string-append "src/" import-path))
              ;; TODO: build manpages with 'go-md2man'.
-             (invoke "make" "binary-local")))
+             (invoke "make" "bin/skopeo")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (invoke "make" "install-binary" "install-completions"
                        (string-append "PREFIX=" out))))))))
-    (home-page "https://github.com/projectatomic/skopeo")
+    (home-page "https://github.com/containers/skopeo")
     (synopsis "Interact with container images and container image registries")
     (description
      "@command{skopeo} is a command line utility providing various operations
