@@ -3574,7 +3574,7 @@ syntax checking on dedukti files.")
      `(("ocaml-base" ,ocaml4.07-base)
        ("ocaml-migrate-parsetree"
         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
-       ("ocaml-compiler-libs" ,(package-with-ocaml4.07 ocaml-compiler-libs))
+       ("ocaml-compiler-libs" ,ocaml4.07-compiler-libs)
        ("ocaml-sexplib0" ,ocaml4.07-sexplib0)
        ("ocaml-stdio" ,ocaml4.07-stdio)
        ("ocaml-ppxlib" ,ocaml4.07-ppxlib)))
@@ -4092,9 +4092,9 @@ provided by companion libraries such as
 @url{https://github.com/janestreet/stdio, ocaml-stdio}.")
   (license license:expat)))
 
-(define-public ocaml-compiler-libs
+(define-public ocaml4.07-compiler-libs
   (package
-    (name "ocaml-compiler-libs")
+    (name "ocaml4.07-compiler-libs")
     (version "0.11.0")
     (home-page "https://github.com/janestreet/ocaml-compiler-libs")
     (source
@@ -4109,7 +4109,10 @@ provided by companion libraries such as
          "03jds7bszh8wwpfwxb3dg0gyr1j1872wxwx1xqhry5ir0i84bg0s"))))
     (build-system dune-build-system)
     (arguments
-     '(#:tests? #f)) ;no tests
+     `(#:tests? #f ;no tests
+       #:ocaml ,ocaml-4.07
+       #:findlib ,ocaml4.07-findlib
+       #:dune ,ocaml4.07-dune))
     (properties `((upstream-name . "ocaml-compiler-libs")))
     (synopsis "Compiler libraries repackaged")
     (description "This package simply repackages the OCaml compiler libraries
@@ -4192,7 +4195,7 @@ as part of the same ocaml-migrate-parsetree driver.")
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,ocaml4.07-base)
-       ("ocaml-compiler-libs" ,(package-with-ocaml4.07 ocaml-compiler-libs))
+       ("ocaml-compiler-libs" ,ocaml4.07-compiler-libs)
        ("ocaml-migrate-parsetree"
         ,(package-with-ocaml4.07 ocaml-migrate-parsetree))
        ("ocaml-ppx-derivers" ,(package-with-ocaml4.07 ocaml-ppx-derivers))
