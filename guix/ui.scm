@@ -2134,7 +2134,7 @@ and signal handling have already been set up."
              (G_ "guix: missing command name~%"))
      (show-guix-usage))
     ((or ("-h") ("--help"))
-     (show-guix-help))
+     (leave-on-EPIPE (show-guix-help)))
     ((or ("-V") ("--version"))
      (show-version-and-exit "guix"))
     (((? option? o) args ...)
@@ -2145,7 +2145,7 @@ and signal handling have already been set up."
      (apply run-guix-command (string->symbol command)
             '("--help")))
     (("help" args ...)
-     (show-guix-help))
+     (leave-on-EPIPE (show-guix-help)))
     ((command args ...)
      (apply run-guix-command
             (string->symbol command)
