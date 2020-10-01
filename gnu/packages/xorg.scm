@@ -6304,14 +6304,14 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "4.0.3")
+    (version "4.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.xpra.org/src/xpra-"
                            version ".tar.xz"))
        (sha256
-        (base32 "05afdspf51fbya6jg6971i3ddqn8p4mg3v3aaqyi3chx4q1807rp"))
+        (base32 "10alqdfmgml9ixdi1nyd9xlw8a5q0j8m2sv4g9p83pd6z1a0rpv2"))
        (patches (search-patches "xpra-4.0.1-systemd-run.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
