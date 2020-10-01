@@ -4071,14 +4071,14 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
-    (version "2.21")
+    (version "2.22")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/K/KA/KAZUHO/"
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
                            "Test-TCP-" version ".tar.gz"))
        (sha256
-        (base32 "1djnaw1yli0kcd7azchqnp59l62f6mp13q50xyrjirpaxhd51j32"))))
+        (base32 "0mvv9rqwrwlcfh8qrs0s47p85rhlnw15d4gbpyi802bddp0c6lry"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-sharedfork" ,perl-test-sharedfork)))
