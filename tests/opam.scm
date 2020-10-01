@@ -152,7 +152,11 @@ url {
     ("[make]" . (list-pat (var "make")))
     ("[\"make\"]" . (list-pat (string-pat "make")))
     ("[\n  a\n  b\n  c]" . (list-pat (var "a") (var "b") (var "c")))
-    ("[a   b     \"c\"]" . (list-pat (var "a") (var "b") (string-pat "c")))))
+    ("[a   b     \"c\"]" . (list-pat (var "a") (var "b") (string-pat "c")))
+    ;; complex lists
+    ("[(a & b)]" . (list-pat (choice-pat (group-pat (var "a") (var "b")))))
+    ("[(a | b & c)]" . (list-pat (choice-pat (var "a") (group-pat (var "b") (var "c")))))
+    ("[a (b | c) d]" . (list-pat (var "a") (choice-pat (var "b") (var "c")) (var "d")))))
 
 (test-opam-syntax
   "parse-dicts" dict
@@ -178,5 +182,10 @@ url {
                                  (condition-var "build")))
     ("{ = \"1.0+beta19\" }" . (condition-eq
                                 (condition-string "1.0+beta19")))))
+
+(test-opam-syntax
+  "parse-comment" list-pat
+  '(("" . #f)
+    ("[#comment\n]" . list-pat)))
 
 (test-end "opam")
