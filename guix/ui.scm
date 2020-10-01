@@ -492,7 +492,7 @@ part."
 lines:
 
 @example
-guix package -i glibc-utf8-locales
+guix install glibc-utf8-locales
 export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"
 @end example
 
