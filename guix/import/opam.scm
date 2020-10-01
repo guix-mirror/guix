@@ -75,8 +75,8 @@
       group-pat
       conditional-value
       ground-value))
-(define-peg-pattern group-pat body
-                    (and ground-value (* SP) (ignore "&") (* SP)
+(define-peg-pattern group-pat all
+                    (and (or conditional-value ground-value) (* SP) (ignore "&") (* SP)
                          (or group-pat conditional-value ground-value)))
 (define-peg-pattern ground-value body (and (or multiline-string string-pat choice-pat list-pat var) (* SP)))
 (define-peg-pattern conditional-value all (and ground-value (* SP) condition))
@@ -196,6 +196,7 @@ path to the repository."
     (('string-pat str) str)
     ;; Arbitrary select the first dependency
     (('choice-pat choice ...) (dependency->input (car choice)))
+    (('group-pat val ...) (map dependency->input val))
     (('conditional-value val condition)
      (if (native? condition) "" (dependency->input val)))))
 
@@ -203,7 +204,8 @@ path to the repository."
   (match dependency
     (('string-pat str) "")
     ;; Arbitrary select the first dependency
-    (('choice-pat choice ...) (dependency->input (car choice)))
+    (('choice-pat choice ...) (dependency->native-input (car choice)))
+    (('group-pat val ...) (map dependency->native-input val))
     (('conditional-value val condition)
      (if (native? condition) (dependency->input val) ""))))
 
@@ -211,7 +213,8 @@ path to the repository."
   (match dependency
     (('string-pat str) str)
     ;; Arbitrary select the first dependency
-    (('choice-pat choice ...) (dependency->input (car choice)))
+    (('choice-pat choice ...) (dependency->name (car choice)))
+    (('group-pat val ...) (map dependency->name val))
     (('conditional-value val condition)
      (dependency->name val))))
 
@@ -263,7 +266,7 @@ REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
 or #f on failure."
   (and-let* ((opam-file (opam-fetch name repository))
              (version (assoc-ref opam-file "version"))
-             (opam-content (assoc-ref opam-file "metadata"))
+             (opam-content (pk (assoc-ref opam-file "metadata")))
              (url-dict (metadata-ref opam-content "url"))
              (source-url (or (metadata-ref url-dict "src")
                              (metadata-ref url-dict "archive")))
