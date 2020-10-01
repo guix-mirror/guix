@@ -1946,6 +1946,15 @@ void DerivationGoal::startBuilder()
 
 }
 
+/* Return true if the operating system kernel part of SYSTEM1 and SYSTEM2 (the
+   bit that comes after the hyphen in system types such as "i686-linux") is
+   the same.  */
+static bool sameOperatingSystemKernel(const std::string& system1, const std::string& system2)
+{
+    auto os1 = system1.substr(system1.find("-"));
+    auto os2 = system2.substr(system2.find("-"));
+    return os1 == os2;
+}
 
 void DerivationGoal::runChild()
 {
@@ -2208,9 +2217,20 @@ void DerivationGoal::runChild()
         foreach (Strings::iterator, i, drv.args)
             args.push_back(rewriteHashes(*i, rewritesToTmp));
 
-        execve(drv.builder.c_str(), stringsToCharPtrs(args).data(), stringsToCharPtrs(envStrs).data());
-
-	int error = errno;
+	/* If DRV targets the same operating system kernel, try to execute it:
+	   there might be binfmt_misc set up for user-land emulation of other
+	   architectures.  However, if it targets a different operating
+	   system--e.g., "i586-gnu" vs. "x86_64-linux"--do not try executing
+	   it: the ELF file for that OS is likely indistinguishable from a
+	   native ELF binary and it would just crash at run time.  */
+	int error;
+	if (sameOperatingSystemKernel(drv.platform, settings.thisSystem)) {
+	    execve(drv.builder.c_str(), stringsToCharPtrs(args).data(),
+		   stringsToCharPtrs(envStrs).data());
+	    error = errno;
+	} else {
+	    error = ENOEXEC;
+	}
 
 	/* Right platform?  Check this after we've tried 'execve' to allow for
 	   transparent emulation of different platforms with binfmt_misc
