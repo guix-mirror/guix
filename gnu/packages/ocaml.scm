@@ -5158,9 +5158,9 @@ This library implements a splittable pseudo-random number generator that sacrifi
 cryptographic-quality randomness in favor of performance.")
     (license license:asl2.0)))
 
-(define-public ocaml-jane-street-headers
+(define-public ocaml4.07-jane-street-headers
   (package
-    (name "ocaml-jane-street-headers")
+    (name "ocaml4.07-jane-street-headers")
     (version "0.11.0")
     (source (origin
               (method url-fetch)
@@ -5172,7 +5172,10 @@ cryptographic-quality randomness in favor of performance.")
                 "0afhzm08l9v883fhpqqh2lmy7az609pxif40bp7x1sk8c0yszqsh"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."))
+     `(#:test-target "."
+       #:ocaml ,ocaml-4.07
+       #:findlib ,ocaml4.07-findlib
+       #:dune ,ocaml4.07-dune))
     (home-page "https://github.com/janestreet/jane-street-headers")
     (synopsis "Jane Street C header files")
     (description "This package provides C header files shared between the
@@ -5326,8 +5329,7 @@ standard library that was developed by Jane Street.")
         ("ocaml-bin-prot" ,ocaml4.07-bin-prot)
         ("ocaml-configurator" ,ocaml4.07-configurator)
         ("ocaml-fieldslib" ,ocaml4.07-fieldslib)
-        ("ocaml-jane-street-headers"
-         ,(package-with-ocaml4.07 ocaml-jane-street-headers))
+        ("ocaml-jane-street-headers" ,ocaml4.07-jane-street-headers)
         ("ocaml-ppx-assert" ,ocaml4.07-ppx-assert)
         ("ocaml-ppx-base" ,ocaml4.07-ppx-base)
         ("ocaml-ppx-hash" ,ocaml4.07-ppx-hash)
