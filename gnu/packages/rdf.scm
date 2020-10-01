@@ -268,17 +268,17 @@ and triple stores.")
 (define-public serd
   (package
     (name "serd")
-    (version "0.30.4")
+    (version "0.30.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/serd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "168rn3m32c59qbar120f83ibcnnd987ij9p053kybgl7cmm6358c"))))
+               "1vrprliknw9s0mz99dk7qf8i8xx38dd173q6b60332wxcm6cg8pm"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-before
