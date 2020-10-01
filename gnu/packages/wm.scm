@@ -1386,6 +1386,8 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
+    ;; XXX When updating, check whether grim-revert-output-rotation.patch can
+    ;; be dropped from the grim package.
     (version "1.4")
     (source
      (origin
