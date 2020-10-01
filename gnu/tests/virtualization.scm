@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,8 +20,11 @@
 
 (define-module (gnu tests virtualization)
   #:use-module (gnu tests)
+  #:use-module (gnu image)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system image)
+  #:use-module (gnu system images hurd)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
   #:use-module (gnu services dbus)
@@ -29,6 +33,7 @@
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages ssh)
   #:use-module (guix gexp)
+  #:use-module (guix records)
   #:use-module (guix store)
   #:export (%test-libvirt
             %test-childhurd))
@@ -107,10 +112,24 @@
 ;;; GNU/Hurd virtual machines, aka. childhurds.
 ;;;
 
+;; Copy of `hurd-vm-disk-image', using plain disk-image for test
+(define (hurd-vm-disk-image-raw config)
+  (let ((os ((@@ (gnu services virtualization) secret-service-operating-system)
+             (hurd-vm-configuration-os config)))
+        (disk-size (hurd-vm-configuration-disk-size config)))
+    (system-image
+     (image
+      (inherit hurd-disk-image)
+      (format 'disk-image)
+      (size disk-size)
+      (operating-system os)))))
+
 (define %childhurd-os
   (simple-operating-system
    (service dhcp-client-service-type)
-   (service hurd-vm-service-type)))
+   (service hurd-vm-service-type
+            (hurd-vm-configuration
+             (image (hurd-vm-disk-image-raw this-record))))))
 
 (define (run-childhurd-test)
   (define os
