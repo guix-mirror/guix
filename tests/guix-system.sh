@@ -297,6 +297,20 @@ EOF
 guix system build "$tmpdir/config.scm" -n
 (cd "$tmpdir"; guix system build "config.scm" -n)
 
+# Check that we get a warning when passing 'local-file' a non-literal relative
+# file name.
+cat > "$tmpdir/config.scm" <<EOF
+(use-modules (guix))
+
+(define (bad-local-file file)
+  (local-file file))
+
+(bad-local-file "whatever.scm")
+EOF
+! guix system build "$tmpdir/config.scm" -n
+guix system build "$tmpdir/config.scm" -n 2>&1 | \
+    grep "config\.scm:4:2: warning:.*whatever.*relative to current directory"
+
 # Searching.
 guix system search tor | grep "^name: tor"
 guix system search tor | grep "^shepherdnames: tor"
