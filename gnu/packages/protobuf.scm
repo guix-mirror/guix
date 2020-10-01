@@ -233,18 +233,17 @@ mechanism for serializing structured data.")
 (define-public python-pure-protobuf
   (package
     (name "python-pure-protobuf")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
-       ;; pypi is broken; has no tests
+       ;; The PyPI tarball is broken: it has no tests.
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/eigenein/protobuf")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0lgs99dpfyckz6spib419sl7jpdk2g54pcw0yg59gdcsd1f5zqgz"))))
+        (base32 "15dp5pvazd0jx4wzzh79080ah7hkpd3axh40al9vhzs2hf3v90hx"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
