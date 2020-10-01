@@ -14,6 +14,7 @@
  (version 0)
  (entry (commit "313f492657f1d0863c641fa5ee7f5b7028e27c94")
         (title (en "New @option{--image-type} option for @command{guix system disk-image}.")
+               (de "Neue Option @option{--image-type} für @command{guix system disk-image}.")
                (fr "Nouvelle option @option{--image-type} pour @command{guix system disk-image}."))
         (body
          (en "The @option{--file-system-type} option for @command{guix system
@@ -23,6 +24,15 @@ By default, @code{raw} disk images are produced, but @code{hurd-qcow2},
 are also available.
 
 The @option{--list-image-types} option lists all the available image types.")
+         (de "Anstelle der Befehlszeilenoption @option{--file-system-type} für
+@command{guix system disk-image} gibt es nun die neue Option
+@option{--image-type}.  In der Vorgabeeinstellung @code{raw} werden rohe
+Disk-Images erzeugt, aber es können auch die Abbildtypen @code{hurd-qcow2},
+@code{hurd-raw}, @code{uncompressed-iso9660} und @code{iso9660} ausgewählt
+werden.
+
+Mit der Option @option{--list-image-types} werden alle verfügbaren Abbildtypen
+aufgelistet.")
          (fr "L'option @option{--file-system-type} pour la commande
 @command{guix system disk-image} a été remplacée par la nouvelle option
 @option{--image-type}. Par défaut, l'option @code{raw}, produisant des images
