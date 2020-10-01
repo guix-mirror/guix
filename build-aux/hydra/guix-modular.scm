@@ -48,6 +48,12 @@ for SYSTEM.  Use VERSION as the version identifier."
                         #:pull-version 1
                         #:guile-version "2.2"))))
       `((derivation . ,(derivation-file-name drv)) ;the latest 2.2.x
+        (log . ,(log-file store (derivation-file-name drv)))
+        (outputs . ,(filter-map (lambda (res)
+                                  (match res
+                                    ((name . path)
+                                     `(,name . ,path))))
+                                (derivation->output-paths drv)))
         (nix-name . ,(derivation-name drv))
         (system . ,(derivation-system drv))
         (description . "Modular Guix")

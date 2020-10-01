@@ -78,6 +78,12 @@
     (let ((drv (package-derivation store package system
                                    #:graft? #f)))
       `((derivation . ,(derivation-file-name drv))
+        (log . ,(log-file store (derivation-file-name drv)))
+        (outputs . ,(filter-map (lambda (res)
+                                  (match res
+                                    ((name . path)
+                                     `(,name . ,path))))
+                                (derivation->output-paths drv)))
         (nix-name . ,(derivation-name drv))
         (system . ,(derivation-system drv))
         (description . ,(package-synopsis package))
@@ -203,6 +209,12 @@ SYSTEM."
   "Return a list of jobs that build images for SYSTEM."
   (define (->alist drv)
     `((derivation . ,(derivation-file-name drv))
+      (log . ,(log-file store (derivation-file-name drv)))
+      (outputs . ,(filter-map (lambda (res)
+                                (match res
+                                  ((name . path)
+                                   `(,name . ,path))))
+                              (derivation->output-paths drv)))
       (nix-name . ,(derivation-name drv))
       (system . ,(derivation-system drv))
       (description . "Stand-alone image of the GNU system")
@@ -308,6 +320,12 @@ system.")
             (system-test-value test))))
 
       `((derivation . ,(derivation-file-name drv))
+        (log . ,(log-file store (derivation-file-name drv)))
+        (outputs . ,(filter-map (lambda (res)
+                                  (match res
+                                    ((name . path)
+                                     `(,name . ,path))))
+                                (derivation->output-paths drv)))
         (nix-name . ,(derivation-name drv))
         (system . ,(derivation-system drv))
         (description . ,(format #f "Guix '~a' system test"
@@ -339,6 +357,12 @@ system.")
   "Return Hydra jobs to build the self-contained Guix binary tarball."
   (define (->alist drv)
     `((derivation . ,(derivation-file-name drv))
+      (log . ,(log-file store (derivation-file-name drv)))
+      (outputs . ,(filter-map (lambda (res)
+                                (match res
+                                  ((name . path)
+                                   `(,name . ,path))))
+                              (derivation->output-paths drv)))
       (nix-name . ,(derivation-name drv))
       (system . ,(derivation-system drv))
       (description . "Stand-alone binary Guix tarball")
