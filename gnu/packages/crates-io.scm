@@ -11859,6 +11859,40 @@ immutable interval tree.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-is-executable-0.1
+  (package
+    (name "rust-is-executable")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "is_executable" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0xy516afjh79a0d53j9v4w5mgi2s0r6f6qynnyz8g0dwi8xmab9h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(;; One test tries to invoke 'cargo readme' which does not exist and aborts.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test
+           (lambda _
+             (substitute* "tests/tests.rs"
+               (("panic!\\(\"Run `cargo readme > README.md` to update README.md\"\\)")
+                "return;"))
+             #t)))
+       #:cargo-inputs
+       (("rust-diff" ,rust-diff-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/fitzgen/is_executable")
+    (synopsis "Find executable files at path")
+    (description
+     "This package provides a small helper function which determines
+whether or not a given path points to an executable file.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-iso8601-0.1
   (package
     (name "rust-iso8601")
