@@ -109,7 +109,7 @@ Marburg.")
 (define-public liblouisutdml
   (package
     (name "liblouisutdml")
-    (version "2.8.0")
+    (version "2.9.0")
     (source
      (origin
        (method git-fetch)
@@ -119,15 +119,12 @@ Marburg.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11xxky3crjm8bidfljzpqaz1m1i1m1yskmdpavf9b4jpf87nzjj2"))
-       (patches
-        (search-patches "liblouisutdml-fix-tests.patch"))))
+        (base32 "0c32cfcfp0lyfd655c9ihhh3p7lhrb9q3xbll7q5dw4km86gaq6w"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin" "doc"))
     (arguments
      `(#:configure-flags
-       (list
-        "--disable-static")))
+       (list "--disable-static")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -147,12 +144,8 @@ transcription services for xml, html and text documents.  It translates into
 appropriate braille codes and formats according to its style sheet and the
 specifications in the document.")
     (home-page "http://liblouis.org/")
-    (license
-     (list
-      ;; Library
-      lgpl3+
-      ;; Tools
-      gpl3+))))
+    (license (list lgpl3+               ; library
+                   gpl3+))))            ; tools
 
 (define-public libstemmer
   (package
