@@ -204,11 +204,15 @@
             (chown #$db uid gid)
             (chown #$log uid gid)
 
-            (call-with-output-file #$queries-log-file (const #t))
-            (call-with-output-file #$web-queries-log-file (const #t))
+            (let ((queries-log-file #$queries-log-file))
+              (when queries-log-file
+                (call-with-output-file queries-log-file (const #t))
+                (chown #$queries-log-file uid gid)))
 
-            (chown #$queries-log-file uid gid)
-            (chown #$web-queries-log-file uid gid))))))
+            (let ((web-queries-log-file #$web-queries-log-file))
+              (when web-queries-log-file
+                (call-with-output-file web-queries-log-file (const #t))
+                (chown web-queries-log-file uid gid))))))))
 
 (define (cuirass-log-rotations config)
   "Return the list of log rotations that corresponds to CONFIG."
