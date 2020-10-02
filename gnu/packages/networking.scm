@@ -840,18 +840,17 @@ transparently check connection attempts against an access control list.")
     (license (license:non-copyleft "file://DISCLAIMER"
                                    "See the file DISCLAIMER in the distribution."))))
 
-
 (define-public zeromq
   (package
     (name "zeromq")
-    (version "4.3.2")
+    (version "4.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/zeromq/libzmq/releases"
                                   "/download/v" version "/zeromq-" version ".tar.gz"))
               (sha256
                (base32
-                "0qzp80ky4y2k7k1ya09v9gkivvfbz2km813snrb8jhnn634bbmzb"))))
+                "18km71p77jm1w7wly2a5mxvphjb0f2l6s08cg382x55f6zdqb4lx"))))
     (build-system gnu-build-system)
     (home-page "https://zeromq.org")
     (synopsis "Library for message-based applications")
