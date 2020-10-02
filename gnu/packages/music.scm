@@ -5538,7 +5538,7 @@ and as an LV2 plugin.")
     ;; distros to make necessary changes to integrate the software into the
     ;; distribution.
     (name "zrythm")
-    (version "0.8.911")
+    (version "1.0.0-alpha.3.0.1")
     (source
       (origin
         (method url-fetch)
@@ -5546,7 +5546,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "1xyp70sjc2k5pfdqbwqa988v86da0rmmyl8ry86bqv4ja80sc6g9"))))
+            "06025367x08y4g9grhcn35bk1dsrpgm04c8l8j50i3p49dl3s1n0"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -5558,15 +5558,8 @@ and as an LV2 plugin.")
         "-Dgraphviz=enabled" ; for exporting routing graphs
         "-Dguile=enabled" ; for Guile scripting
         "-Djack=enabled" ; for JACK audio/MIDI backend
-        "-Dsdl=enabled") ; for SDL audio backend (which uses ALSA)
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'patch-xdg-open
-          (lambda _
-            (substitute* "src/utils/io.c"
-                         (("OPEN_DIR_CMD")
-                          (string-append "\"" (which "xdg-open") "\"")))
-            #t)))))
+        "-Drtmidi=enabled" ; for RtMidi backend (ALSA sequencer)
+        "-Dsdl=enabled"))) ; for SDL audio backend (which uses ALSA)
    (inputs
     `(("alsa-lib" ,alsa-lib)
       ("jack" ,jack-1)
