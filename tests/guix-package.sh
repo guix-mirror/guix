@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
@@ -257,7 +257,7 @@ cat > "$module_dir/foo.scm"<<EOF
 (define-public x
   (package (inherit emacs)
     (name "emacs-foo-bar")
-    (version "42")))
+    (version "42.77.0")))
 EOF
 
 guix package -A emacs-foo-bar -L "$module_dir" | grep 42
@@ -298,7 +298,7 @@ cat > "$module_dir/foo.scm"<<EOF
     (source (origin (inherit (package-source emacs))
               (patches (list (search-patch "emacs.patch")))))
     (name "emacs-foo-bar-patched")
-    (version "42")))
+    (version "42.42.42")))
 
 (define-public y
   (package (inherit emacs)
