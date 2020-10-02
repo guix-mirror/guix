@@ -5337,7 +5337,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
 (define-public geonkick
   (package
     (name "geonkick")
-    (version "2.3.7")
+    (version "2.3.8")
     (source
      (origin
        (method git-fetch)
@@ -5346,8 +5346,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1wdcbwiyy6i5agq5lffkyilyc8mv1cc4mp9h0nybn240vb2flqc2"))))
+        (base32 "07809yy2q7dd6fcp0yndlg1vw2ca2zisnsplb3xrxvzdvrqlw910"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests included
