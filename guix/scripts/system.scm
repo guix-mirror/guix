@@ -671,36 +671,40 @@ checking this by themselves in their 'check' procedure."
                                        full-boot? container-shared-network?
                                        mappings label)
   "Return as a monadic value the derivation for OS according to ACTION."
-  (case action
-    ((build init reconfigure)
-     (operating-system-derivation os))
-    ((container)
-     (container-script
-      os
-      #:mappings mappings
-      #:shared-network? container-shared-network?))
-    ((vm-image)
-     (system-qemu-image os #:disk-image-size image-size))
-    ((vm)
-     (system-qemu-image/shared-store-script os
-                                            #:full-boot? full-boot?
-                                            #:disk-image-size
-                                            (if full-boot?
-                                                image-size
-                                                (* 70 (expt 2 20)))
-                                            #:mappings mappings))
-    ((disk-image)
-     (let ((base-image (os->image os #:type image-type)))
-       (lower-object
-        (system-image
-         (image
-          (inherit (if label
-                       (image-with-label base-image label)
-                       base-image))
-          (size image-size)
-          (operating-system os))))))
-    ((docker-image)
-     (system-docker-image os #:shared-network? container-shared-network?))))
+  (mlet %store-monad ((target (current-target-system)))
+    (case action
+      ((build init reconfigure)
+       (operating-system-derivation os))
+      ((container)
+       (container-script
+        os
+        #:mappings mappings
+        #:shared-network? container-shared-network?))
+      ((vm-image)
+       (system-qemu-image os #:disk-image-size image-size))
+      ((vm)
+       (system-qemu-image/shared-store-script os
+                                              #:full-boot? full-boot?
+                                              #:disk-image-size
+                                              (if full-boot?
+                                                  image-size
+                                                  (* 70 (expt 2 20)))
+                                              #:mappings mappings))
+      ((disk-image)
+       (let* ((base-image (os->image os #:type image-type))
+              (base-target (image-target base-image)))
+         (lower-object
+          (system-image
+           (image
+            (inherit (if label
+                         (image-with-label base-image label)
+                         base-image))
+            (target (or base-target target))
+            (size image-size)
+            (operating-system os))))))
+      ((docker-image)
+       (system-docker-image os
+                            #:shared-network? container-shared-network?)))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
