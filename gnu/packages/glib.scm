@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -325,11 +326,14 @@ shared NFS home directories.")
               (for-each (lambda (x) (apply disable x)) failing-tests)
               #t)))
         (replace 'check
-          (lambda _
-            (setenv "MESON_TESTTHREADS"
-                    (number->string (parallel-job-count)))
-            ;; Do not run tests marked as "flaky".
-            (invoke "meson" "test" "--no-suite" "flaky")))
+          (lambda* (#:key tests? #:allow-other-keys)
+            (if tests?
+                (begin
+                  (setenv "MESON_TESTTHREADS"
+                          (number->string (parallel-job-count)))
+                  ;; Do not run tests marked as "flaky".
+                  (invoke "meson" "test" "--no-suite" "flaky"))
+                #t)))
         ;; TODO: meson does not permit the bindir to be outside of prefix.
         ;; See https://github.com/mesonbuild/meson/issues/2561
         ;; We can remove this once meson is patched.
