@@ -147,8 +147,7 @@ host	all	all	::1/128 	md5"))
 (define-record-type* <postgresql-configuration>
   postgresql-configuration make-postgresql-configuration
   postgresql-configuration?
-  (postgresql         postgresql-configuration-postgresql ;<package>
-                      (default postgresql))
+  (postgresql         postgresql-configuration-postgresql) ;<package>
   (port               postgresql-configuration-port
                       (default 5432))
   (locale             postgresql-configuration-locale
@@ -279,8 +278,7 @@ host	all	all	::1/128 	md5"))
                        (service-extension account-service-type
                                           (const %postgresql-accounts))
                        (service-extension profile-service-type
-                                          (compose list postgresql-configuration-postgresql))))
-                (default-value (postgresql-configuration))))
+                                          (compose list postgresql-configuration-postgresql))))))
 
 (define-deprecated (postgresql-service #:key (postgresql postgresql)
                                        (port 5432)

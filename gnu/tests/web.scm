@@ -567,7 +567,9 @@ HTTP-PORT."
              (config
               (httpd-config-file
                (listen '("8080"))))))
-   (service postgresql-service-type)
+   (service postgresql-service-type
+            (postgresql-configuration
+             (postgresql postgresql-10)))
    (service patchwork-service-type
             (patchwork-configuration
              (patchwork patchwork)

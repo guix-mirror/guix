@@ -18457,7 +18457,9 @@ The following example describes a PostgreSQL service with the default
 configuration.
 
 @lisp
-(service postgresql-service-type)
+(service postgresql-service-type
+         (postgresql-configuration
+          (postgresql postgresql-10)))
 @end lisp
 
 If the services fails to start, it may be due to an incompatible
@@ -18483,7 +18485,7 @@ Data type representing the configuration for the
 @code{postgresql-service-type}.
 
 @table @asis
-@item @var{postgresql} (default: @code{postgresql})
+@item @var{postgresql}
 PostgreSQL package to use for the service.
 
 @item @var{port} (default: @code{5432})
