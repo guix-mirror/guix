@@ -68,6 +68,7 @@
 
             image-with-os
             raw-image-type
+            qcow2-image-type
             iso-image-type
             uncompressed-iso-image-type
 
@@ -138,6 +139,16 @@ set to the given OS."
   (image-type
    (name 'raw)
    (constructor (cut image-with-os efi-disk-image <>))))
+
+(define qcow2-image-type
+  (image-type
+   (name 'qcow2)
+   (constructor (cut image-with-os
+                 (image
+                  (inherit efi-disk-image)
+                  (name 'image.qcow2)
+                  (format 'compressed-qcow2))
+                 <>))))
 
 (define iso-image-type
   (image-type
