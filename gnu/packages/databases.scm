@@ -1040,6 +1040,8 @@ TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
 
+(define-public postgresql-10 postgresql)
+
 (define-public postgresql-11
   (package
     (inherit postgresql)
