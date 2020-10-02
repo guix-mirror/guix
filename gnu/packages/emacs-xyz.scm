@@ -23076,6 +23076,31 @@ icon support, git integration, and several other utilities.")
 replicate some of the features of the Doom modeline package.")
     (license license:gpl2+)))
 
+(define-public emacs-frames-only-mode
+  (package
+    (name "emacs-frames-only-mode")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/davidshepherd7/frames-only-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0y0sdjixaxvywrlp2sw51wnczhk51q1svl5aghbk9rkxpwv9ys9v"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/davidshepherd7/frames-only-mode")
+    (synopsis "Use frames instead of Emacs windows")
+    (description
+     "This is an Emacs global minor mode to use Emacs frames instead of Emacs'
+internal windowing system.  This combines particularly well with tiling window
+managers such as XMonad.")
+    (license license:gpl3+)))
+
 (define-public emacs-shrink-path
   (package
     (name "emacs-shrink-path")
