@@ -9350,6 +9350,12 @@ The command above installs @code{python-notebook} on top of
 rebuilds everything that depends on @code{python}, including
 @code{python-notebook} itself.
 
+Internally, @option{--without-tests} relies on changing the
+@code{#:tests?} option of a package's @code{check} phase (@pxref{Build
+Systems}).  Note that some packages use a customized @code{check} phase
+that does not respect a @code{#:tests? #f} setting.  Therefore,
+@option{--without-tests} has no effect on these packages.
+
 @end table
 
 @node Additional Build Options
