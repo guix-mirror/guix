@@ -198,6 +198,13 @@
                            (string-append "sysvinitservicedir = \
 $(prefix)/etc/init.d\n")))
 
+                        ;; Install OpenRC init files to $(prefix)/etc rather
+                        ;; than to /etc.
+                        (substitute* "nix/local.mk"
+                          (("^openrcservicedir = .*$")
+                           (string-append "openrcservicedir = \
+$(prefix)/etc/init.d\n")))
+
                         (invoke "sh" "bootstrap")))
                     (add-before 'build 'use-host-compressors
                       (lambda* (#:key inputs target #:allow-other-keys)
