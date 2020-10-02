@@ -15,6 +15,7 @@
 
  (entry (commit "8e1907a72430aa989125b053573ef0897c480697")
         (title (en "Package transformation options now recorded in profiles")
+               (de "Paketumwandlungsoptionen werden nun in Profilen gesichert")
                (fr "Options de transformation sauvegardées dans les profils"))
         (body
          (en "When installing packages in a profile, package transformation
@@ -23,6 +24,13 @@ you eventually run @command{guix upgrade}, those transformations will be
 automatically applied to the upgraded packages.
 
 Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (de "Wenn Sie ein Paket in ein Profil installieren, werden nun
+Paketumwandlungsoptionen wie @option{--with-input} im Profil gespeichert.
+Sobald Sie später @command{guix upgrade} ausführen, werden dieselben
+Umwandlungen automatisch auf die aktualisierten Pakete angewandt.
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
          (fr "Lorsqu'on installe des paquets dans un profil, les options de
 transformation telles que @option{--with-input} sont désormais enregistrées
 dans le profil.  Quand on le met plus tard à jour avec @command{guix upgrade},
