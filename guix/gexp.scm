@@ -454,9 +454,9 @@ appears."
        (with-syntax ((location (datum->syntax s (syntax-source s))))
         #`(%local-file file
                        (delay (absolute-file-name file (getcwd)))
+                       rest ...
                        #:location 'location
-                       #:literal? #f
-                       rest ...)))
+                       #:literal? #f)))
       ((_)
        #'(syntax-error "missing file name"))
       (id
