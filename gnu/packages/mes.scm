@@ -105,7 +105,15 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1vdiqpm3p0ndmpmkzcpkpjvgklfsk4wxrhkixdxbczpafdfl635p"))))
+                "1vdiqpm3p0ndmpmkzcpkpjvgklfsk4wxrhkixdxbczpafdfl635p"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "configure"
+                    (("GUILE_GLOBAL_SITE=\\$prefix.*")
+                     "GUILE_GLOBAL_SITE=\
+$prefix/share/guile/site/$GUILE_EFFECTIVE_VERSION\n"))
+                  #t))))
     (inputs
      `(("guile" ,guile-3.0)))))
 
