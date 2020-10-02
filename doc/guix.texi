@@ -18451,6 +18451,8 @@ details.
 @cindex SQL
 The @code{(gnu services databases)} module provides the following services.
 
+@subsubheading PostgreSQL
+
 @deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
        [#:config-file] [#:data-directory ``/var/lib/postgresql/data''] @
        [#:port 5432] [#:locale ``en_US.utf8''] [#:extension-packages '()]
@@ -18516,6 +18518,8 @@ dblink as they are already loadable by postgresql.  This field is only
 required to add extensions provided by other packages.
 @end deffn
 
+@subsubheading MariaDB/MySQL
+
 @deffn {Scheme Procedure} mysql-service [#:config (mysql-configuration)]
 Return a service that runs @command{mysqld}, the MySQL or MariaDB
 database server.
@@ -18539,6 +18543,8 @@ For MariaDB, the root password is empty.
 TCP port on which the database server listens for incoming connections.
 @end table
 @end deftp
+
+@subsubheading Memcached
 
 @defvr {Scheme Variable} memcached-service-type
 This is the service type for the @uref{https://memcached.org/,
@@ -18572,6 +18578,8 @@ Additional command line options to pass to @code{memcached}.
 @end table
 @end deftp
 
+@subsubheading MongoDB
+
 @defvr {Scheme Variable} mongodb-service-type
 This is the service type for @uref{https://www.mongodb.com/, MongoDB}.
 The value for the service type is a @code{mongodb-configuration} object.
@@ -18597,6 +18605,8 @@ owned by the mongodb user.  It should match the data-directory which
 MongoDB is configured to use through the configuration file.
 @end table
 @end deftp
+
+@subsubheading Redis
 
 @defvr {Scheme Variable} redis-service-type
 This is the service type for the @uref{https://redis.io/, Redis}
