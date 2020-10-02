@@ -18453,15 +18453,12 @@ The @code{(gnu services databases)} module provides the following services.
 
 @subsubheading PostgreSQL
 
-@deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
-       [#:config-file] [#:data-directory ``/var/lib/postgresql/data''] @
-       [#:port 5432] [#:locale ``en_US.utf8''] [#:extension-packages '()]
-Return a service that runs @var{postgresql}, the PostgreSQL database
-server.
+The following example describes a PostgreSQL service with the default
+configuration.
 
-The PostgreSQL daemon loads its runtime configuration from @var{config-file},
-creates a database cluster with @var{locale} as the default
-locale, stored in @var{data-directory}.  It then listens on @var{port}.
+@lisp
+(service postgresql-service-type)
+@end lisp
 
 If the services fails to start, it may be due to an incompatible
 cluster already present in @var{data-directory}.  Adjust it (or, if you
@@ -18481,6 +18478,29 @@ createuser --interactive
 createdb $MY_USER_LOGIN      # Replace appropriately.
 @end example
 
+@deftp {Data Type} postgresql-configuration
+Data type representing the configuration for the
+@code{postgresql-service-type}.
+
+@table @asis
+@item @var{postgresql} (default: @code{postgresql})
+PostgreSQL package to use for the service.
+
+@item @var{port} (default: @code{5432})
+Port on which PostgreSQL should listen.
+
+@item @var{locale} (default: @code{"en_US.utf8"})
+Locale to use as the default when creating the database cluster.
+
+@item @var{config-file} (default: @code{(postgresql-config-file)})
+The configuration file to use when running PostgreSQL.  The default
+behaviour uses the postgresql-config-file record with the default values
+for the fields.
+
+@item @var{data-directory} (default: @code{"/var/lib/postgresql/data"})
+Directory in which to store the data.
+
+@item @var{extension-packages} (default: @code{'()})
 @cindex postgresql extension-packages
 Additional extensions are loaded from packages listed in
 @var{extension-packages}.  Extensions are available at runtime.  For instance,
@@ -18516,7 +18536,9 @@ psql -U postgres
 There is no need to add this field for contrib extensions such as hstore or
 dblink as they are already loadable by postgresql.  This field is only
 required to add extensions provided by other packages.
-@end deffn
+
+@end table
+@end deftp
 
 @subsubheading MariaDB/MySQL
 

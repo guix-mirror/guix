@@ -30,6 +30,7 @@
   #:use-module (gnu packages databases)
   #:use-module (guix build-system trivial)
   #:use-module (guix build union)
+  #:use-module (guix deprecation)
   #:use-module (guix modules)
   #:use-module (guix packages)
   #:use-module (guix records)
@@ -281,12 +282,13 @@ host	all	all	::1/128 	md5"))
                                           (compose list postgresql-configuration-postgresql))))
                 (default-value (postgresql-configuration))))
 
-(define* (postgresql-service #:key (postgresql postgresql)
-                             (port 5432)
-                             (locale "en_US.utf8")
-                             (config-file (postgresql-config-file))
-                             (data-directory "/var/lib/postgresql/data")
-                             (extension-packages '()))
+(define-deprecated (postgresql-service #:key (postgresql postgresql)
+                                       (port 5432)
+                                       (locale "en_US.utf8")
+                                       (config-file (postgresql-config-file))
+                                       (data-directory "/var/lib/postgresql/data")
+                                       (extension-packages '()))
+  postgresql-service-type
   "Return a service that runs @var{postgresql}, the PostgreSQL database server.
 
 The PostgreSQL daemon loads its runtime configuration from @var{config-file}
