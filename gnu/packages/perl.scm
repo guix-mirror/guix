@@ -454,14 +454,14 @@ list manipulation routines.")
 (define-public perl-async-interrupt
   (package
     (name "perl-async-interrupt")
-    (version "1.25")
+    (version "1.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
                                   "Async-Interrupt-" version ".tar.gz"))
               (sha256
                (base32
-                "0jh94wj1b6a0cnni8prsb59g5lak5rfj2fw5ng96291zmz2yqp1w"))))
+                "0nq8wqy0gsnwhiw23wsp1dmgzzbf2q1asi85yd0d7cmg4haxsmib"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-canary-stability" ,perl-canary-stability)))
