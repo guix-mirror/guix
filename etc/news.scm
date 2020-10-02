@@ -12,6 +12,25 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "8e1907a72430aa989125b053573ef0897c480697")
+        (title (en "Package transformation options now recorded in profiles")
+               (fr "Options de transformation sauvegardées dans les profils"))
+        (body
+         (en "When installing packages in a profile, package transformation
+options such as @option{--with-input} are now recorded in the profile.  When
+you eventually run @command{guix upgrade}, those transformations will be
+automatically applied to the upgraded packages.
+
+Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (fr "Lorsqu'on installe des paquets dans un profil, les options de
+transformation telles que @option{--with-input} sont désormais enregistrées
+dans le profil.  Quand on le met plus tard à jour avec @command{guix upgrade},
+ces transformations sont automatiquement appliquées aux nouveaux paquets.
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
  (entry (commit "313f492657f1d0863c641fa5ee7f5b7028e27c94")
         (title (en "New @option{--image-type} option for @command{guix system disk-image}.")
                (de "Neue Option @option{--image-type} für @command{guix system disk-image}.")
