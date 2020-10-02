@@ -549,6 +549,13 @@ WHILE-LIST."
             (write-passwd (list passwd))
             (write-group groups)
 
+            (unless network?
+              ;; When isolated from the network, provide a minimal /etc/hosts
+              ;; to resolve "localhost".
+              (call-with-output-file "/etc/hosts"
+                (lambda (port)
+                  (display "127.0.0.1 localhost\n" port))))
+
             ;; For convenience, start in the user's current working
             ;; directory or, if unmapped, the home directory.
             (chdir (if map-cwd?

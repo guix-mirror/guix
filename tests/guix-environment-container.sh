@@ -44,6 +44,10 @@ else
     test $? = 42
 fi
 
+# Make sure "localhost" resolves.
+guix environment --container --ad-hoc --bootstrap guile-bootstrap \
+     -- guile -c '(exit (pair? (getaddrinfo "localhost" "80")))'
+
 # Make sure '--preserve' is honored.
 result="`FOOBAR=42; export FOOBAR; guix environment -C --ad-hoc --bootstrap \
    guile-bootstrap -E ^FOO -- guile -c '(display (getenv \"FOOBAR\"))'`"
