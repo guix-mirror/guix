@@ -814,8 +814,8 @@ is similar to mhddfs, unionfs, and aufs.")
               ))))
 
 (define-public mergerfs-tools
-  (let ((commit "c926779d87458d103f3b674603bf97801ae2486d")
-        (revision "1"))
+  (let ((commit "480296ed03d1c3c7909697d7ef96d35840ee26b8")
+        (revision "2"))
     (package
       (name "mergerfs-tools")
       ;; No released version exists.
@@ -829,7 +829,7 @@ is similar to mhddfs, unionfs, and aufs.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "04hhwcib0xv4cf1mkj8zrp2aqpxkncml9iqg4m1mz6a5zhzsk0vm"))))
+           "0xr06gi4xcr832rzy0hkp5c1n231s7w5iq1nkjvx9kvm0dl7chpq"))))
       (build-system copy-build-system)
       (inputs
        `(("python" ,python)
