@@ -768,7 +768,7 @@ community.")
 (define-public mergerfs
   (package
     (name "mergerfs")
-    (version "2.29.0")
+    (version "2.31.0")
     (source
      (origin
        (method url-fetch)
@@ -776,7 +776,7 @@ community.")
                            version "/mergerfs-" version ".tar.gz"))
        (sha256
         (base32
-         "17gizw4vgbqqjd2ykkfpp276942jb5qclp0lkiwkmq1yjgyjqfmk"))))
+         "0k4asbg5n9dhy5jpjkw6simqqnr1zira2y4i71cq05091dfwm90p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
@@ -797,8 +797,9 @@ community.")
              ;; The Makefile does not allow overriding PREFIX via make variables.
              (substitute* '("Makefile" "libfuse/Makefile")
                (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
+               (("= /sbin") "= $(EXEC_PREFIX)/sbin")
                ;; cannot chown as build user
-               (("chown root:root") "true"))
+               (("chown root(:root)?") "true"))
              #t)))))
     ;; mergerfs bundles a heavily modified copy of libfuse.
     (inputs `(("util-linux" ,util-linux)))
