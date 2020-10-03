@@ -550,8 +550,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "78.3.0-guix0-preview1")
-(define %icecat-build-id "20200921000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "78.3.1-guix0-preview1")
+(define %icecat-build-id "20200926000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -573,11 +573,11 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "1xvvizv84v4w3mq56vphccpwagga1i9lgbvj1l0cs763sqi3w9w5"))))
+              "1savwk91vhvg096w289xwpjvqbbd2ibfad90081hirlzd1kpvljz"))))
 
-         (upstream-icecat-base-version "78.3.0") ; maybe older than base-version
+         (upstream-icecat-base-version "78.3.1") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "df6b2146f13fc90ad3c11136115ada077383ee2a")
+         (gnuzilla-commit "cd2af837fce69145effef83def6993d244887b03")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -589,7 +589,7 @@ from forcing GEXP-PROMISE."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "0nmkb2d6jpfnx081w8gdbs264j9rg9whq2gna9d4wazdpds1pyfr"))))
+              "0266gp8vs4avlfdnr8dj7b47msxv1vkd0xpnifp04v4scvgj0yaj"))))
 
          (gnuzilla-fixes-patch
           (local-file (search-patch "icecat-use-older-reveal-hidden-html.patch")))
