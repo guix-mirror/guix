@@ -340,7 +340,8 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
     (native-inputs
      `(("python-docopt" ,python-docopt)))
     (inputs
-     `(("python-pythondialog" ,python-pythondialog)
+     `(("python-jinja2" ,python-jinja2)
+       ("python-pythondialog" ,python-pythondialog)
        ("python-requests" ,python-requests)))
     (propagated-inputs
      `(("openvpn" ,openvpn)
