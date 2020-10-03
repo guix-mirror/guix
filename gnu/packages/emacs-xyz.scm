@@ -9857,7 +9857,11 @@ programming and reproducible research.")
        (uri (string-append "https://orgmode.org/elpa/"
                            "org-plus-contrib-" version ".tar"))
        (sha256
-        (base32 "1naq25g4d95cx29axx428rnpc4m9hd0j7w1l0vqwkdjyr5qfj0ab"))))
+        (base32 "1naq25g4d95cx29axx428rnpc4m9hd0j7w1l0vqwkdjyr5qfj0ab"))
+       ;; ob-sclang.el is packaged separately to avoid the dependency on
+       ;; SuperCollider and qtwebengine.
+       (modules '((guix build utils)))
+       (snippet '(begin (delete-file "ob-sclang.el") #t))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -9884,14 +9888,35 @@ programming and reproducible research.")
     (propagated-inputs
      `(("arduino-mode" ,emacs-arduino-mode)
        ("cider" ,emacs-cider)
-       ("org" ,emacs-org)
-       ("scel" ,emacs-scel)))
+       ("org" ,emacs-org)))
     (synopsis "Contributed packages to Org mode")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
 lists, and project planning with a fast and effective plain-text system.
 
 This package is equivalent to org-plus-contrib, but only includes additional
 files that you would find in @file{contrib/} from the git repository.")))
+
+(define-public emacs-ob-sclang
+  (package
+    (inherit emacs-org-contrib)
+    (name "emacs-ob-sclang")
+    (source
+     (origin (inherit (package-source emacs-org-contrib))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 (for-each (lambda (file)
+                             (unless (equal? file "./ob-sclang.el")
+                               (delete-file file)))
+                           (find-files "." "\\.el"))
+                 #t))))
+    (propagated-inputs
+     `(("org" ,emacs-org)
+       ("scel" ,emacs-scel)))
+    (synopsis "Org Babel support for SuperCollider")
+    (description "This package adds support for evaluating @code{sclang}
+Org mode source blocks.  It is extracted from the @code{emacs-org-contrib}
+package.")))
 
 (define-public emacs-org-edna
   (package
