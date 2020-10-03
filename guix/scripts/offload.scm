@@ -88,6 +88,10 @@
                      (default 3))
   (daemon-socket   build-machine-daemon-socket    ; string
                    (default "/var/guix/daemon-socket/socket"))
+  ;; A #f value tells the offload scheduler to disregard the load of the build
+  ;; machine when selecting the best offload machine.
+  (overload-threshold build-machine-overload-threshold ; inexact real between
+                      (default 0.6))                   ; 0.0 and 1.0 | #f
   (parallel-builds build-machine-parallel-builds  ; number
                    (default 1))
   (speed           build-machine-speed            ; inexact real
@@ -391,30 +395,34 @@ of free disk space on '~a'~%")
   (* 100 (expt 2 20)))                            ;100 MiB
 
 (define (node-load node)
-  "Return the load on NODE.  Return +∞ if NODE is misbehaving."
+  "Return the load on NODE, a normalized value between 0.0 and 1.0.  The value
+is derived from /proc/loadavg and normalized according to the number of
+logical cores available, to give a rough estimation of CPU usage.  Return
+1.0 (fully loaded) if NODE is misbehaving."
   (let ((line (inferior-eval '(begin
                                 (use-modules (ice-9 rdelim))
                                 (call-with-input-file "/proc/loadavg"
                                   read-string))
-                             node)))
-    (if (eof-object? line)
-        +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
+                             node))
+        (ncores (inferior-eval '(begin
+                                  (use-modules (ice-9 threads))
+                                  (current-processor-count))
+                               node)))
+    (if (or (eof-object? line) (eof-object? ncores))
+        1.0    ;MACHINE does not respond, so assume it is fully loaded
         (match (string-tokenize line)
           ((one five fifteen . x)
-           (string->number one))
+           (let ((load (/ (string->number one) ncores)))
+             (if (> load 1.0)
+                 1.0
+                 load)))
           (x
-           +inf.0)))))
+           1.0)))))
 
-(define (normalized-load machine load)
-  "Divide LOAD by the number of parallel builds of MACHINE."
-  (if (rational? load)
-      (let* ((jobs       (build-machine-parallel-builds machine))
-             (normalized (/ load jobs)))
-        (format (current-error-port) "load on machine '~a' is ~s\
- (normalized: ~s)~%"
-                (build-machine-name machine) load normalized)
-        normalized)
-      load))
+(define (report-load machine load)
+  (format (current-error-port)
+          "normalized load on machine '~a' is ~,2f~%"
+          (build-machine-name machine) load))
 
 (define (random-seed)
   (logxor (getpid) (car (gettimeofday))))
@@ -472,11 +480,15 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
        (let* ((session (false-if-exception (open-ssh-session best
                                                              %short-timeout)))
               (node    (and session (remote-inferior session)))
-              (load    (and node (normalized-load best (node-load node))))
+              (load    (and node (node-load node)))
+              (threshold (build-machine-overload-threshold best))
               (space   (and node (node-free-disk-space node))))
+         (when load (report-load best load))
          (when node (close-inferior node))
          (when session (disconnect! session))
-         (if (and node (< load 2.) (>= space %minimum-disk-space))
+         (if (and node
+                  (or (not threshold) (< load threshold))
+                  (>= space %minimum-disk-space))
              (match others
                (((machines slots) ...)
                 ;; Release slots from the uninteresting machines.
@@ -708,13 +720,13 @@ machine."
                               (free (node-free-disk-space inferior)))
                           (close-inferior inferior)
                           (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
-  host name: ~a~%  normalized load: ~a~%  free disk space: ~,2f MiB~%\
+  host name: ~a~%  normalized load: ~,2f~%  free disk space: ~,2f MiB~%\
   time difference: ~a s~%"
                                   (build-machine-name machine)
                                   (utsname:sysname uts) (utsname:release uts)
                                   (utsname:machine uts)
                                   (utsname:nodename uts)
-                                  (normalized-load machine load)
+                                  load
                                   (/ free (expt 2 20) 1.)
                                   (- time now))))))))
 

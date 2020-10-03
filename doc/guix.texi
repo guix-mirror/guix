@@ -1081,7 +1081,28 @@ architecture natively supports it, via emulation (@pxref{Transparent
 Emulation with QEMU}), or both.  Missing prerequisites for the build are
 copied over SSH to the target machine, which then proceeds with the
 build; upon success the output(s) of the build are copied back to the
-initial machine.
+initial machine.  The offload facility comes with a basic scheduler that
+attempts to select the best machine.  The best machine is chosen among
+the available machines based on criteria such as:
+
+@enumerate
+@item
+The availability of a build slot.  A build machine can have as many
+build slots (connections) as the value of the @code{parallel-builds}
+field of its @code{build-machine} object.
+
+@item
+Its relative speed, as defined via the @code{speed} field of its
+@code{build-machine} object.
+
+@item
+Its load.  The normalized machine load must be lower than a threshold
+value, configurable via the @code{overload-threshold} field of its
+@code{build-machine} object.
+
+@item
+Disk space availability.  More than a 100 MiB must be available.
+@end enumerate
 
 The @file{/etc/guix/machines.scm} file typically looks like this:
 
@@ -1184,6 +1205,13 @@ when transferring files to and from build machines.
 @item @code{daemon-socket} (default: @code{"/var/guix/daemon-socket/socket"})
 File name of the Unix-domain socket @command{guix-daemon} is listening
 to on that machine.
+
+@item @code{overload-threshold} (default: @code{0.6})
+The load threshold above which a potential offload machine is
+disregarded by the offload scheduler.  The value roughly translates to
+the total processor usage of the build machine, ranging from 0.0 (0%) to
+1.0 (100%).  It can also be disabled by setting
+@code{overload-threshold} to @code{#f}.
 
 @item @code{parallel-builds} (default: @code{1})
 The number of builds that may run in parallel on the machine.
