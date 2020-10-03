@@ -27,7 +27,8 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages)
-  #:use-module (gnu packages erlang))
+  #:use-module (gnu packages erlang)
+  #:use-module (gnu packages version-control))
 
 (define-public elixir
   (package
@@ -99,7 +100,8 @@
              #t))
          (delete 'configure))))
     (inputs
-     `(("erlang" ,erlang)))
+     `(("erlang" ,erlang)
+       ("git" ,git)))
     (home-page "https://elixir-lang.org/")
     (synopsis "Elixir programming language")
     (description "Elixir is a dynamic, functional language used to build
