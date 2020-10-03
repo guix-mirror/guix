@@ -338,10 +338,10 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no tests in repo
     (native-inputs
-     `(("docopt" ,python-docopt)))
+     `(("python-docopt" ,python-docopt)))
     (inputs
-     `(("pythondialog" ,python-pythondialog)
-       ("requests" ,python-requests)))
+     `(("python-pythondialog" ,python-pythondialog)
+       ("python-requests" ,python-requests)))
     (propagated-inputs
      `(("openvpn" ,openvpn)
        ("dialog" ,dialog)))
