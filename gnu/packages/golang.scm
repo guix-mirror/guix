@@ -512,6 +512,35 @@ way of specifying command line options.")
     (home-page "https://github.com/jessevdk/go-flags")
     (license license:bsd-3)))
 
+(define-public go-github-com-aws-sdk
+  (package
+    (name "go-github-com-aws-sdk")
+    (version "1.35.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aws/aws-sdk-go")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ky5lw2s2zpslnnqcs6hgsrwvwbxwgflb5jwf16dd4aga3vrg10c"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/aws/aws-sdk-go/aws"
+       #:unpack-path "github.com/aws/aws-sdk-go"))
+    (propagated-inputs
+     `(("go-github-com-go-sql-driver-mysql" ,go-github-com-go-sql-driver-mysql)
+       ("go-github-com-jmespath-go-jmespath" ,go-github-com-jmespath-go-jmespath)
+       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)))
+    (home-page "https://github.com/aws/aws-sdk-go")
+    (synopsis "Library to access Amazon Web Services (AWS)")
+    (description
+     "This is the official AWS SDK for the Go programming language.")
+    (license license:asl2.0)))
+
 (define-public go-gopkg.in-tomb.v2
   (let ((commit "d5d1b5820637886def9eef33e03a27a9f166942c")
         (revision "0"))
