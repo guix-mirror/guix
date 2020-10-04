@@ -2318,21 +2318,21 @@ written in the Go programming language.")
     (license license:bsd-3)))
 
 (define-public emacs-google-maps
-  (let ((version "20181121")            ;no release tag since 2013
-        (commit "2eb16ff609f5a9f8d02c15238a111fbb7db6c146")
+  ;; There has been no new release tag since 2013.
+  (let ((commit "2eb16ff609f5a9f8d02c15238a111fbb7db6c146")
         (revision "1"))
     (package
       (name "emacs-google-maps")
-      (version (git-version version revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/jd/google-maps.el")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1bl0dnksbf14d0xcnvdy9qpvzc5c8jwkxpmfvgayj6djikxnw2md"))))
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jd/google-maps.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1bl0dnksbf14d0xcnvdy9qpvzc5c8jwkxpmfvgayj6djikxnw2md"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/jd/google-maps.el")
       (synopsis "Access Google Maps from Emacs")
