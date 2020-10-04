@@ -23291,30 +23291,26 @@ interface.")
       (license license:gpl3+))))
 
 (define-public emacs-ivy-posframe
-  (let ((commit "ae9bafe94fe6b77b6fe45766ae6172646f6a5d50"))
-    (package
-      (name "emacs-ivy-posframe")
-      (version (git-version "0.1.0" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/tumashu/ivy-posframe")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1j6yns5d7lh2v1nfcznrirl7qicdli9csciqvfgj4gkh72a97pw1"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-posframe" ,emacs-posframe)
-         ("emacs-ivy" ,emacs-ivy)))
-      (home-page "https://github.com/tumashu/ivy-posframe")
-      (synopsis "Pop a posframe (a child frame) to show Ivy candidates")
-      (description
-       "This package provides an Emacs Ivy extension, which let Ivy use
+  (package
+    (name "emacs-ivy-posframe")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "ivy-posframe-" version ".el"))
+       (sha256
+        (base32 "0hr6bjlgflvz9rk5rnr55fcrd4873jxmksdr7r1zl1zcb8vdx7ks"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)
+       ("emacs-posframe" ,emacs-posframe)))
+    (home-page "https://github.com/tumashu/ivy-posframe")
+    (synopsis "Pop a posframe (a child frame) to show Ivy candidates")
+    (description
+     "This package provides an Emacs Ivy extension, which let Ivy use
 posframe to show its candidate menu.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-shackle
   (let ((commit "7ccbe513852a1d1700b698547efca14b8940319d")
