@@ -18852,6 +18852,26 @@ applications.")
      "Additional trait for Read and Write to read and write Plain Old Data.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-pom-3
+  (package
+    (name "rust-pom")
+    (version "3.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pom" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1v14c2p1irblagnljkw4n0f1w5r8mbybzycz0j1f5y79h0kikqh7"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/J-F-Liu/pom")
+    (synopsis "PEG parser combinators using operator overloading without macros")
+    (description "This package provides a PEG parser combinators using operator
+overloading without macros in Rust.")
+    (license license:expat)))
+
 (define-public rust-ppv-lite86-0.2
   (package
     (name "rust-ppv-lite86")
