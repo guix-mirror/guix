@@ -571,6 +571,7 @@ EXTRA_DIST +=						\
   build-aux/hydra/guix-modular.scm			\
   build-aux/cuirass/gnu-system.scm			\
   build-aux/cuirass/guix-modular.scm			\
+  build-aux/cuirass/hurd-manifest.scm			\
   build-aux/cuirass/hydra-to-cuirass.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/check-channel-news.scm			\
