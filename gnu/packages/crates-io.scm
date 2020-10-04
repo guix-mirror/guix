@@ -13546,6 +13546,41 @@ by inspecting the system for user preference.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-lopdf-0.25
+  (package
+    (name "rust-lopdf")
+    (version "0.25.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lopdf" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1yb4yj1a8a88w78hz9msg65xbkyx5n4d9gm1xb2c67zaj1xvyw1i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-dtoa" ,rust-dtoa-0.4)
+        ("rust-encoding" ,rust-encoding-0.2)
+        ("rust-flate2" ,rust-flate2-1.0)
+        ("rust-image" ,rust-image-0.20)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-linked-hash-map" ,rust-linked-hash-map-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-lzw" ,rust-lzw-0.10)
+        ("rust-nom" ,rust-nom-5)
+        ("rust-pom" ,rust-pom-3)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-time" ,rust-time-0.1))))
+    (home-page "https://github.com/J-F-Liu/lopdf")
+    (synopsis "Rust library for PDF document manipulation")
+    (description
+     "This package provides a Rust library for PDF document manipulation.")
+    (license license:expat)))
+
 (define-public rust-lru-cache-0.1
   (package
     (name "rust-lru-cache")
