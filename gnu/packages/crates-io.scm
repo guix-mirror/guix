@@ -4135,6 +4135,29 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
 semantics than those provided by @code{as} or @code{From}/@code{Into}.")
     (license license:expat)))
 
+(define-public rust-cordic-0.1
+  (package
+    (name "rust-cordic")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cordic" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "13zvqn6c8d8lp18p9ik10q100wfsyv2m2n4fca16laq3yw7r231m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t     ; rust-fixed fails to build
+       #:cargo-inputs (("rust-fixed" ,rust-fixed-1))))
+    (home-page "https://github.com/sebcrozet/cordic")
+    (synopsis "Special functions for fixed-point numbers using the CORDIC method")
+    (description "This package provides special functions for fixed-point
+numbers using the CORDIC method.")
+    (license license:bsd-3)))
+
 (define-public rust-core-arch-0.1
   (package
     (name "rust-core-arch")
