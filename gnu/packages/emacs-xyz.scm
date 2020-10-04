@@ -5646,6 +5646,34 @@ This provides a basic API and common UI widgets such as popup tooltips
 and popup menus.")
     (license license:gpl3+)))
 
+(define-public emacs-python-black
+  (package
+    (name "emacs-python-black")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wbolster/emacs-python-black")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0fjnd85nlkck156dj6cahk8chhgkbgl2kwywqzi8bl4yj700m4dk"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-reformatter" ,emacs-reformatter)
+       ("python-black-macchiato" ,python-black-macchiato)))
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/wbolster/emacs-python-black")
+    (synopsis "Reformat Python code via @code{python-black}")
+    (description
+     "This package makes it easy to reformat Python code using
+@code{python-black} and @code{python-black-macchiato} for entire and partial
+buffers, respectively.")
+    (license license:bsd-3)))
+
 (define-public emacs-python-environment
   (package
     (name "emacs-python-environment")
