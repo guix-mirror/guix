@@ -2857,10 +2857,10 @@ Lisp implementations.")
   (sbcl-package->ecl-package sbcl-closer-mop))
 
 (define sbcl-cl-cffi-gtk-boot0
-  (let ((commit "412d17214e092220c65a5660f5cbbd9cb69b8fe4"))
+  (let ((commit "e9a46df65995d9a16e6c8dbdc1e09b775eb4a966"))
     (package
       (name "sbcl-cl-cffi-gtk-boot0")
-      (version (git-version "0.11.2" "1" commit))
+      (version (git-version "0.11.2" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -2870,7 +2870,7 @@ Lisp implementations.")
          (file-name (git-file-name "cl-cffi-gtk" version))
          (sha256
           (base32
-           "0n997yhcnzk048nalx8ys62ja2ac8iv4mbn3mb55iapl0321hghn"))))
+           "04vix0gmqsj91lm975sx7jhlnz5gq1xf9jp873mp7c8frc5dk1jj"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("iterate" ,sbcl-iterate)
