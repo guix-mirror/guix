@@ -7479,6 +7479,38 @@ cross platform API.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-fixed-1
+  (package
+    (name "rust-fixed")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fixed" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0p0v4jjgbbvp91sl8rkfqb2hldaxbzv89mzwmp8753mlrfqwn185"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-az" ,rust-az-1)
+        ("rust-half" ,rust-half-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-typenum" ,rust-typenum-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.4))))
+    (home-page "https://gitlab.com/tspiteri/fixed")
+    (synopsis "Rust fixed-point numbers")
+    (description "This package provides fixed-point numbers in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fixedbitset-0.2
   (package
     (name "rust-fixedbitset")
