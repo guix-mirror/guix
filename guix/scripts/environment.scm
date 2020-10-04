@@ -34,6 +34,7 @@
   #:use-module (guix scripts build)
   #:use-module (gnu build linux-container)
   #:use-module (gnu build accounts)
+  #:use-module ((guix build syscalls) #:select (set-network-interface-up))
   #:use-module (gnu system linux-container)
   #:use-module (gnu system file-systems)
   #:use-module (gnu packages)
@@ -554,7 +555,10 @@ WHILE-LIST."
               ;; to resolve "localhost".
               (call-with-output-file "/etc/hosts"
                 (lambda (port)
-                  (display "127.0.0.1 localhost\n" port))))
+                  (display "127.0.0.1 localhost\n" port)))
+
+              ;; Allow local AF_INET communications.
+              (set-network-interface-up "lo"))
 
             ;; For convenience, start in the user's current working
             ;; directory or, if unmapped, the home directory.

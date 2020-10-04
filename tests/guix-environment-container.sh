@@ -48,6 +48,17 @@ fi
 guix environment --container --ad-hoc --bootstrap guile-bootstrap \
      -- guile -c '(exit (pair? (getaddrinfo "localhost" "80")))'
 
+# We should get ECONNREFUSED, not ENETUNREACH, which would indicate that "lo"
+# is down.
+guix environment --container --ad-hoc --bootstrap guile-bootstrap \
+     -- guile -c "(exit (= ECONNREFUSED
+  (catch 'system-error
+    (lambda ()
+      (let ((sock (socket AF_INET SOCK_STREAM 0)))
+        (connect sock AF_INET INADDR_LOOPBACK 12345)))
+    (lambda args
+      (pk 'errno (system-error-errno args))))))"
+
 # Make sure '--preserve' is honored.
 result="`FOOBAR=42; export FOOBAR; guix environment -C --ad-hoc --bootstrap \
    guile-bootstrap -E ^FOO -- guile -c '(display (getenv \"FOOBAR\"))'`"
