@@ -24523,6 +24523,39 @@ words, like Python's shlex.")
     (description "Backend crate for signal-hook.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-simba-0.1
+  (package
+    (name "rust-simba")
+    (version "0.1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "simba" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1chz3abrvrj4qz86gwrrzajsl5zcc2l0dhxi39mymbgscw9ip4zv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-cordic" ,rust-cordic-0.1)
+        ("rust-decimal" ,rust-decimal-2.0)
+        ("rust-fixed" ,rust-fixed-1)
+        ("rust-num-complex" ,rust-num-complex-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-packed-simd" ,rust-packed-simd-0.3)
+        ("rust-paste" ,rust-paste-0.1)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-wide" ,rust-wide-0.4))))
+    (home-page "https://github.com/dimforge/simba")
+    (synopsis "SIMD algebra for Rust")
+    (description "This package provides a set of mathematical traits to
+facilitate the use of SIMD-based @dfn{Array of Struct of Array} (AoSoA) storage
+pattern in Rust.")
+    (license license:bsd-3)))
+
 (define-public rust-simd-0.2
   (package
     (name "rust-simd")
