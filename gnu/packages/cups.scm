@@ -415,16 +415,17 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.20.6")
+    (version "3.20.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "083w58wpvvm6sir6rf5dwx3r0rman9sv1zpl26chl0a88crjsjy6"))
+                "1prdbp410405xrfggjc7y34nzljg7jnbgjzalgv4khwwma4i299n"))
               (modules '((guix build utils)))
-              (patches (search-patches "hplip-remove-imageprocessor.patch"))
+              (patches (search-patches "hplip-fix-bug-1898438.patch"
+                                       "hplip-remove-imageprocessor.patch"))
               (snippet
                '(begin
                   ;; Delete non-free blobs: .so files, pre-compiled
@@ -465,10 +466,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                          (assoc-ref %outputs "out") "/lib")
          ;; Disable until mime.types merging works (FIXME).
          "--disable-fax-build"
-         "--enable-hpcups-install"
          "--enable-new-hpcups"
-         "--enable-cups_ppd_install"
-         "--enable-cups_drv_install"
          ;; TODO add foomatic drv install eventually.
          ;; TODO --enable-policykit eventually.
          ,(string-append "--with-cupsfilterdir="
