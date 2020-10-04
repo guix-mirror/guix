@@ -1178,6 +1178,25 @@ in Rust.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-streaming-stats" ,rust-streaming-stats-0.2))))))
 
+(define-public rust-az-1
+  (package
+    (name "rust-az")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "az" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0sb51w9pjcqb315dg6zv9wwqj1q2fldcc3xmfv0bhkmajiyx9g79"))))
+    (build-system cargo-build-system)
+    (home-page "https://gitlab.com/tspiteri/az")
+    (synopsis "Casts and checked casts")
+    (description "This crate provides casts and checked casts.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-backtrace-0.3
   (package
     (name "rust-backtrace")
