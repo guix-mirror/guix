@@ -15804,7 +15804,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
 (define-public rust-num-traits-0.2
   (package
     (name "rust-num-traits")
-    (version "0.2.11")
+    (version "0.2.12")
     (source
      (origin
        (method url-fetch)
@@ -15813,7 +15813,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
         (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "15khrlm1bra50nd48ijl1vln13m9xg4fxzghf28jp16ic5zf8ay6"))))
+         "04fnzwlnn6fcy09jjbi9l7bj5dvg657x5c2sjgwfb3pl0z67n9mc"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
