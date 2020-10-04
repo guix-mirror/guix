@@ -10563,10 +10563,10 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
     (description "This packages provides a HTTP/2.0 client and server.")
     (license license:expat)))
 
-(define-public rust-half-1.3
+(define-public rust-half-1
   (package
     (name "rust-half")
-    (version "1.3.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -10575,11 +10575,17 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0diqajg3mgar511hxswl4kgqqz9a026yvn3103x5h2smknlc4lwk"))))
+         "0xq1qkbfwnxv72b2fakgi5ai0j8arw38whwxgxs3rp1fz28anvyk"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-serde" ,rust-serde-1))))
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-quickcheck-macros" ,rust-quickcheck-macros-0.9)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-version-sync" ,rust-version-sync-0.8))))
     (home-page "https://github.com/starkat99/half-rs")
     (synopsis "Half-precision floating point f16 type")
     (description
@@ -23523,7 +23529,7 @@ proven statistical guarantees.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-half" ,rust-half-1.3)
+       (("rust-half" ,rust-half-1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-serde-derive" ,rust-serde-derive-1))))
@@ -23550,7 +23556,7 @@ proven statistical guarantees.")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-half" ,rust-half-1.3)
+        ("rust-half" ,rust-half-1)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
        (("rust-serde-derive" ,rust-serde-derive-1))))))
