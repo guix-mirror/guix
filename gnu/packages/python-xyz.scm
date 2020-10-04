@@ -4077,6 +4077,27 @@ matching of file paths.")
     (description "Black is the uncompromising Python code formatter.")
     (license license:expat)))
 
+(define-public python-black-macchiato
+  (package
+    (name "python-black-macchiato")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "black-macchiato" version))
+       (sha256
+        (base32
+         "1drp5p697ni1xn5y2lbjpalgpkzy2i4cyxjj5pk4dxr0vk97dd7i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-black" ,python-black)))
+    (home-page "https://github.com/wbolster/black-macchiato")
+    (synopsis "Partial @code{python-black} formatting")
+    (description
+     "This package is built on top the @{python-black} code formatter to
+enable formatting of partial files.")
+    (license license:bsd-3)))
+
 (define-public python-blinker
   (package
     (name "python-blinker")
