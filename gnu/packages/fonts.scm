@@ -1749,12 +1749,11 @@ This package provides the TrueType fonts.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'install-license-files
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
-               (install-file "../LICENSE" doc)
-               #t))))))
+         (add-before 'install-license-files 'change-directory-to-archive-root
+           ;; Find the LICENSE file outside of the default subdirectory.
+           (lambda _
+             (chdir "..")
+             #t)))))
     (home-page "https://www.jetbrains.com/lp/mono/")
     (synopsis "Mono typeface for developers")
     (description
