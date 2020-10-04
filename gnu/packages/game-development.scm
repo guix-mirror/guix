@@ -1527,7 +1527,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.2.2")
+    (version "3.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1536,7 +1536,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1libz83mbyrkbbsmmi8z2rydv3ls0w9r4vb5v6diqqwn7ka8z804"))
+                "19vrp5lhyvxbm6wjxzn28sn3i0s8j08ca7nani8l1nrhvlc8wi0v"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
