@@ -27169,7 +27169,7 @@ in Rust.")
 (define-public rust-tinyvec-0.3
   (package
     (name "rust-tinyvec")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
@@ -27178,7 +27178,7 @@ in Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vgg2z317kq75bpd0nfda2v507qjpd7g2cjahjgivn2s78nkv5ak"))))
+         "05vijqpckjsnbv07rwadwcny4pkcq7z1wi9ikl7p3ib7s9qy1313"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
@@ -27187,7 +27187,7 @@ in Rust.")
     (synopsis "Tiny vec-like types for Rust")
     (description
      "A 100% safe crate of vec-like types.")
-    (license license:zlib)))
+    (license (list license:zlib license:asl2.0 license:expat))))
 
 (define-public rust-tokio-0.2
   (package
