@@ -80,6 +80,7 @@
 ;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
 ;;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Marco Grassi <marco.au.grassi98@protonmail.com>
+;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7208,6 +7209,31 @@ In fact, when there are only two windows present, @code{other-window} is
 called.  If there are more, each window will have its first character
 highlighted.  Pressing that character will switch to that window.")
     (license license:gpl3+)))
+
+(define-public emacs-windsize
+  ;; There is no proper release.  The base version is extracted from the
+  ;; "Version" keyword in the main file.
+  (let ((revision "1")
+	(commit "62c2846bbe95b0a73e996c75e4a644d05f57aaaa"))
+    (package
+      (name "emacs-windsize")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/grammati/windsize")
+               (commit commit)))
+         (sha256
+          (base32 "13kfrmv3vmkfanxv9nym5v43hx5p7xkgqmx65zcxh4gcbaham1mi"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/grammati/windsize")
+      (synopsis "Easy resizing of Emacs windows")
+      (description
+       "This package allows moving the borders of the active window
+with the arrow keys.  It prefers to move the right or bottom border when
+possible, and falls back to moving the left or top border otherwise.")
+      (license license:gpl3+))))
 
 (define-public emacs-iedit
   ;; Last release version was in 2016.
