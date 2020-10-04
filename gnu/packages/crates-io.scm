@@ -19861,8 +19861,36 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
         (base32
          "1vb4acppaavlnchzc1jmn5wlkgir9x9gmhgp97bavyxxqxgsg1nh"))))))
 
+(define-public rust-quickcheck-macros-0.9
+  (package
+    (name "rust-quickcheck-macros")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "quickcheck_macros" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zsb9b4jpg7qvbiym4v8y9pgqk7p1g4f5hn9gp0fnzz9v1pib330"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page "https://github.com/BurntSushi/quickcheck")
+    (synopsis "Macro attribute for quickcheck")
+    (description
+     "This package provides a macro attribute for quickcheck.")
+    (license (list license:unlicense license:expat))))
+
 (define-public rust-quickcheck-macros-0.8
   (package
+    (inherit rust-quickcheck-macros-0.9)
     (name "rust-quickcheck-macros")
     (version "0.8.0")
     (source
@@ -19874,19 +19902,13 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
        (sha256
         (base32
          "0b3mhn0xcrdd3fkbkx3rghhivwzwil8w991ngp6gaj70l72c3pyp"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.4)
         ("rust-quote" ,rust-quote-0.6)
         ("rust-syn" ,rust-syn-0.15))
        #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.8))))
-    (home-page "https://github.com/BurntSushi/quickcheck")
-    (synopsis "Macro attribute for quickcheck")
-    (description
-     "This package provides a macro attribute for quickcheck.")
-    (license (list license:unlicense license:expat))))
+       (("rust-quickcheck" ,rust-quickcheck-0.8))))))
 
 (define-public rust-quote-1
   (package
