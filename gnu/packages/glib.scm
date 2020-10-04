@@ -950,7 +950,7 @@ programming language.  It also contains the utility
 (define-public appstream-glib
   (package
     (name "appstream-glib")
-    (version "0.7.17")
+    (version "0.7.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://people.freedesktop.org/~hughsient/"
@@ -958,7 +958,7 @@ programming language.  It also contains the utility
                                   "appstream-glib-" version ".tar.xz"))
               (sha256
                (base32
-                "0jg58m1p5xfrh8zkpqhhg00nqs727z5i1qy6sb0a3vyc98fyk9vw"))))
+                "00j0kkgf224nzmrha72g8pd72mymhph7vaisj35i4ffy7cpd47na"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
