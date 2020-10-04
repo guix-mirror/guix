@@ -2318,24 +2318,27 @@ written in the Go programming language.")
     (license license:bsd-3)))
 
 (define-public emacs-google-maps
-  (package
-    (name "emacs-google-maps")
-    (version "1.0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/jd/google-maps.el")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "183igr5lp20zcqi7rc01fk76sfxdhksd74i11v16gdsifdkjimd0"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/jd/google-maps.el")
-    (synopsis "Access Google Maps from Emacs")
-    (description "The @code{google-maps} package displays Google
-Maps directly inside Emacs.")
-    (license license:gpl3+)))
+  (let ((version "20181121")            ;no release tag since 2013
+        (commit "2eb16ff609f5a9f8d02c15238a111fbb7db6c146")
+        (revision "1"))
+    (package
+      (name "emacs-google-maps")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jd/google-maps.el")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1bl0dnksbf14d0xcnvdy9qpvzc5c8jwkxpmfvgayj6djikxnw2md"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jd/google-maps.el")
+      (synopsis "Access Google Maps from Emacs")
+      (description "The @code{google-maps} package displays Google Maps
+directly inside Emacs.  It requires a Google Map Static API key to function.")
+      (license license:gpl3+))))
 
 (define-public emacs-graphviz-dot-mode
   (package
