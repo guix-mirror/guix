@@ -30456,6 +30456,31 @@ Locate installed executable in cross platforms.")
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-wide-0.4
+  (package
+    (name "rust-wide")
+    (version "0.4.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "wide" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ad75vnzygj8qfcl1l9n4wi93xmqzvhqlpqn4hfayrwbn6wa69aq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytemuck" ,rust-bytemuck-1))))
+    (home-page "https://github.com/Lokathor/wide")
+    (synopsis "Rust for wide blocks")
+    (description "This crate has data types for blocks of primitives packed
+together and used as a single unit.  This works very well with SIMD/vector
+hardware of various targets.  Both in terms of explicit SIMD usage and also in
+terms of allowing LLVM's auto-vectorizer to do its job.")
+    (license license:zlib)))
+
 (define-public rust-widestring-0.4
   (package
     (name "rust-widestring")
