@@ -3691,34 +3691,32 @@ Rosenberg's Common Lisp packages.")
   (sbcl-package->cl-source-package sbcl-kmrcl))
 
 (define-public sbcl-cl-base64
-  (package
-    (name "sbcl-cl-base64")
-    (version "3.3.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://files.kpe.io/cl-base64/cl-base64-"
-                           version ".tar.gz"))
-       (sha256
-        (base32 "0pl4zwn5bf18dm8fh1kn1yshaa6kpmfrjyb33z9mq4raqmj3xpv2"))))
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     ;; Tests fail with: :FORCE and :FORCE-NOT arguments not allowed
-     ;; in a nested call to ASDF/OPERATE:OPERATE unless identically
-     ;; to toplevel
-     '(#:tests? #f))
-    (inputs
-     `(("sbcl-ptester" ,sbcl-ptester)
-       ("sbcl-kmrcl" ,sbcl-kmrcl)))
-    (home-page "http://files.kpe.io/cl-base64/")
-    (synopsis
-     "Common Lisp package to encode and decode base64 with URI support")
-    (description
-     "This package provides highly optimized base64 encoding and decoding.
+  ;; 3.3.4 tests are broken, upstream fixes them.
+  (let ((commit "577683b18fd880b82274d99fc96a18a710e3987a"))
+    (package
+      (name "sbcl-cl-base64")
+      (version (git-version "3.3.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/cl-base64.git/")
+               (commit commit)))
+         (sha256
+          (base32 "12jj54h0fs6n237cvnp8v6hn0imfksammq22ys6pi0gwz2w47rbj"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs                    ; For tests.
+       `(("sbcl-ptester" ,sbcl-ptester)
+         ("sbcl-kmrcl" ,sbcl-kmrcl)))
+      (home-page "http://files.kpe.io/cl-base64/")
+      (synopsis
+       "Common Lisp package to encode and decode base64 with URI support")
+      (description
+       "This package provides highly optimized base64 encoding and decoding.
 Besides conversion to and from strings, integer conversions are supported.
 Encoding with Uniform Resource Identifiers is supported by using a modified
 encoding table that uses only URI-compatible characters.")
-    (license license:bsd-3)))
+      (license license:bsd-3))))
 
 (define-public cl-base64
   (sbcl-package->cl-source-package sbcl-cl-base64))
