@@ -2940,7 +2940,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
 (define-public rust-chrono-0.4
   (package
     (name "rust-chrono")
-    (version "0.4.11")
+    (version "0.4.13")
     (source
      (origin
        (method url-fetch)
@@ -2949,7 +2949,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1cmmxamkzzs36zncqjjr7qm7xkb6zyrkjslnlj3axdgqki84y2c0"))))
+         "1dm0q1kmk2vq5djwhp1j9cm4aa38wr9vy1i1w19p2y0nj4188kf7"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
