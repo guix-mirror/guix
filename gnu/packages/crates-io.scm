@@ -17517,6 +17517,26 @@ stack pointer and inspect the properties of the stack.")
      "This package provides a pull parser for CommonMark.")
     (license license:expat)))
 
+(define-public rust-pulldown-cmark-0.1
+  (package
+    (inherit rust-pulldown-cmark-0.2)
+    (name "rust-pulldown-cmark")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pulldown-cmark" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ckflr6w5vfvgb2xnzbnph9b6c0k8cfncm4a8bjzmbbcv9fgizfn"))))
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-0.9)
+        ("rust-getopts" ,rust-getopts-0.2))))))
+
 (define-public rust-pulldown-cmark-0.0.8
   (package/inherit rust-pulldown-cmark-0.4
     (name "rust-pulldown-cmark")
