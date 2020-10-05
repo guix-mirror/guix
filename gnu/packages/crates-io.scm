@@ -15372,16 +15372,16 @@ including bigint, complex, rational, range iterators, generic integers, and more
 (define-public rust-num-integer-0.1
   (package
     (name "rust-num-integer")
-    (version "0.1.42")
+    (version "0.1.43")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "num-integer" version))
        (file-name
-        (string-append name "-" version ".crate"))
+        (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fpw8yr9xwsf3qrh91rm7mzqaiwlc2dmnalsxv9pr9w1klpacviz"))))
+         "0nw79ynfvw8br6yncv27pw65y2vw2z7m3kv9g2hinm1dcrz4ancd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
