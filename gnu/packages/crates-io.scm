@@ -13556,30 +13556,6 @@ types as proposed in RFC 1158.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-netlib-src-0.7
-  (package
-    (name "rust-netlib-src")
-    (version "0.7.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "netlib-src" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "112hwfw1zzdj10h3j213xxqjrq38iygb3nb3ijay65ycmrg819s4"))))
-    (build-system cargo-build-system)
-    ;(inputs
-    ; `(("gfortran:lib" ,gfortran "lib")
-    ;   ("lapack" ,lapack)))
-    (home-page "https://github.com/blas-lapack-rs/netlib-src")
-    (synopsis "Source of BLAS and LAPACK via Netlib")
-    (description
-     "The package provides a source of BLAS and LAPACK via Netlib.")
-    (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
-
 (define-public rust-nettle-7
   (package
     (name "rust-nettle")
