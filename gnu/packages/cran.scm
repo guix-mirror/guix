@@ -8989,14 +8989,14 @@ packages maintained by Torsten Hothorn.")
 (define-public r-multcomp
   (package
     (name "r-multcomp")
-    (version "1.4-13")
+    (version "1.4-14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "multcomp" version))
        (sha256
         (base32
-         "1nszi22rcc551yc75h9cdfkdqsxw1rz30vadazmpyzihp1bh63yk"))))
+         "14a55isy1sp745s109nirlk5fryy144cri6dl8y9d9wjhfxz336a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
