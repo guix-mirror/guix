@@ -14820,20 +14820,21 @@ the XKCD web comic.")
 (define-public r-msigdbr
   (package
     (name "r-msigdbr")
-    (version "7.1.1")
+    (version "7.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "msigdbr" version))
        (sha256
         (base32
-         "0jvi49qa7616s58p0rx66pcw7h12rc8kgcg9225jk7pc3934hnzh"))))
+         "1rc2p9vw57pn4prmfgay4w18qd53ggq7wxfsi9kp7w25ciip1dq1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-magrittr" ,r-magrittr)
        ("r-rlang" ,r-rlang)
-       ("r-tibble" ,r-tibble)))
+       ("r-tibble" ,r-tibble)
+       ("r-tidyselect" ,r-tidyselect)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/igordot/msigdbr")
