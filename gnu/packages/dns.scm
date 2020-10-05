@@ -828,10 +828,7 @@ Extensions} (DNSSEC).")
              "--localstatedir=/var"
              "--enable-dnstap"          ; let tools read/write capture files
              "--enable-fast-parser"     ; disabled by default when .git/ exists
-             "--with-module-dnstap=yes" ; detailed query capturing & logging
-             (string-append "--with-bash-completions="
-                            (assoc-ref %outputs "out")
-                            "/etc/bash_completion.d"))
+             "--with-module-dnstap=yes") ; detailed query capturing & logging
        #:phases
        (modify-phases %standard-phases
          (add-before 'bootstrap 'update-parser
