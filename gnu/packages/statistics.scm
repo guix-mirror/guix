@@ -2034,14 +2034,14 @@ files in R.  It is built on top of the libxml2 C library.")
 (define-public r-multitaper
   (package
     (name "r-multitaper")
-    (version "1.0-14")
+    (version "1.0-15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "multitaper" version))
        (sha256
         (base32
-         "04wd9bbhyx7697pfy0fpj02v1csr48hkpqj62h9p8a6w84ji4k68"))))
+         "1gm3wr8xqpqiby7q1dr3zxim77v0bvvrqi0hlazf5g3gnkrp2zc3"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
