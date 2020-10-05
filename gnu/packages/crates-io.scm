@@ -25800,6 +25800,27 @@ serializing Rust structures.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-toml-0.4
+  (package
+    (inherit rust-toml-0.5)
+    (name "rust-toml")
+    (version "0.4.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "toml" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "07qilkzinn8z13vq2sss65n2lza7wrmqpvkbclw919m3f7y691km"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1))))))
+
 (define-public rust-toml-0.2
   (package
     (name "rust-toml")
