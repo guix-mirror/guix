@@ -24,6 +24,7 @@
 ;;; Copyright © 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mason Hock <chaosmonk@riseup.net>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2319,7 +2320,7 @@ support for high performance Telegram Bot creation.")
 (define-public chatty
  (package
    (name "chatty")
-   (version "0.1.10")
+   (version "0.1.16")
    (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2328,7 +2329,7 @@ support for high performance Telegram Bot creation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0czvqwjzsb0rvmgrmbh97m1b35rnwl41j7q32z4fcqb7bschibql"))))
+                "085hb3ii1cy0jb3f0mim25v5r5w3gpfsdpjid5dmrpw4gi88aa2x"))))
    (build-system meson-build-system)
    (arguments
     '(#:phases
@@ -2345,6 +2346,7 @@ support for high performance Telegram Bot creation.")
    (inputs
     `(("feedbackd" ,feedbackd)
       ("folks" ,folks)
+      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
       ("libgcrypt" ,libgcrypt)
       ("libgee" ,libgee)
       ("libhandy" ,libhandy-0.0)
