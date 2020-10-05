@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Miguel <rosen644835@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (guix build-system perl)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -106,7 +108,11 @@
                #t)))))
 
        ;; When tests fail, we want to know the details.
-       #:make-flags '("VERBOSE=yes")))
+       #:make-flags '("VERBOSE=yes"
+                      ,@(if (hurd-target?)
+                            ;; Linking to libgettextlib.so makes test-raise fail
+                            '("XFAIL_TESTS=test-raise")
+                            '()))))
     (home-page "https://www.gnu.org/software/gettext/")
     (synopsis
      "Tools and documentation for translation (used to build other packages)")
