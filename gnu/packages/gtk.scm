@@ -1217,7 +1217,7 @@ library.")
         (base32 "1xlfl0fm5mgv53lr8xjv2kqsk3bz67qkk6qzvbrqmbvbvvbqp9wp"))))
     (propagated-inputs
      `(("cairo" ,cairo)
-       ("sigc++" ,libsigc++-2)))))
+       ("sigc++" ,libsigc++)))))
 
 (define-public pangomm
   (package

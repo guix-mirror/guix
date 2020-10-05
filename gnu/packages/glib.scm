@@ -619,21 +619,6 @@ It also contains adaptor classes for connection of dissimilar callbacks and
 has an ease of use unmatched by other C++ callback libraries.")
     (license license:lgpl2.1+)))
 
-(define-public libsigc++-2
-  (package
-    (inherit libsigc++)
-    (name "libsigc++")
-    (version "2.10.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "mirror://gnome/sources/libsigc++/"
-                       (version-major+minor version) "/"
-                       name "-" version ".tar.xz"))
-       (sha256
-        (base32 "11j7j1jv4z58d9s7jvl42fnqa1dzl4idgil9r45cjv1w673dys0b"))))))
-
 (define glibmm
   (package
     (name "glibmm")
@@ -692,7 +677,7 @@ useful for C++.")
        (sha256
         (base32 "1v6lp23fr2qh4zshcnm28sn29j3nzgsvcqj2nhmrnvamipjq4lm7"))))
      (propagated-inputs
-      `(("libsigc++" ,libsigc++-2)
+      `(("libsigc++" ,libsigc++)
         ("glib" ,glib)))))
 
 (define-public python2-pygobject-2
