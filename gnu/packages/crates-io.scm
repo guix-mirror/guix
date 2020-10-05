@@ -1691,6 +1691,21 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-bitflags-0.9
+  (package
+    (inherit rust-bitflags-1)
+    (name "rust-bitflags")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "bitflags" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "19dk39gfwmhi3iy1x0wgml1fv1bkb525ywy25zwihbm063i05zaf"))))))
+
 (define-public rust-bitflags-0.8
   (package
     (inherit rust-bitflags-1)
