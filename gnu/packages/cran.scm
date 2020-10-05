@@ -12915,14 +12915,14 @@ to easily call your own custom JavaScript functions from R.")
 (define-public r-colourpicker
   (package
     (name "r-colourpicker")
-    (version "1.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "colourpicker" version))
        (sha256
         (base32
-         "0z3v2083g7kwdp21x9s2n1crfh24agpdq3yxkcdzc2awn2pwpnpi"))))
+         "1qjispj7i12m02js5cm5xlgn5lyff0kc5ybz6lbknz8q5lkbdyrd"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -12963,7 +12963,8 @@ to easily call your own custom JavaScript functions from R.")
        ("r-shiny" ,r-shiny)
        ("r-shinyjs" ,r-shinyjs)))
     (native-inputs
-     `(("uglify-js" ,uglify-js)
+     `(("r-knitr" ,r-knitr)
+       ("uglify-js" ,uglify-js)
        ("js-jquery"
         ,(origin
            (method url-fetch)
