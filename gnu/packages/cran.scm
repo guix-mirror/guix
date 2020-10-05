@@ -24448,13 +24448,13 @@ as allowing spectra with different resolutions.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.2.1")
+    (version "3.2.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0jipc4xpmx56jzc31w6nsl77ah8x8wq7jclg2mxhjql4ixkwmz54"))))
+                "048vnj0c3mrwhr6yq3jqhgnkg68w99nj1ccsmgnd8rl694w26spj"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
