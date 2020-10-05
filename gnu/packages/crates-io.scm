@@ -15397,15 +15397,15 @@ including bigint, complex, rational, range iterators, generic integers, and more
 (define-public rust-num-iter-0.1
   (package
     (name "rust-num-iter")
-    (version "0.1.40")
+    (version "0.1.41")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "num-iter" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "005wif3bk23b5jdg7l0cprzqzyc4jg0xjyzyykciv2ci08581c6z"))))
+          "17sb142lhmpsq17cf9wrffjh8vjk901axxf55565r6cgfiy6nvks"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
