@@ -24646,11 +24646,22 @@ unstable language features.")
       (origin
         (method url-fetch)
         (uri (crate-uri "textwrap" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0q5hky03ik3y50s9sz25r438bc4nwhqc6dqwynv4wylc807n29nk"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (;("rust-hyphenation" ,rust-hyphenation-0.7)
+        ("rust-term-size" ,rust-term-size-0.3)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))
+       #:cargo-development-inputs
+       (;("rust-lipsum" ,rust-lipsum-0.6)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
+        ("rust-version-sync" ,rust-version-sync-0.6))))
     (home-page "https://github.com/mgeisler/textwrap")
     (synopsis "Library for word wrapping, indenting, and dedenting strings")
     (description
@@ -24658,7 +24669,6 @@ unstable language features.")
 strings.  You can use it to format strings (such as help and error messages)
 for display in commandline applications.  It is designed to be efficient and
 handle Unicode characters correctly.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-thin-slice-0.1
