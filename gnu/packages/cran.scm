@@ -6081,14 +6081,14 @@ additional external tools on any platform.")
 (define-public r-openxlsx
   (package
     (name "r-openxlsx")
-    (version "4.1.5")
+    (version "4.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openxlsx" version))
        (sha256
         (base32
-         "0wkpa3wsd8rs0pib7cp67iv0s6jn99frcrw7clypqxmvvdwyb9kq"))))
+         "12sjarcmbdww6jmkcqy8c6id94zv3lwmm15ns1y0xj3ipr8qmphb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
