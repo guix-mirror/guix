@@ -10439,14 +10439,14 @@ components).")
 (define-public r-fftwtools
   (package
     (name "r-fftwtools")
-    (version "0.9-8")
+    (version "0.9-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fftwtools" version))
        (sha256
         (base32
-         "1nqvpzda281rxi1cmwajxxsn3sc3gz7scv8bvs5jm34kf36whha6"))))
+         "0h8lyl2i6zq16ir7xnfj9dhyivxvwikm8lml19s8s8jx95z3n9x9"))))
     (build-system r-build-system)
     (inputs `(("fftw" ,fftw)))
     (home-page "https://github.com/krahim/fftwtools")
