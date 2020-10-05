@@ -989,18 +989,20 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "1.5.1")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "10fp306l1nybkah6jrlrqwwdb6zvklbddp8i3w9v9naj8la5jbnl"))))
+                "0072wlkl58lav3qszzqw6pmx8qra4784r0yb6rx4lg7rbrik6335"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
        ("r-jsonlite" ,r-jsonlite)
        ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/ramnathv/htmlwidgets")
     (synopsis "HTML Widgets for R")
     (description
