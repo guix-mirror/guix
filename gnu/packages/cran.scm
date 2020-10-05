@@ -23775,6 +23775,31 @@ to a data set such as confusion matrices, class probability curve summaries,
 and regression metrics (e.g., RMSE).")
     (license license:gpl2)))
 
+(define-public r-warp
+  (package
+    (name "r-warp")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "warp" version))
+       (sha256
+        (base32
+         "16bmym91h0sbbh4iqasqs0f4kp3jqlm3sqgc356mznhxwnsm8dm2"))))
+    (properties `((upstream-name . "warp")))
+    (build-system r-build-system)
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/DavisVaughan/warp")
+    (synopsis "Group dates")
+    (description
+     "This package provides tooling to group dates by a variety of periods
+including: yearly, monthly, by second, by week of the month, and more.  The
+groups are defined in such a way that they also represent the distance between
+dates in terms of the period.  This extracts valuable information that can be
+used in further calculations that rely on a specific temporal spacing between
+observations.")
+    (license license:expat)))
+
 (define-public r-rsample
   (package
     (name "r-rsample")
