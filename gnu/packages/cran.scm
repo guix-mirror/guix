@@ -3173,19 +3173,21 @@ available in a vignette.")
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.6.7")
+    (version "1.6.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "0ffzxbb8pvfh1m6j61az4ga37snyhylq2941fyc76w7w9i2sixv3"))))
+         "0jdmjjs894mfncswmzz7sa6cy7hqbqii5fcvl3zqkmzpbadb2za2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-numderiv" ,r-numderiv)
        ("r-squarem" ,r-squarem)
        ("r-survival" ,r-survival)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/kkholst/lava")
     (synopsis "Latent variable models")
     (description
