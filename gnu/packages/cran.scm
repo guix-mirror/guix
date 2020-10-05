@@ -22333,21 +22333,22 @@ infinite-precision rational arithmetic.")
 (define-public r-rxnat
   (package
     (name "r-rxnat")
-    (version "1.0.12")
+    (version "1.0.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rxnat" version))
        (sha256
         (base32
-         "06w99b5lvpycykzlga6grw33zkajwbb04s89s37wy9zxy42vc4cb"))))
+         "00fl68pa0c2vy4xlny67pn41lzgm7b97wgg3dwm6z35izca62l11"))))
     (properties
      `((upstream-name . "Rxnat")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-httr" ,r-httr)
-       ("r-rcurl" ,r-rcurl)))
+       ("r-rcurl" ,r-rcurl)
+       ("r-tibble" ,r-tibble)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/Rxnat/")
