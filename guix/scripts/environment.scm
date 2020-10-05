@@ -34,6 +34,7 @@
   #:use-module (guix scripts build)
   #:use-module (gnu build linux-container)
   #:use-module (gnu build accounts)
+  #:use-module ((guix build syscalls) #:select (set-network-interface-up))
   #:use-module (gnu system linux-container)
   #:use-module (gnu system file-systems)
   #:use-module (gnu packages)
@@ -549,6 +550,16 @@ WHILE-LIST."
             (write-passwd (list passwd))
             (write-group groups)
 
+            (unless network?
+              ;; When isolated from the network, provide a minimal /etc/hosts
+              ;; to resolve "localhost".
+              (call-with-output-file "/etc/hosts"
+                (lambda (port)
+                  (display "127.0.0.1 localhost\n" port)))
+
+              ;; Allow local AF_INET communications.
+              (set-network-interface-up "lo"))
+
             ;; For convenience, start in the user's current working
             ;; directory or, if unmapped, the home directory.
             (chdir (if map-cwd?
@@ -564,7 +575,11 @@ WHILE-LIST."
             (primitive-exit/status
              ;; A container's environment is already purified, so no need to
              ;; request it be purified again.
-             (launch-environment command profile manifest #:pure? #f)))
+             (launch-environment command
+                                 (if link-profile?
+                                     (string-append home-dir "/.guix-profile")
+                                     profile)
+                                 manifest #:pure? #f)))
           #:guest-uid uid
           #:guest-gid gid
           #:namespaces (if network?

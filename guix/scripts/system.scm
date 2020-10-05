@@ -666,38 +666,45 @@ checking this by themselves in their 'check' procedure."
 ;;; Action.
 ;;;
 
-(define* (system-derivation-for-action os base-image action
-                                       #:key image-size file-system-type
+(define* (system-derivation-for-action os action
+                                       #:key image-size image-type
                                        full-boot? container-shared-network?
                                        mappings label)
   "Return as a monadic value the derivation for OS according to ACTION."
-  (case action
-    ((build init reconfigure)
-     (operating-system-derivation os))
-    ((container)
-     (container-script
-      os
-      #:mappings mappings
-      #:shared-network? container-shared-network?))
-    ((vm-image)
-     (system-qemu-image os #:disk-image-size image-size))
-    ((vm)
-     (system-qemu-image/shared-store-script os
-                                            #:full-boot? full-boot?
-                                            #:disk-image-size
-                                            (if full-boot?
-                                                image-size
-                                                (* 70 (expt 2 20)))
-                                            #:mappings mappings))
-    ((disk-image)
-     (lower-object
-      (system-image
-       (image
-        (inherit (if label (image-with-label base-image label) base-image))
-        (size image-size)
-        (operating-system os)))))
-    ((docker-image)
-     (system-docker-image os #:shared-network? container-shared-network?))))
+  (mlet %store-monad ((target (current-target-system)))
+    (case action
+      ((build init reconfigure)
+       (operating-system-derivation os))
+      ((container)
+       (container-script
+        os
+        #:mappings mappings
+        #:shared-network? container-shared-network?))
+      ((vm-image)
+       (system-qemu-image os #:disk-image-size image-size))
+      ((vm)
+       (system-qemu-image/shared-store-script os
+                                              #:full-boot? full-boot?
+                                              #:disk-image-size
+                                              (if full-boot?
+                                                  image-size
+                                                  (* 70 (expt 2 20)))
+                                              #:mappings mappings))
+      ((disk-image)
+       (let* ((base-image (os->image os #:type image-type))
+              (base-target (image-target base-image)))
+         (lower-object
+          (system-image
+           (image
+            (inherit (if label
+                         (image-with-label base-image label)
+                         base-image))
+            (target (or base-target target))
+            (size image-size)
+            (operating-system os))))))
+      ((docker-image)
+       (system-docker-image os
+                            #:shared-network? container-shared-network?)))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
@@ -748,18 +755,19 @@ and TARGET arguments."
                          install-bootloader?
                          dry-run? derivations-only?
                          use-substitutes? bootloader-target target
-                         image-size file-system-type full-boot? label
-                         container-shared-network?
+                         image-size image-type
+                         full-boot? label container-shared-network?
                          (mappings '())
                          (gc-root #f))
   "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
 bootloader; BOOTLOADER-TAGET is the target for the bootloader; TARGET is the
 target root directory; IMAGE-SIZE is the size of the image to be built, for
-the 'vm-image' and 'disk-image' actions.  The root file system is created as a
-FILE-SYSTEM-TYPE file system.  FULL-BOOT? is used for the 'vm' action; it
-determines whether to boot directly to the kernel or to the bootloader.
-CONTAINER-SHARED-NETWORK? determines if the container will use a separate
-network namespace.
+the 'vm-image' and 'disk-image' actions.  IMAGE-TYPE is the type of image to
+be built.
+
+FULL-BOOT? is used for the 'vm' action; it determines whether to
+boot directly to the kernel or to the bootloader.  CONTAINER-SHARED-NETWORK?
+determines if the container will use a separate network namespace.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
 building anything.
@@ -799,11 +807,9 @@ static checks."
       (check-initrd-modules os)))
 
   (mlet* %store-monad
-      ((target*   (current-target-system))
-       (image ->  (find-image file-system-type target*))
-       (sys       (system-derivation-for-action os image action
+      ((sys       (system-derivation-for-action os action
                                                 #:label label
-                                                #:file-system-type file-system-type
+                                                #:image-type image-type
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
                                                 #:container-shared-network? container-shared-network?
@@ -888,6 +894,17 @@ Run 'herd status' to view the list of services on your system.\n"))))))
 
 
 ;;;
+;;; Images.
+;;;
+
+(define (list-image-types)
+  "Print the available image types."
+  (display (G_ "The available image types are:\n"))
+  (newline)
+  (format #t "~{   - ~a ~%~}" (map image-type-name (force %image-types))))
+
+
+;;;
 ;;; Options.
 ;;;
 
@@ -945,9 +962,9 @@ Some ACTIONS support additional ARGS.\n"))
                          apply STRATEGY (one of nothing-special, backtrace,
                          or debug) when an error occurs while reading FILE"))
   (display (G_ "
-      --file-system-type=TYPE
-                         for 'disk-image', produce a root file system of TYPE
-                         (one of 'ext4', 'iso9660')"))
+      --list-image-types list available image types"))
+  (display (G_ "
+  -t, --image-type=TYPE  for 'disk-image', produce an image of TYPE"))
   (display (G_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
   (display (G_ "
@@ -1008,10 +1025,14 @@ Some ACTIONS support additional ARGS.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'on-error (string->symbol arg)
                                result)))
-         (option '(#\t "file-system-type") #t #f
+         (option '(#\t "image-type") #t #f
                  (lambda (opt name arg result)
-                   (alist-cons 'file-system-type arg
+                   (alist-cons 'image-type (string->symbol arg)
                                result)))
+         (option '("list-image-types") #f #f
+                 (lambda (opt name arg result)
+                   (list-image-types)
+                   (exit 0)))
          (option '("image-size") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'image-size (size->number arg)
@@ -1080,7 +1101,7 @@ Some ACTIONS support additional ARGS.\n"))
     (debug . 0)
     (verbosity . #f)                              ;default
     (validate-reconfigure . ,ensure-forward-reconfigure)
-    (file-system-type . "ext4")
+    (image-type . raw)
     (image-size . guess)
     (install-bootloader? . #t)
     (label . #f)))
@@ -1177,7 +1198,8 @@ resulting from command-line parsing."
                                (assoc-ref opts 'skip-safety-checks?)
                                #:validate-reconfigure
                                (assoc-ref opts 'validate-reconfigure)
-                               #:file-system-type (assoc-ref opts 'file-system-type)
+                               #:image-type (lookup-image-type-by-name
+                                             (assoc-ref opts 'image-type))
                                #:image-size (assoc-ref opts 'image-size)
                                #:full-boot? (assoc-ref opts 'full-boot?)
                                #:container-shared-network?

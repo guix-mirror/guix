@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -177,15 +178,14 @@ This package is part of the KDE networking module.")
 (define-public konversation
   (package
     (name "konversation")
-    (version "1.7.5")
+    (version "1.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/konversation/" version
                            "/src/konversation-" version ".tar.xz"))
        (sha256
-        (base32 "0h098yhlp36ls6pdvs2r93ig8dv4fys62m0h6wxccprb0qrpbgv0"))
-       (patches (search-patches "konversation-Fix-build-with-Qt-5.11.patch"))))
+        (base32 "14x0rs867grb1xjddycn9l6bfl3h3rp4cmx4zqd2gsvkihn4zlpx"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -297,7 +297,7 @@ Features are:
        ("libxml2" ,libxml2)
        ("libxstl" ,libxslt)
        ;; TODO: Mediastreamer
-       ("openssl", openssl)
+       ("openssl" ,openssl)
        ("ortp" ,ortp)
        ("phonon" ,phonon)
        ("qca" ,qca)
@@ -403,7 +403,7 @@ This package is part of the KDE networking module.")
        ("knotifyconfig" ,knotifyconfig)
        ("kparts" ,kparts)
        ("kplotting" ,kplotting)
-       ("kross", kross)
+       ("kross" ,kross)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -196,11 +197,16 @@ namespace, in addition to essential bind-mounts such /proc."
                                       #:allow-other-keys
                                       #:rest args)
   "This is a variant of 'fork+exec-command' procedure, that joins the
-namespaces of process PID beforehand."
-  (container-excursion* pid
-    (lambda ()
-      (apply fork+exec-command command
-             (strip-keyword-arguments '(#:pid) args)))))
+namespaces of process PID beforehand.  If there is no support for containers,
+on Hurd systems for instance, fallback to direct forking."
+  (let ((container-support?
+         (file-exists? "/proc/self/ns"))
+        (fork-proc (lambda ()
+                     (apply fork+exec-command command
+                            (strip-keyword-arguments '(#:pid) args)))))
+    (if container-support?
+        (container-excursion* pid fork-proc)
+        (fork-proc))))
 
 ;; Local Variables:
 ;; eval: (put 'container-excursion* 'scheme-indent-function 1)

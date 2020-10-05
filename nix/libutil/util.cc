@@ -1142,5 +1142,89 @@ void ignoreException()
     }
 }
 
+static const string pathNullDevice = "/dev/null";
+
+/* Common initialisation performed in child processes. */
+void commonChildInit(Pipe & logPipe)
+{
+    /* Put the child in a separate session (and thus a separate
+       process group) so that it has no controlling terminal (meaning
+       that e.g. ssh cannot open /dev/tty) and it doesn't receive
+       terminal signals. */
+    if (setsid() == -1)
+        throw SysError(format("creating a new session"));
+
+    /* Dup the write side of the logger pipe into stderr. */
+    if (dup2(logPipe.writeSide, STDERR_FILENO) == -1)
+        throw SysError("cannot pipe standard error into log file");
+
+    /* Dup stderr to stdout. */
+    if (dup2(STDERR_FILENO, STDOUT_FILENO) == -1)
+        throw SysError("cannot dup stderr into stdout");
+
+    /* Reroute stdin to /dev/null. */
+    int fdDevNull = open(pathNullDevice.c_str(), O_RDWR);
+    if (fdDevNull == -1)
+        throw SysError(format("cannot open `%1%'") % pathNullDevice);
+    if (dup2(fdDevNull, STDIN_FILENO) == -1)
+        throw SysError("cannot dup null device into stdin");
+    close(fdDevNull);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+Agent::Agent(const string &command, const Strings &args)
+{
+    debug(format("starting agent '%1%'") % command);
+
+    /* Create a pipe to get the output of the child. */
+    fromAgent.create();
+
+    /* Create the communication pipes. */
+    toAgent.create();
+
+    /* Create a pipe to get the output of the builder. */
+    builderOut.create();
+
+    /* Fork the hook. */
+    pid = startProcess([&]() {
+
+        commonChildInit(fromAgent);
+
+        if (chdir("/") == -1) throw SysError("changing into `/");
+
+        /* Dup the communication pipes. */
+        if (dup2(toAgent.readSide, STDIN_FILENO) == -1)
+            throw SysError("dupping to-hook read side");
+
+        /* Use fd 4 for the builder's stdout/stderr. */
+        if (dup2(builderOut.writeSide, 4) == -1)
+            throw SysError("dupping builder's stdout/stderr");
+
+	Strings allArgs;
+	allArgs.push_back(command);
+	allArgs.insert(allArgs.end(), args.begin(), args.end()); // append
+
+        execv(command.c_str(), stringsToCharPtrs(allArgs).data());
+
+        throw SysError(format("executing `%1%'") % command);
+    });
+
+    pid.setSeparatePG(true);
+    fromAgent.writeSide.close();
+    toAgent.readSide.close();
+}
+
+
+Agent::~Agent()
+{
+    try {
+        toAgent.writeSide.close();
+        pid.kill(true);
+    } catch (...) {
+        ignoreException();
+    }
+}
+
 
 }

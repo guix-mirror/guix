@@ -4,6 +4,7 @@
 # Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+# Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 #
 # This file is part of GNU Guix.
 #
@@ -150,6 +151,10 @@ chk_init_sys()
         _msg "${INF}init system is: sysv-init"
         INIT_SYS="sysv-init"
         return 0
+    elif [[ $(openrc --version 2>/dev/null) =~ \(OpenRC\) ]]; then
+        _msg "${INF}init system is: OpenRC"
+        INIT_SYS="openrc"
+        return 0
     else
         INIT_SYS="NA"
         _err "${ERR}Init system could not be detected."
@@ -212,7 +217,7 @@ guix_get_bin_list()
         | sort -Vu)")
 
     latest_ver="$(echo "$bin_ver_ls" \
-                       | grep -oP "([0-9]{1,2}\.){2}[0-9]{1,2}" \
+                       | grep -oE "([0-9]{1,2}\.){2}[0-9]{1,2}" \
                        | tail -n1)"
 
     default_ver="guix-binary-${latest_ver}.${ARCH_OS}"
@@ -268,8 +273,7 @@ sys_create_store()
     _debug "--- [ $FUNCNAME ] ---"
 
     cd "$tmp_path"
-    tar --warning=no-timestamp \
-        --extract \
+    tar --extract \
         --file "$pkg" &&
     _msg "${PAS}unpacked archive"
 
@@ -383,6 +387,16 @@ sys_enable_guix_daemon()
                   update-rc.d guix-daemon enable &&
                   service guix-daemon start; } &&
                 _msg "${PAS}enabled Guix daemon via sysv"
+            ;;
+        openrc)
+            { mkdir -p /etc/init.d;
+              cp "${ROOT_HOME}/.config/guix/current/etc/openrc/guix-daemon" \
+                 /etc/init.d/guix-daemon;
+              chmod 775 /etc/init.d/guix-daemon;
+
+              rc-update add guix-daemon default &&
+                  rc-service guix-daemon start; } &&
+                _msg "${PAS}enabled Guix daemon via OpenRC"
             ;;
         NA|*)
             _msg "${ERR}unsupported init system; run the daemon manually:"

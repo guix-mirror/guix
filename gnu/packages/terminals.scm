@@ -53,6 +53,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages fontutils)
@@ -426,7 +427,7 @@ to all types of devices that provide serial consoles.")
 allowing different sounds to indicate different events.  While it can be run
 quite happily on the command line, its intended place of residence is within
 scripts, notifying the user when something interesting occurs.  Of course, it
-has no notion of what's interesing, but it's very good at that notifying part.")
+has no notion of what's interesting, but it's very good at that notifying part.")
     (home-page "https://github.com/spkr-beep/beep")
     (license license:gpl2+)))
 
@@ -731,7 +732,7 @@ programmer to write text-based user interfaces.")
 (define-public go-github-com-junegunn-fzf
   (package
     (name "go-github-com-junegunn-fzf")
-    (version "0.18.0")
+    (version "0.22.0")
     (source
      (origin
        (method git-fetch)
@@ -741,7 +742,7 @@ programmer to write text-based user interfaces.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pwpr4fpw56yzzkcabzzgbgwraaxmp7xzzmap7w1xsrkbj7dl2xl"))))
+         "0n0cy5q2r3dm1a3ivlzrv9c5d11awxlqim5b9x8zc85dlr73n35l"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/junegunn/fzf"))
@@ -750,6 +751,8 @@ programmer to write text-based user interfaces.")
        ("go-github-com-mattn-go-shellwords" ,go-github-com-mattn-go-shellwords)
        ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
        ("go-github-com-gdamore-tcell" ,go-github-com-gdamore-tcell)
+       ("go-github-com-saracen-walker" ,go-github-com-saracen-walker)
+       ("go-golang.org-x-sync-errgroup" ,go-golang.org-x-sync-errgroup)
        ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
     (home-page "https://github.com/junegunn/fzf")
     (synopsis "Command-line fuzzy-finder")

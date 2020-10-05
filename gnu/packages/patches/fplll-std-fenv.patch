@@ -1,0 +1,18 @@
+See https://github.com/fplll/fplll/issues/444
+
+--- fplll-5.3.3-checkout.old/fplll/enum/enumerate_base.h	2020-09-23 13:55:27.833769823 +0200
++++ fplll-5.3.3-checkout/fplll/enum/enumerate_base.h	2020-09-23 13:56:14.313771769 +0200
+@@ -127,10 +127,10 @@
+   int rounding_backup;
+   void save_rounding()
+   {
+-    rounding_backup = std::fegetround();
+-    std::fesetround(FE_TONEAREST);
++    rounding_backup = fegetround();
++    fesetround(FE_TONEAREST);
+   }
+-  void restore_rounding() { std::fesetround(rounding_backup); }
++  void restore_rounding() { fesetround(rounding_backup); }
+ 
+   inline bool next_pos_up()
+   {

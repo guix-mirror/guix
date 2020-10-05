@@ -29,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages pcre)
@@ -465,7 +466,7 @@ Example use cases:
 
 Features:
 @itemize @bullet
-@item Coalesces multiple filesystem events into one, for editors that
+@item Coalesces multiple file system events into one, for editors that
 use swap/backup files during saving
 @item By default, uses @code{.gitignore} and @code{.ignore} to determine which
 files to ignore notifications for

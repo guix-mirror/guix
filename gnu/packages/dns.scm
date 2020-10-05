@@ -313,7 +313,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
   (package
     (name "bind")
     ;; When updating, check whether isc-dhcp's bundled copy should be as well.
-    (version "9.16.6")
+    (version "9.16.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -321,7 +321,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "1jvi6ms51vyrhpflx05xlb7gblyd59zsyj28b8s3pl3xnkrv0rxm"))))
+                "1l8lhgnkj3fnl1101bs3pzj5gv2x5m9ahvrbyscsc9mxxc91hzcz"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -756,16 +756,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.3.9")
+    (version "2.3.10")
     (source
-     (let ((build "8497"))
+     (let ((build "9729"))
        (origin
          (method url-fetch)
          (uri
           (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
                          "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "0xvyr91sfgzkpw6g3h893ldbwnki3w2472n56rr18w67qghs1sa5")))))
+          (base32 "0azaignqmylfdzr4x02s8y3pkn4f0xkpz3d1pkiiz8mwk92zgybn")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -803,37 +803,25 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.9.6")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                            "knot-" version ".tar.xz"))
        (sha256
-        (base32 "1rxjjisr6rz1wa4279ghvj5zzhgyjhncmb9dkzqm8nw2qs1jhx5z"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Delete bundled libraries.
-           (with-directory-excursion "src/contrib"
-             (delete-file-recursively "lmdb"))
-           #t))))
+        (base32 "1i76zflc49jbsaj3idxx7a6x87c0lzal294c3fdjyfl7dvznmjgi"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("fstrm" ,fstrm)
-       ("gnutls" ,gnutls)
-       ("jansson" ,jansson)
-       ("libcap-ng" ,libcap-ng)
-       ("libedit" ,libedit)
-       ("libidn" ,libidn)
-       ("liburcu" ,liburcu)
-       ("lmdb" ,lmdb)
-       ("ncurses" ,ncurses)
-       ("protobuf-c" ,protobuf-c)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--sysconfdir=/etc"
+             "--localstatedir=/var"
+             "--enable-dnstap"          ; let tools read/write capture files
+             "--with-module-dnstap=yes" ; detailed query capturing & logging
+             (string-append "--with-bash-completions="
+                            (assoc-ref %outputs "out")
+                            "/etc/bash_completion.d"))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-directory-pre-creation
            (lambda _
@@ -848,15 +836,20 @@ Extensions} (DNSSEC).")
                     (etc (string-append doc "/examples/etc")))
                (invoke "make"
                        (string-append "config_dir=" etc)
-                       "install")))))
-       #:configure-flags
-       (list "--sysconfdir=/etc"
-             "--localstatedir=/var"
-             "--enable-dnstap"          ; let tools read/write capture files
-             "--with-module-dnstap=yes" ; detailed query capturing & logging
-             (string-append "--with-bash-completions="
-                            (assoc-ref %outputs "out")
-                            "/etc/bash_completion.d"))))
+                       "install")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fstrm" ,fstrm)
+       ("gnutls" ,gnutls)
+       ("jansson" ,jansson)
+       ("libcap-ng" ,libcap-ng)
+       ("libedit" ,libedit)
+       ("libidn" ,libidn)
+       ("liburcu" ,liburcu)
+       ("lmdb" ,lmdb)
+       ("ncurses" ,ncurses)
+       ("protobuf-c" ,protobuf-c)))
     (home-page "https://www.knot-dns.cz/")
     (synopsis "Authoritative DNS name server")
     (description "Knot DNS is an authoritative name server for the @dfn{Domain
@@ -878,14 +871,14 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "4.3.0")
+    (version "5.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "09ffmqx79lv5psr433x4n946njgsn071b9b7161pcb9bmrqz380c"))))
+                "12s5070nqqf599s1mb6rjas2as481rjf751qk5yrz6p34y885k90"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Ddoc=enabled")
@@ -932,11 +925,7 @@ synthesis, and on-the-fly re-configuration.")
        ("lmdb" ,lmdb)
        ("luajit" ,luajit)
        ;; TODO: Add optional lua modules: basexx and psl.
-       ("lua-bitop" ,lua5.1-bitop)
-       ("lua-cqueues" ,lua5.1-cqueues)
-       ("lua-filesystem" ,lua5.1-filesystem)
-       ("lua-sec" ,lua5.1-sec)
-       ("lua-socket" ,lua5.1-socket)))
+       ("lua-bitop" ,lua5.1-bitop)))
     (home-page "https://www.knot-resolver.cz/")
     (synopsis "Caching validating DNS resolver")
     (description

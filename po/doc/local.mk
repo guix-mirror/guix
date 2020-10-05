@@ -32,9 +32,9 @@ EXTRA_DIST = \
   $(DOC_PO_FILES) \
   $(DOC_COOKBOOK_PO_FILES)
 
-POT_OPTIONS = --package-name "guix" --package-version "$(VERSION)" \
-	          --copyright-holder "Ludovic Courtès" \
-			  --msgid-bugs-address "ludo@gnu.org"
+POT_OPTIONS = --package-name "guix manual" --package-version "$(VERSION)" \
+	          --copyright-holder "the authors of Guix (msgids)" \
+			  --msgid-bugs-address "bug-guix@gnu.org"
 
 doc-po-update-%:
 	@lang=`echo "$@" | sed -e's/^doc-po-update-//'` ; \

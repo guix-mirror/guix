@@ -26,6 +26,8 @@
   #:use-module (guix derivations)
   #:use-module (guix grafts)
   #:use-module (guix utils)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -401,9 +403,15 @@ Here TARGET is bound to the cross-compilation triplet or #f."
 (define (true file stat) #t)
 
 (define* (%local-file file promise #:optional (name (basename file))
-                      #:key recursive? (select? true))
+                      #:key
+                      (literal? #t) location
+                      recursive? (select? true))
   ;; This intermediate procedure is part of our ABI, but the underlying
   ;; %%LOCAL-FILE is not.
+  (when (and (not literal?) (not (string-prefix? "/" file)))
+    (warning (and=> location source-properties->location)
+             (G_ "resolving '~a' relative to current directory~%")
+             file))
   (%%local-file file promise name recursive? select?))
 
 (define (absolute-file-name file directory)
@@ -443,9 +451,12 @@ appears."
                       rest ...))
       ((_ file rest ...)
        ;; Resolve FILE relative to the current directory.
-       #'(%local-file file
-                      (delay (absolute-file-name file (getcwd)))
-                      rest ...))
+       (with-syntax ((location (datum->syntax s (syntax-source s))))
+        #`(%local-file file
+                       (delay (absolute-file-name file (getcwd)))
+                       rest ...
+                       #:location 'location
+                       #:literal? #f)))
       ((_)
        #'(syntax-error "missing file name"))
       (id

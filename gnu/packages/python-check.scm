@@ -2,7 +2,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -852,6 +852,26 @@ also ensuring that the notebooks are running without errors.")
 variables in the @file{pytest.ini} file.")
     (license license:expat)))
 
+(define-public python-pyux
+  (package
+    (name "python-pyux")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyux" version))
+       (sha256
+        (base32
+         "1i17xh4dy238ibrjdgh8vn78fk5q6dj37mcznpvdfzidj57js7ca"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                  ;the mini test suite fails
+    (home-page "https://github.com/farizrahman4u/pyux")
+    (synopsis "Utility to check API integrity in Python libraries")
+    (description "The pyux utility allows to detect API changes in Python
+libraries.")
+    (license license:expat)))
+
 (define-public python-codacy-coverage
   (package
     (name "python-codacy-coverage")
@@ -999,3 +1019,28 @@ any Python VM with basically no runtime overhead.")
     ;; Foundation License version 2: stdlib-samples/*, mypyc/lib-rt/pythonsupport.h and
     ;; mypyc/lib-rt/getargs.c
     (license (list license:expat license:psfl))))
+
+(define-public python-robber
+  (package
+    (name "python-robber")
+    (version "1.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "robber" version))
+              (sha256
+               (base32
+                "0xp5csgv2g9q38hscml6bc5i1nm4xy5lzqqiimm2drxsf0hw2nq5"))))
+    (build-system python-build-system)
+    ;; There are no tests in the tarball downloaded from PyPI.
+    ;; The last version tagged in Github (0.1.0) is older than the one on PyPI.
+    ;; Reported upstream: <https://github.com/vesln/robber.py/issues/20>.
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-mock" ,python-mock)
+       ("python-termcolor" ,python-termcolor)))
+    ;; URL of the fork used to generate the package available on PyPI.
+    (home-page "https://github.com/EastAgile/robber.py")
+    (synopsis "Test-driven development (TDD) assertion library for Python")
+    (description "Robber is a Python assertion library for test-driven and
+behavior-driven development (TDD and BDD).")
+    (license license:expat)))

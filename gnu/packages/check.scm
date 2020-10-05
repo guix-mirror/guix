@@ -349,7 +349,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
 (define-public catch-framework2
   (package
     (name "catch2")
-    (version "2.13.0")
+    (version "2.13.1")
     (home-page "https://github.com/catchorg/Catch2")
     (source (origin
               (method git-fetch)
@@ -359,7 +359,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0i4w0c9280a5fyi00mvvf13wlnfzyifr487n1iyr30zvvj5s5f1h"))))
+                "1fbzdqzvad3nxsxlwd5ws7csj6rbyyrza0ckq6km2cf5bhhxagrs"))))
     (build-system cmake-build-system)
     (inputs
      `(("python" ,python-wrapper)))
@@ -2693,7 +2693,7 @@ provides a simple way to achieve this.")
 (define-public umockdev
   (package
     (name "umockdev")
-    (version "0.14.2")
+    (version "0.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinpitt/umockdev/"
@@ -2701,7 +2701,7 @@ provides a simple way to achieve this.")
                                   "umockdev-" version ".tar.xz"))
               (sha256
                (base32
-                "1nh6xsssmssmk0lxp9c9dmq3wzlpbpkg77nmmd09csbpybibgxfp"))))
+                "15smnxwplk48nas2c8ji6a5fqcsh770f1yl5nc2j5iprjspbm4mg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

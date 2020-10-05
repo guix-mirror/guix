@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
@@ -360,14 +360,14 @@ http://www.tux.org/~ricdude/overview.html")
 (define-public orc
   (package
     (name "orc")
-    (version "0.4.31")
+    (version "0.4.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
               (sha256
                (base32
-                "0xb0c7q3xv1ldmz5ipybazb01gy3cijj8622dcx7rbm9lq85zax0"))))
+                "1w0qmyj3v9sb2g7ff39pp38b9850y9hyy0bag26ifrby5f7ksvm6"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases

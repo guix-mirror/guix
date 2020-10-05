@@ -465,7 +465,6 @@ tree binary files.  These are board description files used by Linux and BSD.")
        ("python" ,python)
        ("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)
-       ("sdl2" ,sdl2)
        ("swig" ,swig)))
     (build-system  gnu-build-system)
     (home-page "https://www.denx.de/wiki/U-Boot/")
@@ -478,6 +477,9 @@ also initializes the boards (RAM etc).")
   (package
     (inherit u-boot)
     (name "u-boot-tools")
+    (native-inputs
+     `(("sdl2" ,sdl2)
+       ,@(package-native-inputs u-boot)))
     (arguments
      `(#:make-flags '("HOSTCC=gcc")
        #:test-target "tests"

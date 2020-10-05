@@ -56,7 +56,7 @@
       ("guile-zlib" (ref '(gnu packages guile) 'guile-zlib))
       ("guile-lzlib" (ref '(gnu packages guile) 'guile-lzlib))
       ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile-gcrypt))
-      ("gnutls"     (ref '(gnu packages tls) 'guile3.0-gnutls))
+      ("gnutls"     (ref '(gnu packages tls) 'gnutls))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))

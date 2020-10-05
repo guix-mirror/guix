@@ -62,14 +62,14 @@ and file system operations.  It is used by all skarnet.org software.")
 (define-public execline
   (package
     (name "execline")
-    (version "2.6.0.2")
+    (version "2.6.1.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://skarnet.org/software/execline/execline-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0wdg93hwpxxdqmsnd8j1nf3m2pf85n3rxaawzaih1y0ajyz6gwya"))))
+       (base32 "0mj565xml3hvw27finydms0s9abbbpgbr29vnr8gwi7zjzq7ck52"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -104,14 +104,14 @@ complexity.")))
 (define-public s6
   (package
    (name "s6")
-   (version "2.9.1.0")
+   (version "2.9.2.0")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://skarnet.org/software/s6/s6-"
                          version ".tar.gz"))
      (sha256
-      (base32 "1xqzl2wnvcmcyhppk7mc10h1ac7fkik3i6gpyliwpf3d5i9mkqh5"))))
+      (base32 "1pfxx50shncg2s47ic4kp02jh1cxfjq75j3mnxjagyzzz0mbfg9n"))))
    (build-system gnu-build-system)
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))
@@ -307,7 +307,7 @@ systems and other constrained environments, but they work everywhere.")))
     (build-system gnu-build-system)
     (inputs
      `(("execline" ,execline)
-       ("s6", s6)
+       ("s6" ,s6)
        ("skalibs" ,skalibs)))
     (arguments
      '(#:configure-flags

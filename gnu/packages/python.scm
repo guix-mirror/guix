@@ -581,7 +581,9 @@ for more information.")))
     (description
      "This package provides wrappers for the commands of Python@tie{}3.x such
 that they can be invoked under their usual name---e.g., @command{python}
-instead of @command{python3}.")))
+instead of @command{python3} or @command{pip} instead of @command{pip3}.
+To function properly, this package should not be installed together with the
+@command{python} package.")))
 
 (define-public python-wrapper (wrap-python3 python))
 (define-public python-minimal-wrapper (wrap-python3 python-minimal))
@@ -589,7 +591,7 @@ instead of @command{python3}.")))
 (define-public micropython
   (package
     (name "micropython")
-    (version "1.12")
+    (version "1.13")
     (source
       (origin
         (method url-fetch)
@@ -597,8 +599,7 @@ instead of @command{python3}.")))
                             "releases/download/v" version
                             "/micropython-" version ".tar.gz"))
         (sha256
-         (base32
-          "1fl1dm2aay23hyqbarnv69qj7z2wljcvkwmvfwfac8yadcv05zcq"))
+         (base32 "0lfl7dv5v9rqckslrjqy5swjri29x1nj5d79wxnjys4sq6r2xcws"))
       (modules '((guix build utils)))
       (snippet
        '(begin

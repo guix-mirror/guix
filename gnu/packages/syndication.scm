@@ -100,7 +100,7 @@
         ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-natord" ,rust-natord-1.0)
         ("rust-nom" ,rust-nom-5)
-        ("rust-once-cell" ,rust-once-cell-1.2)
+        ("rust-once-cell" ,rust-once-cell-1)
         ("rust-percent-encoding" ,rust-percent-encoding-2.1)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-smallvec" ,rust-smallvec-0.6)

@@ -107,7 +107,7 @@ problem. The backtrace is displayed below. Please report it by email to \
   (run-user-page))
 
 (define (partition-page)
-  (run-partioning-page))
+  (run-partitioning-page))
 
 (define (services-page)
   (run-services-page))

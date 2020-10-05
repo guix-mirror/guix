@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2020 André Batista <nandre@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (srfi srfi-9)
   #:export (license? license-name license-uri license-comment
             agpl1 agpl3 agpl3+
+            apsl2
             asl1.1 asl2.0
             boost1.0
             bsd-2 bsd-3 bsd-4
@@ -131,6 +133,11 @@
   (license "AGPL 3+"
            "https://gnu.org/licenses/agpl.html"
            "https://gnu.org/licenses/why-affero-gpl.html"))
+
+(define apsl2
+  (license "APSL 2.0"
+           "https://directory.fsf.org/wiki/License:APSL-2.0"
+           "https://www.gnu.org/licenses/license-list.html#apsl2"))
 
 (define asl1.1
   (license "ASL 1.1"

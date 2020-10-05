@@ -504,8 +504,8 @@ non-determinism in the build process.")
            (lambda _ (invoke "./autogen.sh"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("libtirpc", libtirpc)
-       ("rpcsvc-proto", rpcsvc-proto)
+       ("libtirpc" ,libtirpc)
+       ("rpcsvc-proto" ,rpcsvc-proto)
        ("python-2" ,python-2) ; must be version 2
        ("flex" ,flex)
        ("bison" ,bison)
@@ -515,15 +515,15 @@ non-determinism in the build process.")
        ("cmocka" ,cmocka)))
     (inputs
      `(("acl" ,acl)
-       ("fuse", fuse)
+       ("fuse" ,fuse)
        ("openssl" ,openssl)
        ("liburcu" ,liburcu)
        ("libuuid" ,util-linux "lib")
        ("libxml2" ,libxml2)
        ("readline" ,readline)
        ("zlib" ,zlib)
-       ("libaio", libaio)
-       ("rdma-core", rdma-core)))
+       ("libaio" ,libaio)
+       ("rdma-core" ,rdma-core)))
     (home-page "https://www.gluster.org")
     (synopsis "Distributed file system")
     (description "GlusterFS is a distributed scalable network file system
@@ -768,7 +768,7 @@ community.")
 (define-public mergerfs
   (package
     (name "mergerfs")
-    (version "2.29.0")
+    (version "2.31.0")
     (source
      (origin
        (method url-fetch)
@@ -776,7 +776,7 @@ community.")
                            version "/mergerfs-" version ".tar.gz"))
        (sha256
         (base32
-         "17gizw4vgbqqjd2ykkfpp276942jb5qclp0lkiwkmq1yjgyjqfmk"))))
+         "0k4asbg5n9dhy5jpjkw6simqqnr1zira2y4i71cq05091dfwm90p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
@@ -797,8 +797,9 @@ community.")
              ;; The Makefile does not allow overriding PREFIX via make variables.
              (substitute* '("Makefile" "libfuse/Makefile")
                (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
+               (("= /sbin") "= $(EXEC_PREFIX)/sbin")
                ;; cannot chown as build user
-               (("chown root:root") "true"))
+               (("chown root(:root)?") "true"))
              #t)))))
     ;; mergerfs bundles a heavily modified copy of libfuse.
     (inputs `(("util-linux" ,util-linux)))
@@ -813,8 +814,8 @@ is similar to mhddfs, unionfs, and aufs.")
               ))))
 
 (define-public mergerfs-tools
-  (let ((commit "c926779d87458d103f3b674603bf97801ae2486d")
-        (revision "1"))
+  (let ((commit "480296ed03d1c3c7909697d7ef96d35840ee26b8")
+        (revision "2"))
     (package
       (name "mergerfs-tools")
       ;; No released version exists.
@@ -828,7 +829,7 @@ is similar to mhddfs, unionfs, and aufs.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "04hhwcib0xv4cf1mkj8zrp2aqpxkncml9iqg4m1mz6a5zhzsk0vm"))))
+           "0xr06gi4xcr832rzy0hkp5c1n231s7w5iq1nkjvx9kvm0dl7chpq"))))
       (build-system copy-build-system)
       (inputs
        `(("python" ,python)
@@ -917,5 +918,5 @@ Dropbox API v2.")
   (synopsis "User-space file system for Dropbox")
   (description
    "@code{dbxfs} allows you to mount your Dropbox folder as if it were a
-local filesystem using FUSE.")
+local file system using FUSE.")
   (license license:gpl3+)))

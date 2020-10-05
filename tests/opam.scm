@@ -116,81 +116,76 @@ url {
 ;; Test the opam file parser
 ;; We fold over some test cases. Each case is a pair of the string to parse and the
 ;; expected result.
-(test-assert "parse-strings"
-  (fold (lambda (test acc)
-          (display test) (newline)
-          (and acc
-               (let ((result (peg:tree (match-pattern string-pat (car test)))))
-                 (if (equal? result (cdr test))
-                   #t
-                   (pk 'fail (list (car test) result (cdr test)) #f)))))
-    #t '(("" . #f)
-         ("\"hello\"" . (string-pat "hello"))
-         ("\"hello world\"" . (string-pat "hello world"))
-         ("\"The dreaded \\\"é\\\"\"" . (string-pat "The dreaded \"é\""))
-         ("\"Have some \\\\\\\\ :)\"" . (string-pat "Have some \\\\ :)"))
-         ("\"今日は\"" . (string-pat "今日は")))))
+(define (test-opam-syntax name pattern test-cases)
+  (test-assert name
+    (fold (lambda (test acc)
+            (display test) (newline)
+            (match test
+              ((str . expected)
+               (and acc
+                    (let ((result (peg:tree (match-pattern pattern str))))
+                      (if (equal? result expected)
+                          #t
+                          (pk 'fail (list str result expected) #f)))))))
+          #t test-cases)))
 
-(test-assert "parse-multiline-strings"
-  (fold (lambda (test acc)
-          (display test) (newline)
-          (and acc
-               (let ((result (peg:tree (match-pattern multiline-string (car test)))))
-                 (if (equal? result (cdr test))
-                   #t
-                   (pk 'fail (list (car test) result (cdr test)) #f)))))
-    #t '(("" . #f)
-         ("\"\"\"hello\"\"\"" . (multiline-string "hello"))
-         ("\"\"\"hello \"world\"!\"\"\"" . (multiline-string "hello \"world\"!"))
-         ("\"\"\"hello \"\"world\"\"!\"\"\"" . (multiline-string "hello \"\"world\"\"!")))))
+(test-opam-syntax
+  "parse-strings" string-pat
+  '(("" . #f)
+    ("\"hello\"" . (string-pat "hello"))
+    ("\"hello world\"" . (string-pat "hello world"))
+    ("\"The dreaded \\\"é\\\"\"" . (string-pat "The dreaded \"é\""))
+    ("\"Have some \\\\\\\\ :)\"" . (string-pat "Have some \\\\ :)"))
+    ("\"今日は\"" . (string-pat "今日は"))))
 
-(test-assert "parse-lists"
-  (fold (lambda (test acc)
-          (and acc
-               (let ((result (peg:tree (match-pattern list-pat (car test)))))
-                 (if (equal? result (cdr test))
-                   #t
-                   (pk 'fail (list (car test) result (cdr test)) #f)))))
-    #t '(("" . #f)
-         ("[]" . list-pat)
-         ("[make]" . (list-pat (var "make")))
-         ("[\"make\"]" . (list-pat (string-pat "make")))
-         ("[\n  a\n  b\n  c]" . (list-pat (var "a") (var "b") (var "c")))
-         ("[a   b     \"c\"]" . (list-pat (var "a") (var "b") (string-pat "c"))))))
+(test-opam-syntax
+  "parse-multiline-strings" multiline-string
+  '(("" . #f)
+    ("\"\"\"hello\"\"\"" . (multiline-string "hello"))
+    ("\"\"\"hello \"world\"!\"\"\"" . (multiline-string "hello \"world\"!"))
+    ("\"\"\"hello \"\"world\"\"!\"\"\"" . (multiline-string "hello \"\"world\"\"!"))))
 
-(test-assert "parse-dicts"
-  (fold (lambda (test acc)
-          (and acc
-               (let ((result (peg:tree (match-pattern dict (car test)))))
-                 (if (equal? result (cdr test))
-                   #t
-                   (pk 'fail (list (car test) result (cdr test)) #f)))))
-    #t '(("" . #f)
-         ("{}" . dict)
-         ("{a: \"b\"}" . (dict (record "a" (string-pat "b"))))
-         ("{a: \"b\"\nc: \"d\"}" . (dict (record "a" (string-pat "b")) (record "c" (string-pat "d")))))))
+(test-opam-syntax
+  "parse-lists" list-pat
+  '(("" . #f)
+    ("[]" . list-pat)
+    ("[make]" . (list-pat (var "make")))
+    ("[\"make\"]" . (list-pat (string-pat "make")))
+    ("[\n  a\n  b\n  c]" . (list-pat (var "a") (var "b") (var "c")))
+    ("[a   b     \"c\"]" . (list-pat (var "a") (var "b") (string-pat "c")))
+    ;; complex lists
+    ("[(a & b)]" . (list-pat (choice-pat (group-pat (var "a") (var "b")))))
+    ("[(a | b & c)]" . (list-pat (choice-pat (var "a") (group-pat (var "b") (var "c")))))
+    ("[a (b | c) d]" . (list-pat (var "a") (choice-pat (var "b") (var "c")) (var "d")))))
 
-(test-assert "parse-conditions"
-  (fold (lambda (test acc)
-          (and acc
-               (let ((result (peg:tree (match-pattern condition (car test)))))
-                 (if (equal? result (cdr test))
-                   #t
-                   (pk 'fail (list (car test) result (cdr test)) #f)))))
-    #t '(("" . #f)
-         ("{}" . #f)
-         ("{build}" . (condition-var "build"))
-         ("{>= \"0.2.0\"}" . (condition-greater-or-equal
-                               (condition-string "0.2.0")))
-         ("{>= \"0.2.0\" & test}" . (condition-and
-                                      (condition-greater-or-equal
-                                        (condition-string "0.2.0"))
-                                      (condition-var "test")))
-         ("{>= \"0.2.0\" | build}" . (condition-or
-                                      (condition-greater-or-equal
-                                        (condition-string "0.2.0"))
-                                      (condition-var "build")))
-         ("{ = \"1.0+beta19\" }" . (condition-eq
-                                     (condition-string "1.0+beta19"))))))
+(test-opam-syntax
+  "parse-dicts" dict
+  '(("" . #f)
+    ("{}" . dict)
+    ("{a: \"b\"}" . (dict (record "a" (string-pat "b"))))
+    ("{a: \"b\"\nc: \"d\"}" . (dict (record "a" (string-pat "b")) (record "c" (string-pat "d"))))))
+
+(test-opam-syntax
+  "parse-conditions" condition
+  '(("" . #f)
+    ("{}" . #f)
+    ("{build}" . (condition-var "build"))
+    ("{>= \"0.2.0\"}" . (condition-greater-or-equal
+                          (condition-string "0.2.0")))
+    ("{>= \"0.2.0\" & test}" . (condition-and
+                                 (condition-greater-or-equal
+                                   (condition-string "0.2.0"))
+                                 (condition-var "test")))
+    ("{>= \"0.2.0\" | build}" . (condition-or
+                                 (condition-greater-or-equal
+                                   (condition-string "0.2.0"))
+                                 (condition-var "build")))
+    ("{ = \"1.0+beta19\" }" . (condition-eq
+                                (condition-string "1.0+beta19")))))
+
+(test-opam-syntax
+  "parse-comment" list-pat
+  '(("" . #f)
+    ("[#comment\n]" . list-pat)))
 
 (test-end "opam")

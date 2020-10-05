@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -613,6 +614,39 @@ application can be customized via its API for Python scripting.
 NOTE: This older version of Blender is the last release that does not require
 OpenGL 3.  It is retained for use with older computers.")
     (license license:gpl2+)))
+
+(define-public goxel
+  (package
+    (name "goxel")
+    (version "0.10.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/guillaumechereau/goxel")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wmxy5wfk1xrqgz0y0zcr4vkddylqc70cv4vzk117x6whjnldsm3"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases (delete 'configure))
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "release")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk3" ,gtk+)
+       ("glfw" ,glfw)
+       ("scons" ,scons)))
+    (home-page "https://goxel.xyz/")
+    (synopsis "Voxel editor")
+    (description
+     "Goxel is a voxel editor that features unlimited scene size, unlimited
+history buffer, 24-bit RGB colors, layers, procedural rendering, ray tracing,
+and export to various formats including the format used by Magicavoxel.")
+    (license license:gpl3+)))
 
 (define-public assimp
   (package
@@ -1208,7 +1242,7 @@ realistic reflections, shading, perspective and other effects.")
        ("python" ,python-2)
        ("cython" ,python2-cython)))
     (native-inputs
-     `(("pandoc" ,ghc-pandoc)
+     `(("pandoc" ,pandoc)
        ("bison" ,bison)
        ("flex" ,flex)
        ("doxygen" ,doxygen)

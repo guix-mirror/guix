@@ -1,0 +1,52 @@
+From 3b43b79da15be994348f13035474925ba592fe1f Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Fri, 15 Sep 2017 10:06:42 +0200
+Subject: [PATCH] Add standalone template generator
+
+---
+ tool/src/org/antlr/v4/unicode/UnicodeRenderer.java | 33 ++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+ create mode 100644 tool/src/org/antlr/v4/unicode/UnicodeRenderer.java
+
+diff --git a/tool/src/org/antlr/v4/unicode/UnicodeRenderer.java b/tool/src/org/antlr/v4/unicode/UnicodeRenderer.java
+new file mode 100644
+index 0000000..9e53213
+--- /dev/null
++++ b/tool/src/org/antlr/v4/unicode/UnicodeRenderer.java
+@@ -0,0 +1,33 @@
++package org.antlr.v4.unicode;
++
++import org.stringtemplate.v4.*;
++import org.stringtemplate.v4.misc.ErrorBuffer;
++import org.antlr.v4.unicode.UnicodeDataTemplateController;
++
++import java.io.File;
++import java.io.FileWriter;
++import java.io.IOException;
++import java.util.Map;
++import java.util.Map.Entry;
++
++public class UnicodeRenderer extends UnicodeDataTemplateController {
++    public static void main(String[] arg)
++        throws IOException {
++        String inputdir =  arg[0];
++        String input =     arg[1];
++        String output =    arg[2];
++
++        FileWriter fileWriter = new FileWriter(new File(output));
++        ErrorBuffer listener = new ErrorBuffer();
++
++        STGroupDir group = new STGroupDir(inputdir);
++        ST st = group.getInstanceOf(input);
++
++        for(Entry<String, Object> entry : getProperties().entrySet())
++        	st.add(entry.getKey(), entry.getValue());
++
++        st.write(new AutoIndentWriter(fileWriter), listener);
++        fileWriter.flush();
++        fileWriter.close();
++    }
++}
+-- 
+2.13.5
+

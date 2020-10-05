@@ -796,7 +796,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public waylandpp
   (package
     (name "waylandpp")
-    (version "0.2.7")
+    (version "0.2.8")
     (home-page "https://github.com/NilsBrause/waylandpp")
     (source (origin
               (method git-fetch)
@@ -804,10 +804,10 @@ applications, X servers (rootless or fullscreen) or other display servers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r4m0xhvwpcqxrqvp3hz1bzlkxqj2jiymd5r6hj8xjzz536hyprz"))))
+                "1kxiqab48p0n97pwg8c2zx56wqq32m3rcq7qd2pjj33ipcanb3qq"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ;no tests
+     `(#:tests? #f))                    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -909,41 +909,39 @@ multiplexer to the KMS/DRM Linux kernel devices.")
     (license license:expat)))
 
 (define-public wev
-  ;; There simple tool has no version or release yet.
-  (let ((commit "cee3dfb2a8b40ee303611018c68ae182d84a7f46"))
-    (package
-      (name "wev")
-      (version (string-append "2020-02-06-" (string-take commit 8)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.sr.ht/~sircmpwn/wev")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0l71v3fzgiiv6xkk365q1l08qvaymxd4kpaya6r2g8yzkr7i2hms"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f ; no tests
-         #:make-flags
-         (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure))))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("scdoc" ,scdoc)))
-      (inputs
-       `(("libxkbcommon" ,libxkbcommon)
-         ("wayland" ,wayland)
-         ("wayland-protocols" ,wayland-protocols)))
-      (home-page "https://git.sr.ht/~sircmpwn/wev")
-      (synopsis "Wayland event viewer")
-      (description "Wev is a tool that opens a window, printing all events
+  (package
+    (name "wev")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.sr.ht/~sircmpwn/wev")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0l71v3fzgiiv6xkk365q1l08qvaymxd4kpaya6r2g8yzkr7i2hms"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags
+       (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)))
+    (inputs
+     `(("libxkbcommon" ,libxkbcommon)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://git.sr.ht/~sircmpwn/wev")
+    (synopsis "Wayland event viewer")
+    (description "Wev is a tool that opens a window, printing all events
 sent to a Wayland window, such as key presses.  It is analogous to the X11 tool
 XEv.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public exempi
   (package
@@ -1398,7 +1396,7 @@ wish to perform colour calibration.")
 (define-public libfprint
   (package
     (name "libfprint")
-    (version "1.90.1")
+    (version "1.90.3")
     (source
      (origin
        (method git-fetch)
@@ -1407,7 +1405,7 @@ wish to perform colour calibration.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fdaak7qjr9b4482g7fhhqpyfdqpxq5kpmyzkp7f5i7qq2ynb78a"))))
+        (base32 "1fs0qrfrqnvc6kcsg81l5p89n8jnsx9dr1pzxpb8ghwas8c9v52i"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags

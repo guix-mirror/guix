@@ -1324,7 +1324,7 @@ whatever the thing is supposed to do).")))
   (wpa-supplicant     wpa-supplicant-configuration-wpa-supplicant ;<package>
                       (default wpa-supplicant))
   (requirement        wpa-supplicant-configuration-requirement    ;list of symbols
-                      (default '(user-processes dbus-system loopback syslogd)))
+                      (default '(user-processes loopback syslogd)))
   (pid-file           wpa-supplicant-configuration-pid-file       ;string
                       (default "/var/run/wpa_supplicant.pid"))
   (dbus?              wpa-supplicant-configuration-dbus?          ;Boolean
@@ -1343,7 +1343,9 @@ whatever the thing is supposed to do).")))
      (list (shepherd-service
             (documentation "Run the WPA supplicant daemon")
             (provision '(wpa-supplicant))
-            (requirement requirement)
+            (requirement (if dbus?
+                             (cons 'dbus-system requirement)
+                             requirement))
             (start #~(make-forkexec-constructor
                       (list (string-append #$wpa-supplicant
                                            "/sbin/wpa_supplicant")

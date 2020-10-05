@@ -129,6 +129,7 @@
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -1622,18 +1623,18 @@ of @code{xmlfile}.")
 (define-public python-openpyxl
   (package
     (name "python-openpyxl")
-    (version "2.6.2")
+    (version "3.0.5")
     (source
      (origin
        ;; We use the upstream repository, as the tests are not included in the
        ;; PyPI releases.
        (method hg-fetch)
        (uri (hg-reference
-             (url "https://bitbucket.org/openpyxl/openpyxl")
+             (url "https://foss.heptapod.net/openpyxl/openpyxl")
              (changeset version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "1qhij6kcvdxqjy4g6193nsv4q7fy8n4fwyd3c2z047idlm6s3j4w"))))
+        (base32 "0s6fgwwkcfz1bnrp5gjd4g2lcbl4a76147ylkrmkbabi2nf4xlli"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -7339,13 +7340,13 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "2.4")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "networkx" version))
        (sha256
-        (base32 "0r2wr7aqay9fwjrgk35fkjzk8lvvb4i4df7ndaqzkr4ndw5zzx7q"))))
+        (base32 "00hnii2lplig2s324k1hvi29pyfab6z7i22922f67jgv4da9ay3r"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -7535,15 +7536,17 @@ and statistical routines from scipy and statsmodels.")
 (define-public python-mpmath
   (package
   (name "python-mpmath")
-  (version "0.19")
+  (version "1.1.0")
   (source (origin
             (method url-fetch)
-            (uri (string-append "http://mpmath.org/files/mpmath-"
-                                version ".tar.gz"))
+            (uri (pypi-uri "mpmath" version))
+            (file-name (git-file-name name version))
             (sha256
              (base32
-              "08ijsr4ifrqv3cjc26mkw0dbvyygsa99in376hr4b96ddm1gdpb8"))))
+              "1xlrcja213jpfhw25q1jl5pl10w1a2cc68x1c4mkicxsbzhan5zw"))))
   (build-system python-build-system)
+  (native-inputs
+   `(("python-pytest" ,python-pytest)))
   (arguments
    '(#:phases
      (modify-phases %standard-phases
@@ -7587,27 +7590,22 @@ multiprecision arithmetic.")
 (define-public python-sympy
   (package
     (name "python-sympy")
-    (version "1.1.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://github.com/sympy/sympy/releases/download/sympy-"
-             version "/sympy-" version ".tar.gz"))
+       (uri (pypi-uri "sympy" version))
        (sha256
-        (base32 "190n29sppw7g8ihilc5451y7jlfcaw56crqiqbf1jff43dlmfnxc"))))
+        (base32 "0247skhkxanczpqqdz6n9k1axgpwl665b25hyn9vgr060p4dryhw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Run the core tests after installation.  By default it would run
-         ;; *all* tests, which take a very long time to complete and are known
-         ;; to be flaky.
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "python3" "-c" "import sympy; sympy.test(\"/core\")")
-             #t)))))
+             (invoke
+               (or (which "python3") (which "python"))
+               "-c" "import sympy; sympy.test(\"/core\")"))))))
     (propagated-inputs
      `(("python-mpmath" ,python-mpmath)))
     (home-page "https://www.sympy.org/")
@@ -7621,17 +7619,13 @@ as possible in order to be comprehensible and easily extensible.")
 (define-public python2-sympy
   (package
     (inherit (package-with-python2 python-sympy))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Run the core tests after installation.  By default it would run
-         ;; *all* tests, which take a very long time to complete and are known
-         ;; to be flaky.
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "python" "-c" "import sympy; sympy.test(\"/core\")")
-             #t)))))))
+    (version "1.5.1")  ; last release for python2
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sympy" version))
+       (sha256
+        (base32 "0zjfbxlkazzh9z22gf62azrkipb2xw7mpzjz3wl1az9893bh2yfp"))))))
 
 (define-public python-q
   (package
@@ -9175,7 +9169,7 @@ specification.")
 (define-public python-libsass
   (package
     (name "python-libsass")
-    (version "0.20.0")
+    (version "0.20.1")
     (source
      (origin
        ;; PyPI tarball is missing some test files.
@@ -9185,7 +9179,7 @@ specification.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0h9rj4k9izkfdvli8ip72bbvh6a7bvrv5pxz6zay2bq235gpfgfc"))))
+        (base32 "1r0kgl7i6nnhgjl44sjw57k08gh2qr7l8slqih550dyxbf1akbxh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -9198,10 +9192,7 @@ specification.")
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "sasstests.py" "-k"
-                     ;; See https://github.com/sass/libsass/issues/3092.
-                     ;; This test may work in a future release of libsass.
-                     "not test_stack_trace_formatting"))))))
+             (invoke "pytest" "sasstests.py"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-werkzeug" ,python-werkzeug)))
@@ -14454,7 +14445,7 @@ PKCS#5 v2.0 Password-Based Key Derivation is a key derivation function which
 is part of the RSA Public Key Cryptography Standards series.  The provided
 implementation takes a password or a passphrase and a salt value (and
 optionally a iteration count, a digest module, and a MAC module) and provides
-a file-like object from which an arbitrarly-sized key can be read.")
+a file-like object from which an arbitrarily-sized key can be read.")
     (license license:expat)))
 
 (define-public python2-pbkdf2
@@ -14534,7 +14525,7 @@ to ansi-escaped strings suitable for display in a terminal.")
     (synopsis "Convert ANSI-decorated console output to HTML")
     (description
      "@command{ansi2html} is a Python library and command line utility for
-convering text with ANSI color codes to HTML or LaTeX.")
+converting text with ANSI color codes to HTML or LaTeX.")
     (license license:gpl3+)))
 
 (define-public python2-ansi2html
@@ -18960,7 +18951,7 @@ with a non-list @code{cdr}.")
     (description
      "This Python module provides line editing functions similar to the default
 Emacs-style ones of GNU Readline.  Unlike the Python standard library's
-@code{readline} package, this one allows access to those capabilties in settings
+@code{readline} package, this one allows access to those capabilities in settings
 outside of a standard command-line interface.  It is especially well-suited to
 interfacing with Urwid, due to a shared syntax for describing key inputs.
 
@@ -19263,13 +19254,13 @@ project.")
 (define-public python-trio
   (package
     (name "python-trio")
-    (version "0.16.0")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trio" version))
        (sha256
-        (base32 "0g6gkwz6i05rm9ym4l4imxakzld7qcgxhb21kprilchcav87s1nz"))))
+        (base32 "0zcxirpdvvl54pbfkgw7vz984879xwvdygqfpggnam24is2zjp78"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -19454,6 +19445,27 @@ space that are close to a given query point.  It also creates large read-only
 file-based data structures that are @code{mmap}ped into memory so that many
 processes may share the same data.")
     (license license:asl2.0)))
+
+(define-public python-croniter
+  (package
+    (name "python-croniter")
+    (version "0.3.34")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "croniter" version))
+              (sha256
+               (base32
+                "0r79cx4v2dw4hzr0annkkxxis46c8hivq61sr39z6p7lcjsbk1ki"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-natsort" ,python-natsort)))
+    (home-page "https://github.com/kiorky/croniter")
+    (synopsis "Iterate datetime objects with cron-like syntax")
+    (description
+     "@code{croniter} provides iteration for datetime object with cron-like
+format.")
+    (license license:expat)))
 
 (define-public python-pylzma
   (package
@@ -19868,6 +19880,31 @@ hard (or impossible without root privileges) to set the state of the real
 services to what you expect in your tests.")
     (license license:lgpl3+)))
 
+(define-public python-jsonplus
+  (package
+    (name "python-jsonplus")
+    (version "0.8.0")
+    (home-page "https://github.com/randomir/jsonplus")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "jsonplus" version))
+              (sha256
+               (base32
+                "05yv3dw813zwas9snz124k2hki49y268b3mx0gj9w7v1nrjmglq1"))))
+    (build-system python-build-system)
+    ;; XXX: No tests on PyPI, and the repository has no tags.
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-simplejson" ,python-simplejson)
+       ("python-sortedcontainers" ,python-sortedcontainers)))
+    (synopsis "Serialize Python types to/from JSON")
+    (description
+     "This package provides functionality to serialize arbitrary data types
+to and from JSON.  Common data types are implemented and it is easy to
+register custom encoders and decoders.")
+    (license license:expat)))
+
 (define-public python-ujson
   (package
     (name "python-ujson")
@@ -20061,11 +20098,11 @@ load balancing.")
      `(("python-pytest" ,python-pytest)
        ("which" ,which)))
     (home-page "https://pypi.org/project/pox/")
-    (synopsis "Python utilities for filesystem exploration and automated builds")
+    (synopsis "Python utilities for file system exploration and automated builds")
     (description
      "Pox provides a collection of utilities for navigating and manipulating
-filesystems.  This module is designed to facilitate some of the low level
-operating system interactions that are useful when exploring a filesystem on a
+file systems.  This module is designed to facilitate some of the low-level
+operating system interactions that are useful when exploring a file system on a
 remote host.  Pox provides Python equivalents of several shell commands such
 as @command{which} and @command{find}.  These commands allow automated
 discovery of what has been installed on an operating system, and where the
@@ -20389,15 +20426,31 @@ tests.")
 (define-public python-gssapi
   (package
     (name "python-gssapi")
-    (version "1.6.5")
+    (version "1.6.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gssapi" version))
        (sha256
         (base32
-         "02i5s7998dg5kcr4m0xwamd8vjqk1816xbzldyp68l91f6bynwcr"))))
+         "1fa78pn5jzfbwf3y6mj4fc8sh11wjf1hwh5qv39cdlxb71qsq2hb"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Work around
+         ;; https://github.com/pythongssapi/python-gssapi/issues/220.
+         (add-before 'check 'disable-failing-tests
+           (lambda _
+             (let ((reason "Disabled failing test (see: \
+https://github.com/pythongssapi/python-gssapi/issues/220)."))
+               (substitute* "gssapi/tests/test_high_level.py"
+                 ((".*def test_add_with_impersonate.*" all)
+                  (string-append all "        self.skipTest('" reason "')\n")))
+               (substitute* "gssapi/tests/test_raw.py"
+                 ((".*def test_.*impersonate_name.*" all)
+                  (string-append all "        self.skipTest('" reason "')\n")))
+               #t))))))
     (propagated-inputs
      `(("python-decorator" ,python-decorator)
        ("python-six" ,python-six)))
@@ -20414,7 +20467,7 @@ tests.")
     (description
      "Python-GSSAPI provides both low-level and high level wrappers around the
 GSSAPI C libraries.  While it focuses on the Kerberos mechanism, it should
-also be useable with other GSSAPI mechanisms.")
+also be usable with other GSSAPI mechanisms.")
     (license license:isc)))
 
 (define-public python-check-manifest
@@ -20490,8 +20543,8 @@ files.  These files are used to translate strings in android apps.")
      `(("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-timeout" ,python-pytest-timeout)))
     (home-page "https://github.com/gorakhargosh/watchdog")
-    (synopsis "Filesystem events monitoring")
-    (description "This package provides a way to monitor filesystem events
+    (synopsis "File system events monitoring")
+    (description "This package provides a way to monitor file system events
 such as a file modification and trigger an action.  This is similar to inotify,
 but portable.")
     (license license:asl2.0)))
@@ -20762,13 +20815,13 @@ content models.")
     ;; Testing requires undocumented setup changes, and so testing is disabled here.
     (arguments `(#:tests? #f))
     (propagated-inputs
-      `(("python-certifi", python-certifi)
-        ("python-six", python-six)
-        ("python-dateutil", python-dateutil)
-        ("python-urllib3", python-urllib3)
-        ("python-pyjwt", python-pyjwt)
-        ("python-cryptography", python-cryptography)
-        ("python-nose", python-nose)))
+      `(("python-certifi" ,python-certifi)
+        ("python-six" ,python-six)
+        ("python-dateutil" ,python-dateutil)
+        ("python-urllib3" ,python-urllib3)
+        ("python-pyjwt" ,python-pyjwt)
+        ("python-cryptography" ,python-cryptography)
+        ("python-nose" ,python-nose)))
     (synopsis "DocuSign Python Client")
     (description "The Official DocuSign Python Client Library used to interact
  with the eSign REST API.  Send, sign, and approve documents using this client.")
@@ -20791,9 +20844,9 @@ content models.")
      `(("python-cffi" ,python-cffi)))
     (home-page "https://github.com/xattr/xattr")
     (synopsis
-     "Python wrapper for extended filesystem attributes")
+     "Python wrapper for extended file system attributes")
     (description "This package provides a Python wrapper for using extended
-filesystem attributes.  Extended attributes extend the basic attributes of files
+file system attributes.  Extended attributes extend the basic attributes of files
 and directories in the file system.  They are stored as name:data pairs
 associated with file system objects (files, directories, symlinks, etc).")
     (license license:expat)))
@@ -21806,10 +21859,10 @@ RFC 3464.")
     (home-page "https://flufli18n.readthedocs.io")
     (synopsis "API for Python internationalization")
     (description
-     "This package provides a high level, convenient API for managing
-internationalization translation contexts in Python application.  There is a
+     "This package provides a high-level, convenient API for managing
+internationalization/translation contexts in Python applications.  There is a
 simple API for single-context applications, such as command line scripts which
-only need to translate into one language during the entire course of thei
+only need to translate into one language during the entire course of their
 execution.  There is a more flexible, but still convenient API for multi-context
 applications, such as servers, which may need to switch language contexts for
 different tasks.")
@@ -21990,3 +22043,97 @@ dates in almost any string formats commonly found on web pages.")
     (description "Safety checks installed dependencies for known vulnerabilities.
 By default it uses the open Python vulnerability database Safety DB.")
   (license license:expat)))
+
+(define-public python-pypandoc
+  (package
+    (name "python-pypandoc")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pypandoc" version))
+       (sha256
+        (base32
+         "1zvn9764cf7kkjkmr9gw6wc8adpk06qxr1rhxwa9pg0zmdvrk90l"))))
+    (build-system python-build-system)
+    (inputs
+     `(("pandoc" ,pandoc)
+       ("pandoc-citeproc" ,pandoc-citeproc)))
+    (propagated-inputs
+     `(("wheel" ,python-wheel)))
+    (native-inputs
+     `(("texlive" ,(texlive-union (list texlive-amsfonts
+                                        texlive-fonts-ec
+                                        texlive-latex-hyperref
+                                        texlive-latex-oberdiek
+                                        texlive-lm
+                                        texlive-xcolor)))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-tests
+           (lambda _
+             ;; Disable test requiring network access
+             (substitute* "tests.py"
+               (("test_basic_conversion_from_http_url")
+                "skip_test_basic_conversion_from_http_url"))
+             ;; Needed by texlive-union to generate fonts
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (home-page "https://github.com/bebraw/pypandoc")
+    (synopsis "Python wrapper for pandoc")
+    (description "pypandoc is a thin Python wrapper around pandoc
+and pandoc-citeproc.")
+    (license license:expat)))
+
+(define-public python-rnc2rng
+  (package
+    (name "python-rnc2rng")
+    (version "2.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "rnc2rng" version))
+       (sha256
+        (base32
+         "1kmp3iwxxyzjsd47j2sprd47ihhkwhb3yydih3af5bbfq0ibh1w8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-rply" ,python-rply)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "test.py"))))))
+    (home-page "https://github.com/djc/rnc2rng")
+    (synopsis "Convert RELAX NG Compact to regular syntax")
+    (description
+     "This package provides the @command{rnc2rng} command-line tool as well as
+a Python library to convert RELAX NG schemata in Compact syntax (rnc) to
+equivalent schemata in the XML-based default RELAX NG syntax.")
+    (license license:expat)))
+
+(define-public python-citeproc-py
+  (package
+    (name "python-citeproc-py")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "citeproc-py" version))
+       (sha256
+        (base32
+         "00aaff50jy4j0nakdzq9258z1gzrac9baarli2ymgspj88jg5968"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-rnc2rng" ,python-rnc2rng)))
+    (home-page
+     "https://github.com/brechtm/citeproc-py")
+    (synopsis "Citations and bibliography formatter")
+    (description
+     "Citeproc-py is a CSL processor for Python.  It aims to implement the
+CSL 1.0.1 specification.  citeproc-py can output styled citations and
+bibliographies in a number of different output formats.  Currently supported
+are plain text, reStructuredText and HTML.")
+    (license license:bsd-2)))

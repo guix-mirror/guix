@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -973,6 +973,9 @@ experience.")
        (modify-phases %standard-phases
          (add-before 'configure 'set-paths
            (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/awful/completion.lua"
+               (("/usr/bin/env")
+                ""))
              ;; The build process needs to load Cairo dynamically.
              (let* ((cairo (string-append (assoc-ref inputs "cairo") "/lib"))
                     (lua-version ,(version-major+minor (package-version lua)))
@@ -1021,9 +1024,9 @@ experience.")
                     (lua-version ,(version-major+minor (package-version lua)))
                     (lua-lgi (assoc-ref inputs "lua-lgi")))
                (wrap-program (string-append awesome "/bin/awesome")
-                 `("LUA_PATH" suffix
+                 `("LUA_PATH" ";" suffix
                    (,(format #f "~a/share/lua/~a/?.lua" lua-lgi lua-version)))
-                 `("LUA_CPATH" suffix
+                 `("LUA_CPATH" ";" suffix
                    (,(format #f "~a/lib/lua/~a/?.so" lua-lgi lua-version)))
                  `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))
                  `("LD_LIBRARY_PATH" suffix (,cairo)))
@@ -1383,6 +1386,8 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
+    ;; XXX When updating, check whether grim-revert-output-rotation.patch can
+    ;; be dropped from the grim package.
     (version "1.4")
     (source
      (origin
@@ -1514,7 +1519,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (method git-fetch)
@@ -1523,10 +1528,10 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ks719khhg2zwpyiwa2079i6962qcxpapm28hmr4ckpsp2n659ck"))))
+        (base32 "038vnma7y7z81caywp45yr364bc1aq8d01j5vycyiyfv33nm76fy"))))
     (build-system meson-build-system)
     (inputs `(("date" ,date)
-              ("fmt" ,fmt)
+              ("fmt" ,fmt-6)
               ("gtk-layer-shell" ,gtk-layer-shell)
               ("gtkmm" ,gtkmm)
               ("jsoncpp" ,jsoncpp)

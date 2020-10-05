@@ -712,14 +712,14 @@ text documents, vector drawings, presentations and spreadsheets.")
 (define-public libmwaw
   (package
     (name "libmwaw")
-    (version "0.3.15")
+    (version "0.3.16")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/libmwaw/libmwaw/libmwaw-"
                           version "/libmwaw-" version ".tar.xz"))
-      (sha256 (base32
-               "1cdhm9yhanyv3w4vr73zhgyynmkhhkp3dyld7m11jd2yy04vnh04"))))
+      (sha256
+       (base32 "0s0qvrmxzs8wv4304p7zx9mrasglyaszafqrfmaxwyr9lpdrwqqc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -739,14 +739,14 @@ spreadsheet documents.")
 (define-public libstaroffice
   (package
     (name "libstaroffice")
-    (version "0.0.6")
+    (version "0.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/fosnola/libstaroffice/releases/download/"
                            version "/libstaroffice-" version ".tar.xz"))
        (sha256 (base32
-                "1i0ykl0c94lc1qzb5mbyf9jr7qw8p38ja424whmhgrllh7ny203b"))))
+                "1ny8411273k2bq7mnpmcvri3rd46b2j67wfypqkp3y8nhanv0kzr"))))
     (build-system gnu-build-system)
     (inputs
      `(("librevenge" ,librevenge)

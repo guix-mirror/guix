@@ -4,6 +4,8 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Peter Lo <peterloleungyau@gmail.com>
+;;; Copyright © 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1113,7 +1115,7 @@ how the coverage distributed across the genome.")
    (propagated-inputs
     `(("r-biobase" ,r-biobase)
       ("r-biocgenerics" ,r-biocgenerics)
-      ("r-fastcluster", r-fastcluster)
+      ("r-fastcluster" ,r-fastcluster)
       ("r-ggplot2" ,r-ggplot2)
       ("r-gviz" ,r-gviz)
       ("r-plyr" ,r-plyr)
@@ -1795,14 +1797,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.22.3")
+    (version "3.22.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "0q3f55hh0a2hl96272js6gagmgps9cxs8s13pf6fii64rzaz5m7y"))))
+         "0wxgjdikinkqj7jvs2725ak0291q6zhikyf1c93w8cngwvd9i1gq"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2734,7 +2736,7 @@ gene and isoform level using RNA-seq data")
     (home-page "https://bioconductor.org/packages/karyoploteR/")
     (synopsis "Plot customizable linear genomes displaying arbitrary data")
     (description "This package creates karyotype plots of arbitrary genomes and
-offers a complete set of functions to plot arbitrary data on them.  It mimicks
+offers a complete set of functions to plot arbitrary data on them.  It mimics
 many R base graphics functions coupling them with a coordinate change function
 automatically mapping the chromosome and data coordinates into the plot
 coordinates.")
@@ -3672,7 +3674,7 @@ sets of GO terms, gene products and gene clusters.")
     (description
      "Genome wide studies of translational control is emerging as a tool to
 study various biological conditions.  The output from such analysis is both
-the mRNA level (e.g. cytosolic mRNA level) and the levl of mRNA actively
+the mRNA level (e.g. cytosolic mRNA level) and the level of mRNA actively
 involved in translation (the actively translating mRNA level) for each mRNA.
 The standard analysis of such data strives towards identifying differential
 translational between two or more sample classes - i.e.  differences in
@@ -4841,7 +4843,7 @@ a more complex way than the simple GC content.  Instead, the base types (A, T,
 G or C) at each position along the probe determine the affinity of each probe.
 The parameters of the position-specific base contributions to the probe
 affinity is estimated in an NSB experiment in which only NSB but no
-gene-specific bidning is expected.")
+gene-specific binding is expected.")
     ;; Any version of the LGPL
     (license license:lgpl2.1+)))
 
@@ -7159,14 +7161,14 @@ data.")
 (define-public r-activedriverwgs
   (package
     (name "r-activedriverwgs")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActiveDriverWGS" version))
        (sha256
         (base32
-         "08l9dj8d3cd74z1dqn8n4yqykwvqjxsfa067wnxyh7xnfvvnm5v1"))))
+         "0l6h0f54zjvcx19ngq3kp01dypsjqf28vssjm8yzccmpyacfypag"))))
     (properties
      `((upstream-name . "ActiveDriverWGS")))
     (build-system r-build-system)
@@ -7177,8 +7179,9 @@ data.")
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
-       ("r-plyr" ,r-plyr)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ActiveDriverWGS/")
     (synopsis "Driver discovery tool for cancer whole genomes")
     (description
@@ -7475,7 +7478,7 @@ networks and estimated fluxes can be visualized with hypergraphs.")
 safety and convenience features to the @code{filebacked.big.matrix} class from
 the @code{bigmemory} package.  @code{BigMatrix} protects against segfaults by
 monitoring and gracefully restoring the connection to on-disk data and it also
-protects against accidental data modification with a filesystem-based
+protects against accidental data modification with a file-system-based
 permissions system.  Utilities are provided for using @code{BigMatrix}-derived
 classes as @code{assayData} matrices within the @code{Biobase} package's
 @code{eSet} family of classes.  @code{BigMatrix} provides some optimizations
@@ -8241,3 +8244,483 @@ with:
 @end itemize
 ")
     (license license:gpl2+)))
+
+(define-public r-fourcseq
+  (package
+    (name "r-fourcseq")
+    (version "1.22.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "FourCSeq" version))
+       (sha256
+        (base32 "14q1ijnqnbd9xs60sfvyqjfiypjrvhacpwp2v85yfhcxw870cx5b"))))
+    (properties `((upstream-name . "FourCSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biostrings" ,r-biostrings)
+       ("r-deseq2" ,r-deseq2)
+       ("r-fda" ,r-fda)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggbio" ,r-ggbio)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gtools" ,r-gtools)
+       ("r-lsd" ,r-lsd)
+       ("r-matrix" ,r-matrix)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page
+     "https://bioconductor.org/packages/release/bioc/html/FourCSeq.html")
+    (synopsis "Analysis of multiplexed 4C sequencing data")
+    (description
+     "This package is an R package dedicated to the analysis of (multiplexed)
+4C sequencing data.  @code{r-fourcseq} provides a pipeline to detect specific
+interactions between DNA elements and identify differential interactions
+between conditions.  The statistical analysis in R starts with individual bam
+files for each sample as inputs.  To obtain these files, the package contains
+a Python script to demultiplex libraries and trim off primer sequences.  With
+a standard alignment software the required bam files can be then be
+generated.")
+    (license license:gpl3+)))
+
+(define-public r-preprocesscore
+  (package
+    (name "r-preprocesscore")
+    (version "1.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "preprocessCore" version))
+       (sha256
+        (base32
+         "0q1406kswylc8zn5k3wyd34p34pfzbhi1ggkfsh30zcjp6adbwjl"))))
+    (properties
+     `((upstream-name . "preprocessCore")))
+    (build-system r-build-system)
+    (home-page "https://github.com/bmbolstad/preprocessCore")
+    (synopsis "Collection of pre-processing functions")
+    (description
+     "This package provides a library of core pre-processing and normalization
+routines.")
+    (license license:lgpl2.0+)))
+
+;; This is a CRAN package, but it depends on preprocessorcore, which is a
+;; Bioconductor package.
+(define-public r-wgcna
+  (package
+    (name "r-wgcna")
+    (version "1.69")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "WGCNA" version))
+       (sha256
+        (base32
+         "022hkprnrafvggi8pkjffkvk1qlnibmbbxxrni00wkrdbga5589f"))))
+    (properties `((upstream-name . "WGCNA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-doparallel" ,r-doparallel)
+       ("r-dynamictreecut" ,r-dynamictreecut)
+       ("r-fastcluster" ,r-fastcluster)
+       ("r-foreach" ,r-foreach)
+       ("r-go-db" ,r-go-db)
+       ("r-hmisc" ,r-hmisc)
+       ("r-impute" ,r-impute)
+       ("r-rcpp" ,r-rcpp)
+       ("r-survival" ,r-survival)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-preprocesscore" ,r-preprocesscore)))
+    (home-page
+     "http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/")
+    (synopsis "Weighted correlation network analysis")
+    (description
+     "This package provides functions necessary to perform Weighted
+Correlation Network Analysis on high-dimensional data.  It includes functions
+for rudimentary data cleaning, construction and summarization of correlation
+networks, module identification and functions for relating both variables and
+modules to sample traits.  It also includes a number of utility functions for
+data manipulation and visualization.")
+    (license license:gpl2+)))
+
+(define-public r-rgraphviz
+  (package
+    (name "r-rgraphviz")
+    (version "2.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rgraphviz" version))
+       (sha256
+        (base32
+         "1calpvzgcz6v7s4x6bf35kj83sga95zjp7x87p5d3qnbv7q2wz5y"))))
+    (properties `((upstream-name . "Rgraphviz")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             ;; The replacement value is taken from src/graphviz/builddate.h
+             (substitute* "src/graphviz/configure"
+               (("VERSION_DATE=.*")
+                "VERSION_DATE=20200427.2341\n"))
+             #t)))))
+    ;; FIXME: Rgraphviz bundles the sources of an older variant of
+    ;; graphviz.  It does not build with the latest version of graphviz, so
+    ;; we do not add graphviz to the inputs.
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-graph" ,r-graph)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://bioconductor.org/packages/Rgraphviz")
+    (synopsis "Plotting capabilities for R graph objects")
+    (description
+     "This package interfaces R with the graphviz library for plotting R graph
+objects from the @code{graph} package.")
+    (license license:epl1.0)))
+
+(define-public r-fithic
+  (package
+    (name "r-fithic")
+    (version "1.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "FitHiC" version))
+              (sha256
+               (base32
+                "1dffkdxm08wq4kjd9j2v2625x3p6vbrk33a2zx94pwpgkghr72yp"))))
+    (properties `((upstream-name . "FitHiC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-fdrtool" ,r-fdrtool)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/FitHiC")
+    (synopsis "Confidence estimation for intra-chromosomal contact maps")
+    (description
+     "Fit-Hi-C is a tool for assigning statistical confidence estimates to
+intra-chromosomal contact maps produced by genome-wide genome architecture
+assays such as Hi-C.")
+    (license license:gpl2+)))
+
+(define-public r-hitc
+  (package
+    (name "r-hitc")
+    (version "1.32.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "HiTC" version))
+              (sha256
+               (base32
+                "1jx2pfa7sbdz7xi466lz1h5xv126g56z73n0a5l2wrq28k47qaxy"))))
+    (properties `((upstream-name . "HiTC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rtracklayer" ,r-rtracklayer)))
+    (home-page "https://bioconductor.org/packages/HiTC")
+    (synopsis "High throughput chromosome conformation capture analysis")
+    (description
+     "The HiTC package was developed to explore high-throughput \"C\" data
+such as 5C or Hi-C.  Dedicated R classes as well as standard methods for
+quality controls, normalization, visualization, and further analysis are also
+provided.")
+    (license license:artistic2.0)))
+
+(define-public r-hdf5array
+  (package
+    (name "r-hdf5array")
+    (version "1.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "HDF5Array" version))
+       (sha256
+        (base32
+         "01767v90nl0499jcicpxngbbs0af5p9c5aasi5va01w3v5bnqddn"))))
+    (properties `((upstream-name . "HDF5Array")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-rhdf5lib" ,r-rhdf5lib)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/HDF5Array")
+    (synopsis "HDF5 back end for DelayedArray objects")
+    (description "This package provides an array-like container for convenient
+access and manipulation of HDF5 datasets.  It supports delayed operations and
+block processing.")
+    (license license:artistic2.0)))
+
+(define-public r-rhdf5lib
+  (package
+    (name "r-rhdf5lib")
+    (version "1.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rhdf5lib" version))
+       (sha256
+        (base32
+         "0f45sqrvzj6x4mckalyp8366hm8v0rrmzklx3xd4gs6l2wallcn9"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled binaries
+           (delete-file-recursively "src/wininclude/")
+           (delete-file-recursively "src/winlib-4.9.3/")
+           (delete-file-recursively "src/winlib-8.3.0/")
+           (delete-file "src/hdf5small_cxx_hl_1.10.6.tar.gz")
+           #t))))
+    (properties `((upstream-name . "Rhdf5lib")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-use-bundled-hdf5
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each delete-file '("configure" "configure.ac"))
+             ;; Do not make other packages link with the proprietary libsz.
+             (substitute* "R/zzz.R"
+               ((" \"%s/libsz.a\"") ""))
+             (with-directory-excursion "src"
+               (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
+               (rename-file (string-append "hdf5-" ,(package-version hdf5-1.10))
+                            "hdf5")
+               ;; Remove timestamp and host system information to make
+               ;; the build reproducible.
+               (substitute* "hdf5/src/libhdf5.settings.in"
+                 (("Configured on: @CONFIG_DATE@")
+                  "Configured on: Guix")
+                 (("Uname information:.*")
+                  "Uname information: Linux\n")
+                 ;; Remove unnecessary store reference.
+                 (("C Compiler:.*")
+                  "C Compiler: GCC\n"))
+               (rename-file "Makevars.in" "Makevars")
+               (substitute* "Makevars"
+                 (("@ZLIB_LIB@") "-lz")
+                 (("@ZLIB_INCLUDE@") "")
+                 (("HDF5_CXX_LIB=.*")
+                  (string-append "HDF5_CXX_LIB="
+                                 (assoc-ref inputs "hdf5") "/lib/libhdf5_cpp.a\n"))
+                 (("HDF5_LIB=.*")
+                  (string-append "HDF5_LIB="
+                                 (assoc-ref inputs "hdf5") "/lib/libhdf5.a\n"))
+                 (("HDF5_CXX_INCLUDE=.*") "HDF5_CXX_INCLUDE=./hdf5/c++/src\n")
+                 (("HDF5_INCLUDE=.*") "HDF5_INCLUDE=./hdf5/src\n")
+                 (("HDF5_HL_INCLUDE=.*") "HDF5_HL_INCLUDE=./hdf5/hl/src\n")
+                 (("HDF5_HL_CXX_INCLUDE=.*") "HDF5_HL_CXX_INCLUDE=./hdf5/hl/c++/src\n")
+                 (("HDF5_HL_LIB=.*")
+                  (string-append "HDF5_HL_LIB="
+                                 (assoc-ref inputs "hdf5") "/lib/libhdf5_hl.a\n"))
+                 (("HDF5_HL_CXX_LIB=.*")
+                  (string-append "HDF5_HL_CXX_LIB="
+                                 (assoc-ref inputs "hdf5") "/lib/libhdf5_hl_cpp.a\n"))
+                 ;; szip is non-free software
+                 (("cp \"\\$\\{SZIP_LIB\\}.*") "")
+                 (("PKG_LIBS =.*") "PKG_LIBS = -lz -lhdf5\n")))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("hdf5" ,hdf5-1.10)))
+    (native-inputs
+     `(("hdf5-source" ,(package-source hdf5-1.10))
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/Rhdf5lib")
+    (synopsis "HDF5 library as an R package")
+    (description "This package provides C and C++ HDF5 libraries for use in R
+packages.")
+    (license license:artistic2.0)))
+
+(define-public r-beachmat
+  (package
+    (name "r-beachmat")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "beachmat" version))
+       (sha256
+        (base32
+         "1vl6jbf9ia78cm4ikdb8vz04jv4b46zhvg5i006c63a9pzw7zhxi"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-matrix" ,r-matrix)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/beachmat")
+    (synopsis "Compiling Bioconductor to handle each matrix type")
+    (description "This package provides a consistent C++ class interface for a
+variety of commonly used matrix types, including sparse and HDF5-backed
+matrices.")
+    (license license:gpl3)))
+
+(define-public r-singlecellexperiment
+  (package
+    (name "r-singlecellexperiment")
+    (version "1.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "SingleCellExperiment" version))
+       (sha256
+        (base32
+         "092wvk11n7pa234vlwhxm3gdi4k3sbnz1splhxalbdhz3jf02zfp"))))
+    (properties
+     `((upstream-name . "SingleCellExperiment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/SingleCellExperiment")
+    (synopsis "S4 classes for single cell data")
+    (description "This package defines an S4 class for storing data from
+single-cell experiments.  This includes specialized methods to store and
+retrieve spike-in information, dimensionality reduction coordinates and size
+factors for each cell, along with the usual metadata for genes and
+libraries.")
+    (license license:gpl3)))
+
+(define-public r-scater
+  (package
+    (name "r-scater")
+    (version "1.16.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "scater" version))
+              (sha256
+               (base32
+                "1pa5wvgjb30rw1vsjwbnn07ss3sc5n8ck5d7khdby4r2s9177s33"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocneighbors" ,r-biocneighbors)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biocsingular" ,r-biocsingular)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-ggbeeswarm" ,r-ggbeeswarm)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/davismcc/scater")
+    (synopsis "Single-cell analysis toolkit for gene expression data in R")
+    (description "This package provides a collection of tools for doing
+various analyses of single-cell RNA-seq gene expression data, with a focus on
+quality control.")
+    (license license:gpl2+)))
+
+(define-public r-scran
+  (package
+    (name "r-scran")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "scran" version))
+       (sha256
+        (base32
+         "1gm4ys4aq8h1pn45k1rxk384wjyf55izivw8kgxbrflj6j4xvvsv"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-bh" ,r-bh)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocneighbors" ,r-biocneighbors)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biocsingular" ,r-biocsingular)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-dqrng" ,r-dqrng)
+       ("r-edger" ,r-edger)
+       ("r-igraph" ,r-igraph)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scater" ,r-scater)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-statmod" ,r-statmod)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/scran")
+    (synopsis "Methods for single-cell RNA-Seq data analysis")
+    (description "This package implements a variety of low-level analyses of
+single-cell RNA-seq data.  Methods are provided for normalization of
+cell-specific biases, assignment of cell cycle phase, and detection of highly
+variable and significantly correlated genes.")
+    (license license:gpl3)))
+
+(define-public r-delayedmatrixstats
+  (package
+    (name "r-delayedmatrixstats")
+    (version "1.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DelayedMatrixStats" version))
+       (sha256
+        (base32
+         "046sam0rz42ph0m7jz7v3bck7d3h2mp45gzywh5dvc1qkjq6fdxx"))))
+    (properties
+     `((upstream-name . "DelayedMatrixStats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-hdf5array" ,r-hdf5array)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/PeteHaitch/DelayedMatrixStats")
+    (synopsis "Functions that apply to rows and columns of DelayedMatrix objects")
+    (description
+     "This package provides a port of the @code{matrixStats} API for use with
+@code{DelayedMatrix} objects from the @code{DelayedArray} package.  It
+contains high-performing functions operating on rows and columns of
+@code{DelayedMatrix} objects, e.g. @code{colMedians}, @code{rowMedians},
+@code{colRanks}, @code{rowRanks}, @code{colSds}, and @code{rowSds}.  Functions
+are optimized per data type and for subsetted calculations such that both
+memory usage and processing time is minimized.")
+    (license license:expat)))

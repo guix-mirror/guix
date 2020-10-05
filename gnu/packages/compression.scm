@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1762,7 +1763,8 @@ Clzip is intended to be fully compatible with the regular lzip package.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
+             "--disable-static"
              "--enable-shared")))       ; only static (.a) is built by default
     (home-page "https://www.nongnu.org/lzip/lzlib.html")
     (synopsis "Lzip data compression C library")
@@ -2249,3 +2251,31 @@ computations.")
 with their error correction data losslessly rearranged for better compression,
 to their original, binary CD format.")
     (license license:gpl3+)))
+
+(define-public tarlz
+  (package
+    (name "tarlz")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/lzip/tarlz/"
+                           "tarlz-" version ".tar.lz"))
+       (sha256
+        (base32 "0gpdm6z9pdr5bn31kxg73wm686hhpb5pdf5782pbl5a4xqqhqj90"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("lzip" ,lzip)))
+    (inputs
+     `(("lzlib" ,lzlib)))
+    (home-page "https://www.nongnu.org/lzip/tarlz.html")
+    (synopsis "Combination of the tar archiver and the lzip compressor")
+    (description
+     "Tarlz is a massively parallel (multi-threaded) combined implementation of
+the tar archiver and the lzip compressor.  Tarlz creates, lists, and extracts
+archives in a simplified and safer variant of the POSIX pax format compressed
+with lzip, keeping the alignment between tar members and lzip members.  The
+resulting multimember tar.lz archive is fully backward compatible with standard
+tar tools like GNU tar, which treat it like any other tar.lz archive.  Tarlz
+can append files to the end of such compressed archives.")
+    (license license:gpl2+)))

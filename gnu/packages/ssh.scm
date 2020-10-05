@@ -57,6 +57,8 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
@@ -123,7 +125,7 @@ file names.
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.9.4")
+    (version "0.9.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -131,7 +133,7 @@ file names.
                      (commit (string-append "libssh-" version))))
               (sha256
                (base32
-                "0qr4vi3k1wv69c95d9j26fiv78pzyksaq8ccd76b8nxar5z1fbj6"))
+                "1b2klflmn0mdkcyjl4dqfg116bf9nhmqm4qla5cqa9xis89a5bn6"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
@@ -182,7 +184,7 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "8.3p1")
+   (version "8.4p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
@@ -190,7 +192,7 @@ a server that supports the SSH-2 protocol.")
              (patches (search-patches "openssh-hurd.patch"))
              (sha256
               (base32
-               "1cl74ghi9y21dc3f4xa0qamb7dhwacbynh1ks9syprrg8zhgpgpj"))))
+               "091b3pxdlj47scxx6kkf4agkx8c8sdacdxx8m1dw1cby80pd40as"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)
                     ("pkg-config" ,pkg-config)))
@@ -694,7 +696,7 @@ manipulating key files.")
         (base32
          "0q7fblaczb7kwbsz0gdy9267z0sllzgmf0c7z5c9mf88wv74ycn6"))))
     (build-system gnu-build-system)
-    (description "sshpass is a tool for non-interactivly performing password
+    (description "sshpass is a tool for non-interactively performing password
 authentication with SSH's so-called @dfn{interactive keyboard password
 authentication}.")
     (license license:gpl2+)))
@@ -852,3 +854,39 @@ program doesn't depend on any cryptographic libraries.  It's a simple,
 single-threaded, standalone C program.  It uses @code{poll()} to trap multiple
 clients at a time.")
     (license license:unlicense)))
+
+(define-public webssh
+  (package
+    (name "webssh")
+    (version "1.5.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/huashengdun/webssh")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1l4bwzaifsd6pl120d400qkhvaznj2ck1lvwg76ycb08jsk6gpaz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-paramiko" ,python-paramiko)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://webssh.huashengdun.org/")
+    (synopsis "Web application to be used as an SSH client")
+    (description "This package provides a web application to be used as an SSH
+client.
+
+Features:
+@itemize @bullet
+@item SSH password authentication supported, including empty password.
+@item SSH public-key authentication supported, including DSA RSA ECDSA
+Ed25519 keys.
+@item Encrypted keys supported.
+@item Two-Factor Authentication (time-based one-time password) supported.
+@item Fullscreen terminal supported.
+@item Terminal window resizable.
+@item Auto detect the ssh server's default encoding.
+@item Modern browsers are supported.
+@end itemize")
+    (license license:expat)))

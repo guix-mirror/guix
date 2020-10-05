@@ -197,7 +197,10 @@ example, modify the message headers or body, or encrypt or sign the message.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "17smrxjdgbbzbzakik30vj46q4iib85ksqhb82jr4vjp57akszh9"))))
+               "17smrxjdgbbzbzakik30vj46q4iib85ksqhb82jr4vjp57akszh9"))
+             (patches
+              ;; Fixes https://issues.guix.gnu.org/43088.
+              (search-patches "mailutils-fix-uninitialized-variable.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -626,6 +629,117 @@ Extension (MIME).")
               (sha256
                (base32
                 "0slzlzcr3h8jikpz5a5amqd0csqh2m40gdk910ws2hnaf5m6hjbi"))))))
+
+(define-public altermime
+  (package
+    (name "altermime")
+    (version "0.3.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://pldaniels.com/altermime/altermime-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vn3vmbcimv0n14khxr1782m76983zz9sf4j2kz5v86lammxld43"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-bugs
+           (lambda _
+             (substitute* "MIME_headers.c"
+               (("hinfo->filename, sizeof\\(hinfo->name\\)")
+                "hinfo->filename, sizeof(hinfo->filename)")
+               (("memset\\(hinfo->defects, 0, _MIMEH_DEFECT_ARRAY_SIZE\\);")
+                "memset(hinfo->defects, 0, sizeof(hinfo->defects));"))
+             (substitute* "pldstr.c"
+               (("if \\(\\(st->start\\)&&\\(st->start != '\\\\0'\\)\\)")
+                "if ((st->start)&&(*st->start != '\\0'))"))
+             (substitute* "qpe.c"
+               (("if \\(lineend != '\\\\0'\\)")
+                "if (*lineend != '\\0')"))
+             #t))
+         (add-after 'unpack 'install-to-prefix
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr/local") "${PREFIX}")
+               (("cp altermime.*") "install -D -t ${PREFIX}/bin altermime\n"))
+             #t))
+         (add-after 'unpack 'disable-Werror
+           (lambda _
+             (substitute* "Makefile"
+               (("-Werror") ""))
+             #t)))))
+    (home-page "https://pldaniels.com/altermime/")
+    (synopsis "Modify MIME-encoded messages")
+    (description
+     "alterMIME is a small program which is used to alter your mime-encoded
+mailpack.  What can alterMIME do?
+
+@enumerate
+@item Insert disclaimers,
+@item insert arbitary X-headers,
+@item modify existing headers,
+@item remove attachments based on filename or content-type,
+@item replace attachments based on filename.
+@end enumerate
+.")
+    ;; MIME_headers.c is distributed under BSD-3; the rest of the code is
+    ;; published under the alterMIME license.
+    (license (list (license:non-copyleft "file://LICENSE")
+                   license:bsd-3))))
+
+(define-public ripmime
+  ;; Upstream does not tag or otherwise provide any releases (only a version
+  ;; number in the source)
+  (let ((commit "a556ffe08d620602475c976732e8e1a82f3169e9")
+        (revision "1"))
+    (package
+      (name "ripmime")
+      (version (git-version "1.4.0.10" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/inflex/ripMIME")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1z8ar8flvkd9q3ax4x28sj5pyq8ykk5pq249y967lj2406lxparh"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; Source has no configure script
+           (delete 'configure)
+           ;; Buildcodes make the build non-reproducible; remove them
+           (add-after 'unpack 'strip-buildcodes
+             (lambda _
+               (substitute* "generate-buildcodes.sh"
+                 (("`date \\+%s`") "0")
+                 (("`date`") "0")
+                 (("`uname -a`") "Guix"))
+               #t))
+           ;; https://github.com/inflex/ripMIME/pull/16 makes 'mkdir-p-bin-man unnecessary
+           (add-before 'install 'mkdir-p-bin-man
+             (lambda _
+               (mkdir-p (string-append (assoc-ref %outputs "out") "/bin"))
+               (mkdir-p (string-append (assoc-ref %outputs "out") "/man"))
+               #t)))
+         ;; Makefile has no tests
+         #:tests? #f
+         #:make-flags (list (string-append "LOCATION=" (assoc-ref %outputs "out"))
+                            "CC=gcc")))
+      (synopsis "Extract attachments from MIME-encoded email")
+      (description
+       "ripMIME is a small program to extract the attached files out of a
+MIME-encoded email package.")
+      (home-page "https://github.com/inflex/ripMIME")
+      (license license:bsd-3))))
 
 (define-public bogofilter
   (package
@@ -1202,7 +1316,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.6")
+    (version "3.17.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1210,7 +1324,7 @@ compresses it.")
                     ".tar.xz"))
               (sha256
                (base32
-                "1s05qw0r0gqwvvkxvrrwbjkbi61dvilixiwrpgcq21qc9csc9r0m"))))
+                "1j6x09621wng0lavh53nwzh9vqjzpspl8kh5azh7kbihpi4ldfb0"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -1598,7 +1712,7 @@ scripts to prevent embarrassing errors later on.")
      "Technology for Resting Email Encrypted Storage (TREES) is a NaCL-based
 Dovecot encryption plugin.  This plugin adds individually encrypted mail
 storage to the Dovecot IMAP server.  It is inspired by Posteo's scrambler
-which uses OpenSSL and RSA keypairs.  TREES works in a similar way, but uses
+which uses OpenSSL and RSA key pairs.  TREES works in a similar way, but uses
 the Sodium crypto library (based on NaCL).
 
 How it works:
@@ -2476,7 +2590,7 @@ transfer protocols.")
     (description
      "Sieve-connect lets you view, upload, edit, delete, and otherwise manage
 Sieve scripts on any mail server that speaks the @dfn{ManageSieve} protocol,
-as specifed in RFC 5804.
+as specified in RFC 5804.
 
 @dfn{Sieve} (RFC 5228) is a specialised language for e-mail filtering.  Sieve
 scripts are stored on the server and run whenever mail arrives.  They can
@@ -2936,47 +3050,6 @@ installation on systems where resources are limited.  Its features include:
     (description
      "This package contains libraries and templates for Django-based interfaces
 interacting with Mailman.")
-    (properties `((python2-variant . ,(delay python2-django-mailman3))))
-    (license license:gpl3+)))
-
-;; This is the last version to support Python-2.
-(define-public python2-django-mailman3
-  (package
-    (name "python2-django-mailman3")
-    (version "1.1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "django-mailman3" version))
-       (sha256
-        (base32
-         "1xjdkgfjwhgyrp5nxw65dcpcsr98ygj6856sp0bwkrmyxpd1xxk2"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (invoke "django-admin"
-                     "test"
-                     "--settings=django_mailman3.tests.settings_test"
-                     "django_mailman3"))))
-       #:python ,python-2))
-    (inputs
-     `(("python2-django" ,python2-django)))
-    (propagated-inputs
-     `(("python2-requests" ,python2-requests)
-       ("python2-requests-oauthlib" ,python2-requests-oauthlib)
-       ("python2-openid" ,python2-openid)
-       ("python2-mailmanclient" ,python2-mailmanclient)
-       ("python2-django-allauth" ,python2-django-allauth)
-       ("python2-django-gravatar2" ,python2-django-gravatar2)
-       ("python2-pytz" ,python2-pytz)))
-    (home-page "https://gitlab.com/mailman/django-mailman3")
-    (synopsis "Django library for Mailman UIs")
-    (description
-     "Libraries and templates for Django-based interfaces
-interacting with Mailman.")
     (license license:gpl3+)))
 
 (define-public python-mailman-hyperkitty
@@ -3036,16 +3109,12 @@ which sends emails to HyperKitty, the official Mailman3 web archiver.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; It is unclear why this test fails.
-             (substitute* "hyperkitty/tests/commands/test_import.py"
-               (("def test_bad_content_type_part_two")
-                "@SkipTest\n    def test_bad_content_type_part_two"))
              (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
              (invoke "example_project/manage.py" "test"
                      "--settings=hyperkitty.tests.settings_test"))))))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
-       ("python-django" ,python-django)
+       ("python-django" ,python-django-2.2)
        ("python-django-compressor" ,python-django-compressor)
        ("python-django-extensions" ,python-django-extensions)
        ("python-django-gravatar2" ,python-django-gravatar2)

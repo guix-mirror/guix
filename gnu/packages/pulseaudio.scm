@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,7 @@
   (package
     (name "libsndfile")
     (version "1.0.28")
+    (replacement libsndfile-1.0.30)
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.mega-nerd.com/libsndfile/files/libsndfile-"
@@ -103,6 +105,41 @@ as big-endian processor systems such as Motorola 68k, Power PC, MIPS and
 SPARC.  Hopefully the design of the library will also make it easy to extend
 for reading and writing new sound file formats.")
     (license l:gpl2+)))
+
+;; Replacement package to fix multiple security vulnerabilities.
+(define libsndfile-1.0.30
+  (package
+    (inherit libsndfile)
+    (version "1.0.30")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/erikd/libsndfile"
+                                 "/releases/download/v" version
+                                 "/libsndfile-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "0gsbg8ni496h55mx2p9999fk0xvbsjyz6v678a0l75b5fqs8d2gc"))
+             (modules '((ice-9 textual-ports) (guix build utils)))
+             (snippet
+              '(begin
+                 ;; Remove carriage returns (CRLF) to prevent bogus
+                 ;; errors from bash like "$'\r': command not found".
+                 (let ((data (call-with-input-file
+                                 "tests/pedantic-header-test.sh.in"
+                               (lambda (port)
+                                 (string-join
+                                  (string-split (get-string-all port)
+                                                #\return))))))
+                   (call-with-output-file "tests/pedantic-header-test.sh.in"
+                     (lambda (port) (format port data))))
+
+                 ;; While at it, fix hard coded executable name.
+                 (substitute* "tests/test_wrapper.sh.in"
+                   (("^/usr/bin/env") "env"))
+                 #t))))
+    (native-inputs
+     `(("python" ,python)
+       ,@(package-native-inputs libsndfile)))))
 
 (define-public libsamplerate
   (package

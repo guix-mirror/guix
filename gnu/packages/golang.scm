@@ -559,6 +559,30 @@ per-goroutine.")
     (home-page "https://github.com/jtolds/gls")
     (license license:expat)))
 
+(define-public go-github-com-saracen-walker
+  (package
+    (name "go-github-com-saracen-walker")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/saracen/walker")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rq1lrp99lx7k1ysbfznn4c1iagnxdhb4lnnklsadnnzi3gvygqz"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/saracen/walker"))
+    (inputs
+     `(("go-golang-org-x-sync" ,go-golang-org-x-sync)))
+    (home-page "https://github.com/saracen/walker")
+    (synopsis "Faster, parallel version of Go's filepath.Walk")
+    (license license:expat)
+    (description "The @code{walker} function is a faster, parallel version, of
+@code{filepath.Walk}")))
+
 (define-public go-github-com-tj-docopt
   (package
     (name "go-github-com-tj-docopt")
@@ -739,6 +763,36 @@ for the Go language.")
       (synopsis "Supplemental Go image libraries")
       (description "This package provides supplemental Go libraries for image
 processing.")
+      (license license:bsd-3))))
+
+(define-public go-golang-org-x-sync
+  (let ((commit "6e8e738ad208923de99951fe0b48239bfd864f28")
+        (revision "1"))
+    (package
+      (name "go-golang-org-x-sync")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/sync")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1avk27pszd5l5df6ff7j78wgla46ir1hhy2jwfl9a3c0ys602yx9"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/sync"
+         #:tests? #f
+         ;; Source-only package
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
+      (synopsis "Additional Go concurrency primitives")
+      (description "This package provides Go concurrency primitives in addition
+to the ones provided by the language and “sync” and “sync/atomic”
+packages.")
+      (home-page "https://go.googlesource.com/sync/")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys
@@ -2822,7 +2876,7 @@ cross-compilation.")
     (synopsis "Walk a value in Go using reflection")
     (description "reflectwalk is a Go library for \"walking\" a value in Go
 using reflection, in the same way a directory tree can be \"walked\" on the
-filesystem.  Walking a complex structure can allow you to do manipulations on
+file system.  Walking a complex structure can allow you to do manipulations on
 unknown structures such as those decoded from JSON.")
     (license license:expat)))
 
@@ -5237,11 +5291,11 @@ errors (warnings).")
     (native-inputs
      `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
     (home-page "https://github.com/go-git/go-billy/")
-    (synopsis "Filesystem abstraction for Go")
-    (description "Billy implements an interface based on the os standard
-library, allowing to develop applications without dependency on the underlying
-storage.  Makes it virtually free to implement mocks and testing over
-filesystem operations.")
+    (synopsis "File system abstraction for Go")
+    (description "Billy implements an interface based on the OS's standard
+library to develop applications without depending on the underlying storage.
+This makes it virtually free to implement mocks and testing over
+file system operations.")
     (license license:asl2.0)))
 
 (define-public go-github-com-jbenet-go-context

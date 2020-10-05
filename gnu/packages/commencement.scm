@@ -381,7 +381,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
     (inputs '())
     (propagated-inputs '())
     (native-inputs
-     `(("nyacc-source" ,(origin (inherit (package-source nyacc))
+     `(("nyacc-source" ,(origin (inherit (package-source nyacc-0.99))
                                 (snippet #f)))
        ("mes" ,%bootstrap-mes-rewired)
        ("mescc-tools" ,%bootstrap-mescc-tools)
@@ -477,7 +477,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
     (propagated-inputs '())
     (native-inputs
      `(("mes" ,mes-boot)
-       ("nyacc-source" ,(origin (inherit (package-source nyacc))
+       ("nyacc-source" ,(origin (inherit (package-source nyacc-0.99))
                                 (snippet #f)))
        ("mescc-tools" ,%bootstrap-mescc-tools)
        ,@(%boot-gash-inputs)))
@@ -788,14 +788,17 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
              (substitute* "config.h"
                (("#define GETCWD_BROKEN 1") "#undef GETCWD_BROKEN"))
              (let ((config.h (open-file "config.h" "a")))
-               (display (string-append "
+               (display (string-append
+                         ;; XXX TODO: remove nested ,(string-append ...) and
+                         ;; store file name on next rebuild cycle
+                         ,(string-append "
 // tcc: error: undefined symbol 'enable_hostname_completion'
 #define enable_hostname_completion(on_or_off) 0
 
-// /gnu/store/cq0cmv35s9dhilx14zaghlc08gpc0hwr-tcc-boot0-0.9.26-6.c004e9a/lib/libc.a: error: 'sigprocmask' defined twice
+// /gnu/store/" "cq0cmv35s9dhilx14zaghlc08gpc0hwr-tcc-boot0-0.9.26-6.c004e9a/lib/libc.a: error: 'sigprocmask' defined twice
 #define HAVE_POSIX_SIGNALS 1
 #define endpwent(x) 0
-")
+"))
                         config.h)
                (close config.h))
              #t))
@@ -3861,7 +3864,8 @@ COREUTILS-FINAL vs. COREUTILS, etc."
       (description
        "This package provides a complete GCC tool chain for C/C++ development to
 be installed in user profiles.  This includes GCC, as well as libc (headers and
-binaries, plus debugging symbols in the @code{debug} output), and Binutils.")
+binaries, plus debugging symbols in the @code{debug} output), and Binutils.  GCC
+is the GNU Compiler Collection.")
       (home-page "https://gcc.gnu.org/")
       (outputs '("out" "debug" "static"))
 

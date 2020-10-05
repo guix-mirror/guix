@@ -37,6 +37,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages readline)
@@ -92,7 +93,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.21.25")
+    (version "0.21.26")
     (source (origin
               (method url-fetch)
               (uri
@@ -101,7 +102,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "00f2cm3sg0vi9gxb1yk35lyyh3fbabwim3mfnsz2syrjpw0sv810"))))
+                "1sjfx9ln2zik5fr5mdjy1w184hgjn89v67i85z09x0m6qwhq5rpr"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
@@ -249,18 +250,19 @@ sort playlists, and a local file system browser.")
 (define-public mpdscribble
   (package
     (name "mpdscribble")
-    (version "0.22")
+    (version "0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.musicpd.org/download/mpdscribble/"
-                                  version "/mpdscribble-" version ".tar.gz"))
+                                  version "/mpdscribble-" version ".tar.xz"))
               (sha256
                (base32
-                "0f0ybx380x2z2g1qvdndpvcrhkrgsfqckhz3ryydq2w3pl12v27z"))))
-    (build-system gnu-build-system)
-    (inputs `(("libmpdclient" ,libmpdclient)
+                "0s66zqscb44p88cl3kcv5jkjcqsskcnrv7xgrjhzrchf2kcpwf53"))))
+    (build-system meson-build-system)
+    (inputs `(("boost" ,boost)
               ("curl" ,curl)
-              ("glib" ,glib)))
+              ("libgcrypt" ,libgcrypt)
+              ("libmpdclient" ,libmpdclient)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (synopsis "MPD client for track scrobbling")
     (description "mpdscribble is a Music Player Daemon client which submits

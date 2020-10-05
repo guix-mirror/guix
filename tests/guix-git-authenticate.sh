@@ -46,9 +46,8 @@ v1_0_0_signer="3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5" # civodul
 v1_0_1_commit="d68de958b60426798ed62797ff7c96c327a672ac"
 
 # This should fail because these commits lack '.guix-authorizations'.
-if guix git authenticate "$v1_0_0_commit" "$v1_0_0_signer" \
-	--cache-key="$cache_key" --end="$v1_0_1_commit";
-then false; else true; fi
+! guix git authenticate "$v1_0_0_commit" "$v1_0_0_signer" \
+       --cache-key="$cache_key" --end="$v1_0_1_commit"
 
 # This should work thanks to '--historical-authorizations'.
 guix git authenticate "$v1_0_0_commit" "$v1_0_0_signer" 	\

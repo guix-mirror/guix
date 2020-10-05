@@ -2215,7 +2215,7 @@ maintaining an index of the contents of your files.")
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Access usage statistics collected by the activity manager")
     (description "The KActivitiesStats library provides a querying mechanism for
-the data that the activitiy manager collects - which documents have been opened
+the data that the activity manager collects---which documents have been opened
 by which applications, and what documents have been linked to which activity.")
     ;; triple licensed
     (license (list license:lgpl2.0+ license:lgpl2.1+ license:lgpl3+))))

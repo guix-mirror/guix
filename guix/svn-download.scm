@@ -159,10 +159,11 @@ reports to LOG."
             (parameterize ((current-output-port log))
               (build:svn-fetch (svn-reference-url ref)
                                (svn-reference-revision ref)
-                               temp
+                               (string-append temp "/svn")
                                #:user-name (svn-reference-user-name ref)
                                #:password (svn-reference-password ref)))))
        (and result
-            (add-to-store store name #t "sha256" temp))))))
+            (add-to-store store name #t "sha256"
+                          (string-append temp "/svn")))))))
 
 ;;; svn-download.scm ends here

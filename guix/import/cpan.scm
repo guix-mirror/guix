@@ -49,7 +49,7 @@
             cpan-release-license
             cpan-release-author
             cpan-release-version
-            cpan-release-modle
+            cpan-release-module
             cpan-release-distribution
             cpan-release-download-url
             cpan-release-abstract

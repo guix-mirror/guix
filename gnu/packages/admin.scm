@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -443,7 +443,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.35")
+    (version "4.0.41")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -452,7 +452,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f203g2hp96cp8w4x1myhqdj5j09z9s23kylwkrxr69fjhn0vhnb"))))
+                "09i3kv91g2y5hgl75ccd59gjjvkkri4cj80m7smlx6p14hmbgdif"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -514,7 +514,7 @@ or via the @code{facter} Ruby library.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
      (origin
        (method git-fetch)
@@ -522,15 +522,14 @@ or via the @code{facter} Ruby library.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "0kjlphdvwwbj91kk91s4ksc954d3c2bznddzx2223jmb1bn9rcsa"))
+        (base32 "1qmqhbnc5yw4brd24yrp85k09770c1c00nl03mkv5pdz2bvqivk7"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
     (native-inputs
      `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("python" ,python-wrapper)))     ; for scripts/MakeHeader.py
+       ("automake" ,automake)))
     (home-page "https://htop.dev")
     (synopsis "Interactive process viewer")
     (description
@@ -828,7 +827,7 @@ would need and has several interesting built-in capabilities.")
 (define-public netcat-openbsd
   (package
     (name "netcat-openbsd")
-    (version "1.217-1")
+    (version "1.217-2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -837,12 +836,12 @@ would need and has several interesting built-in capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0kcvi3pav2fdx5c22psjv5dggk4cmrqiaq2cklhqngsk4a7vrjan"))))
+                "19sr52ix14w344pv13ppb0c1wyg5dxhic1fw2q0s3qfmx57b9hhp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
        #:make-flags
-       (list "CC=gcc")
+       (list (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -1398,7 +1397,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.2")
+    (version "1.9.3p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1408,7 +1407,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "05432672iilb7s52j9l9xzrlambb1wg3k7qvf5973i41y40x563w"))
+                "17mldsg5d08s23cskmjxfa81ibnqw3slgf3l4023j72ywi9xxffw"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2607,14 +2606,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.80")
+    (version "7.90")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1aizfys6l9f9grm82bk878w56mg0zpkfns3spzj157h98875mypw"))
+                "1s20i84m9bci70lrl0p2j7h3kpbi9snmvyhc3lzc9s3mh92w6msm"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3589,7 +3588,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.06-1")
+      (version "3.1.07-1")
       (source
        (origin
          (method git-fetch)
@@ -3598,7 +3597,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0h65n03q9kdsv0i1q5f88i11iv79ca7fqq97rdkzkmiqb4whhnm2"))))
+          (base32 "0hs4m2vmfc6srscaz72r6zpkn6n7msgzlps376ks38gj1l103xfn"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

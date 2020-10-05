@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Google LLC
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -590,11 +591,8 @@ a bind mount."
                  ;; XXX: On some GNU/Linux systems, /etc/resolv.conf is a
                  ;; symlink to a file in a tmpfs which, for an unknown reason,
                  ;; cannot be bind mounted read-only within the container.
-                 ;; The same goes with /var/run/nscd, as discussed in
-                 ;; <https://bugs.gnu.org/37967>.
-                 (writable? (or (string=? file "/etc/resolv.conf")
-                                (string=? file "/var/run/nscd")))))
-              (cons "/var/run/nscd" %network-configuration-files)))
+                 (writable? (string=? file "/etc/resolv.conf"))))
+              %network-configuration-files))
 
 (define (file-system-type-predicate type)
   "Return a predicate that, when passed a file system, returns #t if that file

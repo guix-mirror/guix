@@ -2473,10 +2473,10 @@ Lisp implementations.")
   (sbcl-package->ecl-package sbcl-closer-mop))
 
 (define-public sbcl-cl-cffi-gtk
-  (let ((commit "412d17214e092220c65a5660f5cbbd9cb69b8fe4"))
+  (let ((commit "e9a46df65995d9a16e6c8dbdc1e09b775eb4a966"))
     (package
       (name "sbcl-cl-cffi-gtk")
-      (version (git-version "0.11.2" "1" commit))
+      (version (git-version "0.11.2" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -2486,7 +2486,7 @@ Lisp implementations.")
          (file-name (git-file-name "cl-cffi-gtk" version))
          (sha256
           (base32
-           "0n997yhcnzk048nalx8ys62ja2ac8iv4mbn3mb55iapl0321hghn"))))
+           "04vix0gmqsj91lm975sx7jhlnz5gq1xf9jp873mp7c8frc5dk1jj"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
@@ -2557,10 +2557,10 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->ecl-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "dccf9d25de4e9a69f716f8ed9578e58963ead967"))
+  (let ((commit "04bb5703b68f4db9de71529b81896cc428ef54e1"))
     (package
       (name "sbcl-cl-webkit")
-      (version (git-version "2.4" "5" commit))
+      (version (git-version "2.4" "8" commit))
       (source
        (origin
          (method git-fetch)
@@ -2570,7 +2570,7 @@ is a library for creating graphical user interfaces.")
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "0cn43ks2mgqkfnalq1p997z6q5pr1sfvz99gvvr5fp7r1acn7v5w"))))
+           "12dzqgkvgwi97r8dbflslj7nsx7p6iavx82fs48nj9wf7ln1c87s"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
@@ -2868,10 +2868,10 @@ client and server.")
   (sbcl-package->ecl-package sbcl-s-xml-rpc))
 
 (define-public sbcl-trivial-clipboard
-  (let ((commit "5af3415d1484e6d69a1b5c178f24680d9fd01796"))
+  (let ((commit "afcd3743b842f5a81fc86dba60f9db59970f49c5"))
     (package
       (name "sbcl-trivial-clipboard")
-      (version (git-version "0.0.0.0" "2" commit))
+      (version (git-version "0.0.0.0" "3" commit))
       (source
        (origin
          (method git-fetch)
@@ -2881,7 +2881,7 @@ client and server.")
          (file-name (git-file-name "trivial-clipboard" version))
          (sha256
           (base32
-           "1gb515z5yq6h5548pb1fwhmb0hhq1ssyb78pvxh4alq799xipxs9"))))
+           "1qfbvkzmvkbqpc5s3sx31c5653sy6qlcixafgzd10qpykb843prr"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("xclip" ,xclip)))
@@ -3067,8 +3067,8 @@ Development into CL+SSL was done by David Lichteblau.")
   (sbcl-package->ecl-package sbcl-cl+ssl))
 
 (define-public sbcl-kmrcl
-  (let ((version "1.109.0")
-        (commit "5260068b2eb735af6796740c2db4955afac21636")
+  (let ((version "1.111")
+        (commit "4a27407aad9deb607ffb8847630cde3d041ea25a")
         (revision "1"))
     (package
       (name "sbcl-kmrcl")
@@ -3081,19 +3081,15 @@ Development into CL+SSL was done by David Lichteblau.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1va7xjgzfv674bpsli674i7zj3f7wg5kxic41kz18r6hh4n52dfv"))))
+          (base32 "06gx04mah5nc8w78s0j8628divbf1s5w7af8w7pvzb2d5mgvrbd2"))))
       (build-system asdf-build-system/sbcl)
-      (arguments
-       ;; Tests fail with: :FORCE and :FORCE-NOT arguments not allowed in a
-       ;; nested call to ASDF/OPERATE:OPERATE unless identically to toplevel
-       '(#:tests? #f))
       (inputs
        `(("sbcl-rt" ,sbcl-rt)))
       (home-page "http://files.kpe.io/kmrcl/")
       (synopsis "General utilities for Common Lisp programs")
       (description
        "KMRCL is a collection of utilities used by a number of Kevin
-Rosenberg's CL packages.")
+Rosenberg's Common Lisp packages.")
       (license license:llgpl))))
 
 (define-public cl-kmrcl
@@ -3103,34 +3099,32 @@ Rosenberg's CL packages.")
   (sbcl-package->ecl-package sbcl-kmrcl))
 
 (define-public sbcl-cl-base64
-  (package
-    (name "sbcl-cl-base64")
-    (version "3.3.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://files.kpe.io/cl-base64/cl-base64-"
-                           version ".tar.gz"))
-       (sha256
-        (base32 "0pl4zwn5bf18dm8fh1kn1yshaa6kpmfrjyb33z9mq4raqmj3xpv2"))))
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     ;; Tests fail with: :FORCE and :FORCE-NOT arguments not allowed
-     ;; in a nested call to ASDF/OPERATE:OPERATE unless identically
-     ;; to toplevel
-     '(#:tests? #f))
-    (inputs
-     `(("sbcl-ptester" ,sbcl-ptester)
-       ("sbcl-kmrcl" ,sbcl-kmrcl)))
-    (home-page "http://files.kpe.io/cl-base64/")
-    (synopsis
-     "Common Lisp package to encode and decode base64 with URI support")
-    (description
-     "This package provides highly optimized base64 encoding and decoding.
+  ;; 3.3.4 tests are broken, upstream fixes them.
+  (let ((commit "577683b18fd880b82274d99fc96a18a710e3987a"))
+    (package
+      (name "sbcl-cl-base64")
+      (version (git-version "3.3.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/cl-base64.git/")
+               (commit commit)))
+         (sha256
+          (base32 "12jj54h0fs6n237cvnp8v6hn0imfksammq22ys6pi0gwz2w47rbj"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs                    ; For tests.
+       `(("sbcl-ptester" ,sbcl-ptester)
+         ("sbcl-kmrcl" ,sbcl-kmrcl)))
+      (home-page "http://files.kpe.io/cl-base64/")
+      (synopsis
+       "Common Lisp package to encode and decode base64 with URI support")
+      (description
+       "This package provides highly optimized base64 encoding and decoding.
 Besides conversion to and from strings, integer conversions are supported.
 Encoding with Uniform Resource Identifiers is supported by using a modified
 encoding table that uses only URI-compatible characters.")
-    (license license:bsd-3)))
+      (license license:bsd-3))))
 
 (define-public cl-base64
   (sbcl-package->cl-source-package sbcl-cl-base64))
@@ -6274,8 +6268,8 @@ implementation specific equivalent.")
   (sbcl-package->ecl-package sbcl-trivial-macroexpand-all))
 
 (define-public sbcl-serapeum
-  (let ((commit "a2ca90cbdcb9f76c2822286110c7abe9ba5b76c2")
-        (revision "2"))
+  (let ((commit "c5e352a9f04a84a93742193c01734f4fb31d9f82")
+        (revision "3"))
     (package
       (name "sbcl-serapeum")
       (version (git-version "0.0.0" revision commit))
@@ -6289,7 +6283,7 @@ implementation specific equivalent.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1lrk2kf7qh5g6f8xvyg8wf89frzb5mw6m1jzgy46jy744f459i8q"))))
+           "16767pxl766c15jznr4srcbp7cnxf8w9lkyaqpp5w5crqymw84nw"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -10501,7 +10495,8 @@ package that includes a number of renames and shadows. ")
        ("metabang-bind" ,sbcl-metabang-bind)))
     (home-page "http://dwim.hu/")
     (synopsis "Common Lisp library shared by other hu.dwim systems")
-    (description "")
+    (description "This package contains a support library for other
+hu.dwim systems.")
     (license license:public-domain)))
 
 (define-public cl-hu.dwim.common
@@ -10543,7 +10538,7 @@ simplify class and condition declarations.  Features include:
 
 @itemize
 @item Automatically export all or select slots at compile time.
-@item Define the @code{:initarg} and @code{:accesor} automatically.
+@item Define the @code{:initarg} and @code{:accessor} automatically.
 @item Specify a name transformer for both the @code{:initarg} and
 @code{:accessor}, etc.
 @item Specify the @code{:initform} as second slot value.

@@ -420,11 +420,13 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
   ;; A procedure that rewrites the dependency tree of the given package to use
   ;; GUILE-2.0 instead of GUILE-3.0.
   (package-input-rewriting `((,guile-3.0 . ,guile-2.0))
-                           (guile-variant-package-name "guile2.0")))
+                           (guile-variant-package-name "guile2.0")
+                           #:deep? #f))
 
 (define package-for-guile-2.2
   (package-input-rewriting `((,guile-3.0 . ,guile-2.2))
-                           (guile-variant-package-name "guile2.2")))
+                           (guile-variant-package-name "guile2.2")
+                           #:deep? #f))
 
 (define-syntax define-deprecated-guile3.0-package
   (lambda (s)
@@ -821,7 +823,7 @@ Guile's foreign function interface.")
 (define-public guile-lzlib
   (package
     (name "guile-lzlib")
-    (version "0.0.1")
+    (version "0.0.2")
     (source
      (origin
        (method url-fetch)
@@ -831,7 +833,7 @@ Guile's foreign function interface.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rdmszn1qix085ci2mddwq5cypipc004fk7arrrkgn9bv39hazza"))))
+         "11sggvncyx08ssp1s5xii4d6nskh1qwqihnbpzzvkrs7sivxn8w6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags

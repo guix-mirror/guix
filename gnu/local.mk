@@ -144,6 +144,8 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cppi.scm				\
   %D%/packages/cran.scm				\
   %D%/packages/crates-io.scm			\
+  %D%/packages/crates-graphics.scm		\
+  %D%/packages/crates-gtk.scm			\
   %D%/packages/cross-base.scm			\
   %D%/packages/crypto.scm			\
   %D%/packages/cryptsetup.scm			\
@@ -646,6 +648,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/vm.scm				\
 						\
   %D%/system/images/hurd.scm			\
+  %D%/system/images/pine64.scm			\
 						\
   %D%/machine.scm				\
 						\
@@ -967,6 +970,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
   %D%/packages/patches/fontconfig-hurd-path-max.patch		\
   %D%/packages/patches/fpc-reproducibility.patch		\
+  %D%/packages/patches/fplll-std-fenv.patch     		\
   %D%/packages/patches/freedink-engine-fix-sdl-hints.patch	\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
@@ -1067,6 +1071,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-shell-theme.patch			\
   %D%/packages/patches/gnome-shell-disable-test.patch		\
+  %D%/packages/patches/gnome-settings-daemon-gc.patch		\
   %D%/packages/patches/gnome-todo-delete-esource-duplicate.patch \
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
@@ -1082,6 +1087,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gpsbabel-qstring.patch     		\
   %D%/packages/patches/grantlee-merge-theme-dirs.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
+  %D%/packages/patches/grim-revert-output-rotation.patch	\
   %D%/packages/patches/grocsvs-dont-use-admiral.patch		\
   %D%/packages/patches/gromacs-tinyxml2.patch			\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
@@ -1130,6 +1136,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-cross.patch				\
   %D%/packages/patches/hurd-xattr.patch				\
+  %D%/packages/patches/hplip-fix-bug-1898438.patch		\
   %D%/packages/patches/hplip-remove-imageprocessor.patch	\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-makeicecat.patch			\
@@ -1159,6 +1166,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/jamvm-2.0.0-aarch64-support.patch	\
   %D%/packages/patches/jamvm-2.0.0-disable-branch-patching.patch	\
   %D%/packages/patches/jamvm-2.0.0-opcode-guard.patch		\
+  %D%/packages/patches/java-antlr4-Add-standalone-generator.patch	\
+  %D%/packages/patches/java-antlr4-fix-code-too-large.java	\
   %D%/packages/patches/java-apache-ivy-port-to-latest-bouncycastle.patch	\
   %D%/packages/patches/java-commons-collections-fix-java8.patch \
   %D%/packages/patches/java-jeromq-fix-tests.patch		\
@@ -1200,7 +1209,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/kodi-increase-test-timeout.patch		\
   %D%/packages/patches/kodi-set-libcurl-ssl-parameters.patch		\
   %D%/packages/patches/kodi-skip-test-449.patch		\
-  %D%/packages/patches/konversation-Fix-build-with-Qt-5.11.patch	\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/lcalc-default-parameters-1.patch		\
   %D%/packages/patches/lcalc-default-parameters-2.patch		\
@@ -1227,7 +1235,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgnomeui-utf8.patch			\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
-  %D%/packages/patches/liblouisutdml-fix-tests.patch		\
   %D%/packages/patches/libofa-ftbfs-1.diff		\
   %D%/packages/patches/libofa-curl.diff		\
   %D%/packages/patches/libofa-ftbfs-2.diff		\
@@ -1292,6 +1299,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/luajit-no_ldconfig.patch			\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/lvm2-static-link.patch			\
+  %D%/packages/patches/mailutils-fix-uninitialized-variable.patch	\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mariadb-client-test-32bit.patch		\
   %D%/packages/patches/mars-install.patch			\
@@ -1356,6 +1364,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nsis-env-passthru.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
+  %D%/packages/patches/nss-3.56-pkgconfig.patch			\
   %D%/packages/patches/ntfs-3g-CVE-2019-9755.patch		\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
@@ -1402,6 +1411,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pango-skip-libthai-test.patch		\
   %D%/packages/patches/pciutils-hurd-configure.patch		\
   %D%/packages/patches/ppsspp-disable-upgrade-and-gold.patch		\
+  %D%/packages/patches/samba-fix-fcntl-hint-detection.patch		\
   %D%/packages/patches/sdl-pango-api_additions.patch		\
   %D%/packages/patches/sdl-pango-blit_overflow.patch		\
   %D%/packages/patches/sdl-pango-fillrect_crash.patch		\
@@ -1423,6 +1433,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-module-pluggable-search.patch	\
   %D%/packages/patches/perl-reproducible-build-date.patch	\
   %D%/packages/patches/perl-www-curl-remove-symbol.patch	\
+  %D%/packages/patches/picard-fix-id3-rename-test.patch		\
   %D%/packages/patches/picprog-non-intel-support.patch		\
   %D%/packages/patches/pidgin-add-search-path.patch		\
   %D%/packages/patches/pidgin-libnm.patch			\
@@ -1507,6 +1518,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/pypy3-7.3.1-fix-tests.patch		\
+  %D%/packages/patches/qemu-build-info-manual.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
   %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\

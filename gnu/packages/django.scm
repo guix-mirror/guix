@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages check)
   #:use-module (gnu packages geo)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
@@ -45,43 +47,55 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "1.11.29")
+    (version "3.1.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "171jsi54fbnxzi2n3l4hkdmmwfnfrwacs180rw59l0bqcvxsw022"))))
+                "0bzwy58hrxbsh7szak1yfh7qvvfnpdpi8ay1x7d3pvbkm1f15j2r"))))
     (build-system python-build-system)
     (arguments
-     '(#:modules ((srfi srfi-1)
-                  (guix build python-build-system)
-                  (guix build utils))
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-tzdir
+         (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The test-suite tests timezone-dependent functions, thus tzdata
              ;; needs to be available.
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
-             #t))
-         (replace 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "PYTHONPATH"
-                     (string-append ".:" (getenv "PYTHONPATH")))
+
+             ;; Disable test for incorrect timezone: it only raises the
+             ;; expected error when /usr/share/zoneinfo exists, even though
+             ;; the machinery gracefully falls back to TZDIR.  According to
+             ;; django/conf/__init__.py, lack of /usr/share/zoneinfo is
+             ;; harmless, so just ignore this test.
+             (substitute* "tests/settings_tests/tests.py"
+               ((".*def test_incorrect_timezone.*" all)
+                (string-append "    @unittest.skipIf(True, 'Disabled by Guix')\n"
+                               all)))
+
+             ;; Preserve the PYTHONPATH created by Guix when running the tests.
              (substitute* "tests/admin_scripts/tests.py"
                (("python_path = \\[")
                 (string-append "python_path = ['"
-                               (find (lambda (entry)
-                                       (string-prefix?
-                                        (assoc-ref inputs "python-pytz")
-                                        entry))
-                                     (string-split (getenv "PYTHONPATH")
-                                                   #\:))
+                               (string-join
+                                (string-split (getenv "PYTHONPATH") #\:)
+                                "','")
                                "', ")))
-             (invoke "python" "tests/runtests.py"))))))
+
+             #t))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "tests"
+               (setenv "PYTHONPATH"
+                       (string-append "..:" (getenv "PYTHONPATH")))
+               (invoke "python" "runtests.py"
+                       ;; By default tests run in parallel, which may cause
+                       ;; various race conditions.  Run sequentially for
+                       ;; consistent results.
+                       "--parallel=1")))))))
     ;; TODO: Install extras/django_bash_completion.
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
@@ -95,12 +109,16 @@
        ("python-pillow" ,python-pillow)
        ("python-pyyaml" ,python-pyyaml)
        ;; optional for tests: ("python-selenium" ,python-selenium)
-       ("python-sqlparse" ,python-sqlparse)
        ("python-tblib" ,python-tblib)))
     (propagated-inputs
      `(("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-asgiref" ,python-asgiref)
        ("python-bcrypt" ,python-bcrypt)
-       ("python-pytz" ,python-pytz)))
+       ("python-pytz" ,python-pytz)
+
+       ;; This input is not strictly required, but in practice many Django
+       ;; libraries need it for test suites and similar.
+       ("python-sqlparse" ,python-sqlparse)))
     (home-page "https://www.djangoproject.com/")
     (synopsis "High-level Python Web framework")
     (description
@@ -109,26 +127,27 @@ development and clean, pragmatic design.  It provides many tools for building
 any Web site.  Django focuses on automating as much as possible and adhering
 to the @dfn{don't repeat yourself} (DRY) principle.")
     (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-django))
-                  (cpe-name . "django")))))
+    (properties `((cpe-name . "django")))))
 
-(define-public python2-django
-  (let ((base (package-with-python2 (strip-python2-variant python-django))))
-    (package
-      (inherit base)
-      (native-inputs
-       `(;; Test requirements for Python 2 taken from
-         ;; tests/requirements/py3.txt: enum34 and mock.
-         ("python2-enum34" ,python2-enum34)
-         ("python2-mock" ,python2-mock)
-         ;; When adding memcached mind: for Python 2 memcached <= 1.53 is
-         ;; required.
-         ,@(package-native-inputs base))))))
+(define-public python-django-2.2
+  (package
+    (inherit python-django)
+    (version "2.2.16")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Django" version))
+              (sha256
+               (base32
+                "1535g2r322cl4x52fb0dmzlbg23539j2wx6027j54p22xvjlbkv2"))))
+    (native-inputs
+     `(;; XXX: In 2.2 and 3.0, selenium is required for the test suite.
+       ("python-selenium" ,python-selenium)
+       ,@(package-native-inputs python-django)))))
 
 (define-public python-django-extensions
   (package
     (name "python-django-extensions")
-    (version "2.1.6")
+    (version "3.0.6")
     (source
      (origin
        (method git-fetch)
@@ -139,18 +158,18 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
        (file-name (string-append name "-" version))
        (sha256
         (base32
-         "0p4qrdinrv6indczlc8dcnm528i5fzmcn9xk1ja7ycfkyk5x6j5w"))))
+         "0sra6hazqvspxd1pnx5cj7gia1rkaz3hn06ib4wd0frc167f5afy"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ;TODO collected 378 items / 3 errors / 1 skipped
+     '(#:tests? #f)) ;XXX: requires a Postgres or MySQL database
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-vobject" ,python-vobject)
        ("python-werkzeug" ,python-werkzeug)
-       ("python-dateutil" ,python-dateutil)
-       ("python-django" ,python-django)))
+       ("python-dateutil" ,python-dateutil)))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("python-django" ,python-django)
+       ("python-mock" ,python-mock)
        ("python-factory-boy" ,python-factory-boy)
        ("python-tox" ,python-tox)
        ("python-pytest" ,python-pytest)
@@ -168,21 +187,37 @@ commands, additional database fields and admin extensions.")
 (define-public python-django-simple-math-captcha
   (package
     (name "python-django-simple-math-captcha")
-    (version "1.0.7")
+    (version "1.0.9")
+    (home-page "https://github.com/alsoicode/django-simple-math-captcha")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "django-simple-math-captcha" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0906hms6y6znjhpd0g4wmzv9vcla4brkdpsm4zha9zdj8g5vq2hd"))))
+                "0fhy9k8haqa1296v0qpg1b5w7y3pyw9qi9z9laj5ijry1gk35qaw"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: Upstream uses a 'runtests.py' script that is not
-     ;; present in the pypi tarball.
-     '(#:tests? #f))
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-six-imports
+                    (lambda _
+                      ;; Django no longer bundles six, adjust the imports
+                      ;; accordingly.  The six dependency can likely be
+                      ;; removed in the next version.
+                      (substitute* (find-files "." "\\.py$")
+                        (("from django\\.utils import six")
+                         "import six"))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "runtests.py"))))))
+    (native-inputs
+     `(("python-django" ,python-django)
+       ("python-mock" ,python-mock)))
     (propagated-inputs
-     `(("python-django" ,python-django)))
-    (home-page "https://github.com/alsoicode/django-simple-math-captcha")
+     `(("python-six" ,python-six)))
     (synopsis "Easy-to-use math field/widget captcha for Django forms")
     (description
      "A multi-value-field that presents a human answerable question,
@@ -190,25 +225,20 @@ with no settings.py configuration necessary, but instead can be configured
 with arguments to the field constructor.")
     (license license:asl2.0)))
 
-(define-public python2-django-simple-math-captcha
-  (package-with-python2 python-django-simple-math-captcha))
-
 (define-public python-django-classy-tags
   (package
     (name "python-django-classy-tags")
-    (version "1.0.0")
+    (version "2.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django-classy-tags" version))
         (sha256
          (base32
-          "1cayqddvxd5prhybqi77lif2z4j7mmfmxgc61pq9i82q5gy2asmd"))))
+          "1javam3zqi3y3j0r490mm61v48yh75jaha99gb7lsxkaz6yri7fm"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; Test script not distributed with release.
-    (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-six" ,python-six)))
+    ;; FIXME: How to make the test templates available to Django?
+    (arguments '(#:tests? #f))
     (home-page "https://github.com/divio/django-classy-tags")
     (synopsis "Class based template tags for Django")
     (description
@@ -221,14 +251,14 @@ when coding custom template tags.")
 (define-public python-django-taggit
   (package
     (name "python-django-taggit")
-    (version "1.1.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-taggit" version))
        (sha256
         (base32
-         "044fzcpmns90kaxdi49qczlam4xsi8rl73rpfwvxx1gkcqzidgq1"))))
+         "0bbkabbs77z229ps0800gxfhf75yagp4x4j5jzfysbac3zvkp0sa"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -237,10 +267,10 @@ when coding custom template tags.")
            (lambda _
              (invoke "python3" "-m" "django" "test" "--settings=tests.settings"))))))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-isort" ,python-isort)))
+     `(("python-isort" ,python-isort)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-django" ,python-django)
+       ("python-pytest" ,python-pytest)
        ("python-mock" ,python-mock)))
     (home-page
      "https://github.com/jazzband/django-taggit")
@@ -262,9 +292,10 @@ when coding custom template tags.")
         (base32
          "14gzp5cv24z0qhxb7f7k7v9jgzpaj4n8yhjq83ynpx8183fs1rz4"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-pillow" ,python-pillow)))
+     `(("python-pillow" ,python-pillow)))
     (home-page "https://github.com/SmileyChris/easy-thumbnails")
     (synopsis "Easy thumbnails for Django")
     (description
@@ -277,26 +308,43 @@ size and quality.")
 (define-public python-pytest-django
   (package
     (name "python-pytest-django")
-    (version "3.1.2")
+    (version "3.10.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pytest-django" version))
               (sha256
                (base32
-                "02932m2sr8x22m4az8syr8g835g4ak77varrnw71n6xakmdcr303"))))
+                "19nvqsb7b9kz3ikpb50m8ppf7mfhzrapdxsqd5hhd1pdfz8dprjd"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; FIXME: How to run tests?
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-setuppy
-           (lambda _
-             (substitute* "setup.py"
-                          (("setuptools_scm==1.11.1") "setuptools_scm"))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (if tests?
+                 (begin
+                   (add-installed-pythonpath inputs outputs)
+                   (setenv "PYTHONPATH"
+                           (string-append ".:" ;for pytest_django_test
+                                          (getenv "PYTHONPATH")))
+                   (setenv "PYTEST_DJANGO_TEST_RUNNER" "pytest")
+                   (setenv "DJANGO_SETTINGS_MODULE"
+                           "pytest_django_test.settings_sqlite_file")
+                   (invoke "pytest" "-vv" "-k"
+                           ;; FIXME: these tests fail to locate Django templates ...
+                           (string-append "not test_django_not_loaded_without_settings"
+                                          " and not test_settings"
+                                          ;; ... and this does not discover
+                                          ;; 'pytest_django_test'.
+                                          " and not test_urls_cache_is_cleared")))
+                 (format #t "test suite not run~%"))
              #t)))))
     (native-inputs
      `(("python-django" ,python-django)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+       ("python-setuptools-scm" ,python-setuptools-scm)
+
+       ;; For tests.
+       ("python-pytest-xdist" ,python-pytest-xdist)))
     (propagated-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://pytest-django.readthedocs.org/")
@@ -304,9 +352,6 @@ size and quality.")
     (description "Pytest-django is a plugin for py.test that provides a set of
 useful tools for testing Django applications and projects.")
     (license license:bsd-3)))
-
-(define-public python2-pytest-django
-  (package-with-python2 python-pytest-django))
 
 (define-public python-django-haystack
   (package
@@ -335,11 +380,10 @@ useful tools for testing Django applications and projects.")
                                     "/lib"))
              #t)))
        #:tests? #f)) ; OSError: libgdal.so.27: cannot open shared object file
-    (propagated-inputs
-     `(("python-django" ,python-django)))
     (native-inputs
      `(("gdal" ,gdal)
        ("python-coverage" ,python-coverage)
+       ("python-django" ,python-django)
        ("python-dateutil" ,python-dateutil)
        ("python-geopy" ,python-geopy)
        ("python-mock" ,python-mock)
@@ -359,13 +403,13 @@ your code.")
 (define-public python-django-filter
   (package
     (name "python-django-filter")
-    (version "1.1.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-filter" version))
               (sha256
                (base32
-                "0slpfqfhnjrzlrb6vmswyhrzn01p84s16j2x1xib35gg4fxg23pc"))))
+                "1bz5qzdk9pk4a2lp2yacrdnqmkv24vxnz4k3lykrnpc3b7bkvrhi"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -387,20 +431,17 @@ filter down a queryset based on a model’s fields, displaying the form to let
 them do this.")
     (license license:bsd-3)))
 
-(define-public python2-django-filter
-  (package-with-python2 python-django-filter))
-
 (define-public python-django-allauth
   (package
     (name "python-django-allauth")
-    (version "0.40.0")
+    (version "0.42.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-allauth" version))
        (sha256
         (base32
-         "12f5gjidcpb7a0d1f601k0c5dcdmb6fg9sfn7xn5j8zfsg29y63a"))))
+         "0c0x8izvrnjhrr48w6pwsfk9ddbi6yfxg7v3hh5dm1vz1d0hjwpi"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -415,9 +456,8 @@ them do this.")
        ("python-requests" ,python-requests)
        ("python-requests-oauthlib" ,python-requests-oauthlib)))
     (native-inputs
-     `(("python-mock" ,python-mock)))
-    (inputs
-     `(("python-django" ,python-django)))
+     `(("python-django" ,python-django)
+       ("python-mock" ,python-mock)))
     (home-page "https://github.com/pennersr/django-allauth")
     (synopsis "Set of Django applications addressing authentication")
     (description
@@ -426,13 +466,10 @@ registration, account management as well as 3rd party (social)
 account authentication.")
     (license license:expat)))
 
-(define-public python2-django-allauth
-  (package-with-python2 python-django-allauth))
-
 (define-public python-django-debug-toolbar
   (package
     (name "python-django-debug-toolbar")
-    (version "1.10.1")
+    (version "2.2")
     (source
      (origin
        (method git-fetch)
@@ -442,13 +479,13 @@ account authentication.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zr6yjsms97wlvvd17rdbrx01irkg887dn9x70c1hzfjmfvp9afk"))))
+         "14069rlgjd5g724iaglai0nc636g9km4ba56r4j3k84chibqzn03"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sqlparse" ,python-sqlparse)
-       ("python-django" ,python-django)))
+     `(("python-sqlparse" ,python-sqlparse)))
     (native-inputs
-     `(("python-django-jinja" ,python-django-jinja)
+     `(("python-django" ,python-django)
+       ("python-django-jinja" ,python-django-jinja)
        ("python-html5lib" ,python-html5lib)))
     (arguments
      '(#:phases
@@ -464,17 +501,42 @@ account authentication.")
 request and response as a toolbar on the rendered page.")
     (license license:bsd-3)))
 
+(define-public python-django-debug-toolbar-alchemy
+  (package
+    (name "python-django-debug-toolbar-alchemy")
+    (version "0.1.5")
+    (home-page "https://github.com/miki725/django-debug-toolbar-alchemy")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-debug-toolbar-alchemy" version))
+              (sha256
+               (base32
+                "1kmpzghnsc247bc1dl22s4y62k9ijgy1pjms227018h5a4frsa5b"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;XXX: 'make check' does "echo TODO"
+    (propagated-inputs
+     `(("python-django-debug-toolbar" ,python-django-debug-toolbar)
+       ("python-jsonplus" ,python-jsonplus)
+       ("python-six" ,python-six)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (synopsis "Django Debug Toolbar panel for SQLAlchemy")
+    (description
+     "This package completely mimics the default Django Debug Toolbar SQL
+panel (internally it is actually subclassed), but instead of displaying
+queries done via the Django ORM, SQLAlchemy generated queries are displayed.")
+    (license license:expat)))
+
 (define-public python-django-gravatar2
   (package
     (name "python-django-gravatar2")
-    (version "1.4.2")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-gravatar2" version))
        (sha256
         (base32
-         "1qsv40xywbqsf4mkrmsswrpzqd7nfljxpfiim9an2z3dykn5rka6"))))
+         "1vn921fb6jjx7rf5dzhy66rkb71nwmh9ydd0xs9ys72icw4jh4y8"))))
     (build-system python-build-system)
     (arguments
      '(;; TODO: The django project for the tests is missing from the release.
@@ -488,44 +550,22 @@ request and response as a toolbar on the rendered page.")
 templatetags and a full test suite.")
     (license license:expat)))
 
-(define-public python2-django-gravatar2
-  (package-with-python2 python-django-gravatar2))
-
 (define-public python-django-assets
   (package
     (name "python-django-assets")
-    (version "0.12")
+    (version "2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-assets" version))
               (sha256
                (base32
-                "0y0007fvkn1rdlj2g0y6k1cnkx53kxab3g8i85i0rd58k335p365"))))
+                "0fc6i77faxxv1gjlp06lv3kw64b5bhdiypaygfxh5djddgk83fwa"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'fix-tests
-           (lambda _
-             (begin
-               ;; https://github.com/miracle2k/django-assets/issues/87
-               (substitute* "tests/__init__.py"
-                 (("settings.configure.*")
-                  (string-append
-                    "settings.configure(\n"
-                    "INSTALLED_APPS=['django_assets', "
-                    "'django.contrib.staticfiles'],\n"
-                    "TEMPLATES=[{'BACKEND': "
-                    "'django.template.backends.django.DjangoTemplates'}],\n"
-                    ")\n")))
-              ;; These tests fail
-              (substitute* "tests/test_django.py"
-                (("TestLoader") "NoTestLoader"))))))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
-    (propagated-inputs
      `(("python-django" ,python-django)
-       ("python-webassets" ,python-webassets)))
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-webassets" ,python-webassets)))
     (home-page "https://github.com/miracle2k/django-assets")
     (synopsis "Asset management for Django")
     (description
@@ -534,13 +574,10 @@ files.  Integrates the webassets library with Django, adding support for
 merging, minifying and compiling CSS and Javascript files.")
     (license license:bsd-2)))
 
-(define-public python2-django-assets
-  (package-with-python2 python-django-assets))
-
 (define-public python-django-jinja
   (package
     (name "python-django-jinja")
-    (version "2.4.1")
+    (version "2.6.0")
     (source
      (origin
        (method git-fetch)
@@ -550,11 +587,10 @@ merging, minifying and compiling CSS and Javascript files.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fcrxlznlq1xvl26y3j1r22vvy6m08r5l97xi2wj50rdmxhfvhis"))))
+         "06ldbkfkm6sc0p9sqpjph06gxrqpj78ih3dc2yik2fcba2y5mak1"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-jinja2" ,python-jinja2)
+     `(("python-jinja2" ,python-jinja2)
        ("python-pytz" ,python-pytz)
        ("python-django-pipeline" ,python-django-pipeline)))
     (arguments
@@ -578,47 +614,20 @@ provides certain advantages over the builtin Jinja2 backend in Django, for
 example, explicit calls to callables from templates and better performance.")
     (license license:bsd-3)))
 
+;; JSONField is now built-in to Django, obsoleting this package.
 (define-public python-django-jsonfield
-  (package
-    (name "python-django-jsonfield")
-    (version "1.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "jsonfield" version))
-              (sha256
-               (base32
-                "19x4lak0hg9c20r7mvf27w7i8r6i4sg2g0ypmlmp2665fnk76zvy"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'fix-tests
-           (lambda _
-             (substitute* "jsonfield/tests.py"
-               (("django.forms.util") "django.forms.utils")))))))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
-    (home-page "https://github.com/bradjasper/django-jsonfield")
-    (synopsis "Store validated JSON in your model")
-    (description
-      "Django-jsonfield is a reusable Django field that allows you to store
-validated JSON in your model.  It silently takes care of serialization.  To
-use, simply add the field to one of your models.")
-    (license license:expat)))
-
-(define-public python2-django-jsonfield
-  (package-with-python2 python-django-jsonfield))
+  (deprecated-package "python-django-jsonfield" python-django))
 
 (define-public python-dj-database-url
   (package
     (name "python-dj-database-url")
-    (version "0.4.2")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "dj-database-url" version))
               (sha256
                (base32
-                "024zbkc5rli4hia9lz9g8kf1zxhb2gwawj5abf67i7gf8n22v0x6"))))
+                "0qs16g5y3lflxibsl8gwkwap21crhmmv98l60rdq6x1wawgypsja"))))
     (build-system python-build-system)
     (home-page "https://github.com/kennethreitz/dj-database-url")
     (synopsis "Use Database URLs in your Django Application")
@@ -631,24 +640,30 @@ dictionary, populated with all the data specified in your URL.  There is also a
 conn_max_age argument to easily enable Django’s connection pool.")
     (license license:bsd-2)))
 
-(define-public python2-dj-database-url
-  (package-with-python2 python-dj-database-url))
-
 (define-public python-django-picklefield
   (package
     (name "python-django-picklefield")
-    (version "2.1.1")
+    (version "3.0.1")
+    (home-page "https://github.com/gintas/django-picklefield")
+    ;; Use a git checkout because the PyPI release lacks tests.
     (source
       (origin
-        (method url-fetch)
-        (uri (pypi-uri "django-picklefield" version))
+        (method git-fetch)
+        (uri (git-reference
+              (url home-page)
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "0imncys5s3vsy2q79nn7k5d670da1xgmcr9gmhn06fry6ibf39b7"))))
+          "0ni7bc86k0ra4pc8zv451pzlpkhs1nyil1sq9jdb4m2mib87b5fk"))))
     (build-system python-build-system)
-    (propagated-inputs `(("python-django" ,python-django)))
-    (native-inputs `(("python-tox" ,python-tox)))
-    (home-page "https://github.com/gintas/django-picklefield")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "-m" "django" "test" "-v2"
+                              "--settings=tests.settings"))))))
+    (native-inputs `(("python-django" ,python-django)))
     (synopsis "Pickled object field for Django")
     (description "Pickled object field for Django")
     (license license:expat)))
@@ -656,23 +671,17 @@ conn_max_age argument to easily enable Django’s connection pool.")
 (define-public python-django-bulk-update
   (package
     (name "python-django-bulk-update")
-    (version "1.1.10")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-bulk-update" version))
               (sha256
                (base32
-                "0mbng9m7swfc0dnidipbzlxfhlfjrv755dlnha5s4m9mgdxb1fhc"))))
+                "0dxkmrm3skyw82i0qa8vklxw1ma1y308kh9w2hcnvhpacn5cxdss"))))
     (build-system python-build-system)
     (arguments
-     ;; tests don't support django 1.10, but the module seems to work.
+     ;; XXX: Tests require a Postgres database.
      `(#:tests? #f))
-    (native-inputs
-     `(("six" ,python-six)
-       ("jsonfield" ,python-django-jsonfield)
-       ("python-dj-database-url" ,python-dj-database-url)))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
     (home-page "https://github.com/aykut/django-bulk-update")
     (synopsis "Simple bulk update over Django ORM or with helper function")
     (description
@@ -680,34 +689,30 @@ conn_max_age argument to easily enable Django’s connection pool.")
 project aims to bulk update given objects using one query over Django ORM.")
     (license license:expat)))
 
-(define-public python2-django-bulk-update
-  (package-with-python2 python-django-bulk-update))
-
 (define-public python-django-contact-form
   (package
     (name "python-django-contact-form")
-    (version "1.3")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-contact-form" version))
               (sha256
                (base32
-                "0az590y56k5ahv4sixrkn54d3a8ig2q2z9pl6s3m4f533mx2gj17"))))
+                "1zv7bcjfrg32gcsq3bclkld79l6mcy2wcvlj81h7q2ppv1wm8vqs"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; the next version will need "make test"
-             (invoke "flake8" "contact_form")
-             (invoke "coverage" "run" "contact_form/runtests.py")
-             (invoke "coverage" "report" "-m" "--fail-under" "0"))))))
+             (setenv "PYTHONPATH"
+                     (string-append "./build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (invoke "coverage" "run" "--source" "contact_form"
+                     "runtests.py"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
-       ("python-flake8" ,python-flake8)))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
+       ("python-django" ,python-django)))
     (home-page "https://github.com/ubernostrum/django-contact-form")
     (synopsis "Contact form for Django")
     (description
@@ -715,22 +720,21 @@ project aims to bulk update given objects using one query over Django ORM.")
 for Django sites.")
     (license license:bsd-3)))
 
-(define-public python2-django-contact-form
-  (package-with-python2 python-django-contact-form))
-
 (define-public python-django-contrib-comments
   (package
     (name "python-django-contrib-comments")
-    (version "1.8.0")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-contrib-comments" version))
               (sha256
                (base32
-                "0bxsgw8jrkhg6r5s0z6ksfi4w8yknaqb1s9acmxd9pm3pnsnp5kx"))))
+                "0ccdiv784a5vnpfal36km4dyg12340rwhpr0riyy0k89wfnjn8yi"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (native-inputs
      `(("python-django" ,python-django)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (home-page "https://github.com/django/django-contrib-comments")
     (synopsis "Comments framework")
     (description
@@ -740,53 +744,17 @@ used to attach comments to any model, so you can use it for comments on blog
 entries, photos, book chapters, or anything else.")
     (license license:bsd-3)))
 
-(define-public python2-django-contrib-comments
-  (package-with-python2 python-django-contrib-comments))
-
-(define-public python-django-overextends
-  (package
-    (name "python-django-overextends")
-    (version "0.4.3")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "django-overextends" version))
-              (sha256
-               (base32
-                "0qc2pcf3i56pmfxh2jw7k3pgljd8xzficmkl2541n7bkcbngqfzm"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _ (invoke "./test_project/manage.py" "test"))))))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
-    (native-inputs
-     `(("sphinx-me" ,python-sphinx-me)))
-    (home-page "https://github.com/stephenmcd/django-overextends")
-    (synopsis "Circular template inheritance")
-    (description
-      "A Django reusable app providing the overextends template tag, a drop-in
-replacement for Django's extends tag, which allows you to use circular template
-inheritance.  The primary use-case for overextends is to simultaneously
-override and extend templates from other reusable apps, in your own Django
-project.")
-    (license license:bsd-2)))
-
-(define-public python2-django-overextends
-  (package-with-python2 python-django-overextends))
-
 (define-public python-django-pipeline
   (package
     (name "python-django-pipeline")
-    (version "1.6.14")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-pipeline" version))
        (sha256
         (base32
-         "1a207y71r7za033ira0qmh2yrgp5rq0l04gw2fg9b8jri7sslrzg"))))
+         "19vrbd5s12qw4qlg5n8ldv7zz2rs5y2sdid1i7lvgp92m71dayvc"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -806,8 +774,10 @@ project.")
                                        (getenv "PYTHONPATH")))
                 (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
                 (invoke "django-admin" "test" "tests"))))))))
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
-     `(("python-django" ,python-django)
+     `(("python-css-html-js-minify" ,python-css-html-js-minify)
        ("python-slimit" ,python-slimit)
        ("python-jsmin" ,python-jsmin)))
     (home-page
@@ -822,13 +792,13 @@ support, and optional data-URI image and font embedding.")
 (define-public python-django-redis
   (package
     (name "python-django-redis")
-    (version "4.10.0")
+    (version "4.12.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-redis" version))
               (sha256
                (base32
-                "1rxcwnv9ik0swkwvfqdi9i9baw6n8if5pj6q63fjh4p9chw3j2xg"))))
+                "0qvsm8yjchl0d3i7g20wba6px9lb5gv8kp3fcnr6hr0y0b3qjr9h"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -839,33 +809,30 @@ support, and optional data-URI image and font embedding.")
              (with-directory-excursion "tests"
                (invoke "python" "runtests.py")))))))
     (native-inputs
-     `(("python-fakeredis" ,python-fakeredis)
+     `(("python-django" ,python-django)
+       ("python-fakeredis" ,python-fakeredis)
        ("python-hiredis" ,python-hiredis)
        ("python-mock" ,python-mock)
        ("python-msgpack" ,python-msgpack)
        ("redis" ,redis)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-redis" ,python-redis)))
+     `(("python-redis" ,python-redis)))
     (home-page "https://github.com/niwibe/django-redis")
     (synopsis "Full featured redis cache backend for Django")
     (description
       "Full featured redis cache backend for Django.")
     (license license:bsd-3)))
 
-(define-public python2-django-redis
-  (package-with-python2 python-django-redis))
-
 (define-public python-django-rq
   (package
     (name "python-django-rq")
-    (version "1.3.1")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-rq" version))
               (sha256
                (base32
-                "1ips1ikv5qhgwb58ssn496vgqg9qv6jinwmwbrg9l3s75fskd1l5"))))
+                "0lksnjn3q3f7y72bj2yr8870w28a5b6x0vjnd9nhpq2ah6xfz6pf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -877,11 +844,13 @@ support, and optional data-URI image and font embedding.")
                      "--settings=django_rq.tests.settings"
                      "--pythonpath=."))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("python-django" ,python-django)
+       ("python-django-redis" ,python-django-redis)
+       ("python-mock" ,python-mock)
+       ("python-rq-scheduler" ,python-rq-scheduler)
        ("redis" ,redis)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-rq" ,python-rq)))
+     `(("python-rq" ,python-rq)))
     (home-page "https://github.com/ui/django-rq")
     (synopsis "Django integration with RQ")
     (description
@@ -890,37 +859,26 @@ Django-RQ is a simple app that allows you to configure your queues in django's
 settings.py and easily use them in your project.")
     (license license:expat)))
 
-(define-public python2-django-rq
-  (package-with-python2 python-django-rq))
-
 (define-public python-django-q
   (package
     (name "python-django-q")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django-q" version))
         (sha256
          (base32
-          "0ac3rjxv37bn97a62ly8b7qvbv765z6paiinzpwxx83nal2icc42"))))
+          "1fs29767940akbsn3vdzw2rqnn9v77b0b55bi7fvydny1rk7fw6y"))))
     (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (setenv "DJANGO_SETTINGS_MODULE" "django_q.tests.settings")
-             (invoke "django-admin" "test" "django_q.tests"
-                     "--pythonpath=."))))))
+    ;; FIXME: Tests require disque, Redis, MongoDB, Docker.
+    (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
      `(("python-arrow" ,python-arrow)
        ("python-blessed" ,python-blessed)
-       ("python-django" ,python-django)
        ("python-django-picklefield" ,python-django-picklefield)))
-    (native-inputs
-     `(("python-django-redis" ,python-django-redis)
-       ("python-pytest-django" ,python-pytest-django)))
     (home-page "https://django-q.readthedocs.io/")
     (synopsis "Multiprocessing distributed task queue for Django")
     (description
@@ -931,20 +889,25 @@ using Python multiprocessing.")
 (define-public python-django-sortedm2m
   (package
     (name "python-django-sortedm2m")
-    (version "1.3.3")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-sortedm2m" version))
               (sha256
                (base32
-                "0axf765i7b3c2s83nlph47asi8s071dhq8l7y382v1pw785s22vi"))))
+                "0z0yymmrr2l5cznqbzwziw624df0qsiflvbpqwrpan52nww3dk4a"))))
     (build-system python-build-system)
     (arguments
-     ;; no tests.
-     `(#:tests? #f))
-    (propagated-inputs
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH" (string-append "./test_project:"
+                                                          "./build/lib:.:"
+                                                          (getenv "PYTHONPATH")))
+                      (invoke "django-admin.py" "test" "--settings=settings"))))))
+    (native-inputs
      `(("python-django" ,python-django)))
-    (home-page "https://github.com/gregmuellegger/django-sortedm2m")
+    (home-page "https://github.com/jazzband/django-sortedm2m")
     (synopsis "Drop-in replacement for django's own ManyToManyField")
     (description
       "Sortedm2m is a drop-in replacement for django's own ManyToManyField.
@@ -952,23 +915,27 @@ The provided SortedManyToManyField behaves like the original one but remembers
 the order of added relations.")
     (license license:bsd-3)))
 
-(define-public python2-django-sortedm2m
-  (package-with-python2 python-django-sortedm2m))
-
 (define-public python-django-appconf
   (package
     (name "python-django-appconf")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-appconf" version))
               (sha256
                (base32
-                "1qw0p9qh78bvkgi38ba58djwn0rd5j1lrkg2c2wk5wb7snj3rw9m"))))
+                "101k8nkc7xlffpjdi2qbrp9pc4v8hzvmkzi12qp7vms39asxwn5y"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-six" ,python-six)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH" (string-append ".:"
+                                                          (getenv "PYTHONPATH")))
+                      (setenv "DJANGO_SETTINGS_MODULE" "tests.test_settings")
+                      (invoke "django-admin.py" "test" "-v2"))))))
+    (native-inputs
+     `(("python-django" ,python-django)))
     (home-page "https://github.com/django-compressor/django-appconf")
     (synopsis "Handle configuration defaults of packaged Django apps")
     (description
@@ -979,104 +946,41 @@ django-appconf and can't easily be used as a replacement.  The similarity in
 name is purely coincidental.")
     (license license:bsd-3)))
 
-(define-public python2-django-appconf
-  (package-with-python2 python-django-appconf))
-
 (define-public python-django-statici18n
   (package
     (name "python-django-statici18n")
-    (version "1.3.0")
+    (version "1.9.0")
+    (home-page "https://github.com/zyegfryed/django-statici18n")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "django-statici18n" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0alcf4g1nv69njhq5k3qw4mfl2k6dc18bik5nk0g1mnp3m8zyz7k"))))
+                "1p3myp2im6c87yc05alh91jyahqws5lcw3zzdsj4dh8lx9s9cgpf"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./tests/test_project:./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (setenv "DJANGO_SETTINGS_MODULE" "project.settings")
+                      (invoke "pytest" "-vv"))))))
+    (native-inputs
      `(("python-django" ,python-django)
-       ("django-appconf" ,python-django-appconf)))
-    (home-page "https://github.com/zyegfryed/django-statici18n")
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-django" ,python-pytest-django)))
+    (propagated-inputs
+     `(("django-appconf" ,python-django-appconf)))
     (synopsis "Generate JavaScript catalog to static files")
     (description
       "A Django app that provides helper for generating JavaScript catalog to
 static files.")
     (license license:bsd-3)))
-
-(define-public python2-django-statici18n
-  (package-with-python2 python-django-statici18n))
-
-(define-public pootle
-  (package
-    (name "pootle")
-    (version "2.8.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "Pootle" version ".tar.bz2"))
-        (sha256
-         (base32
-          "1ng8igq0alsqzasgxdh3fb23581anyzp121h9041pwdzzv98kn4m"))))
-    (build-system python-build-system)
-    (arguments
-     `(; pootle supports only python2.
-       #:python ,python-2
-       ;; tests are not run and fail with "pytest_pootle/data/po/.tmp: No such
-       ;; file or directory". If we create this directory,
-       ;; pytest_pootle/data/po/terminology.po is missing.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'fix-requirements
-           (lambda _
-             (substitute* "Pootle.egg-info/requires.txt"
-               (("1.7.3") "1.8.0")
-               (("2.0.0") "2.1.0"))
-             (substitute* "requirements/tests.txt"
-               (("==3.0.6") ">=3.0.6"))
-             (substitute* "requirements/base.txt"
-               (("1.7.3") "1.8.0")
-               (("2.0.0") "2.1.0")))))))
-    (propagated-inputs
-     `(("django-allauth" ,python2-django-allauth)
-       ("django-assets" ,python2-django-assets)
-       ("django-bulk-update" ,python2-django-bulk-update)
-       ("django-contact-form" ,python2-django-contact-form)
-       ("django-contrib-comments" ,python2-django-contrib-comments)
-       ("django-overextends" ,python2-django-overextends)
-       ("django-redis" ,python2-django-redis)
-       ("django-rq" ,python2-django-rq)
-       ("django-sortedm2m" ,python2-django-sortedm2m)
-       ("django-statici18n" ,python2-django-statici18n)
-       ("babel" ,python2-babel)
-       ("cssmin" ,python2-cssmin)
-       ("diff-match-patch" ,python2-diff-match-patch)
-       ("dirsync" ,python2-dirsync)
-       ("elasticsearch" ,python2-elasticsearch)
-       ("jsonfield" ,python2-django-jsonfield)
-       ("lxml" ,python2-lxml)
-       ("dateutil" ,python2-dateutil)
-       ("levenshtein" ,python2-levenshtein)
-       ("mysqlclient" ,python2-mysqlclient)
-       ("psycopg2" ,python2-psycopg2)
-       ("pytz" ,python2-pytz)
-       ("rq" ,python2-rq)
-       ("scandir" ,python2-scandir)
-       ("stemming" ,python2-stemming)
-       ("translate-toolkit" ,python2-translate-toolkit)))
-    (native-inputs
-     `(("python2-pytest" ,python2-pytest)
-       ("python2-pytest-django" ,python2-pytest-django)
-       ("python2-pytest-catchlog" ,python2-pytest-catchlog)
-       ("python2-pytest-cov" ,python2-pytest-cov)
-       ("python2-factory-boy" ,python2-factory-boy)))
-    (home-page "https://pootle.translatehouse.org/")
-    (synopsis "Community localization server")
-    (description
-      "Pootle is an online translation and localization tool.  It works to
-lower the barrier of entry, providing tools to enable teams to work towards
-higher quality while welcoming newcomers.")
-    (license license:gpl3+)))
 
 (define-public python-django-tagging
   (package
@@ -1104,63 +1008,47 @@ higher quality while welcoming newcomers.")
     (description "This package provides a generic tagging application for
 Django projects, which allows association of a number of tags with any
 @code{Model} instance and makes retrieval of tags simple.")
-    (properties `((python2-variant . ,(delay python2-django-tagging))))
     (license license:bsd-3)))
-
-(define-public python2-django-tagging
-  (let ((base (package-with-python2
-                (strip-python2-variant python-django-tagging))))
-    (package
-      (inherit base)
-      (version "0.4.6")
-      (source
-        (origin
-          (method url-fetch)
-          (uri (pypi-uri "django-tagging" version))
-          (sha256
-           (base32
-            "0s7b4v45j783yaxs7rni10k24san0ya77nqz4s7zdf3jhfpk42r1")))))))
 
 (define-public python-djangorestframework
   (package
     (name "python-djangorestframework")
-    (version "3.7.7")
+    (version "3.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "djangorestframework" version))
        (sha256
         (base32
-         "11qv117gqwswxjljs7wafxg1hyzzlx3qrviwlk9hw41bsbl997lz"))))
+         "0chbl1d0m1x23mmpdj7y85k3n32lpxrhcdl07ywnylfj9dd2vl3d"))))
     (build-system python-build-system)
     (arguments
      '(;; No included tests
        #:tests? #f))
-    (propagated-inputs
-     `(("python-django" ,python-django)))
     (home-page "https://www.django-rest-framework.org")
     (synopsis "Toolkit for building Web APIs with Django")
     (description
      "The Django REST framework is for building Web APIs with Django.  It
-provides features like a web browseable API and authentication policies.")
+provides features like a Web-browsable API and authentication policies.")
     (license license:bsd-2)))
 
 (define-public python-django-sekizai
   (package
     (name "python-django-sekizai")
-    (version "1.1.0")
+    (version "2.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django-sekizai" version))
         (sha256
          (base32
-          "1nc4sv109valdn6azmgm2j01k7khxy2wnji84z63x7fxsikfdxp2"))))
+          "0vrkli625b5s1wldri3dyrfvqbxg7zxy2pg0rpjixw3b1ndz0ag8"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; Tests not included with release.
+    (native-inputs
+     `(("python-django" ,python-django)))
     (propagated-inputs
-     `(("python-django" ,python-django)
-       ("python-django-classy-tags" ,python-django-classy-tags)
+     `(("python-django-classy-tags" ,python-django-classy-tags)
        ("python-six" ,python-six)))
     (home-page "https://github.com/divio/django-sekizai")
     (synopsis "Template blocks for Django projects")
@@ -1177,19 +1065,19 @@ a single block.")
 (define-public python-django-crispy-forms
   (package
     (name "python-django-crispy-forms")
-    (version "1.7.2")
+    (version "1.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-crispy-forms" version))
        (sha256
         (base32
-         "0pv7y648i8iz7mf64gkjizpbx5d01ap2s4vqqa30n38if6wvlljr"))))
+         "0fxlf233f49hjax786p4r650rd0ilvhnpyvw8hv1d1aqnkxy1wgj"))))
     (build-system python-build-system)
     (arguments
      '(;; No included tests
        #:tests? #f))
-    (propagated-inputs
+    (native-inputs
      `(("python-django" ,python-django)))
     (home-page
      "http://github.com/maraujop/django-crispy-forms")
@@ -1247,20 +1135,162 @@ template tag.")
 (define-public python-django-override-storage
   (package
     (name "python-django-override-storage")
-    (version "0.1.6")
+    (version "0.3.0")
+    (home-page "https://github.com/danifus/django-override-storage")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "django-override-storage" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "022arq94lxnlyykn8wvfnkykhi2dldnsn93pa2i41na551i0wpiv"))))
+        (base32 "081kzfk7mmybhihvc92d3hsdg0r2k20ydq88fs1fgd348sq1ax51"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-django" ,python-django)))
-    (home-page
-     "https://github.com/danifus/django-override-storage")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "runtests.py"))))))
+    (native-inputs
+     `(("python-django" ,python-django)
+       ("python-mock" ,python-mock)))
     (synopsis "Django test helpers to manage file storage side effects")
     (description
      "This project provides tools to help reduce the side effects of using
 FileFields during tests.")
+    (license license:expat)))
+
+(define-public python-django-auth-ldap
+  (package
+    (name "python-django-auth-ldap")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-auth-ldap" version))
+              (sha256
+               (base32
+                "1gq49l5lv6ar6yf73c8pix8n7md4109yq31s5jfk64w6n1rigbqi"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((openldap (assoc-ref inputs "openldap")))
+                        ;; The tests need 'slapd' which is installed to the
+                        ;; libexec directory of OpenLDAP.
+                        (setenv "SLAPD" (string-append openldap "/libexec/slapd"))
+                        (setenv "SCHEMA"
+                                (string-append openldap "/etc/openldap/schema"))
+                        (invoke "python" "-m" "django" "test"
+                                "--settings" "tests.settings")))))))
+    (native-inputs
+     `(("openldap" ,openldap)
+       ("python-django" ,python-django)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-ldap" ,python-ldap)))
+    (home-page "https://github.com/django-auth-ldap/django-auth-ldap")
+    (synopsis "Django LDAP authentication backend")
+    (description
+     "This packages provides a LDAP authentication backend for Django.")
+    (license license:bsd-2)))
+
+(define-public python-django-logging-json
+  (package
+    (name "python-django-logging-json")
+    (version "1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-logging-json" version))
+              (sha256
+               (base32
+                "06041a8icazzp73kg93c7k1ska12wvkq7fpcad0l0sm1qnxx5yx7"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no tests
+    (native-inputs
+     `(("python-django" ,python-django)))
+    (propagated-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-elasticsearch" ,python-elasticsearch)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/cipriantarta/django-logging")
+    (synopsis "Log requests/responses in various formats")
+    (description
+     "This package provides a Django library that logs request, response,
+and exception details in a JSON document.  It can also send logs directly
+to ElasticSearch.")
+    (license license:bsd-2)))
+
+(define-public python-django-netfields
+  (package
+    (name "python-django-netfields")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "django-netfields" version))
+              (sha256
+               (base32
+                "1c47azr5am0q8g45x0fbn0cay7vyrack6n7k6siliw1j2p0gzi7s"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))      ;XXX: Requires a running PostgreSQL server
+    (native-inputs
+     `(("python-django" ,python-django)))
+    (propagated-inputs
+     `(("python-ipaddress" ,python-ipaddress)
+       ("python-netaddr" ,python-netaddr)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/jimfunk/django-postgresql-netfields")
+    (synopsis "PostgreSQL netfields implementation for Django")
+    (description
+     "This package provides mappings for the PostgreSQL @code{INET} and
+@code{CIDR} fields for use in Django projects.")
+    (license license:bsd-3)))
+
+(define-public python-django-url-filter
+  (package
+    (name "python-django-url-filter")
+    (version "0.3.15")
+    (home-page "https://github.com/miki725/django-url-filter")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0r4zhqhs8y6cnplwyvcb0zpijizw1ifnszs38n4w8138657f9026"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f            ;FIXME: Django raises "Apps aren't loaded yet"!?
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'loosen-requirements
+                    (lambda _
+                      ;; Do not depend on compatibility package for old
+                      ;; Python versions.
+                      (substitute* "requirements.txt"
+                        (("enum-compat") ""))
+                      #t))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (begin
+                            (setenv "PYTHONPATH"
+                                    (string-append "./build/lib:.:"
+                                                   (getenv "PYTHONPATH")))
+                            (setenv "DJANGO_SETTINGS_MODULE"
+                                    "test_project.settings")
+                            (invoke "pytest" "-vv" "--doctest-modules"
+                                    "tests/" "url_filter/"))
+                          (format #t "test suite not run~%")))))))
+    (native-inputs
+     `(("python-django" ,python-django)))
+    (propagated-inputs
+     `(("python-cached-property" ,python-cached-property)
+       ("python-six" ,python-six)))
+    (synopsis "Filter data via human-friendly URLs")
+    (description
+     "The main goal of Django URL Filter is to provide an easy URL interface
+for filtering data.  It allows the user to safely filter by model attributes
+and also allows to specify the lookup type for each filter (very much like
+Django's filtering system in ORM).")
     (license license:expat)))

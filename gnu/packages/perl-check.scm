@@ -1442,15 +1442,14 @@ from boxed blocks of test code.")
 (define-public perl-test-utf8
   (package
     (name "perl-test-utf8")
-    (version "1.01")
+    (version "1.02")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MA/MARKF/"
                            "Test-utf8-" version ".tar.gz"))
        (sha256
-        (base32
-         "0yhvf735v334qqvp9zg7i66qyk6r4cbk5s2psv93d3fdd4bindzg"))))
+        (base32 "1mwbdgbbzm54v7wdw3l80bk73lr4z9i8274zlhjhp0s0b6fg10nz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))

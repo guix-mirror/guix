@@ -60,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.10")
+    (version "7.4.11")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -68,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "045h9zb0mw369n35gd4mp5yhwh62akp0s43vg255i122n400pnf2"))
+                "1knnw9b5hkxmisxclw384ic6bcihihhii51q0fyva8cwkdd6fcax"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -311,7 +311,11 @@
                          ;; ("ISO-8859-1"=>"UTF-8") unknown error.
                          "ext/standard/tests/file/bug43008.phpt"
                          ;; Table data not created in sqlite(?).
-                         "ext/pdo_sqlite/tests/bug_42589.phpt"))
+                         "ext/pdo_sqlite/tests/bug_42589.phpt"
+
+                         ;; This tests whether microseconds ‘differ enough’ and
+                         ;; fails inconsistently on ‘fast’ machines.
+                         "ext/date/tests/bug73837.phpt"))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")

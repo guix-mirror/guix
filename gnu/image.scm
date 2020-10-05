@@ -39,7 +39,14 @@
             image-partitions
             image-compression?
             image-volatile-root?
-            image-substitutable?))
+            image-substitutable?
+
+            image-type
+            image-type?
+            image-type-name
+            image-type-constructor
+
+            os->image))
 
 
 ;;;
@@ -84,3 +91,23 @@
                       (default #t))
   (substitutable?     image-substitutable? ;boolean
                       (default #t)))
+
+
+;;;
+;;; Image type.
+;;;
+
+(define-record-type* <image-type>
+  image-type make-image-type
+  image-type?
+  (name           image-type-name) ;symbol
+  (constructor    image-type-constructor)) ;<operating-system> -> <image>
+
+
+;;;
+;;; Image creation.
+;;;
+
+(define* (os->image os #:key type)
+  (let ((constructor (image-type-constructor type)))
+    (constructor os)))

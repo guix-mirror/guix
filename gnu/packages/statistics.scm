@@ -429,14 +429,14 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
 (define-public r-mass
   (package
     (name "r-mass")
-    (version "7.3-52")
+    (version "7.3-53")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MASS" version))
        (sha256
         (base32
-         "0c4scl7r4m0bikr0wmdrnn7wfzy1vg5v7gsq6bms2vknzs9ymhxp"))))
+         "0f2bwsbqr3nzsqxva051lg8wd068naqif3vc48hac0m3mmq4x0j1"))))
     (properties `((upstream-name . "MASS")))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
@@ -1026,14 +1026,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.4.6")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "1mkgxzf000zdgbbbvg2vf4md4l501n5lfksffq8vdg6pbgd6fgv3"))))
+         "0420f7zn5knyyvd3a3xa7059l4kadw0m67rfpivacqn9xn6iwkr2"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1135,13 +1135,13 @@ aesthetic attributes.")
 (define-public r-ggdendro
   (package
     (name "r-ggdendro")
-    (version "0.1.21")
+    (version "0.1.22")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggdendro" version))
               (sha256
                (base32
-                "0jcjdkhd3wirjgv4v3gb9rw8idyymwhwnxplg3wi8wa3mwr9rhq2"))))
+                "0skbj487b6f6pj2iz4yq2b9gbgb39cv5dyzhdl3w7ay1k0s5z9ph"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -2598,13 +2598,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.900.2.0")
+    (version "0.9.900.3.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "03dfy0avzpiaf1jk8h18y2gyj3zwlfvvfixi13q3zq5qaz93by2r"))))
+                "0x8jm6cvfvp1kyckwwqxyy5hfkr8na28fih3k0lhi55wry3ml30q"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4079,27 +4079,6 @@ framework, with additional code inspection and report generation tools.")
 hierarchical clustering dendrograms.")
     (license license:gpl2+)))
 
-(define-public r-preprocesscore
-  (package
-    (name "r-preprocesscore")
-    (version "1.50.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "preprocessCore" version))
-       (sha256
-        (base32
-         "0q1406kswylc8zn5k3wyd34p34pfzbhi1ggkfsh30zcjp6adbwjl"))))
-    (properties
-     `((upstream-name . "preprocessCore")))
-    (build-system r-build-system)
-    (home-page "https://github.com/bmbolstad/preprocessCore")
-    (synopsis "Collection of pre-processing functions")
-    (description
-     "This package provides a library of core pre-processing and normalization
-routines.")
-    (license license:lgpl2.0+)))
-
 (define-public r-fastcluster
   (package
     (name "r-fastcluster")
@@ -4522,20 +4501,22 @@ Farebrother's algorithm or Liu et al.'s algorithm.")
 (define-public r-cowplot
   (package
     (name "r-cowplot")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cowplot" version))
        (sha256
         (base32
-         "19cqdhgfyr1wj0fz0c5ly8f0aiy9sfgzq6lzb78hkx0hdp2agybh"))))
+         "04d5pg4xi9nhgcbam71b5mp3q1g804ng864v90add1kddfyl3f9h"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
        ("r-gtable" ,r-gtable)
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/wilkelab/cowplot")
     (synopsis "Streamlined plot theme and plot annotations for ggplot2")
     (description
@@ -5094,13 +5075,13 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.61")
+    (version "5.67")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
-        (base32 "0kby1crnzkdg5sczwqapfpkr58apyzrrx85khigcqggmhhwl44wk"))))
+        (base32 "09hgch8x6x2k7wm17c0njp7l0r6rrrlcji60afrv19dm9r4596wr"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -5803,78 +5784,81 @@ Java package that provides routines for various statistical distributions.")
     (license license:gpl2+)))
 
 (define-public emacs-ess
-  (package
-    (name "emacs-ess")
-    (version "18.10.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/emacs-ess/ESS")
-                    (commit (string-append "v" version))))
-              (sha256
-               (base32
-                "1yq41l2bicwjrc0b731iic20cpcnz6ppigri1jn621qv2qv22vy3"))
-              (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Stop ESS from trying to bundle an external julia-mode.el.
-                  (substitute* "lisp/Makefile"
-                    (("^ess-julia.elc: julia-mode.elc") "")
-                    (("^all: julia-mode.el")
-                     "all:"))
-                  ;; Include *.el files in install target.
-                  (substitute* "lisp/Makefile"
-                    (("\t\\$\\(INSTALL) \\$\\(ELC\\) \\$\\(LISPDIR\\)" elc)
-                     (string-append "\t$(INSTALL) $(ELS) ess-autoloads.el "
-                                    "$(LISPDIR)\n" elc)))
-                  ;; Only build docs in info format.
-                  (substitute* "doc/Makefile"
-                    (("all  : info text")
-                     "all  : info")
-                    (("install: install-info install-other-docs")
-                     "install: install-info"))
-                  ;; Stop install-info from trying to update the info directory.
-                  (substitute* "doc/Makefile"
-                    ((".*\\$\\(INFODIR\\)/dir.*") ""))
-                  ;; Fix roxygen preview test.
-                  (substitute* "test/ess-r-tests.el"
-                               (("Add together two numbers.\n")
-                                "Add together two numbers. ")
-                               (("##' add\\(10, 1\\)") "add(10, 1)"))
-                  #t))))
-    (build-system gnu-build-system)
-    (arguments
-     (let ((base-directory "/share/emacs/site-lisp"))
-       `(#:make-flags (list (string-append "PREFIX=" %output)
-                            (string-append "ETCDIR=" %output
-                                           ,base-directory "/etc")
-                            (string-append "LISPDIR=" %output
-                                           ,base-directory))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-before 'build 'more-shebang-patching
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "Makeconf"
-                 (("SHELL = /bin/sh")
-                  (string-append "SHELL = " (which "sh"))))
-               #t))
-           (replace 'check
-             (lambda _
-               (invoke "make" "test")))))))
-    (inputs
-     `(("emacs" ,emacs-minimal)
-       ("r-minimal" ,r-minimal)))
-    (native-inputs
-     `(("perl" ,perl)
-       ("r-roxygen2" ,r-roxygen2)
-       ("texinfo" ,texinfo)))
-    (propagated-inputs
-     `(("emacs-julia-mode" ,emacs-julia-mode)))
-    (home-page "https://ess.r-project.org/")
-    (synopsis "Emacs mode for statistical analysis programs")
-    (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
-Emacs.  It is designed to support editing of scripts and interaction with
-various statistical analysis programs such as R, Julia, and JAGS.")
-    (license license:gpl2+)))
+  ;; Latest release is old.  This is not the latest commit either due to bug
+  ;; reported here: <https://github.com/emacs-ess/ESS/issues/987>.
+  (let ((commit "24da603184ce39246611dd5b8602e769d7ebd5bf")
+        (version "18.10.2")
+        (revision "0"))
+    (package
+      (name "emacs-ess")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-ess/ESS")
+               (commit commit)))
+         (sha256
+          (base32 "0j98lv07nzwzd54d4dgcfz01wy5gj48m0mnirxzh5r45ik2myh1r"))
+         (file-name (git-file-name name version))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Stop ESS from trying to bundle an external julia-mode.el.
+             (substitute* "lisp/Makefile"
+               ((" \\$\\(JULIAS)") "")
+               (("\ttest.*julia-mode.*\\.el") ""))
+             ;; Only build docs in info format.
+             (substitute* "doc/Makefile"
+               (("all  : info text")
+                "all  : info")
+               (("install: install-info install-other-docs")
+                "install: install-info"))
+             ;; Stop install-info from trying to update the info directory.
+             (substitute* "doc/Makefile"
+               ((".*/dir.*") ""))
+             ;; Fix r-help-mode test.
+             (substitute* "test/ess-test-r.el"
+               (("\\(equal ess-help-object \"plot.default\")") "t"))
+             ;; Avoid generating ess-autoloads.el twice.
+             (substitute* "Makefile"
+               (("all: lisp doc etc autoloads")
+                "all: lisp doc etc"))
+             ;; Install to correct directories.
+             (substitute* "Makefile"
+               (("mkdir -p \\$\\(ESSDESTDIR)")
+                "$(MAKE) -C lisp install; $(MAKE) -C doc install")
+               (("\\$\\(INSTALL) -R \\./\\* \\$\\(ESSDESTDIR)/")
+                "$(MAKE) -C etc install"))
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       (let ((base-directory "/share/emacs/site-lisp"))
+         `(#:make-flags (list (string-append "PREFIX=" %output)
+                              (string-append "ETCDIR=" %output
+                                             ,base-directory "/etc")
+                              (string-append "LISPDIR=" %output
+                                             ,base-directory)
+                              (string-append "INFODIR=" %output
+                                             "/share/info"))
+           #:phases
+           (modify-phases %standard-phases
+             (delete 'configure)
+             (replace 'check
+               (lambda _ (invoke "make" "test")))))))
+      (native-inputs
+       `(("perl" ,perl)
+         ("r-roxygen2" ,r-roxygen2)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("emacs" ,emacs-minimal)
+         ("r-minimal" ,r-minimal)))
+      (propagated-inputs
+       `(("emacs-julia-mode" ,emacs-julia-mode)))
+      (home-page "https://ess.r-project.org/")
+      (synopsis "Emacs mode for statistical analysis programs")
+      (description
+       "Emacs Speaks Statistics (ESS) is an add-on package for GNU Emacs.  It
+is designed to support editing of scripts and interaction with various
+statistical analysis programs such as R, Julia, and JAGS.")
+      (license license:gpl3+))))

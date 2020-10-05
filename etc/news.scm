@@ -13,6 +13,180 @@
 (channel-news
  (version 0)
 
+ (entry (commit "8e1907a72430aa989125b053573ef0897c480697")
+        (title (en "Package transformation options now recorded in profiles")
+               (de "Paketumwandlungsoptionen werden nun in Profilen gesichert")
+               (fr "Options de transformation sauvegardées dans les profils"))
+        (body
+         (en "When installing packages in a profile, package transformation
+options such as @option{--with-input} are now recorded in the profile.  When
+you eventually run @command{guix upgrade}, those transformations will be
+automatically applied to the upgraded packages.
+
+Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (de "Wenn Sie ein Paket in ein Profil installieren, werden nun
+Paketumwandlungsoptionen wie @option{--with-input} im Profil gespeichert.
+Sobald Sie später @command{guix upgrade} ausführen, werden dieselben
+Umwandlungen automatisch auf die aktualisierten Pakete angewandt.
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
+         (fr "Lorsqu'on installe des paquets dans un profil, les options de
+transformation telles que @option{--with-input} sont désormais enregistrées
+dans le profil.  Quand on le met plus tard à jour avec @command{guix upgrade},
+ces transformations sont automatiquement appliquées aux nouveaux paquets.
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
+ (entry (commit "313f492657f1d0863c641fa5ee7f5b7028e27c94")
+        (title (en "New @option{--image-type} option for @command{guix system disk-image}.")
+               (de "Neue Option @option{--image-type} für @command{guix system disk-image}.")
+               (fr "Nouvelle option @option{--image-type} pour @command{guix system disk-image}."))
+        (body
+         (en "The @option{--file-system-type} option for @command{guix system
+disk-image} command has been replaced by the new @option{--image-type} option.
+By default, @code{raw} disk images are produced, but @code{hurd-qcow2},
+@code{hurd-raw}, @code{uncompressed-iso9660} and @code{iso9660} image types
+are also available.
+
+The @option{--list-image-types} option lists all the available image types.")
+         (de "Anstelle der Befehlszeilenoption @option{--file-system-type} für
+@command{guix system disk-image} gibt es nun die neue Option
+@option{--image-type}.  In der Vorgabeeinstellung @code{raw} werden rohe
+Disk-Images erzeugt, aber es können auch die Abbildtypen @code{hurd-qcow2},
+@code{hurd-raw}, @code{uncompressed-iso9660} und @code{iso9660} ausgewählt
+werden.
+
+Mit der Option @option{--list-image-types} werden alle verfügbaren Abbildtypen
+aufgelistet.")
+         (fr "L'option @option{--file-system-type} pour la commande
+@command{guix system disk-image} a été remplacée par la nouvelle option
+@option{--image-type}. Par défaut, l'option @code{raw}, produisant des images
+disque brutes est sélectionnée. Les options @code{hurd-qcow2},
+@code{hurd-raw}, @code{uncompressed-iso9660} et @code{iso9660} sont également
+disponibles.
+
+La nouvelle option @option{--list-image-types} énumère les types d'image
+disponibles.")))
+
+ (entry (commit "8819551c8d2a12cd4e84e09b51e434d05a012c9d")
+        (title (en "Package transformations now apply to implicit inputs")
+               (de "Paketumwandlungen betreffen jetzt auch implizite Eingaben")
+               (fr "Les transformations de paquets s'appliquent aux
+dépendances implicites"))
+        (body
+         (en "Package transformation options such as @option{--with-branch},
+@option{--with-input}, and so on now apply to implicit inputs---previously
+only a package's explicit inputs would be affected.  This allows for things
+such as replacing the Python dependency of a package that uses
+@code{python-build-system}:
+
+@example
+guix install --with-input=python=python2 python-itsdangerous
+@end example
+
+Another example is grafting a different version of the GNU C
+Library (@code{glibc} is an implicit input of almost all the packages and is
+``deep down'' in the dependency graph):
+
+@example
+guix build --with-graft=glibc=glibc@@2.31 hello
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more
+info.")
+         (de "Paketumwandlungsoptionen wie @option{--with-branch},
+@option{--with-input} und so weiter betreffen nun auch implizite Eingaben —
+zuvor haben sie sich nur auf die expliziten Eingaben eines Pakets
+ausgewirkt. Dadurch kann jetzt zum Beispiel die Python-Abhängigkeit eines
+Pakets, welches @code{python-build-system} benutzt, ersetzt werden:
+
+@example
+guix install --with-input=python=python2 python-itsdangerous
+@end example
+
+Ein weiteres Beispiel ist, mit einer anderen Version der GNU-C-Bibliothek zu
+veredeln (@code{glibc} ist eine implizite Eingabe fast aller Pakete und steckt
+„ganz tief“ im Abhängigkeitsgraphen):
+
+@example
+guix build --with-graft=glibc=glibc@@2.31 hello
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
+         (fr "Les options de transformation de paquets telles que
+@option{--with-branch} et @option{--with-input} s'appliquent désormais aux
+dépendances implicites — jusque là seules les dépendances explicites des
+paquets étaient prises en compte.  Cela permet certaines choses telles que
+remplacer la dépendance sur Python d'un paquet utilisant
+@code{python-build-system} :
+
+@example
+guix install --with-input=python=python2 python-itsdangerous
+@end example
+
+Un autre exemple est la possibilité de greffer une version différente de la
+bibliothèque C GNU (la @code{glibc} est une dépendance implicite de tous les
+paquets et se trouve « tout en bas » du graphe de dépendance) :
+
+@example
+guix build --with-graft=glibc=glibc@@2.31 hello
+@end example
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
+ (entry (commit "f458cfbcc54ed87b1a87dd9e150ea276f17eab74")
+        (title (en "New @option{--without-tests} transformation option")
+               (de "Neue Paketumwandlungsoption @option{--without-tests}")
+               (fr "Nouvelle option de transformation @option{--without-tests}"))
+        (body
+         (en "The new @option{--without-tests} package transformation option
+instructs Guix to skip the test suite of a given package.  In the example
+below, @code{guile-gcrypt} is built using a variant of @code{automake} itself
+built without running its (lengthy) test suite:
+
+@example
+guix build guile-gcrypt --without-tests=automake
+@end example
+
+This is primarily useful as a way to speed up development cycles, or to work
+around flaky test suites---skipping tests can hide real issues, so use with
+care.  Run @command{info \"(guix) Package Transformation Options\"} for more
+info.")
+         (de "Mit der neuen Paketumwandlungsoption @option{--without-tests}
+wird Guix angewiesen, den Testkatalog des angegebenen Pakets zu
+überspringen. Im folgenden Beispiel wird @code{guile-gcrypt} mit einer
+Variante von @code{automake} erstellt, die wiederum ohne Durchlauf ihres (viel
+Zeit in Anspruch nehmenden) Testkatalogs erstellt wird:
+
+@example
+guix build guile-gcrypt --without-tests=automake
+@end example
+
+Der hauptsächliche Nutzen liegt in der Beschleunigung von Entwicklungszyklen
+oder im Umgehen unzuverlässiger Testkataloge. Allerdings kann das Überspringen
+dazu führen, dass echte Probleme verborgen bleiben. Setzen Sie es mit Bedacht
+ein. Führen Sie @command{info \"(guix.de) Paketumwandlungsoptionen\"} aus, um
+mehr Informationen zu erhalten.")
+         (fr "La nouvelle option de transformation de paquets
+@option{--without-tests} demande à Guix de sauter la suite de tests d'un
+paquet.  Dans l'exemple ci-dessous, @code{guile-gcrypt} est construit en
+utilisant une variante de @code{automake} construite sans lancer sa suite de
+tests :
+
+@example
+guix build guile-gcrypt --without-tests=automake
+@end example
+
+Cette option est surtout intéressante pour raccourcir le cycle de
+développement ou pour contourner une suite de tests qui n'est pas
+fiable — sauter les tests peut cacher des vrais problèmes, à utiliser avec
+précaution donc.  Voir @command{info \"(guix.fr) Options de transformation de
+paquets\"} pour plus de détails.")))
+
  (entry (commit "a98712785e0b042a290420fd74e5a4a5da4fc68f")
         (title (en "New @command{guix git authenticate} command")
                (de "Neuer Befehl @command{guix git authenticate}")

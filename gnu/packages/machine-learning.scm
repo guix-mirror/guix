@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -330,8 +331,6 @@ networks) based on simulation of (stochastic) flow in graphs.")
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
            (lambda _
-             (substitute* "configure"
-               (("/bin/sh") (which "sh")))
              (substitute* "setup.ml"
                (("LDFLAGS=-fPIC")
                 (string-append "LDFLAGS=-fPIC\"; \"SHELL=" (which "sh")))
@@ -1932,13 +1931,14 @@ with image data, text data, and sequence data.")
              ;; These tests attempt to download data files from the internet.
              (delete-file "tests/integration_tests/test_datasets.py")
              (delete-file "tests/integration_tests/imagenet_utils_test.py")
-
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
-             (invoke "py.test" "-v"
-                     "-p" "no:cacheprovider"
-                     "--ignore" "keras/utils"))))))
+             ;; Backport https://github.com/keras-team/keras/pull/12479.
+             (substitute* "tests/keras/engine/test_topology.py"
+               (("np.ones\\(\\(3, 2\\)\\)")
+                "1."))
+             (invoke "python" "-m" "pytest"
+                     ;; The following test fail only in the build container;
+                     ;; skip it.
+                     "-k" "not test_selu"))))))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-keras-applications" ,python-keras-applications)

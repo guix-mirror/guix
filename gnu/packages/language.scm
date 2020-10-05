@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -56,7 +56,7 @@
 (define-public liblouis
   (package
     (name "liblouis")
-    (version "3.14.0")
+    (version "3.15.0")
     (source
      (origin
        (method git-fetch)
@@ -66,7 +66,7 @@
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0v6w8b9r994mkkbm2gqgd7k5yfmdhgbabh0j1gmn375nyvhy4qqh"))))
+        (base32 "1ljy5xsy7vf2r0ix0d7bqcr6qvr6897f8madsx9zlm1mrj31n5px"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin" "doc" "python"))
     (arguments
@@ -76,7 +76,6 @@
         "--enable-ucs4")
        #:phases
        (modify-phases %standard-phases
-         ;; To install the sub-package "python".
          (add-after 'install 'install-python-extension
            (lambda* (#:key outputs #:allow-other-keys)
              (with-directory-excursion "python"
@@ -104,17 +103,13 @@ support a rule- or dictionary based approach.  Tools for testing and debugging
 tables are also included.  Liblouis also supports math braille, Nemeth and
 Marburg.")
     (home-page "http://liblouis.org/")
-    (license
-     (list
-      ;; Library
-      lgpl2.1+
-      ;; Tools
-      gpl3+))))
+    (license (list lgpl2.1+             ; library
+                   gpl3+))))            ; tools
 
 (define-public liblouisutdml
   (package
     (name "liblouisutdml")
-    (version "2.8.0")
+    (version "2.9.0")
     (source
      (origin
        (method git-fetch)
@@ -124,15 +119,12 @@ Marburg.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11xxky3crjm8bidfljzpqaz1m1i1m1yskmdpavf9b4jpf87nzjj2"))
-       (patches
-        (search-patches "liblouisutdml-fix-tests.patch"))))
+        (base32 "0c32cfcfp0lyfd655c9ihhh3p7lhrb9q3xbll7q5dw4km86gaq6w"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin" "doc"))
     (arguments
      `(#:configure-flags
-       (list
-        "--disable-static")))
+       (list "--disable-static")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -152,12 +144,8 @@ transcription services for xml, html and text documents.  It translates into
 appropriate braille codes and formats according to its style sheet and the
 specifications in the document.")
     (home-page "http://liblouis.org/")
-    (license
-     (list
-      ;; Library
-      lgpl3+
-      ;; Tools
-      gpl3+))))
+    (license (list lgpl3+               ; library
+                   gpl3+))))            ; tools
 
 (define-public libstemmer
   (package
@@ -1100,7 +1088,7 @@ noun phrases, verb phrases, etc.).")
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.fon.hum.uva.nl/praat/")
     (synopsis "Doing phonetics by computer")
-    (description "Praat is a tool to perform phonetics tasks.  It can do speach
-analysis (pitch, formant, intensity, ...), speach synthesis, labeling, segmenting
+    (description "Praat is a tool to perform phonetics tasks.  It can do speech
+analysis (pitch, formant, intensity, ...), speech synthesis, labelling, segmenting
 and manipulation.")
     (license gpl2+)))

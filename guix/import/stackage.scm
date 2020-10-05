@@ -42,12 +42,12 @@
 (define %stackage-url "http://www.stackage.org")
 
 (define (lts-info-ghc-version lts-info)
-  "Retruns the version of the GHC compiler contained in LTS-INFO."
+  "Returns the version of the GHC compiler contained in LTS-INFO."
   (and=> (assoc-ref lts-info "snapshot")
          (cut assoc-ref <> "ghc")))
 
 (define (lts-info-packages lts-info)
-  "Retruns the alist of packages contained in LTS-INFO."
+  "Returns the alist of packages contained in LTS-INFO."
   (or (assoc-ref lts-info "packages") '()))
 
 (define (leave-with-message fmt . args)

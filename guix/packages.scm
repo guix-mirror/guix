@@ -422,6 +422,16 @@ name of its URI."
                                                        package)
                                                       16)))))
 
+(define-syntax-rule (package/inherit p overrides ...)
+  "Like (package (inherit P) OVERRIDES ...), except that the same
+transformation is done to the package replacement, if any.  P must be a bare
+identifier, and will be bound to either P or its replacement when evaluating
+OVERRIDES."
+  (let loop ((p p))
+    (package (inherit p)
+      overrides ...
+      (replacement (and=> (package-replacement p) loop)))))
+
 (define (package-upstream-name package)
   "Return the upstream name of PACKAGE, which could be different from the name
 it has in Guix."
@@ -968,10 +978,31 @@ packages they depend on, recursively."
                    (vhash-consq package #t visited)
                    (fold set-insert closure dependencies))))))))
 
-(define* (package-mapping proc #:optional (cut? (const #f)))
+(define (build-system-with-package-mapping bs rewrite)
+  "Return a variant of BS, a build system, that rewrites a bag's inputs by
+passing them through REWRITE, a procedure that takes an input tuplet and
+returns a \"rewritten\" input tuplet."
+  (define lower
+    (build-system-lower bs))
+
+  (define (lower* . args)
+    (let ((lowered (apply lower args)))
+      (bag
+        (inherit lowered)
+        (build-inputs (map rewrite (bag-build-inputs lowered)))
+        (host-inputs (map rewrite (bag-host-inputs lowered)))
+        (target-inputs (map rewrite (bag-target-inputs lowered))))))
+
+  (build-system
+    (inherit bs)
+    (lower lower*)))
+
+(define* (package-mapping proc #:optional (cut? (const #f))
+                          #:key deep?)
   "Return a procedure that, given a package, applies PROC to all the packages
 depended on and returns the resulting package.  The procedure stops recursion
-when CUT? returns true for a given package."
+when CUT? returns true for a given package.  When DEEP? is true, PROC is
+applied to implicit inputs as well."
   (define (rewrite input)
     (match input
       ((label (? package? package) outputs ...)
@@ -980,48 +1011,77 @@ when CUT? returns true for a given package."
       (_
        input)))
 
+  (define mapping-property
+    ;; Property indicating whether the package has already been processed.
+    (gensym " package-mapping-done"))
+
   (define replace
     (mlambdaq (p)
-      ;; Return a variant of P with PROC applied to P and its explicit
-      ;; dependencies, recursively.  Memoize the transformations.  Failing to
-      ;; do that, we would build a huge object graph with lots of duplicates,
-      ;; which in turns prevents us from benefiting from memoization in
-      ;; 'package-derivation'.
-      (let ((p (proc p)))
-        (package
-          (inherit p)
-          (location (package-location p))
-          (inputs (map rewrite (package-inputs p)))
-          (native-inputs (map rewrite (package-native-inputs p)))
-          (propagated-inputs (map rewrite (package-propagated-inputs p)))
-          (replacement (and=> (package-replacement p) proc))))))
+      ;; If P is the result of a previous call, return it.
+      (if (assq-ref (package-properties p) mapping-property)
+          p
+
+          ;; Return a variant of P with PROC applied to P and its explicit
+          ;; dependencies, recursively.  Memoize the transformations.  Failing
+          ;; to do that, we would build a huge object graph with lots of
+          ;; duplicates, which in turns prevents us from benefiting from
+          ;; memoization in 'package-derivation'.
+          (let ((p (proc p)))
+            (package
+              (inherit p)
+              (location (package-location p))
+              (build-system (if deep?
+                                (build-system-with-package-mapping
+                                 (package-build-system p) rewrite)
+                                (package-build-system p)))
+              (inputs (map rewrite (package-inputs p)))
+              (native-inputs (map rewrite (package-native-inputs p)))
+              (propagated-inputs (map rewrite (package-propagated-inputs p)))
+              (replacement (and=> (package-replacement p) replace))
+              (properties `((,mapping-property . #t)
+                            ,@(package-properties p))))))))
 
   replace)
 
 (define* (package-input-rewriting replacements
-                                  #:optional (rewrite-name identity))
+                                  #:optional (rewrite-name identity)
+                                  #:key (deep? #t))
   "Return a procedure that, when passed a package, replaces its direct and
-indirect dependencies (but not its implicit inputs) according to REPLACEMENTS.
-REPLACEMENTS is a list of package pairs; the first element of each pair is the
-package to replace, and the second one is the replacement.
+indirect dependencies, including implicit inputs when DEEP? is true, according
+to REPLACEMENTS.  REPLACEMENTS is a list of package pairs; the first element
+of each pair is the package to replace, and the second one is the replacement.
 
 Optionally, REWRITE-NAME is a one-argument procedure that takes the name of a
 package and returns its new name after rewrite."
+  (define replacement-property
+    ;; Property to tag right-hand sides in REPLACEMENTS.
+    (gensym " package-replacement"))
+
   (define (rewrite p)
-    (match (assq-ref replacements p)
-      (#f  (package
-             (inherit p)
-             (name (rewrite-name (package-name p)))))
-      (new new)))
+    (if (assq-ref (package-properties p) replacement-property)
+        p
+        (match (assq-ref replacements p)
+          (#f  (package/inherit p
+                 (name (rewrite-name (package-name p)))))
+          (new (if deep?
+                   (package/inherit new
+                     (properties `((,replacement-property . #t)
+                                   ,@(package-properties new))))
+                   new)))))
 
-  (package-mapping rewrite (cut assq <> replacements)))
+  (define (cut? p)
+    (or (assq-ref (package-properties p) replacement-property)
+        (assq-ref replacements p)))
 
-(define (package-input-rewriting/spec replacements)
+  (package-mapping rewrite cut?
+                   #:deep? deep?))
+
+(define* (package-input-rewriting/spec replacements #:key (deep? #t))
   "Return a procedure that, given a package, applies the given REPLACEMENTS to
-all the package graph (excluding implicit inputs).  REPLACEMENTS is a list of
-spec/procedures pair; each spec is a package specification such as \"gcc\" or
-\"guile@2\", and each procedure takes a matching package and returns a
-replacement for that package."
+all the package graph, including implicit inputs unless DEEP? is false.
+REPLACEMENTS is a list of spec/procedures pair; each spec is a package
+specification such as \"gcc\" or \"guile@2\", and each procedure takes a
+matching package and returns a replacement for that package."
   (define table
     (fold (lambda (replacement table)
             (match replacement
@@ -1046,22 +1106,27 @@ replacement for that package."
                  (package-name package)
                  table))
 
-  (define (rewrite package)
-    (match (find-replacement package)
-      (#f package)
-      (proc (proc package))))
+  (define replacement-property
+    (gensym " package-replacement"))
 
-  (package-mapping rewrite find-replacement))
+  (define (rewrite p)
+    (if (assq-ref (package-properties p) replacement-property)
+        p
+        (match (find-replacement p)
+          (#f p)
+          (proc
+           (let ((new (proc p)))
+             ;; Mark NEW as already processed.
+             (package/inherit new
+               (properties `((,replacement-property . #t)
+                             ,@(package-properties new)))))))))
 
-(define-syntax-rule (package/inherit p overrides ...)
-  "Like (package (inherit P) OVERRIDES ...), except that the same
-transformation is done to the package replacement, if any.  P must be a bare
-identifier, and will be bound to either P or its replacement when evaluating
-OVERRIDES."
-  (let loop ((p p))
-    (package (inherit p)
-      overrides ...
-      (replacement (and=> (package-replacement p) loop)))))
+  (define (cut? p)
+    (or (assq-ref (package-properties p) replacement-property)
+        (find-replacement p)))
+
+  (package-mapping rewrite cut?
+                   #:deep? deep?))
 
 
 ;;;

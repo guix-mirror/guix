@@ -10,6 +10,7 @@
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -134,7 +135,7 @@ This package contains GUI widgets for baloo.")
      (list license:lgpl2.1+ license:fdl1.2+))))
 
 (define-public kdenlive
-  (let ((version "20.04.1"))
+  (let ((version "20.08.1"))
     (package
       (name "kdenlive")
       (version version)
@@ -142,15 +143,16 @@ This package contains GUI widgets for baloo.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://anongit.kde.org/kdenlive.git")
+               (url "https://invent.kde.org/multimedia/kdenlive")
                (commit (string-append "v" version))))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0n0x34xmcn0k87rqnz0mk462b3al4gq56kn4m00rr428hafscdz7"))))
+           "15mpw1sysy7mky8fcj0x4zbspz0na7q76xdfj0j8hsggg9d3yq8l"))))
       (build-system cmake-build-system)
       (native-inputs
        `(("extra-cmake-modules" ,extra-cmake-modules)
+         ("pkg-config" ,pkg-config)
          ("qttools" ,qttools)))
       (inputs
        `(("shared-mime-info" ,shared-mime-info)
@@ -177,6 +179,9 @@ This package contains GUI widgets for baloo.")
          ("qtquickcontrols" ,qtquickcontrols)
          ("qtquickcontrols2" ,qtquickcontrols2)
          ("kiconthemes" ,kiconthemes)
+         ("breeze" ,breeze)
+         ("purpose" ,purpose)
+         ("qtwebkit" ,qtwebkit)
          ("qtgraphicaleffects" ,qtgraphicaleffects)
          ("kplotting" ,kplotting)))
       (arguments
@@ -186,29 +191,23 @@ This package contains GUI widgets for baloo.")
            (add-after 'install 'wrap-executable
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
-                      (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
-                      (qtquickcontrols2 (assoc-ref inputs "qtquickcontrols2"))
                       (qtbase (assoc-ref inputs "qtbase"))
-                      (qtdeclarative (assoc-ref inputs "qtdeclarative"))
                       (frei0r (assoc-ref inputs "frei0r-plugins"))
                       (ffmpeg (assoc-ref inputs "ffmpeg"))
-                      (qml "/lib/qt5/qml"))
+                      (breeze (assoc-ref inputs "breeze")))
                  (wrap-program (string-append out "/bin/kdenlive")
                    `("PATH" ":" prefix
                      ,(list (string-append ffmpeg "/bin")))
+                   `("XDG_DATA_DIRS" ":" prefix
+                     ,(list (string-append breeze "/share")))
                    `("QT_PLUGIN_PATH" ":" prefix
-                     ,(map (lambda (label)
-                             (string-append (assoc-ref inputs label)
-                                            "/lib/qt5/plugins/"))
-                           '("qtbase" "qtsvg")))
+                     ,(list (getenv "QT_PLUGIN_PATH")))
                    `("FREI0R_PATH" ":" =
                      (,(string-append frei0r "/lib/frei0r-1/")))
                    `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
                      (,(string-append qtbase "/lib/qt5/plugins/platforms")))
                    `("QML2_IMPORT_PATH" ":" prefix
-                     (,(string-append qtquickcontrols qml)
-                      ,(string-append qtquickcontrols2 qml)
-                      ,(string-append qtdeclarative qml)))
+                     ,(list (getenv "QML2_IMPORT_PATH")))
                    `("MLT_PREFIX" ":" =
                      (,(assoc-ref inputs "mlt")))))
                #t)))))

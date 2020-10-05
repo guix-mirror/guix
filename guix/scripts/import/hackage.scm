@@ -49,7 +49,7 @@
 Import and convert the Hackage package for PACKAGE-NAME.  If PACKAGE-NAME
 includes a suffix constituted by a at-sign followed by a numerical version (as
 used with Guix packages), then a definition for the specified version of the
-package will be generated.  If no version suffix is pecified, then the
+package will be generated.  If no version suffix is specified, then the
 generated package definition will correspond to the latest available
 version.\n"))
   (display (G_ "

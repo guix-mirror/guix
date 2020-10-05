@@ -130,8 +130,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.1.0")
-        (commit "44c6e6f590b706f1ecfea6a7e7406bbd7cb70736")
-        (revision 25))
+        (commit "d27dbeb9d8f6c3a4c1d2fdbeb432717c119b73d1")
+        (revision 28))
     (package
       (name "guix")
 
@@ -147,7 +147,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "17kmn9yrk9pxi88v4d48h9q3m5dpd2j0pf15fhxzh4k915jv8n6k"))
+                  "0j60m9s47n23flfp2yn4ww4vsk8qvp500m2x1x0ib5bjywj1hiwl"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -196,6 +196,13 @@
                         (substitute* "nix/local.mk"
                           (("^sysvinitservicedir = .*$")
                            (string-append "sysvinitservicedir = \
+$(prefix)/etc/init.d\n")))
+
+                        ;; Install OpenRC init files to $(prefix)/etc rather
+                        ;; than to /etc.
+                        (substitute* "nix/local.mk"
+                          (("^openrcservicedir = .*$")
+                           (string-append "openrcservicedir = \
 $(prefix)/etc/init.d\n")))
 
                         (invoke "sh" "bootstrap")))
@@ -384,7 +391,7 @@ $(prefix)/etc/init.d\n")))
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
-       `(("gnutls" ,(if (%current-target-system) gnutls-3.6.14 guile3.0-gnutls))
+       `(("gnutls" ,(if (%current-target-system) gnutls-3.6.14 gnutls))
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-4)
          ("guile-sqlite3" ,guile-sqlite3)
@@ -418,7 +425,7 @@ the Nix package manager.")
      (fold alist-delete (package-native-inputs guix)
            '("po4a" "graphviz" "help2man")))
     (inputs
-     `(("gnutls" ,guile3.0-gnutls)
+     `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
        ("guile-json" ,guile-json-3)
        ("guile-gcrypt" ,guile-gcrypt)

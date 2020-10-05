@@ -2944,13 +2944,14 @@ projects.")
     (name "maven-resources-plugin")
     (version "3.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/apache/"
-                                  "maven-resources-plugin/archive/"
-                                  "maven-resources-plugin-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/apache/maven-resources-plugin")
+                     (commit (string-append  "maven-resources-plugin-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f5gnjg2xmqfxml6k0ydyd1sxxwzgnb24qn6avcc4mijwd8a84pl"))))
+                "090k5j2y7ak54czfjjg3v7pdmdlgd96fbs91d1fd3vslm9zzndg8"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-resources-plugin.jar"
@@ -3052,13 +3053,14 @@ components for supporting incremental build functionality in maven plugins.")
     (name "maven-compiler-plugin")
     (version "3.8.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/apache/"
-                                  "maven-compiler-plugin/archive/"
-                                  "maven-compiler-plugin-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/apache/maven-compiler-plugin")
+                     (commit (string-append "maven-compiler-plugin-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "018d9qwc4cd6k7a8kvhvxjmzbzd2ifdf7m36wqjfq42010js1mv1"))))
+                "0jkbq02vykd09ws8k9bzqxv6fjrpmir8gcxydbmj05kkhl242bma"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-compiler-plugin.jar"
@@ -3620,13 +3622,14 @@ reports in two different file formats, plain text and xml.")))
     (name "maven-jar-plugin")
     (version "3.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/apache/"
-                                  "maven-jar-plugin/archive/"
-                                  "maven-jar-plugin-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/apache/maven-jar-plugin")
+                     (commit (string-append "maven-jar-plugin-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "032042n3kfb4g5jf6khzxywn22xfy3jpx57lkq88xsv0lwx9np96"))))
+                "04y2rlmcabmc55ljqlkgbb5xx94a59cz1dvrnpfj1vzz024pqkyg"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-jar-plugin.jar"

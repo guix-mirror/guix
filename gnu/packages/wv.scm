@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,14 +33,14 @@
 (define-public wv
   (package
     (name "wv")
-    (version "1.2.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/wvware/wv/" version
-                                  "/wv-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1mn2ax6qjy3pvixlnvbkn6ymy6y4l2wxrr4brjaczm121s8hjcb7"))))
+    (version "1.2.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://abiword.org/downloads/wv/"
+                           version "/wv-" version ".tar.gz"))
+       (sha256
+        (base32 "17f16lkdv1c3amaz2hagiicih59ynpp4786k1m2qa1sw68xhswsc"))))
     (build-system gnu-build-system)
     (inputs
       `(("glib" ,glib)
@@ -57,7 +57,7 @@
 Word 9, 8, 7, and 6) to HTML or LaTeX.  Word 2 documents can still be converted
 to plain text but will lack formatting.
 
-Othe programs can use wv as a library to convert Word documents to other
+Other programs can use wv as a library to convert Word documents to other
 formats.  AbiWord uses it as its Word importer, and KWord uses concepts and
 code from wv in theirs.")
     (home-page "http://wvware.sourceforge.net/")

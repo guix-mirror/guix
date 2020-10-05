@@ -77,8 +77,7 @@ then
     grep 'GNU sed' "$test_directory/output"
 
     # Check whether the exit code is preserved.
-    if run_without_store "$test_directory/Bin/sed" --does-not-exist;
-    then false; else true; fi
+    ! run_without_store "$test_directory/Bin/sed" --does-not-exist
 
     chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 else

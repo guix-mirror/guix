@@ -89,7 +89,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public bear
   (package
     (name "bear")
-    (version "2.4.3")
+    (version "2.4.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -98,7 +98,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19fk4flfykbzhb89ppmzqf0zlrkbjm6ajl9fsayndj9km5ys0041"))))
+                "184dqjcpxiwcfziyi67zzran2c4fal1r3j8nhjdjadcmfxf4389d"))))
     (build-system cmake-build-system)
     (inputs
      `(("python" ,python-wrapper)))
@@ -210,6 +210,21 @@ Autoconf/Automake/make combo.  Build specifications, also known as @dfn{Meson
 files}, are written in a custom domain-specific language (@dfn{DSL}) that
 resembles Python.")
     (license license:asl2.0)))
+
+;; Added temporarily for packages that need it.
+;; TODO: Remove when core-updates is merged.
+(define-public meson-0.55
+  (package
+    (inherit meson)
+    (version "0.55.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mesonbuild/meson/"
+                                  "releases/download/" version  "/meson-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1070kjiirxxdfppmrhi3wsc6rykay1zlciqrzayjhjg0hkw42mrv"))))))
 
 (define-public meson-for-build
   (package

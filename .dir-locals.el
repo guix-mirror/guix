@@ -37,7 +37,7 @@
    (eval . (put 'with-file-lock 'scheme-indent-function 1))
    (eval . (put 'with-file-lock/no-wait 'scheme-indent-function 1))
    (eval . (put 'with-profile-lock 'scheme-indent-function 1))
-   (eval . (put 'with-writable-file 'scheme-indent-function 1))
+   (eval . (put 'with-writable-file 'scheme-indent-function 2))
 
    (eval . (put 'package 'scheme-indent-function 0))
    (eval . (put 'package/inherit 'scheme-indent-function 1))
@@ -90,9 +90,9 @@
    (eval . (put 'let-system 'scheme-indent-function 1))
 
    (eval . (put 'with-database 'scheme-indent-function 2))
-   (eval . (put 'call-with-transaction 'scheme-indent-function 2))
+   (eval . (put 'call-with-transaction 'scheme-indent-function 1))
    (eval . (put 'with-statement 'scheme-indent-function 3))
-   (eval . (put 'call-with-retrying-transaction 'scheme-indent-function 2))
+   (eval . (put 'call-with-retrying-transaction 'scheme-indent-function 1))
    (eval . (put 'call-with-savepoint 'scheme-indent-function 1))
    (eval . (put 'call-with-retrying-savepoint 'scheme-indent-function 1))
 

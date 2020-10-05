@@ -37,14 +37,16 @@
     (name "gdsl")
     (version "1.8")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.gna.org/gdsl/"
-                                  "gdsl-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://example.org") ;only hosted on Software Heritage
+                    (commit "6adb53be8b8f9f2e4bbfc92d357eedeefb4c7430")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v64jvlnj8jfpphphgjgb36p0kv50kwfyqncf0y12f16v8ydyiaw"))))
+                "0a52g12d9sf9hhcyvwfd7xdazj2a9i9jh97cnlqf2ymvwnvjk1g0"))))
     (build-system gnu-build-system)
-    (home-page "http://home.gna.org/gdsl/")
+    (home-page "https://web.archive.org/web/20170502005430/http://home.gna.org/gdsl/")
     (synopsis "Generic data structures library")
     (description "The Generic Data Structures Library (GDSL) is a collection
 of routines for generic data structures manipulation.  It is a re-entrant

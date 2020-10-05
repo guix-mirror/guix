@@ -317,14 +317,13 @@ provide connectivity for client applications written in any language.")
 (define-public nml
   (package
     (name "nml")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nml" version))
        (sha256
-        (base32
-         "1lwf5sc5qqzrkxfx5wkkj3yh2j2nzh5r599ly5psy8yw92km24hy"))))
+        (base32 "0l5pfs8q7jrl3xscqq7pnwh5h5d17fsyjy7xspkc73sa0ayjm9jx"))))
     (build-system python-build-system)
     ;; TODO: Fix test that fails with
     ;; "AttributeError: partially initialized module 'nml.nmlop' has no
@@ -581,7 +580,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
 (define-public surgescript
   (package
     (name "surgescript")
-    (version "0.5.4.3")
+    (version "0.5.4.4")
     (source
      (origin
        (method git-fetch)
@@ -590,7 +589,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13q81439zg1bn7gskligskjgcfq0rdapp6f3llmrlk48vnyq49s0"))))
+        (base32 "1vck1wk6r6jrrw5xzpqldplz601dfgpk5s5p45fam00nfsid0p7p"))))
      (build-system cmake-build-system)
      (arguments
       '(#:configure-flags
@@ -1528,7 +1527,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.2.2")
+    (version "3.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1537,7 +1536,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1libz83mbyrkbbsmmi8z2rydv3ls0w9r4vb5v6diqqwn7ka8z804"))
+                "19vrp5lhyvxbm6wjxzn28sn3i0s8j08ca7nani8l1nrhvlc8wi0v"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))

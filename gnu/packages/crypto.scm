@@ -143,7 +143,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public signify
   (package
     (name "signify")
-    (version "29")
+    (version "30")
     (home-page "https://github.com/aperezdc/signify")
     (source (origin
               (method url-fetch)
@@ -151,7 +151,7 @@ communication, encryption, decryption, signatures, etc.")
                                   "/download/v" version "/signify-" version ".tar.xz"))
               (sha256
                (base32
-                "1bzcax5kb4lr0rmpmrdpq5q0iq6b2dxzpl56li8aanbkck1c7hd9"))))
+                "11l67j04gyxnlw6zrzsygqs5cgsc1sww1rh0apl05yay131hd17n"))))
     (build-system gnu-build-system)
     ;; TODO Build with libwaive (described in README.md), to implement something
     ;; like OpenBSD's pledge().
@@ -359,10 +359,10 @@ secure operations. ")
           (base32
            "0lj38ldh8vzi11wp4ghw4k0fkwp0s04zv8k8d473p1snmbh7mx98"))))
       (inputs
-       `(("openssl" ,openssl))) ; It needs: openssl/{bn,pem,rsa,sha}.h
+       `(("openssl" ,openssl-1.0)))     ; for openssl/{bn,pem,rsa,sha}.h
       (build-system gnu-build-system)
       (arguments
-       `(#:make-flags (list "CC=gcc"
+       `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
                             (string-append "PREFIX=" (assoc-ref %outputs "out"))
                             (string-append "INSTALL=" "install"))
          ;; XXX: make test would run a !VERY! long hashing of names with the use

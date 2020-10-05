@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1276,7 +1277,7 @@ to the OSM opening hours specification.")
 (define-public josm
   (package
     (name "josm")
-    (version "16812")
+    (version "17013")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -1285,12 +1286,12 @@ to the OSM opening hours specification.")
                      (recursive? #f)))
               (sha256
                (base32
-                "131ly6ah9ygrah1wq1h2199v4hyzgflnh62ychs4jqvy9wz0dal6"))
+                "12mcqswjijvx2n7hz7lnx83i3vjr5ib58cazqin10hczcwnd778q"))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
             (snippet
              '(begin
-		(for-each delete-file (find-files "." ".*.jar$"))
+                (for-each delete-file (find-files "." ".*.jar$"))
                 #t))))
     (build-system ant-build-system)
     (native-inputs
@@ -1339,7 +1340,8 @@ to the OSM opening hours specification.")
                        (filter
                          (lambda (s)
                            (let ((source (assoc-ref inputs "source")))
-                             (not (equal? (substring s 0 (string-length source)) source))))
+                             (not (equal? (substring s 0 (string-length source))
+                                          source))))
                          (string-split (getenv "CLASSPATH") #\:))
                        ":"))
              #t))
@@ -1385,6 +1387,19 @@ to the OSM opening hours specification.")
                    (string-append "Revision: " ,version "\n"
                                   "Is-Local-Build: true\n"
                                   "Build-Date: 1970-01-01 00:00:00 +0000\n"))))
+             #t))
+         (add-after 'install 'install-share-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (share-directories '("applications" "icons" "man" "menu"
+                                        "metainfo" "mime" "pixmaps")))
+               (for-each (lambda (directory)
+                           (copy-recursively (string-append
+                                              "native/linux/tested/usr/share/"
+                                              directory)
+                                             (string-append
+                                              out "/share/" directory)))
+                         share-directories))
              #t))
          (add-after 'install 'install-bin
            (lambda* (#:key outputs inputs #:allow-other-keys)
@@ -1761,7 +1776,7 @@ track your position right from your laptop.")
           (base32 "1fwsm99kz0bxvjk7442qq1h45ikrmhba8bqclafb61gqg1q6ymrk"))))
       (build-system gnu-build-system)
       (inputs
-       `(("bzip2", bzip2)
+       `(("bzip2" ,bzip2)
          ("cairo" ,cairo)
          ("fftw" ,fftw)
          ("freetype" ,freetype)

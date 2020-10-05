@@ -273,7 +273,7 @@ and to some extent D.")
     (description
      "DOC++ is a documentation system for C, C++, IDL, and Java.  It can
 generate both TeX output for high-quality hardcopies or HTML output for online
-brwosing.  The documentation is extracted directly from the C/C++/IDL source
+browsing.  The documentation is extracted directly from the C/C++/IDL source
 or Java class files.")
     (license gpl2+)))
 

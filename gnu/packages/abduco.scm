@@ -19,6 +19,7 @@
 
 (define-module (gnu packages abduco)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix packages))
@@ -37,7 +38,7 @@
               "1x1m58ckwsprljgmdy93mvgjyg9x3cqrzdf3mysp0mx97zhhj2f9"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:make-flags (list "CC=gcc"
+    `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
       #:phases (modify-phases %standard-phases
                  (delete 'configure)

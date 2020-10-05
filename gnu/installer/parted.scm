@@ -1201,13 +1201,13 @@ the FS-TYPE field set to 'swap, return the empty list if none found."
           user-partitions))
 
 (define (start-swapping user-partitions)
-  "Start swaping on <user-partition> records with FS-TYPE equal to 'swap."
+  "Start swapping on <user-partition> records with FS-TYPE equal to 'swap."
   (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
          (swap-devices (map user-partition-file-name swap-user-partitions)))
     (for-each swapon swap-devices)))
 
 (define (stop-swapping user-partitions)
-  "Stop swaping on <user-partition> records with FS-TYPE equal to 'swap."
+  "Stop swapping on <user-partition> records with FS-TYPE equal to 'swap."
   (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
          (swap-devices (map user-partition-file-name swap-user-partitions)))
     (for-each swapoff swap-devices)))

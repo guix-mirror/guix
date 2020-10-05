@@ -71,7 +71,7 @@
     (_ #f)))
 
 (define* (build-compiled-file name locale-builder)
-  "Return a file-like object that evalutes the gexp LOCALE-BUILDER and store
+  "Return a file-like object that evaluates the gexp LOCALE-BUILDER and store
 its result in the scheme file NAME. The derivation will also build a compiled
 version of this file."
   (define set-utf8-locale

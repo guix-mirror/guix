@@ -123,15 +123,15 @@ greatest common divisor operations.")
 (define-public cm
   (package
    (name "cm")
-   (version "0.3")
+   (version "0.3.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://www.multiprecision.org/cm/download/cm-"
+                  "http://www.multiprecision.org/downloads/cm-"
                   version ".tar.gz"))
             (sha256
              (base32
-              "1nf5kr0nqmhbzrsrinky18z0ighjpsmb5cr8zyg8jf04bfbyrfmc"))))
+              "0qq6b1kwb1byj8ws33ya5awq0ilkpm32037pi1l4cf2737fg9m42"))))
    (build-system gnu-build-system)
    (propagated-inputs
      `(("mpfrcx" ,mpfrcx)
@@ -151,12 +151,7 @@ line applications.")
 (define-public fplll
   (package
     (name "fplll")
-    ;; The most recent version 5.3.3 fails in the configure phase:
-    ;; ./configure: line 12956: syntax error near unexpected token `LIBQD,'
-    ;; ./configure: line 12956: `  PKG_CHECK_MODULES(LIBQD, qd, have_libqd="yes",'
-    ;; The error disappears when adding qd as an input; but this is
-    ;; supposed to be an optional input.
-    (version "5.3.2")
+    (version "5.3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -165,13 +160,15 @@ line applications.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00iyz218ywspizjiimrjdcqvdqmrsb2367zyy3vkmypnf9i9l680"))))
+                "06nyfidagp8pc2kfcw88ldgb2b1xm0a8z31n0sln7j72ihlmd8zj"))
+              (patches (search-patches "fplll-std-fenv.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (inputs
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs ; header files pulled in by fplll/defs.h
      `(("gmp" ,gmp)
        ("mpfr" ,mpfr)))
     (home-page "https://github.com/fplll/fplll")
@@ -357,7 +354,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.6.0-7")
+    (version "1.6.0-23")
     (source
      (origin
        (method url-fetch)
@@ -369,7 +366,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "1pvgp137zcl0rbhdn1j41xxfml7fp771a7x4ph8qrhhlx0hxzn3p"))))
+        (base32 "0bgc3jw9r0f2bkqv0m4hla7r7mxi3fzscnkjfc5cvffp3nk2gwvf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -380,7 +377,8 @@ precision.")
          (add-after 'unpack 'patch-bin-cp
            ;; Some Makefiles contain hard-coded "/bin/cp".
            (lambda _
-             (substitute* (find-files "doc" "^Makefile")
+             (substitute* (cons "micropython-1.12/xcas/Makefile"
+                                (find-files "doc" "^Makefile"))
                (("/bin/cp") (which "cp")))
              #t))
          (add-after 'unpack 'disable-failing-test
@@ -409,7 +407,7 @@ precision.")
                (delete-file (string-append out "/bin/xcasnew"))
                #t))))))
     (inputs
-;;; TODO: Add libnauty.
+     ;; TODO: Add libnauty, unbundle "libmicropython.a".
      `(("fltk" ,fltk)
        ("glpk" ,glpk)
        ("gmp" ,gmp)
@@ -433,6 +431,7 @@ precision.")
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("python" ,python-wrapper)
        ("readline" ,readline)
        ("texlive" ,texlive-tiny)))
     (home-page "https://www-fourier.ujf-grenoble.fr/~parisse/giac.html")
@@ -1554,7 +1553,7 @@ structure constants of Schubert polynomials.")
          "0akwhhz9b40bz6lrfxpamp7r7wkk48p455qbn04mfnl9a1l6db8x"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gmp", gmp)
+     `(("gmp" ,gmp)
        ("cblas" ,openblas))) ; or any other BLAS library; the documentation
                              ; mentions ATLAS in particular
     (arguments

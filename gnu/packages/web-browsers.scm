@@ -461,7 +461,7 @@ driven and does not detract you from your daily work.")
     (name "nyxt")
     ;; Package the pre-release because latest stable 1.5.0 does not build
     ;; anymore.
-    (version "2-pre-release-1")
+    (version "2-pre-release-2")
     (source
      (origin
        (method git-fetch)
@@ -472,7 +472,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0aipsmzqnlkmy001cihz2jnc0hja8c10rm08jycxr05j3gx3qsxd"))
+         "0wqq8ppn0n7js3pxzzb36h0lf3r3gqhs2hi8h85c3n8a54hnbp8q"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
@@ -547,6 +547,7 @@ driven and does not detract you from your daily work.")
        ("dexador" ,sbcl-dexador)
        ("enchant" ,sbcl-enchant)
        ("fset" ,sbcl-fset)
+       ("hu.dwim.defclass-star" ,sbcl-hu.dwim.defclass-star)
        ("iolib" ,sbcl-iolib)
        ("local-time" ,sbcl-local-time)
        ("log4cl" ,sbcl-log4cl)

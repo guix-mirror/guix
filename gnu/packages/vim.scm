@@ -70,7 +70,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.1500")
+    (version "8.2.1770")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -79,7 +79,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1f3ghv7g6khcvvs8irkxmskzc352xxmxw3wy0jq9q9r497v6p3ls"))))
+               "14mbrbnjwb8r4pl06vafd56x0pmbcgqvr57s2ns2arh7xcy9bri7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -166,7 +166,7 @@ configuration files.")
   (package (inherit vim)
     (name "xxd")
     (arguments
-     `(#:make-flags '("CC=gcc")
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target)))
        #:tests? #f ; there are none
        #:phases
        (modify-phases %standard-phases
@@ -499,8 +499,7 @@ commit or run any Git arbitrary command.")
      '(#:install-plan
        '(("autoload" "share/vim/vimfiles/")
          ("doc" "share/vim/vimfiles/")
-         ("plugin" "share/vim/vimfiles/")
-         ("t" "share/vim/vimfiles/"))))
+         ("plugin" "share/vim/vimfiles/"))))
     (synopsis "Statusline for Vim")
     (description
      "@code{vim-airline} is an extensible statusline for Vim.
@@ -570,7 +569,7 @@ are detected, the user is notified.")
 (define-public editorconfig-vim
   (package
     (name "editorconfig-vim")
-    (version "0.3.3")
+    (version "1.1.1")
     (source
       (origin
         (method git-fetch)
@@ -580,27 +579,13 @@ are detected, the user is notified.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0vssfl1wjq0mv0p30c3dszwrh4yy90vwxmmdgqaxf5rykik7bdfd"))
-        (modules '((guix build utils)))
-        (snippet
-         '(begin
-            (delete-file-recursively "plugin/editorconfig-core-py") #t))))
+          "0mp80bi2m56bb93szw87vy6q5s85yk9g91sl4pr51316rgdv5kkv"))))
     (build-system copy-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-editorconfig-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((editorconfig (assoc-ref inputs "editorconfig-core")))
-               (substitute* "plugin/editorconfig.vim"
-                 (("/opt") editorconfig))
-               #t))))
-       #:install-plan
+     '(#:install-plan
        '(("autoload" "share/vim/vimfiles/")
          ("doc" "share/vim/vimfiles/")
          ("plugin" "share/vim/vimfiles/"))))
-    (inputs
-     `(("editorconfig-core" ,editorconfig-core-c)))
     (home-page "https://editorconfig.org/")
     (synopsis "EditorConfig plugin for Vim")
     (description "EditorConfig makes it easy to maintain the correct coding
@@ -713,7 +698,7 @@ refactor Vim in order to:
 (define-public vifm
   (package
     (name "vifm")
-    (version "0.10.1")
+    (version "0.11")
     (source
       (origin
         (method url-fetch)
@@ -724,7 +709,7 @@ refactor Vim in order to:
                               "vifm-" version ".tar.bz2")))
         (sha256
          (base32
-          "0fyhxh7ndjn8fyjhj14ymkr3pjcs3k1xbs43g7xvvq85vdb6y04r"))))
+          "0rqyd424y0g5b5basw2ybb60r9gar4f40d1xgzr3c2dsy4jpwvyh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-build-timestamp")
@@ -794,13 +779,13 @@ With the package comes a plugin to use vifm as a vim file selector.")
 (define-public python-pynvim
   (package
     (name "python-pynvim")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pynvim" version))
               (sha256
                (base32
-                "0n2cx22lrmbq7xk7356lyn6k77ryqvkxplw9k0fglk35ckb1isam"))))
+                "13qgwkqbx012j5spis1aw8rb120rw0zphgjy1j58irax8r6j1ikb"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)

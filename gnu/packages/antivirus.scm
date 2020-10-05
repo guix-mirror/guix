@@ -44,14 +44,14 @@
 (define-public clamav
   (package
     (name "clamav")
-    (version "0.102.4")
+    (version "0.103.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.clamav.net/downloads/production/"
                                   "clamav-" version ".tar.gz"))
               (sha256
                (base32
-                "06rrzyrhnr0rswryijpbbzywr6387rv8qjq8sb8cl3h2d1m45ggf"))
+                "0ih5x1rscg2m64y0z20njj7435q8k7ss575cfw7aipdzfx979a9j"))
               (modules '((guix build utils)))
               (snippet
                '(begin

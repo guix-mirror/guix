@@ -293,7 +293,7 @@ applications and libraries.  It is used by AqBanking.")
        ("gnutls" ,gnutls)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gettext-minimal", gettext-minimal)
+       ("gettext-minimal" ,gettext-minimal)
        ("libltdl" ,libltdl)))
     (home-page "https://www.aquamaniac.de/sites/aqbanking/index.php")
     (synopsis "Interface for online banking tasks")

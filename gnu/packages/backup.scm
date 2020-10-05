@@ -1066,7 +1066,7 @@ other storage medium.  Subsequent incremental backups can then be layered on
 top of the full backup.  The restore command performs the inverse function of
 dump; it can restore a full backup of a file system.  Single files and
 directory subtrees may also be restored from full or partial backups in
-interractive mode.")
+interactive mode.")
     (license license:bsd-3)))
 
 (define-public burp

@@ -24,8 +24,7 @@
 guix build --version
 
 # Should fail.
-if guix build -e +;
-then false; else true; fi
+! guix build -e +
 
 # Source-less packages are accepted; they just return nothing.
 guix build -e '(@ (gnu packages bootstrap) %bootstrap-glibc)' -S
@@ -178,7 +177,7 @@ cat > "$module_dir/foo.scm" <<EOF
     (inputs (quasiquote (("sed" ,sed))))))  ;unbound variable
 EOF
 
-if guix build package-with-something-wrong -n; then false; else true; fi
+! guix build package-with-something-wrong -n
 guix build package-with-something-wrong -n 2> "$module_dir/err" || true
 grep "unbound" "$module_dir/err"		     # actual error
 grep "forget.*(gnu packages base)" "$module_dir/err" # hint
@@ -222,7 +221,7 @@ test "`guix build --log-file guile-bootstrap`" = "$log"
 test "`guix build --log-file $out`" = "$log"
 
 # Should fail because the name/version combination could not be found.
-if guix build hello-0.0.1 -n; then false; else true; fi
+! guix build hello-0.0.1 -n
 
 # Keep a symlink to the result, registered as a root.
 result="t-result-$$"
@@ -231,8 +230,7 @@ guix build -r "$result"					\
 test -x "$result/bin/guile"
 
 # Should fail, because $result already exists.
-if guix build -r "$result" -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
-then false; else true; fi
+! guix build -r "$result" -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
 
 rm -f "$result"
 
@@ -259,8 +257,18 @@ drv1=`guix build guile -d`
 drv2=`guix build guile --with-input=gimp=ruby -d`
 test "$drv1" = "$drv2"
 
-if guix build guile --with-input=libunistring=something-really-silly
-then false; else true; fi
+# See <https://bugs.gnu.org/42156>.
+drv1=`guix build glib -d`
+drv2=`guix build glib -d --with-input=libreoffice=inkscape`
+test "$drv1" = "$drv2"
+
+# Rewriting implicit inputs.
+drv1=`guix build hello -d`
+drv2=`guix build hello -d --with-input=gcc=gcc-toolchain`
+test "$drv1" != "$drv2"
+guix gc -R "$drv2" | grep `guix build -d gcc-toolchain`
+
+! guix build guile --with-input=libunistring=something-really-silly
 
 # Deprecated/superseded packages.
 test "`guix build superseded -d`" = "`guix build bar -d`"
@@ -268,10 +276,8 @@ test "`guix build superseded -d`" = "`guix build bar -d`"
 # Parsing package names and versions.
 guix build -n time		# PASS
 guix build -n time@1.9		# PASS, version found
-if guix build -n time@3.2;	# FAIL, version not found
-then false; else true; fi
-if guix build -n something-that-will-never-exist; # FAIL
-then false; else true; fi
+! guix build -n time@3.2	# FAIL, version not found
+! guix build -n something-that-will-never-exist # FAIL
 
 # Invoking a monadic procedure.
 guix build -e "(begin
@@ -343,5 +349,4 @@ export GUIX_BUILD_OPTIONS
 guix build emacs
 
 GUIX_BUILD_OPTIONS="--something-completely-crazy"
-if guix build emacs;
-then false; else true; fi
+! guix build emacs

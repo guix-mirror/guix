@@ -231,14 +231,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.19.2")
+    (version "1.19.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0wr4ss4gld7x717m4j3a6l6f7ijblrrd55y563lkwhvr7sqpn7vw"))))
+                "1w4dkq7bl5gyix3x0ap3d9lndh7zyvc3mscl693d4ybql57vgrci"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -318,53 +318,11 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;;     except for two source files which are bsd-4 licensed.
     (license (list license:bsd-2 license:expat license:bsd-3 license:bsd-4))))
 
-(define nginx-xslscript
-  (let ((revision 11)
-        (changeset "01dc9ba12e1b"))
-    (package
-      (name "nginx-xslscript")
-      (version
-       (simple-format #f "2014-03-31-~A-~A" revision changeset))
-      (source (origin
-                (method hg-fetch)
-                (uri (hg-reference
-                      (url "http://hg.nginx.org/xslscript")
-                      (changeset changeset)))
-                (file-name (string-append name "-" version))
-                (sha256
-                 (base32
-                  "0am8zvdx3jmiwkg5q07qjaw5r26r4i2v5i4yr8a1k0jgib6ii08g"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:tests? #f  ; No test suite
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out-bin (string-append
-                               (assoc-ref outputs "out")
-                               "/bin")))
-                 (mkdir-p out-bin)
-                 (copy-file "xslscript.pl"
-                            (string-append
-                             out-bin
-                             "/xslscript.pl"))
-                 #t))))))
-      (home-page "http://hg.nginx.org/xslscript")
-      (synopsis "XSLScript with NGinx specific modifications")
-      (description
-       "XSLScript is a terse notation for writing complex XSLT stylesheets.
-This is modified version, specifically intended for use with the NGinx
-documentation.")
-      (license license:bsd-2))))
-
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.19.2")
-        (revision 2581)
-        (changeset "324ca14c3003"))
+  (let ((version "1.19.3")
+        (revision 2603)
+        (changeset "94ebfbcd68bb"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -376,7 +334,7 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "15bdbi6cjqhx8lqsyr3hnwagq2r80bsyh2im80ajmbfv7y47djqi"))))
+                 "1yryharm4dkjnj424r7sy0rc28h8ypfyj8as255a42gmllkwl2pg"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -548,6 +506,48 @@ supported at your website.")
                       ;; therefore nginx’ other licenses may also apply to its
                       ;; binary:
                       (package-license nginx)))))))
+
+(define nginx-xslscript
+  (let ((revision 11)
+        (changeset "01dc9ba12e1b"))
+    (package
+      (name "nginx-xslscript")
+      (version
+       (simple-format #f "2014-03-31-~A-~A" revision changeset))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "http://hg.nginx.org/xslscript")
+                      (changeset changeset)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0am8zvdx3jmiwkg5q07qjaw5r26r4i2v5i4yr8a1k0jgib6ii08g"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f  ; No test suite
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out-bin (string-append
+                               (assoc-ref outputs "out")
+                               "/bin")))
+                 (mkdir-p out-bin)
+                 (copy-file "xslscript.pl"
+                            (string-append
+                             out-bin
+                             "/xslscript.pl"))
+                 #t))))))
+      (home-page "http://hg.nginx.org/xslscript")
+      (synopsis "XSLScript with NGinx specific modifications")
+      (description
+       "XSLScript is a terse notation for writing complex XSLT stylesheets.
+This is modified version, specifically intended for use with the NGinx
+documentation.")
+      (license license:bsd-2))))
 
 (define-public lighttpd
   (package
@@ -3181,15 +3181,14 @@ and multipart/form-data.")
 (define-public perl-http-cookiejar
   (package
     (name "perl-http-cookiejar")
-    (version "0.008")
+    (version "0.010")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
                            "HTTP-CookieJar-" version ".tar.gz"))
        (sha256
-        (base32
-         "0rfw6avcralggs7bf7n86flvhaahxjnqzvpwszp0sk4z4wwy01wm"))))
+        (base32 "1l7mqsca4fmls7agzwmp6yq1x16y9jwq4114i6i75n654gl37qsn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -3533,15 +3532,14 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
 (define-public perl-io-socket-ip
   (package
     (name "perl-io-socket-ip")
-    (version "0.39")
+    (version "0.41")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PEVANS/"
                            "IO-Socket-IP-" version ".tar.gz"))
        (sha256
-        (base32
-         "15kv5g1yb4a345sk3r5wfr99f868lhfqkddzsgpqddvccfkhv58i"))))
+        (base32 "0ihlpxrkq1xrvhnq52nhghanskic718ch8kpp642afgq72i4b6l4"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/IO-Socket-IP")
@@ -3581,7 +3579,7 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.41")
+    (version "6.49")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3589,7 +3587,7 @@ select or poll.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0jh67946fwd33ap3xy8df0421d2mr6lmhalhkf1p7dx2b7fil9wf"))))
+               "19k0cg4j4qz005a4ngy48z4r8dc99dxlpq8kvj7qnk15mvgd1r63"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -3718,7 +3716,7 @@ https schemed URLs with LWP.")
     (home-page "https://metacpan.org/release/LWP-UserAgent-Cached")
     (synopsis "Simple caching for LWP::UserAgent")
     (description "LWP::UserAgent::Cached is an LWP::UserAgent subclass with
-cache support.  It returns responses from the local filesystem if available
+cache support.  It returns responses from the local file system, if available,
 instead of making an HTTP request.")
     (license license:perl-license)))
 
@@ -4076,14 +4074,14 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
-    (version "2.21")
+    (version "2.22")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/K/KA/KAZUHO/"
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
                            "Test-TCP-" version ".tar.gz"))
        (sha256
-        (base32 "1djnaw1yli0kcd7azchqnp59l62f6mp13q50xyrjirpaxhd51j32"))))
+        (base32 "0mvv9rqwrwlcfh8qrs0s47p85rhlnw15d4gbpyi802bddp0c6lry"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-sharedfork" ,perl-test-sharedfork)))
@@ -5055,7 +5053,7 @@ written in C.  It is developed as part of the NetSurf project.")
     (inputs
      `(("libyaml" ,libyaml)))
     (native-inputs
-     `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (synopsis "C library for reading and writing YAML")
     (description
      "LibCYAML is a C library written in ISO C11 for reading and writing

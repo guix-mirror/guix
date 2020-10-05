@@ -162,7 +162,7 @@ internal RPC protocols and file formats.")
 (define-public protobuf-c
   (package
     (name "protobuf-c")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/protobuf-c/protobuf-c/"
@@ -170,7 +170,7 @@ internal RPC protocols and file formats.")
                                   "/protobuf-c-" version ".tar.gz"))
               (sha256
                (base32
-                "0x4ybd9rfd878p2imz0hb8zxfd7l60vbdw7cg84dnysr9kqm3wjk"))))
+                "0y3yaanq97si7iyld06p8w20m0shpj7sf4xwzbhhvijhxw36d592"))))
     (build-system gnu-build-system)
     (inputs `(("protobuf" ,protobuf)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -233,18 +233,17 @@ mechanism for serializing structured data.")
 (define-public python-pure-protobuf
   (package
     (name "python-pure-protobuf")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
-       ;; pypi is broken; has no tests
+       ;; The PyPI tarball is broken: it has no tests.
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/eigenein/protobuf")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0lgs99dpfyckz6spib419sl7jpdk2g54pcw0yg59gdcsd1f5zqgz"))))
+        (base32 "15dp5pvazd0jx4wzzh79080ah7hkpd3axh40al9vhzs2hf3v90hx"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)

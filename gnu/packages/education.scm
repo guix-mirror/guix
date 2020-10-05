@@ -275,7 +275,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "6.1.4")
+    (version "6.2.1")
     (source
      (origin
        (method git-fetch)
@@ -284,7 +284,7 @@ easy.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qvnm5jg2hlf32say531m8nmp3aib93mqnllw1g289s58fzk5li6"))))
+        (base32 "163pskgrssw0l6c73lrdx613fridnv0162lscl4xqx9sgg7hfaxh"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -613,14 +613,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.46.1")
+    (version "5.47.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "1sakzizjsyjn6705zl283i81zxn1gxskg2i4jv7iq75vw3nzm6kv"))))
+        (base32 "1a4mzzd6qy7hpb3yvmf922dbrqrzacz60ld8dsds78m018jf9gaj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

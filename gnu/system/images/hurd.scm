@@ -29,9 +29,13 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu system hurd)
   #:use-module (gnu system image)
+  #:use-module (srfi srfi-26)
   #:export (hurd-barebones-os
             hurd-disk-image
-            hurd-barebones-disk-image))
+            hurd-image-type
+            hurd-qcow2-image-type
+            hurd-barebones-disk-image
+            hurd-barebones-qcow2-image))
 
 (define hurd-barebones-os
   (operating-system
@@ -82,8 +86,28 @@
            (flags '(boot))
            (initializer hurd-initialize-root-partition))))))
 
+(define hurd-image-type
+  (image-type
+   (name 'hurd-raw)
+   (constructor (cut image-with-os hurd-disk-image <>))))
+
+(define hurd-qcow2-image-type
+  (image-type
+   (name 'hurd-qcow2)
+   (constructor (lambda (os)
+                  (image
+                   (inherit hurd-disk-image)
+                   (format 'compressed-qcow2)
+                   (operating-system os))))))
+
 (define hurd-barebones-disk-image
   (image
-   (inherit hurd-disk-image)
-   (name 'hurd-barebones-disk-image)
-   (operating-system hurd-barebones-os)))
+   (inherit
+    (os->image hurd-barebones-os #:type hurd-image-type))
+   (name 'hurd-barebones-disk-image)))
+
+(define hurd-barebones-qcow2-image
+  (image
+   (inherit
+    (os->image hurd-barebones-os #:type hurd-qcow2-image-type))
+   (name 'hurd-barebones.qcow2)))

@@ -527,7 +527,7 @@ patcher application.")))
                (install-file "dist/Axoloti.jar" share)
 
                ;; Install old firmware
-               (let ((target (string-append share "/old_firmware/"))
+               (let ((target (string-append share "/old_firmware/firmware-1.0.12"))
                      (old-firmware
                       (string-append (assoc-ref inputs "axoloti-runtime")
                                      "/share/axoloti/firmware/")))
@@ -557,7 +557,7 @@ patcher application.")))
                                         toolchain
                                         "/arm-none-eabi/include:"
                                         toolchain
-                                        "/arm-none-eabi/include/arm-none-eabi/armv7e-m")))
+                                        "/arm-none-eabi/include/arm-none-eabi/thumb/v7e-m")))
                        (display
                         (string-append "#!" (which "sh") "\n"
                                        "export CROSS_CPATH=" includes "\n"

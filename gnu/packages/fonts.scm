@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
-;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2019, 2020 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Alva <alva@skogen.is>
@@ -951,19 +951,16 @@ designed to work well in user interface environments.")
 (define-public font-adobe-source-sans-pro
   (package
     (name "font-adobe-source-sans-pro")
-    (version "2.040R-ro-1.090R-it")
+    (version "3.028R")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/adobe-fonts/source-sans-pro")
-             (commit (regexp-substitute/global
-                      ;; The upstream tag uses "/" between the roman and italic
-                      ;; versions, so substitute our "-" separator here.
-                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lzin2hfwidbvhps7shs201p1bpxy6220xmhhprv9fc8bknd4c45"))))
+        (base32 "0lgjqi4d5p1q1z00ad807v5qy4z54gmp7jpdaypc0rxk8czv6zq7"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-sans-pro")
     (synopsis
@@ -976,19 +973,16 @@ work well in user interface (UI) environments.")
 (define-public font-adobe-source-serif-pro
   (package
     (name "font-adobe-source-serif-pro")
-    (version "2.007R-ro-1.007R-it")
+    (version "3.001R")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/adobe-fonts/source-serif-pro")
-             (commit (regexp-substitute/global
-                      ;; The upstream tag uses "/" between the roman and italic
-                      ;; versions, so substitute our "-" separator here.
-                      #f "R-ro-" version 'pre "R-ro/" 'post))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vvzfhjpi47m84bzkapylkd5fri8bdm8qng2hiylmmlw0wk4gpas"))))
+        (base32 "1z0pjvx0jpjwb8vzvc6l5gzlg0mqax4v9pizqcxx82l0ydlfh5bj"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-serif-pro")
     (synopsis
@@ -1154,14 +1148,14 @@ later hand-tweaked with the gbdfed(1) editor:
 (define-public font-comic-neue
   (package
     (name "font-comic-neue")
-    (version "2.5")
+    (version "2.51")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
                     "http://www.comicneue.com/comic-neue-" version ".zip"))
               (sha256
                (base32
-                "1ng0m0zs7qr91qy5ff0l01l27npr76961c6zfkxnhxf68zpwz5k4"))))
+                "0883542v915crz98v1ij6smgy40dg6gxwsid3j5nbmmqjf69kpal"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
@@ -1742,7 +1736,7 @@ This package provides the TrueType fonts.")
 (define-public font-jetbrains-mono
   (package
     (name "font-jetbrains-mono")
-    (version "2.001")
+    (version "2.002")
     (source
      (origin
        (method url-fetch)
@@ -1750,17 +1744,16 @@ This package provides the TrueType fonts.")
         (string-append "https://download.jetbrains.com/fonts/"
                        "JetBrainsMono-" version ".zip"))
        (sha256
-        (base32 "0r3dk3kn536rik4mvpcjin9mwmifl3v8mawvb4a5l59pww0vcxzq"))))
+        (base32 "0lcsl718jhkqgld1xqll7fsv8j968jlf292541fkqxwm8i5g93sn"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'install-license-files
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
-               (install-file "../LICENSE" doc)
-               #t))))))
+         (add-before 'install-license-files 'change-directory-to-archive-root
+           ;; Find the LICENSE file outside of the default subdirectory.
+           (lambda _
+             (chdir "..")
+             #t)))))
     (home-page "https://www.jetbrains.com/lp/mono/")
     (synopsis "Mono typeface for developers")
     (description

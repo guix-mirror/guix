@@ -415,16 +415,17 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.20.6")
+    (version "3.20.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "083w58wpvvm6sir6rf5dwx3r0rman9sv1zpl26chl0a88crjsjy6"))
+                "1prdbp410405xrfggjc7y34nzljg7jnbgjzalgv4khwwma4i299n"))
               (modules '((guix build utils)))
-              (patches (search-patches "hplip-remove-imageprocessor.patch"))
+              (patches (search-patches "hplip-fix-bug-1898438.patch"
+                                       "hplip-remove-imageprocessor.patch"))
               (snippet
                '(begin
                   ;; Delete non-free blobs: .so files, pre-compiled
@@ -465,10 +466,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                          (assoc-ref %outputs "out") "/lib")
          ;; Disable until mime.types merging works (FIXME).
          "--disable-fax-build"
-         "--enable-hpcups-install"
          "--enable-new-hpcups"
-         "--enable-cups_ppd_install"
-         "--enable-cups_drv_install"
          ;; TODO add foomatic drv install eventually.
          ;; TODO --enable-policykit eventually.
          ,(string-append "--with-cupsfilterdir="
@@ -749,20 +747,19 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
 (define-public escpr
   (package
     (name "escpr")
-    (version "1.6.30")
+    (version "1.7.7")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
     ;; preserved.  An alternative source will be added as soon as
     ;; available.
-    (source (origin
-              (method url-fetch)
-              ;; The uri has to be chopped up in order to satisfy guix lint.
-              (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/08/18/20/"
-                                  "e94de600e28e510c1cfa158929d8b2c0aadc8aa0/"
-                                  "epson-inkjet-printer-escpr-1.6.30-1lsb3.2.tar.gz"))
-              (sha256
-               (base32
-                "0m8pyfkixisp0vclwxj340isn15zzisal0v2xvv66kxfd68dzf12"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/10/49/18/"
+                           "f3016be6120a7271a6d9cb64872f817bce1920b8/"
+                           "epson-inkjet-printer-escpr-1.7.7-1lsb3.2.tar.gz"))
+       (sha256
+        (base32 "0khdf2a9iwh9aplj2gzyzl53yyfnfv0kszk3p018jnirl5l475ld"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -771,13 +768,30 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
          ,(string-append "--with-cupsfilterdir="
                          (assoc-ref %outputs "out") "/lib/cups/filter")
          ,(string-append "--with-cupsppddir="
-                         (assoc-ref %outputs "out") "/share/ppd"))))
-    (inputs `(("cups" ,cups-minimal)))
+                         (assoc-ref %outputs "out") "/share/cups/model"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-autotools-version-requirement
+           (lambda _
+             (substitute* "aclocal.m4"
+               (("1\\.15")
+                ,(package-version automake)))
+             (substitute* "configure"
+               (("^(ACLOCAL=).*" _ match)
+                (string-append match "aclocal"))
+               (("^(AUTOMAKE=).*" _ match)
+                (string-append match "automake")))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("cups" ,cups-minimal)))
     (synopsis "ESC/P-R printer driver")
     (description
-     "This package provides a filter for the Common UNIX Printing
-System (CUPS).  It offers high-quality printing with Seiko Epson color ink jet
-printers.  It can only be used with printers that support the Epson ESC/P-R
+     "This package provides a filter for @acronym{CUPS, the Common UNIX Printing
+System} that offers high-quality printing with Seiko@tie{}Epson color ink jet
+printers.  It can be used only with printers that support the Epson@tie{}ESC/P-R
 language.")
     (home-page "http://download.ebz.epson.net/dsc/search/01/search")
     (license license:gpl2+)))

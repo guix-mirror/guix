@@ -350,49 +350,53 @@ access to servers running the Discord protocol.")
     (license license:gpl2+)))
 
 (define-public purple-mattermost
-  (package
-    (name "purple-mattermost")
-    (version "1.2")
-    (home-page "https://github.com/EionRobb/purple-mattermost")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference (url home-page)
-                                  (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0fm49iv58l09qpy8vkca3am642fxiwcrrh6ykimyc2mas210b5g2"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'configure
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      ;; Adjust the makefile to install files in the right
-                      ;; place.
-                      (let ((out (assoc-ref outputs "out")))
-                        (substitute* "Makefile"
-                          (("MATTERMOST_DEST = .*")
-                           (string-append "MATTERMOST_DEST = " out
-                                          "/lib/purple-2\n")) ;XXX: hardcoded
-                          (("MATTERMOST_ICONS_DEST = .*")
-                           (string-append "MATTERMOST_ICONS_DEST = "
-                                          out
-                                          "/share/pixmaps/pidgin/protocols\n")))
-                        #t))))
-       #:make-flags (list "CC=gcc"
-                          ,(string-append "PLUGIN_VERSION=" version))
-       #:tests? #f))
-    (inputs `(("glib" ,glib)
-              ("json-glib" ,json-glib)
-              ("discount" ,discount)
-              ("pidgin" ,pidgin)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (synopsis "Purple plug-in to access Mattermost instant messaging")
-    (description
-     "Purple-Mattermost is a plug-in for Purple, the instant messaging library
+  ;; The latest release (1.2) only supports Mattermost's /api/v3.  Choose a
+  ;; commit that supports /api/v4.
+  (let ((commit "158ce2052af9aaf3d1f6f045f0cfba276e0e91cf")
+        (revision "0"))
+    (package
+      (name "purple-mattermost")
+      (version (git-version "1.2" revision commit))
+      (home-page "https://github.com/EionRobb/purple-mattermost")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page)
+                                    (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1481zm20pnfq52ncg7hxayjq8cw3a6yh9m4jm1m5s8chsq04015l"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (replace 'configure
+                      (lambda* (#:key inputs outputs #:allow-other-keys)
+                        ;; Adjust the makefile to install files in the right
+                        ;; place.
+                        (let ((out (assoc-ref outputs "out")))
+                          (substitute* "Makefile"
+                            (("MATTERMOST_DEST = .*")
+                             (string-append "MATTERMOST_DEST = " out
+                                            "/lib/purple-2\n")) ;XXX: hardcoded
+                            (("MATTERMOST_ICONS_DEST = .*")
+                             (string-append "MATTERMOST_ICONS_DEST = "
+                                            out
+                                            "/share/pixmaps/pidgin/protocols\n")))
+                          #t))))
+         #:make-flags (list "CC=gcc"
+                            ,(string-append "PLUGIN_VERSION=" version))
+         #:tests? #f))
+      (inputs `(("glib" ,glib)
+                ("json-glib" ,json-glib)
+                ("discount" ,discount)
+                ("pidgin" ,pidgin)))
+      (native-inputs `(("pkg-config" ,pkg-config)))
+      (synopsis "Purple plug-in to access Mattermost instant messaging")
+      (description
+       "Purple-Mattermost is a plug-in for Purple, the instant messaging library
 used by Pidgin and Bitlbee, among others, to access
 @uref{https://mattermost.com/, Mattermost} servers.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public hexchat
   (package
@@ -874,6 +878,7 @@ on Axolotl and PEP.")
   (package
     (name "dino")
     (version "0.1.0")
+    (outputs '("out" "debug"))
     (source
      (origin
        (method url-fetch)
@@ -1774,43 +1779,49 @@ are both supported).")
   (package
     (name "profanity")
     (version "0.9.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://profanity-im.github.io/profanity-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "00j9l9v62rz9hprgiy1vrz8v3v59ph18h8kskqxr31fgqvjv5xr3"))))
-    (build-system gnu-build-system)
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://profanity-im.github.io/profanity-"
+                       version ".tar.gz"))
+       (sha256
+        (base32
+         "00j9l9v62rz9hprgiy1vrz8v3v59ph18h8kskqxr31fgqvjv5xr3"))))
+    (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:configure-flags
-       (list "--enable-c-plugins"
-             "--enable-otr"
-             "--enable-omemo"
-             "--enable-pgp"
-             "--enable-icons"
-             "--enable-notifications")))
-    (inputs
-     `(("curl" ,curl)
-       ("expat" ,expat)
-       ("glib" ,glib)
-       ("gpgme" ,gpgme)
-       ("libmesode" ,libmesode)
-       ("libotr" ,libotr)
-       ("ncurses" ,ncurses)
-       ("openssl" ,openssl)
-       ("readline" ,readline)
-       ("sqlite" ,sqlite)))
+     `(#:configure-flags
+       (list
+        "--enable-notifications"
+        "--enable-python-plugins"
+        "--enable-c-plugins"
+        "--enable-plugins"
+        "--enable-otr"
+        "--enable-pgp"
+        "--enable-omemo"
+        "--enable-icons-and-clipboard")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)
        ("cmocka" ,cmocka)
-       ("gtk+" ,gtk+-2)
-       ("libnotify" ,libnotify)
        ("libtool" ,libtool)
-       ("libsignal-protocol-c" ,libsignal-protocol-c)
        ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("expat" ,expat)
+       ("glib" ,glib)
+       ("gpgme" ,gpgme)
+       ("gtk+" ,gtk+-2)
+       ("libmesode" ,libmesode)
+       ("libnotify" ,libnotify)
+       ("libotr" ,libotr)
+       ("libsignal-protocol-c" ,libsignal-protocol-c)
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("python" ,python-wrapper)
+       ("readline" ,readline)
+       ("sqlite" ,sqlite)))
     (synopsis "Console-based XMPP client")
     (description "Profanity is a console based XMPP client written in C
 using ncurses and libmesode, inspired by Irssi.")
@@ -2064,6 +2075,7 @@ There is support for:
   (package
     (name "quaternion")
     (version "0.0.9.4e")
+    (outputs '("out" "debug"))
     (source
      (origin
        (method git-fetch)

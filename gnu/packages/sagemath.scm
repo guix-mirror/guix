@@ -59,7 +59,7 @@
      `(("python-cysignals" ,python-cysignals)))
     (inputs
      `(("gmp" ,gmp)
-       ("pari-gp", pari-gp)))
+       ("pari-gp" ,pari-gp)))
     (home-page "https://cypari2.readthedocs.io/")
     (synopsis
      "Python interface to the number theory library libpari")

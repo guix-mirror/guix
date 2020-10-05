@@ -79,7 +79,7 @@
        ("libxext" ,libxext)
        ("libxft" ,libxft)
        ("libxinerama" ,libxinerama)
-       ("pulseaudio", pulseaudio)
+       ("pulseaudio" ,pulseaudio)
        ("lua" ,lua)
        ("ncurses" ,ncurses)
        ("curl" ,curl)))

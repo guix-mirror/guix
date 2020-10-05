@@ -223,30 +223,22 @@
            ;;(> freed 0)
            (not (file-exists? p))))))
 
-(test-assert "add-text-to-store vs. delete-paths"
-  ;; Before, 'add-text-to-store' would return PATH2 without noticing that it
-  ;; is no longer valid.
+(test-assert "add-text-to-store/add-to-store vs. delete-paths"
+  ;; Before, 'add-text-to-store' and 'add-to-store' would return the same
+  ;; store item without noticing that it is no longer valid.
   (with-store store
     (let* ((text    (random-text))
-           (path    (add-text-to-store store "delete-me" text))
-           (deleted (delete-paths store (list path)))
-           (path2   (add-text-to-store store "delete-me" text)))
-      (and (string=? path path2)
-           (equal? deleted (list path))
-           (valid-path? store path)
-           (file-exists? path)))))
-
-(test-assert "add-to-store vs. delete-paths"
-  ;; Same as above.
-  (with-store store
-    (let* ((file    (search-path %load-path "guix.scm"))
-           (path    (add-to-store store "delete-me" #t "sha256" file))
-           (deleted (delete-paths store (list path)))
-           (path2   (add-to-store store "delete-me" #t "sha256" file)))
-      (and (string=? path path2)
-           (equal? deleted (list path))
-           (valid-path? store path)
-           (file-exists? path)))))
+           (file    (search-path %load-path "guix.scm"))
+           (path1   (add-text-to-store store "delete-me" text))
+           (path2   (add-to-store store "delete-me" #t "sha256" file))
+           (deleted (delete-paths store (list path1 path2))))
+      (and (string=? path1 (add-text-to-store store "delete-me" text))
+           (string=? path2 (add-to-store store "delete-me" #t "sha256" file))
+           (lset= string=? deleted (list path1 path2))
+           (valid-path? store path1)
+           (valid-path? store path2)
+           (file-exists? path1)
+           (file-exists? path2)))))
 
 (test-equal "add-file-tree-to-store"
   `(42
@@ -990,7 +982,7 @@
 
     ;; Ensure 'import-paths' raises an exception.
     (guard (c ((store-protocol-error? c)
-               (and (not (zero? (store-protocol-error-status (pk 'C c))))
+               (and (not (zero? (store-protocol-error-status c)))
                     (string-contains (store-protocol-error-message c)
                                      "lacks a signature"))))
       (let* ((source   (open-bytevector-input-port dump))
@@ -1030,9 +1022,9 @@
 
     ;; Ensure 'import-paths' raises an exception.
     (guard (c ((store-protocol-error? c)
-               ;; XXX: The daemon-provided error message currently doesn't
-               ;; mention the reason of the failure.
-               (not (zero? (store-protocol-error-status c)))))
+               (and (not (zero? (store-protocol-error-status c)))
+                    (string-contains (store-protocol-error-message c)
+                                     "unauthorized public key"))))
       (let* ((source   (open-bytevector-input-port dump))
              (imported (import-paths %store source)))
         (pk 'unauthorized-imported imported)

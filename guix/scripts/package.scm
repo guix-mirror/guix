@@ -218,12 +218,13 @@ non-zero relevance score."
         (output (manifest-entry-output old)))
       transaction)))
 
-  (define (upgrade entry)
+  (define (upgrade entry transform)
     (match entry
       (($ <manifest-entry> name version output (? string? path))
        (match (find-best-packages-by-name name #f)
          ((pkg . rest)
-          (let ((candidate-version (package-version pkg)))
+          (let* ((pkg               (transform store pkg))
+                 (candidate-version (package-version pkg)))
             (match (package-superseded pkg)
               ((? package? new)
                (supersede entry new))
@@ -231,12 +232,14 @@ non-zero relevance score."
                (case (version-compare candidate-version version)
                  ((>)
                   (manifest-transaction-install-entry
-                   (package->manifest-entry* pkg output)
+                   (manifest-entry-with-transformations
+                    (package->manifest-entry* pkg output))
                    transaction))
                  ((<)
                   transaction)
                  ((=)
-                  (let* ((new (package->manifest-entry* pkg output)))
+                  (let* ((new (manifest-entry-with-transformations
+                               (package->manifest-entry* pkg output))))
                     ;; Here we want to determine whether the NEW actually
                     ;; differs from ENTRY, but we need to intercept
                     ;; 'build-things' calls because they would prevent us from
@@ -255,7 +258,14 @@ non-zero relevance score."
 
   (if (manifest-transaction-removal-candidate? entry transaction)
       transaction
-      (upgrade entry)))
+
+      ;; Upgrade ENTRY, preserving transformation options listed in its
+      ;; properties.
+      (let ((transform (options->transformation
+                        (or (assq-ref (manifest-entry-properties entry)
+                                      'transformations)
+                            '()))))
+        (upgrade entry transform))))
 
 
 ;;;
@@ -585,14 +595,8 @@ upgrading, #f otherwise."
 (define (package->manifest-entry* package output)
   "Like 'package->manifest-entry', but attach PACKAGE provenance meta-data to
 the resulting manifest entry."
-  (define (provenance-properties package)
-    (match (package-provenance package)
-      (#f   '())
-      (sexp `((provenance ,@sexp)))))
-
-  (package->manifest-entry package output
-                           #:properties (provenance-properties package)))
-
+  (manifest-entry-with-provenance
+   (package->manifest-entry package output)))
 
 (define (options->installable opts manifest transaction)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
@@ -870,12 +874,13 @@ processed, #f otherwise."
 
   (define (transform-entry entry)
     (let ((item (transform store (manifest-entry-item entry))))
-      (manifest-entry
-        (inherit entry)
-        (item item)
-        (version (if (package? item)
-                     (package-version item)
-                     (manifest-entry-version entry))))))
+      (manifest-entry-with-transformations
+       (manifest-entry
+         (inherit entry)
+         (item item)
+         (version (if (package? item)
+                      (package-version item)
+                      (manifest-entry-version entry)))))))
 
   (when (equal? profile %current-profile)
     ;; Normally the daemon created %CURRENT-PROFILE when we connected, unless

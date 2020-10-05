@@ -8168,6 +8168,232 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
     (propagated-inputs
      `(("stringtemplate" ,java-stringtemplate-3)))))
 
+(define-public java-treelayout
+  (package
+    (name "java-treelayout")
+    (version "1.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/abego/treelayout")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18my8ql9b1y0n0zrvkih7xfhf3dpgfhyfifvkcfhmwcvw3divxak"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name (string-append ,name "-" ,version ".jar")
+       #:source-dir "org.abego.treelayout/src/main/java"
+       #:test-dir "org.abego.treelayout/src/test"))
+    (inputs
+     `(("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://treelayout.sourceforge.net")
+    (synopsis "Tree Layout Algorithm in Java")
+    (description "TreeLayout creates tree layouts for arbitrary trees.  It is
+not restricted to a specific output or format, but can be used for any kind of
+two dimensional diagram.  Examples are Swing based components, SVG files, etc.
+This is possible because TreeLayout separates the layout of a tree from the
+actual rendering.")
+    (license license:bsd-3)))
+
+(define-public java-antlr4-runtime
+  (package
+    (name "java-antlr4-runtime")
+    (version "4.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/antlr/antlr4")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qal3add26qxskm85nk7r758arladn5rcyjinmhlhznmpbbv9j8m"))
+              (patches
+                (search-patches "java-antlr4-Add-standalone-generator.patch"
+                                "java-antlr4-fix-code-too-large.java"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-antlr4-runtime.jar"
+       #:source-dir "runtime/Java/src/org"
+       #:tests? #f; tests depend on java-antlr4 itself
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "runtime/Java/src/main/dot"
+                               "build/classes")
+             #t)))))
+    (home-page "https://antlr.org")
+    (synopsis "ANTLR runtime library")
+    (description "This package contains the runtime library used with generated
+sources by ANTLR.")
+    (license license:bsd-3)))
+
+(define-public antlr4
+  (package
+    (inherit java-antlr4-runtime)
+    (name "antlr4")
+    (arguments
+     `(#:jar-name "antlr4.jar"
+       #:source-dir "tool/src"
+       #:test-dir "tool-testsuite/test:runtime-testsuite/test:runtime-testsuite/annotations/src"
+       #:test-include (list "**/Test*.java")
+       #:test-exclude (list
+                        ;; no runnable method
+                        "**/TestOutputReading.java"
+                        ;; no @Test methods
+                        "**/TestParserErrors.java"
+                        "**/TestSemPredEvalParser.java"
+                        "**/TestSets.java"
+                        "**/TestListeners.java"
+                        "**/TestParseTrees.java"
+                        "**/TestParserExec.java"
+                        "**/TestLexerErrors.java"
+                        "**/TestPerformance.java"
+                        "**/TestCompositeParsers.java"
+                        "**/TestLexerExec.java"
+                        "**/TestSemPredEvalLexer.java"
+                        "**/TestLeftRecursion.java"
+                        "**/TestFullContextParsing.java"
+                        "**/TestCompositeLexers.java"
+                        ;; Null pointer exception
+                        "**/TestCompositeGrammars.java"
+                        ;; Wrong assumption on emoji
+                        "**/TestUnicodeData.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-build.xml
+           (lambda _
+             ;; tests are not in a java subdirectory
+             (substitute* "build.xml"
+               (("\\$\\{test.home\\}/java") "${test.home}"))
+             #t))
+         ;; tests require to have a working antlr4 binary
+         (delete 'check)
+         (add-after 'bin-install 'check
+           (lambda _
+             (invoke "ant" "compile-tests")
+             (invoke "ant" "check" "-Dtest.home=runtime-testsuite/annotations/src")
+             (invoke "ant" "check" "-Dtest.home=runtime-testsuite/test")
+             (invoke "ant" "check" "-Dtest.home=tool-testsuite/test")
+             #t))
+         (add-before 'check 'remove-unrelated-languages
+           (lambda _
+             ;; There are tests for other languages that ANTLR can generate, but
+             ;; we don't have the infrastructure for that yet.  Let's test Java
+             ;; generation only.
+             (for-each
+               (lambda (language)
+                 (delete-file-recursively
+                   (string-append "runtime-testsuite/test/org/antlr/v4/test/runtime/"
+                                  language)))
+               '("cpp" "csharp" "go" "javascript" "php" "python" "python2"
+                 "python3" "swift"))
+             #t))
+         (add-before 'check 'generate-test-parsers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (run-antlr dir filename package)
+               (invoke "antlr4" "-lib" dir "-visitor" "-no-listener"
+                       "-package" package (string-append dir "/" filename)
+                       "-Xlog"))
+             (setenv "PATH" (string-append (getenv "PATH") ":"
+                                           (assoc-ref outputs "out") "/bin"))
+             (run-antlr "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api"
+                        "Java.g4" "org.antlr.v4.test.runtime.java.api")
+             (run-antlr "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api"
+                        "VisitorBasic.g4" "org.antlr.v4.test.runtime.java.api")
+             (run-antlr "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api"
+                        "VisitorCalc.g4" "org.antlr.v4.test.runtime.java.api")
+             #t))
+         (add-before 'check 'remove-graphemes
+           (lambda _
+             ;; When running antlr on grahemes.g4, we get a runtime exception:
+             ;; set is empty.  So delete the file that depends on it.
+             (delete-file
+               "runtime-testsuite/test/org/antlr/v4/test/runtime/java/api/perf/TimeLexerSpeed.java")
+             #t))
+         (add-after 'install 'bin-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((jar (string-append (assoc-ref outputs "out") "/share/java"))
+                   (bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/antlr4")
+                 (lambda _
+                   (display
+                     (string-append "#!" (which "sh") "\n"
+                                    "java -cp " jar "/antlr4.jar:"
+                                    (string-join
+                                      (apply
+                                        append
+                                        (map
+                                          (lambda (input)
+                                            (find-files (assoc-ref inputs input)
+                                                  ".*\\.jar"))
+                                          '("antlr3" "java-stringtemplate"
+                                            "java-antlr4-runtime" "java-treelayout"
+                                            "java-jsonp-api" "java-icu4j")))
+                                      ":")
+                                    " org.antlr.v4.Tool $*"))))
+               (chmod (string-append bin "/antlr4") #o755)
+               #t)))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "tool/resources/" "build/classes")
+             #t))
+         (add-before 'build 'generate-unicode
+           (lambda _
+             ;; First: build the generator
+             (invoke "javac" "-cp" (getenv "CLASSPATH")
+                     "tool/src/org/antlr/v4/unicode/UnicodeRenderer.java"
+                     "tool/src/org/antlr/v4/unicode/UnicodeDataTemplateController.java")
+             ;; Then use it
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                 ":tool/src:runtime/Java")
+                     "org.antlr.v4.unicode.UnicodeRenderer"
+                     "tool/resources/org/antlr/v4/tool/templates"
+                     "unicodedata"
+                     "tool/src/org/antlr/v4/unicode/UnicodeData.java")
+             ;; It seems there is a bug with our ST4
+             (substitute* "tool/src/org/antlr/v4/unicode/UnicodeData.java"
+               (("\\\\>") ">"))
+             ;; Remove the additional file
+             (delete-file "tool/src/org/antlr/v4/unicode/UnicodeRenderer.java")
+             #t))
+         (add-before 'build 'generate-grammar
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "tool/src/org/antlr/v4/parse"
+               (for-each (lambda (file)
+                           (display file)
+                           (newline)
+                           (invoke "antlr3" file))
+                         '("ANTLRLexer.g" "ANTLRParser.g" "BlockSetTransformer.g"
+                           "GrammarTreeVisitor.g" "ATNBuilder.g"
+                           "ActionSplitter.g" "LeftRecursiveRuleWalker.g")))
+             (with-directory-excursion "tool/src/org/antlr/v4/codegen"
+               (install-file "../parse/ANTLRParser.tokens" ".")
+               (display "SourceGenTriggers.g\n")
+               (invoke "antlr3" "SourceGenTriggers.g"))
+             #t)))))
+    (inputs
+     `(("antlr3" ,antlr3)
+       ("java-antlr4-runtime" ,java-antlr4-runtime)
+       ("java-icu4j" ,java-icu4j)
+       ("java-jsonp-api" ,java-jsonp-api)
+       ("java-stringtemplate" ,java-stringtemplate)
+       ("java-treelayout" ,java-treelayout)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (synopsis "Parser and lexer generator in Java")
+    (description "ANTLR (ANother Tool for Language Recognition) is a powerful
+parser generator for reading, processing, executing, or translating structured
+text or binary files.  It's widely used to build languages, tools, and
+frameworks.  From a grammar, ANTLR generates a parser that can build and walk
+parse trees.")))
+
 (define-public java-commons-cli-1.2
   ;; This is a bootstrap dependency for Maven2.
   (package
@@ -9560,18 +9786,24 @@ make data-binding work.")
     (name "java-hdrhistogram")
     (version "2.1.9")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/HdrHistogram/HdrHistogram/"
-                                  "archive/HdrHistogram-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/HdrHistogram/HdrHistogram")
+                     (commit (string-append "HdrHistogram-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sicbmc3sr42nw93qbkb26q9rn33ag33k6k77phjc3j5h5gjffqv"))))
+                "1cw8aa1vk258k42xs6wpy72m4gbai540jq032qsa7c5586iawx2d"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-hdrhistogram.jar"
        #:source-dir "src/main/java"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'configure 'set-version
            (lambda _
              (let* ((version-java "src/main/java/org/HdrHistogram/Version.java")
@@ -10739,7 +10971,7 @@ application components to create, send, receive, and read messages.")
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://javaee.github.io/javamail/")
-    (synopsis "Mail-related functionnalities in Java")
+    (synopsis "Mail-related functionality in Java")
     (description "The JavaMail API provides a platform-independent and
 protocol-independent framework to build mail and messaging applications.")
     ;; General Public License Version 2 only ("GPL") or the Common Development
@@ -12016,7 +12248,7 @@ Java method invocation.")
     (inputs
      `(("java-native-access" ,java-native-access)))
     (synopsis "Cross-platform mappings for jna")
-    (description "java-native-access-platfrom has cross-platform mappings
+    (description "java-native-access-platform has cross-platform mappings
 and mappings for a number of commonly used platform functions, including a
 large number of Win32 mappings as well as a set of utility classes that
 simplify native access.")))

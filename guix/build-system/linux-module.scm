@@ -68,14 +68,41 @@
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (out-lib-build (string-append out "/lib/modules/build")))
+                ;; Delete some huge items that we probably don't need.
                 ;; TODO: Only preserve the minimum, i.e. [Kbuild], Kconfig,
                 ;; scripts, include, ".config".
                 (copy-recursively "." out-lib-build)
+                (for-each (lambda (name)
+                            (when (file-exists? name)
+                            (delete-file-recursively name)))
+                 (map (lambda (name)
+                        (string-append out-lib-build "/" name))
+                  '("arch" ; 137 MB
+                    ;"tools" ; 44 MB ; Note: is built by our 'build phase.
+                    "tools/testing" ; 14 MB
+                    "tools/perf" ; 17 MB
+                    "drivers" ; 600 MB
+                    "Documentation" ; 52 MB
+                    "fs" ; 43 MB
+                    "net" ; 33 MB
+                    "samples" ; 2 MB
+                    "sound"))) ; 40 MB
+                ;; Reinstate arch/**/dts since "scripts/dtc" depends on it.
+                ;; Reinstate arch/**/include directories.
+                ;; Reinstate arch/**/Makefile.
+                ;; Reinstate arch/**/module.lds.
+                (for-each
+                 (lambda (name)
+                   (mkdir-p (dirname (string-append out-lib-build "/" name)))
+                   (copy-recursively name
+                                     (string-append out-lib-build "/" name)))
+                 (append (find-files "arch" "^(dts|include)$" #:directories? #t)
+                         (find-files "arch" "^(Makefile|module.lds)$")))
                 (let* ((linux (assoc-ref inputs "linux")))
                   (install-file (string-append linux "/System.map")
                                 out-lib-build)
                   (let ((source (string-append linux "/Module.symvers")))
-                    (if (file-exists? source)
+                    (when (file-exists? source)
                         (install-file source out-lib-build))))
                 #t)))))))))
 

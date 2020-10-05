@@ -27,8 +27,9 @@ _guix_complete_command ()
     if [ -z "$_guix_commands" ]
     then
 	# Cache the list of commands to speed things up.
-	_guix_commands="$(guix --help 2> /dev/null \
-                                     | grep '^  ' | cut -c 2-)"
+	_guix_commands="$(guix --help 2> /dev/null  \
+                                     | grep '^    ' \
+				     | sed '-es/^ *\([a-z-]\+\).*$/\1/g')"
     fi
     COMPREPLY=($(compgen -W "$_guix_commands" -- "$word_at_point"))
 }
@@ -181,7 +182,7 @@ _guix_complete ()
 	*)
 	    if _guix_is_command "package"
 	    then
-		if _guix_is_dash_L || _guix_is_dash_m
+		if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
 		then
 		    _guix_complete_file
 		elif _guix_is_removing

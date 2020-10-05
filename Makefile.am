@@ -571,6 +571,7 @@ EXTRA_DIST +=						\
   build-aux/hydra/guix-modular.scm			\
   build-aux/cuirass/gnu-system.scm			\
   build-aux/cuirass/guix-modular.scm			\
+  build-aux/cuirass/hurd-manifest.scm			\
   build-aux/cuirass/hydra-to-cuirass.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/check-channel-news.scm			\
@@ -833,9 +834,8 @@ release: dist-with-updated-version
 	      -v1 --no-grafts --fallback
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
-	    guix system disk-image							\
-	    --file-system-type=iso9660							\
-	    --label="GUIX_$${system}_$(VERSION)"						\
+	    guix system disk-image -t iso9660                                           \
+	    --label="GUIX_$${system}_$(VERSION)"					\
             --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
