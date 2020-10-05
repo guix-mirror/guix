@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,8 @@
 
 (define-module (guix build svn)
   #:use-module (guix build utils)
+  #:use-module (srfi srfi-34)
+  #:use-module (ice-9 format)
   #:export (svn-fetch))
 
 ;;; Commentary:
@@ -36,20 +39,33 @@
                     (password #f))
   "Fetch REVISION from URL into DIRECTORY.  REVISION must be an integer, and a
 valid Subversion revision.  Return #t on success, #f otherwise."
-  (apply invoke svn-command
-         "export" "--non-interactive"
-         ;; Trust the server certificate.  This is OK as we
-         ;; verify the checksum later.  This can be removed when
-         ;; ca-certificates package is added.
-         "--trust-server-cert" "-r" (number->string revision)
-         `(,@(if (and user-name password)
-                 (list (string-append "--username=" user-name)
-                       (string-append "--password=" password))
-                 '())
-           ,@(if recursive?
-                 '()
-                 (list "--ignore-externals"))
-           ,url ,directory))
-  #t)
+  (mkdir-p directory)
+
+  (guard (c ((invoke-error? c)
+             (format (current-error-port)
+                     "svn-fetch: '~a~{ ~a~}' failed with exit code ~a~%"
+                     (invoke-error-program c)
+                     (invoke-error-arguments c)
+                     (or (invoke-error-exit-status c)
+                         (invoke-error-stop-signal c)
+                         (invoke-error-term-signal c)))
+             (delete-file-recursively directory)
+             #f))
+    (with-directory-excursion directory
+      (apply invoke svn-command
+             "export" "--non-interactive"
+             ;; Trust the server certificate.  This is OK as we
+             ;; verify the checksum later.  This can be removed when
+             ;; ca-certificates package is added.
+             "--trust-server-cert" "-r" (number->string revision)
+             `(,@(if (and user-name password)
+                     (list (string-append "--username=" user-name)
+                           (string-append "--password=" password))
+                     '())
+               ,@(if recursive?
+                     '()
+                     (list "--ignore-externals"))
+               ,url ,directory))
+      #t)))
 
 ;;; svn.scm ends here
