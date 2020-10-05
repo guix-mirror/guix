@@ -4774,6 +4774,27 @@ complementary pairs stability selection with improved error bounds
 arbitrary user specified variable selection approaches.")
   (license license:gpl2)))
 
+(define-public r-rle
+  (package
+    (name "r-rle")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rle" version))
+       (sha256
+        (base32
+         "0sagl0jggg40lihzy7pfq4593rfvc3b3f7g6ggi85s7n18qvwg40"))))
+    (properties `((upstream-name . "rle")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rle/")
+    (synopsis "Common functions for run-length encoded vectors")
+    (description
+     "This package provides common @code{base} and @code{stats} methods for
+@code{rle} objects, aiming to make it possible to treat them transparently as
+vectors.")
+    (license license:gpl3)))
+
 (define-public r-statnet-common
   (package
     (name "r-statnet-common")
