@@ -24012,14 +24012,14 @@ models without involving a test set.")
 (define-public r-tidypredict
   (package
     (name "r-tidypredict")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidypredict" version))
        (sha256
         (base32
-         "1fx1nr8fry3nwy2391g26zkqakdf8f3j7zyrihbc0qhscvbdskiy"))))
+         "0z0wr0ssl1h0smr9431cy1ik5kxfy1nvkdcyyq9c0355h828hybh"))))
     (properties `((upstream-name . "tidypredict")))
     (build-system r-build-system)
     (propagated-inputs
@@ -24028,7 +24028,9 @@ models without involving a test set.")
        ("r-knitr" ,r-knitr)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
-       ("r-tibble" ,r-tibble)))
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://tidypredict.tidymodels.org")
