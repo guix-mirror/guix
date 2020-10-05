@@ -4236,14 +4236,14 @@ of Eigenmatrices} (JADE).")
 (define-public r-dtw
   (package
     (name "r-dtw")
-    (version "1.21-3")
+    (version "1.22-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dtw" version))
        (sha256
         (base32
-         "02hyhx1sy5h3vzh9zixy18a7d47df4k5d0wyflcvlcbsbcl6p90s"))))
+         "004gm4mzgdzdj807j3bwqsv5lizmnmz5jq514bdjshhkysnzjz6z"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-proxy" ,r-proxy)))
     (home-page "http://dtw.r-forge.r-project.org/")
