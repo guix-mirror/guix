@@ -2695,18 +2695,17 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "2.3")
+    (version "2.4")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
-          (base32 "0vdjq4kcyxkr2m27588kk6yi5g53symjshj4jz4n0j18wz53shji"))))
+          (base32 "1y2156w1abik8df8vl376ilv8s1jg8i0x2w4n4dwrnm3xxgp5kf0"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-base64enc" ,r-base64enc)
-       ("r-evaluate" ,r-evaluate)
+     `(("r-evaluate" ,r-evaluate)
        ("r-htmltools" ,r-htmltools)
        ("r-jsonlite" ,r-jsonlite)
        ("r-knitr" ,r-knitr)
