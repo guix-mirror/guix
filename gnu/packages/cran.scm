@@ -9740,14 +9740,14 @@ problems into least squares ones first.")
 (define-public r-npsurv
   (package
     (name "r-npsurv")
-    (version "0.4-0.1")
+    (version "0.5-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "npsurv" version))
        (sha256
         (base32
-         "09nxibp93bp9v8qcx0gnazk7fkvyh0fq9vlgxl639m6ndr7fwp88"))))
+         "1ihxhb42cga1hssj2jv4ah0f4hlwsky899ij5261fzh1wxvdp1xw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lsei" ,r-lsei)))
