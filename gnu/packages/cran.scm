@@ -15748,17 +15748,18 @@ code edited with @code{RStudio IDE}, @code{Emacs} and @code{Vim}.")
 (define-public r-sctransform
   (package
     (name "r-sctransform")
-    (version "0.2.1")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sctransform" version))
        (sha256
         (base32
-         "07v3lzccsrkh1glfxd1q20r8f8gl9ls5az0s1dvxm4vcls0hlhyn"))))
+         "1vyjxzghfvw57pwncvkfg3lbcsqfdsiplh1h4vscxpnd3872nrq3"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-future-apply" ,r-future-apply)
+     `(("r-future" ,r-future)
+       ("r-future-apply" ,r-future-apply)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
        ("r-mass" ,r-mass)
