@@ -4202,18 +4202,17 @@ including:
 (define-public r-gplots
   (package
     (name "r-gplots")
-    (version "3.0.4")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gplots" version))
        (sha256
         (base32
-         "15ip3v4xiqzbanf8bc5fj90cbwdgixr72aj5jrp34jfdzdx0gxwg"))))
+         "05rislwgaw6v5dmhcwyvc04hi1fgaxrpb61f66kx483px45w6f24"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-catools" ,r-catools)
-       ("r-gdata" ,r-gdata)
        ("r-gtools" ,r-gtools)
        ("r-kernsmooth" ,r-kernsmooth)))
     (native-inputs
