@@ -9494,14 +9494,14 @@ terminals that do not support Unicode.")
 (define-public r-usethis
   (package
     (name "r-usethis")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "usethis" version))
        (sha256
         (base32
-         "0vwxsnq615mwc706a4a71gyy0hmvnllbh249gzm7vl3ym5cr0cv0"))))
+         "09lk04kycvf5x9ggrb6pwc7bx5mzqxwialm2w9vn1a0w0gh2gcfc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
