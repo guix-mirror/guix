@@ -26982,6 +26982,36 @@ If that fails, no determination is made, and calls return None.")
 updated when the crate version changes.")
     (license license:expat)))
 
+(define-public rust-version-sync-0.6
+  (package
+    (inherit rust-version-sync-0.8)
+    (name "rust-version-sync")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "version-sync" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0n33s4s4k9sy7rhlrf9lwwyqkjrgwnpfjsz0xzhfh3d3w33jaiq8"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (substitute* "Cargo.toml"
+                   (("~1.1") "1.1"))
+                 #t))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-itertools" ,rust-itertools-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-pulldown-cmark" ,rust-pulldown-cmark-0.1)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-semver-parser" ,rust-semver-parser-0.9)
+        ("rust-syn" ,rust-syn-0.15)
+        ("rust-toml" ,rust-toml-0.4)
+        ("rust-url" ,rust-url-1.7))))))
+
 (define-public rust-void-1
   (package
     (name "rust-void")
