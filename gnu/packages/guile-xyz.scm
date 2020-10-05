@@ -845,8 +845,8 @@ Vicare Scheme and IronScheme.  Right now it contains:
     (license license:bsd-3)))
 
 (define-public guile-prometheus
-  (let ((commit "cbc6e1b03512443a03d66414c426adb8470b5f2b")
-        (revision "0"))
+  (let ((commit "8980f39bafb3e59d6de17e7b311df4932e5b5182")
+        (revision "1"))
     (package
     (name "guile-prometheus")
     (version (git-version "0" revision commit))
@@ -857,13 +857,14 @@ Vicare Scheme and IronScheme.  Right now it contains:
                     (commit commit)))
               (sha256
                (base32
-                "1k1qg4ia87w2ipnf8cpikdc67lxi5bmahkhgk2x0i9ibdyvqb7np"))
+                "04vwza78b5nq0szzxzvpnfjyfkb4pqf2w4dx3kz1f082n01xnwss"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
-       ("automake" ,automake)))
+       ("automake" ,automake)
+       ("guile" ,guile-3.0)))
     (inputs
      `(("guile" ,guile-3.0)))
     (home-page "https://git.cbaines.net/guile/prometheus")
