@@ -19,6 +19,10 @@
 
 (define-module (gnu packages vlang)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages node)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -39,8 +43,7 @@
       (base32 "1rqi7cah5nq8aggrib9xvdpfjxq20li91svv0w9yny6nn1ag7snx"))))
    (build-system gnu-build-system)
    (arguments
-    '(#:tests? #f                      ; some tests are broken
-      #:make-flags
+    '(#:make-flags
       `("CC=gcc"
         "TMPTCC=tcc"
         ,(string-append "VC=" (assoc-ref %build-inputs "vc"))
@@ -58,17 +61,27 @@
               (("rm -rf") "true")
               (("v self") "v -cc gcc cmd/v"))
             #t))
-        ;; A few tests are broken in v 0.1.27. This function should be
-        ;; enabled to run tests in the next release.
-        ;; (replace 'check
-        ;;   (lambda _
-        ;;     (let* ((tmpbin "tmp/bin")
-        ;;            (gcc (which "gcc")))
-        ;;       (mkdir-p tmpbin)
-        ;;       (symlink gcc (string-append tmpbin "/cc"))
-        ;;       (setenv "PATH" (string-append tmpbin ":" (getenv "PATH")))
-        ;;       (invoke "./v" "test-fixed"))
-        ;;     #t))
+        (add-before 'check 'delete-failing-tests
+          ;; XXX As always, these should eventually be fixed and run.
+          (lambda _
+            (for-each delete-file
+                      '("vlib/v/gen/x64/tests/x64_test.v"
+                        "vlib/v/tests/repl/repl_test.v"
+                        "vlib/v/tests/valgrind/valgrind_test.v"
+                        "vlib/v/tests/valgrind/strings_and_arrays.vv"
+                        "vlib/v/tests/live_test.v"
+                        "vlib/net/websocket/ws_test.v"))
+            #t))
+        (replace 'check
+          (lambda* (#:key tests? #:allow-other-keys)
+            (let* ((bin "tmp/bin")
+                   (gcc (which "gcc")))
+              (when tests?
+                (mkdir-p bin)
+                (symlink gcc (string-append bin "/cc"))
+                (setenv "PATH" (string-append bin ":" (getenv "PATH")))
+                (invoke "./v" "test-fixed")))
+            #t))
         (replace 'install
           (lambda _
             (let* ((bin (string-append (assoc-ref %outputs "out") "/bin"))
@@ -106,7 +119,13 @@
                   (commit vc-version)))
             (file-name (git-file-name "vc" vc-version))
             (sha256
-             (base32 "052gp5q2k31r3lci3rx4k0vy0vjdjva64xvrbbihn8lgmw63lc9f")))))))
+             (base32 "052gp5q2k31r3lci3rx4k0vy0vjdjva64xvrbbihn8lgmw63lc9f")))))
+
+      ;; For the tests.
+      ("libx11" ,libx11)
+      ("node" ,node)
+      ("openssl" ,openssl)
+      ("sqlite" ,sqlite)))
    (home-page "https://vlang.io/")
    (synopsis "Compiler for the V programming language")
    (description
