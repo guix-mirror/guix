@@ -804,19 +804,22 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "3.0.0")                   ; also update update-parser.sh below
+    (version "3.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://secure.nic.cz/files/knot-dns/"
-                           "knot-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.nic.cz/knot/knot-dns")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1i76zflc49jbsaj3idxx7a6x87c0lzal294c3fdjyfl7dvznmjgi"))
+        (base32 "0fkvip7n5ihjfwnnivdc3jf44y8p85ifglvq7b0anxvj9cg1m78f"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Remove Ragel-generated C files.  We'll recreate them below.
            (for-each delete-file (find-files "." "\\.c\\.[gt]."))
+           (delete-file "src/libknot/yparser/ypbody.c")
            #t))))
     (build-system gnu-build-system)
     (arguments
@@ -824,16 +827,17 @@ Extensions} (DNSSEC).")
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
              "--enable-dnstap"          ; let tools read/write capture files
+             "--enable-fast-parser"     ; disabled by default when .git/ exists
              "--with-module-dnstap=yes" ; detailed query capturing & logging
              (string-append "--with-bash-completions="
                             (assoc-ref %outputs "out")
                             "/etc/bash_completion.d"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'update-parser
-           (lambda* (#:key inputs #:allow-other-keys)
+         (add-before 'bootstrap 'update-parser
+           (lambda _
              (with-directory-excursion "src"
-               (invoke "sh" "-x" (assoc-ref inputs "update-parser.sh")))))
+               (invoke "sh" "../scripts/update-parser.sh"))))
          (add-before 'configure 'disable-directory-pre-creation
            (lambda _
              ;; Don't install empty directories like ‘/etc’ outside the store.
@@ -849,17 +853,11 @@ Extensions} (DNSSEC).")
                        (string-append "config_dir=" etc)
                        "install")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("ragel" ,ragel)
-       ;; The release tarball doesn't include scripts/update-parser.sh.
-       ("update-parser.sh"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append "https://gitlab.nic.cz/knot/knot-dns/-/raw/v"
-                               version "/scripts/update-parser.sh"))
-           (file-name (string-append name "-" version "-update-parser.sh"))
-           (sha256
-            (base32 "1a0s71lbnklpzkh97gm4g4lnxgg60zdf0hr8qr0732kqgsva1sjl"))))))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("ragel" ,ragel)))
     (inputs
      `(("fstrm" ,fstrm)
        ("gnutls" ,gnutls)
