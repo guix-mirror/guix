@@ -1074,7 +1074,7 @@ trace (backtrace) at runtime in a Rust program.")
 (define-public rust-base64-0.12
   (package
     (name "rust-base64")
-    (version "0.12.2")
+    (version "0.12.3")
     (source
      (origin
        (method url-fetch)
@@ -1083,7 +1083,7 @@ trace (backtrace) at runtime in a Rust program.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0ryc48pp8dpx3rl1dcwn723dyfgifi4imh1f6kwd95lcqh6sy8z2"))
+         "1zq33had71xh48n17g4kqs96szhx3yh7qibzwi4fk217n3vz0h9l"))
        (modules '((guix build utils)))
        (snippet
         '(begin
