@@ -5497,15 +5497,17 @@ Memorial-Sloan-Kettering Cancer Center (MSKCC).")
 (define-public r-import
   (package
     (name "r-import")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "import" version))
        (sha256
         (base32
-         "0blf9539rbfwcmw8zsb4k58slb4pdnc075v34vmyjw752fznhcji"))))
+         "018s0x224gqnv4cjfh0fwliyfg6ma9vslmwybrlizfsmqcc5wp37"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/smbache/import")
     (synopsis "Import mechanism for R")
     (description
