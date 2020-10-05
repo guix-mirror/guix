@@ -20763,14 +20763,14 @@ least squares.")
 (define-public r-regsem
   (package
     (name "r-regsem")
-    (version "1.5.2")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "regsem" version))
        (sha256
         (base32
-         "0ch057010xfsw0nqcsarzakdbiplvxaldyqlbbacspqs65ax1yk7"))))
+         "14nrzyrkrijdrr4jwkri5zra2wh36w68wy6xs600l2z1633h2lmn"))))
     (properties `((upstream-name . "regsem")))
     (build-system r-build-system)
     (propagated-inputs
@@ -20778,6 +20778,8 @@ least squares.")
        ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-rsolnp" ,r-rsolnp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/package=regsem")
     (synopsis "Regularized structural equation modeling")
     (description
