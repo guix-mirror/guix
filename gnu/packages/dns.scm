@@ -65,6 +65,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages ragel)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
@@ -803,14 +804,20 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "3.0.0")
+    (version "3.0.0")                   ; also update update-parser.sh below
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                            "knot-" version ".tar.xz"))
        (sha256
-        (base32 "1i76zflc49jbsaj3idxx7a6x87c0lzal294c3fdjyfl7dvznmjgi"))))
+        (base32 "1i76zflc49jbsaj3idxx7a6x87c0lzal294c3fdjyfl7dvznmjgi"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove Ragel-generated C files.  We'll recreate them below.
+           (for-each delete-file (find-files "." "\\.c\\.[gt]."))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -823,6 +830,10 @@ Extensions} (DNSSEC).")
                             "/etc/bash_completion.d"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'update-parser
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src"
+               (invoke "sh" "-x" (assoc-ref inputs "update-parser.sh")))))
          (add-before 'configure 'disable-directory-pre-creation
            (lambda _
              ;; Don't install empty directories like ‘/etc’ outside the store.
@@ -838,7 +849,17 @@ Extensions} (DNSSEC).")
                        (string-append "config_dir=" etc)
                        "install")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("ragel" ,ragel)
+       ;; The release tarball doesn't include scripts/update-parser.sh.
+       ("update-parser.sh"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://gitlab.nic.cz/knot/knot-dns/-/raw/v"
+                               version "/scripts/update-parser.sh"))
+           (file-name (string-append name "-" version "-update-parser.sh"))
+           (sha256
+            (base32 "1a0s71lbnklpzkh97gm4g4lnxgg60zdf0hr8qr0732kqgsva1sjl"))))))
     (inputs
      `(("fstrm" ,fstrm)
        ("gnutls" ,gnutls)
