@@ -15343,7 +15343,7 @@ including bigint, complex, rational, range iterators, generic integers, and more
 (define-public rust-num-derive-0.3
   (package
     (name "rust-num-derive")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
       (origin
         (method url-fetch)
@@ -15352,14 +15352,16 @@ including bigint, complex, rational, range iterators, generic integers, and more
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0imprwv8cs01k46g56ajlvc97dp8kz51y2vn6cp9jkw1c6r1b2qc"))))
+          "1czs5215ypgbwg0qgy2i515xj3vfcgm8fw7gi4gmwsyv3a2bj2bg"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-syn" ,rust-syn-1)
-        ("rust-quote" ,rust-quote-1))))
+        ("rust-quote" ,rust-quote-1))
+       #:cargo-development-inputs
+       (("rust-num" ,rust-num-0.3)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
     (home-page "https://github.com/rust-num/num-derive")
     (synopsis "Numeric syntax extensions")
     (description "This package provides numeric syntax extensions.")
