@@ -29,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages pcre)
