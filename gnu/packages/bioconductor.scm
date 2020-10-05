@@ -8187,14 +8187,14 @@ truncated data.")
 (define-public r-interval
   (package
     (name "r-interval")
-    (version "1.1-0.1")
+    (version "1.1-0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "interval" version))
        (sha256
         (base32
-         "1lln9jkli28i4wivwzqrsxvv2n15560f7msjy5gssrm45vxrxms8"))))
+         "1b31lh0sv7lzy76230djipahxa10lblbr37kdiigr6hp3dd1xmz9"))))
     (properties `((upstream-name . "interval")))
     (build-system r-build-system)
     (propagated-inputs
