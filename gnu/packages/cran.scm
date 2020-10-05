@@ -20554,14 +20554,14 @@ Gibbs sampling by Xuan-Hieu Phan and co-authors.")
 (define-public r-stm
   (package
     (name "r-stm")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stm" version))
        (sha256
         (base32
-         "1yyfxaxqc6yq0yq68zhdnhpwpvsyp71dlmivn7zxixfmp932s6cn"))))
+         "0qwq4nin2n9fjd06852r8k7arvcgh46kcfb3lm21swgx6j8bgrhb"))))
     (properties `((upstream-name . "stm")))
     (build-system r-build-system)
     (propagated-inputs
