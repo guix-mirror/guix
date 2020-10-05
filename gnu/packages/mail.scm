@@ -3231,10 +3231,12 @@ on the fly.  Both programs are written in C and are very fast.")
          "12awq5z4sdd54cxprj834zajxhkpy4jwhzf1fhigcx1zbhdaacsp"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-net-dns" ,perl-net-dns)
-       ("perl-net-ssleay" ,perl-net-ssleay)))
+     `(("perl-io-socket-inet6" ,perl-io-socket-inet6)
+       ("perl-net-dns" ,perl-net-dns)
+       ("perl-net-ssleay" ,perl-net-ssleay)
+       ("perl-socket6" ,perl-socket6))) ; used by perl-io-socket-inet6
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
