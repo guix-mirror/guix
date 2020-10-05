@@ -19900,14 +19900,14 @@ generation for the Poisson binomial distribution.")
 (define-public r-diagram
   (package
     (name "r-diagram")
-    (version "1.6.4")
+    (version "1.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "diagram" version))
        (sha256
         (base32
-         "0f6ffprn5k0ir1s7m9s7izc64aa17r3gnygagz5bihrlsvawaavw"))))
+         "1r3lyl0h7mk9cfg8smr3jydfkjdawaphnxibkxfjqa7029vkxh79"))))
     (properties `((upstream-name . "diagram")))
     (build-system r-build-system)
     (propagated-inputs
