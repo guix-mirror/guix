@@ -8333,25 +8333,29 @@ derived from an internal hasher used in FireFox and Rustc.")
 
 (define-public rust-gcc-0.3
   (package
-    (inherit rust-cc-1)
     (name "rust-gcc")
     (version "0.3.55")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "gcc" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1hng1sajn4r67hndvhjysswz8niayjwvcj42zphpxzhbz89kjpwg"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; gcc-test folder missing from release tarball.
+       #:cargo-inputs
+       (("rust-rayon" ,rust-rayon-0.8))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/alexcrichton/cc-rs")
     (synopsis "Library to compile C/C++ code into a Rust library/application")
     (description
      "This package provides a build-time dependency for Cargo build scripts to
 assist in invoking the native C compiler to compile native C code into a static
 archive to be linked into Rustcode.")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
