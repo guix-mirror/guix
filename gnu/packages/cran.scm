@@ -11405,14 +11405,14 @@ preparing, executing, and processing HTTP requests.")
 (define-public r-bigrquery
   (package
     (name "r-bigrquery")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bigrquery" version))
        (sha256
         (base32
-         "0mq03sqv5lkyn3dlxvyd6lqqwnryfdaqh05pjvngzp194fxmd9cy"))))
+         "16whccv7f94vf57dvbbrhdskz3nnbmpa11a14kp7aynckldlfy0v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
