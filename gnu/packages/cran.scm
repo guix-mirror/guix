@@ -17116,14 +17116,14 @@ structural data.")
 (define-public r-bios2cor
   (package
     (name "r-bios2cor")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Bios2cor" version))
        (sha256
         (base32
-         "04wk1cjrrxhpv1kdhd67r1qvjv268xxi0z0r105wy912110z9m6x"))))
+         "1wkj9vr33m9jilidil9jpw5rzr3pf7gkimxdvch22ks4bgkx7l1w"))))
     (properties `((upstream-name . "Bios2cor")))
     (build-system r-build-system)
     (propagated-inputs
