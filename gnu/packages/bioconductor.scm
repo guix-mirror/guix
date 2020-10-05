@@ -7161,14 +7161,14 @@ data.")
 (define-public r-activedriverwgs
   (package
     (name "r-activedriverwgs")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActiveDriverWGS" version))
        (sha256
         (base32
-         "0l6h0f54zjvcx19ngq3kp01dypsjqf28vssjm8yzccmpyacfypag"))))
+         "06mvakdc8d2pn91p0sr4ixc561s4ia5h1cvd1p7pqd6s50dy4say"))))
     (properties
      `((upstream-name . "ActiveDriverWGS")))
     (build-system r-build-system)
