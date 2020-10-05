@@ -730,32 +730,18 @@ multiple inspectors with independent history.")
       (properties `((cl-source-variant . ,(delay cl-slynk)))))))
 
 (define-public cl-slynk
-  (package
-    (inherit (sbcl-package->cl-source-package sbcl-slynk))
-    (name "cl-slynk")))
+  (sbcl-package->cl-source-package sbcl-slynk))
 
 (define-public ecl-slynk
-  (package
-    (inherit sbcl-slynk)
-    (name "ecl-slynk")
-    (inputs
-     (map (match-lambda
-            ((name pkg . _)
-             (list name (sbcl-package->ecl-package pkg))))
-          (package-inputs sbcl-slynk)))
-    (native-inputs '())
-    (outputs '("out"))
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder
-       (begin
-         (use-modules (ice-9 match)
-                      (guix build union))
-         (match %build-inputs
-           (((names . paths) ...)
-            (union-build (assoc-ref %outputs "out")
-                         paths)
-            #t)))))))
+  (let ((pkg (sbcl-package->ecl-package sbcl-slynk)))
+    (package
+      (inherit pkg)
+      (outputs '("out"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments pkg)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'build-image))))))))
 
 (define-public sbcl-parse-js
   (let ((commit "fbadc6029bec7039602abfc06c73bb52970998f6")
