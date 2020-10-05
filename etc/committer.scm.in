@@ -175,8 +175,8 @@ corresponding to the top-level definition containing the staged changes."
               (let ((old-values (get-values old field))
                     (new-values (get-values new field)))
                 (or (equal? old-values new-values)
-                    (let ((removed (lset-difference eq? old-values new-values))
-                          (added (lset-difference eq? new-values old-values)))
+                    (let ((removed (lset-difference equal? old-values new-values))
+                          (added (lset-difference equal? new-values old-values)))
                       (format port
                               "[~a]: ~a~%" field
                               (match (list (map symbol->string removed)
