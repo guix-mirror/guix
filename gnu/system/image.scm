@@ -202,6 +202,7 @@ set to the given OS."
     (with-imported-modules `(,@(source-module-closure
                                 '((gnu build vm)
                                   (gnu build image)
+                                  (gnu build bootloader)
                                   (gnu build hurd-boot)
                                   (gnu build linux-boot)
                                   (guix store database))
@@ -210,6 +211,7 @@ set to the given OS."
       #~(begin
           (use-modules (gnu build vm)
                        (gnu build image)
+                       (gnu build bootloader)
                        (gnu build hurd-boot)
                        (gnu build linux-boot)
                        (guix store database)
