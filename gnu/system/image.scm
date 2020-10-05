@@ -65,12 +65,14 @@
 
             efi-disk-image
             iso9660-image
+            arm64-disk-image
 
             image-with-os
             raw-image-type
             qcow2-image-type
             iso-image-type
             uncompressed-iso-image-type
+            arm64-image-type
 
             image-with-label
             system-image
@@ -123,6 +125,18 @@
            (label "GUIX_IMAGE")
            (flags '(boot)))))))
 
+(define arm64-disk-image
+  (image
+   (format 'disk-image)
+   (target "aarch64-linux-gnu")
+   (partitions
+    (list (partition
+           (inherit root-partition)
+           (offset root-offset))))
+   ;; FIXME: Deleting and creating "/var/run" and "/tmp" on the overlayfs
+   ;; fails.
+   (volatile-root? #f)))
+
 
 ;;;
 ;;; Images types.
@@ -163,6 +177,11 @@ set to the given OS."
                   (inherit iso9660-image)
                   (compression? #f))
                  <>))))
+
+(define arm64-image-type
+  (image-type
+   (name 'arm)
+   (constructor (cut image-with-os arm64-disk-image <>))))
 
 
 ;;
