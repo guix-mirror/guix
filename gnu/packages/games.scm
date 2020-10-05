@@ -429,7 +429,9 @@ physics settings to tweak as well.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
-       #:configure-flags '("-DDATADIR=share/astromenace")
+       #:configure-flags (list (string-append "-DDATADIR="
+                                              (assoc-ref %outputs "out")
+                                              "/share/astromenace"))
        #:phases
        (modify-phases %standard-phases
          (replace 'install
