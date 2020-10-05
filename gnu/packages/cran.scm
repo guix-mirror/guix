@@ -23800,6 +23800,34 @@ used in further calculations that rely on a specific temporal spacing between
 observations.")
     (license license:expat)))
 
+(define-public r-slider
+  (package
+    (name "r-slider")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "slider" version))
+       (sha256
+        (base32
+         "1x4jwfxam4czfkb1s5qds5krfw1h2p5a4rh6f5z4yvhsv0d81xck"))))
+    (properties `((upstream-name . "slider")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-glue" ,r-glue)
+       ("r-rlang" ,r-rlang)
+       ("r-vctrs" ,r-vctrs)
+       ("r-warp" ,r-warp)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/DavisVaughan/slider")
+    (synopsis "Sliding window functions")
+    (description
+     "This package provides type-stable rolling window functions over any R
+data type.  Cumulative and expanding windows are also supported.  For more
+advanced usage, an index can be used as a secondary vector that defines how
+sliding windows are to be created.")
+    (license license:expat)))
+
 (define-public r-rsample
   (package
     (name "r-rsample")
