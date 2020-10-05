@@ -11988,14 +11988,14 @@ covariance functions for large data sets.")
 (define-public r-spatialextremes
   (package
     (name "r-spatialextremes")
-    (version "2.0-8")
+    (version "2.0-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "SpatialExtremes" version))
        (sha256
         (base32
-         "0r2byz5xxc46zqnigdax28q7446ibmzmsmi10lmm2hdks3ml6sl3"))))
+         "1mhn1c8n3bmgf0fjyac3wji4790zswzkqliqcv3n8kv9806crb0y"))))
     (properties
      `((upstream-name . "SpatialExtremes")))
     (build-system r-build-system)
