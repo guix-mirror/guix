@@ -11438,7 +11438,7 @@ etc.  You can also play games on FICS or against an engine.")
                   (delete 'configure))))
     (synopsis "Strong chess engine")
     (description
-     "Stockfish is a very strong chess engines.  It is much stronger than the
+     "Stockfish is a very strong chess engine.  It is much stronger than the
 best human chess grandmasters.  It can be used with UCI-compatible GUIs like
 ChessX.")
     (home-page "https://stockfishchess.org/")
