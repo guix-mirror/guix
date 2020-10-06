@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Simon South <simon@simonsouth.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -862,6 +863,7 @@ Extensions} (DNSSEC).")
        ("libcap-ng" ,libcap-ng)
        ("libedit" ,libedit)
        ("libidn" ,libidn)
+       ("libnghttp2" ,nghttp2 "lib")
        ("liburcu" ,liburcu)
        ("lmdb" ,lmdb)
        ("ncurses" ,ncurses)
