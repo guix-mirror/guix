@@ -4033,7 +4033,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.46")
+    (version "1.12.48")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnumeric/"
@@ -4041,7 +4041,7 @@ Hints specification (EWMH).")
                                   "gnumeric-" version ".tar.xz"))
               (sha256
                (base32
-                "1qdmw2dp7rmq8fmjapgwaks7ajh270wm6kyvlxlzwbgmg8vngp4z"))))
+                "14556b0vyxdvdwjlin0rv7jk0vq4nplbmvp9j89bhkfk84xf7k2p"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -4069,8 +4069,8 @@ Hints specification (EWMH).")
        ("librsvg" ,librsvg)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("python" ,python-2)
-       ("python2-pygobject" ,python2-pygobject)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
        ("zlib" ,zlib)))
     (native-inputs
      `(("bison" ,bison)
