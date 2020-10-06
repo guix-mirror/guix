@@ -3812,24 +3812,15 @@ of the input.  MD4 is described in RFC 1320.")
 (define-public perl-digest-md5
   (package
     (name "perl-digest-md5")
-    (version "2.55")
+    (version "2.58")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/Digest-MD5-"
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/Digest-MD5-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0g0fklbrm2krswc1xhp4iwn1dhqq71fqh2p5wm8xj9a4s6i9ic83"))))
+        (base32 "057psy6k7im0pr3344ny6k5rsnbqj8aizkmwgw53kbbngabh20kx"))))
     (build-system perl-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'set-permissions
-           (lambda _
-             ;; Make MD5.so read-write so it can be stripped.
-             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755)
-             #t)))))
     (home-page "https://metacpan.org/release/Digest-MD5")
     (synopsis "Perl interface to the MD-5 algorithm")
     (description
