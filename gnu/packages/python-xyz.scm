@@ -10821,36 +10821,40 @@ Pytest but stripped of Pytest specific details.")
 
 (define-public python-tox
   (package
-   (name "python-tox")
-   (version "2.8.1")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (pypi-uri "tox" version))
-     (sha256
-      (base32
-       "1drp6mwm8wdypjym15ia8lwjxbhcksb9vzxg4ay5dh4ji57by2ny"))))
-   (build-system python-build-system)
-   (arguments
-    ;; FIXME: Tests require pytest-timeout, which itself requires
-    ;; pytest>=2.8.0 for installation.
-    '(#:tests? #f))
-   (propagated-inputs
-    `(("python-pluggy" ,python-pluggy) ; >=0.3.0,<0.4.0
-      ("python-py" ,python-py)
-      ("python-virtualenv" ,python-virtualenv)))
-   (native-inputs
-    `(; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
-      ("python-pytest" ,python-pytest)  ; >= 2.3.5
-      ("python-setuptools-scm" ,python-setuptools-scm)))
-   (home-page "https://tox.readthedocs.io")
-   (synopsis "Virtualenv-based automation of test activities")
-   (description "Tox is a generic virtualenv management and test command line
+    (name "python-tox")
+    (version "3.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tox" version))
+       (sha256
+        (base32
+         "0nk0nyzhzamcrvn0qqzzy54isxxqwdi28swml7a2ym78c3f9sqpb"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Tests require pytest-timeout, which itself requires
+     ;; pytest>=2.8.0 for installation.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-filelock" ,python-filelock)
+       ("python-packaging" ,python-packaging)
+       ("python-pluggy" ,python-pluggy)
+       ("python-py" ,python-py)
+       ("python-six" ,python-six)
+       ("python-toml" ,python-toml)
+       ("python-virtualenv" ,python-virtualenv)))
+    (native-inputs
+     `(; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-pytest" ,python-pytest)  ; >= 2.3.5
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://tox.readthedocs.io")
+    (synopsis "Virtualenv-based automation of test activities")
+    (description "Tox is a generic virtualenv management and test command line
 tool.  It can be used to check that a package installs correctly with
 different Python versions and interpreters, or run tests in each type of
 supported environment, or act as a frontend to continuous integration
 servers.")
-   (license license:expat)))
+    (license license:expat)))
 
 (define-public python2-tox
   (package-with-python2 python-tox))
