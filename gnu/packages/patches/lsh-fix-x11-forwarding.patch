@@ -1,0 +1,20 @@
+--- a/src/server_x11.c	2016-08-01 11:58:54.714647794 +0200
++++ b/src/server_x11.c	2016-08-01 11:58:46.606563478 +0200
+@@ -151,7 +151,7 @@ DEFINE_COMMAND(open_forwarded_x11)
+ #define X11_MIN_DISPLAY 10
+ #define X11_MAX_DISPLAY 1000
+ 
+-/* FIXME: Create the /tmp/.X11-unix directory, if needed. Figure out
++/* FIXME: Figure out
+  * if and how we should use /tmp/.X17-lock. Consider using display
+  * "unix:17" instead of just ":17".
+  */
+@@ -253,6 +253,7 @@ open_x11_socket(struct ssh_channel *chan
+ 
+   old_umask = umask(0077);
+   
++  mkdir(X11_SOCKET_DIR, S_IRWXU | S_IRWXG | S_IRWXO | S_ISVTX);
+   old_cd = lsh_pushd(X11_SOCKET_DIR, &dir, 0, 0);
+   if (old_cd < 0)
+     {
+

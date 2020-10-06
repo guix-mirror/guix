@@ -594,7 +594,8 @@ basis for almost any application.")
 
                   (substitute* "src/testsuite/login-auth-test"
                     (("/bin/cat") "cat"))
-                  #t))))
+                  #t))
+              (patches (search-patches "lsh-fix-x11-forwarding.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("m4" ,m4)
@@ -615,7 +616,8 @@ basis for almost any application.")
 
        ;; The server (lshd) invokes xauth when X11 forwarding is requested.
        ;; This adds 24 MiB (or 27%) to the closure of lsh.
-       ("xauth" ,xauth)))
+       ("xauth" ,xauth)
+       ("libxau" ,libxau)))             ;also required for x11-forwarding
     (arguments
      '(;; Skip the `configure' test that checks whether /dev/ptmx &
        ;; co. work as expected, because it relies on impurities (for
