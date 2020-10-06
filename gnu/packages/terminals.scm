@@ -235,10 +235,9 @@ text-based approach to terminal recording.")
       (arguments
        `(#:configure-flags '("-DBUILD_TESTING=ON")))
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
-      (inputs
-       `(("libxkbcommon" ,libxkbcommon)
-         ("check" ,check)))
+       `(("check" ,check)
+         ("libxkbcommon" ,libxkbcommon) ; for xkbcommon-keysyms.h
+         ("pkg-config" ,pkg-config)))
       (synopsis "Xterm state machine library")
       (description "TSM is a state machine for DEC VT100-VT520 compatible
 terminal emulators.  It tries to support all common standards while keeping
