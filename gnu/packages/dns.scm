@@ -46,6 +46,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
@@ -824,6 +825,8 @@ Extensions} (DNSSEC).")
            ;; Remove Ragel-generated C files.  We'll recreate them below.
            (for-each delete-file (find-files "." "\\.c\\.[gt]."))
            (delete-file "src/libknot/yparser/ypbody.c")
+           ;; Remove bundled library to ensure we always use the system's.
+           (delete-file-recursively "src/contrib/libbpf")
            #t))))
     (build-system gnu-build-system)
     (arguments
@@ -832,9 +835,18 @@ Extensions} (DNSSEC).")
              "--localstatedir=/var"
              "--enable-dnstap"          ; let tools read/write capture files
              "--enable-fastparser"      ; disabled by default when .git/ exists
+             "--enable-xdp=auto"        ; XXX [=yes] currently means =embedded
              "--with-module-dnstap=yes") ; detailed query capturing & logging
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'link-missing-libbpf-dependency
+           ;; Linking against -lbpf later would fail to find -lz: libbpf.pc has
+           ;; zlib in its Requires.private (not Requires) field.  Add it here.
+           (lambda _
+             (substitute* "configure.ac"
+               (("enable_xdp=yes" match)
+                (string-append match "\nlibbpf_LIBS=\"$libbpf_LIBS -lz\"")))
+             #t))
          (add-before 'bootstrap 'update-parser
            (lambda _
              (with-directory-excursion "src"
@@ -871,8 +883,10 @@ Extensions} (DNSSEC).")
      `(("fstrm" ,fstrm)
        ("gnutls" ,gnutls)
        ("jansson" ,jansson)
+       ("libbpf" ,libbpf)
        ("libcap-ng" ,libcap-ng)
        ("libedit" ,libedit)
+       ("libelf" ,libelf)
        ("libidn" ,libidn)
        ("libnghttp2" ,nghttp2 "lib")
        ("liburcu" ,liburcu)
