@@ -85,6 +85,7 @@
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Hendursaga <hendursaga@yahoo.com>
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
+;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21471,6 +21472,37 @@ randomly picked from wordlists.  It supports several sources of
 randomness (including real life dice) and different wordlists (including
 cryptographically signed ones).")
     (license license:gpl3+)))
+
+(define-public python-dictdiffer
+  (package
+    (name "python-dictdiffer")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "dictdiffer" version))
+              (sha256
+               (base32
+                "1lk3qmy1hkaphk4n7ayfk0wl6m2yvd6r7qkam6yncqfzgkbc1phs"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-check-manifest" ,python-check-manifest)
+       ("python-coverage" ,python-coverage)
+       ("python-isort" ,python-isort)
+       ("python-mock" ,python-mock)
+       ("python-pydoctstyle" ,python-pydocstyle)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-tox" ,python-tox)))
+    (home-page "https://github.com/inveniosoftware/dictdiffer")
+    (synopsis "Diff and patch Python dictionary objects")
+    (description
+     "Dictdiffer is a Python module that helps you to diff and patch
+dictionaries.")
+    (license license:expat)))
 
 (define-public pyzo
   (package
