@@ -10272,14 +10272,14 @@ interval to data view, mismatch pileup, and several splicing summaries.")
 (define-public r-gqtlbase
   (package
     (name "r-gqtlbase")
-    (version "1.20.0")
+    (version "1.20.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gQTLBase" version))
        (sha256
         (base32
-         "06xvzp4fn3qfa46ggg8kxi267gbyd821vvx4040173xkqxpr0g5j"))))
+         "1ly14vhhqxjpbxjypi6ppd37dycabdhf4ny4nsvp9969k418zv41"))))
     (properties `((upstream-name . "gQTLBase")))
     (build-system r-build-system)
     (propagated-inputs
