@@ -7497,9 +7497,10 @@ Symbol font from Adobe's basic set.")
               (list "/doc/latex/mathpazo/"
                     "/fonts/afm/public/mathpazo/"
                     "/fonts/tfm/public/mathpazo/"
-                    "/fonts/type1/public/mathpazo/")
+                    "/fonts/type1/public/mathpazo/"
+                    "/fonts/vf/public/mathpazo/")
               (base32
-               "1k04ijgi54hbddayngy1zq4mxf995gn6ky3vr1z8syifqqipqv11")
+               "02in6hdnbnkz216mpy8g6fk3wmlls8nh5982vmg37vhbj77lk0rh")
               #:trivial? #t))
     (home-page "http://www.ctan.org/pkg/mathpazo")
     (synopsis "Fonts to typeset mathematics to match Palatino")
