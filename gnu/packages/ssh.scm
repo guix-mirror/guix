@@ -598,7 +598,9 @@ basis for almost any application.")
               (patches (search-patches "lsh-fix-x11-forwarding.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("m4" ,m4)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("m4" ,m4)
        ("guile" ,guile-2.0)
        ("gperf" ,gperf)
        ("psmisc" ,psmisc)))                       ; for `killall'
@@ -630,14 +632,20 @@ basis for almost any application.")
                            ;; 'lsh_argp.h' checks HAVE_ARGP_PARSE but nothing
                            ;; defines it.
                            "CPPFLAGS=-DHAVE_ARGP_PARSE")
-
-       ;; FIXME: Tests won't run in a chroot, presumably because
-       ;; /etc/profile is missing, and thus clients get an empty $PATH
-       ;; and nothing works.
-       #:tests? #f
-
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; FIXME: Most tests won't run in a chroot, presumably because
+             ;; /etc/profile is missing, and thus clients get an empty $PATH
+             ;; and nothing works.  Run only the subset that passes.
+             (delete-file "configure")  ;force rebootstrap
+             (substitute* "src/testsuite/Makefile.am"
+               (("seed-test \\\\")        ;prevent trailing slash
+                "seed-test")
+               (("^\t(lsh|daemon|tcpip|socks|lshg|lcp|rapid7|lshd).*test.*")
+                ""))
+             #t))
          (add-before 'configure 'pre-configure
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((nettle    (assoc-ref inputs "nettle"))
