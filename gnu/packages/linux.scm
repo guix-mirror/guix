@@ -7373,9 +7373,8 @@ persistent over reboots.")
      `(#:tests? #f                      ; no tests
        #:make-flags
        (list
-        (string-append "PREFIX=''")
-        (string-append "DESTDIR=" (assoc-ref %outputs "out"))
-        (string-append "LIBDIR=/lib")
+        (string-append "PREFIX=" (assoc-ref %outputs "out"))
+        (string-append "LIBDIR=$(PREFIX)/lib")
         (string-append
          "CC=" (assoc-ref %build-inputs "gcc") "/bin/gcc"))
        #:phases
