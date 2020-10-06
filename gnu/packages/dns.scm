@@ -70,6 +70,7 @@
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -842,6 +843,9 @@ Extensions} (DNSSEC).")
              ;; This is needed even when using ‘make config_dir=... install’.
              (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))
              #t))
+         (add-after 'build 'build-info
+           (lambda _
+             (invoke "make" "info")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -849,13 +853,18 @@ Extensions} (DNSSEC).")
                     (etc (string-append doc "/examples/etc")))
                (invoke "make"
                        (string-append "config_dir=" etc)
-                       "install")))))))
+                       "install"))))
+         (add-after 'install 'install-info
+           (lambda _
+             (invoke "make" "install-info"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
-       ("ragel" ,ragel)))
+       ("python-sphinx" ,python-sphinx)
+       ("ragel" ,ragel)
+       ("texinfo" ,texinfo)))
     (inputs
      `(("fstrm" ,fstrm)
        ("gnutls" ,gnutls)
