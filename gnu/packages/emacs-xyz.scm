@@ -197,16 +197,16 @@
 (define-public emacs-geiser
   (package
     (name "emacs-geiser")
-    (version "0.11.2")
-    (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://gitlab.com/jaor/geiser/")
-                   (commit version)))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "1khi1bghsjx6cs5acizmlbw9z19s4qycnji9krdbn42cbpv0rysv"))))
+    (version "0.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/jaor/geiser/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0n718xpys7v94zaf9lpmsx97qgn6qxif1acr718wyvpmfr4hiv08"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -218,7 +218,8 @@
                                      "/share/emacs/site-lisp/"
                                      "geiser-autoloads.el"))
              #t)))))
-    (inputs `(("guile" ,guile-2.2)))
+    (inputs
+     `(("guile" ,guile-2.2)))
     (native-inputs
      `(("emacs" ,emacs-minimal)
        ("autoconf" ,autoconf)
