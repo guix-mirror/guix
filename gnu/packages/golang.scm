@@ -12,9 +12,9 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright @ 2018, 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
-;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
-;;; Copyright @ 2019, 2020 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2018, 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2019 Giovanni Biscuolo <g@xelera.eu>
+;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
