@@ -221,16 +221,22 @@ text-based approach to terminal recording.")
     (package
       (name "libtsm")
       (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                ;; The freedesktop repository is no longer maintained.
-                (uri (git-reference
-                      (url (string-append "https://github.com/Aetf/" name))
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0mwn91i5h5d518i1s05y7hzv6bc13vzcvxszpfh77473iwg4wprx"))))
+      (source
+       (origin
+         (method git-fetch)
+         ;; The freedesktop repository is no longer maintained.
+         (uri (git-reference
+               (url (string-append "https://github.com/Aetf/" name))
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0mwn91i5h5d518i1s05y7hzv6bc13vzcvxszpfh77473iwg4wprx"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Remove a bundled copy of libxkbcommon's xkbcommon-keysyms.h.
+             (delete-file-recursively "external/xkbcommon")
+             #t))))
       (build-system cmake-build-system)
       (arguments
        `(#:configure-flags '("-DBUILD_TESTING=ON")))
