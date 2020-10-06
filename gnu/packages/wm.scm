@@ -2044,3 +2044,39 @@ execute a shell command on a configurable action.  The icons can be moved on
 the desktop by dragging them, and the icons will remember their positions on
 start-up.")
     (license license:bsd-3)))
+
+(define-public xnotify
+  (package
+    (name "xnotify")
+    (version "0.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/phillbush/xnotify")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ris7jhi7hgw7nxkwkn3zk7n3y4nvnnm6dbz0qs0g2srp2k67v7v"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("libxinerama" ,libxinerama)
+       ("imlib2" ,imlib2)))
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output)
+             (string-append "CFLAGS="
+                            "-I" (assoc-ref %build-inputs "freetype")
+                            "/include/freetype2"))
+       #:tests? #f ;no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/phillbush/xnotify")
+    (synopsis "Displays a notification on the screen")
+    (description "XNotify receives a notification specification in stdin and
+shows a notification for the user on the screen.")
+    (license license:expat)))
