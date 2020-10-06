@@ -1053,7 +1053,7 @@ noun phrases, verb phrases, etc.).")
 (define-public praat
   (package
     (name "praat")
-    (version "6.1.16")
+    (version "6.1.26")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1062,10 +1062,10 @@ noun phrases, verb phrases, etc.).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rx4qvl0dd85x0r6pl0zk4bysx9ykxl05kywjr4pyvv6dvpswkrm"))))
+                "12y4x7c34ddlg22kc82n17if1dqm8lyap9jg0kh1vagkdm9dy02w"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f; no test target
+     `(#:tests? #f                      ; no test target
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
