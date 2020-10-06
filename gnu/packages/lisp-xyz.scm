@@ -3702,6 +3702,7 @@ Rosenberg's Common Lisp packages.")
          (uri (git-reference
                (url "http://git.kpe.io/cl-base64.git/")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "12jj54h0fs6n237cvnp8v6hn0imfksammq22ys6pi0gwz2w47rbj"))))
       (build-system asdf-build-system/sbcl)
