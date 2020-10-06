@@ -831,7 +831,7 @@ Extensions} (DNSSEC).")
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
              "--enable-dnstap"          ; let tools read/write capture files
-             "--enable-fast-parser"     ; disabled by default when .git/ exists
+             "--enable-fastparser"      ; disabled by default when .git/ exists
              "--with-module-dnstap=yes") ; detailed query capturing & logging
        #:phases
        (modify-phases %standard-phases
