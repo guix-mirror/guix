@@ -816,6 +816,8 @@ Extensions} (DNSSEC).")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0fkvip7n5ihjfwnnivdc3jf44y8p85ifglvq7b0anxvj9cg1m78f"))
+       (patches
+        (search-patches "knot-test_net_shortwrite-ensure-connection.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
