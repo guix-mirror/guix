@@ -1051,6 +1051,7 @@ that support this feature).")
               (uri (git-reference
                     (url "https://github.com/memkind/memkind.git")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "11iz887f3cp5pzf1bzm644wzab8gkbhz3b7x1w6pcps71yd94ylj"))))
