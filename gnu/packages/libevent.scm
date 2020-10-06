@@ -54,7 +54,8 @@
     (outputs '("out" "bin"))
     (arguments
      ;; This skips some of the tests which fail on armhf and aarch64.
-     '(#:configure-flags '("--disable-libevent-regress")))
+     '(#:configure-flags '("--disable-libevent-regress"
+                           "--disable-openssl")))
     (inputs
      `(("python" ,python-wrapper)))     ;for 'event_rpcgen.py'
     (native-inputs
