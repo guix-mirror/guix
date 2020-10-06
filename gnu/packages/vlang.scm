@@ -85,8 +85,8 @@
                 (invoke "./v" "test-fixed")))
             #t))
         (replace 'install
-          (lambda _
-            (let* ((bin (string-append (assoc-ref %outputs "out") "/bin"))
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
                    (tools (string-append bin "/cmd/tools"))
                    (thirdparty (string-append bin "/thirdparty"))
                    (vlib (string-append bin "/vlib"))
