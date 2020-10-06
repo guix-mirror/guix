@@ -7489,3 +7489,28 @@ Packages @code{bicaption}, @code{ltcaption}, @code{newfloat},
     (description "This package provides a drop-in replacement for the
 Symbol font from Adobe's basic set.")
     (license license:gpl2)))
+
+(define-public texlive-mathpazo
+  (package
+    (inherit (simple-texlive-package
+              "texlive-mathpazo"
+              (list "/doc/latex/mathpazo/"
+                    "/fonts/afm/public/mathpazo/"
+                    "/fonts/tfm/public/mathpazo/"
+                    "/fonts/type1/public/mathpazo/")
+              (base32
+               "1k04ijgi54hbddayngy1zq4mxf995gn6ky3vr1z8syifqqipqv11")
+              #:trivial? #t))
+    (home-page "http://www.ctan.org/pkg/mathpazo")
+    (synopsis "Fonts to typeset mathematics to match Palatino")
+    (description "The Pazo Math fonts are a family of PostScript fonts
+suitable for typesetting mathematics in combination with the Palatino
+family of text fonts.  The Pazo Math family is made up of five fonts
+provided in Adobe Type 1 format.  These contain glyphs that are
+usually not available in Palatino and for which Computer Modern looks
+odd when combined with Palatino.  These glyphs include the uppercase
+Greek alphabet in upright and slanted shapes, the lowercase Greek
+alphabet in slanted shape, several mathematical glyphs and the
+uppercase letters commonly used to represent various number sets.
+LaTeX macro support is provided in package @code{psnfss}.")
+    (license license:gpl3+)))
