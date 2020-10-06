@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages))
 
 (define-public vlang
@@ -43,15 +45,15 @@
       (base32 "1rqi7cah5nq8aggrib9xvdpfjxq20li91svv0w9yny6nn1ag7snx"))))
    (build-system gnu-build-system)
    (arguments
-    '(#:make-flags
-      `("CC=gcc"
-        "TMPTCC=tcc"
-        ,(string-append "VC=" (assoc-ref %build-inputs "vc"))
-        "GITCLEANPULL=true"
-        "GITFASTCLONE=mkdir -p"
-        "TCCREPO="
-        "VCREPO="
-        "VERBOSE=1")
+    `(#:make-flags
+      (list (string-append "CC=" ,(cc-for-target))
+            "TMPTCC=tcc"
+            (string-append "VC=" (assoc-ref %build-inputs "vc"))
+            "GITCLEANPULL=true"
+            "GITFASTCLONE=mkdir -p"
+            "TCCREPO="
+            "VCREPO="
+            "VERBOSE=1")
       #:phases
       (modify-phases %standard-phases
         (delete 'configure)
@@ -59,7 +61,7 @@
           (lambda _
             (substitute* "Makefile"
               (("rm -rf") "true")
-              (("v self") "v -cc gcc cmd/v"))
+              (("v self") (string-append "v -cc " ,(cc-for-target) " cmd/v")))
             #t))
         (add-before 'check 'delete-failing-tests
           ;; XXX As always, these should eventually be fixed and run.
