@@ -34,6 +34,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages web))
 
@@ -147,6 +148,8 @@ convert it to structurally valid XHTML (or HTML).")
                (invoke "./configure.sh"
                        (string-append "--prefix=" out)
                        "--shared")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (synopsis "Markdown processing library, written in C")
     (description
      "Discount is a markdown implementation, written in C.  It provides a
