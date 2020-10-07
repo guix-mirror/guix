@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,14 +30,14 @@
 (define-public entr
   (package
     (name "entr")
-    (version "4.2")
+    (version "4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://entrproject.org/code/entr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0w2xkf77jikcjh15fp9g7661ss30pz3jbnh261vqpaqavwah4c17"))))
+                "0vcflgagna2gdlpjsd6748c73j2829xlhm276mi838zl1n121phn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -59,7 +59,7 @@
                (("/bin/cat") (which "cat"))
                (("/usr/bin/clear") (which "clear")))
              #t)))))
-    ;; ncurses provides the `clear' binary
+    ;; ncurses provides the `clear' binary.
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://entrproject.org/")
     (synopsis "Run arbitrary commands when files change")
