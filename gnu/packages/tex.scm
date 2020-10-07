@@ -7515,3 +7515,23 @@ alphabet in slanted shape, several mathematical glyphs and the
 uppercase letters commonly used to represent various number sets.
 LaTeX macro support is provided in package @code{psnfss}.")
     (license license:gpl3+)))
+
+(define-public texlive-fpl
+  (package
+    (inherit (simple-texlive-package
+              "texlive-fpl"
+              (list "/doc/fonts/fpl/"
+                    "/source/fonts/fpl/"
+                    "/fonts/afm/public/fpl/"
+                    "/fonts/type1/public/fpl/")
+              (base32
+               "02gkl516z9kn8xqs269pdkqn37sxm8ib0pcs43s4rs2rhyyl5z68")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/fpl")
+    (synopsis "SC and OsF fonts for URW Palladio L")
+    (description "The FPL Fonts provide a set of SC/OsF fonts for URW
+Palladio L which are compatible with the Palatino SC/OsF fonts from
+Adobe.  LaTeX use is enabled by the mathpazo package, which is part of
+the @code{psnfss} distribution.")
+    ;; Either LPPL version 1.0 or later, or GPL version 2
+    (license (list license:lppl1.0+ license:gpl2))))
