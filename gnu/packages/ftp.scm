@@ -226,7 +226,8 @@ output.
       ;; Don't let filezilla phone home to check for updates.
      '(#:configure-flags '("--disable-autoupdatecheck")))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(("cppunit" ,cppunit)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
        ("xdg-utils" ,xdg-utils)))
     (inputs
