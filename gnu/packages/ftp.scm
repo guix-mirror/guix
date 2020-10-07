@@ -179,6 +179,9 @@ as required.")
        (sha256
         (base32 "1zfnqbn14dx0fl45mfaznr5n5xsxy1kx8z9f80fppbqn37pb9mgx"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("gettext" ,gettext-minimal)
