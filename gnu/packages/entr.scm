@@ -51,9 +51,8 @@
              (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
                (setenv "CC" ,(cc-for-target))
-               (setenv "DESTDIR" (string-append out "/"))
-               (setenv "PREFIX" "")
-               (setenv "MANPREFIX" "man")
+               (setenv "PREFIX" out)
+               (setenv "MANPREFIX" (string-append out "/man"))
                (invoke "./configure"))))
          (add-before 'build 'remove-fhs-file-names
            (lambda* (#:key inputs #:allow-other-keys)
