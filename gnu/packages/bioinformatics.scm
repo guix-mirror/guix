@@ -4225,6 +4225,13 @@ performance.")
                (base32
                 "16ljv43sc3fxmv63w7b2ff8m1s7h89xhazwmbm1bicz8axq8fjz0"))))
     (build-system gnu-build-system)
+    ;; Let htslib translate "gs://" and "s3://" to regular https links with
+    ;; "--enable-gcs" and "--enable-s3". For these options to work, we also
+    ;; need to set "--enable-libcurl".
+    (arguments
+     `(#:configure-flags '("--enable-gcs"
+                           "--enable-libcurl"
+                           "--enable-s3")))
     (inputs
      `(("curl" ,curl)
        ("openssl" ,openssl)))
