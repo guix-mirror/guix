@@ -2129,9 +2129,8 @@ To load this plugin, specify the following option when starting mpv:
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.8.2")
+    (version "1.9.0")
     (source (origin
-              ;; XXX: Upstream does not provide tarballs for > 1.6.1.
               (method git-fetch)
               (uri (git-reference
                     (url "https://chromium.googlesource.com/webm/libvpx")
@@ -2139,7 +2138,7 @@ To load this plugin, specify the following option when starting mpv:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gyq4fkbd2fv7m1mm9xrvn6rk6f4jsmbv8bnlhingmnrvyncnmnr"))
+                "16xv6ambc82g14h1y0q1vyy57wp6j9fbp0nk0wd5csnrw407rhry"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -2157,7 +2156,11 @@ To load this plugin, specify the following option when starting mpv:
                       ;; The configure script does not understand some of the GNU
                       ;; options, so we only add the flags specified above.
                       (apply invoke  "./configure" configure-flags))))
-       #:tests? #f)) ; no check target
+
+       ;; XXX: The test suite wants to download 871 files from a cloud storage
+       ;; service (see test/test-data.sha1).  It is possible to specify a
+       ;; custom directory, but there seems to be no tarball with all files.
+       #:tests? #f))
     (native-inputs
      `(("perl" ,perl)
        ("yasm" ,yasm)))
