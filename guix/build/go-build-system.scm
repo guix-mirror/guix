@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -254,6 +255,17 @@ XXX We can't make use of compiled libraries (Go \"packages\")."
       (copy-recursively source dest #:keep-mtime? #t)))
   #t)
 
+(define* (install-license-files #:key unpack-path
+                                import-path
+                                #:allow-other-keys
+                                #:rest args)
+  "Install license files matching LICENSE-FILE-REGEXP to 'share/doc'.  Adjust
+the standard install-license-files phase to first enter the correct directory."
+  (with-directory-excursion (string-append "src/" (if (string-null? unpack-path)
+                                                    import-path
+                                                    unpack-path))
+    (apply (assoc-ref gnu:%standard-phases 'install-license-files) args)))
+
 (define* (remove-store-reference file file-name
                                   #:optional (store (%store-directory)))
   "Remove from FILE occurrences of FILE-NAME in STORE; return #t when FILE-NAME
@@ -317,6 +329,7 @@ files in OUTPUTS."
     (replace 'build build)
     (replace 'check check)
     (replace 'install install)
+    (replace 'install-license-files install-license-files)
     (add-after 'install 'remove-go-references remove-go-references)))
 
 (define* (go-build #:key inputs (phases %standard-phases)
