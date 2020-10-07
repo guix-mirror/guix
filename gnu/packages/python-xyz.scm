@@ -10059,14 +10059,13 @@ simulation, statistical modeling, machine learning and much more.")
        (uri (pypi-uri "chardet" version))
        (sha256
         (base32
-         "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))))
+         "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))
+        (patches (search-patches "python-chardet-3.0.4-pytest.patch"))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (build-system python-build-system)
-    ;; XXX: Incompatible with Pytest 4: <https://github.com/chardet/chardet/issues/173>.
-    (arguments `(#:tests? #f))
     (home-page "https://github.com/chardet/chardet")
     (synopsis "Universal encoding detector for Python 2 and 3")
     (description
