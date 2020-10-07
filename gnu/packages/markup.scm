@@ -30,6 +30,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system perl)
+  #:use-module (guix utils)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
@@ -138,7 +139,7 @@ convert it to structurally valid XHTML (or HTML).")
              #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (setenv "CC" "gcc")
+             (setenv "CC" ,(cc-for-target))
              (invoke "./configure.sh"
                      (string-append "--prefix=" (assoc-ref outputs "out"))
                      "--shared"))))))
