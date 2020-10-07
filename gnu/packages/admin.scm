@@ -1414,17 +1414,11 @@ system administrator.")
                   (delete-file-recursively "lib/zlib")
                   #t))))
     (build-system gnu-build-system)
-    (outputs (list "out" "python"))
+    (outputs (list "out"))
     (arguments
      `(#:configure-flags
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
                             "/share/doc/" ,name "-" ,version)
-
-             ;; XXX: Disable Python support when cross-compiling because
-             ;; 'configure' tries to run 'python', which fails.
-             ,(if (%current-target-system)
-                  "--disable-python"
-                  "--enable-python")              ; for plug-ins written in ~
 
              "--with-logpath=/var/log/sudo.log"
              "--with-rundir=/var/run/sudo" ; must be cleaned up at boot time
@@ -1472,22 +1466,7 @@ system administrator.")
              (substitute* "plugins/sudoers/Makefile.in"
                (("^pre-install:" match)
                 (string-append match "\ndisabled-" match)))
-             #t))
-         (add-after 'install 'separate-python-output
-           (lambda* (#:key target outputs #:allow-other-keys)
-             (let ((out        (assoc-ref outputs "out"))
-                   (out:python (assoc-ref outputs "python")))
-               (if target
-                   (mkdir-p (string-append out:python "/empty"))
-                   (for-each
-                    (lambda (file)
-                      (let ((old (string-append out "/" file))
-                            (new (string-append out:python "/" file)))
-                        (mkdir-p (dirname new))
-                        (rename-file old new)))
-                    (list "libexec/sudo/python_plugin.so"
-                          "libexec/sudo/python_plugin.la")))
-               #t))))
+             #t)))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
@@ -1497,9 +1476,6 @@ system administrator.")
     (inputs
      `(("coreutils" ,coreutils)
        ("linux-pam" ,linux-pam)
-       ,@(if (%current-target-system)
-             '()
-             `(("python" ,python)))
        ("zlib" ,zlib)))
     (home-page "https://www.sudo.ws/")
     (synopsis "Run commands as root")
