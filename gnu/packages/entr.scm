@@ -21,11 +21,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages entr)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages ncurses)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils))
 
 (define-public entr
   (package
@@ -47,20 +50,25 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (setenv "CC" (which "gcc"))
+               (setenv "CC" ,(cc-for-target))
                (setenv "DESTDIR" (string-append out "/"))
                (setenv "PREFIX" "")
                (setenv "MANPREFIX" "man")
                (invoke "./configure"))))
          (add-before 'build 'remove-fhs-file-names
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "entr.c"
-               (("/bin/sh") (which "sh"))
-               (("/bin/cat") (which "cat"))
-               (("/usr/bin/clear") (which "clear")))
+               (("/bin/sh" command)
+                (string-append (assoc-ref inputs "bash") command))
+               (("/bin/cat" command)
+                (string-append (assoc-ref inputs "coreutils") command))
+               (("/usr(/bin/clear)" _ command)
+                (string-append (assoc-ref inputs "ncurses") command)))
              #t)))))
-    ;; ncurses provides the `clear' binary.
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("ncurses" ,ncurses)))
     (home-page "http://entrproject.org/")
     (synopsis "Run arbitrary commands when files change")
     (description
