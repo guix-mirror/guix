@@ -1209,7 +1209,7 @@ and search library.")
         (base32 "1k2m44pj5i6vfhp9icdqs42chsp208llanc666p3d9nww8ngq2lb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ghc-pandoc" ,ghc-pandoc)
+     `(("pandoc" ,pandoc)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libcrypto" ,openssl)
