@@ -234,7 +234,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "20.1.8")
+    (version "20.1.9")
     (source
       (origin
         (method url-fetch)
@@ -246,7 +246,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1252mgwiy05nz8mm4gjkzmnjfvdz5yv1shnsr837cdnan86dvsad"))
+          "10kk8a8k7f4ip8yaiqdyrx162nbw8pw4h3b4hs4ha8mpd43wlldj"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
@@ -358,6 +358,12 @@ also known as DXTn or DXTC) for Mesa.")
                        (("'u_format_test',") ""))
                      #t)))
                '())
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; See <https://gitlab.freedesktop.org/mesa/mesa/-/issues/3181>.
+             (substitute* "src/compiler/glsl/glcpp/tests/084-unbalanced-parentheses.c.expected"
+              (("unexpected \\$end") "unexpected end of file"))
+             #t))
          (add-before 'configure 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
