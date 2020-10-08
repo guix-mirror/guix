@@ -2945,6 +2945,8 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
              (commit (string-append "v" version))))
        (sha256
         (base32 "04f3jqg8ww4jxsf9c6ddcdgy2xbhkyp0b3l5f1hvvbv94p81rjxd"))
+       (patches
+        (search-patches "sunxi-tools-remove-sys-io.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove binaries contained in the tarball which are only for the
