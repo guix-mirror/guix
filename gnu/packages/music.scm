@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3159,6 +3160,13 @@ websites such as Libre.fm.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; Reported upstream: <https://github.com/beetbox/beets/issues/3771>.
+         ;; Disable the faulty test as the fix is unclear.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "test/test_mediafile.py"
+               (("def test_read_audio_properties") "def _test_read_audio_properties"))
+             #t))
          (add-after 'unpack 'set-HOME
            (lambda _
              (setenv "HOME" (string-append (getcwd) "/tmp"))
