@@ -636,6 +636,7 @@ re-executing them as necessary.")
        ;; "Failed to tell switch -a apart from -A".
        #:parallel-tests? #f))
     (inputs `(("coreutils*" ,coreutils)
+              ("shadow" ,shadow)    ;for login (used in telnetd and rlogind)
               ("ncurses" ,ncurses)
               ("readline" ,readline)))        ;for 'ftp'
     (native-inputs (if (member (%current-system)
