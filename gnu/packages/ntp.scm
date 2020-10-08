@@ -80,7 +80,8 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libcap" ,libcap/next)
+     `(("gnutls" ,gnutls)
+       ("libcap" ,libcap/next)
        ("libseccomp" ,libseccomp)
        ("nettle" ,nettle)))
     (home-page "https://chrony.tuxfamily.org/")
