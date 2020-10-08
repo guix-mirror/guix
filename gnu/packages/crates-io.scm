@@ -5399,6 +5399,28 @@ structs and enums.")
      "This package provides a library for command line prompts and the like.")
     (license license:expat)))
 
+(define-public rust-dialoguer-0.3
+  (package
+    (inherit rust-dialoguer-0.6)
+    (name "rust-dialoguer")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dialoguer" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1a9gqvqp83gg4jbm286q5ab3l44zyyzlsdaiqmw8x4k80fdc5l8s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags '("--lib")
+       #:cargo-inputs
+       (("rust-console" ,rust-console-0.11)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-tempfile" ,rust-tempfile-2))))))
+
 (define-public rust-diff-0.1
   (package
     (name "rust-diff")
