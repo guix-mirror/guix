@@ -2854,15 +2854,15 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom.")
 (define-public perl-file-listing
   (package
     (name "perl-file-listing")
-    (version "6.04")
+    (version "6.11")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/File-Listing-"
+                   "mirror://cpan/authors/id/P/PL/PLICEASE/File-Listing-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "1xcwjlnxaiwwpn41a5yi6nz95ywh3szq5chdxiwj36kqsvy5000y"))))
+               "0vmzw1mhv580flzkla80gvwfpficnhlbqr1dnlf9x50bw7n18k62"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-http-date" ,perl-http-date)))
