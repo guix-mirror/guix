@@ -22161,3 +22161,32 @@ CSL 1.0.1 specification.  citeproc-py can output styled citations and
 bibliographies in a number of different output formats.  Currently supported
 are plain text, reStructuredText and HTML.")
     (license license:bsd-2)))
+
+(define-public python-inform
+  (package
+    (name "python-inform")
+    (version "1.23.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "inform" version))
+        (sha256
+          (base32
+            "0dvc5klbnbryrvspp45nmlg02g40j7xspcz7lqsm0c0dj0z29zdz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))  ; PyPI tarball lacks tests
+    (native-inputs
+      `(("python-hypothesis" ,python-hypothesis)
+        ("python-pytest-cov" ,python-pytest-cov)
+        ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+      `(("python-arrow" ,python-arrow)
+        ("python-six" ,python-six)))
+    (home-page "https://inform.readthedocs.io")
+    (synopsis "Print & logging utilities for communicating with user")
+    (description
+      "Inform is designed to display messages from programs that are typically run from
+a console.  It provides a collection of ‘print’ functions that allow you to simply and
+cleanly print different types of messages.")
+    (license license:gpl3+)))
