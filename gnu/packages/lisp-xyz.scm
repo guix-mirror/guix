@@ -14176,3 +14176,28 @@ XML to Lisp structures or s-expressions and back.")
 
 (define-public ecl-xmls
   (sbcl-package->ecl-package sbcl-xmls))
+
+(define-public sbcl-geco
+  (package
+    (name "sbcl-geco")
+    (version "2.01a")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://common-lisp.net/project/geco/download/"
+                           "geco-" version ".tar.gz"))
+       (sha256
+        (base32 "0kk0bzr1019cfmf2b1jl1rk9shv3gx5z1znifxllg9mb98yqsgw0"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://common-lisp.net/project/geco/")
+    (synopsis "Genetic algorithm toolkit for Common Lisp")
+    (description
+     "GECO (Genetic Evolution through Combination of Objects) is an extensible,
+object-oriented framework for prototyping genetic algorithms in Common Lisp.")
+    (license license:lgpl2.1+)))
+
+(define-public cl-geco
+  (sbcl-package->cl-source-package sbcl-geco))
+
+(define-public ecl-geco
+  (sbcl-package->ecl-package sbcl-geco))
