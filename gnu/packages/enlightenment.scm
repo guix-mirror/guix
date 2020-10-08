@@ -179,6 +179,8 @@
                 "install_dir: join_paths(dir_data, 'dbus-1', 'services'))\n"))
              (substitute* "src/tests/elementary/meson.build"
                (("dir_data") "meson.source_root(), 'test-output'"))
+             (substitute* "data/eo/meson.build"
+               (("'usr', 'lib'") "'./' + dir_lib"))
              #t))
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
