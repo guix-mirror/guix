@@ -24254,6 +24254,28 @@ directories.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tempfile-2
+  (package
+    (inherit rust-tempfile-3)
+    (name "rust-tempfile")
+    (version "2.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tempfile" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1q61byf232rra0vqxp4qp10wwwqsqqd45qjj80ql5f34vgljzkhi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-rand" ,rust-rand-0.3)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-winapi" ,rust-winapi-0.2))))))
+
 (define-public rust-tendril-0.4
   (package
     (name "rust-tendril")
