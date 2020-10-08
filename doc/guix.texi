@@ -12062,11 +12062,15 @@ following in your operating system declaration:
     (guix-service-type config =>
                        (guix-configuration
                         (inherit config)
-                        (use-substitutes? #f)
-                        (extra-options '("--gc-keep-derivations"))))
+                        ;; Fetch substitutes from example.org.
+                        (substitute-urls
+                          (list "https://example.org/guix"
+                                "https://ci.guix.gnu.org"))))
     (mingetty-service-type config =>
                            (mingetty-configuration
-                            (inherit config)))))
+                            (inherit config)
+                            ;; Automatially log in as "guest".
+                            (auto-login "guest")))))
 
 (operating-system
   ;; @dots{}
@@ -30431,7 +30435,7 @@ A service of this type is instantiated like this:
 (service guix-service-type
          (guix-configuration
            (build-accounts 5)
-           (use-substitutes? #f)))
+           (extra-options '("--gc-keep-derivations"))))
 @end lisp
 
 The second argument to the @code{service} form is a value representing
