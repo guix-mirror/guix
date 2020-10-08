@@ -22190,3 +22190,31 @@ are plain text, reStructuredText and HTML.")
 a console.  It provides a collection of ‘print’ functions that allow you to simply and
 cleanly print different types of messages.")
     (license license:gpl3+)))
+
+(define-public python-nestedtext
+  (package
+    (name "python-nestedtext")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "nestedtext" version))
+        (sha256
+          (base32
+            "0xjx863n7yd1xmkwhy48lhmqrmlzgbx3civhk386hvrzyq4sx148"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))  ; PyPI tarball lacks tests
+    (propagated-inputs
+      `(("python-inform" ,python-inform)))
+    (home-page "https://nestedtext.org")
+    (synopsis "Human readable and writable data interchange format")
+    (description
+      "NestedText is a file format for holding data that is to be entered, edited, or
+viewed by people.  It allows data to be organized into a nested collection of
+dictionaries, lists, and strings.  In this way it is similar to JSON and YAML, but
+without the complexity and risk of YAML and without the syntatic clutter of JSON.
+NestedText is both simple and natural.  Only a small number of concepts and rules must
+be kept in mind when creating it.  It is easily created, modified, or viewed with
+a text editor and easily understood and used by both programmers and non-programmers.")
+    (license license:expat))) ; MIT license
