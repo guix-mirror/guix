@@ -690,7 +690,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
  (cons* procps psmisc which
         (@ (gnu packages admin) shadow) ;for 'passwd'
 
-        guile-3.0
+        guile-3.0-latest
 
         ;; The packages below are also in %FINAL-INPUTS, so take them from
         ;; there to avoid duplication.
