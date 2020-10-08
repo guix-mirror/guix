@@ -84,6 +84,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Hendursaga <hendursaga@yahoo.com>
+;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -507,14 +508,14 @@ pidof, tty, taskset, pmap.")
 (define-public python-shapely
   (package
     (name "python-shapely")
-    (version "1.6.4.post2")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Shapely" version))
        (sha256
         (base32
-         "03r42fmd9alp6r3q95ad6rldq2f7n1wimrw53zy5kpn33yv7pf64"))))
+         "0adiz4jwmwxk7k1awqifb1a9bj5x4nx4gglb5dz9liam21674h8n"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)
@@ -533,11 +534,14 @@ pidof, tty, taskset, pmap.")
              (let ((geos (assoc-ref inputs "geos"))
                    (glibc (assoc-ref inputs ,(if (%current-target-system)
                                                  "cross-libc" "libc"))))
-               (substitute* "shapely/geos.py"
+               (substitute* '("shapely/geos.py" "shapely/_buildcfg.py")
                  (("_lgeos = load_dll\\('geos_c', fallbacks=.*\\)")
                   (string-append "_lgeos = load_dll('geos_c', fallbacks=['"
                                  geos "/lib/libgeos_c.so'])"))
                  (("free = load_dll\\('c'\\)\\.free")
+                  (string-append "free = load_dll('c', fallbacks=['"
+                                 glibc "/lib/libc.so.6']).free"))
+                 (("free = load_dll\\('c', fallbacks=.*\\)\\.free")
                   (string-append "free = load_dll('c', fallbacks=['"
                                  glibc "/lib/libc.so.6']).free"))))
              #t)))))
