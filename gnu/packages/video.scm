@@ -2997,7 +2997,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "26.0.1")
+    (version "26.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3006,7 +3006,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w6hbj83w91ni4fkkvpr2yz443xsgzilpip1fn7cnbvyizr89c1y"))))
+                "1d502f80whh686mvq0yn6zpa5nvmnlzxwp5sjz43vpbbvhpbrdqj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
