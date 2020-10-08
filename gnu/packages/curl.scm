@@ -53,14 +53,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.71.1")
+   (version "7.72.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "13357690bgr533dd49k0blwvkwcscgxwwj6ssifb5gnd4zd3xy20"))
+              "04rpa53c6wycjrhldnm9kig1d7fc23k0m646vgh2wpyqqh40iv8d"))
             (patches (search-patches "curl-use-ssl-cert-env.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
@@ -72,7 +72,8 @@
              ("nghttp2" ,nghttp2 "lib")
              ("zlib" ,zlib)))
    (native-inputs
-     `(("perl" ,perl)
+     `(("nghttp2" ,nghttp2)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
    (native-search-paths
