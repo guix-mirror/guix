@@ -50,6 +50,7 @@
 ;;; Copyright © 2020 Anders Thuné <asse.97@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1110,8 +1111,8 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
       (license license:gpl2+))))
 
 (define-public rtl8821ce-linux-module
-  (let ((commit "69765eb288a8dfad3b055b906760b53e02ab1dea")
-        (revision "0"))
+  (let ((commit "fe97b5003f2f3dd070f76ec38c00b83798c1cdea")
+        (revision "1"))
     (package
       (name "rtl8821ce-linux-module")
       (version (git-version "0.0.0" revision commit))
@@ -1124,7 +1125,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "17jiw25k74kv5lnvgycvj2g1n06hbrpjz6p4znk4a62g136rhn4s"))))
+           "10mrp63npbqb39c442vx8mra278hw7sczb3b6bjrpr3gan6ljshn"))))
       (build-system linux-module-build-system)
       (arguments
        `(#:make-flags
