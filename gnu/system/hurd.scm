@@ -62,7 +62,7 @@
 
 (define %base-packages/hurd
   (list hurd bash coreutils file findutils grep sed
-        guile-3.0 guile-colorized guile-readline
+        guile-3.0-latest guile-colorized guile-readline
         net-base inetutils less shadow shepherd sudo which))
 
 (define %base-services/hurd
