@@ -9155,11 +9155,9 @@ Non-deterministic build processes are a problem because they make it
 practically impossible for users to @emph{verify} whether third-party
 binaries are genuine.  @xref{Invoking guix challenge}, for more.
 
-Note that, currently, the differing build results are not kept around,
-so you will have to manually investigate in case of an error---e.g., by
-stashing one of the build results with @code{guix archive --export}
-(@pxref{Invoking guix archive}), then rebuilding, and finally comparing
-the two results.
+When used in conjunction with @option{--keep-failed}, the differing
+output is kept in the store, under @file{/gnu/store/@dots{}-check}.
+This makes it easy to look for differences between the two results.
 
 @item --no-offload
 Do not use offload builds to other machines (@pxref{Daemon Offload
