@@ -23,6 +23,7 @@
   #:use-module (gnu bootloader grub)
   #:use-module (gnu image)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages gdb)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages virtualization)
@@ -862,6 +863,9 @@ that will be listening to receive secret keys on port 1004, TCP."
                  (bootloader grub-minimal-bootloader)
                  (target "/dev/vda")
                  (timeout 0)))
+    (packages (cons* gdb-minimal
+                     (operating-system-packages
+                      %hurd-default-operating-system)))
     (services (cons*
                (service openssh-service-type
                         (openssh-configuration
