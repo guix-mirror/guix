@@ -515,7 +515,13 @@ pidof, tty, taskset, pmap.")
        (uri (pypi-uri "Shapely" version))
        (sha256
         (base32
-         "0adiz4jwmwxk7k1awqifb1a9bj5x4nx4gglb5dz9liam21674h8n"))))
+         "0adiz4jwmwxk7k1awqifb1a9bj5x4nx4gglb5dz9liam21674h8n"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file "shapely/speedups/_speedups.c")
+           (delete-file "shapely/vectorized/_vectorized.c")
+           #t))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)
