@@ -41,13 +41,7 @@ Mercurial changeset identifier.  Return #t on success, #f otherwise."
   (mkdir-p directory)
 
   (guard (c ((invoke-error? c)
-             (format (current-error-port)
-                     "hg-fetch: '~a~{ ~a~}' failed with exit code ~a~%"
-                     (invoke-error-program c)
-                     (invoke-error-arguments c)
-                     (or (invoke-error-exit-status c)
-                         (invoke-error-stop-signal c)
-                         (invoke-error-term-signal c)))
+             (report-invoke-error c)
              (delete-file-recursively directory)
              #f))
     (with-directory-excursion directory

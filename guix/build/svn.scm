@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
@@ -40,13 +40,7 @@
   "Fetch REVISION from URL into DIRECTORY.  REVISION must be an integer, and a
 valid Subversion revision.  Return #t on success, #f otherwise."
   (guard (c ((invoke-error? c)
-             (format (current-error-port)
-                     "svn-fetch: '~a~{ ~a~}' failed with exit code ~a~%"
-                     (invoke-error-program c)
-                     (invoke-error-arguments c)
-                     (or (invoke-error-exit-status c)
-                         (invoke-error-stop-signal c)
-                         (invoke-error-term-signal c)))
+             (report-invoke-error c)
              #f))
     (apply invoke svn-command
            "export" "--non-interactive"
