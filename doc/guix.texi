@@ -15351,6 +15351,9 @@ example:
 This is the configuration record for OpenSSH's @command{sshd}.
 
 @table @asis
+@item @code{openssh} (default @var{openssh})
+The Openssh package to use.
+
 @item @code{pid-file} (default: @code{"/var/run/sshd.pid"})
 Name of the file where @command{sshd} writes its PID.
 
