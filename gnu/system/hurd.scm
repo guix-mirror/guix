@@ -26,8 +26,10 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hurd)
@@ -62,6 +64,7 @@
 
 (define %base-packages/hurd
   (list hurd bash coreutils file findutils grep sed
+        diffutils patch gawk tar gzip bzip2 xz lzip
         guile-3.0-latest guile-colorized guile-readline
         net-base inetutils less shadow shepherd sudo which))
 
