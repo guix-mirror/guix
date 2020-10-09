@@ -474,6 +474,40 @@ the equal sign."
             obj)
         obj)))
 
+(define (transform-package-with-debug-info specs)
+  "Return a procedure that, when passed a package, set its 'replacement' field
+to the same package but with #:strip-binaries? #f in its 'arguments' field."
+  (define (non-stripped p)
+    (package
+      (inherit p)
+      (arguments
+       (substitute-keyword-arguments (package-arguments p)
+         ((#:strip-binaries? _ #f) #f)))))
+
+  (define (package-with-debug-info p)
+    (if (member "debug" (package-outputs p))
+        p
+        (let loop ((p p))
+          (match (package-replacement p)
+            (#f
+             (package
+               (inherit p)
+               (replacement (non-stripped p))))
+            (next
+             (package
+               (inherit p)
+               (replacement (loop next))))))))
+
+  (define rewrite
+    (package-input-rewriting/spec (map (lambda (spec)
+                                         (cons spec package-with-debug-info))
+                                       specs)))
+
+  (lambda (store obj)
+    (if (package? obj)
+        (rewrite obj)
+        obj)))
+
 (define (transform-package-tests specs)
   "Return a procedure that, when passed a package, sets #:tests? #f in its
 'arguments' field."
@@ -505,6 +539,7 @@ the equal sign."
     (with-commit . ,transform-package-source-commit)
     (with-git-url . ,transform-package-source-git-url)
     (with-c-toolchain . ,transform-package-toolchain)
+    (with-debug-info . ,transform-package-with-debug-info)
     (without-tests . ,transform-package-tests)))
 
 (define (transformation-procedure key)
@@ -536,6 +571,8 @@ the equal sign."
                   (parser 'with-git-url))
           (option '("with-c-toolchain") #t #f
                   (parser 'with-c-toolchain))
+          (option '("with-debug-info") #t #f
+                  (parser 'with-debug-info))
           (option '("without-tests") #t #f
                   (parser 'without-tests)))))
 
@@ -561,6 +598,9 @@ the equal sign."
   (display (G_ "
       --with-c-toolchain=PACKAGE=TOOLCHAIN
                          build PACKAGE and its dependents with TOOLCHAIN"))
+  (display (G_ "
+      --with-debug-info=PACKAGE
+                         build PACKAGE and preserve its debug info"))
   (display (G_ "
       --without-tests=PACKAGE
                          build PACKAGE without running its tests")))

@@ -348,6 +348,23 @@
     (with-store store
       (eq? (t store p) p))))
 
+(test-equal "options->transformation, with-debug-info"
+  '(#:strip-binaries? #f)
+  (let* ((dep  (dummy-package "chbouib"))
+         (p    (dummy-package "thingie"
+                 (build-system gnu-build-system)
+                 (inputs `(("foo" ,dep)
+                           ("bar" ,grep)))))
+         (t    (options->transformation
+                '((with-debug-info . "chbouib")))))
+    (with-store store
+      (let ((new (t store p)))
+        (match (package-inputs new)
+          ((("foo" dep0) ("bar" dep1))
+           (and (string=? (package-full-name dep1)
+                          (package-full-name grep))
+                (package-arguments (package-replacement dep0)))))))))
+
 (test-assert "options->transformation, without-tests"
   (let* ((dep (dummy-package "dep"))
          (p   (dummy-package "foo"

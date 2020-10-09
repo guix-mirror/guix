@@ -352,6 +352,11 @@ Defining Services
 * Service Reference::           API reference.
 * Shepherd Services::           A particular type of service.
 
+Installing Debugging Files
+
+* Separate Debug Info::         Installing 'debug' outputs.
+* Rebuilding Debug Info::       Building missing debug info.
+
 Bootstrapping
 
 * Reduced Binary Seed Bootstrap::  A Bootstrap worthy of GNU.
@@ -9883,6 +9888,37 @@ a library, the application binary interface (ABI) of those libraries
 must be compatible.  If @var{replacement} is somehow incompatible with
 @var{package}, then the resulting package may be unusable.  Use with
 care!
+
+@cindex debugging info, rebuilding
+@item --with-debug-info=@var{package}
+Build @var{package} in a way that preserves its debugging info and graft
+it onto packages that depend on it.  This is useful if @var{package}
+does not already provide debugging info as a @code{debug} output
+(@pxref{Installing Debugging Files}).
+
+For example, suppose you're experiencing a crash in Inkscape and would
+like to see what's up in GLib, a library deep down in Inkscape's
+dependency graph.  GLib lacks a @code{debug} output, so debugging is
+tough.  Fortunately, you rebuild GLib with debugging info and tack it on
+Inkscape:
+
+@example
+guix install inkscape --with-debug-info=glib
+@end example
+
+Only GLib needs to be recompiled so this takes a reasonable amount of
+time.  @xref{Installing Debugging Files}, for more info.
+
+@quotation Note
+Under the hood, this option works by passing the @samp{#:strip-binaries?
+#f} to the build system of the package of interest (@pxref{Build
+Systems}).  Most build systems support that option but some do not.  In
+that case, an error is raised.
+
+Likewise, if a C/C++ package is built without @code{-g} (which is rarely
+the case), debugging info will remain unavailable even when
+@code{#:strip-binaries?} is false.
+@end quotation
 
 @cindex tool chain, changing the build tool chain of a package
 @item --with-c-toolchain=@var{package}=@var{toolchain}
@@ -31688,6 +31724,18 @@ typically written in the ELF format, with a section containing
 debugger, GDB, to map binary code to source code; it is required to
 debug a compiled program in good conditions.
 
+This chapter explains how to use separate debug info when packages
+provide it, and how to rebuild packages with debug info when it's
+missing.
+
+@menu
+* Separate Debug Info::         Installing 'debug' outputs.
+* Rebuilding Debug Info::       Building missing debug info.
+@end menu
+
+@node Separate Debug Info
+@section Separate Debug Info
+
 The problem with debugging information is that is takes up a fair amount
 of disk space.  For example, debugging information for the GNU C Library
 weighs in at more than 60 MiB.  Thus, as a user, keeping all the
@@ -31737,12 +31785,75 @@ directory using the @code{directory} command (@pxref{Source Path,
 @c XXX: keep me up-to-date
 The @code{debug} output mechanism in Guix is implemented by the
 @code{gnu-build-system} (@pxref{Build Systems}).  Currently, it is
-opt-in---debugging information is available only for the packages
-with definitions explicitly declaring a @code{debug} output.  This may be
-changed to opt-out in the future if our build farm servers can handle
-the load.  To check whether a package has a @code{debug} output, use
-@command{guix package --list-available} (@pxref{Invoking guix package}).
+opt-in---debugging information is available only for the packages with
+definitions explicitly declaring a @code{debug} output.  To check
+whether a package has a @code{debug} output, use @command{guix package
+--list-available} (@pxref{Invoking guix package}).
 
+Read on for how to deal with packages lacking a @code{debug} output.
+
+@node Rebuilding Debug Info
+@section Rebuilding Debug Info
+
+@cindex debugging info, rebuilding
+As we saw above, some packages, but not all, provide debugging info in a
+@code{debug} output.  What can you do when debugging info is missing?
+The @option{--with-debug-info} option provides a solution to that: it
+allows you to rebuild the package(s) for which debugging info is
+missing---and only those---and to graft those onto the application
+you're debugging.  Thus, while it's not as fast as installing a
+@code{debug} output, it is relatively inexpensive.
+
+Let's illustrate that.  Suppose you're experiencing a bug in Inkscape
+and would like to see what's going on in GLib, a library that's deep
+down in its dependency graph.  As it turns out, GLib does not have a
+@code{debug} output and the backtrace GDB shows is all sadness:
+
+@example
+(gdb) bt
+#0  0x00007ffff5f92190 in g_getenv ()
+   from /gnu/store/@dots{}-glib-2.62.6/lib/libglib-2.0.so.0
+#1  0x00007ffff608a7d6 in gobject_init_ctor ()
+   from /gnu/store/@dots{}-glib-2.62.6/lib/libgobject-2.0.so.0
+#2  0x00007ffff7fe275a in call_init (l=<optimized out>, argc=argc@@entry=1, argv=argv@@entry=0x7fffffffcfd8, 
+    env=env@@entry=0x7fffffffcfe8) at dl-init.c:72
+#3  0x00007ffff7fe2866 in call_init (env=0x7fffffffcfe8, argv=0x7fffffffcfd8, argc=1, l=<optimized out>)
+    at dl-init.c:118
+@end example
+
+To address that, you install Inkscape linked against a variant GLib that
+contains debug info:
+
+@example
+guix install inkscape --with-debug-info=glib
+@end example
+
+This time, debugging will be a whole lot nicer:
+
+@example
+$ gdb --args sh -c 'exec inkscape'
+@dots{}
+(gdb) b g_getenv
+Function "g_getenv" not defined.
+Make breakpoint pending on future shared library load? (y or [n]) y
+Breakpoint 1 (g_getenv) pending.
+(gdb) r
+Starting program: /gnu/store/@dots{}-profile/bin/sh -c exec\ inkscape
+@dots{}
+(gdb) bt
+#0  g_getenv (variable=variable@@entry=0x7ffff60c7a2e "GOBJECT_DEBUG") at ../glib-2.62.6/glib/genviron.c:252
+#1  0x00007ffff608a7d6 in gobject_init () at ../glib-2.62.6/gobject/gtype.c:4380
+#2  gobject_init_ctor () at ../glib-2.62.6/gobject/gtype.c:4493
+#3  0x00007ffff7fe275a in call_init (l=<optimized out>, argc=argc@@entry=3, argv=argv@@entry=0x7fffffffd088, 
+    env=env@@entry=0x7fffffffd0a8) at dl-init.c:72
+@dots{}
+@end example
+
+Much better!
+
+Note that there can be packages for which @option{--with-debug-info}
+will not have the desired effect.  @xref{Package Transformation Options,
+@option{--with-debug-info}}, for more information.
 
 @node Security Updates
 @chapter Security Updates
