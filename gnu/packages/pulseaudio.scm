@@ -118,7 +118,7 @@ for reading and writing new sound file formats.")
                                  "/libsndfile-" version ".tar.bz2"))
              (sha256
               (base32
-               "0gsbg8ni496h55mx2p9999fk0xvbsjyz6v678a0l75b5fqs8d2gc"))
+               "06k1wj3lwm7vf21s8yqy51k6nrkn9z610bj1gxb618ag5hq77wlx"))
              (modules '((ice-9 textual-ports) (guix build utils)))
              (snippet
               '(begin
