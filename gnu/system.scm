@@ -634,6 +634,8 @@ bookkeeping."
                            (operating-system-file-systems os)))
           (pam-root-service (operating-system-pam-services os))
           (operating-system-etc-service os)
+          (service setuid-program-service-type
+                   (operating-system-setuid-programs os))
           (service profile-service-type (operating-system-packages os)))))
 
 (define* (operating-system-services os)
