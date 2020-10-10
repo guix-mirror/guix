@@ -6055,6 +6055,61 @@ memoizing PEG/Packrat parser in Python.")
 (define-public python2-grako
   (package-with-python2 python-grako))
 
+(define-public python-grandalf
+  (package
+    (name "python-grandalf")
+    (version "0.7")
+    (source
+     (origin
+       ;; There's no source tarball on PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bdcht/grandalf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03p8w8ljpb87qbyldm3s6b7qi30hfcn43h33iwlgqcf31fjsyr4g"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "setup.py" "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-ply" ,python-ply)))
+    (home-page "https://github.com/bdcht/grandalf")
+    (synopsis "Graph and drawing algorithms framework")
+    (description
+     "Grandalf is a Python package made for experimentations with graphs
+drawing algorithms.  It is written in pure Python, and currently implements
+two layouts: the Sugiyama hierarchical layout and the force-driven or energy
+minimization approach.  While not as fast or featured as graphviz or other
+libraries like OGDF (C++), it provides a way to walk and draw graphs no larger
+than thousands of nodes, while keeping the source code simple enough to tweak
+and hack any part of it for experimental purpose.  With a total of about 1500
+lines of Python, the code involved in drawing the Sugiyama (dot) layout fits
+in less than 600 lines.  The energy minimization approach is comprised of only
+250 lines!
+
+Grandalf does only 2 not-so-simple things:
+@itemize
+@item computing the nodes (x,y) coordinates (based on provided nodes
+dimensions, and a chosen layout)
+@item routing the edges with lines or nurbs
+@end itemize
+
+It doesn’t depend on any GTK/Qt/whatever graphics toolkit.  This means that it
+will help you find where to draw things like nodes and edges, but it’s up to
+you to actually draw things with your favorite toolkit.")
+    ;; The user can choose either license.
+    (license (list license:gpl2 license:epl1.0))))
+
 (define-public python-gridmap
   (package
     (name "python-gridmap")
