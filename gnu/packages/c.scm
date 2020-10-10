@@ -584,3 +584,30 @@ portability.")
 with fallback to efficient C99 software implementations.")
     (home-page "https://github.com/awslabs/aws-checksums")
     (license license:asl2.0)))
+
+(define-public aws-c-event-stream
+  (package
+    (name "aws-c-event-stream")
+    (version "0.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vl9ainc4klv0g9gk1iv4833bsllni6jxn6mwb0fnv2dnlz7zv9q"))
+              (patches (search-patches "aws-c-event-stream-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("aws-c-common" ,aws-c-common)))
+    (inputs
+     `(("aws-checksums" ,aws-checksums)))
+    (synopsis "Amazon Web Services client-server message format library")
+    (description
+     "This library is a C99 implementation for @acronym{AWS,Amazon Web Services}
+event stream encoding, a binary format for bidirectional client-server
+communication.")
+    (home-page "https://github.com/awslabs/aws-c-event-stream")
+    (license license:asl2.0)))
