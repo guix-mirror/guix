@@ -692,8 +692,7 @@ standard GNU style syntax for options.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q4w4cvjxffc462hvs8h4zryq4965j7015zvkwagcm6cj6wmz3cn"))
-              (patches (search-patches "folly-add-missing-include.patch"))))
+                "0q4w4cvjxffc462hvs8h4zryq4965j7015zvkwagcm6cj6wmz3cn"))))
     (build-system cmake-build-system)
     (arguments
      '(;; Tests must be explicitly enabled
