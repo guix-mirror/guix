@@ -3011,7 +3011,16 @@ be used for realtime video capture via Linux-specific APIs.")
     (arguments
      `(#:configure-flags
        (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version)
-             "-DENABLE_UNIT_TESTS=TRUE")))
+             "-DENABLE_UNIT_TESTS=TRUE")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (plugin-path (getenv "QT_PLUGIN_PATH")))
+               (wrap-program (string-append out "/bin/obs")
+                 `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
+             #t)))))
     (native-inputs
      `(("cmocka" ,cmocka)
        ("pkg-config" ,pkg-config)))
