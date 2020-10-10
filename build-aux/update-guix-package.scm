@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,13 +25,20 @@
 ;;; Code:
 
 (use-modules (guix)
+             (guix ui)
              (guix git-download)
              (guix upstream)
              (guix utils)
              (guix base32)
              (guix build utils)
+             (guix scripts hash)
              (gnu packages package-management)
-             (ice-9 match))
+             (ice-9 match)
+             (ice-9 popen)
+             (ice-9 textual-ports)
+             (srfi srfi-1)
+             (srfi srfi-2)
+             (srfi srfi-26))
 
 (define %top-srcdir
   (string-append (current-source-directory) "/.."))
@@ -101,44 +109,74 @@ COMMIT."
       (exp
        (error "'guix' package definition is not as expected" exp)))))
 
+(define (git-add-worktree directory commit)
+  "Create a new git worktree at DIRECTORY, detached on commit COMMIT."
+  (invoke "git" "worktree" "add" "--detach" directory commit))
+
+(define-syntax-rule (with-temporary-git-worktree commit body ...)
+  "Execute BODY in the context of a temporary git worktree created from COMMIT."
+  (call-with-temporary-directory
+   (lambda (tmp-directory)
+     (dynamic-wind
+       (lambda ()
+         #t)
+       (lambda ()
+         (git-add-worktree tmp-directory commit)
+         (with-directory-excursion tmp-directory body ...))
+       (lambda ()
+         (invoke "git" "worktree" "remove" "--force" tmp-directory))))))
+
+(define %savannah-guix-git-repo-push-url
+  "git.savannah.gnu.org/srv/git/guix.git")
+
+(define-syntax-rule (with-input-pipe-to-string prog arg ...)
+  (let* ((input-pipe (open-pipe* OPEN_READ prog arg ...))
+	 (output (get-string-all input-pipe))
+	 (exit-val (status:exit-val (close-pipe input-pipe))))
+    (unless (zero? exit-val)
+      (error (format #f "Command ~s exited with non-zero exit status: ~s"
+                     (string-join (list prog arg ...)) exit-val)))
+    (string-trim-both output)))
+
+(define (find-origin-remote)
+  "Find the name of the git remote with the Savannah Guix git repo URL."
+  (and-let* ((remotes (string-split (with-input-pipe-to-string
+                                     "git" "remote" "-v")
+                                    #\newline))
+             (origin-entry (find (cut string-contains <>
+                                      (string-append
+                                       %savannah-guix-git-repo-push-url
+                                       " (push)"))
+                                 remotes)))
+    (first (string-split origin-entry #\tab))))
+
+(define (commit-already-pushed? remote commit)
+  "True if COMMIT is found in the REMOTE repository."
+  (not (string-null? (with-input-pipe-to-string
+                      "git" "branch" "-r" "--contains" commit
+                      (string-append remote "/master")))))
+
 
 (define (main . args)
   (match args
     ((commit version)
-     (with-store store
-       (let* ((source   (add-to-store store
-                                      "guix-checkout" ;dummy name
-                                      #t "sha256" %top-srcdir
-                                      #:select? version-controlled?))
-              (hash     (query-path-hash store source))
+     (with-directory-excursion %top-srcdir
+       (or (getenv "GUIX_ALLOW_ME_TO_USE_PRIVATE_COMMIT")
+           (commit-already-pushed? (find-origin-remote) commit)
+           (leave (G_ "Commit ~a is not pushed upstream.  Aborting.~%") commit))
+       (let* ((hash (with-temporary-git-worktree commit
+                        (nix-base32-string->bytevector
+                         (string-trim-both
+                          (with-output-to-string
+		            (lambda ()
+		              (guix-hash "-rx" ".")))))))
               (location (package-definition-location))
               (old-hash (content-hash-value
-                          (origin-hash (package-source guix)))))
+                         (origin-hash (package-source guix)))))
          (edit-expression location
                           (update-definition commit hash
                                              #:old-hash old-hash
-                                             #:version version))
-
-         ;; Re-add SOURCE to the store, but this time under the real name used
-         ;; in the 'origin'.  This allows us to build the package without
-         ;; having to make a real checkout; thus, it also works when working
-         ;; on a private branch.
-         (reload-module
-          (resolve-module '(gnu packages package-management)))
-
-         (let* ((source (add-to-store store
-                                      (origin-file-name (package-source guix))
-                                      #t "sha256" source))
-                (root   (store-path-package-name source)))
-
-           ;; Add an indirect GC root for SOURCE in the current directory.
-           (false-if-exception (delete-file root))
-           (symlink source root)
-           (add-indirect-root store
-                              (string-append (getcwd) "/" root))
-
-           (format #t "source code for commit ~a: ~a (GC root: ~a)~%"
-                   commit source root)))))
+                                             #:version version)))))
     ((commit)
      ;; Automatically deduce the version and revision numbers.
      (main commit #f))))
