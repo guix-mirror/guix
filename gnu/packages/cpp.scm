@@ -43,10 +43,12 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunwind)
@@ -730,6 +732,42 @@ of C++14 components that complements @code{std} and Boost.")
     (home-page "https://github.com/facebook/folly/wiki")
     ;; 32-bit is not supported: https://github.com/facebook/folly/issues/103
     (supported-systems '("aarch64-linux" "x86_64-linux"))
+    (license license:asl2.0)))
+
+(define-public aws-sdk-cpp
+  (package
+    (name "aws-sdk-cpp")
+    (version "1.8.102")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aws/aws-sdk-cpp")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1w8x2vakg5ngjyyg08n4g3dqy8wqnz0k3gkrlqrh460s2pvdivba"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(;; Tests are run during the build phase.
+       #:tests? #f
+       #:configure-flags
+       '("-DBUILD_SHARED_LIBS=OFF"
+         "-DBUILD_DEPS=OFF")))
+    (propagated-inputs
+     `(("aws-c-common" ,aws-c-common)
+       ("aws-c-event-stream" ,aws-c-event-stream)))
+    (inputs
+     `(("aws-checksums" ,aws-checksums)
+       ("curl" ,curl)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (synopsis "Amazon Web Services SDK for C++")
+    (description
+     "The AWS SDK for C++ provides a C++11 interface to the @acronym{AWS,Amazon
+Web Services} API.  AWS provides on-demand computing infrastructure and software
+services including database, analytic, and machine learning technologies.")
+    (home-page "https://github.com/aws/aws-sdk-cpp")
     (license license:asl2.0)))
 
 (define-public libexpected
