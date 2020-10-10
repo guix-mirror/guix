@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Dale Mellor <guix-devel-0brg6b@rdmp.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,7 +76,7 @@
      `(("nghttp2" ,nghttp2)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+       ("python" ,python-minimal-wrapper)))
    (native-search-paths
     ;; These variables are introduced by curl-use-ssl-cert-env.patch.
     (list (search-path-specification
