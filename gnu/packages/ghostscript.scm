@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -266,7 +267,7 @@ printing, and psresize, for adjusting page sizes.")
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)       ;needed for freetype
-       ("python" ,python-wrapper)
+       ("python" ,python-minimal-wrapper)
        ("tcl" ,tcl)
 
        ;; When cross-compiling, some of the natively-built tools require all
