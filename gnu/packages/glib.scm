@@ -14,6 +14,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -209,7 +210,7 @@ shared NFS home directories.")
       ("m4" ,m4) ; for installing m4 macros
       ("dbus" ,dbus)                              ; for GDBus tests
       ("pkg-config" ,pkg-config)
-      ("python" ,python-wrapper)
+      ("python" ,python-minimal-wrapper)
       ("perl" ,perl)                              ; needed by GIO tests
       ("tzdata" ,tzdata-for-tests)))                  ; for tests/gdatetime.c
    (arguments
