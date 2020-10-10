@@ -1716,14 +1716,14 @@ from the Python interpreter, or as a small part of a larger application.")
 (define-public python-six
   (package
     (name "python-six")
-    (version "1.14.0")
+    (version "1.15.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "six" version))
       (sha256
        (base32
-        "02lw67hprv57hyg3cfy02y3ixjk3nzwc0dx3c4ynlvkfwkfdnsr3"))))
+        "0n82108wxn5giff50hd9ykjhd3zl7cndabdasi6568yvbh1rqqrh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
