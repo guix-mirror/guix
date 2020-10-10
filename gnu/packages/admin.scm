@@ -530,7 +530,7 @@ or via the @code{facter} Ruby library.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("python" ,python-wrapper)))     ; for scripts/MakeHeader.py
+       ("python" ,python-minimal-wrapper)))     ; for scripts/MakeHeader.py
     (home-page "https://htop.dev")
     (synopsis "Interactive process viewer")
     (description
