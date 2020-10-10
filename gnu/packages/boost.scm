@@ -14,6 +14,7 @@
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,7 +77,7 @@
      `(("perl" ,perl)
        ,@(if (%current-target-system)
              '()
-             `(("python" ,python-wrapper)))
+             `(("python" ,python-minimal-wrapper)))
        ("tcsh" ,tcsh)))
     (arguments
      `(#:imported-modules ((guix build python-build-system)
