@@ -37,6 +37,7 @@
 # Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 # Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 # Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+# Copyright © 2020 Malte Frank Gerdes <mate.f.gerdes@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -1393,7 +1394,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
-  %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssh-hurd.patch			\
   %D%/packages/patches/openresolv-restartcmd-guix.patch	\
   %D%/packages/patches/openscad-parser-boost-1.72.patch	\
