@@ -26,6 +26,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -691,7 +692,7 @@ arithmetic ops.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
-       ("python" ,python-wrapper)))     ;for tests
+       ("python" ,python-minimal-wrapper)))     ;for tests
     (synopsis "Decoder of the JBIG2 image compression format")
     (description
       "JBIG2 is designed for lossy or lossless encoding of @code{bilevel} (1-bit
