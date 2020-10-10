@@ -4076,3 +4076,44 @@ the system configuration; hosts only works when using the Guix package manager
 on a foreign distro.  @command{hosts} works with existing hosts files and
 entries, providing commands to add, remove, comment, and search.")
     (license license:expat)))
+
+(define-public nmrpflash
+  (package
+    (name "nmrpflash")
+    (version "0.9.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/jclehner/nmrpflash.git")
+         (commit (string-append "v" version))))
+       (sha256
+        (base32 "1fdjrxhjs96rdclbkld57xarf592slhkp79h46z833npxpn12ck1"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libnl" ,libnl)
+       ("libpcap" ,libpcap)))
+    (arguments
+     `(#:tests? #f ; None exist
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'prepare-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (home-page "https://github.com/jclehner/nmrpflash")
+    (synopsis "Netgear unbrick utility")
+    (description "This package provides a utility to flash a new firmware
+image to a Netgear device.  It has been tested on Netgear EX2700, EX6120,
+EX6150v2, DNG3700v2, R6100, R6220, R7000, D7000, WNR3500, R6400, R6800,
+R8000, R8500, WNDR3800, but is likely to be compatible with many other
+Netgear devices.")
+    (license license:gpl3+)))
