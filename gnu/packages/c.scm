@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Greg Hogan <code@greghogan.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages bootstrap)
@@ -536,3 +538,24 @@ avoiding distractions when studying code that uses @code{#ifdef} heavily for
 portability.")
     (license (list license:bsd-2        ;all files except...
                    license:bsd-3))))    ;...the unidef.1 manual page
+
+(define-public aws-c-common
+  (package
+    (name "aws-c-common")
+    (version "0.4.63")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "16bc6fn1gq3nqcrzgpi2kjphq7xkkr73aljakrg89ysm6hyzyim9"))))
+    (build-system cmake-build-system)
+    (synopsis "Amazon Web Services core C library")
+    (description
+     "This library provides common C99 primitives, configuration, data
+ structures, and error handling for the @acronym{AWS,Amazon Web Services} SDK.")
+    (home-page "https://github.com/awslabs/aws-c-common")
+    (license license:asl2.0)))
