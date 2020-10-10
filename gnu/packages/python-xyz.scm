@@ -22067,6 +22067,42 @@ dates in almost any string formats commonly found on web pages.")
     (description "This package provides a parser for Python dependency files.")
     (license license:expat)))
 
+(define-public python-dpath
+  (package
+    (name "python-dpath")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dpath" version))
+       (sha256
+        (base32
+         "1ymi9ssk7i0mx3mviplf4csfvzibdd6wyj4qzj6s487n9xgnp85y"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             ;; This invokation is taken from tox.ini.
+             (invoke "nosetests" "-d" "-v" "tests/"))))))
+    (home-page "https://github.com/akesterson/dpath-python")
+    (synopsis "Filesystem-like pathing and searching for dictionaries")
+    (description
+     "@code{python-dpath} is a library for accessing and searching
+dictionaries via /slashed/paths ala xpath.
+
+Basically it lets you glob over a dictionary as if it were a filesystem.  It
+allows you to specify globs (ala the bash eglob syntax, through some advanced
+fnmatch.fnmatch magic) to access dictionary elements, and provides some
+facility for filtering those results.")
+    (license license:expat)))
+
 (define-public python-safety
   (package
     (name "python-safety")
