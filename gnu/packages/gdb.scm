@@ -116,7 +116,13 @@
       `(("texinfo" ,texinfo)
         ("dejagnu" ,dejagnu)
         ("pkg-config" ,pkg-config)
-        ,@(if (hurd-target?) `(("mig" ,mig)) '())))
+        ,@(if (hurd-target?)
+              ;; When cross-compiling from x86_64-linux, make sure to use a
+              ;; 32-bit MiG because we assume target i586-pc-gnu.
+              `(("mig" ,(if (%current-target-system)
+                            mig/32-bit
+                            mig)))
+              '())))
     (home-page "https://www.gnu.org/software/gdb/")
     (synopsis "The GNU debugger")
     (description
