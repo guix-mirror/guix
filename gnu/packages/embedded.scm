@@ -458,35 +458,31 @@ languages are C and C++.")
      ,@(package-arguments gdb)))))
 
 (define-public libjaylink
-  ;; No release tarballs available.
-  (let ((commit "699b7001d34a79c8e7064503dde1bede786fd7f0")
-        (revision "2"))
-    (package
-      (name "libjaylink")
-      (version (string-append "0.1.0-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.zapb.de/libjaylink.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "034872d44myycnzn67v5b8ixrgmg8sk32aqalvm5x7108w2byww1"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("libusb" ,libusb)))
-      (home-page "https://repo.or.cz/w/libjaylink.git")
-      (synopsis "Library to interface Segger J-Link devices")
-      (description "libjaylink is a shared library written in C to access
+  (package
+    (name "libjaylink")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://repo.or.cz/libjaylink.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ndyfh51hiqyv2yscpj6qd091w7myxxjid3a6rx8f6k233vy826q"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)))
+    (home-page "https://repo.or.cz/w/libjaylink.git")
+    (synopsis "Library to interface Segger J-Link devices")
+    (description "libjaylink is a shared library written in C to access
 SEGGER J-Link and compatible devices.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public jimtcl
   (package
