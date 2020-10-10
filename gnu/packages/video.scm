@@ -1833,6 +1833,8 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("sdl-image" ,sdl-image)
        ("speex" ,speex)
        ("speexdsp" ,speexdsp)
+       ;; VLC is not yet compatible with SRT > 1.4.1.
+       ("srt" ,srt-1.4.1)
        ("taglib" ,taglib)
        ("twolame" ,twolame)
        ("unzip" ,unzip)
