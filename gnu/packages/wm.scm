@@ -1597,7 +1597,11 @@ compositors that support the layer-shell protocol.")
         (base32 "1ha8803ll7472kqxsy2xz0v5d4sv8apmc9z631d67m31q0z1m9rz"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("fiasco" ,sbcl-fiasco)
-                     ("texinfo" ,texinfo)))
+                     ("texinfo" ,texinfo)
+
+                     ;; To build the manual.
+                     ("autoconf" ,autoconf)
+                     ("automake" ,automake)))
     (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
               ("clx" ,sbcl-clx)
               ("alexandria" ,sbcl-alexandria)))
@@ -1631,13 +1635,12 @@ compositors that support the layer-shell protocol.")
                     out)))
                #t)))
          (add-after 'install 'install-manual
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; The proper way to the manual is bootstrapping a full autotools
-             ;; build system and running ‘./configure && make stumpwm.info’ to
-             ;; do some macro substitution.  We can get away with much less.
+           (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     (info (string-append out "/share/info")))
-               (invoke "makeinfo" "stumpwm.texi.in")
+               (invoke "./autogen.sh")
+               (invoke "sh" "./configure" "SHELL=sh")
+               (apply invoke "make" "stumpwm.info" make-flags)
                (install-file "stumpwm.info" info)
                #t))))))
     (synopsis "Window manager written in Common Lisp")
