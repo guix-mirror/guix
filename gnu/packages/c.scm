@@ -36,6 +36,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
@@ -558,4 +559,28 @@ portability.")
      "This library provides common C99 primitives, configuration, data
  structures, and error handling for the @acronym{AWS,Amazon Web Services} SDK.")
     (home-page "https://github.com/awslabs/aws-c-common")
+    (license license:asl2.0)))
+
+(define-public aws-checksums
+  (package
+    (name "aws-checksums")
+    (version "0.1.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/awslabs/" name))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1f9scl5734pgjlsixspwljrrlndzhllwlfygdcr1gx5p0za08zjb"))
+              (patches (search-patches "aws-checksums-cmake-prefix.patch"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("aws-c-common" ,aws-c-common)))
+    (synopsis "Amazon Web Services checksum library")
+    (description
+     "This library provides cross-Platform hardware accelerated CRC32c and CRC32
+with fallback to efficient C99 software implementations.")
+    (home-page "https://github.com/awslabs/aws-checksums")
     (license license:asl2.0)))
