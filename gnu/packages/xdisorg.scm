@@ -987,7 +987,8 @@ compact configuration syntax.")
      ;; This sets the destination when installing the necessary terminal
      ;; capability data, which are not provided by 'ncurses'.  See
      ;; https://lists.gnu.org/archive/html/bug-ncurses/2009-10/msg00031.html
-     `(#:make-flags (list (string-append "TERMINFO="
+     `(#:configure-flags (list "--enable-256-color")
+       #:make-flags (list (string-append "TERMINFO="
                                          (assoc-ref %outputs "out")
                                          "/share/terminfo"))
        #:phases
