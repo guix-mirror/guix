@@ -1455,6 +1455,8 @@ operate properly.")
        ("sdl" ,sdl2)
        ("soxr" ,soxr)
        ("speex" ,speex)
+       ;; FFmpeg is not yet compatible with SRT > 1.4.1.
+       ("srt" ,srt-1.4.1)
        ("twolame" ,twolame)
        ("vidstab" ,vidstab)
        ("x265" ,x265)
@@ -1539,6 +1541,7 @@ operate properly.")
                '())
          "--enable-libsoxr"
          "--enable-libspeex"
+         "--enable-libsrt"
          "--enable-libtheora"
          "--enable-libtwolame"
          "--enable-libvidstab"
