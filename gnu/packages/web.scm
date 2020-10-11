@@ -254,31 +254,32 @@ Interface} specification.")
              #t))
          (replace 'configure
            ;; The configure script is hand-written, not from GNU autotools.
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key configure-flags outputs #:allow-other-keys)
              (let ((flags
-                    (list (string-append "--prefix=" (assoc-ref outputs "out"))
-                          "--with-http_ssl_module"
-                          "--with-http_v2_module"
-                          "--with-pcre-jit"
-                          "--with-debug"
-                          ;; Even when not cross-building, we pass the
-                          ;; --crossbuild option to avoid customizing for the
-                          ;; kernel version on the build machine.
-                          ,(let ((system "Linux")    ; uname -s
-                                 (release "3.2.0")   ; uname -r
-                                 ;; uname -m
-                                 (machine (match (or (%current-target-system)
-                                                     (%current-system))
-                                            ("x86_64-linux"   "x86_64")
-                                            ("i686-linux"     "i686")
-                                            ("mips64el-linux" "mips64")
-                                            ;; Prevent errors when querying
-                                            ;; this package on unsupported
-                                            ;; platforms, e.g. when running
-                                            ;; "guix package --search="
-                                            (_                "UNSUPPORTED"))))
-                             (string-append "--crossbuild="
-                                            system ":" release ":" machine)))))
+                    (append (list (string-append "--prefix=" (assoc-ref outputs "out"))
+                                  "--with-http_ssl_module"
+                                  "--with-http_v2_module"
+                                  "--with-pcre-jit"
+                                  "--with-debug"
+                                  ;; Even when not cross-building, we pass the
+                                  ;; --crossbuild option to avoid customizing for the
+                                  ;; kernel version on the build machine.
+                                  ,(let ((system "Linux")    ; uname -s
+                                         (release "3.2.0")   ; uname -r
+                                         ;; uname -m
+                                         (machine (match (or (%current-target-system)
+                                                             (%current-system))
+                                                    ("x86_64-linux"   "x86_64")
+                                                    ("i686-linux"     "i686")
+                                                    ("mips64el-linux" "mips64")
+                                                    ;; Prevent errors when querying
+                                                    ;; this package on unsupported
+                                                    ;; platforms, e.g. when running
+                                                    ;; "guix package --search="
+                                                    (_                "UNSUPPORTED"))))
+                                     (string-append "--crossbuild="
+                                                    system ":" release ":" machine)))
+                            configure-flags)))
                (setenv "CC" "gcc")
                (format #t "configure flags: ~s~%" flags)
                (apply invoke "./configure" flags)
