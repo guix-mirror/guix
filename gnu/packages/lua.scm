@@ -952,3 +952,43 @@ on numbers.")
     (description
      "This package provides Lua LRU cache based on the LuaJIT FFI.")
     (license license:bsd-2)))
+
+(define-public lua-resty-signal
+  (package
+    (name "lua-resty-signal")
+    (version "0.02")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-resty-signal")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13y1pqn45y49mhqwywasfdsid46d0c33yi6mrnracbnmvyxz1cif"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;TODO: Run the test suite.
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'install-lua
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (use-modules (guix build utils))
+             (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                    (package-lua-resty (lambda (input output)
+                                         (mkdir-p (string-append output "/lib/lua/" luajit-major+minor))
+                                         (copy-recursively (string-append input "/lib/resty")
+                                                           (string-append output "/lib/lua/" luajit-major+minor  "/resty"))
+                                         (symlink (string-append output "/lib/lua/" luajit-major+minor "/resty")
+                                                  (string-append output "/lib/resty")))))
+               (package-lua-resty (assoc-ref inputs "source")
+                                  (assoc-ref outputs "out")))
+             #t)))))
+    (home-page "https://github.com/openresty/lua-resty-signal")
+    (synopsis "Lua library for killing or sending signals to Linux processes")
+    (description "This package provides Lua library for killing or sending
+signals to Linux processes.")
+    (license license:bsd-3)))
