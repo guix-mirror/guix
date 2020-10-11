@@ -1024,3 +1024,38 @@ signals to Linux processes.")
     (synopsis "Lua table recycling pools for LuaJIT")
     (description "This package provides Lua table recycling pools for LuaJIT.")
     (license license:bsd-2)))
+
+(define-public lua-resty-shell
+  (package
+    (name "lua-resty-shell")
+    (version "0.03")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-resty-shell")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1s6g04ip4hr97r2pd8ry3alq063604s9a3l0hn9nsidh81ps4dp7"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                (package-lua-resty (lambda (input output)
+                                     (mkdir-p (string-append output "/lib/lua/" luajit-major+minor))
+                                     (copy-recursively (string-append input "/lib/resty")
+                                                       (string-append output "/lib/lua/" luajit-major+minor  "/resty"))
+                                     (symlink (string-append output "/lib/lua/" luajit-major+minor "/resty")
+                                              (string-append output "/lib/resty")))))
+           (package-lua-resty (assoc-ref %build-inputs "source")
+                              (assoc-ref %outputs "out")))
+         #t)))
+    (home-page "https://github.com/openresty/lua-resty-shell")
+    (synopsis "Lua module for nonblocking system shell command executions")
+    (description "This package provides Lua module for nonblocking system
+shell command executions.")
+    (license license:bsd-3)))
