@@ -4021,7 +4021,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.30")
+    (version "2.31")
     (source
       (origin
         (method url-fetch)
@@ -4031,7 +4031,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "1m4pnzlcdl6d1p7hdccpi0605zkikind00kjc5bx4gk3gd7m4nh9"))))
+            "18xddaxh83zm698syh50w983jg6b7b8zgv0dfaf7ha485hgihi6s"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
