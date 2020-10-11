@@ -372,7 +372,7 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "243.4")
+    (version "243.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -381,7 +381,7 @@ the freedesktop.org XDG Base Directory specification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "141frvgyk4fafcxsix94qc0d9ffrwksld8lqq4hq6xsgjlvv0mrs"))))
+                "1ccj3cbs9nsfg497wg195in1a7b9csm1jdm7z6q7vvx1ynpjxlxz"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -419,14 +419,6 @@ the freedesktop.org XDG Base Directory specification.")
              (substitute* "meson.build"
                (("join_paths\\(bindir, 'pkttyagent'\\)")
                 "'\"/run/current-system/profile/bin/pkttyagent\"'"))
-             #t))
-         (add-after 'unpack 'adjust-dbus-socket-address
-           (lambda _
-             ;; Look for the D-Bus socket in /var/run instead of /run.  Remove
-             ;; this for versions > 243.4.
-             (substitute* "src/libelogind/sd-bus/bus-internal.h"
-               (("=/run/dbus/system_bus_socket")
-                "=/var/run/dbus/system_bus_socket"))
              #t))
          (add-after 'unpack 'adjust-tests
            (lambda _
