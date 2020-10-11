@@ -917,3 +917,38 @@ on numbers.")
     (description "This package provides a FFI-based Lua API for
 @code{ngx_http_lua_module} or @code{ngx_stream_lua_module}.")
     (license license:bsd-2)))
+
+(define-public lua-resty-lrucache
+  (package
+    (name "lua-resty-lrucache")
+    (version "0.09")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-resty-lrucache")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1mwiy55qs8bija1kpgizmqgk15ijizzv4sa1giaz9qlqs2kqd7q2"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                (package-lua-resty (lambda (input output)
+                                     (mkdir-p (string-append output "/lib/lua/" luajit-major+minor))
+                                     (copy-recursively (string-append input "/lib/resty")
+                                                       (string-append output "/lib/lua/" luajit-major+minor  "/resty"))
+                                     (symlink (string-append output "/lib/lua/" luajit-major+minor "/resty")
+                                              (string-append output "/lib/resty")))))
+           (package-lua-resty (assoc-ref %build-inputs "source")
+                              (assoc-ref %outputs "out")))
+         #t)))
+    (home-page "https://github.com/openresty/lua-resty-lrucache")
+    (synopsis "Lua LRU cache based on the LuaJIT FFI")
+    (description
+     "This package provides Lua LRU cache based on the LuaJIT FFI.")
+    (license license:bsd-2)))
