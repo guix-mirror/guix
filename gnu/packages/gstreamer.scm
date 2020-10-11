@@ -33,6 +33,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
@@ -42,7 +43,6 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
@@ -394,6 +394,58 @@ arrays of data.")
     ;; under the 3-clause BSD license, the rest is under 2-clause BSD license.
     (license (list license:bsd-2 license:bsd-3))))
 
+(define-public gstreamer-docs
+  (package
+    (name "gstreamer-docs")
+    (version "1.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://gstreamer.freedesktop.org/src/gstreamer-docs"
+                    "/gstreamer-docs-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0x6ix6dj3ndc1y133xidb21a4bamdfjh88mxxxld05d78wd1ayda"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules ((guix build utils)))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (tar (assoc-ref %build-inputs "tar"))
+                (xz (assoc-ref %build-inputs "xz"))
+                (out (assoc-ref %outputs "out"))
+                (books (string-append out "/share/devhelp/books")))
+           (setenv "PATH" (string-append xz "/bin"))
+           (mkdir-p books)
+           (with-directory-excursion books
+             (invoke (string-append tar "/bin/tar") "-xvf" source
+                     "--strip-components=3"
+                     (string-append ,name "-" ,version
+                                    "/devhelp/books/GStreamer")))
+           #t))))
+    (native-inputs
+     `(("tar" ,tar)
+       ("xz" ,xz)))
+    (home-page "https://gstreamer.freedesktop.org/")
+    (synopsis "Developer documentation for GStreamer")
+    (description
+     "This package contains manuals, tutorials, and API reference for
+the GStreamer multimedia framework.")
+    ;; The documentation is covered by multiple licenses.  Anything not
+    ;; explicitly mentioned below is LGPL2.1+.  See README.md for details.
+    (license (list
+              ;; The tutorial code can be used with either of these licenses,
+              ;; at the users option.
+              license:lgpl2.1+ license:bsd-2 license:expat
+              ;; The developer manual and plugin writer guide carries
+              ;; the Open Publication License v1.0.
+              (license:fsf-free "https://opencontent.org/openpub/"
+                                "The Open Publication License v1.0")
+              ;; Tutorials are covered by CC-BY-SA 4.0.
+              license:cc-by-sa4.0))))
+
 ;; Increase the test timeouts to accommodate slow or busy machines.
 (define %common-gstreamer-phases
   '((add-after 'unpack 'increase-test-timeout
@@ -408,7 +460,7 @@ arrays of data.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.16.2")
+    (version "1.18.0")
     (source
      (origin
       (method url-fetch)
@@ -417,9 +469,8 @@ arrays of data.")
             version ".tar.xz"))
       (sha256
        (base32
-        "0kp93622y29pck8asvil1fmzf55s2gx76wv475a6izc3cwj49w73"))))
+        "01bq1k0gj603zyhq975zl09q4zla12mxqvhmk9fyn2kcn12r5w0g"))))
     (build-system meson-build-system)
-    (outputs '("out" "doc"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -437,23 +488,13 @@ arrays of data.")
                        (("tcase_add_test \\(tc_chain, test_stress_reschedule.*")
                       ""))
                      #t)))
-               '())
-         (add-after 'install 'move-docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               (mkdir-p (string-append doc "/share"))
-               (copy-recursively (string-append out "/share/gtk-doc")
-                                 (string-append doc "/share/gtk-doc"))
-               (delete-file-recursively (string-append out "/share/gtk-doc"))
-               #t))))))
+               '()))))
     (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
@@ -479,7 +520,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.16.2")
+    (version "1.18.0")
     (source
      (origin
       (method url-fetch)
@@ -487,7 +528,7 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0sl1hxlyq46r02k7z70v09vx1gi4rcypqmzra9jid93lzvi76gmi"))))
+        "15vqvcy842vhbic3w7l4yvannzazdgwggzv2x8f9m02hm78vsakn"))))
     (build-system meson-build-system)
     (propagated-inputs
      `(("glib" ,glib)              ;required by gstreamer-sdp-1.0.pc
@@ -522,10 +563,7 @@ This package provides the core library and elements.")
         ("gobject-introspection" ,gobject-introspection)
         ("python-wrapper" ,python-wrapper)))
     (arguments
-     `(#:configure-flags '("-Dgl=disabled"
-                           ;; FIXME: Documentation fails to build without
-                           ;; enabling GL above, which causes other problems.
-                           "-Ddoc=false")
+     `(#:configure-flags '("-Dgl=disabled")
        #:phases
        (modify-phases %standard-phases
          ,@%common-gstreamer-phases
@@ -544,7 +582,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.16.2")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
@@ -553,22 +591,13 @@ for the GStreamer multimedia library.")
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
        (sha256
-        (base32 "068k3cbv1yf3gbllfdzqsg263kzwh21y8dpwr0wvgh15vapkpfs0"))))
+        (base32 "1b4b3a6fm2wyqpnx300pg1sz01m9qhfajadk3b7sbzisg8vvqab3"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-docbook-xml
-           (lambda* (#:key inputs #:allow-other-keys)
-             (with-directory-excursion "docs"
-               (substitute* "plugins/gst-plugins-good-plugins-docs.sgml"
-                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
-                  (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/"))))
-             #t))
-         (add-before
-             'check 'pre-check
+         (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
              (system "Xvfb :1 +extension GLX &")
@@ -581,8 +610,7 @@ for the GStreamer multimedia library.")
              (setenv "DBUS_FATAL_WARNINGS" "0")
              #t)))))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.1.2)
-       ("gettext" ,gettext-minimal)
+     `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
@@ -643,14 +671,14 @@ model to base your own plug-in on, here it is.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.16.2")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0x0y0hm0ga3zqi5q4090hw5sjh59y1ry9ak16qsaascm72i7mjzi"))))
+                "0pqqq5bs9fjwcmbwgsgxs2dx6gznhxs7ii5pmjkslr6xmlfap0pk"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -667,20 +695,26 @@ model to base your own plug-in on, here it is.")
                         ""))
                      #t)))
                '())
-         (add-after 'unpack 'disable-failing-test
-           (lambda _
-             ;; FIXME: Why is this failing.
-             (substitute* "tests/check/meson.build"
-               ((".*elements/dash_mpd\\.c.*")
-                ""))
-             #t)))))
+         (add-after 'unpack 'adjust-tests
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (let ((gst-plugins-good (assoc-ref (or native-inputs inputs)
+                                                "gst-plugins-good")))
+               (substitute* "tests/check/meson.build"
+                 ;; Make gst-plugin-good available for tests, see
+                 ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1426
+                 (("'GST_PLUGIN_SYSTEM_PATH_1_0', ''")
+                  (string-append "'GST_PLUGIN_SYSTEM_PATH_1_0', '"
+                                 gst-plugins-good "/lib/gstreamer-1.0'"))
+                 ;; This test occasionally times out, see
+                 ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1412
+                 ((".*elements/dtls\\.c.*") ""))
+               #t))))))
     (propagated-inputs
      `(("gst-plugins-base" ,gst-plugins-base)))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
-       ;; TODO: Enable documentation for 1.18.
-       ;;("gtk-doc" ,gtk-doc)
+       ("gst-plugins-good" ,gst-plugins-good) ;for tests
        ("pkg-config" ,pkg-config)
        ("python" ,python)))
     (inputs
@@ -737,7 +771,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.16.2")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
@@ -745,22 +779,13 @@ par compared to the rest.")
         (string-append "https://gstreamer.freedesktop.org/src/"
                        name "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1jpvc32x6q01zjkfgh6gmq6aaikiyfwwnhj7bmvn52syhrdl202m"))))
+        (base32 "10p0nyzighvkciaspxnhlr7d7n4acrv96lf483i8l988bvj48rk8"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-docbook-xml
-           (lambda* (#:key inputs #:allow-other-keys)
-             (with-directory-excursion "docs"
-               (substitute* "plugins/gst-plugins-ugly-plugins-docs.sgml"
-                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
-                  (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/"))))
-             #t))
-         (add-before
-             'check 'pre-check
+         (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
              (system "Xvfb :1 +extension GLX &")
@@ -773,8 +798,7 @@ par compared to the rest.")
              (setenv "DBUS_FATAL_WARNINGS" "0")
              #t)))))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.1.2)
-       ("gettext" ,gettext-minimal)
+     `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
@@ -805,7 +829,7 @@ think twice about shipping them.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.16.2")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
@@ -814,28 +838,10 @@ think twice about shipping them.")
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
        (sha256
-        (base32 "1wpfilc98bad9nsv3y1qapxp35dvn2mvwvrmqwrsj58cf09gc967"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Drop bundled ffmpeg.
-           (delete-file-recursively "gst-libs/ext/libav")
-           #t))))
+        (base32 "0sm0sfdlalimpkf7a7rk7whvyvmmfi2kly2z3q2j5z53x5f3zya2"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-docbook-xml
-           (lambda* (#:key inputs #:allow-other-keys)
-             (with-directory-excursion "docs"
-               (substitute* "plugins/gst-libav-plugins-docs.sgml"
-                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
-                  (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/"))))
-             #t)))))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.1.2)
-       ("perl" ,perl)
+     `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
        ("ruby" ,ruby)))
@@ -853,15 +859,15 @@ decoders, muxers, and demuxers provided by FFmpeg.")
 (define-public gst-editing-services
   (package
     (name "gst-editing-services")
-    (version "1.16.2")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://gstreamer.freedesktop.org/src/" name "/"
-                    "gstreamer-editing-services-" version ".tar.xz"))
+                    "gst-editing-services-" version ".tar.xz"))
               (sha256
                (base32
-                "05hcf3prna8ajjnqd53221gj9syarrrjbgvjcbhicv0c38csc1hf"))))
+                "1a00f07v0yjqz1hydhgkjjarm4rk99yjicbz5wkfl5alhzag1bjd"))))
     (build-system meson-build-system)
     (arguments
      ;; FIXME: 16/22 failing tests.
@@ -888,7 +894,7 @@ non-linear editors.")
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.16.2")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -896,9 +902,7 @@ non-linear editors.")
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "1a48ca66izmm8hnp608jv5isg3jxb0vlfmhns0bg9nbkilag7390"))
-              (patches
-               (search-patches "python-gst-fix-build-with-python-3.8.patch"))))
+                "0ifx2s2j24sj2w5jm7cxyg1kinnhbxiz4x0qp3gnsjlwbawfigvn"))))
     (build-system meson-build-system)
     (arguments
      `(#:modules ((guix build meson-build-system)
