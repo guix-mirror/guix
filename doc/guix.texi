@@ -21984,7 +21984,29 @@ names of loadable modules, as in this example:
 (modules
  (list
   (file-append nginx-accept-language-module "\
-/etc/nginx/modules/ngx_http_accept_language_module.so")))
+/etc/nginx/modules/ngx_http_accept_language_module.so")
+  (file-append nginx-lua-module "\
+/etc/nginx/modules/ngx_http_lua_module.so")))
+@end lisp
+
+@item @code{lua-package-path} (default: @code{'()})
+List of nginx lua packages to load.  This should be a list of package
+names of loadable lua modules, as in this example:
+
+@lisp
+(lua-package-path (list lua-resty-core
+                        lua-resty-lrucache
+                        lua-resty-signal
+                        lua-tablepool
+                        lua-resty-shell))
+@end lisp
+
+@item @code{lua-package-cpath} (default: @code{'()})
+List of nginx lua C packages to load.  This should be a list of package
+names of loadable lua C modules, as in this example:
+
+@lisp
+(lua-package-cpath (list lua-resty-signal))
 @end lisp
 
 @item @code{global-directives} (default: @code{'((events . ()))})

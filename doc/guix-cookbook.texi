@@ -1353,6 +1353,7 @@ reference.
 * Running Guix on a Linode Server:: Running Guix on a Linode Server
 * Setting up a bind mount:: Setting up a bind mount in the file-systems definition.
 * Getting substitutes from Tor:: Configuring Guix daemon to get substitutes through Tor.
+* Setting up NGINX with Lua:: Configuring NGINX web-server to load Lua modules.
 @end menu
 
 @node Customizing the Kernel
@@ -2113,6 +2114,63 @@ want to get a substitute from the Tor tunnel run:
 sudo herd set-http-proxy guix-daemon http://localhost:9250
 guix build --substitute-urls=https://bp7o7ckwlewr4slm.onion …
 @end example
+
+@node Setting up NGINX with Lua
+@section Setting up NGINX with Lua
+@cindex nginx, lua, openresty, resty
+
+NGINX could be extended with Lua scripts.
+
+Guix provides NGINX service with ability to load Lua module and specific
+Lua packages, and reply to requests by evaluating Lua scripts.
+
+The following example demonstrates system definition with configuration
+to evaluate @file{index.lua} Lua script on HTTP request to
+@uref{http://localhost/hello} endpoint:
+
+@example
+local shell = require "resty.shell"
+
+local stdin = ""
+local timeout = 1000  -- ms
+local max_size = 4096  -- byte
+
+local ok, stdout, stderr, reason, status =
+   shell.run([[/run/current-system/profile/bin/ls /tmp]], stdin, timeout, max_size)
+
+ngx.say(stdout)
+@end example
+
+@lisp
+(use-modules (gnu))
+(use-service-modules #;… web)
+(use-package-modules #;… lua)
+(operating-system
+  ;; …
+  (services
+   ;; …
+   (service nginx-service-type
+            (nginx-configuration
+             (modules
+              (list
+               (file-append nginx-lua-module "/etc/nginx/modules/ngx_http_lua_module.so")))
+             (lua-package-path (list lua-resty-core
+                                     lua-resty-lrucache
+                                     lua-resty-signal
+                                     lua-tablepool
+                                     lua-resty-shell))
+             (lua-package-cpath (list lua-resty-signal))
+             (server-blocks
+              (list (nginx-server-configuration
+                     (server-name '("localhost"))
+                     (listen '("80"))
+                     (root "/etc")
+                     (locations (list
+                                 (nginx-location-configuration
+                                  (uri "/hello")
+                                  (body (list #~(format #f "content_by_lua_file ~s;"
+                                                        #$(local-file "index.lua"))))))))))))))
+@end lisp
 
 @c *********************************************************************
 @node Advanced package management
