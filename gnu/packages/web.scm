@@ -551,6 +551,16 @@ This is modified version, specifically intended for use with the NGinx
 documentation.")
       (license license:bsd-2))))
 
+(define nginx-socket-cloexec
+  (package
+    (inherit nginx)
+    (name "nginx-socket-cloexec") ;required for lua-resty-shell
+    (source
+     (origin
+       (inherit (package-source nginx))
+       (patches (append (search-patches "nginx-socket-cloexec.patch")
+                        (origin-patches (package-source nginx))))))))
+
 (define-public lighttpd
   (package
     (name "lighttpd")
