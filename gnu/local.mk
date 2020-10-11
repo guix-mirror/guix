@@ -1254,10 +1254,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
   %D%/packages/patches/libqalculate-3.8.0-libcurl-ssl-fix.patch	\
   %D%/packages/patches/libquicktime-ffmpeg.patch 		\
-  %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
-  %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
-  %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
-  %D%/packages/patches/libsndfile-CVE-2017-12562.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtgvoip-disable-sse2.patch 		\
   %D%/packages/patches/libtgvoip-disable-webrtc.patch 		\
