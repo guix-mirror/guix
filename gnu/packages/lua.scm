@@ -880,3 +880,40 @@ on numbers.")
      "Selene is a simple C++11 header-only library enabling seamless
  interoperability between C++ and Lua programming language.")
     (license license:zlib)))
+
+(define-public lua-resty-core
+  (package
+    (name "lua-resty-core")
+    (version "0.1.17")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-resty-core")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "11fyli6yrg7b91nv9v2sbrc6y7z3h9lgf4lrrhcjk2bb906576a0"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                (package-lua-resty (lambda (input output)
+                                     (mkdir-p (string-append output "/lib/lua"))
+                                     (copy-recursively (string-append input "/lib/resty")
+                                                       (string-append output "/lib/lua/resty"))
+                                     (copy-recursively (string-append input "/lib/ngx")
+                                                       (string-append output "/lib/ngx"))
+                                     (symlink (string-append output "/lib/lua/resty")
+                                              (string-append output "/lib/resty")))))
+           (package-lua-resty (assoc-ref %build-inputs "source")
+                              (assoc-ref %outputs "out")))
+         #t)))
+    (home-page "https://github.com/openresty/lua-resty-core")
+    (synopsis "Lua API for NGINX")
+    (description "This package provides a FFI-based Lua API for
+@code{ngx_http_lua_module} or @code{ngx_stream_lua_module}.")
+    (license license:bsd-2)))
