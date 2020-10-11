@@ -15700,7 +15700,17 @@ synchronization primitives.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1jcq8aq4wv9y5fip7jg12jdwjd5g5r3x857xdma8vcin769cgj4l"))))))
+         "1jcq8aq4wv9y5fip7jg12jdwjd5g5r3x857xdma8vcin769cgj4l"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-petgraph" ,rust-petgraph-0.4)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-thread-id" ,rust-thread-id-3.3)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
 (define-public rust-partial-io-0.2
   (package
