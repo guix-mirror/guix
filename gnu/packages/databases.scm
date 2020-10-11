@@ -1885,7 +1885,7 @@ valid SQL query.")
 (define-public unixodbc
   (package
    (name "unixodbc")
-   (version "2.3.7")
+   (version "2.3.9")
    (source (origin
             (method url-fetch)
             (uri
@@ -1893,7 +1893,7 @@ valid SQL query.")
               "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-"
               version ".tar.gz"))
             (sha256
-             (base32 "0xry3sg497wly8f7715a7gwkn2k36bcap0mvzjw74jj53yx6kwa5"))))
+             (base32 "01xj65d02i3yjy7p9z08y9jakcs5szmz4rask868n7387nn3x0sj"))))
    (build-system gnu-build-system)
    (synopsis "Data source abstraction library")
    (description "Unixodbc is a library providing an API with which to access
