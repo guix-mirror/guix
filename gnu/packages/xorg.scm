@@ -5309,8 +5309,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.8")
-    (replacement xorg-server/fixed)
+    (version "1.20.9")
     (source
       (origin
         (method url-fetch)
@@ -5318,7 +5317,7 @@ over Xlib, including:
                             "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "0ih15m7gh1z1ly6z7g82bkni719yisqmbk61a1wgp82bxrmn8yyi"))
+          "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2"))
         (patches
          (list
           ;; See:
@@ -5433,19 +5432,6 @@ separate composite manager) as directed by the window manager, which usually
 communicates with the user via graphical controls such as buttons and
 draggable titlebars and borders.")
     (license license:x11)))
-
-(define xorg-server/fixed  ; security fixes
-  (package
-    (inherit xorg-server)
-    (version "1.20.9")
-    (source
-     (origin
-       (inherit (package-source xorg-server))
-       (uri (string-append "mirror://xorg/individual/xserver/"
-                           "xorg-server-" version ".tar.bz2"))
-       (sha256
-        (base32
-         "0w9mrnffvjgmwi50kln15i8rpdskxv97r78l75wlcmg4vzhg46g2"))))))
 
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
