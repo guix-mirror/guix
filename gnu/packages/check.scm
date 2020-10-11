@@ -135,7 +135,7 @@ like Jasmine or Mocha.")
 (define-public check
   (package
     (name "check")
-    (version "0.15.1")
+    (version "0.15.2")
     (source
      (origin
       (method url-fetch)
@@ -143,7 +143,7 @@ like Jasmine or Mocha.")
                           version "/check-" version ".tar.gz"))
       (sha256
        (base32
-        "0080qvd7gj1c7j79v9wfiwkp259gcs0xi45b8a0ds3jwjxj3vk61"))))
+        "02m25y9m46pb6n46s51av62kpd936lkfv3b13kfpckgvmh5lxpm8"))))
     (build-system gnu-build-system)
     (home-page "https://libcheck.github.io/check/")
     (synopsis "Unit test framework for C")
