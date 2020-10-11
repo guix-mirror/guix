@@ -2450,7 +2450,7 @@ Linux-based operating systems.")
 (define-public libcap
   (package
     (inherit libcap-2.31)
-    (version "2.34")
+    (version "2.44")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2458,7 +2458,19 @@ Linux-based operating systems.")
                     "libcap2/libcap-" version ".tar.xz"))
               (sha256
                (base32
-                "048n1gy2p48vl9hkrr9wymfxxcpwj2aslz2bv79nhl4m2lhd9kdf"))))))
+                "1qf80lifygbnxwvqjf8jz5j24n6fqqx4ixnkbf76xs2vrmcq664j"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments libcap-2.31)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'configure
+             (lambda _
+               ;; Add $libdir to the RUNPATH of executables.
+               (substitute* "Make.Rules"
+                 (("LDFLAGS \\?= #-g")
+                  (string-append "LDFLAGS ?= -Wl,-rpath="
+                                 %output "/lib")))
+               #t))))))))
 
 (define-deprecated libcap/next libcap)
 (export libcap/next)
