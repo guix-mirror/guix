@@ -15685,7 +15685,20 @@ synchronization primitives.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1317j5a1yd03baza2kqqrxb4kr1vxa7rckw4frksl2vrncfcp26b"))))))
+         "1317j5a1yd03baza2kqqrxb4kr1vxa7rckw4frksl2vrncfcp26b"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-cloudabi" ,rust-cloudabi-0.0)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-petgraph" ,rust-petgraph-0.4)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-thread-id" ,rust-thread-id-3.3)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
 (define-public rust-parking-lot-core-0.4
   (package
