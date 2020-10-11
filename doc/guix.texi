@@ -6961,8 +6961,8 @@ In its @code{configure} phase, this build system will make any source inputs
 specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
 parameters available to cargo.  It will also remove an included
 @code{Cargo.lock} file to be recreated by @code{cargo} during the
-@code{build} phase.  The @code{install} phase installs any crate the binaries
-if they are defined by the crate.
+@code{build} phase.  The @code{install} phase installs the binaries
+defined by the crate.
 @end defvr
 
 
@@ -7208,7 +7208,7 @@ implements the build procedure used by @uref{https://julialang.org/,
 julia} packages, which essentially is similar to running @samp{julia -e
 'using Pkg; Pkg.add(package)'} in an environment where
 @env{JULIA_LOAD_PATH} contains the paths to all Julia package inputs.
-Tests are run not run.
+Tests are run with @code{Pkg.test}.
 
 Julia packages require the source @code{file-name} to be the real name of the
 package, correctly capitalized.
@@ -18147,10 +18147,10 @@ List of settings to set in @file{daemon.conf}, formatted just like
 @var{client-conf}.
 
 @item @var{script-file} (default: @code{(file-append pulseaudio "/etc/pulse/default.pa")})
-Script file to use as as @file{default.pa}.
+Script file to use as @file{default.pa}.
 
 @item @var{system-script-file} (default: @code{(file-append pulseaudio "/etc/pulse/system.pa")})
-Script file to use as as @file{system.pa}.
+Script file to use as @file{system.pa}.
 @end table
 @end deftp
 
@@ -23304,7 +23304,7 @@ This type has the following parameters:
 
 @table @asis
 @item @code{id} (default: @code{""})
-An identifier for ether configuration fields to refer to this key. IDs must be
+An identifier for other configuration fields to refer to this key. IDs must be
 unique and must not be empty.
 
 @item @code{address} (default: @code{'()})
@@ -25295,7 +25295,7 @@ mixer, the @code{null} mixer (allows setting the volume, but with no
 effect; this can be used as a trick to implement an external mixer
 External Mixer) or no mixer (@code{none}).
 
-@item @code{extra-options} (default: @code{'()"})
+@item @code{extra-options} (default: @code{'()})
 An association list of option symbols to string values to be appended to
 the audio output configuration.
 
@@ -25354,7 +25354,7 @@ Libvirt package.
 
 @deftypevr {@code{libvirt-configuration} parameter} boolean listen-tls?
 Flag listening for secure TLS connections on the public TCP/IP port.
-must set @code{listen} for this to have any effect.
+You must set @code{listen} for this to have any effect.
 
 It is necessary to setup a CA and issue server certificates before using
 this capability.
@@ -25364,28 +25364,28 @@ Defaults to @samp{#t}.
 @end deftypevr
 
 @deftypevr {@code{libvirt-configuration} parameter} boolean listen-tcp?
-Listen for unencrypted TCP connections on the public TCP/IP port.  must
+Listen for unencrypted TCP connections on the public TCP/IP port.  You must
 set @code{listen} for this to have any effect.
 
 Using the TCP socket requires SASL authentication by default.  Only SASL
 mechanisms which support data encryption are allowed.  This is
-DIGEST_MD5 and GSSAPI (Kerberos5)
+DIGEST_MD5 and GSSAPI (Kerberos5).
 
 Defaults to @samp{#f}.
 
 @end deftypevr
 
 @deftypevr {@code{libvirt-configuration} parameter} string tls-port
-Port for accepting secure TLS connections This can be a port number, or
-service name
+Port for accepting secure TLS connections.   This can be a port number,
+or service name.
 
 Defaults to @samp{"16514"}.
 
 @end deftypevr
 
 @deftypevr {@code{libvirt-configuration} parameter} string tcp-port
-Port for accepting insecure TCP connections This can be a port number,
-or service name
+Port for accepting insecure TCP connections.  This can be a port number,
+or service name.
 
 Defaults to @samp{"16509"}.
 
@@ -25697,7 +25697,7 @@ Defaults to @samp{3}.
 Logging filters.
 
 A filter allows to select a different logging level for a given category
-of logs The format for a filter is one of:
+of logs.  The format for a filter is one of:
 
 @itemize @bullet
 @item
@@ -26228,7 +26228,7 @@ By default, it produces
 with forwarded ports:
 
 @example
-@var{ssh-port}: @code{(+ 11004 (* 1000 @var{ID}))}
+@var{secrets-port}: @code{(+ 11004 (* 1000 @var{ID}))}
 @var{ssh-port}: @code{(+ 10022 (* 1000 @var{ID}))}
 @var{vnc-port}: @code{(+ 15900 (* 1000 @var{ID}))}
 @end example
@@ -26873,7 +26873,7 @@ When true, the daemon performs additional logging for debugging purposes.
 @defvr {Scheme Variable} ganeti-watcher-service-type
 @command{ganeti-watcher} is a script designed to run periodically and ensure
 the health of a cluster.  It will automatically restart instances that have
-stopped without Ganetis consent, and repairs DRBD links in case a node has
+stopped without Ganeti's consent, and repairs DRBD links in case a node has
 rebooted.  It also archives old cluster jobs and restarts Ganeti daemons
 that are not running.  If the cluster parameter @code{ensure_node_health}
 is set, the watcher will also shutdown instances and DRBD devices if the
@@ -29810,7 +29810,7 @@ Data type representing the configuration of the GRUB theme.
 
 @table @asis
 @item @code{gfxmode} (default: @code{'("auto")})
-The GRUB @code{gfxmode} to set (a list of screen resolution strings, see
+The GRUB @code{gfxmode} to set (a list of screen resolution strings,
 @pxref{gfxmode,,, grub, GNU GRUB manual}).
 @end table
 @end deftp
