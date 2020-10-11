@@ -992,3 +992,35 @@ on numbers.")
     (description "This package provides Lua library for killing or sending
 signals to Linux processes.")
     (license license:bsd-3)))
+
+(define-public lua-tablepool
+  (package
+    (name "lua-tablepool")
+    (version "0.01")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openresty/lua-tablepool")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "03yjj3w6znvj6843prg84m0lkrn49l901f9hj9bgy3cj9s0awl6y"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((luajit-major+minor ,(version-major+minor (package-version lua)))
+                (package-lua-resty (lambda (input output)
+                                     (mkdir-p (string-append output "/lib/lua/" luajit-major+minor))
+                                     (copy-recursively (string-append input "/lib")
+                                                       (string-append output "/lib")))))
+           (package-lua-resty (assoc-ref %build-inputs "source")
+                              (assoc-ref %outputs "out")))
+         #t)))
+    (home-page "https://github.com/openresty/lua-tablepool")
+    (synopsis "Lua table recycling pools for LuaJIT")
+    (description "This package provides Lua table recycling pools for LuaJIT.")
+    (license license:bsd-2)))
