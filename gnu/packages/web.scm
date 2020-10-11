@@ -45,6 +45,7 @@
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1345,6 +1346,50 @@ UTS#46.")
 used to validate and fix HTML data.")
     (home-page "http://tidy.sourceforge.net/")
     (license (license:x11-style "file:///include/tidy.h"))))
+
+(define-public esbuild
+  (package
+    (name "esbuild")
+    (version "0.7.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/evanw/esbuild")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1y5hqymv2r8r29f8vh8kgncj3wlkg4fzi0zlc7mgyss872ajkc7i"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove prebuilt binaries
+           (delete-file-recursively "npm")
+           #t))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/evanw/esbuild/cmd/esbuild"
+       #:unpack-path "github.com/evanw/esbuild"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? unpack-path #:allow-other-keys)
+             (if tests?
+               (with-directory-excursion (string-append "src/" unpack-path)
+                 (invoke "make" "test-go")))
+             #t)))))
+    (inputs
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (native-inputs
+     `(("go-github-com-kylelemons-godebug" ,go-github-com-kylelemons-godebug)))
+    (home-page "https://github.com/evanw/esbuild")
+    (synopsis "Bundler and minifier tool for JavaScript and TypeScript")
+    (description
+     "The esbuild tool provides a unified bundler, transpiler and
+minifier.  It packages up JavaScript and TypeScript code, along with JSON
+and other data, for distribution on the web.")
+    (license license:expat)))
 
 (define-public tinyproxy
   (package
