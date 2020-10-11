@@ -5836,7 +5836,7 @@ direct syscalls are not intercepted either, leading to erratic behavior.
 @vindex GUIX_EXECUTION_ENGINE
 When running a wrapped program, you can explicitly request one of the
 execution engines listed above by setting the
-@code{GUIX_EXECUTION_ENGINE} environment variable accordingly.
+@env{GUIX_EXECUTION_ENGINE} environment variable accordingly.
 @end quotation
 
 @cindex entry point, for Docker images
@@ -28587,22 +28587,22 @@ This is the data type representing the configuration for the zram-device
 service.
 
 @table @asis
-@item @code{size} (default @var{"1G"})
+@item @code{size} (default @code{"1G"})
 This is the amount of space you wish to provide for the zram device.  It
 accepts a string and can be a number of bytes or use a suffix, eg.:
-@var{"512M"} or @var{1024000}.
-@item @code{compression-algorithm} (default @var{'lzo})
+@code{"512M"} or @code{1024000}.
+@item @code{compression-algorithm} (default @code{'lzo})
 This is the compression algorithm you wish to use.  It is difficult to
 list all the possible compression options, but common ones supported by
-Guix's Linux Libre Kernel include @var{'lzo}, @var{'lz4} and @var{'zstd}.
-@item @code{memory-limit} (default @var{0})
+Guix's Linux Libre Kernel include @code{'lzo}, @code{'lz4} and @code{'zstd}.
+@item @code{memory-limit} (default @code{0})
 This is the maximum amount of memory which the zram device can use.
 Setting it to '0' disables the limit.  While it is generally expected
 that compression will be 2:1, it is possible that uncompressable data
 can be written to swap and this is a method to limit how much memory can
 be used.  It accepts a string and can be a number of bytes or use a
-suffix, eg.: @var{"2G"}.
-@item @code{priority} (default @var{-1})
+suffix, eg.: @code{"2G"}.
+@item @code{priority} (default @code{-1})
 This is the priority of the swap device created from the zram device.
 @code{swapon} accepts values between -1 and 32767, with higher values
 indicating higher priority.  Higher priority swap will generally be used
@@ -29015,7 +29015,7 @@ The @code{(gnu services science)} module provides the following service.
 @defvr {Scheme Variable} rshiny-service-type
 
 This is a type of service which is used to run a webapp created with
-@code{r-shiny}.  This service sets the @code{R_LIBS_USER} environment
+@code{r-shiny}.  This service sets the @env{R_LIBS_USER} environment
 variable and runs the provided script to call @code{runApp}.
 
 @deftp {Data Type} rshiny-configuration
