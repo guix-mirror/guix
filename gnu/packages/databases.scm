@@ -2990,8 +2990,7 @@ database).")
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ;XXX: requires a live database
     (inputs
-     `(("mysql" ,mariadb "lib")
-       ("mysql-dev" ,mariadb "dev")))
+     `(("mysql-dev" ,mariadb "dev")))
     (home-page "https://github.com/PyMySQL/mysqlclient-python")
     (synopsis "MySQLdb is an interface to the popular MySQL database server for Python")
     (description "MySQLdb is an interface to the popular MySQL database server
@@ -3672,8 +3671,7 @@ The drivers officially supported by @code{libdbi} are:
        ("sqlite" ,sqlite)
        ("odbc" ,unixodbc)
        ("boost" ,boost)
-       ("mariadb:dev" ,mariadb "dev")
-       ("mariadb:lib" ,mariadb "lib")))
+       ("mariadb:dev" ,mariadb "dev")))
     (arguments
      `(#:tests? #f ; Tests may require running database management systems.
        #:phases
