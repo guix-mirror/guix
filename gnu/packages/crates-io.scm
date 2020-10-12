@@ -943,7 +943,8 @@ ArrayVec and ArrayString.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-generic-array" ,rust-generic-array-0.12)
+       (("rust-generic-array-0.13" ,rust-generic-array-0.13)
+        ("rust-generic-array-0.12" ,rust-generic-array-0.12)
         ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
     (home-page "https://github.com/japaric/as-slice")
     (synopsis "AsSlice and AsMutSlice traits")
