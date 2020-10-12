@@ -3599,7 +3599,7 @@ depending on a large number of #[cfg] parameters.  Structured like an
          "0695kfrqx7n091fzm6msbqg2q2kyhka64q08lm63f3l9d964i8cx"))))
     (build-system cargo-build-system)
     (inputs
-     `(("clang" ,clang)))
+     `(("libclang" ,clang)))
     (arguments
      `(#:cargo-inputs
        (("rust-glob" ,rust-glob-0.3)
@@ -3609,8 +3609,9 @@ depending on a large number of #[cfg] parameters.  Structured like an
        (modify-phases %standard-phases
          (add-before 'configure 'configure-clang
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "LIBCLANG_PATH" (string-append (assoc-ref inputs "clang")
-                                                    "/lib"))
+             (setenv "LIBCLANG_PATH"
+                     (string-append (assoc-ref inputs "libclang")
+                                    "/lib"))
              #t)))))
     (home-page "https://github.com/KyleMayes/clang-sys")
     (synopsis "Rust bindings for libclang")
@@ -3643,8 +3644,6 @@ depending on a large number of #[cfg] parameters.  Structured like an
              (let ((clang (assoc-ref inputs "libclang")))
                (setenv "LIBCLANG_PATH"
                        (string-append clang "/lib")))
-    (inputs
-     `(("libclang" ,clang)))
              #t)))))))
 
 (define-public rust-clang-sys-0.28
