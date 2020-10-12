@@ -137,7 +137,7 @@ disabled!~%"))
 
 (define %narinfo-negative-ttl
   ;; Likewise, but for negative lookups---i.e., cached lookup failures (404).
-  (* 3 3600))
+  (* 1 3600))
 
 (define %narinfo-transient-error-ttl
   ;; Likewise, but for transient errors such as 504 ("Gateway timeout").
