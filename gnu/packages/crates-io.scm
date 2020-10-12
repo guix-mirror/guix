@@ -3887,7 +3887,8 @@ pitfalls in Rust.")
           "0rv4yf5jlldfkynzrw687s00f4x12ypw7axv71vawhy6h4i52i23"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1))))
     (home-page "https://cloudabi.org/")
     (synopsis "Low level interface to CloudABI")
@@ -3907,7 +3908,10 @@ contains all syscalls and related types.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))))
+          "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1))))))
 
 (define-public rust-cloudflare-zlib-sys-0.2
   (package
