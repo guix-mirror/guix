@@ -29321,7 +29321,8 @@ implementation of TLS for nonblocking I/O streams.")
          "16b48dl6sbc9x944jgjvsd65ab1w2c2qcziddbrbwv1b3y4l50my"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #f
+       #:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
         ("rust-futures-core" ,rust-futures-core-0.3)
         ("rust-futures-io" ,rust-futures-io-0.3)
