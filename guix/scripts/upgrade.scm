@@ -36,6 +36,8 @@ This is an alias for 'guix package -u'.\n"))
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
   (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
+  (display (G_ "
+      --do-not-upgrade[=REGEXP] do not upgrade any packages matching REGEXP"))
   (newline)
   (show-build-options-help)
   (newline)
