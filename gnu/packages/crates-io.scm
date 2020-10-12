@@ -26895,7 +26895,8 @@ browsers.")
         (base32
          "16qvx8qyb5v4vjbg9rk8848bw6x4i6vzs8v7f4n1v9pkj9ibzy8l"))))
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #f
+       #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.3)
         ("rust-quote" ,rust-quote-0.5)
         ("rust-unicode-xid" ,rust-unicode-xid-0.1))
