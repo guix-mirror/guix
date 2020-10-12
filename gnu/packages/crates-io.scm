@@ -4599,7 +4599,14 @@ macOS.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0va97wf49c8dzm9c8pgyk1jn7z21rl0bj1syf2zz5m2z2hzy1f95"))))))
+         "0va97wf49c8dzm9c8pgyk1jn7z21rl0bj1syf2zz5m2z2hzy1f95"))))
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-uuid" ,rust-uuid-0.5))))))
 
 (define-public rust-core-foundation-sys-0.7
   (package
