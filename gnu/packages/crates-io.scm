@@ -32747,6 +32747,7 @@ compression library.")
 
 (define-public rust-zstd-safe-2.0.5 rust-zstd-safe-2)
 
+;; TODO: Unbundle zstd.
 (define-public rust-zstd-sys-1
   (package
     (name "rust-zstd-sys")
@@ -32763,9 +32764,8 @@ compression library.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2))
-       #:cargo-development-inputs
-       (("rust-bindgen" ,rust-bindgen-0.54)
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-bindgen" ,rust-bindgen-0.54)
         ("rust-cc" ,rust-cc-1)
         ("rust-glob" ,rust-glob-0.3)
         ("rust-itertools" ,rust-itertools-0.9)
