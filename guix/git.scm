@@ -161,11 +161,14 @@ the 'SSL_CERT_FILE' and 'SSL_CERT_DIR' environment variables."
 (define (make-default-fetch-options)
   "Return the default fetch options."
   (let ((auth-method (%make-auth-ssh-agent)))
-    ;; The #:transfer-progress option appeared in Guile-Git 0.4.0.  Omit it
-    ;; when using an older version.
+    ;; The #:transfer-progress and #:proxy-url options appeared in Guile-Git
+    ;; 0.4.0.  Omit them when using an older version.
     (catch 'wrong-number-of-args
       (lambda ()
         (make-fetch-options auth-method
+                            ;; Guile-Git doesn't distinguish between these.
+                            #:proxy-url (or (getenv "http_proxy")
+                                            (getenv "https_proxy"))
                             #:transfer-progress
                             (and (isatty? (current-error-port))
                                  show-progress)))
