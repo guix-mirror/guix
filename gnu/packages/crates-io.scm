@@ -4915,7 +4915,7 @@ criterion.")
     (arguments
      `(#:cargo-inputs
        (("rust-cast" ,rust-cast-0.2)
-        ("rust-itertools" ,rust-itertools-0.8))
+        ("rust-itertools" ,rust-itertools-0.9))
        #:cargo-development-inputs
        (("rust-itertools-num" ,rust-itertools-num-0.1)
         ("rust-num-complex" ,rust-num-complex-0.2)
