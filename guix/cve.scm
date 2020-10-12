@@ -336,7 +336,7 @@ sexp to CACHE."
                ,(map vulnerability->sexp vulns))
              cache))))
 
-(define (fetch-vulnerabilities year ttl)
+(define* (fetch-vulnerabilities year ttl #:key (timeout 10))
   "Return the list of <vulnerability> for YEAR, assuming the on-disk cache has
 the given TTL (fetch from the NIST web site when TTL has expired)."
   (define (cache-miss uri)
@@ -361,16 +361,18 @@ the given TTL (fetch from the NIST web site when TTL has expired)."
   (let* ((port (http-fetch/cached (yearly-feed-uri year)
                                   #:ttl ttl
                                   #:write-cache write-cache
-                                  #:cache-miss cache-miss))
+                                  #:cache-miss cache-miss
+                                  #:timeout timeout))
          (sexp (read* port)))
     (close-port port)
     (match sexp
       (('vulnerabilities 1 vulns)
        (map sexp->vulnerability vulns)))))
 
-(define (current-vulnerabilities)
+(define* (current-vulnerabilities #:key (timeout 10))
   "Return the current list of Common Vulnerabilities and Exposures (CVE) as
-published by the US NIST."
+published by the US NIST.  TIMEOUT specifies the timeout in seconds for
+connection establishment."
   (let ((past-years (unfold (cut > <> 3)
                             (lambda (n)
                               (- %current-year n))
@@ -381,7 +383,7 @@ published by the US NIST."
                               (* n %past-year-ttl))
                             1+
                             1)))
-    (append-map fetch-vulnerabilities
+    (append-map (cut fetch-vulnerabilities <> <> #:timeout timeout)
                 (cons %current-year past-years)
                 (cons %current-year-ttl past-ttls))))
 
