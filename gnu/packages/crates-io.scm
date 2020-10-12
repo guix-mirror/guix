@@ -931,7 +931,7 @@ ArrayVec and ArrayString.")
 (define-public rust-as-slice-0.1
   (package
     (name "rust-as-slice")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
@@ -939,11 +939,12 @@ ArrayVec and ArrayString.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0w0f56lnd9l6369jh6iv1qb08zl1lqa4y017x1gcharvq1dvdprp"))))
+         "1rmhdfj11va424163d6r79wbgf2043i2p37s59ky6x2v8wiiqkdv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-generic-array-0.13" ,rust-generic-array-0.13)
+       (("rust-generic-array-0.14" ,rust-generic-array-0.14)
+        ("rust-generic-array-0.13" ,rust-generic-array-0.13)
         ("rust-generic-array-0.12" ,rust-generic-array-0.12)
         ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
     (home-page "https://github.com/japaric/as-slice")
