@@ -921,18 +921,7 @@ non-linear editors.")
     (description
      "This package contains GObject Introspection overrides for Python that can
 be used by Python applications using GStreamer.")
-    (license license:lgpl2.1+)
-    (properties `((python2-variant . ,(delay python2-gst))))))
-
-(define-public python2-gst
-  (package (inherit python-gst)
-    (name "python2-gst")
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
-    (propagated-inputs
-     `(("gst-plugins-base" ,gst-plugins-base)
-       ("python-pygobject" ,python2-pygobject)))))
+    (license license:lgpl2.1+)))
 
 (define-public gst123
   (package
