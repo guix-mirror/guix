@@ -17016,7 +17016,7 @@ You probably don't want to link to this crate directly; instead check out the
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-parking-lot" ,rust-parking-lot-0.10))
+       (("rust-parking-lot" ,rust-parking-lot-0.11))
        #:cargo-development-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-lazy-static" ,rust-lazy-static-1)
