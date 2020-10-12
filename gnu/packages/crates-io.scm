@@ -32526,7 +32526,8 @@ to XDG Base Directory specification.")
          "0v4jb0193gx8s1kvd2ajsgh0ffmwhqhfmrrw1n1h2z7w6jgqcyf1"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #f  ; Not all files included in the tarball.
+       #:cargo-inputs
        (("rust-futures" ,rust-futures-0.1)
         ("rust-lzma-sys" ,rust-lzma-sys-0.1)
         ("rust-tokio-io" ,rust-tokio-io-0.1))
@@ -32534,6 +32535,9 @@ to XDG Base Directory specification.")
        (("rust-quickcheck" ,rust-quickcheck-0.7)
         ("rust-rand" ,rust-rand-0.5)
         ("rust-tokio-core" ,rust-tokio-core-0.1))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("xz" ,xz)))
     (home-page "https://github.com/alexcrichton/xz2-rs")
     (synopsis "Rust bindings to liblzma")
     (description "This package provides Rust bindings to liblzma providing
