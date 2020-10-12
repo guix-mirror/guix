@@ -40,6 +40,7 @@
   #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages crates-gtk)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages jemalloc)
@@ -15296,9 +15297,11 @@ a default trait implementation you've defined.")
          "11ggkcbfnmp81amc9g0j98dk17fnmqcp9smgm9w401286kckg5ky"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-development-inputs
+     `(#:cargo-inputs
        (("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
+    (native-inputs
+     `(("mariadb" ,mariadb "lib")))
     (home-page "https://github.com/sgrif/mysqlclient-sys")
     (synopsis "Auto-generated rust bindings for libmysqlclient")
     (description "This package provides auto-generated rust bindings for
