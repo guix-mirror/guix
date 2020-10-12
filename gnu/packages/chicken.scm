@@ -59,6 +59,11 @@
 
        ;; Parallel builds are not supported, as noted in README.
        #:parallel-build? #f))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CHICKEN_REPOSITORY_PATH")
+            ;; TODO extract binary version into a module level definition.
+            (files (list "var/lib/chicken/11")))))
     (propagated-inputs `(("gcc-toolchain" ,gcc-toolchain)))
     (home-page "https://www.call-cc.org/")
     (synopsis "R5RS Scheme implementation that compiles native code via C")
