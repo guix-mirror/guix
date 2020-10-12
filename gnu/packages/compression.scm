@@ -804,7 +804,7 @@ decompression of some loosely related file formats used by Microsoft.")
        ("valgrind" ,valgrind)))
     (arguments
      `(#:test-target "test"
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure)            ;no configure script
