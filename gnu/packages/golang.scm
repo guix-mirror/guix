@@ -5847,3 +5847,30 @@ log package.  All the functionality of the built-in package still exists and
 is unchanged.  This package contains a series of small enhancements and
 additions.")
       (license license:bsd-3))))
+
+(define-public go-github-com-frankban-quicktest
+  (package
+    (name "go-github-com-frankban-quicktest")
+    (version "1.11.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/frankban/quicktest")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0b1b44b2hli2p969gqz30z8v9z6ahlklpqzi17nwk1lsjz9yv938"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/frankban/quicktest"))
+    (propagated-inputs
+     `(("go-github-com-google-go-cmp-cmp" ,go-github-com-google-go-cmp-cmp)
+       ("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
+    (home-page "https://github.com/frankban/quicktest")
+    (synopsis "Quick helpers for testing Go applications")
+    (description
+     "Package quicktest provides a collection of Go helpers for writing
+tests.")
+    (license license:expat)))
