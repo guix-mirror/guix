@@ -13479,7 +13479,7 @@ functions and static variables these libraries contain.")
 (define-public rust-libmimalloc-sys-0.1
   (package
     (name "rust-libmimalloc-sys")
-    (version "0.1.16")
+    (version "0.1.18")
     (source
      (origin
        (method url-fetch)
@@ -13487,7 +13487,7 @@ functions and static variables these libraries contain.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "127x7v82y227x2gkcnbay6lx2b505dq9ny47dd4p5g8lkgklnz37"))))
+         "0bbm03687j9fspvk6nqspmjlvchlvbxydl0mrc1x9i1k6kqiy5c2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
