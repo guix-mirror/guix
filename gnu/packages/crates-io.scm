@@ -4563,7 +4563,7 @@ intrinsics.")
 (define-public rust-core-foundation-0.7
   (package
     (name "rust-core-foundation")
-    (version "0.7.1")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4572,10 +4572,11 @@ intrinsics.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "024qmb4c33ppy0fhj022x291nrlzl5n2gqs46n0cyxms85xl8qxl"))))
+         "0wbias8f0m5kyn2pcksi0h58fdslams6nmf16w78fgn42dx4rljp"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-chrono" ,rust-chrono-0.4)
         ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.7)
         ("rust-libc" ,rust-libc-0.2)
