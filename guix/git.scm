@@ -31,7 +31,9 @@
   #:use-module (guix gexp)
   #:use-module (guix sets)
   #:use-module ((guix diagnostics) #:select (leave))
+  #:use-module (guix progress)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -117,6 +119,59 @@ the 'SSL_CERT_FILE' and 'SSL_CERT_DIR' environment variables."
                               (string-append "R:" url)
                               url))))))
 
+(define (show-progress progress)
+  "Display a progress bar as we fetch Git code.  PROGRESS is an
+<indexer-progress> record from (git)."
+  (define total
+    (indexer-progress-total-objects progress))
+
+  (define hundredth
+    (match (quotient (indexer-progress-total-objects progress) 100)
+      (0 1)
+      (x x)))
+
+  (define-values (done label)
+    (if (< (indexer-progress-received-objects progress) total)
+        (values (indexer-progress-received-objects progress)
+                (G_ "receiving objects"))
+        (values (indexer-progress-indexed-objects progress)
+                (G_ "indexing objects"))))
+
+  (define %
+    (* 100. (/ done total)))
+
+  (when (and (< % 100) (zero? (modulo done hundredth)))
+    (erase-current-line (current-error-port))
+    (let ((width (max (- (current-terminal-columns)
+                         (string-length label) 7)
+                      3)))
+      (format (current-error-port) "~a ~3,d% ~a"
+              label (inexact->exact (round %))
+              (progress-bar % width)))
+    (force-output (current-error-port)))
+
+  (when (= % 100.)
+    ;; We're done, erase the line.
+    (erase-current-line (current-error-port))
+    (force-output (current-error-port)))
+
+  ;; Return true to indicate that we should go on.
+  #t)
+
+(define (make-default-fetch-options)
+  "Return the default fetch options."
+  (let ((auth-method (%make-auth-ssh-agent)))
+    ;; The #:transfer-progress option appeared in Guile-Git 0.4.0.  Omit it
+    ;; when using an older version.
+    (catch 'wrong-number-of-args
+      (lambda ()
+        (make-fetch-options auth-method
+                            #:transfer-progress
+                            (and (isatty? (current-error-port))
+                                 show-progress)))
+      (lambda args
+        (make-fetch-options auth-method)))))
+
 (define (clone* url directory)
   "Clone git repository at URL into DIRECTORY.  Upon failure,
 make sure no empty directory is left behind."
@@ -127,7 +182,7 @@ make sure no empty directory is left behind."
       (let ((auth-method (%make-auth-ssh-agent)))
         (clone url directory
                (make-clone-options
-                #:fetch-options (make-fetch-options auth-method)))))
+                #:fetch-options (make-default-fetch-options)))))
     (lambda _
       (false-if-exception (rmdir directory)))))
 
@@ -300,7 +355,7 @@ it unchanged."
                 (not (reference-available? repository ref)))
        (let ((auth-method (%make-auth-ssh-agent)))
          (remote-fetch (remote-lookup repository "origin")
-                       #:fetch-options (make-fetch-options auth-method))))
+                       #:fetch-options (make-default-fetch-options))))
      (when recursive?
        (update-submodules repository #:log-port log-port))
 
