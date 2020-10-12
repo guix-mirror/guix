@@ -36,7 +36,7 @@
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.27")
+    (version "4.29")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -44,7 +44,7 @@
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "16z82qc1l4cqn66p59ai0dy9ycllywn4jlxhip1a605bns952jbd"))))
+               "10i5x637x0jqmdi47grkzgn56fg6770naa3wrhr4dmsrh3dnna12"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
