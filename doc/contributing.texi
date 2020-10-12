@@ -1011,6 +1011,12 @@ Before submitting a patch that adds or modifies a package definition,
 please run through this check list:
 
 @enumerate
+@cindex @code{git format-patch}
+@cindex @code{git-format-patch}
+@item
+We recommend to use the command @code{git format-patch --base} to
+include the commit where your patch applies.
+
 @item
 If the authors of the packaged software provide a cryptographic
 signature for the release tarball, make an effort to verify the
