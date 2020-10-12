@@ -16863,13 +16863,13 @@ effect size.")
 (define-public r-rgdal
   (package
     (name "r-rgdal")
-    (version "1.5-16")
+    (version "1.5-17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rgdal" version))
        (sha256
-        (base32 "0rwlsafqxgqflfid4ciaa9qz3f75fgw8hilhaqj558gdxg8bzigp"))))
+        (base32 "16vk3a8azbqhv4m598i78hs9m1nlfcls6lx011v0wgiw6ksq64zw"))))
     (properties `((upstream-name . "rgdal")))
     (build-system r-build-system)
     (inputs
