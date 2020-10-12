@@ -35,6 +35,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages crates-gtk)
@@ -13490,9 +13491,10 @@ functions and static variables these libraries contain.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-cty" ,rust-cty-0.2))
-       #:cargo-development-inputs
-       (("rust-cmake" ,rust-cmake-0.1))))
+       (("rust-cty" ,rust-cty-0.2)
+        ("rust-cmake" ,rust-cmake-0.1))))
+    (native-inputs
+     `(("cmake" ,cmake-minimal)))
     (home-page "https://github.com/purpleprotocol/mimalloc_rust")
     (synopsis "Sys crate wrapping the mimalloc allocator")
     (description "This package provides a sys crate wrapping the mimalloc
