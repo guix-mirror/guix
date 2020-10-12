@@ -18,6 +18,44 @@
 (channel-news
  (version 0)
 
+ (entry (commit "abd7a474615353149a44f4504f0b4b248dcc0716")
+        (title (en "New @option{--with-c-toolchain} package transformation option")
+               (fr "Nouvelle option de transformation @option{--with-c-toolchain}"))
+        (body
+         (en "The new @option{--with-c-toolchain} package transformation
+options provides an easy way for developers to rebuild their favorite packages
+with the C/C++ tool chain of their choice instead of the default one.
+
+For example, the following command rebuilds the @code{fftw} and @code{fftwf}
+packages as well as every package that depends on them, up to and including
+@code{octave-cli}, using GCC version 10 (currently GCC 7.5 is used by
+default):
+
+@example
+guix build octave-cli \\
+  --with-c-toolchain=fftw=gcc-toolchain@@10 \\
+  --with-c-toolchain=fftwf=gcc-toolchain@@10
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (fr "La nouvelle option de transformation de paquets
+@option{--with-c-toolchain} permet aux développeur·euses de recompiler leurs
+paquets préférés avec la chaîne d'outils C/C++ de leur choix à la place de
+celle par défaut.
+
+Par exemple, la commande ci-dessous recompile @code{fftw}, @code{fftwf} et
+tous les paquets qui en dépendent, jusqu'à @code{octave-cli} inclus, avec GCC
+10 (actuellement c'est GCC 7.5 qui est utilisé par défaut):
+
+@example
+guix build octave-cli \\
+  --with-c-toolchain=fftw=gcc-toolchain@@10 \\
+  --with-c-toolchain=fftwf=gcc-toolchain@@10
+@end example
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
  (entry (commit "8e1907a72430aa989125b053573ef0897c480697")
         (title (en "Package transformation options now recorded in profiles")
                (es "Las opciones de transformación de paquetes ahora se
