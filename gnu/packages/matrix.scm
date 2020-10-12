@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,13 +61,13 @@ an LDAP server.")
 (define-public synapse
   (package
     (name "synapse")
-    (version "1.14.0")
+    (version "1.20.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "matrix-synapse" version))
               (sha256
                (base32
-                "09drdqcjvpk9s3hq5rx9yxsxq0wak5fg5gfaiqfnbnxav2c2v7kq"))))
+                "1sf36vwvy2f9jy6dldq6gqfmh60384i5j64s7yc131b4dp0n7lcw"))))
     (build-system python-build-system)
     ;; TODO Run tests with ‘PYTHONPATH=. trial3 tests’.
     (propagated-inputs
