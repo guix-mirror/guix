@@ -19190,9 +19190,11 @@ for x86.")
          "1npz9756283pjq3lcpwss8xh1rw4sx8f6dz8cxdg90h5bbp5xhka"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-development-inputs
+     `(#:cargo-inputs
        (("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
+    (native-inputs
+     `(("postgresql" ,postgresql)))
     (home-page "https://crates.io/crates/pq-sys")
     (synopsis "Auto-generated rust bindings for libpq")
     (description "This package provides auto-generated rust bindings for
