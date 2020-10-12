@@ -32457,7 +32457,7 @@ to XDG Base Directory specification.")
 (define-public rust-xml-rs-0.7
   (package
     (name "rust-xml-rs")
-    (version "0.7.1")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
@@ -32466,19 +32466,12 @@ to XDG Base Directory specification.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1wv7izl41jf3ylhqhw23y1h0m729v2g5k4mgfw72v4kmgvvawiin"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; 'doctest' isn't stable until rust-1.40
-           (substitute* "src/lib.rs"
-             (("\\(doctest") "(test"))
-           #t))))
+         "1hp9kf80y9qm3aiqg5psyshqfkcrjgifbcm2c2nc5qlzs80vc71w"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-development-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1))))
+     `(#:cargo-test-flags '("--release" "--lib")
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1))))
     (home-page "https://github.com/netvl/xml-rs")
     (synopsis "XML library in pure Rust")
     (description "An XML library in pure Rust.")
