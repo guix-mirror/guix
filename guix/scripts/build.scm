@@ -65,7 +65,6 @@
             %transformation-options
             options->transformation
             manifest-entry-with-transformations
-            show-transformation-options-help
 
             guix-build
             register-root
@@ -718,6 +717,8 @@ options handled by 'set-build-options-from-command-line', and listed in
   (display (G_ "
   -M, --max-jobs=N       allow at most N build jobs"))
   (display (G_ "
+      --help-transform   list package transformation options not shown here"))
+  (display (G_ "
       --debug=LEVEL      produce debugging output at LEVEL")))
 
 (define (set-build-options-from-command-line store opts)
@@ -853,7 +854,14 @@ use '--no-offload' instead~%")))
                     (if c
                         (apply values (alist-cons 'max-jobs c result) rest)
                         (leave (G_ "not a number: '~a' option argument: ~a~%")
-                               name arg)))))))
+                               name arg)))))
+        (option '("help-transform") #f #f
+                (lambda _
+                  (format #t
+                          (G_ "Available package transformation options:~%"))
+                  (show-transformation-options-help)
+                  (newline)
+                  (exit 0)))))
 
 
 ;;;
@@ -909,8 +917,6 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
       --log-file         return the log file names for the given derivations"))
   (newline)
   (show-build-options-help)
-  (newline)
-  (show-transformation-options-help)
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))

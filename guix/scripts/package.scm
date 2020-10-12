@@ -397,8 +397,6 @@ Install, remove, or upgrade packages in a single transaction.\n"))
   (newline)
   (show-build-options-help)
   (newline)
-  (show-transformation-options-help)
-  (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "

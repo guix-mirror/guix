@@ -38,8 +38,6 @@ This is an alias for 'guix package -i'.\n"))
   (newline)
   (show-build-options-help)
   (newline)
-  (show-transformation-options-help)
-  (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "

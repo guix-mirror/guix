@@ -9803,6 +9803,11 @@ Package transformation options are preserved across upgrades:
 @command{guix upgrade} attempts to apply transformation options
 initially used when creating the profile to the upgraded packages.
 
+The available options are listed below.  Most commands support them and
+also support a @option{--help-transform} option that lists all the
+available options and a synopsis (these options are not shown in the
+@option{--help} output for brevity).
+
 @table @code
 
 @item --with-source=@var{source}

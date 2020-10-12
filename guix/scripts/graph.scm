@@ -35,8 +35,7 @@
   #:use-module ((guix diagnostics)
                 #:select (location-file formatted-message))
   #:use-module ((guix scripts build)
-                #:select (show-transformation-options-help
-                          options->transformation
+                #:select (options->transformation
                           %standard-build-options
                           %transformation-options))
   #:use-module (srfi srfi-1)
@@ -545,8 +544,6 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
   (newline)
   (display (G_ "
   -L, --load-path=DIR    prepend DIR to the package module search path"))
-  (newline)
-  (show-transformation-options-help)
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
