@@ -8484,7 +8484,8 @@ streams.")
          "1i67vcas0gr64bc8spprlfp7m7msv1jyspghgq1q8f0qrnvy8px8"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #f
+       #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-0.4)
         ("rust-quote" ,rust-quote-0.6)
         ("rust-syn" ,rust-syn-0.15)
