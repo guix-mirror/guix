@@ -230,6 +230,7 @@
                                       #:current-channels (list new)
                                       #:validate-pull validate-pull)))))))
 
+(test-expect-fail 1)                    ;see: https://issues.guix.gnu.org/43940
 (test-assert "channel-instances->manifest"
   ;; Compute the manifest for a graph of instances and make sure we get a
   ;; derivation graph that mirrors the instance graph.  This test also ensures
