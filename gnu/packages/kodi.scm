@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages file-systems)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
@@ -375,7 +377,6 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
            (lambda _
              (invoke "make" "kodi-test"))))))
     ;; TODO: Add dependencies for:
-    ;; - nfs
     ;; - cec
     ;; - plist
     ;; - shairplay
@@ -424,6 +425,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
        ("libmad" ,libmad)
        ("libmicrohttpd" ,libmicrohttpd)
        ("libmpeg2" ,libmpeg2)
+       ("libnfs" ,libnfs)
        ("libogg" ,libogg)
        ("libpng" ,libpng)
        ("libssh" ,libssh)
