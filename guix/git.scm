@@ -20,6 +20,7 @@
 (define-module (guix git)
   #:use-module (git)
   #:use-module (git object)
+  #:use-module (git submodule)
   #:use-module (guix i18n)
   #:use-module (guix base32)
   #:use-module (gcrypt hash)
@@ -116,10 +117,6 @@ the 'SSL_CERT_FILE' and 'SSL_CERT_DIR' environment variables."
                               (string-append "R:" url)
                               url))))))
 
-;; Authentication appeared in Guile-Git 0.3.0, check if it is available.
-(define auth-supported?
-  (false-if-exception (resolve-interface '(git auth))))
-
 (define (clone* url directory)
   "Clone git repository at URL into DIRECTORY.  Upon failure,
 make sure no empty directory is left behind."
@@ -127,18 +124,10 @@ make sure no empty directory is left behind."
     (lambda ()
       (mkdir-p directory)
 
-      ;; Note: Explicitly pass options to work around the invalid default
-      ;; value in Guile-Git: <https://bugs.gnu.org/29238>.
-      (if (module-defined? (resolve-interface '(git))
-                           'clone-init-options)
-          (let ((auth-method (and auth-supported?
-                                  (%make-auth-ssh-agent))))
-            (clone url directory
-                   (if auth-supported?
-                       (make-clone-options
-                        #:fetch-options (make-fetch-options auth-method))
-                       (clone-init-options))))
-          (clone url directory)))
+      (let ((auth-method (%make-auth-ssh-agent)))
+        (clone url directory
+               (make-clone-options
+                #:fetch-options (make-fetch-options auth-method)))))
     (lambda _
       (false-if-exception (rmdir directory)))))
 
@@ -167,12 +156,7 @@ corresponding Git object."
          ;; read out-of-bounds when passed a string shorter than 40 chars,
          ;; which is why we delay calls to it below.
          (if (< len 40)
-             (if (module-defined? (resolve-interface '(git object))
-                                  'object-lookup-prefix)
-                 (object-lookup-prefix repository (string->oid commit) len)
-                 (raise (condition
-                         (&message
-                          (message "long Git object ID is required")))))
+             (object-lookup-prefix repository (string->oid commit) len)
              (object-lookup repository (string->oid commit)))))
       (('tag-or-commit . str)
        (if (or (> (string-length str) 40)
@@ -234,40 +218,23 @@ dynamic extent of EXP."
     (lambda (key err)
       (report-git-error err))))
 
-(define (load-git-submodules)
-  "Attempt to load (git submodules), which was missing until Guile-Git 0.2.0.
-Return true on success, false on failure."
-  (match (false-if-exception (resolve-interface '(git submodule)))
-    (#f
-     (set! load-git-submodules (const #f))
-     #f)
-    (iface
-     (module-use! (resolve-module '(guix git)) iface)
-     (set! load-git-submodules (const #t))
-     #t)))
-
 (define* (update-submodules repository
                             #:key (log-port (current-error-port)))
   "Update the submodules of REPOSITORY, a Git repository object."
-  ;; Guile-Git < 0.2.0 did not have (git submodule).
-  (if (load-git-submodules)
-      (for-each (lambda (name)
-                  (let ((submodule (submodule-lookup repository name)))
-                    (format log-port (G_ "updating submodule '~a'...~%")
-                            name)
-                    (submodule-update submodule)
+  (for-each (lambda (name)
+              (let ((submodule (submodule-lookup repository name)))
+                (format log-port (G_ "updating submodule '~a'...~%")
+                        name)
+                (submodule-update submodule)
 
-                    ;; Recurse in SUBMODULE.
-                    (let ((directory (string-append
-                                      (repository-working-directory repository)
-                                      "/" (submodule-path submodule))))
-                      (with-repository directory repository
-                        (update-submodules repository
-                                           #:log-port log-port)))))
-                (repository-submodules repository))
-      (format (current-error-port)
-              (G_ "Support for submodules is missing; \
-please upgrade Guile-Git.~%"))))
+                ;; Recurse in SUBMODULE.
+                (let ((directory (string-append
+                                  (repository-working-directory repository)
+                                  "/" (submodule-path submodule))))
+                  (with-repository directory repository
+                    (update-submodules repository
+                                       #:log-port log-port)))))
+            (repository-submodules repository)))
 
 (define-syntax-rule (false-if-git-not-found exp)
   "Evaluate EXP, returning #false if a GIT_ENOTFOUND error is raised."
@@ -331,12 +298,9 @@ it unchanged."
      ;; Only fetch remote if it has not been cloned just before.
      (when (and cache-exists?
                 (not (reference-available? repository ref)))
-       (if auth-supported?
-           (let ((auth-method (and auth-supported?
-                                   (%make-auth-ssh-agent))))
-             (remote-fetch (remote-lookup repository "origin")
-                           #:fetch-options (make-fetch-options auth-method)))
-           (remote-fetch (remote-lookup repository "origin"))))
+       (let ((auth-method (%make-auth-ssh-agent)))
+         (remote-fetch (remote-lookup repository "origin")
+                       #:fetch-options (make-fetch-options auth-method))))
      (when recursive?
        (update-submodules repository #:log-port log-port))
 
@@ -359,9 +323,7 @@ it unchanged."
 
        ;; Reclaim file descriptors and memory mappings associated with
        ;; REPOSITORY as soon as possible.
-       (when (module-defined? (resolve-interface '(git repository))
-                              'repository-close!)
-         (repository-close! repository))
+       (repository-close! repository)
 
        (values cache-directory (oid->string oid) relation)))))
 

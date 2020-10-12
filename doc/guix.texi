@@ -826,8 +826,8 @@ or later;
 @item @uref{https://notabug.org/guile-lzlib/guile-lzlib, Guile-lzlib};
 @item
 @c FIXME: Specify a version number once a release has been made.
-@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
-2017 or later;
+@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, version 0.3.0
+or later;
 @item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON}
 4.3.0 or later;
 @item @url{https://www.gnu.org/software/make/, GNU Make}.
