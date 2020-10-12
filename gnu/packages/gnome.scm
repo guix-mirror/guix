@@ -10295,6 +10295,60 @@ photo-booth-like software, such as Cheese.")
 apply fancy special effects and lets you share the fun with others.")
     (license license:gpl2+)))
 
+(define-public passwordsafe
+  (package
+    (name "passwordsafe")
+    (version "3.99.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/World/PasswordSafe")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pi2l4gwf8paxm858mxrcsk5nr0c0zw5ycax40mghndb6b1qmmhf"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/gnome-passwordsafe"))
+                   (pylib (string-append (assoc-ref outputs "out")
+                                         "/lib/python"
+                                         ,(version-major+minor
+                                           (package-version python))
+                                         "/site-packages")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("libhandy" ,libhandy-0.0)
+       ("libpwquality" ,libpwquality)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pykeepass" ,python-pykeepass)))
+    (home-page "https://gitlab.gnome.org/World/PasswordSafe")
+    (synopsis "Password manager for the GNOME desktop")
+    (description
+     "Password Safe is a password manager which makes use of the KeePass v4
+format.  It integrates perfectly with the GNOME desktop and provides an easy
+and uncluttered interface for the management of password databases.")
+    (license license:gpl3+)))
+
 (define-public sound-juicer
   (package
     (name "sound-juicer")
