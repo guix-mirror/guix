@@ -4640,7 +4640,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.54")
+    (version "5.55")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4648,7 +4648,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1p2ncvjz6alr9n3l5wvq2arqgc7xjs6dqyar1l9jp0z8cfgapkb8"))))
+                "124v9s4y1s7s6klx5vlmzpk1jlr4x84ch7r7scm7x2f42dqp2qw8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -4657,6 +4657,8 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                "--localstatedir=/var"
                "--enable-library"
                "--disable-systemd"
+               ;; TODO: is this needed?  Not installed by default since 5.55.
+               "--enable-hid2hci"
                ;; Install dbus/udev files to the correct location.
                (string-append "--with-dbusconfdir=" out "/etc")
                (string-append "--with-udevdir=" out "/lib/udev")))
