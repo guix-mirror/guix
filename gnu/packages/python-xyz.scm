@@ -86,6 +86,7 @@
 ;;; Copyright © 2020 Hendursaga <hendursaga@yahoo.com>
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
+;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15969,6 +15970,51 @@ validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
 
 (define-public python2-rfc3987
   (package-with-python2 python-rfc3987))
+
+;; The latest commit contains fixes for building with both python3 and python2.
+(define-public python-rfc6555
+  (let ((commit "1a181b432312731f6742a5eb558dae4761d32361")
+        (revision "1"))
+    (package
+      (name "python-rfc6555")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/sethmlarson/rfc6555")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1bxl17j9vs69cshcqnlwamr03hnykxqnwz3mdgi6x3s2k4q18npp"))))
+      (build-system python-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (if tests?
+                 ;; Other tests require network access.
+                 (invoke "pytest" "tests/test_ipv6.py")
+                 #t))))))
+      (native-inputs
+       `(("python-pytest" ,python-pytest)))
+      (home-page "https://pypi.org/project/rfc6555/")
+      (synopsis "Python implementation of RFC 6555")
+      (description
+       "Python implementation of the Happy Eyeballs Algorithm described in RFC
+6555.  Provided with a single file and dead-simple API to allow easy vendoring
+and integration into other projects.")
+      (properties `((python2-variant . ,(delay python2-rfc6555))))
+      (license license:asl2.0))))
+
+(define-public python2-rfc6555
+  (let ((base (package-with-python2
+               (strip-python2-variant python-rfc6555))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-selectors2" ,python2-selectors2))))))
 
 (define-public python-validators
   (package
