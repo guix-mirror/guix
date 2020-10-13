@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexey Abramov <levenson@mmer.org>
+;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -776,7 +777,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.2.4")
+    (version "7.3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -785,12 +786,14 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h5q5nk2p2vx86w6rrbs7v70h81dpqqr68x6l3klzl3m0yj9agb1"))))
+                "1gg8ry67i20qapj4z20am9bm67m2q28kixcj7ja75m897vhzarnq"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
-    (inputs `(("python2-pysqlite" ,python2-pysqlite)
-              ("python2-six" ,python2-six)))
+    (inputs
+     `(("python2-pysqlite" ,python2-pysqlite)
+       ("python2-rfc6555" ,python2-rfc6555)
+       ("python2-six" ,python2-six)))
     (arguments
      ;; The setup.py script expects python-2.
      `(#:python ,python-2
