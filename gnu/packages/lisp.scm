@@ -51,10 +51,8 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bdw-gc)
-  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ed)
-  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -801,7 +799,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "243")
+    (version "244")
     (source
      (origin
        (method git-fetch)
@@ -810,7 +808,7 @@ enough to play the original mainframe Zork all the way through.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08rrl7ac6jnx0zfchzbpvs3qidrbjrl9c7p8s1wms90lp10i18ak"))))
+        (base32 "1bzhb1pms6gjzphbsimhwdyq46ik1m7sgldigg5l1q7bppg9r3i0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -832,9 +830,6 @@ enough to play the original mainframe Zork all the way through.")
                                 "tests/017/realpath.expected")
                (("/usr/bin") "/"))
              #t)))))
-    (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
     (inputs
      `(("libffi" ,libffi)))
     (synopsis "General-purpose, multi-paradigm programming language")
