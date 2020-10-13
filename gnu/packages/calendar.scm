@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -339,3 +340,45 @@ DebConf, FrOSCon, Grazer LinuxTage, and the CCC congresses.
 ConfClerk is targeted at mobile devices but works on any system running Qt.")
     (license (list license:gpl2+
                    license:lgpl3)))) ; or cc-by3.0 for src/icons/*
+
+(define-public ccal
+  (package
+    (name "ccal")
+    (version "2.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ccal.chinesebay.com/ccal/ccal-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15nza1d1lvk3dp0wcl53wsd32yhbgyzznha092mh5kh5z74vsk1x"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("/usr/local/bin")
+                  (string-append out "/bin"))
+                 (("/usr/local/man")
+                  (string-append out "/share/man"))))
+             #t))
+         (add-after 'install 'install-manuals
+           (lambda _
+             (invoke "make" "install-man"))))
+       ;; no tests
+       #:tests? #f))
+    (home-page "http://ccal.chinesebay.com/ccal/ccal.htm")
+    (synopsis "Command line program for Chinese calendar")
+    (description "@command{ccal} is a command line program which writes a
+Gregorian calendar together with Chinese calendar to standard output.  Its
+usage is similar to the @command{cal} program.  In addition to console output,
+it can also generate Encapsulated Postscript and HTML table outputs for use in
+do-it-yourself calendars and web pages.  It supports both simplified and
+traditional Chinese characters.")
+    ;; Both licenses are in use in various source files.  Note that
+    ;; COPYING.LESSER specifies LGPL 3.0, but all source files say
+    ;; 'Lesser GPL version 2 or later'.
+    (license (list license:gpl2+ license:lgpl2.1+))))
