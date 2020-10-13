@@ -9586,8 +9586,7 @@ library.")
          "037mb9ichariqi45xm6mz0b11pa92gj38ba0409z3iz239sns6y3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1))
        #:cargo-development-inputs
        (("rust-fnv" ,rust-fnv-1)
