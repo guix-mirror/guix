@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2156,7 +2157,7 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
 (define-public gmsh
   (package
     (name "gmsh")
-    (version "2.16.0")
+    (version "4.6.0")
     (source
      (origin
       (method git-fetch)
@@ -2168,12 +2169,11 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
                                         version)))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "08rq4jajwmlpivnm9yifz2jhaivnz065lnk0h2zv773nwl9wf162"))
+       (base32 "0m0pjxcy1bnr7a20i11lh0ih159pphq9wsvfjr3sfx4y3lginz5y"))
       (modules '((guix build utils)))
       (snippet
-       ;; Remove non-free METIS code
        '(begin
-          (delete-file-recursively "contrib/Metis")
+          (delete-file-recursively "contrib/metis")
           #t))))
     (build-system cmake-build-system)
     (propagated-inputs
@@ -2184,14 +2184,15 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
        ("lapack" ,lapack)
        ("mesa" ,mesa)
        ("glu" ,glu)
-       ("opencascade-oce" ,opencascade-oce)
+       ("metis" ,metis)
+       ("opencascade-occt" ,opencascade-occt)
        ("libx11" ,libx11)
        ("libxext" ,libxext)))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("libxft" ,libxft)))
     (arguments
-     `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
+     `(#:configure-flags `("-DENABLE_SYSTEM_CONTRIB:BOOL=ON"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
                            "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
     (home-page "http://gmsh.info/")

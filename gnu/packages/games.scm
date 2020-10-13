@@ -11409,7 +11409,7 @@ etc.  You can also play games on FICS or against an engine.")
 (define-public stockfish
   (package
     (name "stockfish")
-    (version "11")
+    (version "12")
     (source
      (origin
        (method git-fetch)
@@ -11418,8 +11418,15 @@ etc.  You can also play games on FICS or against an engine.")
              (commit (string-append "sf_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12mppipinymj8s1ipq9a7is453vncly49c32ym9wvyklsgyxfzlk"))))
+        (base32 "0vcymbwp5nf114pp3ax40s21ki5dckda15vmhr77d1mnq3fn0l32"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("neural-network"
+        ,(origin
+           (method url-fetch)
+           (uri "https://tests.stockfishchess.org/api/nn/nn-82215d0fd0df.nnue")
+           (sha256
+            (base32 "1r4yqrh4di05syyhl84hqcz84djpbd605b27zhbxwg6zs07ms8c2"))))))
     (arguments
      `(#:tests? #f
        #:make-flags (list "-C" "src"
@@ -11435,10 +11442,17 @@ etc.  You can also play games on FICS or against an engine.")
                                             ("mips64el-linux" "general-64")
                                             (_ "general-32"))))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)
+                  ;; The official neural network file is needed for building
+                  ;; and is embedded in the resulting binary.
+                  (add-after 'unpack 'copy-net
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (copy-file (assoc-ref inputs "neural-network")
+                                 "src/nn-82215d0fd0df.nnue")
+                      #t)))))
     (synopsis "Strong chess engine")
     (description
-     "Stockfish is a very strong chess engines.  It is much stronger than the
+     "Stockfish is a very strong chess engine.  It is much stronger than the
 best human chess grandmasters.  It can be used with UCI-compatible GUIs like
 ChessX.")
     (home-page "https://stockfishchess.org/")

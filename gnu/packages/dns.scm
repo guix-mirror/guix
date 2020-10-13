@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Simon South <simon@simonsouth.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
@@ -65,9 +67,11 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages ragel)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -529,14 +533,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.3.2")
+    (version "4.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0ac3mbn5z4nc18782m9aswdpi2m9f4665vidw0ciyigdh0pywp2v"))))
+        (base32 "0lgdiqnkfvy245h6kkiqic586qjwmg51lsfs86vlc0kwjwddiijz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -803,32 +807,57 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://secure.nic.cz/files/knot-dns/"
-                           "knot-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.nic.cz/knot/knot-dns")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1i76zflc49jbsaj3idxx7a6x87c0lzal294c3fdjyfl7dvznmjgi"))))
+        (base32 "10mlzldxqvbaw78nghkr0s73rlbpz9wg16z14321xw2l9xfibkad"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove Ragel-generated C files.  We'll recreate them below.
+           (for-each delete-file (find-files "." "\\.c\\.[gt]."))
+           (delete-file "src/libknot/yparser/ypbody.c")
+           ;; Remove bundled library to ensure we always use the system's.
+           (delete-file-recursively "src/contrib/libbpf")
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
              "--enable-dnstap"          ; let tools read/write capture files
-             "--with-module-dnstap=yes" ; detailed query capturing & logging
-             (string-append "--with-bash-completions="
-                            (assoc-ref %outputs "out")
-                            "/etc/bash_completion.d"))
+             "--enable-fastparser"      ; disabled by default when .git/ exists
+             "--enable-xdp=auto"        ; XXX [=yes] currently means =embedded
+             "--with-module-dnstap=yes") ; detailed query capturing & logging
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'link-missing-libbpf-dependency
+           ;; Linking against -lbpf later would fail to find -lz: libbpf.pc has
+           ;; zlib in its Requires.private (not Requires) field.  Add it here.
+           (lambda _
+             (substitute* "configure.ac"
+               (("enable_xdp=yes" match)
+                (string-append match "\nlibbpf_LIBS=\"$libbpf_LIBS -lz\"")))
+             #t))
+         (add-before 'bootstrap 'update-parser
+           (lambda _
+             (with-directory-excursion "src"
+               (invoke "sh" "../scripts/update-parser.sh"))))
          (add-before 'configure 'disable-directory-pre-creation
            (lambda _
              ;; Don't install empty directories like ‘/etc’ outside the store.
              ;; This is needed even when using ‘make config_dir=... install’.
              (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))
              #t))
+         (add-after 'build 'build-info
+           (lambda _
+             (invoke "make" "info")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -836,16 +865,28 @@ Extensions} (DNSSEC).")
                     (etc (string-append doc "/examples/etc")))
                (invoke "make"
                        (string-append "config_dir=" etc)
-                       "install")))))))
+                       "install"))))
+         (add-after 'install 'install-info
+           (lambda _
+             (invoke "make" "install-info"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
+       ("ragel" ,ragel)
+       ("texinfo" ,texinfo)))
     (inputs
      `(("fstrm" ,fstrm)
        ("gnutls" ,gnutls)
        ("jansson" ,jansson)
+       ("libbpf" ,libbpf)
        ("libcap-ng" ,libcap-ng)
        ("libedit" ,libedit)
+       ("libelf" ,libelf)
        ("libidn" ,libidn)
+       ("libnghttp2" ,nghttp2 "lib")
        ("liburcu" ,liburcu)
        ("lmdb" ,lmdb)
        ("ncurses" ,ncurses)

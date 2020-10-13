@@ -1609,14 +1609,14 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
 (define-public r-diffbind
   (package
     (name "r-diffbind")
-    (version "2.16.0")
+    (version "2.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DiffBind" version))
        (sha256
         (base32
-         "1mwqgljya1c7r2dfrdds3nswn9bn1l3ak1wavbpv4lbv3nkmykn5"))))
+         "11y9kigdikqcd0cnksh306nsaadak0kgivk7773mv3yszrxxwzj1"))))
     (properties `((upstream-name . "DiffBind")))
     (build-system r-build-system)
     (inputs
@@ -2707,13 +2707,13 @@ gene and isoform level using RNA-seq data")
 (define-public r-karyoploter
   (package
     (name "r-karyoploter")
-    (version "1.14.0")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "karyoploteR" version))
               (sha256
                (base32
-                "0h0gk4xd95k5phy6qcsv7j931d7gk3p24i2fg4mz5dsk110lpifs"))))
+                "1wlnzkq58baqj9854nzf5rbglchb2xy4wsp3s0q8xfq8v0p3baxf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -3628,14 +3628,14 @@ information about samples and features can be added to the plot.")
 (define-public r-gosemsim
   (package
     (name "r-gosemsim")
-    (version "2.14.1")
+    (version "2.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GOSemSim" version))
        (sha256
         (base32
-         "0v4q9xr1cm5xr08pgbzrss41kh3yz7xyh31n55l0sjmr1629ykln"))))
+         "02r7m1x6g8bb7q8l0hpvakdzdv5v1nplhx5lbiy798a7c3xg895b"))))
     (properties `((upstream-name . "GOSemSim")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4364,14 +4364,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.12.4")
+    (version "1.12.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "1gs9862hhh4gr1akij6ykhcj29s9dzg1vnj87hqrm19dfgl43qbh"))))
+         "1103daz82k97vzmxjmf7jwm2nd3w8i0jwplrsi9996bkih11qwbf"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5062,14 +5062,14 @@ based on @dfn{Continuous Wavelet Transform} (CWT).")
 (define-public r-xcms
   (package
     (name "r-xcms")
-    (version "3.10.1")
+    (version "3.10.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "xcms" version))
        (sha256
         (base32
-         "1aa11gy1v7kkamv3hsnvdx715q8f1saw9p664j6wifyjj0hx13kn"))))
+         "0sk53jcl7sjrpw2ncdpl8sw1b1j9mizlrj517rinr1qrbm6lsn8f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -7161,14 +7161,14 @@ data.")
 (define-public r-activedriverwgs
   (package
     (name "r-activedriverwgs")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActiveDriverWGS" version))
        (sha256
         (base32
-         "0l6h0f54zjvcx19ngq3kp01dypsjqf28vssjm8yzccmpyacfypag"))))
+         "06mvakdc8d2pn91p0sr4ixc561s4ia5h1cvd1p7pqd6s50dy4say"))))
     (properties
      `((upstream-name . "ActiveDriverWGS")))
     (build-system r-build-system)
@@ -7247,14 +7247,14 @@ gene expression.")
 (define-public r-bgx
   (package
     (name "r-bgx")
-    (version "1.54.0")
+    (version "1.54.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bgx" version))
        (sha256
         (base32
-         "0r67a6m5hrnsxgk0f57hl5yaagi2wai2kpfyjjlhrck4rlm1sjcx"))))
+         "0a10fg9n5p024jrmbis102gqpbz23sc6vdn1sal2697hlxikzb46"))))
     (properties `((upstream-name . "bgx")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8187,14 +8187,14 @@ truncated data.")
 (define-public r-interval
   (package
     (name "r-interval")
-    (version "1.1-0.1")
+    (version "1.1-0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "interval" version))
        (sha256
         (base32
-         "1lln9jkli28i4wivwzqrsxvv2n15560f7msjy5gssrm45vxrxms8"))))
+         "1b31lh0sv7lzy76230djipahxa10lblbr37kdiigr6hp3dd1xmz9"))))
     (properties `((upstream-name . "interval")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8214,14 +8214,14 @@ plot them, and perform logrank or Wilcoxon type tests.")
 (define-public r-fhtest
   (package
     (name "r-fhtest")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "FHtest" version))
        (sha256
         (base32
-         "1wsn0j9ydpp9nfswiqg21p09kgkvaq8fh0y0h8syqgizah7i8vs2"))))
+         "00mql2r4f5hxhdqf27q3x9s5rz2zzakx2myym97b1w1s7c5znl4q"))))
     (properties `((upstream-name . "FHtest")))
     (build-system r-build-system)
     (propagated-inputs

@@ -569,13 +569,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.13")
+    (version "1.1.14")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
-        (base32 "089q3flmwbz7dc28zlscwylf64kgck3jf1n6lqpwww8hlrk8cjhn"))
+        (base32 "1fpdj73cgp96xwasdcifxl7q2pr1my2f4vfdjpv771llri3hgfvx"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -606,7 +606,7 @@ detection, and lossless compression.")
            #t))))
     (build-system python-build-system)
     (arguments
-     `(#:modules ((srfi srfi-26) ; for cut
+     `(#:modules ((srfi srfi-26)        ; for cut
                   (guix build utils)
                   (guix build python-build-system))
        #:phases

@@ -105,6 +105,9 @@ if test "x$GUILE_EFFECTIVE_VERSION" = "x2.2"; then
   PKG_CHECK_MODULES([GUILE], [guile-2.2 >= 2.2.3])
 fi
 
+dnl Get CFLAGS and LDFLAGS for libguile.
+GUILE_FLAGS
+
 dnl Installation directories for .scm and .go files.
 guilemoduledir="${datarootdir}/guile/site/$GUILE_EFFECTIVE_VERSION"
 guileobjectdir="${libdir}/guile/$GUILE_EFFECTIVE_VERSION/site-ccache"

@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,15 +20,20 @@
 
 (define-module (gnu packages vlang)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages node)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages))
 
 (define-public vlang
   (package
    (name "vlang")
-   (version "0.1.27")
+   (version "0.1.29")
    (source
     (origin
      (method git-fetch)
@@ -35,20 +42,18 @@
            (commit version)))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "1d9qhacllvkqif42jaayixhjyhx7pzslh8p1yr5p19447q763fq1"))))
+      (base32 "1rqi7cah5nq8aggrib9xvdpfjxq20li91svv0w9yny6nn1ag7snx"))))
    (build-system gnu-build-system)
    (arguments
-    '(#:tests? #f ; tests are broken in v 0.1.27
-      #:make-flags
-      `("CC=gcc"
-        "GITCLEANPULL=true"
-        "GITFASTCLONE=mkdir -p"
-        "TCCREPO="
-        "TMPTCC=tcc"
-        ,(string-append "TMPVC=" (assoc-ref %build-inputs "vc"))
-        "VCREPO="
-        "VERBOSE=1"
-        "V_ALWAYS_CLEAN_TMP=false")
+    `(#:make-flags
+      (list (string-append "CC=" ,(cc-for-target))
+            "TMPTCC=tcc"
+            (string-append "VC=" (assoc-ref %build-inputs "vc"))
+            "GITCLEANPULL=true"
+            "GITFASTCLONE=mkdir -p"
+            "TCCREPO="
+            "VCREPO="
+            "VERBOSE=1")
       #:phases
       (modify-phases %standard-phases
         (delete 'configure)
@@ -56,22 +61,32 @@
           (lambda _
             (substitute* "Makefile"
               (("rm -rf") "true")
-              (("v self") "v -cc gcc cmd/v"))
+              (("v self") (string-append "v -cc " ,(cc-for-target) " cmd/v")))
             #t))
-        ;; A few tests are broken in v 0.1.27. This function should be
-        ;; enabled to run tests in the next release.
-        ;; (replace 'check
-        ;;   (lambda _
-        ;;     (let* ((tmpbin "tmp/bin")
-        ;;            (gcc (which "gcc")))
-        ;;       (mkdir-p tmpbin)
-        ;;       (symlink gcc (string-append tmpbin "/cc"))
-        ;;       (setenv "PATH" (string-append tmpbin ":" (getenv "PATH")))
-        ;;       (invoke "./v" "test-fixed"))
-        ;;     #t))
-        (replace 'install
+        (add-before 'check 'delete-failing-tests
+          ;; XXX As always, these should eventually be fixed and run.
           (lambda _
-            (let* ((bin (string-append (assoc-ref %outputs "out") "/bin"))
+            (for-each delete-file
+                      '("vlib/v/gen/x64/tests/x64_test.v"
+                        "vlib/v/tests/repl/repl_test.v"
+                        "vlib/v/tests/valgrind/valgrind_test.v"
+                        "vlib/v/tests/valgrind/strings_and_arrays.vv"
+                        "vlib/v/tests/live_test.v"
+                        "vlib/net/websocket/ws_test.v"))
+            #t))
+        (replace 'check
+          (lambda* (#:key tests? #:allow-other-keys)
+            (let* ((bin "tmp/bin")
+                   (gcc (which "gcc")))
+              (when tests?
+                (mkdir-p bin)
+                (symlink gcc (string-append bin "/cc"))
+                (setenv "PATH" (string-append bin ":" (getenv "PATH")))
+                (invoke "./v" "test-fixed")))
+            #t))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
                    (tools (string-append bin "/cmd/tools"))
                    (thirdparty (string-append bin "/thirdparty"))
                    (vlib (string-append bin "/vlib"))
@@ -90,7 +105,9 @@
     `(("glib" ,glib)))
    (native-inputs
     `(("vc"
-       ,(let ((vc-version "0884d7092f4c2a4f8ca16da6f1792efa235247be"))
+       ;; Versions are not consistently tagged, but the matching commit will
+       ;; probably have ‘v0.x.y’ in the commit message.
+       ,(let ((vc-version "b01d0fcda4b55861baa4be82e307cca4834b1641"))
           ;; v bootstraps from generated c source code from a dedicated
           ;; repository. It's readable, as generated source goes, and not at all
           ;; obfuscated, and it's about 15kb. The original source written in
@@ -104,7 +121,13 @@
                   (commit vc-version)))
             (file-name (git-file-name "vc" vc-version))
             (sha256
-             (base32 "17bs09iwxfd0si70j48n9nd16gfgcj8imd0azypk3xzzbz4wybnz")))))))
+             (base32 "052gp5q2k31r3lci3rx4k0vy0vjdjva64xvrbbihn8lgmw63lc9f")))))
+
+      ;; For the tests.
+      ("libx11" ,libx11)
+      ("node" ,node)
+      ("openssl" ,openssl)
+      ("sqlite" ,sqlite)))
    (home-page "https://vlang.io/")
    (synopsis "Compiler for the V programming language")
    (description

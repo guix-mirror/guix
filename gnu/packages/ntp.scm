@@ -43,14 +43,14 @@
 (define-public chrony
   (package
     (name "chrony")
-    (version "3.5.1")
+    (version "4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.tuxfamily.org/chrony/"
                            "chrony-" version ".tar.gz"))
        (sha256
-        (base32 "19ywl8a3lb2id7lcna5hp2g4pjnfwdc9ihr0fk6i9m45vdq2za0v"))))
+        (base32 "09f6w2x5h5kamb4rhcbaz911q1f730qdalgsn8s48yjyqlafl9xy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
@@ -80,7 +80,8 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libcap" ,libcap/next)
+     `(("gnutls" ,gnutls)
+       ("libcap" ,libcap/next)
        ("libseccomp" ,libseccomp)
        ("nettle" ,nettle)))
     (home-page "https://chrony.tuxfamily.org/")

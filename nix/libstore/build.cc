@@ -1386,11 +1386,6 @@ void DerivationGoal::buildDone()
            being valid. */
         registerOutputs();
 
-        if (buildMode == bmCheck) {
-            done(BuildResult::Built);
-            return;
-        }
-
         /* Delete unused redirected outputs (when doing hash rewriting). */
         foreach (RedirectedOutputs::iterator, i, redirectedOutputs)
             if (pathExists(i->second)) deletePath(i->second);
@@ -2484,8 +2479,6 @@ void DerivationGoal::registerOutputs()
         info.deriver = drvPath;
         infos.push_back(info);
     }
-
-    if (buildMode == bmCheck) return;
 
     /* Compare the result with the previous round, and report which
        path is different, if any.*/

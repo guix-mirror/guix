@@ -1,0 +1,52 @@
+From 783cbd59fcf086a9aaf603271823fb4ca71f0c55 Mon Sep 17 00:00:00 2001
+From: Danny Milosavljevic <dannym@scratchpost.org>
+Date: Thu, 8 Oct 2020 23:01:05 +0200
+Subject: [PATCH] meminfo: Replace sys/io.h by direct register accesses.
+See: https://github.com/linux-sunxi/sunxi-tools/pull/144
+
+Signed-off-by: Danny Milosavljevic <dannym@scratchpost.org>
+---
+ meminfo.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/meminfo.c b/meminfo.c
+index 0b0ff23..3b3a5df 100644
+--- a/meminfo.c
++++ b/meminfo.c
+@@ -22,7 +22,6 @@
+ #include <sys/mman.h>
+ #include <stdint.h>
+ #include <errno.h>
+-#include <sys/io.h>
+ #include <stdbool.h>
+ 
+ #include "common.h"
+@@ -74,24 +73,24 @@ static enum sunxi_soc_version soc_version;
+ unsigned int
+ sunxi_io_read(void *base, int offset)
+ {
+-	return inl((unsigned long) (base + offset));
++	return *(volatile unsigned int*) (base + offset);
+ }
+ 
+ void
+ sunxi_io_write(void *base, int offset, unsigned int value)
+ {
+-	outl(value, (unsigned long) (base + offset));
++	*(volatile unsigned int*) (base + offset) = value;
+ }
+ 
+ void
+ sunxi_io_mask(void *base, int offset, unsigned int value, unsigned int mask)
+ {
+-	unsigned int tmp = inl((unsigned long) (base + offset));
++	unsigned int tmp = sunxi_io_read(base, offset);
+ 
+ 	tmp &= ~mask;
+ 	tmp |= value & mask;
+ 
+-	outl(tmp, (unsigned long) (base + offset));
++	sunxi_io_write(base, offset, tmp);
+ }
+ 
+ 

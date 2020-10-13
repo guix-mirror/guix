@@ -244,6 +244,7 @@ set."
   (false-if-EEXIST (symlink "/dev/fd/0" (scope "dev/stdin")))
   (false-if-EEXIST (symlink "/dev/fd/1" (scope "dev/stdout")))
   (false-if-EEXIST (symlink "/dev/fd/2" (scope "dev/stderr")))
+  (false-if-EEXIST (symlink "crash-dump-core" (scope "servers/crash")))
 
   ;; Make sure /etc/mtab is a symlink to /proc/mounts.
   (false-if-exception (delete-file (scope "etc/mtab")))

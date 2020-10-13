@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -40,6 +40,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -136,6 +137,15 @@
                             (format port
                                     "using gcc : cross : ~a-c++ ;"
                                     ,(%current-target-system)))))
+                     '())
+
+               ;; Change an #ifdef __MACH__ that really targets macOS.
+               ;; TODO: Inline this on the next rebuild cycle.
+               ,@(if (hurd-target?)
+                     '((substitute* "boost/test/utils/timer.hpp"
+                         (("defined\\(__MACH__\\)")
+                          "(defined __MACH__ && !defined __GNU__)"))
+                       #t)
                      '())
 
                (invoke "./bootstrap.sh"

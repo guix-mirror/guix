@@ -84,6 +84,8 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Hendursaga <hendursaga@yahoo.com>
+;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
+;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -507,14 +509,20 @@ pidof, tty, taskset, pmap.")
 (define-public python-shapely
   (package
     (name "python-shapely")
-    (version "1.6.4.post2")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Shapely" version))
        (sha256
         (base32
-         "03r42fmd9alp6r3q95ad6rldq2f7n1wimrw53zy5kpn33yv7pf64"))))
+         "0adiz4jwmwxk7k1awqifb1a9bj5x4nx4gglb5dz9liam21674h8n"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file "shapely/speedups/_speedups.c")
+           (delete-file "shapely/vectorized/_vectorized.c")
+           #t))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)
@@ -533,11 +541,14 @@ pidof, tty, taskset, pmap.")
              (let ((geos (assoc-ref inputs "geos"))
                    (glibc (assoc-ref inputs ,(if (%current-target-system)
                                                  "cross-libc" "libc"))))
-               (substitute* "shapely/geos.py"
+               (substitute* '("shapely/geos.py" "shapely/_buildcfg.py")
                  (("_lgeos = load_dll\\('geos_c', fallbacks=.*\\)")
                   (string-append "_lgeos = load_dll('geos_c', fallbacks=['"
                                  geos "/lib/libgeos_c.so'])"))
                  (("free = load_dll\\('c'\\)\\.free")
+                  (string-append "free = load_dll('c', fallbacks=['"
+                                 glibc "/lib/libc.so.6']).free"))
+                 (("free = load_dll\\('c', fallbacks=.*\\)\\.free")
                   (string-append "free = load_dll('c', fallbacks=['"
                                  glibc "/lib/libc.so.6']).free"))))
              #t)))))
@@ -4087,6 +4098,27 @@ matching of file paths.")
     (synopsis "The uncompromising code formatter")
     (description "Black is the uncompromising Python code formatter.")
     (license license:expat)))
+
+(define-public python-black-macchiato
+  (package
+    (name "python-black-macchiato")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "black-macchiato" version))
+       (sha256
+        (base32
+         "1drp5p697ni1xn5y2lbjpalgpkzy2i4cyxjj5pk4dxr0vk97dd7i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-black" ,python-black)))
+    (home-page "https://github.com/wbolster/black-macchiato")
+    (synopsis "Partial @code{python-black} formatting")
+    (description
+     "This package is built on top the @{python-black} code formatter to
+enable formatting of partial files.")
+    (license license:bsd-3)))
 
 (define-public python-blinker
   (package
@@ -8048,13 +8080,13 @@ complexity of Python source code.")
 (define-public python-flake8
   (package
     (name "python-flake8")
-    (version "3.8.3")
+    (version "3.8.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flake8" version))
               (sha256
                (base32
-                "02527892hh0qjivxaiphzalj7q32qkna1cqaikjs7c03mk5ryjzh"))))
+                "0fvcrsbyzjpcli8ldbpsdbpmf238nkvwc1dy4hy82lf63rvfinma"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -10039,14 +10071,13 @@ simulation, statistical modeling, machine learning and much more.")
        (uri (pypi-uri "chardet" version))
        (sha256
         (base32
-         "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))))
+         "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))
+        (patches (search-patches "python-chardet-3.0.4-pytest.patch"))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (build-system python-build-system)
-    ;; XXX: Incompatible with Pytest 4: <https://github.com/chardet/chardet/issues/173>.
-    (arguments `(#:tests? #f))
     (home-page "https://github.com/chardet/chardet")
     (synopsis "Universal encoding detector for Python 2 and 3")
     (description
@@ -10811,36 +10842,40 @@ Pytest but stripped of Pytest specific details.")
 
 (define-public python-tox
   (package
-   (name "python-tox")
-   (version "2.8.1")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (pypi-uri "tox" version))
-     (sha256
-      (base32
-       "1drp6mwm8wdypjym15ia8lwjxbhcksb9vzxg4ay5dh4ji57by2ny"))))
-   (build-system python-build-system)
-   (arguments
-    ;; FIXME: Tests require pytest-timeout, which itself requires
-    ;; pytest>=2.8.0 for installation.
-    '(#:tests? #f))
-   (propagated-inputs
-    `(("python-pluggy" ,python-pluggy) ; >=0.3.0,<0.4.0
-      ("python-py" ,python-py)
-      ("python-virtualenv" ,python-virtualenv)))
-   (native-inputs
-    `(; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
-      ("python-pytest" ,python-pytest)  ; >= 2.3.5
-      ("python-setuptools-scm" ,python-setuptools-scm)))
-   (home-page "https://tox.readthedocs.io")
-   (synopsis "Virtualenv-based automation of test activities")
-   (description "Tox is a generic virtualenv management and test command line
+    (name "python-tox")
+    (version "3.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tox" version))
+       (sha256
+        (base32
+         "0nk0nyzhzamcrvn0qqzzy54isxxqwdi28swml7a2ym78c3f9sqpb"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Tests require pytest-timeout, which itself requires
+     ;; pytest>=2.8.0 for installation.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-filelock" ,python-filelock)
+       ("python-packaging" ,python-packaging)
+       ("python-pluggy" ,python-pluggy)
+       ("python-py" ,python-py)
+       ("python-six" ,python-six)
+       ("python-toml" ,python-toml)
+       ("python-virtualenv" ,python-virtualenv)))
+    (native-inputs
+     `(; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-pytest" ,python-pytest)  ; >= 2.3.5
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://tox.readthedocs.io")
+    (synopsis "Virtualenv-based automation of test activities")
+    (description "Tox is a generic virtualenv management and test command line
 tool.  It can be used to check that a package installs correctly with
 different Python versions and interpreters, or run tests in each type of
 supported environment, or act as a frontend to continuous integration
 servers.")
-   (license license:expat)))
+    (license license:expat)))
 
 (define-public python2-tox
   (package-with-python2 python-tox))
@@ -15380,18 +15415,18 @@ perform the operations required for synchronizing plain text.")
 (define-public python-dirsync
   (package
     (name "python-dirsync")
-    (version "2.2.3")
+    (version "2.2.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dirsync" version))
         (sha256
          (base32
-          "1r40fkanksagcszf1ag85mdr8w7rgc7196n6s1qlsk2abw6i7v0z"))))
+          "1gm82jddm1lkazdi8lfsl1b3vi1z0252ng60mzjym8irnv94qfhy"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("six" ,python-six)))
-    (home-page "https://bitbucket.org/tkhyn/dirsync")
+    (home-page "https://github.com/tkhyn/dirsync")
     (synopsis "Advanced directory tree synchronisation tool")
     (description "Advanced directory tree synchronisation tool.")
     (license license:expat)))
@@ -21449,6 +21484,37 @@ randomness (including real life dice) and different wordlists (including
 cryptographically signed ones).")
     (license license:gpl3+)))
 
+(define-public python-dictdiffer
+  (package
+    (name "python-dictdiffer")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "dictdiffer" version))
+              (sha256
+               (base32
+                "1lk3qmy1hkaphk4n7ayfk0wl6m2yvd6r7qkam6yncqfzgkbc1phs"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-check-manifest" ,python-check-manifest)
+       ("python-coverage" ,python-coverage)
+       ("python-isort" ,python-isort)
+       ("python-mock" ,python-mock)
+       ("python-pydoctstyle" ,python-pydocstyle)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-tox" ,python-tox)))
+    (home-page "https://github.com/inveniosoftware/dictdiffer")
+    (synopsis "Diff and patch Python dictionary objects")
+    (description
+     "Dictdiffer is a Python module that helps you to diff and patch
+dictionaries.")
+    (license license:expat)))
+
 (define-public pyzo
   (package
     (name "pyzo")
@@ -22012,6 +22078,42 @@ dates in almost any string formats commonly found on web pages.")
     (description "This package provides a parser for Python dependency files.")
     (license license:expat)))
 
+(define-public python-dpath
+  (package
+    (name "python-dpath")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dpath" version))
+       (sha256
+        (base32
+         "1ymi9ssk7i0mx3mviplf4csfvzibdd6wyj4qzj6s487n9xgnp85y"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             ;; This invokation is taken from tox.ini.
+             (invoke "nosetests" "-d" "-v" "tests/"))))))
+    (home-page "https://github.com/akesterson/dpath-python")
+    (synopsis "Filesystem-like pathing and searching for dictionaries")
+    (description
+     "@code{python-dpath} is a library for accessing and searching
+dictionaries via /slashed/paths ala xpath.
+
+Basically it lets you glob over a dictionary as if it were a filesystem.  It
+allows you to specify globs (ala the bash eglob syntax, through some advanced
+fnmatch.fnmatch magic) to access dictionary elements, and provides some
+facility for filtering those results.")
+    (license license:expat)))
+
 (define-public python-safety
   (package
     (name "python-safety")
@@ -22137,3 +22239,60 @@ CSL 1.0.1 specification.  citeproc-py can output styled citations and
 bibliographies in a number of different output formats.  Currently supported
 are plain text, reStructuredText and HTML.")
     (license license:bsd-2)))
+
+(define-public python-inform
+  (package
+    (name "python-inform")
+    (version "1.23.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "inform" version))
+        (sha256
+          (base32
+            "0dvc5klbnbryrvspp45nmlg02g40j7xspcz7lqsm0c0dj0z29zdz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))  ; PyPI tarball lacks tests
+    (native-inputs
+      `(("python-hypothesis" ,python-hypothesis)
+        ("python-pytest-cov" ,python-pytest-cov)
+        ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+      `(("python-arrow" ,python-arrow)
+        ("python-six" ,python-six)))
+    (home-page "https://inform.readthedocs.io")
+    (synopsis "Print & logging utilities for communicating with user")
+    (description
+      "Inform is designed to display messages from programs that are typically run from
+a console.  It provides a collection of ‘print’ functions that allow you to simply and
+cleanly print different types of messages.")
+    (license license:gpl3+)))
+
+(define-public python-nestedtext
+  (package
+    (name "python-nestedtext")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "nestedtext" version))
+        (sha256
+          (base32
+            "0xjx863n7yd1xmkwhy48lhmqrmlzgbx3civhk386hvrzyq4sx148"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))  ; PyPI tarball lacks tests
+    (propagated-inputs
+      `(("python-inform" ,python-inform)))
+    (home-page "https://nestedtext.org")
+    (synopsis "Human readable and writable data interchange format")
+    (description
+      "NestedText is a file format for holding data that is to be entered, edited, or
+viewed by people.  It allows data to be organized into a nested collection of
+dictionaries, lists, and strings.  In this way it is similar to JSON and YAML, but
+without the complexity and risk of YAML and without the syntatic clutter of JSON.
+NestedText is both simple and natural.  Only a small number of concepts and rules must
+be kept in mind when creating it.  It is easily created, modified, or viewed with
+a text editor and easily understood and used by both programmers and non-programmers.")
+    (license license:expat))) ; MIT license

@@ -443,7 +443,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.41")
+    (version "4.0.43")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -452,7 +452,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09i3kv91g2y5hgl75ccd59gjjvkkri4cj80m7smlx6p14hmbgdif"))))
+                "0ppzr7vsl6iw8x82c4g60mx1vz06nzwcy8byablhg0n0g6qa3pb0"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -1414,17 +1414,11 @@ system administrator.")
                   (delete-file-recursively "lib/zlib")
                   #t))))
     (build-system gnu-build-system)
-    (outputs (list "out" "python"))
+    (outputs (list "out"))
     (arguments
      `(#:configure-flags
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
                             "/share/doc/" ,name "-" ,version)
-
-             ;; XXX: Disable Python support when cross-compiling because
-             ;; 'configure' tries to run 'python', which fails.
-             ,(if (%current-target-system)
-                  "--disable-python"
-                  "--enable-python")              ; for plug-ins written in ~
 
              "--with-logpath=/var/log/sudo.log"
              "--with-rundir=/var/run/sudo" ; must be cleaned up at boot time
@@ -1472,34 +1466,19 @@ system administrator.")
              (substitute* "plugins/sudoers/Makefile.in"
                (("^pre-install:" match)
                 (string-append match "\ndisabled-" match)))
-             #t))
-         (add-after 'install 'separate-python-output
-           (lambda* (#:key target outputs #:allow-other-keys)
-             (let ((out        (assoc-ref outputs "out"))
-                   (out:python (assoc-ref outputs "python")))
-               (if target
-                   (mkdir-p (string-append out:python "/empty"))
-                   (for-each
-                    (lambda (file)
-                      (let ((old (string-append out "/" file))
-                            (new (string-append out:python "/" file)))
-                        (mkdir-p (dirname new))
-                        (rename-file old new)))
-                    (list "libexec/sudo/python_plugin.so"
-                          "libexec/sudo/python_plugin.la")))
-               #t))))
+             #t)))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
        #:tests? #f))
     (native-inputs
-     `(("groff" ,groff)))
+     ;; XXX TODO: Remove on next rebuild cycle.
+     (if (hurd-target?)
+         '()
+         `(("groff" ,groff))))
     (inputs
      `(("coreutils" ,coreutils)
        ("linux-pam" ,linux-pam)
-       ,@(if (%current-target-system)
-             '()
-             `(("python" ,python)))
        ("zlib" ,zlib)))
     (home-page "https://www.sudo.ws/")
     (synopsis "Run commands as root")
@@ -2606,14 +2585,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.90")
+    (version "7.91")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1s20i84m9bci70lrl0p2j7h3kpbi9snmvyhc3lzc9s3mh92w6msm"))
+                "001kb5xadqswyw966k2lqi6jr6zz605jpp9w4kmm272if184pk0q"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2691,7 +2670,7 @@ advanced netcat implementation (ncat), a utility for comparing scan
 results (ndiff), and a packet generation and response analysis tool (nping).")
     ;; This package uses nmap's bundled versions of libdnet and liblinear, which
     ;; both use a 3-clause BSD license.
-    (license (list license:nmap license:bsd-3))))
+    (license (list license:npsl license:bsd-3))))
 
 (define-public dstat
   (package
@@ -2945,6 +2924,8 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
              (commit (string-append "v" version))))
        (sha256
         (base32 "04f3jqg8ww4jxsf9c6ddcdgy2xbhkyp0b3l5f1hvvbv94p81rjxd"))
+       (patches
+        (search-patches "sunxi-tools-remove-sys-io.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove binaries contained in the tarball which are only for the
@@ -4098,3 +4079,44 @@ the system configuration; hosts only works when using the Guix package manager
 on a foreign distro.  @command{hosts} works with existing hosts files and
 entries, providing commands to add, remove, comment, and search.")
     (license license:expat)))
+
+(define-public nmrpflash
+  (package
+    (name "nmrpflash")
+    (version "0.9.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/jclehner/nmrpflash.git")
+         (commit (string-append "v" version))))
+       (sha256
+        (base32 "1fdjrxhjs96rdclbkld57xarf592slhkp79h46z833npxpn12ck1"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libnl" ,libnl)
+       ("libpcap" ,libpcap)))
+    (arguments
+     `(#:tests? #f ; None exist
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'prepare-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (home-page "https://github.com/jclehner/nmrpflash")
+    (synopsis "Netgear unbrick utility")
+    (description "This package provides a utility to flash a new firmware
+image to a Netgear device.  It has been tested on Netgear EX2700, EX6120,
+EX6150v2, DNG3700v2, R6100, R6220, R7000, D7000, WNR3500, R6400, R6800,
+R8000, R8500, WNDR3800, but is likely to be compatible with many other
+Netgear devices.")
+    (license license:gpl3+)))

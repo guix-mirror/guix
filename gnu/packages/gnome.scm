@@ -3261,7 +3261,7 @@ library.")
         ("rust-selectors" ,rust-selectors-0.22)
         ("rust-string-cache" ,rust-string-cache-0.8)
         ("rust-tinyvec" ,rust-tinyvec-0.3)
-        ("rust-url" ,rust-url-2.1)
+        ("rust-url" ,rust-url-2)
         ("rust-xml5ever" ,rust-xml5ever-0.16))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1)
@@ -3969,14 +3969,14 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.47")
+    (version "0.10.48")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/goffice/"
                                   (version-major+minor version)  "/"
                                   "goffice-" version ".tar.xz"))
               (sha256
-               (base32 "0xmigfdzvmlpa0fw79mf3xwchmxc8rlidryn5syv8bz7msmrb215"))))
+               (base32 "1z6f3q8fxkd1ysqrwdxdi0844zqa00vjpf07gq8mh3kal8picfd4"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                  ; 4.0 MiB of gtk-doc
@@ -4033,7 +4033,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.46")
+    (version "1.12.48")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnumeric/"
@@ -4041,7 +4041,7 @@ Hints specification (EWMH).")
                                   "gnumeric-" version ".tar.xz"))
               (sha256
                (base32
-                "1qdmw2dp7rmq8fmjapgwaks7ajh270wm6kyvlxlzwbgmg8vngp4z"))))
+                "14556b0vyxdvdwjlin0rv7jk0vq4nplbmvp9j89bhkfk84xf7k2p"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -4069,8 +4069,8 @@ Hints specification (EWMH).")
        ("librsvg" ,librsvg)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("python" ,python-2)
-       ("python2-pygobject" ,python2-pygobject)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
        ("zlib" ,zlib)))
     (native-inputs
      `(("bison" ,bison)
@@ -4130,7 +4130,7 @@ engineering.")
 (define-public seahorse
   (package
     (name "seahorse")
-    (version "3.36")
+    (version "3.36.2")
     (source
      (origin
        (method url-fetch)
@@ -4138,8 +4138,7 @@ engineering.")
                            (version-major+minor version) "/" name "-"
                            version ".tar.xz"))
        (sha256
-        (base32
-         "1nqn4a6dr4l1fpzj3mv4swhpnvhjcqlwsyhwm59sdzqgdfx4hbwr"))))
+        (base32 "16wmxxppgcgfj8zkagcny5af1c81x32ysm9d6j9f2k7bmik21ss5"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -4742,7 +4741,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.20.3")
+    (version "0.20.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4751,7 +4750,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
                     "libsecret-" version ".tar.xz"))
               (sha256
                (base32
-                "1r4habxdzmn02id324m0m4mg5isf22q1z436bg3vjjmcz1b3rjsg"))))
+                "0a4xnfmraxchd9cq5ai66j12jv2vrgjmaaxz25kl031jvda4qnij"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -4777,6 +4776,8 @@ and the GLib main loop, to integrate well with GNOME applications.")
     (propagated-inputs
      `(("glib" ,glib))) ; required by libsecret-1.pc
     (inputs
+     ;; The ‘build’ phase complains about missing docbook-xml-4.2 but adding it
+     ;; doesn't seem to affect the build result.
      `(("docbook-xsl" ,docbook-xsl)
        ("libgcrypt" ,libgcrypt)
        ("libxml2" ,libxml2))) ; for XML_CATALOG_FILES
@@ -6421,14 +6422,14 @@ almost all of them.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.98.1")
+    (version "0.9.99")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://adishatz.org/eolie/eolie-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1d844zva5w4p9pnp9c2g7zyb4vayr2g2drf78spxsdlc5lbd7lqr"))))
+                "0zj5v7wxqj7c20bmil127ah0vnjfzvvf6kzz82b9ip3846h43j02"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

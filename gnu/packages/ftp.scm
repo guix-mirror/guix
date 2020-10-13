@@ -170,20 +170,25 @@ as required.")
 (define-public libfilezilla
   (package
     (name "libfilezilla")
-    (version "0.16.0")
+    (version "0.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/"
                            "libfilezilla/libfilezilla-" version ".tar.bz2"))
        (sha256
-        (base32 "1fd71vmllzvljff5l5ka5wnzbdsxx4i54dpxpklydmbsqpilnv1v"))))
+        (base32 "1zfnqbn14dx0fl45mfaznr5n5xsxy1kx8z9f80fppbqn37pb9mgx"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (native-inputs
      `(("cppunit" ,cppunit)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("nettle" ,nettle)))
+     `(("gnutls" ,gnutls)
+       ("nettle" ,nettle)))
     (home-page "https://lib.filezilla-project.org")
     (synopsis "Cross-platform C++ library used by Filezilla client")
     (description
@@ -208,20 +213,21 @@ output.
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.42.1")
+    (version "3.50.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/client/"
                            "FileZilla_" version "_src.tar.bz2"))
        (sha256
-        (base32 "083ycsycwy1szhp3mzf998wsqa74hmdxdsy07x6k81vp2cxjxijg"))))
+        (base32 "042w2f5cf8g9cr7d3m6294ygx7jggcria9502jnql855khk8gnz0"))))
     (build-system gnu-build-system)
     (arguments
       ;; Don't let filezilla phone home to check for updates.
      '(#:configure-flags '("--disable-autoupdatecheck")))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(("cppunit" ,cppunit)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
        ("xdg-utils" ,xdg-utils)))
     (inputs

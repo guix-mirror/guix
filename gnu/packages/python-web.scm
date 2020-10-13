@@ -872,14 +872,14 @@ is Python’s.")
 (define-public python-openid
   (package
     (name "python-openid")
-    (version "3.1.0")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python3-openid" version))
        (sha256
         (base32
-         "00l5hrjh19740w00b3fnsqldnla41wbr2rics09dl4kyd1fkd3b2"))))
+         "1bxf9a3ny1js422j962zfzl4a9dhj192pvai05whn7j0iy9gdyrk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2164,13 +2164,13 @@ adapter for use with the Requests library.")
 (define-public python-oauthlib
   (package
     (name "python-oauthlib")
-    (version "3.0.1")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "oauthlib" version))
               (sha256
                (base32
-                "163jg4a8f7c5ki655grrr47kgljy12wri3qly7ijf64sk1fjrqqc"))))
+                "12gqnabwck30gdlpwm6af3s28qm9p2yc7b1w8s4fk9ncbz1irr5y"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

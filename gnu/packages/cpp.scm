@@ -41,12 +41,22 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages logging)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
@@ -669,3 +679,52 @@ parsers according to a Parsing Expression Grammar (PEG).")
 standard GNU style syntax for options.")
     (home-page "https://github.com/jarro2783/cxxopts/wiki")
     (license license:expat)))
+
+(define-public folly
+  (package
+    (name "folly")
+    (version "2020.10.05.00")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/facebook/folly")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0q4w4cvjxffc462hvs8h4zryq4965j7015zvkwagcm6cj6wmz3cn"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(;; Tests must be explicitly enabled
+       ;;#:configure-flags '("-DBUILD_TESTS=ON")))
+       ;; Leave tests disabled; see https://github.com/facebook/folly/issues/1456
+       #:tests? #f))
+    (propagated-inputs
+     `(("boost" ,boost)
+       ("gflags" ,gflags)
+       ("glog" ,glog)
+       ("liburing" ,liburing)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("double-conversion" ,double-conversion)
+       ("fmt" ,fmt)
+       ("libaio" ,libaio)
+       ("libevent" ,libevent)
+       ("libiberty" ,libiberty)
+       ("libsodium" ,libsodium)
+       ("libunwind" ,libunwind)
+       ("lz4" ,lz4)
+       ("openssl" ,openssl)
+       ("snappy" ,snappy)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (synopsis "Collection of C++ components complementing the standard library")
+    (description
+     "Folly (acronymed loosely after Facebook Open Source Library) is a library
+of C++14 components that complements @code{std} and Boost.")
+    (home-page "https://github.com/facebook/folly/wiki")
+    ;; 32-bit is not supported: https://github.com/facebook/folly/issues/103
+    (supported-systems '("aarch64-linux" "x86_64-linux"))
+    (license license:asl2.0)))

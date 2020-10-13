@@ -1209,7 +1209,7 @@ and search library.")
         (base32 "1k2m44pj5i6vfhp9icdqs42chsp208llanc666p3d9nww8ngq2lb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ghc-pandoc" ,ghc-pandoc)
+     `(("pandoc" ,pandoc)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libcrypto" ,openssl)
@@ -3231,10 +3231,12 @@ on the fly.  Both programs are written in C and are very fast.")
          "12awq5z4sdd54cxprj834zajxhkpy4jwhzf1fhigcx1zbhdaacsp"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-net-dns" ,perl-net-dns)
-       ("perl-net-ssleay" ,perl-net-ssleay)))
+     `(("perl-io-socket-inet6" ,perl-io-socket-inet6)
+       ("perl-net-dns" ,perl-net-dns)
+       ("perl-net-ssleay" ,perl-net-ssleay)
+       ("perl-socket6" ,perl-socket6))) ; used by perl-io-socket-inet6
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -3268,7 +3270,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.23.2")
+    (version "2.24")
     (source
      (origin
        (method git-fetch)
@@ -3281,7 +3283,7 @@ operators and scripters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16ldmmcymrnpnbfc1kb2rhac7nzlc87wjawic4wfinkphd124d1y"))
+        (base32 "0d5ybnsv29gs8krl66db56avmssq28jlg0qj5i1wka05ncc3740d"))
        (modules '((guix build utils)))
        (snippet
         '(begin

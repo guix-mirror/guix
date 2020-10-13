@@ -1041,3 +1041,47 @@ of choice for all light thinking Unix addicts!")
 temperature of your hard drive by reading S.M.A.R.T. information (for drives
 that support this feature).")
     (license license:gpl2+)))
+
+(define-public memkind
+  (package
+    (name "memkind")
+    (version "1.10.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/memkind/memkind.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "11iz887f3cp5pzf1bzm644wzab8gkbhz3b7x1w6pcps71yd94ylj"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(;; memkind patched jemalloc to add je_arenalookupx,
+       ;; je_check_reallocatex--i.e. they forked jemalloc.
+       ;("jemalloc" ,jemalloc)
+       ("ndctl" ,ndctl)
+       ("numactl" ,numactl)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     `(#:tests? #f ; Tests require a NUMA-enabled system.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'autogen-jemalloc
+           (lambda _
+             (with-directory-excursion "jemalloc"
+               (substitute* "Makefile.in"
+                (("/bin/sh") (which "sh")))
+               (invoke "autoconf")
+               (substitute* "configure"
+                (("/bin/sh") (which "sh"))))
+             #t)))))
+    (home-page "https://github.com/memkind/memkind")
+    (synopsis "Heap manager with memory kinds (for NUMA)")
+    (description "This package provides a user-extensible heap manager
+built on top of jemalloc which enables control of memory characteristics
+and a partitioning of the heap between kinds of memory (for NUMA).")
+    (license license:bsd-3)))

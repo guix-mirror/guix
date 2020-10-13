@@ -76,7 +76,7 @@
             mpl1.0 mpl1.1 mpl2.0
             ms-pl
             ncsa
-            nmap
+            npsl
             ogl-psi1.0
             openldap2.8 openssl
             perl-license
@@ -521,10 +521,10 @@ at URI, which may be a file:// URI pointing the package's tree."
            "http://directory.fsf.org/wiki/License:IllinoisNCSA"
            "https://www.gnu.org/licenses/license-list#NCSA"))
 
-(define nmap
-  (license "Nmap license"
-           "https://svn.nmap.org/nmap/COPYING"
-           "https://fedoraproject.org/wiki/Licensing/Nmap"))
+(define npsl
+  (license "Nmap Public Source License"
+           "https://svn.nmap.org/nmap/LICENSE"
+           "https://nmap.org/npsl/"))
 
 (define ogl-psi1.0
   (license "Open Government Licence for Public Sector Information"

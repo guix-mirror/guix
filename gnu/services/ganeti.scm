@@ -430,7 +430,7 @@ appropriate requests to this daemon.")))
                 (description
                  "@command{ganeti-luxid} is a daemon used to answer queries
 related to the configuration and the current live state of a Ganeti cluster.
-Additionally, it is the autorative daemon for the Ganeti job queue.  Jobs can
+Additionally, it is the authorative daemon for the Ganeti job queue.  Jobs can
 be submitted via this daemon and it schedules and starts them.")))
 
 (define-record-type* <ganeti-rapi-configuration>

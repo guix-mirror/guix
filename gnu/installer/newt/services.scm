@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,7 @@ choose the one to use on the log-in screen.")
      #:items items
      #:selection (map system-service-recommended? items)
      #:item->text system-service-name             ;no i18n for DE names
-     #:checkbox-tree-height 8
+     #:checkbox-tree-height 9
      #:exit-button-callback-procedure
      (lambda ()
        (raise

@@ -1081,7 +1081,28 @@ architecture natively supports it, via emulation (@pxref{Transparent
 Emulation with QEMU}), or both.  Missing prerequisites for the build are
 copied over SSH to the target machine, which then proceeds with the
 build; upon success the output(s) of the build are copied back to the
-initial machine.
+initial machine.  The offload facility comes with a basic scheduler that
+attempts to select the best machine.  The best machine is chosen among
+the available machines based on criteria such as:
+
+@enumerate
+@item
+The availability of a build slot.  A build machine can have as many
+build slots (connections) as the value of the @code{parallel-builds}
+field of its @code{build-machine} object.
+
+@item
+Its relative speed, as defined via the @code{speed} field of its
+@code{build-machine} object.
+
+@item
+Its load.  The normalized machine load must be lower than a threshold
+value, configurable via the @code{overload-threshold} field of its
+@code{build-machine} object.
+
+@item
+Disk space availability.  More than a 100 MiB must be available.
+@end enumerate
 
 The @file{/etc/guix/machines.scm} file typically looks like this:
 
@@ -1184,6 +1205,13 @@ when transferring files to and from build machines.
 @item @code{daemon-socket} (default: @code{"/var/guix/daemon-socket/socket"})
 File name of the Unix-domain socket @command{guix-daemon} is listening
 to on that machine.
+
+@item @code{overload-threshold} (default: @code{0.6})
+The load threshold above which a potential offload machine is
+disregarded by the offload scheduler.  The value roughly translates to
+the total processor usage of the build machine, ranging from 0.0 (0%) to
+1.0 (100%).  It can also be disabled by setting
+@code{overload-threshold} to @code{#f}.
 
 @item @code{parallel-builds} (default: @code{1})
 The number of builds that may run in parallel on the machine.
@@ -6530,6 +6558,35 @@ cross-compiling:
 It is an error to refer to @code{this-package} outside a package definition.
 @end deffn
 
+Because packages are regular Scheme objects that capture a complete
+dependency graph and associated build procedures, it is often useful to
+write procedures that take a package and return a modified version
+thereof according to some parameters.  Below are a few examples.
+
+@cindex tool chain, choosing a package's tool chain
+@deffn {Scheme Procedure} package-with-c-toolchain @var{package} @var{toolchain}
+Return a variant of @var{package} that uses @var{toolchain} instead of
+the default GNU C/C++ toolchain.  @var{toolchain} must be a list of
+inputs (label/package tuples) providing equivalent functionality, such
+as the @code{gcc-toolchain} package.
+
+The example below returns a variant of the @code{hello} package built
+with GCC@tie{}10.x and the rest of the GNU tool chain (Binutils and the
+GNU C Library) instead of the default tool chain:
+
+@lisp
+(let ((toolchain (specification->package "gcc-toolchain@@10")))
+  (package-with-c-toolchain hello `(("toolchain" ,toolchain))))
+@end lisp
+
+The build tool chain is part of the @dfn{implicit inputs} of
+packages---it's usually not listed as part of the various ``inputs''
+fields and is instead pulled in by the build system.  Consequently, this
+procedure works by changing the build system of @var{package} so that it
+pulls in @var{toolchain} instead of the defaults.  @ref{Build Systems},
+for more on build systems.
+@end deffn
+
 @node origin Reference
 @subsection @code{origin} Reference
 
@@ -6666,6 +6723,9 @@ ornamentation---in other words, a bag is a lower-level representation of
 a package, which includes all the inputs of that package, including some
 that were implicitly added by the build system.  This intermediate
 representation is then compiled to a derivation (@pxref{Derivations}).
+The @code{package-with-c-toolchain} is an example of a way to change the
+implicit inputs that a package's build system pulls in (@pxref{package
+Reference, @code{package-with-c-toolchain}}).
 
 Build systems accept an optional list of @dfn{arguments}.  In package
 definitions, these are passed @i{via} the @code{arguments} field
@@ -9124,11 +9184,9 @@ Non-deterministic build processes are a problem because they make it
 practically impossible for users to @emph{verify} whether third-party
 binaries are genuine.  @xref{Invoking guix challenge}, for more.
 
-Note that, currently, the differing build results are not kept around,
-so you will have to manually investigate in case of an error---e.g., by
-stashing one of the build results with @code{guix archive --export}
-(@pxref{Invoking guix archive}), then rebuilding, and finally comparing
-the two results.
+When used in conjunction with @option{--keep-failed}, the differing
+output is kept in the store, under @file{/gnu/store/@dots{}-check}.
+This makes it easy to look for differences between the two results.
 
 @item --no-offload
 Do not use offload builds to other machines (@pxref{Daemon Offload
@@ -9302,6 +9360,44 @@ a library, the application binary interface (ABI) of those libraries
 must be compatible.  If @var{replacement} is somehow incompatible with
 @var{package}, then the resulting package may be unusable.  Use with
 care!
+
+@cindex tool chain, changing the build tool chain of a package
+@item --with-c-toolchain=@var{package}=@var{toolchain}
+This option changes the compilation of @var{package} and everything that
+depends on it so that they get built with @var{toolchain} instead of the
+default GNU tool chain for C/C++.
+
+Consider this example:
+
+@example
+guix build octave-cli \
+  --with-c-toolchain=fftw=gcc-toolchain@@10 \
+  --with-c-toolchain=fftwf=gcc-toolchain@@10
+@end example
+
+The command above builds a variant of the @code{fftw} and @code{fftwf}
+packages using version 10 of @code{gcc-toolchain} instead of the default
+tool chain, and then builds a variant of the GNU@tie{}Octave
+command-line interface using them.  GNU@tie{}Octave itself is also built
+with @code{gcc-toolchain@@10}.
+
+This other example builds the Hardware Locality (@code{hwloc}) library
+and its dependents up to @code{intel-mpi-benchmarks} with the Clang C
+compiler:
+
+@example
+guix build --with-c-toolchain=hwloc=clang-toolchain \
+           intel-mpi-benchmarks
+@end example
+
+@quotation Note
+There can be application binary interface (ABI) incompatibilities among
+tool chains.  This is particularly true of the C++ standard library and
+run-time support libraries such as that of OpenMP.  By rebuilding all
+dependents with the same tool chain, @option{--with-c-toolchain} minimizes
+the risks of incompatibility but cannot entirely eliminate them.  Choose
+@var{package} wisely.
+@end quotation
 
 @item --with-git-url=@var{package}=@var{url}
 @cindex Git, using the latest commit
@@ -12059,11 +12155,15 @@ following in your operating system declaration:
     (guix-service-type config =>
                        (guix-configuration
                         (inherit config)
-                        (use-substitutes? #f)
-                        (extra-options '("--gc-keep-derivations"))))
+                        ;; Fetch substitutes from example.org.
+                        (substitute-urls
+                          (list "https://example.org/guix"
+                                "https://ci.guix.gnu.org"))))
     (mingetty-service-type config =>
                            (mingetty-configuration
-                            (inherit config)))))
+                            (inherit config)
+                            ;; Automatially log in as "guest".
+                            (auto-login "guest")))))
 
 (operating-system
   ;; @dots{}
@@ -15316,6 +15416,9 @@ example:
 This is the configuration record for OpenSSH's @command{sshd}.
 
 @table @asis
+@item @code{openssh} (default @var{openssh})
+The Openssh package to use.
+
 @item @code{pid-file} (default: @code{"/var/run/sshd.pid"})
 Name of the file where @command{sshd} writes its PID.
 
@@ -23360,6 +23463,60 @@ disables caching.
 @item @code{negative-cache?} (default: @code{#t})
 When false, disable negative caching.
 
+@item @code{tftp-enable?} (default: @code{#f})
+Whether to enable the built-in TFTP server.
+
+@item @code{tftp-no-fail?} (default: @code{#f})
+If true, does not fail dnsmasq if the TFTP server could not start up.
+
+@item @code{tftp-single-port?} (default: @code{#f})
+Whether to use only one single port for TFTP.
+
+@item @code{tftp-secure?} (default: @code{#f})
+If true, only files owned by the user running the dnsmasq process are accessible.
+
+If dnsmasq is being run as root, different rules apply:
+@code{tftp-secure?} has no effect, but only files which have the
+world-readable bit set are accessible.
+
+@item @code{tftp-max} (default: @code{#f})
+If set, sets the maximal number of concurrent connections allowed.
+
+@item @code{tftp-mtu} (default: @code{#f})
+If set, sets the MTU for TFTP packets to that value.
+
+@item @code{tftp-no-blocksize?} (default: @code{#f})
+If true, stops the TFTP server from negotiating the blocksize with a client.
+
+@item @code{tftp-lowercase?} (default: @code{#f})
+Whether to convert all filenames in TFTP requests to lowercase.
+
+@item @code{tftp-port-range} (default: @code{#f})
+If set, fixes the dynamical ports (one per client) to the given range
+(@code{"<start>,<end>"}).
+
+@item @code{tftp-root} (default: @code{/var/empty,lo})
+Look for files to transfer using TFTP relative to the given directory.
+When this is set, TFTP paths which include ".." are rejected, to stop clients
+getting outside the specified root. Absolute paths (starting with /) are
+allowed, but they must be within the tftp-root. If the optional interface
+argument is given, the directory is only used for TFTP requests via that
+interface.
+
+@item @code{tftp-unique-root} (default: @code{#f})
+If set, add the IP or hardware address of the TFTP client as a path component
+on the end of the TFTP-root.  Only valid if a TFTP root is set and the
+directory exists.  Defaults to adding IP address (in standard dotted-quad
+format).
+
+For instance, if --tftp-root is "/tftp" and client 1.2.3.4 requests file
+"myfile" then the effective path will be "/tftp/1.2.3.4/myfile" if
+/tftp/1.2.3.4 exists or /tftp/myfile otherwise. When "=mac" is specified
+it will append the MAC address instead, using lowercase zero padded digits
+separated by dashes, e.g.: 01-02-03-04-aa-bb Note that resolving MAC
+addresses is only possible if the client is in the local network or obtained
+a DHCP lease from dnsmasq.
+
 @end table
 @end deftp
 
@@ -27761,6 +27918,168 @@ The complete list of possible options can be found in the man page for
 @node Guix Services
 @subsection Guix Services
 
+@subsubheading Guix Build Coordinator
+The @uref{https://git.cbaines.net/guix/build-coordinator/,Guix Build
+Coordinator} aids in distributing derivation builds among machines
+running an @dfn{agent}.  The build daemon is still used to build the
+derivations, but the Guix Build Coordinator manages allocating builds
+and working with the results.
+
+@quotation Note
+This service is considered experimental.  Configuration options may be
+changed in a backwards-incompatible manner, and not all features have
+been thorougly tested.
+@end quotation
+
+The Guix Build Coordinator consists of one @dfn{coordinator}, and one or
+more connected @dfn{agent} processes. The coordinator process handles
+clients submitting builds, and allocating builds to agents. The agent
+processes talk to a build daemon to actually perform the builds, then
+send the results back to the coordinator.
+
+There is a script to run the coordinator component of the Guix Build
+Coordinator, but the Guix service uses a custom Guile script instead, to
+provide better integration with G-expressions used in the configuration.
+
+@defvar {Scheme Variable} guix-build-coordinator-service-type
+Service type for the Guix Build Coordinator.  Its value must be a
+@code{guix-build-coordinator-configuration} object.
+@end defvar
+
+@deftp {Data Type} guix-build-coordinator-configuration
+Data type representing the configuration of the Guix Build Coordinator.
+
+@table @asis
+@item @code{package} (default: @code{guix-build-coordinator})
+The Guix Build Coordinator package to use.
+
+@item @code{user} (default: @code{"guix-build-coordinator"})
+The system user to run the service as.
+
+@item @code{group} (default: @code{"guix-build-coordinator"})
+The system group to run the service as.
+
+@item @code{database-uri-string} (default: @code{"sqlite:///var/lib/guix-build-coordinator/guix_build_coordinator.db"})
+The URI to use for the database.
+
+@item @code{agent-communication-uri} (default: @code{"http://0.0.0.0:8745"})
+The URI describing how to listen to requests from agent processes.
+
+@item @code{client-communication-uri} (default: @code{"http://127.0.0.1:8746"})
+The URI describing how to listen to requests from clients.  The client
+API allows submitting builds and currently isn't authenticated, so take
+care when configuring this value.
+
+@item @code{allocation-strategy} (default: @code{#~basic-build-allocation-strategy})
+A G-expression for the allocation strategy to be used.  This is a
+procedure that takes the datastore as an argument and populates the
+allocation plan in the database.
+
+@item @code{hooks} (default: @var{'()})
+An association list of hooks.  These provide a way to execute arbitrary
+code upon certian events, like a build result being processed.
+
+@item @code{guile} (default: @code{guile-3.0-latest})
+The Guile package with which to run the Guix Build Coordinator.
+
+@end table
+@end deftp
+
+@defvar {Scheme Variable} guix-build-coordinator-agent-service-type
+Service type for a Guix Build Coordinator agent.  Its value must be a
+@code{guix-build-coordinator-agent-configuration} object.
+@end defvar
+
+@deftp {Data Type} guix-build-coordinator-agent-configuration
+Data type representing the configuration a Guix Build Coordinator agent.
+
+@table @asis
+@item @code{package} (default: @code{guix-build-coordinator})
+The Guix Build Coordinator package to use.
+
+@item @code{user} (default: @code{"guix-build-coordinator-agent"})
+The system user to run the service as.
+
+@item @code{coordinator} (default: @code{"http://localhost:8745"})
+The URI to use when connecting to the coordinator.
+
+@item @code{uuid}
+The UUID of the agent.  This should be generated by the coordinator
+process, stored in the coordinator database, and used by the intended
+agent.
+
+@item @code{password} (default: @code{#f})
+The password to use when connecting to the coordinator.  A file to read
+the password from can also be specified, and this is more secure.
+
+@item @code{password-file} (default: @code{#f})
+A file containing the password to use when connecting to the
+coordinator.
+
+@item @code{systems} (default: @var{#f})
+The systems for which this agent should fetch builds.  The agent process
+will use the current system it's running on as the default.
+
+@item @code{max-parallel-builds} (default: @code{1})
+The number of builds to perform in parallel.
+
+@item @code{derivation-substitute-urls} (default: @code{1})
+URLs from which to attempt to fetch substitutes for derivations, if the
+derivations aren't already available.
+
+@item @code{non-derivation-substitute-urls} (default: @code{1})
+URLs from which to attempt to fetch substitutes for build inputs, if the
+input store items aren't already available.
+
+@end table
+@end deftp
+
+The Guix Build Coordinator package contains a script to query an
+instance of the Guix Data Service for derivations to build, and then
+submit builds for those derivations to the coordinator.  The service
+type below assists in running this script.  This is an additional tool
+that may be useful when building derivations contained within an
+instance of the Guix Data Service.
+
+@defvar {Scheme Variable} guix-build-coordinator-queue-builds-service-type
+Service type for the
+guix-build-coordinator-queue-builds-from-guix-data-service script.  Its
+value must be a @code{guix-build-coordinator-queue-builds-configuration}
+object.
+@end defvar
+
+@deftp {Data Type} guix-build-coordinator-queue-builds-configuration
+Data type representing the options to the queue builds from guix data
+service script.
+
+@table @asis
+@item @code{package} (default: @code{guix-build-coordinator})
+The Guix Build Coordinator package to use.
+
+@item @code{user} (default: @code{"guix-build-coordinator-queue-builds"})
+The system user to run the service as.
+
+@item @code{coordinator} (default: @code{"http://localhost:8745"})
+The URI to use when connecting to the coordinator.
+
+@item @code{systems} (default: @code{#f})
+The systems for which to fetch derivations to build.
+
+@item @code{systems-and-targets} (default: @code{#f})
+An association list of system and target pairs for which to fetch
+derivations to build.
+
+@item @code{guix-data-service} (default: @code{"https://data.guix.gnu.org"})
+The Guix Data Service instance from which to query to find out about
+derivations to build.
+
+@item @code{processed-commits-file} (default: @code{"/var/cache/guix-build-coordinator-queue-builds/processed-commits"})
+A file to record which commits have been processed, to avoid needlessly
+processing them again if the service is restarted.
+
+@end table
+@end deftp
+
 @subsubheading Guix Data Service
 The @uref{http://data.guix.gnu.org,Guix Data Service} processes, stores
 and provides data about GNU Guix.  This includes information about
@@ -30212,7 +30531,7 @@ A service of this type is instantiated like this:
 (service guix-service-type
          (guix-configuration
            (build-accounts 5)
-           (use-substitutes? #f)))
+           (extra-options '("--gc-keep-derivations"))))
 @end lisp
 
 The second argument to the @code{service} form is a value representing

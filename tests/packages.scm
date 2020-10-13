@@ -1430,6 +1430,26 @@
           (derivation-file-name
            (package-derivation %store coreutils))))))))
 
+(test-assert "package-with-c-toolchain"
+  (let* ((dep (dummy-package "chbouib"
+                (build-system gnu-build-system)
+                (native-inputs `(("x" ,grep)))))
+         (p0  (dummy-package "thingie"
+                (build-system gnu-build-system)
+                (inputs `(("foo" ,grep)
+                          ("bar" ,dep)))))
+         (tc  (dummy-package "my-toolchain"))
+         (p1  (package-with-c-toolchain p0 `(("toolchain" ,tc)))))
+    (define toolchain-packages
+      '("gcc" "binutils" "glibc" "ld-wrapper"))
+
+    (match (bag-build-inputs (package->bag p1))
+      ((("foo" foo) ("bar" bar) (_ (= package-name packages) . _) ...)
+       (and (not (any (cut member <> packages) toolchain-packages))
+            (member "my-toolchain" packages)
+            (eq? foo grep)
+            (eq? bar dep))))))
+
 (test-equal "package-patched-vulnerabilities"
   '(("CVE-2015-1234")
     ("CVE-2016-1234" "CVE-2018-4567")

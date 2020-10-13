@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,8 @@
 
 (define-module (guix build hg)
   #:use-module (guix build utils)
+  #:use-module (srfi srfi-34)
+  #:use-module (ice-9 format)
   #:export (hg-fetch))
 
 ;;; Commentary:
@@ -35,22 +38,29 @@
   "Fetch CHANGESET from URL into DIRECTORY.  CHANGESET must be a valid
 Mercurial changeset identifier.  Return #t on success, #f otherwise."
 
-  (invoke hg-command
-          "clone" url
-          "--rev" changeset
-          ;; Disable TLS certificate verification.  The hash of
-          ;; the checkout is known in advance anyway.
-          "--insecure"
-          directory)
+  (mkdir-p directory)
 
-  ;; The contents of '.hg' vary as a function of the current
-  ;; status of the Mercurial repo.  Since we want a fixed
-  ;; output, this directory needs to be taken out.
-  ;; Since the '.hg' file is also in sub-modules, we have to
-  ;; search for it in all sub-directories.
-  (for-each delete-file-recursively
-            (find-files directory "^\\.hg$" #:directories? #t))
+  (guard (c ((invoke-error? c)
+             (report-invoke-error c)
+             (delete-file-recursively directory)
+             #f))
+    (with-directory-excursion directory
+      (invoke hg-command
+              "clone" url
+              "--rev" changeset
+              ;; Disable TLS certificate verification.  The hash of
+              ;; the checkout is known in advance anyway.
+              "--insecure"
+              directory)
 
-  #t)
+      ;; The contents of '.hg' vary as a function of the current
+      ;; status of the Mercurial repo.  Since we want a fixed
+      ;; output, this directory needs to be taken out.
+      ;; Since the '.hg' file is also in sub-modules, we have to
+      ;; search for it in all sub-directories.
+      (for-each delete-file-recursively
+                (find-files directory "^\\.hg$" #:directories? #t))
+
+      #t)))
 
 ;;; hg.scm ends here

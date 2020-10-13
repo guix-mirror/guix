@@ -47,6 +47,18 @@ scripts/guix: scripts/guix.in Makefile
 	$(AM_V_GEN)$(do_subst) < "$(srcdir)/$@.in" > "$@-t"
 	$(AM_V_at)chmod a+x,a-w "$@-t" && mv -f "$@-t" "$@"
 
+# This is our variant of the 'guile' executable, one that doesn't complain
+# about locales.
+pkglibexec_PROGRAMS = guile
+guile_SOURCES = gnu/packages/aux-files/guile-launcher.c
+guile_LDADD   = $(GUILE_LIBS)
+guile_CFLAGS  = $(GUILE_CFLAGS)
+
+# Have the 'guix' command refer to our 'guile'.
+install-exec-hook:
+	$(SED) -i "$(DESTDIR)$(bindir)/guix"				\
+	       -e 's,^#![[:graph:]]\+,#!$(pkglibexecdir)/guile,g'
+
 nodist_noinst_SCRIPTS =				\
   pre-inst-env					\
   test-env

@@ -757,7 +757,29 @@ cache.size = 100 * MB
   (cache-size       dnsmasq-configuration-cache-size
                     (default 150))      ;integer
   (negative-cache?  dnsmasq-configuration-negative-cache?
-                    (default #t)))      ;boolean
+                    (default #t))      ;boolean
+  (tftp-enable?     dnsmasq-configuration-tftp-enable?
+                    (default #f))       ;boolean
+  (tftp-no-fail?    dnsmasq-configuration-tftp-no-fail?
+                    (default #f))       ;boolean
+  (tftp-single-port? dnsmasq-configuration-tftp-single-port?
+                    (default #f))       ;boolean
+  (tftp-secure?     dnsmasq-tftp-secure?
+                    (default #f))       ;boolean
+  (tftp-max         dnsmasq-tftp-max
+                    (default #f))       ;integer
+  (tftp-mtu         dnsmasq-tftp-mtu
+                    (default #f))       ;integer
+  (tftp-no-blocksize? dnsmasq-tftp-no-blocksize?
+                      (default #f))     ;boolean
+  (tftp-lowercase?  dnsmasq-tftp-lowercase?
+                    (default #f))       ;boolean
+  (tftp-port-range  dnsmasq-tftp-port-range
+                    (default #f))       ;string
+  (tftp-root        dnsmasq-tftp-root
+                    (default "/var/empty,lo")) ;string
+  (tftp-unique-root dnsmasq-tftp-unique-root
+                    (default #f)))      ;"" or "ip" or "mac"
 
 (define dnsmasq-shepherd-service
   (match-lambda
@@ -765,7 +787,12 @@ cache.size = 100 * MB
                                 no-hosts?
                                 port local-service? listen-addresses
                                 resolv-file no-resolv? servers
-                                addresses cache-size negative-cache?)
+                                addresses cache-size negative-cache?
+                                tftp-enable? tftp-no-fail?
+                                tftp-single-port? tftp-secure?
+                                tftp-max tftp-mtu tftp-no-blocksize?
+                                tftp-lowercase? tftp-port-range
+                                tftp-root tftp-unique-root)
      (shepherd-service
       (provision '(dnsmasq))
       (requirement '(networking))
@@ -794,7 +821,44 @@ cache.size = 100 * MB
                   #$(format #f "--cache-size=~a" cache-size)
                   #$@(if negative-cache?
                          '()
-                         '("--no-negcache")))
+                         '("--no-negcache"))
+                  #$@(if tftp-enable?
+                         '("--enable-tftp")
+                         '())
+                  #$@(if tftp-no-fail?
+                         '("--tftp-no-fail")
+                         '())
+                  #$@(if tftp-single-port?
+                         '("--tftp-single-port")
+                         '())
+                  #$@(if tftp-secure?
+                         '("--tftp-secure?")
+                         '())
+                  #$@(if tftp-max
+                         (list (format #f "--tftp-max=~a" tftp-max))
+                         '())
+                  #$@(if tftp-mtu
+                         (list (format #f "--tftp-mtu=~a" tftp-mtu))
+                         '())
+                  #$@(if tftp-no-blocksize?
+                         '("--tftp-no-blocksize")
+                         '())
+                  #$@(if tftp-lowercase?
+                         '("--tftp-lowercase")
+                         '())
+                  #$@(if tftp-port-range
+                         (list (format #f "--tftp-port-range=~a"
+                                          tftp-port-range))
+                         '())
+                  #$@(if tftp-root
+                         (list (format #f "--tftp-root=~a" tftp-root))
+                         '())
+                  #$@(if tftp-unique-root
+                         (list
+                          (if (> (length tftp-unique-root) 0)
+                              (format #f "--tftp-unique-root=~a" tftp-unique-root)
+                              (format #f "--tftp-unique-root")))
+                         '()))
                 #:pid-file "/run/dnsmasq.pid"))
       (stop #~(make-kill-destructor))))))
 

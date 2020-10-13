@@ -173,7 +173,13 @@ directory = '" port)
     (or skip-build?
         (not (has-executable-target?))
         (invoke "cargo" "install" "--path" "." "--root" out
-                "--features" (string-join features)))))
+                "--features" (string-join features)))
+
+    ;; This is a file which we definitely don't need installed.
+    (when (file-exists? (string-append out "/.crates.toml"))
+      (delete-file (string-append out "/.crates.toml")))
+
+    #t))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases

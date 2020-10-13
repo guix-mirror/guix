@@ -3096,6 +3096,7 @@ Rosenberg's Common Lisp packages.")
          (uri (git-reference
                (url "http://git.kpe.io/cl-base64.git/")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "12jj54h0fs6n237cvnp8v6hn0imfksammq22ys6pi0gwz2w47rbj"))))
       (build-system asdf-build-system/sbcl)
@@ -10946,3 +10947,88 @@ web applications.  Caveman2 has three design goals:
 
 (define-public ecl-caveman
   (sbcl-package->ecl-package sbcl-caveman))
+
+(define-public sbcl-lambda-fiddle
+  (let ((commit "d16bba55acf6065b412f64ab8fdff679a4a32b1e") ;; no tagged branch
+	(revision "1"))
+    (package
+      (name "sbcl-lambda-fiddle")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/lambda-fiddle")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1zarj1pqjqmk95kdx1axkgpwy2wq3canczk7f9z5hvaw5an6gand"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/Shinmera/lambda-fiddle")
+      (synopsis "Collection of utilities to process lambda-lists")
+      (description "This collection of utilities is useful in contexts where
+you want a macro that uses lambda-lists in some fashion but need more precise
+processing.")
+      (license license:zlib))))
+
+(define-public cl-lambda-fiddle
+  (sbcl-package->cl-source-package sbcl-lambda-fiddle))
+
+(define-public ecl-lambda-fiddle
+  (sbcl-package->ecl-package sbcl-lambda-fiddle))
+
+(define-public sbcl-xmls
+  (let ((commit "18546f0850b1338e03997ffd1696add1cb1800d1") ;; no tagged branch
+	(revision "1"))
+    (package
+      (name "sbcl-xmls")
+      (version (git-version "3.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rpgoldman/xmls")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1lmvfml2ldbb1wkhm25jqqk2bhwsz52hhcgljbnzj1xr8xhc3anp"))))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/rpgoldman/xmls")
+      (synopsis "Non-validating XML parser for Common Lisp")
+      (description "Xmls is a self-contained, easily embedded parser that
+recognizes a useful subset of the XML spec.  It provides a simple mapping from
+XML to Lisp structures or s-expressions and back.")
+      (license license:bsd-2))))
+
+(define-public cl-xmls
+  (sbcl-package->cl-source-package sbcl-xmls))
+
+(define-public ecl-xmls
+  (sbcl-package->ecl-package sbcl-xmls))
+
+(define-public sbcl-geco
+  (package
+    (name "sbcl-geco")
+    (version "2.01a")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://common-lisp.net/project/geco/download/"
+                           "geco-" version ".tar.gz"))
+       (sha256
+        (base32 "0kk0bzr1019cfmf2b1jl1rk9shv3gx5z1znifxllg9mb98yqsgw0"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://common-lisp.net/project/geco/")
+    (synopsis "Genetic algorithm toolkit for Common Lisp")
+    (description
+     "GECO (Genetic Evolution through Combination of Objects) is an extensible,
+object-oriented framework for prototyping genetic algorithms in Common Lisp.")
+    (license license:lgpl2.1+)))
+
+(define-public cl-geco
+  (sbcl-package->cl-source-package sbcl-geco))
+
+(define-public ecl-geco
+  (sbcl-package->ecl-package sbcl-geco))

@@ -2,6 +2,11 @@
 ;;
 ;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
+;; Copyright © 2019, 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;; Copyright © 2019, 2020 Julien Lepiller <julien@lepiller.eu>
+;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -13,8 +18,48 @@
 (channel-news
  (version 0)
 
+ (entry (commit "abd7a474615353149a44f4504f0b4b248dcc0716")
+        (title (en "New @option{--with-c-toolchain} package transformation option")
+               (fr "Nouvelle option de transformation @option{--with-c-toolchain}"))
+        (body
+         (en "The new @option{--with-c-toolchain} package transformation
+options provides an easy way for developers to rebuild their favorite packages
+with the C/C++ tool chain of their choice instead of the default one.
+
+For example, the following command rebuilds the @code{fftw} and @code{fftwf}
+packages as well as every package that depends on them, up to and including
+@code{octave-cli}, using GCC version 10 (currently GCC 7.5 is used by
+default):
+
+@example
+guix build octave-cli \\
+  --with-c-toolchain=fftw=gcc-toolchain@@10 \\
+  --with-c-toolchain=fftwf=gcc-toolchain@@10
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (fr "La nouvelle option de transformation de paquets
+@option{--with-c-toolchain} permet aux développeur·euses de recompiler leurs
+paquets préférés avec la chaîne d'outils C/C++ de leur choix à la place de
+celle par défaut.
+
+Par exemple, la commande ci-dessous recompile @code{fftw}, @code{fftwf} et
+tous les paquets qui en dépendent, jusqu'à @code{octave-cli} inclus, avec GCC
+10 (actuellement c'est GCC 7.5 qui est utilisé par défaut):
+
+@example
+guix build octave-cli \\
+  --with-c-toolchain=fftw=gcc-toolchain@@10 \\
+  --with-c-toolchain=fftwf=gcc-toolchain@@10
+@end example
+
+Voir @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus de détails.")))
+
  (entry (commit "8e1907a72430aa989125b053573ef0897c480697")
         (title (en "Package transformation options now recorded in profiles")
+               (es "Las opciones de transformación de paquetes ahora se
+quedan registradas en el perfil")
                (de "Paketumwandlungsoptionen werden nun in Profilen gesichert")
                (fr "Options de transformation sauvegardées dans les profils"))
         (body
@@ -24,6 +69,14 @@ you eventually run @command{guix upgrade}, those transformations will be
 automatically applied to the upgraded packages.
 
 Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (es "Si durante la instalación de paquetes en un perfil se utilizaron
+opciones de transformación de paquetes, como por ejemplo
+@option{--with-input}, éstas se registran en el perfil. Cuando vuelva a
+ejecutar @command{guix upgrade}, dichas transformaciones se aplicarán
+automáticamente a los paquetes actualizados.
+
+Ejecute @command{info \"(guix.es) Opciones de transformación de paquetes\"}
+para obtener más información.")
          (de "Wenn Sie ein Paket in ein Profil installieren, werden nun
 Paketumwandlungsoptionen wie @option{--with-input} im Profil gespeichert.
 Sobald Sie später @command{guix upgrade} ausführen, werden dieselben
@@ -41,6 +94,7 @@ plus de détails.")))
 
  (entry (commit "313f492657f1d0863c641fa5ee7f5b7028e27c94")
         (title (en "New @option{--image-type} option for @command{guix system disk-image}.")
+               (es "Nueva opción @option{--image-type} para @command{guix system disk-image}.")
                (de "Neue Option @option{--image-type} für @command{guix system disk-image}.")
                (fr "Nouvelle option @option{--image-type} pour @command{guix system disk-image}."))
         (body
@@ -51,6 +105,14 @@ By default, @code{raw} disk images are produced, but @code{hurd-qcow2},
 are also available.
 
 The @option{--list-image-types} option lists all the available image types.")
+         (es "La opción @option{--file-system-type} de @command{guix system
+disk-image} se ha sustituido por la nueva opción @option{--image-type}.  De
+manera predeterminada se producen imágenes en formato crudo (@code{raw}) pero
+también están disponibles los tipos de imagen @code{hurd-qcow2},
+@code{hurd-raw}, @code{uncompressed-iso9660} y @code{iso9660}.
+
+La opción @option{--list-image-types} muestra una lista con todos los tipos
+de imagen disponibles.")
          (de "Anstelle der Befehlszeilenoption @option{--file-system-type} für
 @command{guix system disk-image} gibt es nun die neue Option
 @option{--image-type}.  In der Vorgabeeinstellung @code{raw} werden rohe
@@ -72,6 +134,8 @@ disponibles.")))
 
  (entry (commit "8819551c8d2a12cd4e84e09b51e434d05a012c9d")
         (title (en "Package transformations now apply to implicit inputs")
+               (es "Las transformaciones de paquetes ahora afectan también
+a las dependencias implícitas")
                (de "Paketumwandlungen betreffen jetzt auch implizite Eingaben")
                (fr "Les transformations de paquets s'appliquent aux
 dépendances implicites"))
@@ -96,6 +160,26 @@ guix build --with-graft=glibc=glibc@@2.31 hello
 
 Run @command{info \"(guix) Package Transformation Options\"} for more
 info.")
+         (es "Las opciones de transformación de paquetes como
+@option{--with-branch}, @option{--with-input}, etcétera, ahora también
+influyen en las entradas implícitas---antes únicamente las entradas explícitas
+del paquete se veían afectadas. Esto permite, por ejemplo, sustituir la
+dependencia en python de un paquete que use @code{python-build-system}:
+
+@example
+guix install --with-input=python=python2 python-itsdangerous
+@end example
+
+Otro ejemplo podría ser el injerto de una versión diferente de la biblioteca
+de C de GNU (@code{glibc} es una entrada implícita de casi todos los paquetes
+y ``muy abajo'' en el grafo de dependencias):
+
+@example
+guix build --with-graft=glibc=glibc@@2.31 hello
+@end example
+
+Ejecute @command{info \"(guix.es) Opciones de transformación de paquetes\"}
+para obtener más información.")
          (de "Paketumwandlungsoptionen wie @option{--with-branch},
 @option{--with-input} und so weiter betreffen nun auch implizite Eingaben —
 zuvor haben sie sich nur auf die expliziten Eingaben eines Pakets
@@ -140,6 +224,7 @@ plus de détails.")))
 
  (entry (commit "f458cfbcc54ed87b1a87dd9e150ea276f17eab74")
         (title (en "New @option{--without-tests} transformation option")
+               (es "Nueva opción de transformación @option{--without-tests}")
                (de "Neue Paketumwandlungsoption @option{--without-tests}")
                (fr "Nouvelle option de transformation @option{--without-tests}"))
         (body
@@ -156,6 +241,21 @@ This is primarily useful as a way to speed up development cycles, or to work
 around flaky test suites---skipping tests can hide real issues, so use with
 care.  Run @command{info \"(guix) Package Transformation Options\"} for more
 info.")
+         (es "La nueva opción de transformación de paquetes
+@option{--without-tests} indica a Guix que omita la batería de pruebas del
+paquete proporcionado. En el siguiente ejemplo @code{guile-gcrypt} se
+construye usando una variación de @code{automake}, la cual se ha construido
+sin ejecutar su (larga) batería de pruebas:
+
+@example
+guix build guile-gcrypt --without-tests=automake
+@end example
+
+Esto es principalmente útil como una forma de acelerar ciclos de desarrollo o
+de omitir temporalmente baterías de pruebas problemáticas---omitir las pruebas
+puede ocultar problemas reales, por lo que debe usarse con precaución.
+Ejecute @command{info \"(guix.es) Opciones de transformación de paquetes\"}
+para obtener más información.")
          (de "Mit der neuen Paketumwandlungsoption @option{--without-tests}
 wird Guix angewiesen, den Testkatalog des angegebenen Pakets zu
 überspringen. Im folgenden Beispiel wird @code{guile-gcrypt} mit einer
@@ -189,6 +289,7 @@ paquets\"} pour plus de détails.")))
 
  (entry (commit "a98712785e0b042a290420fd74e5a4a5da4fc68f")
         (title (en "New @command{guix git authenticate} command")
+               (es "Nueva orden @command{guix git authenticate}")
                (de "Neuer Befehl @command{guix git authenticate}")
                (fr "Nouvelle commande @command{guix git authenticate}"))
         (body
@@ -204,6 +305,20 @@ to allow people to authenticate code fetched from your repository.
 Run @command{info \"(guix) Invoking guix git authenticate\"} for more info,
 and see @uref{https://guix.gnu.org/blog/2020/securing-updates/} for details on
 these mechanisms.")
+         (es "La nueva orden @command{guix git authenticate} comprueba la
+validez de un repositorio git verificando las firmas de las revisiones y
+comprobando que todas las firmas están autorizadas, exactamente igual que
+@command{guix pull}.
+
+Esta orden es principalmente útil para desarrolladoras de canales. Permite
+asegurar, antes de subir nada al repositorio remoto, que el canal contiene
+únicamente revisiones firmadas por claves autorizadas. No obstante esta orden
+es útil siempre que use git y quiera que otras personas puedan verificar el
+código obtenido de su repositorio.
+
+Ejecute @command{info \"(guix.es) Invocación de guix git authenticate\"}
+para obtener más información y vea detalles sobre estos mecanismos en
+ @uref{https://guix.gnu.org/blog/2020/securing-updates/}.")
          (de "Mit dem neuen Befehl @command{guix git authenticate} können Sie
 ein Git-Repository authentifizieren. Dazu werden alle Commit-Signaturen
 verifiziert und geprüft, dass jede von einer autorisierten Quelle kommt, genau
@@ -236,6 +351,7 @@ pour en savoir plus sur ces mécanismes.")))
 
  (entry (commit "43badf261f4688c8a7a7a9004a4bff8acb205835")
         (title (en "@command{guix pull} authenticates channels")
+               (es "@command{guix pull} verifica los canales")
                (de "@command{guix pull} authentifiziert Kanäle")
                (fr "@command{guix pull} authentifie les canaux"))
         (body
@@ -248,6 +364,16 @@ repository and from attempts to ship malicious code to users.
 
 This feature is currently limited to the @code{guix} channel but will soon be
 available to third-party channel authors.")
+         (es "Las ordenes @command{guix pull} y @command{guix time-machine}
+ahora verifican el código fuente que obtienen, a menos que se proporcione la
+opción @option{--disable-authentication}. Lo que esto significa es que Guix se
+asegura de que cada revisión que recibe está firmada criptográficamente por
+una desarrolladora autorizada. Esto le protege de intentos de modificación del
+repositorio de Guix y de entregas de código con malas intenciones sobre las
+usuarias.
+
+Esta característica está limitada actualmente al canal @code{guix} pero pronto
+estará disponible para autoras de canales independientes.")
          (de "Die Befehle @command{guix pull} und @command{guix time-machine}
 prüfen nun die Authentizität des heruntergeladenen Quellcodes, außer wenn die
 neue Befehlszeilenoption @option{--disable-authentication} angegeben
@@ -271,6 +397,7 @@ Cette fonctionnalité n'est actuellement disponible que pour le canal
 
  (entry (commit "c924e541390f9595d819edc33c19d979917c15ec")
         (title (en "@command{guix repl} adds support for running Guile scripts")
+               (es "@command{guix repl} puede ejecutar guiones de Guile")
                (de "@command{guix repl} kann Guile-Skripte ausführen")
                (fr "@command{guix repl} permet d'exécuter des scripts en langage Guile"))
         (body
@@ -284,6 +411,18 @@ guix repl -- my-script,scm --option1 --option2=option-arg arg1 arg2
 @end example
 
 Run @command{info \"(guix) Invoking guix repl\"} for more information.")
+         (es "La orden @command{guix repl} ahora se puede usar para
+ejecutar guiones de Guile. En comparación con únicamente la ejecución
+de la orden @command{guile}, @command{guix repl} garantiza que todos
+los módulos de Guix y sus dependencias están disponibles en la ruta
+ de búsqueda. Los guiones se ejecutan de este modo:
+
+@example
+guix repl -- mi-guion.scm --opcion1 --opcion2=param-op2 param1 param2
+@end example
+
+Ejecute @command{info \"(guix.es) Invocación de guix repl\"} para obtener
+más información.")
          (de "Der Befehl @command{guix repl} kann jetzt zur Ausführung von
 Guile-Skripten verwendet werden.  Im Vergleich zum Befehl
 @command{guile} garantiert @command{guix repl}, dass alle Guix-Module und
@@ -310,6 +449,7 @@ Exécutez @command{info \"(guix.fr) Invoquer guix repl\"} pour plus d'informatio
 
  (entry (commit "b460ba7992a0b4af2ddb5927dcf062784539ef7b")
         (title (en "Add support to boot from a Btrfs subvolume")
+               (es "Implementado el arranque desde un subvolumen de Btrfs")
                (de "Unterstützung für Systemstart von einem
 Btrfs-Unterlaufwerk hinzugefügt")
                (fr "Ajout du support pour démarrer depuis un sous-volume Btrfs")
@@ -320,6 +460,11 @@ operating system declaration now takes into account the use of a Btrfs
 subvolume for the partition holding @file{/gnu/store}.  Run the command
 @command{info \"(guix) Btrfs file system\"} for more information and
 examples.")
+         (es "El fichero de configuración de GRUB producido por la
+declaración de sistema operativo ahora tiene en cuenta el uso de
+subvolúmenes de Btrfs en la partición que contiene @file{/gnu/store}.
+Ejecute la orden @command{info \"(guix.es) Sistema de ficheros Btrfs\"}
+ para obtener más información y ejemplos.")
          (de "Für die Erzeugung einer GRUB-Konfigurationsdatei aus einer
 Betriebssystemdeklaration kann jetzt ein Btrfs-Unterlaufwerk („Subvolume“) für
 die Partition mit @file{/gnu/store} angegeben werden.  Führen Sie
@@ -339,6 +484,8 @@ voorbeelden.")))
  (entry (commit "6456232164890dbf5aa20394ee24637feb4b7b9e")
         (title (en "@command{guix pack -RR} introduces a new execution
 engine")
+               (es "@command{guix pack -RR} introduce un nuevo motor
+de ejecución")
                (de "@command{guix pack -RR} führt neuen Ausführungstreiber
 ein"))
         (body
@@ -359,6 +506,26 @@ export GUIX_EXECUTION_ENGINE
 @end example
 
 Run @command{info \"(guix) Invoking guix pack\"} for more information.")
+         (es "La orden @command{guix pack -RR} le permite crear un
+archivador tar que contiene @dfn{binarios reposicionables}. Hasta ahora
+dichos binarios dependían o bien de los ``espacios de nombres de usuarias
+sin privilegios'' de Linux o en PRoot, cuando estos no estaban
+implementados. No obstante, PRoot introduce una sobrecarga significativa
+en algunos escenarios de trabajo.
+
+Para estos casos @command{guix pack -RR} introduce una tercera opción
+basada en una extensión al enlazador de tiempo de ejecución de GNU (ld.so)
+y en Fakechroot, lo que conlleva muy poca sobrecarga. Puede seleccionar
+la opción más rápida cuando ejecute un binario reposicionable de esta
+manera:
+
+@example
+GUIX_EXECUTION_ENGINE=performance
+export GUIX_EXECUTION_ENGINE
+@end example
+
+Ejecute @command{info \"(guix.es) Invocación de guix pack\"} para
+obtener más información.")
          (de "Mit dem Befehl @command{guix pack -RR} können Sie einen Tarball
 mit @dfn{verschieblichen Binärdateien} erzeugen (englisch „Relocatable
 Binaries“).  Bisher wurden diese entweder in „unprivilegierten
@@ -383,6 +550,7 @@ mehr wissen wollen.")))
 
  (entry (commit "88a96c568c47c97d05d883ada5afbc4e1200b10f")
         (title (en "New @option{--path} option for @command{guix graph}")
+               (es "Nueva opción @option{--path} para @command{guix graph}")
                (de "Neue Option @option{--path} für @command{guix graph}"))
         (body
          (en "The @command{guix graph} command has a new @option{--path}
@@ -395,6 +563,18 @@ guix graph --path libreoffice libunistring
 @end example
 
 Run @code{info \"(guix) Invoking guix graph\"} for more information.")
+         (es "La orden @command{guix graph} tiene una nueva opción
+@option{--path} que le indica que debe mostrar la ruta más corta entre dos
+paquetes, derivaciones o elementos del almacén. Por ejemplo, la siguiente
+orden muestra la ruta más corta desde el paquete @code{libreoffice} hasta
+@code{libunistring}:
+
+@example
+guix graph --path libreoffice libunistring
+@end example
+
+Ejecute @code{info \"(guix.es) Invocación de guix graph\"} para obtener más
+información.")
          (de "Der Befehl @command{guix graph} verfügt über eine neue
 Befehlszeilenoption @option{--path}, die ihn den kürzesten Pfad zwischen zwei
 Paketen, Ableitungen oder Store-Objekten ausgeben lässt.  Zum Beispiel zeigt

@@ -35,6 +35,8 @@
   #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages commencement)       ;for 'guile-final'
   #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages openbox)
@@ -1271,7 +1273,8 @@ build (current-guix) and then store a couple of full system images.")
     ;; graphical installer are available.
     (packages (append
                (list openbox awesome i3-wm i3status
-                     dmenu st ratpoison xterm)
+                     dmenu st ratpoison xterm
+                     emacs emacs-exwm emacs-desktop-environment)
                %base-packages))
     (services
      (append

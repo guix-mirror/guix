@@ -40,15 +40,20 @@
                         %base-file-systems))
     (host-name "guixygnu")
     (timezone "Europe/Amsterdam")
+    (users (cons (user-account
+                  (name "guix")
+                  (comment "Anonymous Hurd Hacker")
+                  (group "users")
+                  (supplementary-groups '("wheel")))
+                 %base-user-accounts))
     (packages (cons openssh-sans-x %base-packages/hurd))
     (services (cons (service openssh-service-type
                              (openssh-configuration
                               (openssh openssh-sans-x)
-                              (use-pam? #f)
                               (port-number 2222)
                               (permit-root-login #t)
                               (allow-empty-passwords? #t)
                               (password-authentication? #t)))
-               %base-services/hurd))))
+                    %base-services/hurd))))
 
 %hurd-os

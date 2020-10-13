@@ -28,7 +28,8 @@
   #:use-module (gnu system image)
   #:use-module (srfi srfi-26)
   #:export (pine64-barebones-os
-            pine64-image-type))
+            pine64-image-type
+            pine64-barebones-raw-image))
 
 (define pine64-barebones-os
   (operating-system
@@ -57,3 +58,9 @@
   (image-type
    (name 'pine64-raw)
    (constructor (cut image-with-os arm64-disk-image <>))))
+
+(define pine64-barebones-raw-image
+  (image
+   (inherit
+    (os->image pine64-barebones-os #:type pine64-image-type))
+   (name 'pine64-barebones-raw-image)))

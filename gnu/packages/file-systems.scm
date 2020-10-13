@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -140,6 +141,46 @@ large and/or frequently changing (network) environment.")
     ;; fedfs/ is GPL-2-only but not built.
     (license (list license:bsd-3        ; modules/cyrus-sasl.c
                    license:gpl2+))))    ; the rest
+
+(define-public bindfs
+  (package
+    (name "bindfs")
+    (version "1.14.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bindfs.org/downloads/bindfs-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15y4brlcrqhxl6z73785m0dr1vp2q3wc6xss08x9jjr0apzmmjp5"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: The tests have no hope of passing until there is a "nogroup"
+     ;; entry (or at least some group to which the guix builder does
+     ;; not belong) in the /etc/group file of the build environment.
+     ;; Currently we do not have such a group.  Disable tests for now.
+     '(#:tests? #f))
+    (native-inputs
+       ;; Native inputs to run the tests
+       ;; ("ruby" ,ruby)
+       ;; ("valgrind" ,valgrind)
+       ;; ("which" ,which)
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)))
+    (home-page "https://bindfs.org")
+    (synopsis "Bind mount a directory and alter permission bits")
+    (description
+     "@command{bindfs} is a FUSE filesystem for mounting a directory to
+another location, similar to @command{mount --bind}.  It can be used for:
+@itemize
+@item Making a directory read-only.
+@item Making all executables non-executable.
+@item Sharing a directory with a list of users (or groups).
+@item Modifying permission bits using rules with chmod-like syntax.
+@item Changing the permissions with which files are created.
+@end itemize ")
+    (license license:gpl2+)))
 
 (define-public fsarchiver
   (package

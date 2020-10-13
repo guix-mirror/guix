@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,6 +83,11 @@
       (name "ratpoison")
       (packages '((specification->package "ratpoison")
                   (specification->package "xterm"))))
+     (desktop-environment
+      (name "Emacs EXWM")
+      (packages '((specification->package "emacs")
+                  (specification->package "emacs-exwm")
+                  (specification->package "emacs-desktop-environment"))))
 
      ;; Networking.
      (system-service

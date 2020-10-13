@@ -221,24 +221,29 @@ text-based approach to terminal recording.")
     (package
       (name "libtsm")
       (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                ;; The freedesktop repository is no longer maintained.
-                (uri (git-reference
-                      (url (string-append "https://github.com/Aetf/" name))
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0mwn91i5h5d518i1s05y7hzv6bc13vzcvxszpfh77473iwg4wprx"))))
+      (source
+       (origin
+         (method git-fetch)
+         ;; The freedesktop repository is no longer maintained.
+         (uri (git-reference
+               (url (string-append "https://github.com/Aetf/" name))
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0mwn91i5h5d518i1s05y7hzv6bc13vzcvxszpfh77473iwg4wprx"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Remove a bundled copy of libxkbcommon's xkbcommon-keysyms.h.
+             (delete-file-recursively "external/xkbcommon")
+             #t))))
       (build-system cmake-build-system)
       (arguments
        `(#:configure-flags '("-DBUILD_TESTING=ON")))
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
-      (inputs
-       `(("libxkbcommon" ,libxkbcommon)
-         ("check" ,check)))
+       `(("check" ,check)
+         ("libxkbcommon" ,libxkbcommon) ; for xkbcommon-keysyms.h
+         ("pkg-config" ,pkg-config)))
       (synopsis "Xterm state machine library")
       (description "TSM is a state machine for DEC VT100-VT520 compatible
 terminal emulators.  It tries to support all common standards while keeping
@@ -1178,7 +1183,7 @@ made by suckless.")
         ("rust-mio" ,rust-mio-0.6)
         ("rust-mio-extras" ,rust-mio-extras-2)
         ("rust-terminfo" ,rust-terminfo-0.6)
-        ("rust-url" ,rust-url-2.1)
+        ("rust-url" ,rust-url-2)
         ("rust-vte" ,rust-vte-0.3)
         ("rust-nix" ,rust-nix-0.15)
         ("rust-miow" ,rust-miow-0.3)

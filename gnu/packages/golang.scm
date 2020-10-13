@@ -12,13 +12,14 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright @ 2018, 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
-;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
-;;; Copyright @ 2019, 2020 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2018, 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2019 Giovanni Biscuolo <g@xelera.eu>
+;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.com>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3348,6 +3349,32 @@ format in Go.")
     (description "This package provides a pretty printer for Go values.")
     (home-page "https://github.com/kr/pretty")
     (license license:expat)))
+
+(define-public go-github-com-kylelemons-godebug
+  (package
+    (name "go-github-com-kylelemons-godebug")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kylelemons/godebug")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0dkk3friykg8p6wgqryx6745ahhb9z1j740k7px9dac6v5xjp78c"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/kylelemons/godebug/diff"
+       #:unpack-path "github.com/kylelemons/godebug"))
+    (home-page "https://github.com/kylelemons/godebug")
+    (synopsis "Pretty printer for Go values.")
+    (description
+     "This package will pretty print a compact representation of a Go data
+structure.  It can also produce a much more verbose, one-item-per-line
+representation suitable for computing diffs.")
+    (license license:asl2.0)))
 
 (define-public go-github-com-kr-text
   (package

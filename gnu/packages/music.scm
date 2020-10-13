@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3159,6 +3160,13 @@ websites such as Libre.fm.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; Reported upstream: <https://github.com/beetbox/beets/issues/3771>.
+         ;; Disable the faulty test as the fix is unclear.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "test/test_mediafile.py"
+               (("def test_read_audio_properties") "def _test_read_audio_properties"))
+             #t))
          (add-after 'unpack 'set-HOME
            (lambda _
              (setenv "HOME" (string-append (getcwd) "/tmp"))
@@ -5538,7 +5546,7 @@ and as an LV2 plugin.")
     ;; distros to make necessary changes to integrate the software into the
     ;; distribution.
     (name "zrythm")
-    (version "0.8.911")
+    (version "1.0.0-alpha.3.0.1")
     (source
       (origin
         (method url-fetch)
@@ -5546,7 +5554,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "1xyp70sjc2k5pfdqbwqa988v86da0rmmyl8ry86bqv4ja80sc6g9"))))
+            "06025367x08y4g9grhcn35bk1dsrpgm04c8l8j50i3p49dl3s1n0"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -5558,15 +5566,8 @@ and as an LV2 plugin.")
         "-Dgraphviz=enabled" ; for exporting routing graphs
         "-Dguile=enabled" ; for Guile scripting
         "-Djack=enabled" ; for JACK audio/MIDI backend
-        "-Dsdl=enabled") ; for SDL audio backend (which uses ALSA)
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'patch-xdg-open
-          (lambda _
-            (substitute* "src/utils/io.c"
-                         (("OPEN_DIR_CMD")
-                          (string-append "\"" (which "xdg-open") "\"")))
-            #t)))))
+        "-Drtmidi=enabled" ; for RtMidi backend (ALSA sequencer)
+        "-Dsdl=enabled"))) ; for SDL audio backend (which uses ALSA)
    (inputs
     `(("alsa-lib" ,alsa-lib)
       ("jack" ,jack-1)

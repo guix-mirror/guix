@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,9 +30,11 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system perl)
+  #:use-module (guix utils)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages web))
 
@@ -112,7 +114,7 @@ convert it to structurally valid XHTML (or HTML).")
 (define-public discount
   (package
     (name "discount")
-    (version "2.2.4")
+    (version "2.2.7")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -120,10 +122,11 @@ convert it to structurally valid XHTML (or HTML).")
                    "discount/discount-" version ".tar.bz2"))
              (sha256
               (base32
-               "199hwajpspqil0a4y3yxsmhdp2dm73gqkzfk4mrwzsmlq8y1xzbl"))))
+               "024mxv0gpvilyfczarcgy5m7h4lv6qvhjfpf5i73qkxhszjjn9mi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:parallel-build? #f             ; libmarkdown won't be built in time
        #:make-flags (list
                      (string-append "LFLAGS=-L. -Wl,-rpath="
                                     (assoc-ref %outputs "out") "/lib"))
@@ -138,10 +141,15 @@ convert it to structurally valid XHTML (or HTML).")
              #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (setenv "CC" "gcc")
-             (invoke "./configure.sh"
-                     (string-append "--prefix=" (assoc-ref outputs "out"))
-                     "--shared"))))))
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CC" ,(cc-for-target))
+               ;; The ‘validate-runpath’ phase fails otherwise.
+               (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
+               (invoke "./configure.sh"
+                       (string-append "--prefix=" out)
+                       "--shared")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (synopsis "Markdown processing library, written in C")
     (description
      "Discount is a markdown implementation, written in C.  It provides a

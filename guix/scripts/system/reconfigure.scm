@@ -126,22 +126,25 @@ return the <live-service> objects that are currently running on MACHINE."
   (define exp
     (with-imported-modules '((gnu services herd))
       #~(begin
-          (use-modules (gnu services herd))
+          (use-modules (gnu services herd)
+                       (ice-9 match))
+
           (let ((services (current-services)))
             (and services
-                 ;; 'live-service-running' is ignored, as we can't necessarily
-                 ;; serialize arbitrary objects. This should be fine for now,
-                 ;; since 'machine-current-services' is not exposed publicly,
-                 ;; and the resultant <live-service> objects are only used for
-                 ;; resolving service dependencies.
                  (map (lambda (service)
                         (list (live-service-provision service)
-                              (live-service-requirement service)))
+                              (live-service-requirement service)
+                              (match (live-service-running service)
+                                (#f #f)
+                                (#t #t)
+                                ((? number? pid) pid)
+                                (_ #t))))         ;not serializable
                       services))))))
+
   (mlet %store-monad ((services (eval exp)))
     (return (map (match-lambda
-                   ((provision requirement)
-                    (live-service provision requirement #f)))
+                   ((provision requirement running)
+                    (live-service provision requirement running)))
                  services))))
 
 ;; XXX: Currently, this does NOT attempt to restart running services. See
@@ -181,13 +184,14 @@ services as defined by OS."
   (mlet* %store-monad ((live-services (running-services eval)))
     (let*-values (((to-unload to-restart)
                    (shepherd-service-upgrade live-services target-services)))
-      (let* ((to-unload (map live-service-canonical-name to-unload))
+      (let* ((to-unload  (map live-service-canonical-name to-unload))
              (to-restart (map shepherd-service-canonical-name to-restart))
-             (to-start (lset-difference eqv?
-                                        (map shepherd-service-canonical-name
-                                             target-services)
-                                        (map live-service-canonical-name
-                                             live-services)))
+             (running    (map live-service-canonical-name
+                              (filter live-service-running live-services)))
+             (to-start   (lset-difference eqv?
+                                          (map shepherd-service-canonical-name
+                                               target-services)
+                                          running))
              (service-files (map shepherd-service-file target-services)))
         (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
                   (primitive-load #$(upgrade-services-program service-files

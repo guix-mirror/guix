@@ -7489,3 +7489,49 @@ Packages @code{bicaption}, @code{ltcaption}, @code{newfloat},
     (description "This package provides a drop-in replacement for the
 Symbol font from Adobe's basic set.")
     (license license:gpl2)))
+
+(define-public texlive-mathpazo
+  (package
+    (inherit (simple-texlive-package
+              "texlive-mathpazo"
+              (list "/doc/latex/mathpazo/"
+                    "/fonts/afm/public/mathpazo/"
+                    "/fonts/tfm/public/mathpazo/"
+                    "/fonts/type1/public/mathpazo/"
+                    "/fonts/vf/public/mathpazo/")
+              (base32
+               "02in6hdnbnkz216mpy8g6fk3wmlls8nh5982vmg37vhbj77lk0rh")
+              #:trivial? #t))
+    (home-page "http://www.ctan.org/pkg/mathpazo")
+    (synopsis "Fonts to typeset mathematics to match Palatino")
+    (description "The Pazo Math fonts are a family of PostScript fonts
+suitable for typesetting mathematics in combination with the Palatino
+family of text fonts.  The Pazo Math family is made up of five fonts
+provided in Adobe Type 1 format.  These contain glyphs that are
+usually not available in Palatino and for which Computer Modern looks
+odd when combined with Palatino.  These glyphs include the uppercase
+Greek alphabet in upright and slanted shapes, the lowercase Greek
+alphabet in slanted shape, several mathematical glyphs and the
+uppercase letters commonly used to represent various number sets.
+LaTeX macro support is provided in package @code{psnfss}.")
+    (license license:gpl3+)))
+
+(define-public texlive-fpl
+  (package
+    (inherit (simple-texlive-package
+              "texlive-fpl"
+              (list "/doc/fonts/fpl/"
+                    "/source/fonts/fpl/"
+                    "/fonts/afm/public/fpl/"
+                    "/fonts/type1/public/fpl/")
+              (base32
+               "02gkl516z9kn8xqs269pdkqn37sxm8ib0pcs43s4rs2rhyyl5z68")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/fpl")
+    (synopsis "SC and OsF fonts for URW Palladio L")
+    (description "The FPL Fonts provide a set of SC/OsF fonts for URW
+Palladio L which are compatible with the Palatino SC/OsF fonts from
+Adobe.  LaTeX use is enabled by the mathpazo package, which is part of
+the @code{psnfss} distribution.")
+    ;; Either LPPL version 1.0 or later, or GPL version 2
+    (license (list license:lppl1.0+ license:gpl2))))

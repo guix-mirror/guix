@@ -4225,6 +4225,13 @@ performance.")
                (base32
                 "16ljv43sc3fxmv63w7b2ff8m1s7h89xhazwmbm1bicz8axq8fjz0"))))
     (build-system gnu-build-system)
+    ;; Let htslib translate "gs://" and "s3://" to regular https links with
+    ;; "--enable-gcs" and "--enable-s3". For these options to work, we also
+    ;; need to set "--enable-libcurl".
+    (arguments
+     `(#:configure-flags '("--enable-gcs"
+                           "--enable-libcurl"
+                           "--enable-s3")))
     (inputs
      `(("curl" ,curl)
        ("openssl" ,openssl)))
@@ -7539,13 +7546,13 @@ also known as views, in a controlled vocabulary.")
 (define-public r-biocstyle
   (package
     (name "r-biocstyle")
-    (version "2.16.0")
+    (version "2.16.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocStyle" version))
               (sha256
                (base32
-                "07rjl2n4sazdg581zh7w3yykzphgr2gpz41ba4ryqs7347vh9nbf"))))
+                "09sz2bnbfbj8wz16k0q8xrvag9fldxqyp5vbg9pvd9skh28hv7c7"))))
     (properties
      `((upstream-name . "BiocStyle")))
     (build-system r-build-system)
@@ -8848,13 +8855,13 @@ of gene-level counts.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.32.2")
+    (version "2.32.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "1v6ygi0avh3gmaj2ld2nr7vww4ipw39b5kqci9w27i3ja985lb8j"))))
+                "0fnx60dpf6s2qwq48lg98g18g8k7wgm66pw0kamlbb7l2hnwycvf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rhdf5lib" ,r-rhdf5lib)))
@@ -10272,14 +10279,14 @@ interval to data view, mismatch pileup, and several splicing summaries.")
 (define-public r-gqtlbase
   (package
     (name "r-gqtlbase")
-    (version "1.20.0")
+    (version "1.20.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gQTLBase" version))
        (sha256
         (base32
-         "06xvzp4fn3qfa46ggg8kxi267gbyd821vvx4040173xkqxpr0g5j"))))
+         "1ly14vhhqxjpbxjypi6ppd37dycabdhf4ny4nsvp9969k418zv41"))))
     (properties `((upstream-name . "gQTLBase")))
     (build-system r-build-system)
     (propagated-inputs

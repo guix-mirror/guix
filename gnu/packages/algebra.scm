@@ -48,6 +48,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -354,7 +355,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.6.0-23")
+    (version "1.6.0-25")
     (source
      (origin
        (method url-fetch)
@@ -366,7 +367,7 @@ precision.")
                            "~parisse/debian/dists/stable/main/source/"
                            "giac_" version ".tar.gz"))
        (sha256
-        (base32 "0bgc3jw9r0f2bkqv0m4hla7r7mxi3fzscnkjfc5cvffp3nk2gwvf"))))
+        (base32 "11kik2csdg9wy0npiih21kaag0nc89i9ldgk7ak7gvf9ycddm6mh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -431,6 +432,7 @@ precision.")
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("hevea" ,hevea)
        ("python" ,python-wrapper)
        ("readline" ,readline)
        ("texlive" ,texlive-tiny)))

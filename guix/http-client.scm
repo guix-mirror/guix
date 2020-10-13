@@ -71,7 +71,8 @@
 
 (define* (http-fetch uri #:key port (text? #f) (buffered? #t)
                      (verify-certificate? #t)
-                     (headers '((user-agent . "GNU Guile"))))
+                     (headers '((user-agent . "GNU Guile")))
+                     timeout)
   "Return an input port containing the data at URI, and the expected number of
 bytes available or #f.  If TEXT? is true, the data at URI is considered to be
 textual.  Follow any HTTP redirection.  When BUFFERED? is #f, return an
@@ -80,13 +81,17 @@ extra HTTP headers.
 
 When VERIFY-CERTIFICATE? is true, verify HTTPS server certificates.
 
+TIMEOUT specifies the timeout in seconds for connection establishment; when
+TIMEOUT is #f, connection establishment never times out.
+
 Raise an '&http-get-error' condition if downloading fails."
   (let loop ((uri (if (string? uri)
                       (string->uri uri)
                       uri)))
     (let ((port (or port (guix:open-connection-for-uri uri
                                                        #:verify-certificate?
-                                                       verify-certificate?)))
+                                                       verify-certificate?
+                                                       #:timeout timeout)))
           (headers (match (uri-userinfo uri)
                      ((? string? str)
                       (cons (cons 'Authorization
@@ -155,13 +160,16 @@ Raise an '&http-get-error' condition if downloading fails."
 
 (define* (http-fetch/cached uri #:key (ttl (%http-cache-ttl)) text?
                             (write-cache dump-port)
-                            (cache-miss (const #t)))
+                            (cache-miss (const #t))
+                            (timeout 10))
   "Like 'http-fetch', return an input port, but cache its contents in
 ~/.cache/guix.  The cache remains valid for TTL seconds.
 
 Call WRITE-CACHE with the HTTP input port and the cache output port to write
 the data to cache.  Call CACHE-MISS with URI just before fetching data from
-URI."
+URI.
+
+TIMEOUT specifies the timeout in seconds for connection establishment."
   (let ((file (cache-file-for-uri uri)))
     (define (update-cache cache-port)
       (define cache-time
@@ -183,7 +191,7 @@ URI."
                        cache-port)
                      (raise c))))
         (let ((port (http-fetch uri #:text? text?
-                                #:headers headers)))
+                                #:headers headers #:timeout timeout)))
           (cache-miss uri)
           (mkdir-p (dirname file))
           (when cache-port

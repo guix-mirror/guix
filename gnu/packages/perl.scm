@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2019, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -27,6 +27,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,7 +75,8 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xorg))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -3812,24 +3814,15 @@ of the input.  MD4 is described in RFC 1320.")
 (define-public perl-digest-md5
   (package
     (name "perl-digest-md5")
-    (version "2.55")
+    (version "2.58")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/Digest-MD5-"
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/Digest-MD5-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0g0fklbrm2krswc1xhp4iwn1dhqq71fqh2p5wm8xj9a4s6i9ic83"))))
+        (base32 "057psy6k7im0pr3344ny6k5rsnbqj8aizkmwgw53kbbngabh20kx"))))
     (build-system perl-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'set-permissions
-           (lambda _
-             ;; Make MD5.so read-write so it can be stripped.
-             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755)
-             #t)))))
     (home-page "https://metacpan.org/release/Digest-MD5")
     (synopsis "Perl interface to the MD-5 algorithm")
     (description
@@ -7868,6 +7861,64 @@ signatures.")
 an OLE-Structured file.  @dfn{OLE} (Object Linking and Embedding) is a
 technology to store hierarchical information such as links to other
 documents within a single file.")
+    (license (package-license perl))))
+
+(define-public perl-opengl
+  (package
+    (name "perl-opengl")
+    (version "0.70")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/C/CH/CHM/OpenGL-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1q3lz168q081iwl9jg21fbzhp9la79gav9mv6nmh2jab83s2l3mj"))))
+    (build-system perl-build-system)
+    (inputs `(("freeglut" ,freeglut)
+              ("libxi" ,libxi)
+              ("libxmu" ,libxmu)))
+    (arguments
+     '(#:tests? #f ; test.pl fails with our empty glversion.txt, while
+                   ; the package still seems to work on the examples
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'glversion
+           ;; Building utils/glversion.txt fails, and is probably
+           ;; dependent on the graphics card in the build system.
+           ;; Replace it by a content-free file; while this breaks
+           ;; the tests, the examples in the examples/ subdirectory
+           ;; can be run.
+           (lambda _
+             (substitute* "Makefile.PL"
+               (("unlink") "# unlink") ; prevent utils/glversion.txt
+                                       ; from being deleted once...
+               (("\\.\"\\$make_ver clean\"") "")) ; ...and twice...
+             (substitute* "utils/Makefile"
+               (("all: glversion.txt") "all: ")) ; ...and thrice.
+             (call-with-output-file "utils/glversion.txt"
+               (lambda (port)
+                 (display (string-append "FREEGLUT=\nGLUT=\nVERSION=\n"
+                                         "VENDOR=\nRENDERER=\n"
+                                         "EXTENSIONS=\n")
+                          port)))
+             #t))
+         (add-before 'configure 'fix-library-flags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.PL"
+               (("-L/usr/local/freeglut/lib")
+                (string-append "-L" (assoc-ref inputs "freeglut") "/lib\n"
+                               "-L" (assoc-ref inputs "glu") "/lib\n"
+                               "-L" (assoc-ref inputs "mesa") "/lib\n")))
+             #t)))))
+    (home-page "https://metacpan.org/release/OpenGL")
+    (synopsis
+      "Perl bindings to the OpenGL API, GLU, and GLUT/FreeGLUT")
+    (description "The package provides Perl bindings to OpenGL, GLU
+and FreeGLUT.")
     (license (package-license perl))))
 
 (define-public perl-package-anon

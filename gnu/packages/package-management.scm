@@ -50,6 +50,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
@@ -130,8 +131,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.1.0")
-        (commit "d27dbeb9d8f6c3a4c1d2fdbeb432717c119b73d1")
-        (revision 28))
+        (commit "875c01f82dc5f2c4ca82952ea88b3240fbe8bede")
+        (revision 30))
     (package
       (name "guix")
 
@@ -147,7 +148,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0j60m9s47n23flfp2yn4ww4vsk8qvp500m2x1x0ib5bjywj1hiwl"))
+                  "0mh1hnrk84h5nzqp6aflh9ab3kxr5672c8bx44minzyd26177yik"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -987,6 +988,92 @@ environments.")
     ;; the web interface modules in gwl/ are licensed AGPL3+,
     ;; and the fonts included in this package are licensed OFL1.1.
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
+
+(define-public guix-build-coordinator
+  (let ((commit "e701d4d7f24a11d94cf504e7efbcee4e1091b092")
+        (revision "1"))
+    (package
+    (name "guix-build-coordinator")
+    (version (git-version "0" revision commit))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.cbaines.net/git/guix/build-coordinator")
+                    (commit commit)))
+              (sha256
+               (base32
+                "16f09sl527b6bgyxs2ybyjfncli60dwzg4v1c58h4hcl2zm8qx70"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-GUILE_AUTO_COMPILE
+           (lambda _
+             ;; To avoid warnings relating to 'guild'.
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             #t))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (guile (assoc-ref inputs "guile"))
+                    (version (target-guile-effective-version))
+                    (scm (string-append out "/share/guile/site/" version))
+                    (go  (string-append out "/lib/guile/" version "/site-ccache")))
+               (for-each
+                (lambda (file)
+                  (simple-format (current-error-port) "wrapping: ~A\n" file)
+                  (wrap-program file
+                    `("PATH" ":" prefix
+                      (,bin
+                       ;; Support building without sqitch as an input, as it
+                       ;; can't be cross-compiled yet
+                       ,@(or (and=> (assoc-ref inputs "sqitch")
+                                    list)
+                             '())))
+                    `("GUILE_LOAD_PATH" ":" prefix
+                      (,scm ,(getenv "GUILE_LOAD_PATH")))
+                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                      (,go ,(getenv "GUILE_LOAD_COMPILED_PATH")))))
+                (find-files bin)))
+             #t))
+         (delete 'strip))))             ; As the .go files aren't compatible
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+
+       ;; Guile libraries are needed here for cross-compilation.
+       ("guile-json" ,guile-json-3)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guix" ,guix)
+       ("guile-prometheus" ,guile-prometheus)
+       ("guile-fibers" ,guile-fibers)
+       ("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
+    (inputs
+     `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
+       ("guile-fibers" ,guile-fibers)
+       ("guile-prometheus" ,guile-prometheus)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guile-json" ,guile-json-3)
+       ("guile-lzlib" ,guile-lzlib)
+       ("guile-sqlite3" ,guile-sqlite3)
+       ("guix" ,guix)
+       ("sqlite" ,sqlite)
+       ("sqitch" ,sqitch)))
+    (home-page "https://git.cbaines.net/guix/build-coordinator/")
+    (synopsis "Tool to help build derivations")
+    (description
+     "The Guix Build Coordinator helps with performing lots of builds across
+potentially many machines, and with doing something with the results and
+outputs of those builds.")
+    (license license:gpl3+))))
 
 (define-public guix-jupyter
   (package
