@@ -29344,7 +29344,7 @@ Tokio.")
 (define-public rust-toml-0.5
   (package
     (name "rust-toml")
-    (version "0.5.6")
+    (version "0.5.7")
     (source
       (origin
         (method url-fetch)
@@ -29352,11 +29352,10 @@ Tokio.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06n7j8z63hj6g0kj2x6sqwxnm4q3s0q5d873bdk41vqy1cb2vjgz"))))
+          "0iannv6pb226h0q9vlqg7hdn36fs146yrahw016n107g1fxlbkvm"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
         (("rust-indexmap" ,rust-indexmap-1)
          ("rust-serde" ,rust-serde-1))
         #:cargo-development-inputs
