@@ -77,6 +77,38 @@ produces portable and efficient C, supports almost all of the R5RS Scheme
 language standard, and includes many enhancements and extensions.")
     (license license:bsd-3)))
 
+(define-public chicken-srfi-1
+  (package
+    (name "chicken-srfi-1")
+    (version "0.5.1")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append
+                   "https://code.call-cc.org/svn/chicken-eggs/"
+                   "release/5/srfi-1/tags/"
+                   version))
+             (revision 39055)
+             (user-name "anonymous")
+             (password "")))
+       (file-name (string-append "chicken-srfi-1" version "-checkout"))
+       (sha256
+        (base32
+         "02940zsjrmn7c34rnp1rllm2nahh9jvszlzrw8ak4pf31q09cmq1"))))
+    (build-system chicken-build-system)
+    (arguments '(#:egg-name "srfi-1"))
+    (inputs
+     `(("chicken-test" ,chicken-test)))
+    (home-page "https://wiki.call-cc.org/eggref/5/srfi-1")
+    (synopsis "SRFI-1 list library")
+    (description
+     "The list library defined in
+@uref{https://srfi.schemers.org/srfi-1/srfi-1.html, SRFI-1} contains a lot of
+useful list processing procedures for construction, examining, destructuring
+and manipulating lists and pairs.")
+    (license license:bsd-3)))
+
 (define-public chicken-test
   (package
     (name "chicken-test")
@@ -101,3 +133,4 @@ language standard, and includes many enhancements and extensions.")
     (description
      "This package provides a simple testing utility for CHICKEN Scheme.")
     (license license:bsd-3)))
+
