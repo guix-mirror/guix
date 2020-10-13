@@ -108,6 +108,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
@@ -17482,6 +17483,58 @@ Week instances stringify to this form.")
 
 (define-public python2-isoweek
   (package-with-python2 python-isoweek))
+
+(define-public python-pyzbar
+  (package
+    (name "python-pyzbar")
+    (version "0.1.8")
+    (source
+     (origin
+       ;; There's no source tarball on PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NaturalHistoryMuseum/pyzbar")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fqlfg5p2v9lzzzi0si2sz54lblprk6jjjhjw54b64lp58c1yhsl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-failing-test
+           (lambda _
+             ;; This tests if find_library was called once, but we remove
+             ;; the call in the stage below to make the library find libzbar.
+             (delete-file "pyzbar/tests/test_zbar_library.py")
+             #t))
+         (add-before 'build 'set-library-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libzbar (assoc-ref inputs "zbar")))
+               (substitute* "pyzbar/zbar_library.py"
+                 (("find_library\\('zbar'\\)")
+                  (string-append "'" libzbar "/lib/libzbar.so.0'")))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-numpy" ,python-numpy)
+       ("python-pillow" ,python-pillow)))
+    (inputs
+     `(("zbar" ,zbar)))
+    (home-page "https://github.com/NaturalHistoryMuseum/pyzbar/")
+    (synopsis "Read one-dimensional barcodes and QR codes")
+    (description
+     "Read one-dimensional barcodes and QR codes using the zbar library.
+
+Features:
+
+@itemize
+@item Pure python
+@item Works with PIL / Pillow images, OpenCV / numpy ndarrays, and raw bytes
+@item Decodes locations of barcodes
+@item No dependencies, other than the zbar library itself
+@end itemize")
+    (license license:expat)))
 
 (define-public python-tokenize-rt
   (package
