@@ -138,6 +138,35 @@ CHICKEN Scheme, along with
 @uref{https://srfi.schemers.org/srfi-90/srfi-90.html, SRFI-90} extensions.")
     (license license:bsd-3)))
 
+(define-public chicken-iset
+  (package
+    (name "chicken-iset")
+    (version "2.2")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "https://code.call-cc.org/svn/chicken-eggs/"
+                                 "release/5/iset/tags/" version))
+             (revision 39057)
+             (user-name "anonymous")
+             (password "")))
+       (file-name (string-append "chicken-iset-" version "-checkout"))
+       (sha256
+        (base32
+         "0gz50n5i561n5sk9prry0lrxz6bfrq9if5bclaq6a0f7lzinhnzb"))))
+    (inputs
+     `(("chicken-test" ,chicken-test)))
+    (build-system chicken-build-system)
+    (arguments '(#:egg-name "iset"))
+    (synopsis "Integer set library")
+    (home-page "https://wiki.call-cc.org/eggref/5/iset")
+    (description
+     "This ``integer set'' CHICKEN Scheme library implements bit vectors.
+Bit-vectors provide an abstract interface to bitwise operations typically done
+with integers.")
+    (license license:bsd-3)))
+
 (define-public chicken-test
   (package
     (name "chicken-test")
