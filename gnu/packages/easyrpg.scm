@@ -76,7 +76,7 @@ It can read and write LCF and XML files.")
 (define-public easyrpg-player
   (package
     (name "easyrpg-player")
-    (version "0.6.2.2")
+    (version "0.6.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -84,7 +84,7 @@ It can read and write LCF and XML files.")
                     "/easyrpg-player-" version ".tar.gz"))
               (sha256
                (base32
-                "02nrqrb6klynwrq6z0639qnlhr2z900b0y94xr96i12icr7ihm5m"))))
+                "1lahbhgyhky0hgd3xwhgg2nm8mfa9p2i1fzxi00561hnk2ya86pm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
