@@ -126,6 +126,7 @@ MODULES =					\
   guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
   guix/build-system/cargo.scm			\
+  guix/build-system/chicken.scm			\
   guix/build-system/clojure.scm			\
   guix/build-system/cmake.scm			\
   guix/build-system/dub.scm			\
@@ -175,6 +176,7 @@ MODULES =					\
   guix/build/download-nar.scm			\
   guix/build/cargo-build-system.scm		\
   guix/build/cargo-utils.scm			\
+  guix/build/chicken-build-system.scm		\
   guix/build/cmake-build-system.scm		\
   guix/build/dub-build-system.scm		\
   guix/build/dune-build-system.scm		\

@@ -7335,6 +7335,28 @@ parameters available to cargo.  It will also remove an included
 defined by the crate.
 @end defvr
 
+@defvr {Scheme Variable} chicken-build-system
+This variable is exported by @code{(guix build-system chicken)}.
+It builds Chicken Scheme modules (also called ``eggs'' or ``extensions'').
+Chicken generates C source code, which then gets compiled by a C compiler,
+in this case GCC.
+
+It adds @code{chicken} to the package inputs, as well as the packages of
+@code{gnu-build-system}.
+
+The build system can't (yet) deduce the egg's name automatically, so just like
+with @code{go-build-system} and its @code{#:import-path}, you should define
+@code{#:egg-name} in the package's @code{arguments} field.
+
+For example, if you are packaging the srfi-1 egg:
+@lisp
+(arguments '(#:egg-name "srfi-1"))
+@end lisp
+
+Egg dependencies must be defined in @code{propagated-inputs}, not @code{inputs}
+because Chicken doesn't embed absolute references in compiled eggs.
+Test dependecies should go to @code{native-inputs}, as usual.
+@end defvr
 
 @defvr {Scheme Variable} copy-build-system
 This variable is exported by @code{(guix build-system copy)}.  It
