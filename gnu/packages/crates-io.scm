@@ -865,8 +865,7 @@ that runs on Argon2.")
          "1vphy316jbgmgckk4z7m8csvlyc8hih9w95iyq48h8077xc2wf0d"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
+     `(#:cargo-development-inputs
        (("rust-quickcheck" ,rust-quickcheck-0.6))))
     (home-page "https://github.com/droundy/arrayref")
     (synopsis "Macros to take array references of slices")
