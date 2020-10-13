@@ -5676,6 +5676,31 @@ and popup menus.")
 buffers, respectively.")
     (license license:bsd-3)))
 
+(define-public emacs-py-isort
+  (package
+    (name "emacs-py-isort")
+    (version "2016.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/paetzke/py-isort.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08i55gv392wc12x8v3dca0dmz8a8p9ljsqhyajsb6qv1k120wqhx"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #f))     ;tests fail with "emacs: standard input is not a tty"
+    (propagated-inputs
+     `(("python-isort" ,python-isort)))
+    (home-page "https://github.com/paetzke/py-isort.el")
+    (synopsis "Sort the imports in Python buffers")
+    (description
+     "This package provides commands and a minor mode to sort Python imports
+using @code{python-isort}.")
+    (license license:gpl3+)))
+
 (define-public emacs-python-environment
   (package
     (name "emacs-python-environment")
