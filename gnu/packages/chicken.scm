@@ -165,6 +165,38 @@ CHICKEN Scheme, along with
 @uref{https://srfi.schemers.org/srfi-90/srfi-90.html, SRFI-90} extensions.")
     (license license:bsd-3)))
 
+(define-public chicken-agrep
+  (package
+    (name "chicken-agrep")
+    (version "1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/iraikov/chicken-agrep")
+             (commit version)))
+       (file-name (string-append "chicken-agrep-" version "-checkout"))
+       (sha256
+        (base32
+         "0z05x7f154n9bgmainrsmncf5i6dil43r9ymr3rdgwbg4wnxmz4s"))))
+    ;; TODO do we really have to make these propagated?
+    ;; I don't know Chicken's module system well enough to tell
+    (propagated-inputs
+     `(("chicken-datatype" ,chicken-datatype)
+       ("chicken-srfi-1" ,chicken-srfi-1)
+       ("chicken-srfi-14" ,chicken-srfi-14)))
+    (inputs
+     `(("chicken-test" ,chicken-test)))
+    (build-system chicken-build-system)
+    (arguments '(#:egg-name "agrep"))
+    (synopsis "Approximate string matching library")
+    (home-page "https://wiki.call-cc.org/eggref/5/agrep")
+    (description
+     "This library implements the Wu-Manber algorithm for approximate string
+searching with errors, popularized by the agrep Unix command and the glimpse
+file indexing tool.")
+    (license license:gpl3+)))
+
 (define-public chicken-datatype
   (package
     (name "chicken-datatype")
