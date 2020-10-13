@@ -2539,7 +2539,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.28.2")
+    (version "0.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2547,7 +2547,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0818vr0yhk9j1y1wcbxzcd458vrvp06rrhi8k43bhqkb5jb4dcxq"))))
+                "1h4np66p87jf0c85ig524w8f5rbhl5gx8fww1qg0c55f87yzkizr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
