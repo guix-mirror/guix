@@ -24,7 +24,7 @@
   #:use-module (guix download)
   #:use-module (gnu packages commencement)
   #:use-module ((guix licenses)
-                #:select (bsd-3)))
+                #:prefix license:))
 
 (define-public chicken
   (package
@@ -71,4 +71,4 @@
      "CHICKEN is a compiler for the Scheme programming language.  CHICKEN
 produces portable and efficient C, supports almost all of the R5RS Scheme
 language standard, and includes many enhancements and extensions.")
-    (license bsd-3)))
+    (license license:bsd-3)))
