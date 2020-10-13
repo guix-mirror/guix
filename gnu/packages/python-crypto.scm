@@ -1181,6 +1181,26 @@ been constructed to maintain extensive documentation on how to use
 @code{NaCl} as well as being completely portable.")
     (license license:asl2.0)))
 
+(define-public python-pyotp
+  (package
+    (name "python-pyotp")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyotp" version))
+       (sha256
+        (base32 "0a1dx07y785xyl70h0vj6vssg13qfx11w04d0gz8h48qffsymv01"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/pyauth/pyotp")
+    (synopsis "Python One Time Password Library")
+    (description
+     "PyOTP is a Python library for generating and verifying one-time
+passwords.  It can be used to implement two-factor (2FA) or multi-factor
+(MFA) authentication methods in web applications and in other systems that
+require users to log in.")
+    (license license:expat)))
+
 (define-public python-scrypt
   (package
     (name "python-scrypt")
