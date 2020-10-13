@@ -17297,6 +17297,31 @@ user's @file{~/Trash} directory.")
                        (string-append (getcwd) ":" (getenv "PYTHONPATH")))
                #t))))))))
 
+(define-public python-pyfavicon
+  (package
+    (name "python-pyfavicon")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyfavicon" version))
+       (sha256
+        (base32 "15wfpa99hvcfsv8j0m8iprmydi2p4qkhm86qfx485244y0ia5mgx"))))
+    (build-system python-build-system)
+    (arguments
+     ;; There are no tests in the PyPI tarball and the tests from the
+     ;; repository require online data.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/bilelmoussaoui/pyfavicon")
+    (synopsis "Async favicon fetcher")
+    (description
+     "@code{pyfavicon} is an async favicon fetcher.")
+    (license license:expat)))
+
 (define-public python-yapf
   (package
     (name "python-yapf")
