@@ -5,6 +5,7 @@
 # Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+# Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -459,6 +460,26 @@ export XDG_DATA_DIRS="$GUIX_PROFILE/share:${XDG_DATA_DIRS:-/usr/local/share/:/us
 EOF
 }
 
+sys_create_shell_completion()
+{ # Symlink supported shell completions system-wide
+
+    var_guix=/var/guix/profiles/per-user/root/current-guix
+    bash_completion=/etc/bash_completion.d
+    zsh_completion=/usr/share/zsh/site-functions
+    fish_completion=/usr/share/fish/vendor_completions.d
+
+    { # Just in case
+        for dir_shell in $bash_completion $zsh_completion $fish_completion; do
+            [ -d "$dir_shell" ] || mkdir -p $dir_shell
+        done;
+
+        ln -sf ${var_guix}/etc/bash_completion.d/* "$bash_completion";
+        ln -sf ${var_guix}/share/zsh/site-functions/* "$zsh_completion";
+        ln -sf ${var_guix}/share/fish/vendor_completions.d/* "$fish_completion"; } &&
+        _msg "${PAS}installed shell completion"
+}
+
+
 welcome()
 {
     cat<<"EOF"
@@ -516,6 +537,7 @@ main()
     sys_enable_guix_daemon
     sys_authorize_build_farms
     sys_create_init_profile
+    sys_create_shell_completion
 
     _msg "${INF}cleaning up ${tmp_path}"
     rm -r "${tmp_path}"
