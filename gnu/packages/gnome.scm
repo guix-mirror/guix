@@ -74,6 +74,7 @@
 (define-module (gnu packages gnome)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
@@ -9078,6 +9079,75 @@ command-line interface.  It can record part or all of an X display for a
 specified duration and save it as a GIF encoded animated image file.")
       (home-page "https://git.gnome.org/browse/byzanz")
       (license license:gpl2+))))
+
+(define-public authenticator
+  (package
+    (name "authenticator")
+    (version "3.32.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/World/Authenticator")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1c4r9rnrz5gazrfg0z2rcwax4nscs7z391bcjcl74k6ln3blwzpr"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/authenticator"))
+                   (pylib (string-append (assoc-ref outputs "out")
+                                         "/lib/python"
+                                         ,(version-major+minor
+                                           (package-version python))
+                                         "/site-packages")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("libhandy" ,libhandy-0.0)
+       ("libsecret" ,libsecret)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-pillow" ,python-pillow)
+       ("python-pyfavicon" ,python-pyfavicon)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyotp" ,python-pyotp)
+       ("python-pyzbar" ,python-pyzbar)
+       ("yoyo-migrations" ,yoyo-migrations)
+       ("zbar" ,zbar)))
+    (home-page "https://gitlab.gnome.org/World/Authenticator/")
+    (synopsis "Two-factor authentication application built for GNOME")
+    (description
+     "Authenticator is a two-factor authentication (2FA) application built for
+the GNOME desktop environment.
+
+Features:
+
+@itemize
+@item QR code scanner
+@item Beautiful UI
+@item Huge database of more than 560 supported services
+@item Keep your PIN tokens secure by locking the application with a password
+@item Automatically fetch an image for services using their favicon
+@item The possibility to add new services
+@end itemize")
+    (license license:gpl3+)))
 
 (define-public gsound
   (package
