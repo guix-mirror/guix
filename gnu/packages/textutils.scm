@@ -77,8 +77,9 @@
         (base32 "00dfsf4rfyjb5j12gan8xjiirm0asshdz6dmd3l34a7ays6wadb0"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc"
-                          (string-append "prefix=" (assoc-ref %outputs "out")))
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; no configure script
