@@ -10191,7 +10191,7 @@ OpenGL's old and error-prone API.")
           "0x25wfr7vg3mzxc9x05dcphvd3nwlcmbnxrvwcvrrdwplcrrk4cv"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))
     (home-page "https://github.com/rust-lang-nursery/glob")
