@@ -807,7 +807,7 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method git-fetch)
@@ -816,9 +816,7 @@ Extensions} (DNSSEC).")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fkvip7n5ihjfwnnivdc3jf44y8p85ifglvq7b0anxvj9cg1m78f"))
-       (patches
-        (search-patches "knot-test_net_shortwrite-ensure-connection.patch"))
+        (base32 "10mlzldxqvbaw78nghkr0s73rlbpz9wg16z14321xw2l9xfibkad"))
        (modules '((guix build utils)))
        (snippet
         '(begin
