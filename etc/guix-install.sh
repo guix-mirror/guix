@@ -55,6 +55,7 @@ REQUIRE=(
 
 PAS=$'[ \033[32;1mPASS\033[0m ] '
 ERR=$'[ \033[31;1mFAIL\033[0m ] '
+WAR=$'[ \033[33;1mWARN\033[0m ] '
 INF="[ INFO ] "
 
 DEBUG=0
@@ -198,6 +199,19 @@ chk_sys_arch()
     esac
 
     ARCH_OS="${arch}-${os}"
+}
+
+chk_sys_nscd()
+{ # Check if nscd is up and suggest to start it or install it
+    if [ "$(type -P pidof)" ]; then
+        if [ ! "$(pidof nscd)" ]; then
+            _msg "${WAR}We recommend installing and/or starting your distribution 'nscd' service"
+            _msg "${WAR}Please read 'info guix \"Application Setup\"' about \"Name Service Switch\""
+        fi
+    else
+        _msg "${INF}We cannot determine if your distribution 'nscd' service is running"
+        _msg "${INF}Please read 'info guix \"Application Setup\"' about \"Name Service Switch\""
+    fi
 }
 
 # ------------------------------------------------------------------------------
@@ -523,6 +537,7 @@ main()
     chk_gpg_keyring
     chk_init_sys
     chk_sys_arch
+    chk_sys_nscd
 
     _msg "${INF}system is ${ARCH_OS}"
 
