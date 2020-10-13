@@ -723,6 +723,8 @@ model to base your own plug-in on, here it is.")
        ;("qtdeclarative" ,qtdeclarative)
        ;("qtx11extras" ,qtx11extras)
        ("soundtouch" ,soundtouch)
+       ;; GStreamer is not yet compatible with srt > 1.4.1.
+       ("srt" ,srt-1.4.1)
        ("x265" ,x265)
        ("wayland" ,wayland)))
     (home-page "https://gstreamer.freedesktop.org/")
