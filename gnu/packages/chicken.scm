@@ -109,6 +109,33 @@ useful list processing procedures for construction, examining, destructuring
 and manipulating lists and pairs.")
     (license license:bsd-3)))
 
+(define-public chicken-srfi-14
+  (package
+    (name "chicken-srfi-14")
+    (version "0.2.1")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "https://code.call-cc.org/svn/chicken-eggs/"
+                                 "release/5/srfi-14/tags/" version))
+             (revision 39057)
+             (user-name "anonymous")
+             (password "")))
+       (file-name (string-append "chicken-srfi-14-" version "-checkout"))
+       (sha256
+        (base32
+         "0wjsqfwawh9bx6vvii1gwag166bxkflc0ib374fbws14914g2ac1"))))
+    (build-system chicken-build-system)
+    (arguments '(#:egg-name "srfi-14"))
+    (home-page "https://wiki.call-cc.org/eggref/5/srfi-14")
+    (synopsis "Character set library")
+    (description
+     "Character sets can be created, extended, tested for the membership of
+a characters and be compared to other character sets")
+    (license (license:non-copyleft
+              "http://wiki.call-cc.org/eggref/5/srfi-14#license"))))
+
 (define-public chicken-srfi-69
   (package
     (name "chicken-srfi-69")
