@@ -3614,7 +3614,7 @@ practically any type of media.")
 (define-public libmediainfo
   (package
     (name "libmediainfo")
-    (version "20.08")
+    (version "20.09")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mediaarea.net/download/source/"
@@ -3622,7 +3622,7 @@ practically any type of media.")
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "19n8h9jq42b6r3dbag77fzwfksfywszmzpi636w87fvc1nqldlqj"))))
+                "15ni9pnch6688m72swwax109a7mg4a08yx75qknrx7qa6dbyhz6h"))))
     ;; TODO add a Big Buck Bunny webm for tests.
     (native-inputs
      `(("autoconf" ,autoconf)
