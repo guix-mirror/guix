@@ -624,6 +624,31 @@ GDB/x86 features like hardware data watchpoints, makes debugging much more
 fun.")
     (license license:expat)))
 
+(define-public libbacktrace
+  ;; There are no releases nor tags.
+  (let ((revision "1")
+        (commit "5009c113981431ae1843ebd29d6ad24eb32fc1b2"))
+    (package
+      (name "libbacktrace")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ianlancetaylor/libbacktrace")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0663zjpfpnsyv9h3pbp7cgmg9gz79n68bqpdl97y6i0jsx93v1zg"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags '("CFLAGS=-fPIC")))
+      (home-page "https://github.com/ianlancetaylor/libbacktrace")
+      (synopsis "C library for producing symbolic backtraces")
+      (description "The @code{libbacktrace} library can be linked into a C/C++
+program to produce symbolic backtraces.")
+      (license license:expat))))
+
 (define-public mspdebug
   (package
     (name "mspdebug")
