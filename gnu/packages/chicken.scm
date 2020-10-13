@@ -138,6 +138,36 @@ CHICKEN Scheme, along with
 @uref{https://srfi.schemers.org/srfi-90/srfi-90.html, SRFI-90} extensions.")
     (license license:bsd-3)))
 
+(define-public chicken-datatype
+  (package
+    (name "chicken-datatype")
+    (version "1.6")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "https://code.call-cc.org/svn/chicken-eggs/"
+                                 "release/5/datatype/tags/" version))
+             (revision 39266)
+             (user-name "anonymous")
+             (password "")))
+       (file-name (string-append "chicken-datatype-" version "-checkout"))
+       (sha256
+        (base32
+         "1a58q8ypjkjz6wdv25247wixds4179239d36nnvsfn6gp70s9jfq"))))
+    (build-system chicken-build-system)
+    (arguments '(#:egg-name "datatype"))
+    (inputs
+     `(("chicken-srfi-1" ,chicken-srfi-1)
+       ("chicken-test" ,chicken-test)))
+    (home-page "https://wiki.call-cc.org/eggref/5/datatype")
+    (synopsis "Facility for creating and using variant records")
+    (description
+     "This CHICKEN Scheme library provides a facility for creating and using
+variant records, as described in the book @i{Essentials of Programming
+Languages} by Friedman, Wand, and Haynes.")
+    (license license:bsd-3)))
+
 (define-public chicken-iset
   (package
     (name "chicken-iset")
