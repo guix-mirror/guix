@@ -2589,8 +2589,7 @@ Bresenham's line algorithm.")
      `(#:cargo-inputs
        (("rust-alloc-no-stdlib" ,rust-alloc-no-stdlib-2)
         ("rust-alloc-stdlib" ,rust-alloc-stdlib-0.2)
-        ("rust-brotli-decompressor"
-         ,rust-brotli-decompressor-2.3)
+        ("rust-brotli-decompressor" ,rust-brotli-decompressor-2)
         ("rust-packed-simd" ,rust-packed-simd-0.3)
         ("rust-sha2" ,rust-sha2-0.8))))
     (home-page "https://github.com/dropbox/rust-brotli")
@@ -2600,7 +2599,7 @@ with no dependency on the rust stdlib.  This makes it suitable for embedded
 devices and kernels.")
     (license (list license:bsd-3 license:expat))))
 
-(define-public rust-brotli-decompressor-2.3
+(define-public rust-brotli-decompressor-2
   (package
     (name "rust-brotli-decompressor")
     (version "2.3.1")
