@@ -28907,7 +28907,9 @@ using Rustls.")
         (base32
          "1d2iy01v5psvm0ygcflzjna7zwgwk36w36bfr6mqf1vpsah65jqm"))))
     (arguments
-     `(#:cargo-inputs
+     `(;; These tests require network access.
+       #:cargo-test-flags '("--release" "--" "--skip=tls12" "--skip=modern")
+       #:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
         ("rust-futures-core" ,rust-futures-core-0.3)
         ("rust-rustls" ,rust-rustls-0.17)
