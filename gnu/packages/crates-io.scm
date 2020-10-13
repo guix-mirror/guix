@@ -853,7 +853,7 @@ that runs on Argon2.")
 (define-public rust-arrayref-0.3
   (package
     (name "rust-arrayref")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
@@ -862,7 +862,7 @@ that runs on Argon2.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1vphy316jbgmgckk4z7m8csvlyc8hih9w95iyq48h8077xc2wf0d"))))
+         "0i6m1l3f73i0lf0cjdf5rh3xpvxydyhfbakq7xx7bkrp5qajgid4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
