@@ -28874,7 +28874,9 @@ futures.")
          "16l8kx3j7i3jxq36qs3hnmys6cd2zqcixc1n0kf3kymwanr32a71"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(;; These tests require network access.
+       #:cargo-test-flags '("--release" "--" "--skip=tls12" "--skip=modern")
+       #:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
         ("rust-futures-core" ,rust-futures-core-0.3)
         ("rust-rustls" ,rust-rustls-0.18)
