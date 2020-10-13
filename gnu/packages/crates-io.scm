@@ -2614,7 +2614,8 @@ devices and kernels.")
          "1v7l1sa63ix1aq8h0k1ijvxvb5w796hz154b9aw0xn6lp31y2lhh"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:tests? #f      ; not all test files included
+       #:cargo-inputs
        (("rust-alloc-no-stdlib" ,rust-alloc-no-stdlib-2.0)
         ("rust-alloc-stdlib" ,rust-alloc-stdlib-0.2))))
     (home-page "https://github.com/dropbox/rust-brotli-decompressor")
