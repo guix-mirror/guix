@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 Evan Hanson <evhan@foldling.org>
+;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,8 +21,11 @@
 (define-module (gnu packages chicken)
   #:use-module (gnu packages)
   #:use-module (guix packages)
+  #:use-module (guix build-system chicken)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (gnu packages commencement)
   #:use-module ((guix licenses)
                 #:prefix license:))
@@ -71,4 +75,29 @@
      "CHICKEN is a compiler for the Scheme programming language.  CHICKEN
 produces portable and efficient C, supports almost all of the R5RS Scheme
 language standard, and includes many enhancements and extensions.")
+    (license license:bsd-3)))
+
+(define-public chicken-test
+  (package
+    (name "chicken-test")
+    (version "1.1")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "https://code.call-cc.org/svn/chicken-eggs/"
+                                 "release/5/test/tags/" version))
+             (revision 39263)
+             (user-name "anonymous")
+             (password "")))
+       (file-name (string-append "chicken-test-" version "-checkout"))
+       (sha256
+        (base32
+         "14i91cxsn6hjkx6kqf7i9syck73cw71jik61jmhg87vpxx5kfnzx"))))
+    (build-system chicken-build-system)
+    (arguments '(#:egg-name "test"))
+    (home-page "https://wiki.call-cc.org/eggref/5/test")
+    (synopsis "Yet another testing utility")
+    (description
+     "This package provides a simple testing utility for CHICKEN Scheme.")
     (license license:bsd-3)))
