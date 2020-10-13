@@ -109,6 +109,35 @@ useful list processing procedures for construction, examining, destructuring
 and manipulating lists and pairs.")
     (license license:bsd-3)))
 
+(define-public chicken-srfi-69
+  (package
+    (name "chicken-srfi-69")
+    (version "0.4.1")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "https://code.call-cc.org/svn/chicken-eggs/"
+                                 "release/5/srfi-69/tags/"
+                                 version))
+             (revision 39057)
+             (user-name "anonymous")
+             (password "")))
+       (file-name (string-append "chicken-srfi-69-" version "-checkout"))
+       (sha256
+        (base32
+         "1z0m9vmg9bj9z0a941pls6igvg8nmhq4mj5psjjidbp0fac572mp"))))
+    (arguments '(#:egg-name "srfi-69"))
+    (build-system chicken-build-system)
+    (home-page "https://wiki.call-cc.org/eggref/5/srfi-69")
+    (synopsis "Implementation of SRFI 69 with SRFI 90 extensions")
+    (description
+     "This package provides an implementation of
+@uref{https://srfi.schemers.org/srfi-69/srfi-69.html, SRFI-69 hash tables} for
+CHICKEN Scheme, along with
+@uref{https://srfi.schemers.org/srfi-90/srfi-90.html, SRFI-90} extensions.")
+    (license license:bsd-3)))
+
 (define-public chicken-test
   (package
     (name "chicken-test")
