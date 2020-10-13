@@ -9802,8 +9802,7 @@ API library @code{gdi32}.")
           "1mgb3qvivi26gs6ihqqhh8iyhp3vgxri6vwyrwg28w0xqzavznql"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1)
         ("rust-rustc-std-workspace-std" ,rust-rustc-std-workspace-std-1.0))
