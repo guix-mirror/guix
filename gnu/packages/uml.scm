@@ -31,14 +31,14 @@
 (define-public plantuml
   (package
     (name "plantuml")
-    (version "1.2020.17")
+    (version "1.2020.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/plantuml/"
                                   version "/plantuml-" version ".tar.gz"))
               (sha256
                (base32
-                "031xqzqi2jh2kms6qjy9sv9m5mjvk887jz54dnrkvw5zgn6kv4hp"))))
+                "0ja2f72x2qd11pkgh1qj6k03yq9ljwsvd6lh84nndwhrbdj5vns7"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
