@@ -5081,7 +5081,7 @@ written in C.  It is developed as part of the NetSurf project.")
              (url "https://github.com/tlsa/libcyaml")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
-       (patches (search-patches "libcyaml-yaml-compat.patch"))
+       (patches (search-patches "libcyaml-libyaml-compat.patch"))
        (sha256
         (base32 "0428p0rwq71nhh5nzcbapsbrjxa0x5l6h6ns32nxv7j624f0zd93"))))
     (build-system gnu-build-system)
