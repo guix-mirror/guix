@@ -374,7 +374,7 @@ illustrate project schedules.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.3.0")
+    (version "4.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -382,7 +382,7 @@ illustrate project schedules.")
                     "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "1njbxv7b56if838gv7ydzm1sprgmaabnp0jlj0bxryxzfdy8hwfh"))))
+                "13r7x4gql5wp88hmpv9m6m3lh7gsybm4la48hqbjcb3iwiv86pzw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
