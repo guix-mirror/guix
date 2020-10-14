@@ -17,7 +17,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
-;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019, 2020 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Todor Kondić <tk.code@protonmail.com>
@@ -90,6 +90,7 @@
   #:use-module (gnu packages pulseaudio)  ;libsndfile
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -13957,7 +13958,8 @@ tessellation.")
     (inputs
      `(("gdal" ,gdal)
        ("geos" ,geos)
-       ("proj" ,proj.4)
+       ("proj" ,proj)
+       ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-classint" ,r-classint)
