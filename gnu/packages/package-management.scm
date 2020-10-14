@@ -144,7 +144,7 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://git.savannah.gnu.org/r/guix.git")
+                      (url "https://git.savannah.gnu.org/git/guix.git")
                       (commit commit)))
                 (sha256
                  (base32
