@@ -10129,14 +10129,14 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.2.32")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://adishatz.org/lollypop/"
                            "lollypop-" version ".tar.xz"))
        (sha256
-        (base32 "1ng9492k8754vlqggbfsyzbmfdx4w17fzc4ad21fr92710na0w5a"))))
+        (base32 "1hfl68gkvqy5kxlmrsalz78mw1bs1yvqvy2rhg7pzgwiazsdvwzz"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules
@@ -10171,6 +10171,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("gst-plugins-base" ,gst-plugins-base)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
+       ("libhandy" ,libhandy)
        ("libsoup" ,libsoup)
        ("python" ,python)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
