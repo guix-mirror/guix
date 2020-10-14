@@ -2213,7 +2213,7 @@ Password Generator\".")
 (define-public perl-crypt-rijndael
   (package
     (name "perl-crypt-rijndael")
-    (version "1.14")
+    (version "1.15")
     (source
      (origin
       (method url-fetch)
@@ -2221,8 +2221,7 @@ Password Generator\".")
             "mirror://cpan/authors/id/L/LE/LEONT/Crypt-Rijndael-"
             version ".tar.gz"))
       (sha256
-       (base32
-        "03l5nwq97a8q9na4dpd4m3r7vrwpranx225vw8xm40w7zvgw6lb4"))))
+       (base32 "0qs1b6ma4sj0ip5d8544fzgc1bbankc4qlmznp8hay8dk5arp650"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Crypt-Rijndael")
     (synopsis "Crypt::CBC compliant Rijndael encryption module")
