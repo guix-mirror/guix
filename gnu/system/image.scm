@@ -53,6 +53,7 @@
   #:use-module ((srfi srfi-1) #:prefix srfi-1:)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 format)
@@ -656,6 +657,6 @@ image, depending on IMAGE format."
                      (eq? name (image-type-name image-type)))
                    (force %image-types))
       (raise
-       (formatted-message (G_ "~a: no such image type~%") name))))
+       (formatted-message (G_ "~a: no such image type") name))))
 
 ;;; image.scm ends here
