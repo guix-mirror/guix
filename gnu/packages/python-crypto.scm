@@ -141,13 +141,13 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
 (define-public python-passlib
   (package
     (name "python-passlib")
-    (version "1.7.2")
+    (version "1.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "passlib" version))
        (sha256
-        (base32 "1a5ngap7kq0b4azq8nlfg6xg5bcl1i0v1sbynhmbr631jgpnqrld"))))
+        (base32 "015y5qaw9qnxr29lg60dml1g5rbqd4586wy5n8m41ib55gvm1zfy"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -157,8 +157,8 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-PYTHON_EGG_CACHE
-           ;; some tests require access to "$HOME/.cython"
-           (lambda* _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
+           ;; Some tests require access to "$HOME/.cython".
+           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
     (home-page "https://bitbucket.org/ecollins/passlib")
     (synopsis "Comprehensive password hashing framework")
     (description
