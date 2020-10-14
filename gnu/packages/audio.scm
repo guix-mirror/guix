@@ -4004,7 +4004,8 @@ kbps at 24 bit/96 kHz.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-alsaplugindir="
+       (list "--enable-ldac"
+             (string-append "--with-alsaplugindir="
                             (assoc-ref %outputs "out")
                             "/lib/alsa-lib")
              (string-append "--with-dbusconfdir="
@@ -4020,6 +4021,7 @@ kbps at 24 bit/96 kHz.")
        ("bluez" ,bluez)
        ("dbus" ,dbus)
        ("glib" ,glib)
+       ("ldacbt" ,ldacbt)
        ("libbsd" ,libbsd)
        ("ncurses" ,ncurses)
        ("ortp" ,ortp)
