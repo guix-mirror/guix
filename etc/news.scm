@@ -20,6 +20,7 @@
 
  (entry (commit "abd7a474615353149a44f4504f0b4b248dcc0716")
         (title (en "New @option{--with-c-toolchain} package transformation option")
+               (de "Neue Paketumwandlungsoption @option{--with-c-toolchain}")
                (fr "Nouvelle option de transformation @option{--with-c-toolchain}"))
         (body
          (en "The new @option{--with-c-toolchain} package transformation
@@ -38,6 +39,24 @@ guix build octave-cli \\
 @end example
 
 Run @command{info \"(guix) Package Transformation Options\"} for more info.")
+         (de "Die neue Paketumwandlungsoption @option{--with-c-toolchain}
+bietet Entwicklern die Möglichkeit, leicht ihre Lieblingspakete mit der
+selbstgewählten Toolchain für C/C++ anstelle der vorgegebenen neu zu
+erstellen.
+
+Zum Beispiel werden mit folgendem Befehl die Pakete @code{fftw} und
+@code{fftwf} sowie alle davon abhängigen Pakete bis einschließlich
+@code{octave-cli} mit Version 10 der GCC erstellt (vorgegeben wäre zurzeit,
+GCC 7.5 zu benutzen):
+
+@example
+guix build octave-cli \\
+  --with-c-toolchain=fftw=gcc-toolchain@@10 \\
+  --with-c-toolchain=fftwf=gcc-toolchain@@10
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
          (fr "La nouvelle option de transformation de paquets
 @option{--with-c-toolchain} permet aux développeur·euses de recompiler leurs
 paquets préférés avec la chaîne d'outils C/C++ de leur choix à la place de
