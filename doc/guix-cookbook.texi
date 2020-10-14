@@ -128,8 +128,9 @@ REPL.
 @item
 Scheme syntax boils down to a tree of expressions (or @emph{s-expression} in
 Lisp lingo).  An expression can be a literal such as numbers and strings, or a
-compound which is a parenthesized list of compounds and literals.  @code{#t}
-and @code{#f} stand for the Booleans ``true'' and ``false'', respectively.
+compound which is a parenthesized list of compounds and literals.  @code{#true}
+and @code{#false} (abbreviated @code{#t} and @code{#f}) stand for the
+Booleans ``true'' and ``false'', respectively.
 
 Examples of valid expressions:
 
@@ -1090,9 +1091,9 @@ this:
   #t)
 @end lisp
 
-The procedure must return @code{#t} on success.  It's brittle to rely on the return
+The procedure must return @code{#true} on success.  It's brittle to rely on the return
 value of the last expression used to tweak the phase because there is no
-guarantee it would be a @code{#t}.  Hence the trailing @code{#t} to ensure the right value
+guarantee it would be a @code{#true}.  Hence the trailing @code{#true} to ensure the right value
 is returned on success.
 
 @subsubsection Code staging
