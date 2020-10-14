@@ -477,10 +477,10 @@ Packages are currently available on the following platforms:
 @table @code
 
 @item x86_64-linux
-Intel/AMD @code{x86_64} architecture, Linux-Libre kernel;
+Intel/AMD @code{x86_64} architecture, Linux-Libre kernel.
 
 @item i686-linux
-Intel 32-bit architecture (IA32), Linux-Libre kernel;
+Intel 32-bit architecture (IA32), Linux-Libre kernel.
 
 @item armhf-linux
 ARMv7-A architecture with hard float, Thumb-2 and NEON,
@@ -489,6 +489,16 @@ and Linux-Libre kernel.
 
 @item aarch64-linux
 little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.
+
+@item i586-gnu
+@uref{https://hurd.gnu.org, GNU/Hurd} on the Intel 32-bit architecture
+(IA32).
+
+This configuration is experimental and under development.  The easiest
+way for you to give it a try is by setting up an instance of
+@code{hurd-vm-service-type} on your GNU/Linux machine
+(@pxref{transparent-emulation-qemu, @code{hurd-vm-service-type}}).
+@xref{Contributing}, on how to help!
 
 @item mips64el-linux (deprecated)
 little-endian 64-bit MIPS processors, specifically the Loongson series,
