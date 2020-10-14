@@ -3989,7 +3989,7 @@ kbps at 24 bit/96 kHz.")
 (define-public bluez-alsa
   (package
     (name "bluez-alsa")
-    (version "2.0.0")
+    (version "3.0.0")
     (source (origin
               ;; The tarballs are mere snapshots and don't contain a
               ;; bootstrapped build system.
@@ -4000,7 +4000,7 @@ kbps at 24 bit/96 kHz.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08mppgnjf1j2733bk9yf0cny6rfxxwiys0s62lz2zd2lpdl6d9lz"))))
+                "1jlsgxyqfhncfhx1sy3ry0dp6p95kd4agh7g2b7g51h0c4cv74h8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
