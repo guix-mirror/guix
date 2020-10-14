@@ -1545,9 +1545,17 @@ signatures.")
         (sha256
          (base32 "11rrq15gmn6qbahli7czflfcngjl7zyybjlvk732my6axnf2d754"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
     (native-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-pyasn1" ,python-pyasn1)
+       ("python-pytest" ,python-pytest)
        ("python-singledispatch" ,python-singledispatch)
        ("python-six" ,python-six)
        ("python-wheel" ,python-wheel)))
