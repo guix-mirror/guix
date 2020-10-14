@@ -1077,8 +1077,9 @@ is requested, for instance via @code{guix build}, the daemon attempts to
 offload it to one of the machines that satisfy the constraints of the
 derivation, in particular its system types---e.g., @code{x86_64-linux}.
 A single machine can have multiple system types, either because its
-architecture natively supports it, via emulation (@pxref{Transparent
-Emulation with QEMU}), or both.  Missing prerequisites for the build are
+architecture natively supports it, via emulation
+(@pxref{transparent-emulation-qemu, Transparent Emulation with QEMU}),
+or both.  Missing prerequisites for the build are
 copied over SSH to the target machine, which then proceeds with the
 build; upon success the output(s) of the build are copied back to the
 initial machine.  The offload facility comes with a basic scheduler that
@@ -24992,13 +24993,14 @@ an HTTP audio streaming output.
 
 
 @node Virtualization Services
-@subsection Virtualization services
+@subsection Virtualization Services
 
 The @code{(gnu services virtualization)} module provides services for
 the libvirt and virtlog daemons, as well as other virtualization-related
 services.
 
 @subsubheading Libvirt daemon
+
 @code{libvirtd} is the server side daemon component of the libvirt
 virtualization management system. This daemon runs on host servers
 and performs required management tasks for virtualized guests.
@@ -25699,7 +25701,8 @@ Maximum number of backup files to keep.
 Defaults to @samp{3}
 
 @end deftypevr
-@node Transparent Emulation with QEMU
+
+@anchor{transparent-emulation-qemu}
 @subsubheading Transparent Emulation with QEMU
 
 @cindex emulation
