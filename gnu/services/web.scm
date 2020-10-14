@@ -90,7 +90,7 @@
 
             nginx-configuration
             nginx-configuration?
-            nginx-configuartion-nginx
+            nginx-configuration-nginx
             nginx-configuration-log-directory
             nginx-configuration-run-directory
             nginx-configuration-server-blocks
