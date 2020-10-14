@@ -936,16 +936,16 @@ replacement.")
 (define-public emacs-haskell-mode
   (package
     (name "emacs-haskell-mode")
-    (version "17.1")
+    (version "17.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/haskell/haskell-mode")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0izcasi2v02zh08c863h43m8mmsldzy8pck43cllrfn0zf24v2qn"))))
+        (base32 "0zxbacqzr84krmhqpvzndnvlcjh1gs1x20ys0dykgd7chyhci5j5"))))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
     (native-inputs
