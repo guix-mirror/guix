@@ -649,7 +649,7 @@ fun.")
       (synopsis "C library for producing symbolic backtraces")
       (description "The @code{libbacktrace} library can be linked into a C/C++
 program to produce symbolic backtraces.")
-      (license license:expat))))
+      (license license:bsd-3))))
 
 (define-public libleak
   (package
