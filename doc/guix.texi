@@ -28015,7 +28015,7 @@ allocation plan in the database.
 
 @item @code{hooks} (default: @var{'()})
 An association list of hooks.  These provide a way to execute arbitrary
-code upon certian events, like a build result being processed.
+code upon certain events, like a build result being processed.
 
 @item @code{guile} (default: @code{guile-3.0-latest})
 The Guile package with which to run the Guix Build Coordinator.
