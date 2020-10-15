@@ -1320,61 +1320,68 @@ compresses it.")
   (package
     (name "claws-mail")
     (version "3.17.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.claws-mail.org/releases/claws-mail-" version
-                    ".tar.xz"))
-              (sha256
-               (base32
-                "1j6x09621wng0lavh53nwzh9vqjzpspl8kh5azh7kbihpi4ldfb0"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://www.claws-mail.org/releases/claws-mail-"
+         version ".tar.xz"))
+       (sha256
+        (base32 "1j6x09621wng0lavh53nwzh9vqjzpspl8kh5azh7kbihpi4ldfb0"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("bogofilter" ,bogofilter)
-              ("curl" ,curl)
-              ("dbus-glib" ,dbus-glib)
-              ("enchant" ,enchant)
-              ("expat" ,expat)
-              ("ghostscript" ,ghostscript)
-              ("hicolor-icon-theme" ,hicolor-icon-theme)
-              ("gnupg" ,gnupg)
-              ("gnutls" ,gnutls)
-              ("gpgme" ,gpgme)
-              ("gtk" ,gtk+-2)
-              ("libarchive" ,libarchive)
-              ("libcanberra" ,libcanberra)
-              ("libetpan" ,libetpan)
-              ("libical" ,libical)
-              ("libnotify" ,libnotify)
-              ("libsm" ,libsm)
-              ("libxml2" ,libxml2)
-              ("perl" ,perl)
-              ("python-2" ,python-2)
-              ("mime-info" ,shared-mime-info)
-              ("startup-notification" ,startup-notification)))
     (arguments
-      '(#:configure-flags
-        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant"
-          "--enable-ldap")
-        #:make-flags
-        ;; Disable updating icon cache since it's done by the profile hook.
-        ;; Conflict with other packages in the profile would be inevitable
-        ;; otherwise.
-        '("gtk_update_icon_cache=true")
-        #:phases (modify-phases %standard-phases
-                   (add-before 'build 'patch-mime
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       (substitute* "src/procmime.c"
-                         (("/usr/share/mime/globs")
-                          (string-append (assoc-ref inputs "mime-info")
-                                         "/share/mime/globs"))))))))
+     `(#:configure-flags
+       (list
+        "--enable-gnutls"
+        "--enable-pgpmime-plugin"
+        "--enable-enchant"
+        "--enable-ldap")
+       #:make-flags
+       ;; Disable updating icon cache since it's done by the profile hook.
+       ;; Conflict with other packages in the profile would be inevitable
+       ;; otherwise.
+       (list
+        "gtk_update_icon_cache=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-mime
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/procmime.c"
+               (("/usr/share/mime/globs")
+                (string-append (assoc-ref inputs "mime-info")
+                               "/share/mime/globs"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bogofilter" ,bogofilter)
+       ("curl" ,curl)
+       ("dbus-glib" ,dbus-glib)
+       ("enchant" ,enchant)
+       ("expat" ,expat)
+       ("ghostscript" ,ghostscript)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("gnupg" ,gnupg)
+       ("gnutls" ,gnutls)
+       ("gpgme" ,gpgme)
+       ("gtk" ,gtk+-2)
+       ("libarchive" ,libarchive)
+       ("libcanberra" ,libcanberra)
+       ("libetpan" ,libetpan)
+       ("libical" ,libical)
+       ("libnotify" ,libnotify)
+       ("libsm" ,libsm)
+       ("libxml2" ,libxml2)
+       ("perl" ,perl)
+       ("python-2" ,python-2)
+       ("mime-info" ,shared-mime-info)
+       ("startup-notification" ,startup-notification)))
     (synopsis "GTK-based Email client")
-    (description
-     "Claws-Mail is an email client (and news reader) based on GTK+.  The
-appearance and interface are designed to be familiar to new users coming from
-other popular email clients, as well as experienced users.  Almost all commands
-are accessible with the keyboard.  Plus, Claws-Mail is extensible via addons
-which can add many functionalities to the base client.")
+    (description "Claws-Mail is an email client (and news reader) based on GTK+.
+The appearance and interface are designed to be familiar to new users coming
+from other popular email clients, as well as experienced users.  Almost all
+commands are accessible with the keyboard.  Plus, Claws-Mail is extensible via
+addons which can add many functionalities to the base client.")
     (home-page "https://www.claws-mail.org/")
     (license license:gpl3+))) ; most files are actually public domain or x11
 
