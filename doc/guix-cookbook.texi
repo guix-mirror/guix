@@ -1084,11 +1084,11 @@ this:
 
 @lisp
 (lambda* (#:key inputs outputs #:allow-other-keys)
-  (let (((bash-directory (assoc-ref inputs "bash"))
-         (output-directory (assoc-ref outputs "out"))
-         (doc-directory (assoc-ref outputs "doc"))
-  ; ...
-  #t)
+  (let ((bash-directory (assoc-ref inputs "bash"))
+        (output-directory (assoc-ref outputs "out"))
+        (doc-directory (assoc-ref outputs "doc")))
+    ;; ...
+    #t))
 @end lisp
 
 The procedure must return @code{#true} on success.  It's brittle to rely on the return
