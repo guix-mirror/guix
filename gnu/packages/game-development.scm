@@ -485,6 +485,35 @@ clone.")
     ;; under BSD-2.
     (license license:gpl2+)))
 
+(define-public tsukundere
+  (package
+    (name "tsukundere")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/leoprikler/tsukundere")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qmqch8hh7vsa8qaz853vwbkz0krb106955dnz8dsl7skbm5jpn6"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf-wrapper)
+       ("automake" ,automake)
+       ("guile" ,guile-3.0)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("guile-sdl2" ,guile3.0-sdl2)))
+    (home-page "https://gitlab.com/leoprikler/tsukundere")
+    (synopsis "Visual novel engine")
+    (description "Tsukundere is a game engine geared heavily towards the
+development of visual novels, written on top of Guile-SDL2.  It is still
+experimental and at the time of writing contains little more than the Guile
+modules, that make up its runtime.")
+    (license license:lgpl3+)))
+
 (define-public sfml
   (package
     (name "sfml")
