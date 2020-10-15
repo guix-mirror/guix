@@ -613,10 +613,9 @@ documentation.")
                  #t)))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (let ((modules-dir (string-append (assoc-ref outputs "out") "/etc/nginx/modules")))
-                 (mkdir-p modules-dir)
-                 (copy-file "objs/ngx_http_lua_module.so"
-                            (string-append modules-dir "/ngx_http_lua_module.so"))
+               (let ((modules-dir (string-append (assoc-ref outputs "out")
+                                                 "/etc/nginx/modules")))
+                 (install-file "objs/ngx_http_lua_module.so" modules-dir)
                  #t)))
            (delete 'fix-root-dirs)
            (delete 'install-man-page)))))
