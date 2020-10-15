@@ -1067,16 +1067,16 @@ the following forms:
 
 @itemize
 @item
-@code{(add-before PHASE NEW-PHASE PROCEDURE)}: Run @code{PROCEDURE} named @code{NEW-PHASE} before @code{PHASE}.
+@code{(add-before @var{phase} @var{new-phase} @var{procedure})}: Run @var{procedure} named @var{new-phase} before @var{phase}.
 @item
-@code{(add-after PHASE NEW-PHASE PROCEDURE)}: Same, but afterwards.
+@code{(add-after @var{phase} @var{new-phase} @var{procedure})}: Same, but afterwards.
 @item
-@code{(replace PHASE PROCEDURE)}.
+@code{(replace @var{phase} @var{procedure})}.
 @item
-@code{(delete PHASE)}.
+@code{(delete @var{phase})}.
 @end itemize
 
-The @code{PROCEDURE} supports the keyword arguments @code{inputs} and @code{outputs}.  Each
+The @var{procedure} supports the keyword arguments @code{inputs} and @code{outputs}.  Each
 input (whether @emph{native}, @emph{propagated} or not) and output directory is referenced
 by their name in those variables.  Thus @code{(assoc-ref outputs "out")} is the store
 directory of the main output of the package.  A phase procedure may look like
