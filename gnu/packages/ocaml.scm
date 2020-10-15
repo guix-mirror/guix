@@ -1013,6 +1013,14 @@ compilers that can directly deal with packages.")
      `(("m4" ,m4)
        ("ocaml" ,ocaml-4.07)))))
 
+(define-public ocaml4.09-findlib
+  (package
+    (inherit ocaml-findlib)
+    (name "ocaml4.09-findlib")
+    (native-inputs
+     `(("m4" ,m4)
+       ("ocaml" ,ocaml-4.09)))))
+
 ;; note that some tests may hang for no obvious reason.
 (define-public ocaml-ounit
   (package
