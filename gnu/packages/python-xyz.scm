@@ -1666,7 +1666,24 @@ of @code{xmlfile}.")
     (description "This Python library allows reading and writing to the Excel XLSX, XLSM,
 XLTX and XLTM file formats that are defined by the Office Open XML (OOXML)
 standard.")
+    (properties  `((python2-variant . ,(delay python2-openpyxl))))
     (license license:expat)))
+
+(define-public python2-openpyxl
+  (let ((base (package-with-python2
+               (strip-python2-variant python-openpyxl))))
+    (package
+      (inherit base)
+      ;; This is the latest version that has python2 support
+      (version "2.6.4")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (pypi-uri "openpyxl" version))
+          (sha256
+           (base32
+            "1qzjj8nwj4dn0mhq1j64f136afiqqb81lvqiikipz3g1g0b80lqx"))))
+      (arguments '(#:tests? #f)))))     ; No test suite.
 
 (define-public python-eventlet
   (package
