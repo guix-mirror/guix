@@ -958,28 +958,28 @@ floating through space.")
     (name "mdk")
     (version "1.2.11")
     (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/mdk/v" version "/mdk-"
-                          version ".tar.gz"))
-      (sha256
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/mdk/v" version "/mdk-"
+                           version ".tar.gz"))
+       (sha256
         (base32
-          "0rrac91ynya4jrhv14j9vvn21c5z80hi1zmmdxjb0d9zz6i7kjgb"))))
-   (build-system gnu-build-system)
+         "0rrac91ynya4jrhv14j9vvn21c5z80hi1zmmdxjb0d9zz6i7kjgb"))))
+    (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-gui=yes" "-with-readline=yes")))
     (native-inputs
      `(("flex" ,flex)
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
-   (inputs
-    `(("readline" ,readline)
-      ("glib" ,glib)
-      ("gtk+" ,gtk+)
-      ("ncurses" ,ncurses)
-      ("pango" ,pango)
-      ("libglade" ,libglade)))
-   (home-page "https://www.gnu.org/software/mdk/")
+    (inputs
+     `(("readline" ,readline)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("ncurses" ,ncurses)
+       ("pango" ,pango)
+       ("libglade" ,libglade)))
+    (home-page "https://www.gnu.org/software/mdk/")
     (synopsis "Virtual development environment for Knuth's MIX")
     (description
      "GNU MDK is the Mix Development Kit, an emulation of the pedagogical
