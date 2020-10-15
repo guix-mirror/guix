@@ -734,14 +734,15 @@ of xmpppy.")
   (package
     (name "gajim")
     (version "1.1.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gajim.org/downloads/"
-                                  (version-major+minor version)
-                                  "/gajim-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0bzxwcpdd4ydh6d6mzpr0gxwhcb0x9ympk55fpvm1hcw9d28a716"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://gajim.org/downloads/"
+                       (version-major+minor version)
+                       "/gajim-" version ".tar.bz2"))
+       (sha256
+        (base32 "0bzxwcpdd4ydh6d6mzpr0gxwhcb0x9ympk55fpvm1hcw9d28a716"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -800,22 +801,25 @@ else [])"))
                                   "/share/glib-2.0/schemas"))))
              #t)))))
     (native-search-paths
-     (list (search-path-specification
-            (variable "GAJIM_PLUGIN_PATH")
-            (separator #f)              ;single entry
-            (files '("share/gajim/plugins")))
-           ;; Gajim needs to use the propagated inputs of its plugins.
-           (search-path-specification
-            (variable "PYTHONPATH")
-            (files (list (string-append
-                          "lib/python"
-
-                          ;; FIXME: Cannot use this expression as it would
-                          ;; introduce a circular dependency at the top level.
-                          ;; (version-major+minor (package-version python))
-                          "3.8"
-
-                          "/site-packages"))))))
+     (list
+      (search-path-specification
+       (variable "GAJIM_PLUGIN_PATH")
+       (separator #f)                   ;single entry
+       (files
+        (list
+         "share/gajim/plugins")))
+      ;; Gajim needs to use the propagated inputs of its plugins.
+      (search-path-specification
+       (variable "PYTHONPATH")
+       (files
+        (list
+         (string-append
+          "lib/python"
+          ;; FIXME: Cannot use this expression as it would
+          ;; introduce a circular dependency at the top level.
+          ;; (version-major+minor (package-version python))
+          "3.8"
+          "/site-packages"))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("python-docutils" ,python-docutils)
@@ -838,13 +842,13 @@ else [])"))
        ("python-pygobject" ,python-pygobject)
        ("python-pyopenssl" ,python-pyopenssl)
        ("python-qrcode" ,python-qrcode)))
-    (home-page "https://gajim.org/")
     (synopsis "Jabber (XMPP) client")
     (description "Gajim is a feature-rich and easy to use Jabber/XMPP client.
 Among its features are: a tabbed chat window and single window modes; support
 for group chat (with Multi-User Chat protocol), invitation, chat to group chat
 transformation; audio and video conferences; file transfer; TLS, GPG and
 end-to-end encryption support; XML console.")
+    (home-page "https://gajim.org/")
     (license license:gpl3)))
 
 (define-public gajim-omemo
