@@ -7663,11 +7663,11 @@ As soon as you start writing non-trivial package definitions
 files recursively, manipulating build phases, and so on.  The
 @code{(guix build utils)} module provides such utility procedures.
 
-When writing package definitions, most build systems load @code{(guix
-build utils)} (@pxref{Build Systems}).  Thus, when writing custom build
-phases or similar, you can usually assume those procedures are in scope.
+Most build systems load @code{(guix build utils)} (@pxref{Build
+Systems}).  Thus, when writing custom build phases for your package
+definitions, you can usually assume those procedures are in scope.
 
-When writing g-expressions, you can import @code{(guix build utils)} on
+When writing G-expressions, you can import @code{(guix build utils)} on
 the ``build side'' using @code{with-imported-modules} and then put it in
 scope with the @code{use-modules} form (@pxref{Using Guile Modules,,,
 guile, GNU Guile Reference Manual}):
@@ -7690,7 +7690,7 @@ procedures provided by @code{(guix build utils)}.
 
 @subsection Dealing with Store File Names
 
-This section of procedures deals with store file names.
+This section documents procedures that deal with store file names.
 
 @deffn {Scheme Procedure} %store-directory
 Return the directory name of the store.
@@ -7702,7 +7702,7 @@ Return true if @var{file} is in the store.
 
 @deffn {Scheme Procedure} strip-store-file-name @var{file}
 Strip the @file{/gnu/store} and hash from @var{file}, a store file name.
-The result is typically a @code{"PACKAGE-VERSION"} string.
+The result is typically a @code{"@var{package}-@var{version}"} string.
 @end deffn
 
 @deffn {Scheme Procedure} package-name->name+version @var{name}
@@ -7789,7 +7789,8 @@ symlinks.  Don't follow mount points either, unless @var{follow-mounts?}
 is true.  Report but ignore errors.
 @end deffn
 
-@deffn {Scheme Syntax} substitute* @var{clause}@dots{}
+@deffn {Scheme Syntax} substitute* @var{file} @
+  ((@var{regexp} @var{match-var}@dots{}) @var{body}@dots{}) @dots{}
 Substitute @var{regexp} in @var{file} by the string returned by
 @var{body}.  @var{body} is evaluated with each @var{match-var} bound to
 the corresponding positional regexp sub-expression.  For example:
@@ -7804,8 +7805,8 @@ the corresponding positional regexp sub-expression.  For example:
 
 Here, anytime a line of @var{file} contains @code{hello}, it is replaced
 by @code{good morning}.  Anytime a line of @var{file} matches the second
-regexp, @var{all} is bound to the complete match, @var{letters} is bound
-to the first sub-expression, and @var{end} is bound to the last one.
+regexp, @code{all} is bound to the complete match, @code{letters} is bound
+to the first sub-expression, and @code{end} is bound to the last one.
 
 When one of the @var{match-var} is @code{_}, no variable is bound to the
 corresponding match substring.
@@ -7915,6 +7916,26 @@ scripts so that they refer to @code{grep} by its absolute file name:
                            (string-append bin "/fgrep"))
           (("^exec grep")
            (string-append "exec " bin "/grep")))
+        #t))))
+@end lisp
+
+In the example below, phases are modified in two ways: the standard
+@code{configure} phase is deleted, presumably because the package does
+not have a @file{configure} script or anything similar, and the default
+@code{install} phase is replaced by one that manually copies the
+executable files to be installed:
+
+@lisp
+(modify-phases %standard-phases
+  (delete 'configure)      ;no 'configure' script
+  (replace 'install
+    (lambda* (#:key outputs #:allow-other-keys)
+      ;; The package's Makefile doesn't provide an "install"
+      ;; rule so do it by ourselves.
+      (let ((bin (string-append (assoc-ref outputs "out")
+                                "/bin")))
+        (install-file "footswitch" bin)
+        (install-file "scythe" bin)
         #t))))
 @end lisp
 
