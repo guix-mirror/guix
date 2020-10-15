@@ -142,6 +142,7 @@
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
   #:use-module (guix build-system perl)
@@ -1329,7 +1330,7 @@ compresses it.")
          version ".tar.xz"))
        (sha256
         (base32 "1j6x09621wng0lavh53nwzh9vqjzpspl8kh5azh7kbihpi4ldfb0"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
        (list
