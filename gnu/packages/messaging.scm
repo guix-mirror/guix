@@ -25,6 +25,7 @@
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mason Hock <chaosmonk@riseup.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -701,17 +702,24 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.10")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri
         (pypi-uri "nbxmpp" version))
        (sha256
-        (base32 "1vq89nhamciblyi5579bppnm4sb0zk5cg5hdipfpz174fxvl2wyd"))))
+        (base32 "0vw5drr077w9ks4crnw6pwa4735ycyjdcm54knc3w4in4x5027wr"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f))                    ; no tests
+    (native-inputs
+     `(("glib:bin" ,glib "bin")))
+    (inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("libsoup" ,libsoup)
+       ("python-idna" ,python-idna)
+       ("python-precis-i18n" ,python-precis-i18n)
+       ("python-pygobject" ,python-pygobject)))
     (synopsis "Non-blocking Jabber/XMPP module")
     (description "The goal of this python library is to provide a way for Python
 applications to use Jabber/XMPP networks in a non-blocking way.  This library
