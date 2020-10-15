@@ -705,19 +705,18 @@ simultaneously and therefore appear under the same nickname on IRC.")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "nbxmpp" version))
+       (uri
+        (pypi-uri "nbxmpp" version))
        (sha256
-        (base32
-         "1vq89nhamciblyi5579bppnm4sb0zk5cg5hdipfpz174fxvl2wyd"))))
+        (base32 "1vq89nhamciblyi5579bppnm4sb0zk5cg5hdipfpz174fxvl2wyd"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
-    (home-page "https://dev.gajim.org/gajim/python-nbxmpp")
     (synopsis "Non-blocking Jabber/XMPP module")
-    (description
-     "The goal of this python library is to provide a way for Python
+    (description "The goal of this python library is to provide a way for Python
 applications to use Jabber/XMPP networks in a non-blocking way.  This library
 was initially a fork of xmpppy, but uses non-blocking sockets.")
+    (home-page "https://dev.gajim.org/gajim/python-nbxmpp")
     (license license:gpl3+)))
 
 (define-public python2-nbxmpp
