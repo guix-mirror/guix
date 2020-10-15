@@ -887,9 +887,9 @@ and OpenPGP) and available in 29 languages.")
        ("python-cryptography" ,python-cryptography)
        ("python-qrcode" ,python-qrcode)))
     (synopsis "Gajim OMEMO plugin")
-    (description "This package provides the Gajim OMEMO plugin.  OMEMO is an
-XMPP Extension Protocol (XEP) for secure multi-client end-to-end encryption
-based on Axolotl and PEP.")
+    (description "Gajim-OMEMO is a plugin that adds support for the OMEMO
+Encryption to Gajim.  OMEMO is an XMPP Extension Protocol (XEP) for secure
+multi-client end-to-end encryption.")
     (home-page
      "https://dev.gajim.org/gajim/gajim-plugins/-/wikis/OmemoGajimPlugin")
     (license license:gpl3+)))
