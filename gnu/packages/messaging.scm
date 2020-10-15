@@ -894,6 +894,40 @@ multi-client end-to-end encryption.")
      "https://dev.gajim.org/gajim/gajim-plugins/-/wikis/OmemoGajimPlugin")
     (license license:gpl3+)))
 
+(define-public gajim-openpgp
+  (package
+    (name "gajim-openpgp")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri
+        (string-append
+         "https://ftp.gajim.org/plugins_releases/openpgp_"
+         version ".zip"))
+       (sha256
+        (base32 "1jvpl2gjl5xxvsgxpmvh3mn2mm142dg2hknakkc32swb7l1fqx5m"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (in-vicinity out "share/gajim/plugins"))
+                (source (assoc-ref %build-inputs "source")))
+           (mkdir-p share)
+           (copy-recursively source share)
+           #t))))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-gnupg" ,python-gnupg)))
+    (synopsis "Gajim OpenPGP plugin")
+    (description "Gajim-OpenPGP is a plugin that adds support for the OpenPGP
+Encryption to Gajim.")
+    (home-page "https://dev.gajim.org/gajim/gajim-plugins/-/wikis/OpenPGPplugin")
+    (license license:gpl3+)))
+
 (define-public dino
   (package
     (name "dino")
