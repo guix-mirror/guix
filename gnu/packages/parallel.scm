@@ -140,19 +140,19 @@ and they are executed on lists of files, hosts, users or other items.")
                 #t))))
    ;; FIXME: More optional inputs could be added,
    ;; in particular mysql and gtk+.
-   (inputs `(("expect" ,expect)
-             ("freeipmi" ,freeipmi)
+   (inputs `(("freeipmi" ,freeipmi)
              ("hwloc" ,hwloc-2 "lib")
              ("json-c" ,json-c)
              ("linux-pam" , linux-pam)
              ("munge" ,munge)
              ("numactl" ,numactl)
-             ("perl" ,perl)
-             ("python" ,python-wrapper)
              ("readline" ,readline)))
    (native-inputs
     `(("autoconf" ,autoconf)
-      ("pkg-config" ,pkg-config)))
+      ("expect" ,expect)
+      ("perl" ,perl)
+      ("pkg-config" ,pkg-config)
+      ("python" ,python-wrapper)))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
