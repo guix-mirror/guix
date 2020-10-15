@@ -7230,33 +7230,29 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
       (license license:gpl3+))))
 
 (define-public emacs-ivy-rich
-  ;; The latest release version has a small mistake that has since been fixed,
-  ;; so we use a more recent commit.
-  (let ((commit "7a667b135983a1f3ad33d6db8514638e2a3bdfb3")
-        (revision "2"))
-    (package
-      (name "emacs-ivy-rich")
-      (version (git-version "0.1.4" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/Yevgnen/ivy-rich")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1v5j6pak2j1wjw19y7rx9rhxif0bj2h47xyl2knfcl6fi4qiqm9y"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-ivy" ,emacs-ivy)))
-      (home-page "https://github.com/Yevgnen/ivy-rich")
-      (synopsis "More friendly interface for @code{ivy}")
-      (description
-       "This package extends @code{ivy} by showing more information in the
-minibuffer for each candidate.  It adds columns showing buffer modes, file
-sizes, docstrings, etc.  If @code{emacs-all-the-icons} is installed, it can
-show icons as well.")
-      (license license:gpl3+))))
+  (package
+    (name "emacs-ivy-rich")
+    (version "0.1.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Yevgnen/ivy-rich")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ra18v6lgz3m6asm6d5b92zn1x22yiz4cwxd9b54dnvwi11121m7"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)))
+    (home-page "https://github.com/Yevgnen/ivy-rich")
+    (synopsis "More friendly interface for @code{ivy}")
+    (description
+     "This package extends Ivy by showing more information in the minibuffer
+for each candidate.  It adds columns showing buffer modes, file sizes,
+docstrings, etc.  If @code{emacs-all-the-icons} is installed, it can show
+icons as well.")
+    (license license:gpl3+)))
 
 (define-public emacs-avy
   (package
