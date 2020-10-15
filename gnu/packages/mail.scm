@@ -3230,7 +3230,7 @@ on the fly.  Both programs are written in C and are very fast.")
 (define-public swaks
   (package
     (name "swaks")
-    (version "20190914.0")
+    (version "20201014.0")
     (source
      (origin
        (method git-fetch)
@@ -3239,7 +3239,7 @@ on the fly.  Both programs are written in C and are very fast.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xd3952mm8r0nj32rhvciiaq8cx4hxvr7nqpv4njq18q6gv13qby"))))
+        (base32 "131i2b1yxhnbqkfk4kky40pfanqw2c5lcgbnjhfqp5cvpawpk2ai"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-io-socket-inet6" ,perl-io-socket-inet6)
