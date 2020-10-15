@@ -720,10 +720,10 @@ simultaneously and therefore appear under the same nickname on IRC.")
        ("python-idna" ,python-idna)
        ("python-precis-i18n" ,python-precis-i18n)
        ("python-pygobject" ,python-pygobject)))
-    (synopsis "Non-blocking Jabber/XMPP module")
-    (description "The goal of this python library is to provide a way for Python
-applications to use Jabber/XMPP networks in a non-blocking way.  This library
-was initially a fork of xmpppy, but uses non-blocking sockets.")
+    (synopsis "Non-blocking XMPP Module")
+    (description "Python-nbxmpp is a Python library that provides a way for
+Python applications to use the XMPP network.  This library was initially a fork
+of xmpppy.")
     (home-page "https://dev.gajim.org/gajim/python-nbxmpp")
     (license license:gpl3+)))
 
