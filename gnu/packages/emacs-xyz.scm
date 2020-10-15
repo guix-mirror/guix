@@ -383,29 +383,33 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
     (license license:gpl3+)))
 
 (define-public emacs-with-editor
-  (package
-    (name "emacs-with-editor")
-    (version "2.9.4")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/magit/with-editor")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1z3214zjf3dassb31k14gq4nbr3q8g5x87ydfah28hm4j08v0wb3"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)))
-    (home-page "https://github.com/magit/with-editor")
-    (synopsis "Emacs library for using Emacsclient as EDITOR")
-    (description
-     "This package provides an Emacs library to use the Emacsclient as
+  ;; This commit fixes an (magit) issue with emacs 28, see
+  ;; https://lists.gnu.org/archive/html/help-gnu-emacs/2020-10/msg00211.html
+  (let ((commit "c4768f51c7415119519b4626d8643d60e584098c")
+        (revision "1"))
+    (package
+      (name "emacs-with-editor")
+      (version (git-version "2.9.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/magit/with-editor")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "01ysb9pnscpmingay6njdywkqgj4hn5l5d9igsg3x7p7061jwwix"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/magit/with-editor")
+      (synopsis "Emacs library for using Emacsclient as EDITOR")
+      (description
+       "This package provides an Emacs library to use the Emacsclient as
 @code{$EDITOR} of child processes, making sure they know how to call home.
 For remote processes a substitute is provided, which communicates with Emacs
 on stdout instead of using a socket as the Emacsclient does.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-libgit
   (let ((commit "0ef8b13aef011a98b7da756e4f1ce3bb18e4d55a")
