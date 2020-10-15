@@ -159,15 +159,14 @@ this package.  E.g.: @code{(udev-rules-service 'rtl-sdr rtl-sdr)}")
 (define-public chirp
   (package
     (name "chirp")
-    (version "20200430")
+    (version "20201014")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://trac.chirp.danplanet.com/chirp_daily/daily-"
                            version "/chirp-daily-" version ".tar.gz"))
        (sha256
-        (base32
-         "060fzplgmpfrk6wkfaasx7phpfk90mmylk6drbwzk4f9r1655vda"))))
+        (base32 "16x3ix2n7a9l7lln2pri1xfmhyfvvzxb0nr3h33iajqimbwckxj0"))))
     (build-system python-build-system)
     (inputs
      `(("python2-libxml2" ,python2-libxml2)
