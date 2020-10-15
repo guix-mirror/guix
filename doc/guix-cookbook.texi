@@ -250,8 +250,10 @@ definitions.
 @end lisp
 
 @item
-The keyword syntax is @code{#:}; it is used to create unique identifiers.
-@pxref{Keywords,,, guile, GNU Guile Reference Manual}.
+@dfn{Keywords} are typically used to identify the named parameters of a
+procedure.  They are prefixed by @code{#:} (hash, colon) followed by
+alphanumeric characters: @code{#:like-this}.
+@xref{Keywords,,, guile, GNU Guile Reference Manual}.
 
 @item
 The percentage @code{%} is typically used for read-only global variables in
