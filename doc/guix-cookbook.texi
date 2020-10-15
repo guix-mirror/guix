@@ -1119,7 +1119,7 @@ Some of those functions can be found in
 @samp{$GUIX_CHECKOUT/guix/guix/build/utils.scm}.  Most of them mirror the behaviour
 of the traditional Unix system commands:
 
-@table @asis
+@table @code
 @item which
 Like the @samp{which} system command.
 @item find-files
