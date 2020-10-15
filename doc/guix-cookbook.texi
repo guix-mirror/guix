@@ -792,11 +792,11 @@ another, more sophisticated package (slightly modified from the source):
                 (snippet '(begin
                             ;; Remove bundled software.
                             (delete-file-recursively "deps")
-                            #t))))
+                            #true))))
       (build-system cmake-build-system)
       (outputs '("out" "debug"))
       (arguments
-       `(#:tests? #t                            ; Run the test suite (this is the default)
+       `(#:tests? #true                         ; Run the test suite (this is the default)
          #:configure-flags '("-DUSE_SHA1DC=ON") ; SHA-1 collision detection
          #:phases
          (modify-phases %standard-phases
@@ -807,12 +807,12 @@ another, more sophisticated package (slightly modified from the source):
                (substitute* "tests/clar/fs.h"
                  (("/bin/cp") (which "cp"))
                  (("/bin/rm") (which "rm")))
-               #t))
+               #true))
            ;; Run checks more verbosely.
            (replace 'check
              (lambda _ (invoke "./libgit2_clar" "-v" "-Q")))
            (add-after 'unpack 'make-files-writable-for-tests
-               (lambda _ (for-each make-file-writable (find-files "." ".*")))))))
+             (lambda _ (for-each make-file-writable (find-files "." ".*")))))))
       (inputs
        `(("libssh2" ,libssh2)
          ("http-parser" ,http-parser)
@@ -1030,7 +1030,7 @@ If you want to know more about what happens during those phases, consult the
 associated procedures.
 
 For instance, as of this writing the definition of @code{unpack} for the GNU build
-system is
+system is:
 
 @lisp
 (define* (unpack #:key source #:allow-other-keys)
@@ -1045,13 +1045,13 @@ working directory."
         ;; Preserve timestamps (set to the Epoch) on the copied tree so that
         ;; things work deterministically.
         (copy-recursively source "."
-                          #:keep-mtime? #t))
+                          #:keep-mtime? #true))
       (begin
         (if (string-suffix? ".zip" source)
             (invoke "unzip" source)
             (invoke "tar" "xvf" source))
         (chdir (first-subdirectory "."))))
-  #t)
+  #true)
 @end lisp
 
 Note the @code{chdir} call: it changes the working directory to where the source was
@@ -1088,7 +1088,7 @@ this:
         (output-directory (assoc-ref outputs "out"))
         (doc-directory (assoc-ref outputs "doc")))
     ;; ...
-    #t))
+    #true))
 @end lisp
 
 The procedure must return @code{#true} on success.  It's brittle to rely on the return
@@ -1386,8 +1386,8 @@ creates a package.
                            #:key
                            ;; A function that takes an arch and a variant.
                            ;; See kernel-config for an example.
-                           (extra-version #f)
-                           (configuration-file #f)
+                           (extra-version #false)
+                           (configuration-file #false)
                            (defconfig "defconfig")
                            (extra-options %default-extra-linux-options)
                            (patches (list %boot-logo-patch)))
@@ -1461,7 +1461,7 @@ it:
 @lisp
 (define %default-extra-linux-options
   `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-   ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
+   ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #true)
    ;; Modules required for initrd:
    ("CONFIG_NET_9P" . m)
    ("CONFIG_NET_9P_VIRTIO" . m)
@@ -1478,9 +1478,9 @@ it:
   (string-join (map (match-lambda
                       ((option . 'm)
                        (string-append option "=m"))
-                      ((option . #t)
+                      ((option . #true)
                        (string-append option "=y"))
-                      ((option . #f)
+                      ((option . #false)
                        (string-append option "=n")))
                     options)
                "\n"))
@@ -1867,7 +1867,7 @@ is below. Save the resulting file as @file{guix-config.scm}.
                (bootloader
                 (bootloader
                  (inherit grub-bootloader)
-                 (installer #~(const #t))))))
+                 (installer #~(const #true))))))
   (file-systems (cons (file-system
                         (device "/dev/sda")
                         (mount-point "/")
@@ -1899,7 +1899,7 @@ is below. Save the resulting file as @file{guix-config.scm}.
              (service openssh-service-type
                       (openssh-configuration
                        (openssh openssh-sans-x)
-                       (password-authentication? #f)
+                       (password-authentication? #false)
                        (authorized-keys
                         `(("janedoe" ,(local-file "janedoe_rsa.pub"))
                           ("root" ,(local-file "janedoe_rsa.pub"))))))
