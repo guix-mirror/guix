@@ -7044,29 +7044,33 @@ parallel.")
     (license license:gpl3+)))
 
 (define-public emacs-request
-  (package
-    (name "emacs-request")
-    (version "0.3.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/tkf/emacs-request")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1djywhvvb6kwdj0nd3axjvb7k2g06dzkc6hsf29w9rsk96vr8ryl"))))
-    (build-system emacs-build-system)
-    (arguments
-     `(#:tests? #f)) ; requires network access.
-    (propagated-inputs
-     `(("emacs-deferred" ,emacs-deferred)))
-    (home-page "https://github.com/tkf/emacs-request")
-    (synopsis "Package for speaking HTTP in Emacs Lisp")
-    (description "This package provides a HTTP request library with multiple
+  ;; We prefer a more recent commit that has support for auth-source,
+  ;; which makes authentication more convenient for users and maintainers.
+  (let ((commit "d02d1347ffdf138cffd380cbeac62ac8732036ef")
+        (revision "0"))
+    (package
+      (name "emacs-request")
+      (version (git-version "0.3.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tkf/emacs-request")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1rkpakzish2d470ca15yq3k0m1j7a2lrkvvddcyvc2rx0sncsdjs"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #f))                  ; requires network access.
+      (propagated-inputs
+       `(("emacs-deferred" ,emacs-deferred)))
+      (home-page "https://github.com/tkf/emacs-request")
+      (synopsis "Package for speaking HTTP in Emacs Lisp")
+      (description "This package provides a HTTP request library with multiple
 backends.  It supports url.el which is shipped with Emacs and the curl command
 line program.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-rudel
   (package
