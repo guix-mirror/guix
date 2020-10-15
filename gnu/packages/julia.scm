@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +54,7 @@
   (let ((commit "35b1504507a7a4168caae3d78db54d1121b121e1")
         (revision "1"))
     ;; When upgrading Julia, also upgrade this.  Get the commit from
-    ;; https://github.com/JuliaLang/julia/blob/v1.4.1/deps/libuv.version
+    ;; https://github.com/JuliaLang/julia/blob/v1.5.2/deps/libuv.version
     (package
       (inherit libuv)
       (name "libuv-julia")
@@ -103,7 +104,7 @@
                  "/deps/patches/" name ".patch"))
 
 (define (julia-patch name sha)
-  (let ((version "1.4.1"))
+  (let ((version "1.5.2"))
     (origin (method url-fetch)
             (uri (julia-patch-url version name))
             (sha256 (base32 sha))
@@ -111,63 +112,52 @@
 
 (define llvm-julia
   (package
-    (inherit llvm-8)
+    (inherit llvm-9)
     (name "llvm-julia")
     (source (origin
-              (inherit (package-source llvm-8))
+              (inherit (package-source llvm-9))
               ;; Those patches are inside the Julia source repo.
               ;; They are _not_ Julia specific (https://github.com/julialang/julia#llvm)
               ;; but they are required to build Julia.
               ;; Discussion: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=919628
               (patches
-                (map (match-lambda
-                       ((name hash)
-                        (julia-patch name hash)))
-                     (list
-                       '("llvm-7.0-D44650"
-                         "1h55kkmkiisfj6sk956if2bcj9s0v6n5czn8dxb870vp5nccj3ir")
-                       '("llvm-6.0-DISABLE_ABI_CHECKS"
-                         "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
-                       '("llvm-6.0-NVPTX-addrspaces"
-                         "1qdi2zmrjsrj0h84zv2vyly2hjcn4f67mfy0s1q353g4v4jkscqc")
-                       '("llvm-D27629-AArch64-large_model_6.0.1"
-                         "1qrshmlqvnasdyc158vfn3hnbigqph3lsq7acb9w8lwkpnnm2j4z")
-                       '("llvm8-D34078-vectorize-fdiv"
-                         "19spqc3xsazn1xs9gpcgv9ldadfkv49rmc5khl7sf1dlmhgi4602")
-                       '("llvm7-D50010-VNCoercion-ni"
-                         "18scg6aa036xa1508s7q93w9dvc5gp69fz6yl6fkh4yffw4gymw6")
-                       '("llvm-8.0-D50167-scev-umin"
-                         "0g9w2x8yryjdkihnrf18x0yi5bi14c5p8wffda1w732dr5ckzk94")
-                       '("llvm-D57118-powerpc"
-                         "0vxz5s0s9b625v1rv8lg1566yhxh1i91ydzmvy5s7njvzc7p19aw")
-                       '("llvm8-WASM-addrspaces"
-                         "1176agj9hh7csdm2lnklb42zcdsb3q6lx9jiyp2shn4p2678y76q")
-                       '("llvm-exegesis-mingw"
-                         "0ph1cj1j7arvf1xq2xcr7qf9g0cpdl14fincgr67vpi520zvd3vp")
-                       '("llvm-test-plugin-mingw"
-                         "12z738cnahbf6n381im7i0hxp1m6k9hrnfjlmq9sac46nxly9gnj")
-                       '("llvm-8.0-D66401-mingw-reloc"
-                         "15v3p5sznn979cfnd7gdn3nd701fd7xd5aks6lnj1mslvljlq3ls")
-                       '("llvm7-revert-D44485"
-                         "0f59kq3p3mpwsbmskypbi4zn01l6ig0x7v2rjp08k2r8z8m6fa8n")
-                       '("llvm-8.0-D63688-wasm-isLocal"
-                         "0i9wi5n63ip3802z6m7aj3p07hkqjlmp4vg4wq3xkf9f6w9rksab")
-                       '("llvm-8.0-D55758-tablegen-cond"
-                         "1l08mg7qigravi7plsq3yzya80fljnp95n8faddr29wbr2qr0655")
-                       '("llvm-8.0-D59389-refactor-wmma"
-                         "0rgrwk4xlwpk7yai2j7xadcfws93rmk2hhh44fysa88imvrbp478")
-                       '("llvm-8.0-D59393-mma-ptx63-fix"
-                         "094jcsxbcx9fljj623mgmc0rjpk12s2rs0di0ck0hakzhr8mbv5n")
-                       '("llvm-8.0-D66657-codegen-degenerate"
-                         "1n1ddx19h90bbpimdyd9dh8fsm6gb93xxyqm4ljkxa1k3cx2vm72")
-                       '("llvm-8.0-D71495-vectorize-freduce"
-                         "1zff08wvji9lnpskk4b3p5zyjsy5hhy23ynxjqlj9dw7jvvfrf0p")
-                       '("llvm-8.0-D75072-SCEV-add-type"
-                         "0amlyyndsc90ml2k6prdahf24q0j23nfmlbqf8gcqcxpl5sqq3i6")
-                       '("llvm-8.0-D65174-limit-merge-stores"
-                        "1ls5114fhgip9rbqabqc16mi367ra0k75ngc1vyqqhq1ghm9x7y9"))))))
+               (map (match-lambda
+                      ((name hash)
+                       (julia-patch name hash)))
+                    (list
+                     '("llvm-D27629-AArch64-large_model_6.0.1"
+                       "1qrshmlqvnasdyc158vfn3hnbigqph3lsq7acb9w8lwkpnnm2j4z")
+                     '("llvm8-D34078-vectorize-fdiv"
+                       "19spqc3xsazn1xs9gpcgv9ldadfkv49rmc5khl7sf1dlmhgi4602")
+                     '("llvm-7.0-D44650"
+                       "1h55kkmkiisfj6sk956if2bcj9s0v6n5czn8dxb870vp5nccj3ir")
+                     '("llvm9-D50010-VNCoercion-ni"
+                       "1s1d3sjsiq4vxg7ncy5cz56zgy5vcq6ls3iqaiqkvr23wyryqmdx")
+                     '("llvm-exegesis-mingw"
+                       "0ph1cj1j7arvf1xq2xcr7qf9g0cpdl14fincgr67vpi520zvd3vp")
+                     '("llvm-test-plugin-mingw"
+                       "12z738cnahbf6n381im7i0hxp1m6k9hrnfjlmq9sac46nxly9gnj")
+                     '("llvm7-revert-D44485"
+                       "0f59kq3p3mpwsbmskypbi4zn01l6ig0x7v2rjp08k2r8z8m6fa8n")
+                     '("llvm-8.0-D66657-codegen-degenerate"
+                       "1n1ddx19h90bbpimdyd9dh8fsm6gb93xxyqm4ljkxa1k3cx2vm72")
+                     '("llvm-8.0-D71495-vectorize-freduce"
+                       "1zff08wvji9lnpskk4b3p5zyjsy5hhy23ynxjqlj9dw7jvvfrf0p")
+                     '("llvm-D75072-SCEV-add-type"
+                       "029a3fywsm233vf48mscina24idd50dc75wr70lmimrhwnw27p0z")
+                     '("llvm-9.0-D65174-limit-merge-stores"
+                       "04bff1mnblfj9mxfdwr1qdnw3i3szmp60gnhxwas5y68qg33z6j0")
+                     '("llvm9-D71443-PPC-MC-redef-symbol"
+                       "1c93nv7rgc9jg5mqrnvv08xib1789qvlql94fwggh18mp3b9hbgy")
+                     '("llvm-9.0-D78196"
+                       "08a43hyg7yyqjq2vmfsmppf34xcz60wq6y9zw5fdyhw2h1mcnmns")
+                     '("llvm-julia-tsan-custom-as"
+                       "0awh40kf6lm4wn1nsjd1bmhfwq7rqj811szanp2xkpspykw9hg9s")
+                     '("llvm-9.0-D85499"
+                       "0vxlr35srvbvihlgrxq15v6dylp90vgi0qahj22j01jgqmdasjkm"))))
+              (patch-flags '("-p1"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments llvm-8)
+     (substitute-keyword-arguments (package-arguments llvm-9)
        ((#:configure-flags flags)
         `(list ;; Taken from NixOS. Only way I could get libLLVM-6.0.so
            "-DCMAKE_BUILD_TYPE=Release"
@@ -231,7 +221,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
 (define-public julia
   (package
     (name "julia")
-    (version "1.4.1")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -239,7 +229,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "030aza3qj5zcinxbrbqgi7p64q6klwq2bhwccraarx7l0hg9lw3i"))
+                "08wazf3f1lb2c2c5s700kyak8llfqwki8xlnqyrbwmwxjj801p2n"))
               (patches
                (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"))))
     (build-system gnu-build-system)
@@ -344,16 +334,6 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                 "tests = filter(e->!in(e,[\"backtrace\",\"exceptions\",\"precompile\",
                                            \"client\",\"stacktraces\"]),
                                        testnames)"))
-             ;; precompile test is broken, fixed in
-             ;; fed29f893544d1dc8f86444c65d632c68168d0f3
-             (substitute* "test/precompile.jl"
-               (("@test !isdefined\\(Base.Nothing.name.mt")
-                "# @test !isdefined(Base.Nothing.name.mt"))
-             ;; When HOME is not set, julia calls uv_os_homedir, which in
-             ;; turns call getpwuid_r. Add the HOME env variable to the
-             ;; external julia call to fix this
-             (substitute* "test/cmdlineargs.jl"
-               (("\"JULIA_PROJECT\"") "\"HOME\"=>\"/tmp\", \"JULIA_PROJECT\""))
              ;; Marking the test as broken as it's a known bug:
              ;; https://github.com/JuliaLang/julia/issues/32377
              (substitute* "stdlib/REPL/test/replcompletions.jl"
@@ -361,11 +341,16 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
              ;; Dates has a similar bug:
              ;; https://github.com/JuliaLang/julia/issues/34655
              (substitute* "stdlib/Dates/test/io.jl"
+               (("\"Dates.Date") "\"Date")
                (("\"Dates.Time") "\"Time"))
              ;; Upstream bug I found when packaging
              ;; https://github.com/JuliaLang/julia/issues/35785
              (substitute* "test/file.jl"
                (("@test dirname\\(t\\) == d") "@test_broken dirname(t) == d"))
+             ;; Deprecation test fails with --depwarn=no
+             ;; https://github.com/JuliaLang/julia/issues/37673
+             (substitute* "test/Makefile"
+               (("./runtests.jl") "--depwarn=error ./runtests.jl"))
              #t))
          (add-after 'install 'make-wrapper
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -416,7 +401,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                         (assoc-ref %build-inputs "utf8proc")
                         "/include")
          "USE_SYSTEM_LLVM=1"
-         "LLVM_VER=8.0.0"
+         "LLVM_VER=9.0.1"
 
          "USE_LLVM_SHLIB=1"
          "USE_SYSTEM_LIBUNWIND=1"
