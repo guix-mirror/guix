@@ -70,6 +70,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
@@ -733,19 +734,27 @@ of xmpppy.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.1.3")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "https://gajim.org/downloads/"
                        (version-major+minor version)
-                       "/gajim-" version ".tar.bz2"))
+                       "/gajim-" version ".tar.gz"))
        (sha256
-        (base32 "0bzxwcpdd4ydh6d6mzpr0gxwhcb0x9ympk55fpvm1hcw9d28a716"))))
+        (base32 "1gfcp3b5nq43xxz5my8vfhfxnnli726j3hzcgwh9fzrzzd9ic3gx"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:imported-modules
+       (,@%python-build-system-modules
+        (guix build glib-or-gtk-build-system))
+       #:modules
+       ((guix build python-build-system)
+        ((guix build glib-or-gtk-build-system)
+         #:prefix glib-or-gtk:)
+        (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-plugin-dirs
            (lambda _
@@ -759,46 +768,29 @@ else [])"))
              #t))
          (replace 'check
            (lambda _
-             (invoke "python" "./setup.py" "test" "-s" "test.no_gui")))
-         (add-after 'install 'wrap-gi-typelib-path
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (invoke "dbus-launch" "python" "./setup.py" "test")
+             #t))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
+         (add-after 'install 'wrap-env
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (for-each
                 (lambda (name)
                   (let ((file (string-append out "/bin/" name))
+                        (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH"))
                         (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
                     (wrap-program file
-                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                      ;; For translations
-                      `("XDG_DATA_DIRS" ":" prefix
-                        (,(string-append (assoc-ref outputs "out") "/share"))))))
+                      `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
                 '("gajim" "gajim-remote" "gajim-history-manager")))
-             #t))
-         (add-after 'install 'install-icons
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (adwaita (string-append
-                              (assoc-ref inputs "adwaita-icon-theme")
-                              "/share/icons/Adwaita"))
-                    (hicolor (string-append
-                              (assoc-ref inputs "hicolor-icon-theme")
-                              "/share/icons/hicolor"))
-                    (icons (string-append
-                            out "/lib/python"
-                            ,(version-major+minor (package-version python))
-                            "/site-packages/gajim/data/icons")))
-               (with-directory-excursion icons
-                 (symlink adwaita "Adwaita")
-                 (copy-recursively hicolor "hicolor")))
-             #t))
-         (add-after 'install-icons 'wrap-gsettings-schema-dir
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/gajim")
-               ;; For GtkFileChooserDialog.
-               `("GSETTINGS_SCHEMA_DIR" =
-                 (,(string-append (assoc-ref inputs "gtk+")
-                                  "/share/glib-2.0/schemas"))))
              #t)))))
     (native-search-paths
      (list
@@ -821,27 +813,42 @@ else [])"))
           "3.8"
           "/site-packages"))))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("python-docutils" ,python-docutils)
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("python-distutils-extra" ,python-distutils-extra)
+       ("python-setuptools" ,python-setuptools)
        ("xorg-server" ,xorg-server-for-tests)))
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+     `(("avahi" ,avahi)
+       ("dbus" ,dbus)
+       ("farstream" ,farstream)
+       ("geoclue" ,geoclue)
+       ("glib" ,glib)
+       ("glib-networking" ,glib-networking)
        ("gnome-keyring" ,gnome-keyring)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gsound",gsound)
+       ("gspell" ,gspell)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
-       ("gtkspell3" ,gtkspell3)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("libsecret" ,libsecret)
-       ("python-cssutils" ,python-cssutils)
-       ("python-dbus" ,python-dbus)
-       ("python-gnupg" ,python-gnupg)
+       ("gupnp-igd" ,gupnp-igd)
+       ("libsoup" ,libsoup)
+       ("libxss" ,libxscrnsaver)
+       ("network-manager" ,network-manager)
+       ("python-css-parser" ,python-css-parser)
        ("python-keyring" ,python-keyring)
        ("python-nbxmpp" ,python-nbxmpp)
+       ("python-packaging" ,python-packaging)
        ("python-pillow" ,python-pillow)
        ("python-precis-i18n" ,python-precis-i18n)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-qrcode" ,python-qrcode)))
+       ("python-pyopenssl" ,python-pyopenssl)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
     (synopsis "Jabber (XMPP) client")
     (description "Gajim is a feature-rich and easy to use Jabber/XMPP client.
 Among its features are: a tabbed chat window and single window modes; support
