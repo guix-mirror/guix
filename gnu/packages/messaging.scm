@@ -860,14 +860,15 @@ and OpenPGP) and available in 29 languages.")
   (package
     (name "gajim-omemo")
     (version "2.7.7")
-    (source (origin
-              (method url-fetch/zipbomb)
-              (uri (string-append
-                    "https://ftp.gajim.org/plugins_releases/omemo_"
-                    version ".zip"))
-              (sha256
-               (base32
-                "17jl4blkq04ag3g0har6z1bmk36523d29s51g260wb1pywfb536h"))))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri
+        (string-append
+         "https://ftp.gajim.org/plugins_releases/omemo_"
+         version ".zip"))
+       (sha256
+        (base32 "17jl4blkq04ag3g0har6z1bmk36523d29s51g260wb1pywfb536h"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -882,13 +883,12 @@ and OpenPGP) and available in 29 languages.")
            #t))))
     (propagated-inputs
      `(("python-axolotl" ,python-axolotl)))
+    (synopsis "Gajim OMEMO plugin")
+    (description "This package provides the Gajim OMEMO plugin.  OMEMO is an
+XMPP Extension Protocol (XEP) for secure multi-client end-to-end encryption
+based on Axolotl and PEP.")
     (home-page
      "https://dev.gajim.org/gajim/gajim-plugins/-/wikis/OmemoGajimPlugin")
-    (synopsis "Gajim OMEMO plugin")
-    (description
-     "This package provides the Gajim OMEMO plugin.  OMEMO is an XMPP
-Extension Protocol (XEP) for secure multi-client end-to-end encryption based
-on Axolotl and PEP.")
     (license license:gpl3+)))
 
 (define-public dino
