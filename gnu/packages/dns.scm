@@ -986,7 +986,7 @@ synthesis, and on-the-fly re-configuration.")
     (inputs
      `(("fstrm" ,fstrm)
        ("gnutls" ,gnutls)
-       ("knot" ,knot)
+       ("knot:lib" ,knot "lib")
        ("libuv" ,libuv)
        ("lmdb" ,lmdb)
        ("luajit" ,luajit)
