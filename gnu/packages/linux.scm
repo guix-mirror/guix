@@ -7005,7 +7005,7 @@ the superuser to make device nodes.")
 (define-public fakeroot
   (package
     (name "fakeroot")
-    (version "1.25.1")
+    (version "1.25.3")
     (source (origin
               ;; There are no tags in the repository, so take this snapshot.
               (method url-fetch)
@@ -7014,7 +7014,7 @@ the superuser to make device nodes.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ianaacwpjcw02shfiyybkqh5r6il4lvxin10n4y66kw0p7i3kcm"))))
+                "0v4m3v1bdqvblwj3vqsb3mllgbci6dsgsydq6765nzvz6n1kd44f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
