@@ -297,7 +297,8 @@ VARIABLE and return it, or #f if none was found."
                                   (hash-map->list (lambda (name module)
                                                     module)
                                                   (module-submodules head)))))
-             (match (module-local-variable head variable)
+             (match (and=> (module-public-interface head)
+                           (cut module-local-variable <> variable))
                (#f (loop next suggestions visited))
                (_
                 (match (module-name head)
