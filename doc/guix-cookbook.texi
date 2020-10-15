@@ -1143,6 +1143,9 @@ then restore the previous working directory.
 A ``@command{sed}-like'' function.
 @end table
 
+@xref{Build Utilities,,, guix, GNU Guix Reference Manual}, for more
+information on these utilities.
+
 @subsubsection Module prefix
 
 The license in our last example needs a prefix: this is because of how the
