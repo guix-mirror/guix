@@ -133,10 +133,10 @@
                          "/lib/ocaml/site-lib"))
     #:phases (modify-phases %standard-phases (delete 'configure))))
 
-(define-public ocaml-4.09
+(define-public ocaml-4.11
   (package
     (name "ocaml")
-    (version "4.09.0")
+    (version "4.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -145,7 +145,7 @@
                     "/ocaml-" version ".tar.xz"))
               (sha256
                (base32
-                "1v3z5ar326f3hzvpfljg4xj8b9lmbrl53fn57yih1bkbx3gr3yzj"))))
+                "0k4521c0p10c5ams6vjv5qkkjhmpkb0bfn04llcz46ah0f3r2jpa"))))
     (build-system gnu-build-system)
     (native-search-paths
      (list (search-path-specification
@@ -202,6 +202,20 @@ functional, imperative and object-oriented styles of programming.")
     ;; law: the license is governed by the laws of France.  The library is
     ;; distributed under lgpl2.0.
     (license (list license:qpl license:lgpl2.0))))
+
+(define-public ocaml-4.09
+  (package
+    (inherit ocaml-4.11)
+    (version "4.09.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://caml.inria.fr/pub/distrib/ocaml-"
+                    (version-major+minor version)
+                    "/ocaml-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1v3z5ar326f3hzvpfljg4xj8b9lmbrl53fn57yih1bkbx3gr3yzj"))))))
 
 (define-public ocaml-4.07
   (package
