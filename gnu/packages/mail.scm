@@ -3233,13 +3233,13 @@ on the fly.  Both programs are written in C and are very fast.")
     (version "20190914.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://jetmore.org/john/code/swaks/files/swaks-"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jetmore/swaks")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "12awq5z4sdd54cxprj834zajxhkpy4jwhzf1fhigcx1zbhdaacsp"))))
+        (base32 "0xd3952mm8r0nj32rhvciiaq8cx4hxvr7nqpv4njq18q6gv13qby"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-io-socket-inet6" ,perl-io-socket-inet6)
@@ -3250,10 +3250,15 @@ on the fly.  Both programs are written in C and are very fast.")
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'set-build_version
+           (lambda _
+             (substitute* "swaks"
+               (("\"DEVRELEASE\"") (format #f "\"~a\"" ,version)))
+             #true))
          (delete 'configure)
          (replace 'build
            (lambda _
-             (invoke "pod2man" "doc/ref.pod" "swaks.1")))
+             (invoke "pod2man" "doc/base.pod" "swaks.1")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
