@@ -1315,6 +1315,9 @@ release of Jane Street packages.  It reads metadata from @file{dune} files
 following a very simple s-expression syntax.")
     (license license:expat)))
 
+(define ocaml4.09-dune-bootstrap
+  (package-with-ocaml4.09 dune-bootstrap))
+
 (define-public dune-configurator
   (package
     (inherit dune-bootstrap)
@@ -1327,6 +1330,7 @@ following a very simple s-expression syntax.")
        #:tests? #f))
     (propagated-inputs
      `(("ocaml-csexp" ,ocaml-csexp)))
+    (properties `((ocaml4.09-variant . ,(delay ocaml4.09-dune-configurator))))
     (synopsis "Dune helper library for gathering system configuration")
     (description "Dune-configurator is a small library that helps writing
 OCaml scripts that test features available on the system, in order to generate
@@ -1339,12 +1343,32 @@ config.h files for instance.  Among other things, dune-configurator allows one t
 @item generate config.h file
 @end itemize")))
 
+(define-public ocaml4.09-dune-configurator
+  (package
+    (inherit dune-configurator)
+    (name "ocaml4.09-dune-configurator")
+    (arguments
+     `(#:package "dune-configurator"
+       #:tests? #f
+       #:dune ,ocaml4.09-dune-bootstrap
+       #:ocaml ,ocaml-4.09
+       #:findlib ,ocaml4.09-findlib))
+    (propagated-inputs
+     `(("ocaml-csexp" ,ocaml4.09-csexp)))))
+
 (define-public dune
   (package
     (inherit dune-bootstrap)
     (propagated-inputs
      `(("dune-configurator" ,dune-configurator)))
-    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-dune))))))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-dune))
+                  (ocaml4.09-variant . ,(delay ocaml4.09-dune))))))
+
+(define-public ocaml4.09-dune
+  (package
+    (inherit ocaml4.09-dune-bootstrap)
+    (propagated-inputs
+     `(("dune-configurator" ,dune-configurator)))))
 
 (define-public ocaml4.07-dune
   (package
@@ -1385,6 +1409,7 @@ config.h files for instance.  Among other things, dune-configurator allows one t
              #t)))))
     (propagated-inputs
      `(("ocaml-result" ,ocaml-result)))
+    (properties `((ocaml4.09-variant . ,(delay ocaml4.09-csexp))))
     (home-page "https://github.com/ocaml-dune/csexp")
     (synopsis "Parsing and printing of S-expressions in Canonical form")
     (description "This library provides minimal support for Canonical
@@ -1400,6 +1425,18 @@ how simple parsing S-expressions in canonical form is.
 To avoid a dependency on a particular S-expression library, the only
 module of this library is parameterised by the type of S-expressions.")
     (license license:expat)))
+
+(define-public ocaml4.09-csexp
+  (package
+    (inherit ocaml-csexp)
+    (name "ocaml4.09-csexp")
+    (arguments
+     `(#:ocaml ,ocaml-4.09
+       #:findlib ,ocaml4.09-findlib
+       ,@(substitute-keyword-arguments (package-arguments ocaml-csexp)
+           ((#:dune _) ocaml4.09-dune-bootstrap))))
+    (propagated-inputs
+     `(("ocaml-result" ,ocaml4.09-result)))))
 
 (define-public ocaml-migrate-parsetree
   (package
@@ -1509,12 +1546,23 @@ powerful.")
     (arguments
      `(#:test-target "."
        #:dune ,dune-bootstrap))
+    (properties `((ocaml4.09-variant . ,(delay ocaml4.09-result))))
     (home-page "https://github.com/janestreet/result")
     (synopsis "Compatibility Result module")
     (description "Uses the new result type defined in OCaml >= 4.03 while
 staying compatible with older version of OCaml should use the Result module
 defined in this library.")
     (license license:bsd-3)))
+
+(define-public ocaml4.09-result
+  (package
+    (inherit ocaml-result)
+    (name "ocaml4.09-result")
+    (arguments
+     `(#:test-target "."
+       #:dune ,ocaml4.09-dune-bootstrap
+       #:ocaml ,ocaml-4.09
+       #:findlib ,ocaml4.09-findlib))))
  
 (define-public ocaml-topkg
   (package
