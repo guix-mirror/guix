@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
+;;; Copyright © 2020 Helio Machado <0x2b3bfa0+guix@googlemail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,9 +125,12 @@ of the string VERSION is replaced by the symbol 'version."
   ;; https://spdx.org/licenses/
   ;; The psfl, gfl1.0, nmap, repoze
   ;; licenses doesn't have SPDX identifiers
+  ;;
+  ;; Please update guix/licenses.scm when modifying
+  ;; this list to avoid mismatches.
   (match str
-    ("AGPL-1.0"                    'license:agpl-1.0)
-    ("AGPL-3.0"                    'license:agpl-3.0)
+    ("AGPL-1.0"                    'license:agpl1)
+    ("AGPL-3.0"                    'license:agpl3)
     ("Apache-1.1"                  'license:asl1.1)
     ("Apache-2.0"                  'license:asl2.0)
     ("BSL-1.0"                     'license:boost1.0)
@@ -166,8 +170,8 @@ of the string VERSION is replaced by the symbol 'version."
     ("LGPL-2.0+"                   'license:lgpl2.0+)
     ("LGPL-2.1"                    'license:lgpl2.1)
     ("LGPL-2.1+"                   'license:lgpl2.1+)
-    ("LGPL-3.0"                    'license:lgpl3.0)
-    ("LGPL-3.0+"                   'license:lgpl3.0+)
+    ("LGPL-3.0"                    'license:lgpl3)
+    ("LGPL-3.0+"                   'license:lgpl3+)
     ("MPL-1.0"                     'license:mpl1.0)
     ("MPL-1.1"                     'license:mpl1.1)
     ("MPL-2.0"                     'license:mpl2.0)
@@ -175,7 +179,7 @@ of the string VERSION is replaced by the symbol 'version."
     ("NCSA"                        'license:ncsa)
     ("OpenSSL"                     'license:openssl)
     ("OLDAP-2.8"                   'license:openldap2.8)
-    ("CUA-OPL-1.0"                 'license:opl1.0)
+    ("CUA-OPL-1.0"                 'license:cua-opl1.0)
     ("QPL-1.0"                     'license:qpl)
     ("Ruby"                        'license:ruby)
     ("SGI-B-2.0"                   'license:sgifreeb2.0)
