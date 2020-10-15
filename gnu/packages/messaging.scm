@@ -849,12 +849,10 @@ else [])"))
        ("python-pyopenssl" ,python-pyopenssl)))
     (propagated-inputs
      `(("dconf" ,dconf)))
-    (synopsis "Jabber (XMPP) client")
-    (description "Gajim is a feature-rich and easy to use Jabber/XMPP client.
-Among its features are: a tabbed chat window and single window modes; support
-for group chat (with Multi-User Chat protocol), invitation, chat to group chat
-transformation; audio and video conferences; file transfer; TLS, GPG and
-end-to-end encryption support; XML console.")
+    (synopsis "Fully-featured XMPP client")
+    (description "Gajim aims to be an easy to use and fully-featured XMPP chat
+client.  It is extensible via plugins, supports end-to-end encryption (OMEMO
+and OpenPGP) and available in 29 languages.")
     (home-page "https://gajim.org/")
     (license license:gpl3)))
 
