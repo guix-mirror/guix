@@ -1322,6 +1322,22 @@ TARGET."
          (bag     (package->bag package system target)))
     (bag-grafts store bag)))
 
+(define-inlinable (derivation=? drv1 drv2)
+  "Return true if DRV1 and DRV2 are equal."
+  (or (eq? drv1 drv2)
+      (string=? (derivation-file-name drv1)
+                (derivation-file-name drv2))))
+
+(define (input=? input1 input2)
+  "Return true if INPUT1 and INPUT2 are equivalent."
+  (match input1
+    ((label1 drv1 . outputs1)
+     (match input2
+       ((label2 drv2 . outputs2)
+        (and (string=? label1 label2)
+             (equal? outputs1 outputs2)
+             (derivation=? drv1 drv2)))))))
+
 (define* (bag->derivation store bag
                           #:optional context)
   "Return the derivation to build BAG for SYSTEM.  Optionally, CONTEXT can be
@@ -1340,9 +1356,12 @@ error reporting."
                                          p))
                                        (_ '()))
                                       inputs))))
-
+        ;; It's possible that INPUTS contains packages that are not 'eq?' but
+        ;; that lead to the same derivation.  Delete those duplicates to avoid
+        ;; issues down the road, such as duplicate entries in '%build-inputs'.
         (apply (bag-build bag)
-               store (bag-name bag) input-drvs
+               store (bag-name bag)
+               (delete-duplicates input-drvs input=?)
                #:search-paths paths
                #:outputs (bag-outputs bag) #:system system
                (bag-arguments bag)))))
@@ -1380,8 +1399,9 @@ This is an internal procedure."
 
     (apply (bag-build bag)
            store (bag-name bag)
-           #:native-drvs build-drvs
-           #:target-drvs (append host-drvs target-drvs)
+           #:native-drvs (delete-duplicates build-drvs input=?)
+           #:target-drvs (delete-duplicates (append host-drvs target-drvs)
+                                            input=?)
            #:search-paths paths
            #:native-search-paths npaths
            #:outputs (bag-outputs bag)

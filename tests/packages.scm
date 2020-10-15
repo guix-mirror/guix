@@ -611,6 +611,19 @@
     (and (derivation? drv)
          (file-exists? (derivation-file-name drv)))))
 
+(test-assert "package-derivation, inputs deduplicated"
+  (let* ((dep (dummy-package "dep"))
+         (p0  (dummy-package "p" (inputs `(("dep" ,dep)))))
+         (p1  (package (inherit p0)
+                       (inputs `(("dep" ,(package (inherit dep)))
+                                 ,@(package-inputs p0))))))
+    ;; Here P1 ends up with two non-eq? copies of DEP, under the same label.
+    ;; They should be deduplicated so that P0 and P1 lead to the same
+    ;; derivation rather than P1 ending up with duplicate entries in its
+    ;; '%build-inputs' variable.
+    (string=? (derivation-file-name (package-derivation %store p0))
+              (derivation-file-name (package-derivation %store p1)))))
+
 (test-assert "package-output"
   (let* ((package  (dummy-package "p"))
          (drv      (package-derivation %store package)))
