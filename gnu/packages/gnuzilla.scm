@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -591,10 +591,14 @@ from forcing GEXP-PROMISE."
              (base32
               "0266gp8vs4avlfdnr8dj7b47msxv1vkd0xpnifp04v4scvgj0yaj"))))
 
+         ;; 'search-patch' returns either a valid file name or #f, so wrap it
+         ;; in 'assume-valid-file-name' to avoid 'local-file' warnings.
          (gnuzilla-fixes-patch
-          (local-file (search-patch "icecat-use-older-reveal-hidden-html.patch")))
+          (local-file (assume-valid-file-name
+                       (search-patch "icecat-use-older-reveal-hidden-html.patch"))))
          (makeicecat-patch
-          (local-file (search-patch "icecat-makeicecat.patch"))))
+          (local-file (assume-valid-file-name
+                       (search-patch "icecat-makeicecat.patch")))))
 
     (origin
       (method computed-origin-method)
