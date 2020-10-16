@@ -6437,7 +6437,7 @@ available in the kernel Linux.")
                 "19jnkh57f979b78ak5mpxmdvnkgc33r55cw9shgd2hc380b3zi8k"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
+     `(#:make-flags
        (list (string-append "CC=" ,(cc-for-target)))
        #:tests? #f                      ; no tests
        #:phases (modify-phases %standard-phases
