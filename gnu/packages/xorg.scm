@@ -6312,7 +6312,8 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32 "10alqdfmgml9ixdi1nyd9xlw8a5q0j8m2sv4g9p83pd6z1a0rpv2"))
-       (patches (search-patches "xpra-4.0.1-systemd-run.patch"))))
+       (patches (search-patches "xpra-4.0.1-systemd-run.patch"
+                                "xpra-4.0.4-norequests.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
     (inputs `(
