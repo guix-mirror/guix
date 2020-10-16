@@ -2693,9 +2693,8 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no make check
-       #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "DESTDIR=" out)
-                            "prefix=/"))
+       #:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-python3-DeprecationWarning
