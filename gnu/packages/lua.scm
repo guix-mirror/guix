@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
@@ -312,9 +312,8 @@ directory structure and file attributes.")
              (lua-api-version ,(version-major+minor (package-version lua))))
          (list "CC=gcc"
                "CFLAGS='-D HAVE_SYS_SYSCTL_H=0'" ; sys/sysctl.h is deprecated
-               (string-append "DESTDIR=" out)
-               (string-append "LUA_APIS=" lua-api-version)
-               "prefix="))
+               (string-append "prefix=" out)
+               (string-append "LUA_APIS=" lua-api-version)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
