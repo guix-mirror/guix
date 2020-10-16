@@ -876,7 +876,14 @@ allows for launching applications or shutting down the system.")
                (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
                 (string-append (assoc-ref outputs "out")
                                "/share/lxqt/translations")))
-             #t)))))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/startlxqt")
+                 `("XDG_CONFIG_DIRS" ":" suffix ("/run/current-system/profile/share"
+                                                 "/run/current-system/profile/share/pcmanfm-qt")))
+               #t))))))
     (home-page "https://lxqt.github.io")
     (synopsis "Session manager for LXQt")
     (description "lxqt-session provides the standard session manager
