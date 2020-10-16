@@ -3319,16 +3319,16 @@ This package also includes relevant snippets for yasnippet.")
 (define-public emacs-gdscript-mode
   (package
     (name "emacs-gdscript-mode")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/godotengine/emacs-gdscript-mode")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02by4bvdayldbjlz6jkp36m5rgcy2h5bwhqx2cj7wma6xf6cw3lf"))))
+        (base32 "09q0himrz7a6xgz0jmcl85qc5xhk5fwi6d2vw1n8qaiavm96ksdy"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/godotengine/emacs-gdscript-mode")
     (synopsis "GDScript support and syntax highlighting in Emacs")
