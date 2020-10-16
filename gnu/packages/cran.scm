@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24598,3 +24599,32 @@ enrichment analysis (GSEA) calculation with or without the absolute filtering.
   Without filtering, users can perform (original) two-tailed or one-tailed
 absolute GSEA.")
     (license license:gpl2)))
+
+(define-public r-calculus
+  (package
+    (name "r-calculus")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "calculus" version))
+       (sha256
+        (base32
+         "0hs7hzjl6xjza20v9zx9a1piywxa6w3h2rskr52d1dcbc0vwhinp"))))
+    (properties `((upstream-name . "calculus")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/guidotti/calculus")
+    (synopsis "High dimensional numerical and symbolic calculus")
+    (description
+     "Efficient C++ optimized functions for numerical and symbolic calculus.
+It includes basic symbolic arithmetic, tensor calculus, Einstein summing
+convention, fast computation of the Levi-Civita symbol and generalized
+Kronecker delta, Taylor series expansion, multivariate Hermite polynomials,
+accurate high-order derivatives, differential operators (Gradient, Jacobian,
+Hessian, Divergence, Curl, Laplacian) and numerical integration in arbitrary
+orthogonal coordinate systems: cartesian, polar, spherical, cylindrical,
+parabolic or user defined by custom scale factors.")
+    (license license:gpl3)))
+
