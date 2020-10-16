@@ -165,7 +165,7 @@ commands, displaying the results via a web interface.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list (string-append "CC=" ,(cc-for-target))
              (string-append "PREFIX="
                             (assoc-ref %outputs "out")))
        #:phases
