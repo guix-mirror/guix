@@ -946,7 +946,12 @@ commit date (an integer)."
 
 (let* ((root (canonicalize-path
               (string-append (current-source-directory) "/..")))
-       (commit date (latest-commit+date root)))
+       (commit date (latest-commit+date root))
+       (select? (let ((vcs? (git-predicate root)))
+                  (lambda (file stat)
+                    (and (vcs? file stat)
+                         ;; Filter out this file.
+                         (not (string=? (basename file) "build.scm")))))))
   (format (current-error-port)
           "building manual from work tree around commit ~a, ~a~%"
           commit
@@ -954,7 +959,7 @@ commit date (an integer)."
                  (date (time-utc->date time)))
             (date->string date "~e ~B ~Y")))
   (pdf+html-manual (local-file root "guix" #:recursive? #t
-                               #:select? (git-predicate root))
+                               #:select? select?)
                    #:version (or (getenv "GUIX_MANUAL_VERSION")
                                  (string-take commit 7))
                    #:date date))
