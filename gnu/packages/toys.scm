@@ -101,17 +101,17 @@ typing @command{sl} instead of @command{ls}.")
     (arguments
      `(#:make-flags
        (list (string-append "CC=" ,(cc-for-target))
-             (string-append "DESTDIR=" %output))
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'unpack 'fix-install-directories
+         (add-after 'unpack 'respect-prefix
            (lambda _
              (substitute* "Makefile"
                (("/usr/games")
-                "/bin/")
-               (("/usr/share/")
-                "/share/"))
+                "$(prefix)/bin/")
+               (("/usr")
+                "$(prefix)"))
              #t)))
        #:tests? #f))                    ; no test suite
     (native-inputs
