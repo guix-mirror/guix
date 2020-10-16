@@ -308,7 +308,8 @@ selected keymap."
     ;; translated.
     #~(begin
         (bindtextdomain "guix" (string-append #$guix "/share/locale"))
-        (textdomain "guix")))
+        (textdomain "guix")
+        (setlocale LC_ALL "")))
 
   (define set-installer-path
     ;; Add the specified binary to PATH for later use by the installer.
