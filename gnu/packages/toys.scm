@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -32,7 +32,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public sl
   (package
@@ -101,7 +102,8 @@ typing @command{sl} instead of @command{ls}.")
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
-         (list "CC=gcc" (string-append "DESTDIR=" %output))
+         (list (string-append "CC=" ,(cc-for-target))
+               (string-append "DESTDIR=" %output))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
