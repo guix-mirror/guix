@@ -658,8 +658,7 @@ provisioning etc.")
                                (string-append etc "/fish/completions"))
                  (install-file "zsh/_docker"
                                (string-append etc "/zsh/site-functions")))
-               (chdir "build")
-               (install-file "docker" out-bin)
+               (install-file "build/docker" out-bin)
                #t))))))
     (native-inputs
      `(("go" ,go)
