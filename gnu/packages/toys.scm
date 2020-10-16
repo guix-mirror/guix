@@ -85,7 +85,7 @@ typing @command{sl} instead of @command{ls}.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://git.joeyh.name/filters")
+             (url "git://git.joeyh.name/filters")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
