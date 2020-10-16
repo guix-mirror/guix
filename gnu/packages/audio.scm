@@ -3060,6 +3060,32 @@ that toolkit will work in all hosts that use Suil automatically.
 Suil currently supports every combination of Gtk, Qt, and X11.")
     (license license:isc)))
 
+(define-public libebur128
+  (package
+    (name "libebur128")
+    (version "1.2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jiixyj/libebur128")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0n81rnm8dm1zmibkr2v3q79rsd609y0dbbsrbay18njcjva88p0g"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(;; Tests require proprietary .wav files. See
+       ;; https://github.com/jiixyj/libebur128/issues/82.
+       #:tests? #f
+       #:configure-flags '("-DBUILD_STATIC_LIBS=OFF")))
+    (home-page "https://github.com/jiixyj/libebur128")
+    (synopsis "Library implementing the EBU R 128 loudness standard")
+    (description
+     "@code{libebur128} is a C library that implements the EBU R 128 standard
+for loudness normalisation.")
+    (license license:expat)))
+
 (define-public timidity++
   (package
     (name "timidity++")
