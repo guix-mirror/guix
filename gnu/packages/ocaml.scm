@@ -1482,7 +1482,8 @@ functions to the next and/or previous version.")
                 "07lnj4yzwvwyh5fhpp1dxrys4ddih15jhgqjn59pmgxinbnddi66"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."))
+     `(#:test-target "."
+       #:package "ppx_tools_versioned"))
     (propagated-inputs
      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
     (properties `((upstream-name . "ppx_tools_versioned")))
