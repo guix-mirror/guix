@@ -1865,8 +1865,14 @@ track your position right from your laptop.")
                  (symlink (string-append dir "/lib")
                           (string-append out "/lib")))
                #t))
-           (add-after 'install-links 'wrap-python
-             (assoc-ref python:%standard-phases 'wrap)))))
+           (add-after 'install-links 'python:wrap
+             (assoc-ref python:%standard-phases 'wrap))
+           (add-after 'python:wrap 'wrap-with-python-interpreter
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/" ,grassxx)
+                   `("GRASS_PYTHON" = (,(which "python3"))))
+                 #t))))))
       (synopsis "GRASS Geographic Information System")
       (description
        "GRASS (Geographic Resources Analysis Support System), is a Geographic
