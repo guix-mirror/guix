@@ -1518,18 +1518,19 @@ monitor/GPU.")
                        "-xvf" source))))
          (replace 'build
            (lambda* (#:key import-path #:allow-other-keys)
-             (chdir (string-append "src/" import-path))
-             ;; XXX: requires 'go-md2man'.
-             ;; (invoke "make" "man")
-             (invoke "make")))
+             (with-directory-excursion (string-append "src/" import-path)
+               ;; XXX: requires 'go-md2man'.
+               ;; (invoke "make" "man")
+               (invoke "make"))))
          ;; (replace 'check
          ;;   (lambda _
          ;;     (invoke "make" "localunittest")))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-              (invoke "make" "install" "install-bash"
-                      (string-append "PREFIX=" out))))))))
+           (lambda* (#:key import-path outputs #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (let ((out (assoc-ref outputs "out")))
+                 (invoke "make" "install" "install-bash"
+                         (string-append "PREFIX=" out)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1573,14 +1574,15 @@ Open Container Initiative specification.")
                        "-xvf" source))))
          (replace 'build
            (lambda* (#:key import-path #:allow-other-keys)
-             (chdir (string-append "src/" import-path))
-             ;; TODO: build manpages with 'go-md2man'.
-             (invoke "make" "SHELL=bash")))
+             (with-directory-excursion (string-append "src/" import-path)
+               ;; TODO: build manpages with 'go-md2man'.
+               (invoke "make" "SHELL=bash"))))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key import-path outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bindir (string-append out "/bin")))
-               (install-file "umoci" bindir)
+               (install-file (string-append "src/" import-path "/umoci")
+                             bindir)
                #t))))))
     (home-page "https://umo.ci/")
     (synopsis "Tool for modifying Open Container images")
@@ -1617,19 +1619,20 @@ Open Container Initiative (OCI) image layout and its tagged images.")
     (arguments
      '(#:import-path "github.com/containers/skopeo"
        #:install-source? #f
-       #:tests? #f ; The tests require Docker
+       #:tests? #f                                ; The tests require Docker
        #:phases
        (modify-phases %standard-phases
          (replace 'build
            (lambda* (#:key import-path #:allow-other-keys)
-             (chdir (string-append "src/" import-path))
-             ;; TODO: build manpages with 'go-md2man'.
-             (invoke "make" "bin/skopeo")))
+             (with-directory-excursion (string-append "src/" import-path)
+               ;; TODO: build manpages with 'go-md2man'.
+               (invoke "make" "bin/skopeo"))))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (invoke "make" "install-binary" "install-completions"
-                       (string-append "PREFIX=" out))))))))
+           (lambda* (#:key import-path outputs #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (let ((out (assoc-ref outputs "out")))
+                 (invoke "make" "install-binary" "install-completions"
+                         (string-append "PREFIX=" out)))))))))
     (home-page "https://github.com/containers/skopeo")
     (synopsis "Interact with container images and container image registries")
     (description
