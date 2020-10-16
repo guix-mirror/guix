@@ -2452,21 +2452,28 @@ radix-64 representation.  It is specified in RFC 4648.")
         (base32 "1f0fghvlbfryf5h3j4as7vcqrgfjb4c8abl5y0y5h069vs4kp5ii"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f; no tests
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-safe-string
-           ;; Work around ‘Error: This expression has type string but an
-           ;; expression was expected of type bytes’ since OCaml 4.06.
+         (delete 'configure)
+         (replace 'build
+           ;; This package uses pre-generated setup.ml by oasis, but is
+           ;; a dependency of oasis.  the pre-generated setup.ml is broken
+           ;; with recent versions of OCaml, so we perform a bootstrap instead.
            (lambda _
-             (setenv "OCAMLPARAM" "safe-string=0,_")
+             (substitute* "src/OCamlifyConfig.ml.ab"
+               (("$pkg_version") ,version))
+             (rename-file "src/OCamlifyConfig.ml.ab" "src/OCamlifyConfig.ml")
+             (with-directory-excursion "src"
+               (invoke "ocamlc" "OCamlifyConfig.ml" "ocamlify.ml" "-o"
+                       "ocamlify"))
              #t))
-         (delete 'check)                ; tests are run during the build
-         (replace 'configure
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "ocaml" "setup.ml" "-configure" "--prefix"
-                     (assoc-ref outputs "out")))))))
-    (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)))
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "src/ocamlify" bin)
+               #t))))))
     (home-page "https://forge.ocamlcore.org/projects/ocamlify")
     (synopsis "Include files in OCaml code")
     (description "OCamlify creates OCaml source code by including
