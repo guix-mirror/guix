@@ -2123,14 +2123,14 @@ database.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.854")
+  (version "1.855")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/DB_File-"
                           version ".tar.gz"))
       (sha256
-        (base32 "0fv0any5am6vr6h1wcwhnraj70hd55fs4d8c2y7chsc9alf9di5y"))))
+        (base32 "0q599h7g4jkzks5dxf1zifx9k7l9vif26r2dlgkzxkg6bfif5zyr"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
