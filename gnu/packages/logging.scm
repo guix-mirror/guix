@@ -177,14 +177,14 @@ commands, displaying the results via a web interface.")
                  (("ncursesw\\/panel.h") "panel.h")
                  (("ncursesw\\/ncurses.h") "ncurses.h")))
              #t))
-         (delete 'configure))
+         (delete 'configure))           ; no configure script
        #:tests? #f)) ; no test suite (make check just runs cppcheck)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://vanheusden.com/multitail/")
-    (synopsis "Monitor multiple logfiles")
+    (synopsis "Monitor multiple log files")
     (description
-     "MultiTail allows you to monitor logfiles and command output in multiple
-windows in a terminal, colorize, filter and merge.")
+     "MultiTail can monitor, color, filter, and merge log files and command
+output in multiple windows in a terminal.")
     (license license:gpl2+)))
 
 (define-public spdlog
