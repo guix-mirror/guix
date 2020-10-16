@@ -5253,7 +5253,7 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
 (define-public laby
   (package
     (name "laby")
-    (version "0.6.4")
+    (version "0.7.0")
     (source
      (origin (method git-fetch)
              (uri (git-reference
@@ -5262,7 +5262,7 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "12fq9hhrxpzgfinmj9ra9ckss9yficwdlrmgjvvsq7agvh3sgyl1"))
+               "1y6nfxcjhqg9bb81hs0wijg7kcwk5kff81rgd8bsv5ps7ia9nj6b"))
              (patches (search-patches "laby-make-install.patch"))))
     (build-system gnu-build-system)
     (inputs
