@@ -40,6 +40,7 @@
              (gnu packages iso-codes)
              (gnu packages texinfo)
              (gnu packages tex)
+             (ice-9 match)
              (srfi srfi-19)
              (srfi srfi-71))
 
@@ -204,9 +205,168 @@ content=\"width=device-width, initial-scale=1\" />"))
                (setenv "XFAIL_TESTS" "htmlprag.scm")
                #t))))))))
 
+(define (normalize-language-code language)        ;XXX: deduplicate
+  ;; Normalize LANGUAGE.  For instance, "zh_CN" becomes "zh-cn".
+  (string-map (match-lambda
+                (#\_ #\-)
+                (chr chr))
+              (string-downcase language)))
+
+(define* (html-manual-identifier-index manual base-url
+                                       #:key
+                                       (name "html-manual-identifier-index"))
+  "Return an index of all the identifiers that appear in MANUAL, a
+makeinfo-generated manual.  The index is a file that contains an alist; each
+key is an identifier and the associated value is the URL reference pointing to
+that identifier.  The URL is constructed by concatenating BASE-URL to the
+actual file name."
+  (define build
+    (with-extensions (list guile-lib/htmlprag-fixed)
+      (with-imported-modules '((guix build utils))
+        #~(begin
+            (use-modules (guix build utils)
+                         (htmlprag)
+                         (srfi srfi-1)
+                         (srfi srfi-26)
+                         (ice-9 ftw)
+                         (ice-9 match)
+                         (ice-9 threads)
+                         (ice-9 pretty-print))
+
+            (define file-url
+              (let ((prefix (string-append #$manual "/")))
+                (lambda (file)
+                  ;; Return the URL for FILE.
+                  (let ((file (string-drop file (string-length prefix)))
+                        (base #$base-url))
+                    (if (string-null? base)
+                        file
+                        (string-append base "/" file))))))
+
+            (define (underscore-decode str)
+              ;; Decode STR, an "underscore-encoded" string as produced by
+              ;; makeinfo for indexes, such as "_0025base_002dservices" for
+              ;; "%base-services".
+              (let loop ((str str)
+                         (result '()))
+                (match (string-index str #\_)
+                  (#f
+                   (string-concatenate-reverse (cons str result)))
+                  (index
+                   (let ((char (string->number
+                                (substring str (+ index 1) (+ index 5))
+                                16)))
+                     (loop (string-drop str (+ index 5))
+                           (append (list (string (integer->char char))
+                                         (string-take str index))
+                                   result)))))))
+
+            (define (anchor-id->key id)
+              ;; Convert ID, an anchor ID such as
+              ;; "index-pam_002dlimits_002dservice" to the corresponding key,
+              ;; "pam-limits-service" in this example.  Drop the suffix of
+              ;; duplicate anchor IDs like "operating_002dsystem-1".
+              (let ((id (if (any (cut string-suffix? <> id)
+                                 '("-1" "-2" "-3" "-4" "-5"))
+                            (string-drop-right id 2)
+                            id)))
+                (underscore-decode
+                 (string-drop id (string-length "index-")))))
+
+            (define* (collect-anchors file #:optional (anchors '()))
+              ;; Collect the anchors that appear in FILE, a makeinfo-generated
+              ;; file.  Grab those from <dt> tags, which corresponds to
+              ;; Texinfo @deftp, @defvr, etc.  Return ANCHORS augmented with
+              ;; more name/reference pairs.
+              (define string-or-entity?
+                (match-lambda
+                  ((? string?) #t)
+                  (('*ENTITY* _ ...) #t)
+                  (_ #f)))
+
+              (define (worthy-entry? lst)
+                ;; Attempt to match:
+                ;;   Scheme Variable: <strong>x</strong>
+                ;; but not:
+                ;;   <code>cups-configuration</code> parameter: …
+                (let loop ((lst lst))
+                  (match lst
+                    (((? string-or-entity?) rest ...)
+                     (loop rest))
+                    ((('strong _ ...) _ ...)
+                     #t)
+                    (_ #f))))
+
+              (let ((shtml (call-with-input-file file html->shtml)))
+                (let loop ((shtml shtml)
+                           (anchors anchors))
+                  (match shtml
+                    (('dt ('@ ('id id)) rest ...)
+                     (if (and (string-prefix? "index-" id)
+                              (worthy-entry? rest))
+                         (alist-cons (anchor-id->key id)
+                                     (string-append (file-url file)
+                                                    "#" id)
+                                     anchors)
+                         anchors))
+                    ((tag ('@ _ ...) body ...)
+                     (fold loop anchors body))
+                    ((tag body ...)
+                     (fold loop anchors body))
+                    (_ anchors)))))
+
+            (define (html-files directory)
+              ;; Return the list of HTML files under DIRECTORY.
+              (map (cut string-append directory "/" <>)
+                   (scandir #$manual (lambda (file)
+                                       (string-suffix? ".html" file)))))
+
+            (define anchors
+              (sort (concatenate
+                     (n-par-map (parallel-job-count)
+                                (cut collect-anchors <>)
+                                (html-files #$manual)))
+                    (match-lambda*
+                      (((key1 . url1) (key2 . url2))
+                       (if (string=? key1 key2)
+                           (string<? url1 url2)
+                           (string<? key1 key2))))))
+
+            (call-with-output-file #$output
+              (lambda (port)
+                (display ";; Identifier index for the manual.\n\n"
+                         port)
+                (pretty-print anchors port)))))))
+
+  (computed-file name build))
+
+(define* (html-identifier-indexes manual directory-suffix
+                                  #:key (languages %languages)
+                                  (manual-name %manual)
+                                  (base-url (const "")))
+  (map (lambda (language)
+         (let ((language (normalize-language-code language)))
+           (list language
+                 (html-manual-identifier-index
+                  (file-append manual "/" language directory-suffix)
+                  (base-url language)
+                  #:name (string-append manual-name "-html-index-"
+                                        language)))))
+       languages))
+
 (define* (syntax-highlighted-html input
                                   #:key
                                   (name "highlighted-syntax")
+                                  (languages %languages)
+                                  (mono-node-indexes
+                                   (html-identifier-indexes input ""
+                                                            #:languages
+                                                            languages))
+                                  (split-node-indexes
+                                   (html-identifier-indexes input
+                                                            "/html_node"
+                                                            #:languages
+                                                            languages))
                                   (syntax-css-url
                                    "/static/base/css/code.css"))
   "Return a derivation called NAME that processes all the HTML files in INPUT
@@ -341,78 +501,6 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                   ((? string? str)
                    str))))
 
-            (define (underscore-decode str)
-              ;; Decode STR, an "underscore-encoded" string as produced by
-              ;; makeinfo for indexes, such as "_0025base_002dservices" for
-              ;; "%base-services".
-              (let loop ((str str)
-                         (result '()))
-                (match (string-index str #\_)
-                  (#f
-                   (string-concatenate-reverse (cons str result)))
-                  (index
-                   (let ((char (string->number
-                                (substring str (+ index 1) (+ index 5))
-                                16)))
-                     (loop (string-drop str (+ index 5))
-                           (append (list (string (integer->char char))
-                                         (string-take str index))
-                                   result)))))))
-
-            (define (anchor-id->key id)
-              ;; Convert ID, an anchor ID such as
-              ;; "index-pam_002dlimits_002dservice" to the corresponding key,
-              ;; "pam-limits-service" in this example.  Drop the suffix of
-              ;; duplicate anchor IDs like "operating_002dsystem-1".
-              (let ((id (if (any (cut string-suffix? <> id)
-                                 '("-1" "-2" "-3" "-4" "-5"))
-                            (string-drop-right id 2)
-                            id)))
-                (underscore-decode
-                 (string-drop id (string-length "index-")))))
-
-            (define* (collect-anchors file #:optional (vhash vlist-null))
-              ;; Collect the anchors that appear in FILE, a makeinfo-generated
-              ;; file.  Grab those from <dt> tags, which corresponds to
-              ;; Texinfo @deftp, @defvr, etc.  Return VHASH augmented with
-              ;; more name/reference pairs.
-              (define string-or-entity?
-                (match-lambda
-                  ((? string?) #t)
-                  (('*ENTITY* _ ...) #t)
-                  (_ #f)))
-
-              (define (worthy-entry? lst)
-                ;; Attempt to match:
-                ;;   Scheme Variable: <strong>x</strong>
-                ;; but not:
-                ;;   <code>cups-configuration</code> parameter: …
-                (let loop ((lst lst))
-                  (match lst
-                    (((? string-or-entity?) rest ...)
-                     (loop rest))
-                    ((('strong _ ...) _ ...)
-                     #t)
-                    (_ #f))))
-
-              (let ((shtml (call-with-input-file file html->shtml)))
-                (let loop ((shtml shtml)
-                           (vhash vhash))
-                  (match shtml
-                    (('dt ('@ ('id id)) rest ...)
-                     (if (and (string-prefix? "index-" id)
-                              (worthy-entry? rest))
-                         (vhash-cons (anchor-id->key id)
-                                     (string-append (basename file)
-                                                    "#" id)
-                                     vhash)
-                         vhash))
-                    ((tag ('@ _ ...) body ...)
-                     (fold loop vhash body))
-                    ((tag body ...)
-                     (fold loop vhash body))
-                    (_ vhash)))))
-
             (define (process-html file anchors)
               ;; Parse FILE and perform syntax highlighting for its Scheme
               ;; snippets.  Install the result to #$output.
@@ -444,38 +532,59 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
             (define (html? file stat)
               (string-suffix? ".html" file))
 
+            (define language+node-anchors
+              (match-lambda
+                ((language files ...)
+                 (cons language
+                       (fold (lambda (file vhash)
+                               (let ((alist (call-with-input-file file read)))
+                                 ;; Use 'fold-right' so that the first entry
+                                 ;; wins (e.g., "car" from "Pairs" rather than
+                                 ;; from "rnrs base" in the Guile manual).
+                                 (fold-right (match-lambda*
+                                               (((key . value) vhash)
+                                                (vhash-cons key value vhash)))
+                                             vhash
+                                             alist)))
+                             vlist-null
+                             files)))))
+
+            (define mono-node-anchors
+              ;; List of language/vhash pairs, where each vhash maps an
+              ;; identifier to the corresponding URL in a single-page manual.
+              (map language+node-anchors '#$mono-node-indexes))
+
+            (define multi-node-anchors
+              ;; Likewise for split-node manuals.
+              (map language+node-anchors '#$split-node-indexes))
+
             ;; Install a UTF-8 locale so we can process UTF-8 files.
             (setenv "GUIX_LOCPATH"
                     #+(file-append glibc-utf8-locales "/lib/locale"))
             (setlocale LC_ALL "en_US.utf8")
 
             ;; First process the mono-node 'guix.html' files.
-            (n-par-for-each (parallel-job-count)
-                            (lambda (mono)
-                              (let ((anchors (collect-anchors mono)))
-                                (process-html mono anchors)))
-                            (find-files
-                             #$input
-                             "^guix(-cookbook|)(\\.[a-zA-Z_-]+)?\\.html$"))
+            (for-each (match-lambda
+                        ((language . anchors)
+                         (let ((files (find-files
+                                       (string-append #$input "/" language)
+                                       "^guix(-cookbook|)(\\.[a-zA-Z_-]+)?\\.html$")))
+                           (n-par-for-each (parallel-job-count)
+                                           (cut process-html <> anchors)
+                                           files))))
+                      mono-node-anchors)
 
-            ;; Next process the multi-node HTML files in two phases: (1)
-            ;; collect the list of anchors, and (2) perform
-            ;; syntax-highlighting.
-            (let* ((multi   (find-files #$input "^html_node$"
-                                        #:directories? #t))
-                   (anchors (n-par-map (parallel-job-count)
-                                       (lambda (multi)
-                                         (cons multi
-                                               (fold collect-anchors vlist-null
-                                                     (find-files multi html?))))
-                                       multi)))
-              (n-par-for-each (parallel-job-count)
-                              (lambda (file)
-                                (let ((anchors (assoc-ref anchors (dirname file))))
-                                  (process-html file anchors)))
-                              (append-map (lambda (multi)
-                                            (find-files multi html?))
-                                          multi)))
+            ;; Process the multi-node HTML files.
+            (for-each (match-lambda
+                        ((language . anchors)
+                         (let ((files (find-files
+                                       (string-append #$input "/" language
+                                                      "/html_node")
+                                       "\\.html$")))
+                           (n-par-for-each (parallel-job-count)
+                                           (cut process-html <> anchors)
+                                           files))))
+                      multi-node-anchors)
 
             ;; Last, copy non-HTML files as is.
             (for-each copy-as-is
