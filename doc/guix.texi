@@ -10400,7 +10400,7 @@ package expressions for all those packages that are not yet in Guix.
 
 When @option{--archive=bioconductor} is added, metadata is imported from
 @uref{https://www.bioconductor.org/, Bioconductor}, a repository of R
-packages for for the analysis and comprehension of high-throughput
+packages for the analysis and comprehension of high-throughput
 genomic data in bioinformatics.
 
 Information is extracted from the @file{DESCRIPTION} file contained in the
