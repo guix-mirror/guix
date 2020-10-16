@@ -83,6 +83,7 @@
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2020 Adam Kandur <rndd@tuta.io>
+;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7884,23 +7885,19 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
       (license license:gpl3+))))
 
 (define-public emacs-julia-mode
-  ;; XXX: Upstream version remained stuck at 0.3.  See
-  ;; <https://github.com/JuliaEditorSupport/julia-emacs/issues/46>.
-  (let ((commit "115d4dc8a07445301772da8376b232fa8c7168f4")
-        (revision "1"))
     (package
       (name "emacs-julia-mode")
-      (version (string-append "0.3-" revision "." (string-take commit 8)))
+      (version "0.4")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/JuliaEditorSupport/julia-emacs")
-               (commit commit)))
+               (commit version)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1is4dcv6blslpzbjcg8l2jpxi8xj96q4cm0nxjxsyswpm8bw8ki0"))))
+           "1w131jb9mhvyjxa0p93iwfhzidgbcs6b8i6jg79yisqb9wchik99"))))
       (build-system emacs-build-system)
       (arguments
        `(#:tests? #t
@@ -7911,7 +7908,7 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
       (synopsis "Major mode for Julia")
       (description "This Emacs package provides a mode for the Julia
 programming language.")
-      (license license:expat))))
+      (license license:expat)))
 
 (define-public emacs-smex
   (package
