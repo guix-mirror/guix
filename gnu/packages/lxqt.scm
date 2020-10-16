@@ -849,12 +849,16 @@ allows for launching applications or shutting down the system.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("autostart/CMakeLists.txt"
                             "config/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
-             #t))
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* '("xsession/lxqt.desktop.in")
+                 (("Exec=startlxqt") (string-append "Exec=" out "/bin/startlxqt"))
+                 (("TryExec=lxqt-session") (string-append "TryExec=" out "/bin/startlxqt")))
+               #t)))
          ;; add write permission to lxqt-rc.xml file which is stored as read-only in store
          (add-after 'unpack 'patch-openbox-permission
            (lambda _
