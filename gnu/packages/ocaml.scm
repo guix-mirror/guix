@@ -244,7 +244,7 @@ functional, imperative and object-oriented styles of programming.")
                           "--prefix" out
                           "--mandir" mandir))))))))))
 
-(define-public ocaml ocaml-4.09)
+(define-public ocaml ocaml-4.11)
 
 (define-public ocamlbuild
   (package
