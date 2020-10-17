@@ -32,6 +32,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz) ;; python-setuptools
+  #:use-module (gnu packages rust)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls))
@@ -39,7 +40,7 @@
 (define-public sequoia
   (package
     (name "sequoia")
-    (version "0.17.0")
+    (version "0.20.0")
     (source
      (origin
        (method git-fetch)
@@ -47,7 +48,7 @@
              (url "https://gitlab.com/sequoia-pgp/sequoia.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1rf9q67qmjfkgy6r3mz1h9ibfmc04r4j8nzacqv2l75x4mwvf6xb"))
+        (base32 "1c76sz4y0n4jhf1gq4b87v5c07i09mmd3i6sqki09bd96m3ldgkf"))
        (file-name (git-file-name name version))))
     (build-system cargo-build-system)
     (outputs '("out" "python"))
@@ -55,7 +56,8 @@
      `(("clang" ,clang)
        ("pkg-config" ,pkg-config)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-wrapper" ,python-wrapper)))
     (inputs
      `(("capnproto" ,capnproto)
        ("gmp" ,gmp)
@@ -66,21 +68,24 @@
        ("sqlite" ,sqlite)))
     (arguments
      `(#:tests? #f ;; building the tests requires 9.7GB total
+       #:rust ,rust-1.46
        #:cargo-inputs
-       (("rust-assert-cli" ,rust-assert-cli-0.6)
-        ("rust-anyhow" ,rust-anyhow-1.0)
-        ("rust-base64" ,rust-base64-0.11)
+       (("rust-anyhow" ,rust-anyhow-1.0)
+        ("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-base64" ,rust-base64-0.13)
         ;;("rust-buffered-reader" included
-        ("rust-bzip2" ,rust-bzip2-0.3)
+        ("rust-bzip2" ,rust-bzip2-0.4)
         ("rust-capnp" ,rust-capnp-0.10)
         ("rust-capnp-rpc" ,rust-capnp-rpc-0.10)
         ("rust-capnpc" ,rust-capnpc-0.10)
-        ("rust-chrono" ,rust-chrono-0.4)
-        ("rust-clap" ,rust-clap-2)
+        ("rust-chrono" ,rust-chrono-0.4)  ;; for sqv, sop
+        ("rust-clap" ,rust-clap-2)        ;; for sqv
         ("rust-colored" ,rust-colored-1.9.1)
         ("rust-crossterm" ,rust-crossterm-0.13)
         ("rust-ctor" ,rust-ctor-0.1)
         ("rust-dirs" ,rust-dirs-2.0)
+        ("rust-dyn-clone" ,rust-dyn-clone-1)
+        ("rust-ed25519-dalek" ,rust-ed25519-dalek-1)
         ;;("rust-failure" included
         ("rust-filetime" ,rust-filetime-0.2)
         ("rust-flate2" ,rust-flate2-1)
@@ -90,33 +95,40 @@
         ("rust-hyper" ,rust-hyper-0.12)
         ("rust-hyper-tls" ,rust-hyper-tls-0.3)
         ("rust-idna" ,rust-idna-0.2)
-        ("rust-itertools" ,rust-itertools-0.8)
-        ("rust-lalrpop-util" ,rust-lalrpop-util-0.17)
+        ("rust-itertools" ,rust-itertools-0.9) ;; for sq
+        ("rust-lalrpop" ,rust-lalrpop-0.19)
+        ("rust-lalrpop-util" ,rust-lalrpop-util-0.19)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-memsec" ,rust-memsec-0.5)
+        ("rust-memsec" ,rust-memsec-0.6)
         ("rust-native-tls" ,rust-native-tls-0.2)
         ("rust-nettle" ,rust-nettle-7)
+        ("rust-num-bigint-dig" ,rust-num-bigint-dig-0.6)
         ("rust-parity-tokio-ipc" ,rust-parity-tokio-ipc-0.4)
         ("rust-percent-encoding" ,rust-percent-encoding-2)
-        ("rust-prettytable-rs" ,rust-prettytable-rs-0.8)
+        ("rust-prettytable-rs" ,rust-prettytable-rs-0.8)  ;; for sq
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quickcheck" ,rust-quickcheck-0.9)
         ("rust-rand" ,rust-rand-0.7)
         ("rust-regex" ,rust-regex-1)
-        ("rust-rusqlite" ,rust-rusqlite-0.19)
-        ("rust-structopt" ,rust-structopt-0.3)
-        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-rusqlite" ,rust-rusqlite-0.24)
+        ("rust-structopt" ,rust-structopt-0.3) ;; for sop
+        ("rust-tempfile" ,rust-tempfile-3) ;; for sq
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-core" ,rust-tokio-core-0.1)
         ("rust-unicode-normalization" ,rust-unicode-normalization-0.1)
         ("rust-url" ,rust-url-2)
+        ("rust-win-crypto-ng" ,rust-win-crypto-ng-0.2)
+        ("rust-winapi" ,rust-winapi-0.3)
         ("rust-zbase32" ,rust-zbase32-0.1))
        #:cargo-development-inputs
-       (("rust-bindgen" ,rust-bindgen-0.51) ;; FIXME for nettle-sys and rusqlite
-        ("rust-lalrpop" ,rust-lalrpop-0.17)
-        ("rust-rpassword" ,rust-rpassword-4))
+       (("rust-assert-cli" ,rust-assert-cli-0.6) ;; dev-dep for for sq, sqv
+        ("rust-bindgen" ,rust-bindgen-0.51) ;; FIXME for nettle-sys and rusqlite
+        ;;("rust-lalrpop" ,rust-lalrpop-0.19)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rpassword" ,rust-rpassword-5))
        #:phases
        (modify-phases %standard-phases
          ;; Run make instead of using the rust build system, as
@@ -128,9 +140,12 @@
                  (invoke "make" "check")
                  #t)))
          (replace 'install (lambda _ (invoke "make" "install") #t))
-         (add-after 'unpack 'adjust-prefix
+         (add-after 'unpack 'fix-environment
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; adjust prefix
              (setenv "PREFIX" (assoc-ref outputs "out"))
+             ;; fix install script detection
+             (setenv "INSTALL" "install")
              #t))
          (add-after 'unpack 'fix-fo-python-output
            (lambda* (#:key outputs #:allow-other-keys)
@@ -157,6 +172,13 @@
                (substitute* "openpgp-ffi/sequoia-openpgp.pc.in"
                  (("PREFIX") out))
                #t)))
+         (add-after 'unpack 'keep-SOURCE_DATE_EPOCH
+           (lambda _
+               ;; preempt Makefiles replacing SOURCE_DATE_EPOCH
+               (substitute* "Makefile"
+                 (("SOURCE_DATE_EPOCH\\s=" line)
+                  (string-append "#" line)))
+             #t))
          (add-after 'unpack 'set-missing-env-vars
            (lambda* (#:key inputs #:allow-other-keys)
              ;; FIXME: why do we need to set this here?
@@ -168,7 +190,7 @@
              ;; As the comment in that file explains, upstream encourages
              ;; unpinning, as the pinned version is only to make sure the crate
              ;; compiles on older versions of rustc
-             (substitute* '("openpgp/Cargo.toml" "tool/Cargo.toml")
+             (substitute* '("openpgp/Cargo.toml" "sq/Cargo.toml")
                (("= \"=") "= \""))
              #t)))))
     (home-page "https://sequoia-pgp.org")
