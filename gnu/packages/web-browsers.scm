@@ -280,7 +280,7 @@ and the GTK+ toolkit.")
 (define-public lynx
   (package
     (name "lynx")
-    (version "2.8.9rel.1")
+    (version "2.9.0dev.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -288,7 +288,7 @@ and the GTK+ toolkit.")
                     "/lynx" version ".tar.bz2"))
               (sha256
                (base32
-                "15cmyyma2kz1hfaa6mwjgli8zwdzq3jv0q2cl6nwzycjfwyijzrq"))))
+                "1cjkpwxc1r8x8q73bgh9a4skaph1bwa0anml6f6lvf7lh5zvxw3q"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
