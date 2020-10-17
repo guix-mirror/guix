@@ -91,14 +91,14 @@ Python.  It does not bind to libotr.")
 (define-public python-base58
   (package
     (name "python-base58")
-    (version "1.0.3")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "base58" version))
        (sha256
         (base32
-         "0q1yr0n5jaf17xq98m7dma6z4rh8p19ch55l1s09gi3rk5ckqycs"))))
+         "0yfaqp76kbdb62hikr5n4jkkfjfmii89grwfy6sw3fmsv5hrap1n"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyhamcrest" ,python-pyhamcrest)))
