@@ -11194,6 +11194,31 @@ hash map.")
         ("rust-rustc-hash" ,rust-rustc-hash-1)
         ("rust-serde-test" ,rust-serde-test-1))))))
 
+(define-public rust-hashlink-0.6
+  (package
+    (name "rust-hashlink")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hashlink" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1a2gi4737lmqq1i48b9w13gvbkh4g3gc7gj6d3974hywy21gg76r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-hashbrown" ,rust-hashbrown-0.9)
+        ("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs
+       (("rust-serde-test" ,rust-serde-test-1))))
+    (home-page "https://crates.io/crates/hashlink")
+    (synopsis "HashMap-like containers with user controllable order")
+    (description "This package provides HashMap-like containers that hold
+their key-value pairs in a user controllable order.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-heapless-0.5
   (package
     (name "rust-heapless")
