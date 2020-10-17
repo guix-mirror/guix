@@ -33,6 +33,7 @@
              (guix utils)
              (git)
              (gnu packages base)
+             (gnu packages compression)
              (gnu packages gawk)
              (gnu packages gettext)
              (gnu packages guile)
@@ -41,6 +42,7 @@
              (gnu packages texinfo)
              (gnu packages tex)
              (ice-9 match)
+             (srfi srfi-1)
              (srfi srfi-19)
              (srfi srfi-26)
              (srfi srfi-71))
@@ -1065,6 +1067,85 @@ commit date (an integer)."
     (values (oid->string oid) (commit-time commit))))
 
 
+;;;
+;;; Guile manual.
+;;;
+
+(define guile-manual
+  ;; The Guile manual as HTML, including both the mono-node "guile.html" and
+  ;; the split-node "html_node" directory.
+  (let ((guile guile-3.0-latest))
+    (computed-file (string-append "guile-manual-" (package-version guile))
+                   (with-imported-modules '((guix build utils))
+                     #~(begin
+                         (use-modules (guix build utils)
+                                      (ice-9 match))
+
+                         (setenv "PATH"
+                                 (string-append #+tar "/bin:"
+                                                #+xz "/bin:"
+                                                #+texinfo "/bin"))
+                         (invoke "tar" "xf" #$(package-source guile))
+                         (mkdir-p (string-append #$output "/en/html_node"))
+
+                         (let* ((texi (find-files "." "^guile\\.texi$"))
+                                (documentation (match texi
+                                                 ((file) (dirname file)))))
+                           (with-directory-excursion documentation
+                             (invoke "makeinfo" "--html" "--no-split"
+                                     "-o" (string-append #$output
+                                                         "/en/guile.html")
+                                     "guile.texi")
+                             (invoke "makeinfo" "--html" "-o" "split"
+                                     "guile.texi")
+                             (copy-recursively
+                              "split"
+                              (string-append #$output "/en/html_node")))))))))
+
+(define %guile-manual-base-url
+  "https://www.gnu.org/software/guile/manual")
+
+(define (for-all-languages index)
+  (map (lambda (language)
+         (list language index))
+       %languages))
+
+(define guile-mono-node-indexes
+  ;; The Guile manual is only available in English so use the same index in
+  ;; all languages.
+  (for-all-languages
+   (html-manual-identifier-index (file-append guile-manual "/en")
+                                 %guile-manual-base-url
+                                 #:name "guile-html-index-en")))
+
+(define guile-split-node-indexes
+  (for-all-languages
+   (html-manual-identifier-index (file-append guile-manual "/en/html_node")
+                                 (string-append %guile-manual-base-url
+                                                "/html_node")
+                                 #:name "guile-html-index-en")))
+
+(define (merge-index-alists alist1 alist2)
+  "Merge ALIST1 and ALIST2, both of which are list of tuples like:
+
+  (LANGUAGE INDEX1 INDEX2 ...)
+
+where LANGUAGE is a string like \"en\" and INDEX1 etc. are indexes as returned
+by 'html-identifier-indexes'."
+  (let ((languages (delete-duplicates
+                    (append (match alist1
+                              (((languages . _) ...)
+                               languages))
+                            (match alist2
+                              (((languages . _) ...)
+                               languages))))))
+    (map (lambda (language)
+           (cons language
+                 (append (or (assoc-ref alist1 language) '())
+                         (or (assoc-ref alist2 language) '()))))
+         languages)))
+
+
 (let* ((root (canonicalize-path
               (string-append (current-source-directory) "/..")))
        (commit date (latest-commit+date root))
@@ -1084,23 +1165,31 @@ commit date (an integer)."
                  #:version version
                  #:date date))
 
-  (define mono-node-indexes
+  (define guix-mono-node-indexes
     ;; Alist of indexes for GUIX-MANUAL, where each key is a language code and
     ;; each value is a file-like object containing the identifier index.
     (html-identifier-indexes guix-manual ""
+                             #:manual-name "guix"
                              #:base-url (if (string=? %manual "guix")
                                             (const "")
                                             (cut string-append "/manual/" <>))
                              #:languages %languages))
 
-  (define split-node-indexes
+  (define guix-split-node-indexes
     ;; Likewise for the split-node variant of GUIX-MANUAL.
     (html-identifier-indexes guix-manual "/html_node"
+                             #:manual-name "guix"
                              #:base-url (if (string=? %manual "guix")
                                             (const "")
                                             (cut string-append "/manual/" <>
                                                  "/html_node"))
                              #:languages %languages))
+
+  (define mono-node-indexes
+    (merge-index-alists guix-mono-node-indexes guile-mono-node-indexes))
+
+  (define split-node-indexes
+    (merge-index-alists guix-split-node-indexes guile-split-node-indexes))
 
   (format (current-error-port)
           "building manual from work tree around commit ~a, ~a~%"
@@ -1110,9 +1199,10 @@ commit date (an integer)."
             (date->string date "~e ~B ~Y")))
 
   (pdf+html-manual source
-                   ;; Always use the identifier index of GUIX-MANUAL.  That
-                   ;; way, "guix-cookbook" can contain link to definitions
-                   ;; that appear in GUIX-MANUAL.
+                   ;; Always use the identifier indexes of GUIX-MANUAL and
+                   ;; GUILE-MANUAL.  Both "guix" and "guix-cookbook" can
+                   ;; contain links to definitions that appear in either of
+                   ;; these two manuals.
                    #:mono-node-indexes mono-node-indexes
                    #:split-node-indexes split-node-indexes
                    #:version version
