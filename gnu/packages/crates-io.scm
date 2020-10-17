@@ -1493,8 +1493,34 @@ trace (backtrace) at runtime in a Rust program.")
 c6e7d37.  However, this package works only up to 128 bytes.")
     (license license:expat)))
 
+(define-pUblic rust-base64-0.13
+  (package
+    (name "rust-base64")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "base64" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1z82g23mbzjgijkpcrilc7nljpxpvpf7zxf6iyiapkgka2ngwkch"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-structopt" ,rust-structopt-0.3))))
+    (home-page "https://github.com/marshallpierce/rust-base64")
+    (synopsis "Encodes and decodes base64 as bytes or utf8")
+    (description
+     "This package encodes and decodes base64 as bytes or utf8.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-base64-0.12
   (package
+    (inherit rust-base64-0.13)
     (name "rust-base64")
     (version "0.12.3")
     (source
@@ -1513,17 +1539,11 @@ c6e7d37.  However, this package works only up to 128 bytes.")
            (substitute* "src/lib.rs"
              (("\\(doctest") "(test"))
            #t))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-rand" ,rust-rand-0.6))))
-    (home-page "https://github.com/marshallpierce/rust-base64")
-    (synopsis "Encodes and decodes base64 as bytes or utf8")
-    (description
-     "This package encodes and decodes base64 as bytes or utf8.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rand" ,rust-rand-0.6))))))
 
 (define-public rust-base64-0.11
   (package
