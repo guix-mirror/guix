@@ -15039,20 +15039,21 @@ for Rust structs.")
          "1cvm2z7dy138s302ii7wlzcxbka5a8yfl5pl5di7lbdnw9hw578g"))))
     (arguments `(#:skip-build? #t))))
 
-(define-public rust-memsec-0.5
+(define-public rust-memsec-0.6
   (package
     (name "rust-memsec")
-    (version "0.5.7")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "memsec" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "13ir50j549gdz94pds1i7ljnk14d66q5x91s11hncm1pih7jif8c"))))
+        (base32 "1pfbpl75586bjdkphnaa4j58d668rl1wgcqzpnpzzx1phxfzkx1a"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-getrandom" ,rust-getrandom-0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-mach-o-sys" ,rust-mach-o-sys-0.1)
@@ -15062,6 +15063,19 @@ for Rust structs.")
     (description "This package provides a Rust implementation of
 @code{libsodium/utils}.")
     (license license:expat)))
+
+(define-public rust-memsec-0.5
+  (package
+    (inherit rust-memsec-0.6)
+    (name "rust-memsec")
+    (version "0.5.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "memsec" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13ir50j549gdz94pds1i7ljnk14d66q5x91s11hncm1pih7jif8c"))))))
 
 (define-public rust-metadeps-1.1
   (package
