@@ -22888,22 +22888,23 @@ console applications.")
         (base32
          "1v255xqkig5lwnczvm3achydhxx6kf9jcdxdlgzndgpd18bp6x6k"))))))
 
-(define-public rust-rusqlite-0.19
+(define-public rust-rusqlite-0.24
   (package
     (name "rust-rusqlite")
-    (version "0.19.0")
+    (version "0.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rusqlite" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "19xq7s0kzhlljm3hqx0vidr91ia8hl49r4m5gwdj9dyywgks5g3f"))))
+        (base32 "0s5svm32zl1qqmln8ww8g6ziwg5mi2k88si1a5zj25smmf8lfgby"))))
     (build-system cargo-build-system)
     (inputs
      `(("sqlite" ,sqlite)))
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-byteorder" ,rust-byteorder-1)
         ("rust-chrono" ,rust-chrono-0.4)
@@ -22911,18 +22912,21 @@ console applications.")
         ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
         ("rust-fallible-streaming-iterator"
          ,rust-fallible-streaming-iterator-0.1)
+        ("rust-hashlink" ,rust-hashlink-0.6)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.15)
-        ("rust-lru-cache" ,rust-lru-cache-0.1)
+        ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.20)
+        ;;("rust-lru-cache" ,rust-lru-cache-0.1)
         ("rust-memchr" ,rust-memchr-2)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-time" ,rust-time-0.1)
-        ("rust-url" ,rust-url-1)
+        ("rust-time" ,rust-time-0.2)
+        ("rust-url" ,rust-url-2)
         ("rust-uuid" ,rust-uuid-0.7))
        #:cargo-development-inputs
-       (("rust-lazy-static" ,rust-lazy-static-1)
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-regex" ,rust-regex-1)
-        ("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-tempfile" ,rust-tempfile-3)
         ("rust-unicase" ,rust-unicase-2)
         ("rust-uuid" ,rust-uuid-0.7))))
     (home-page "https://github.com/rusqlite/rusqlite")
