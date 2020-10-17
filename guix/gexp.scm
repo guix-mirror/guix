@@ -457,11 +457,11 @@ appears."
                       (delay (absolute-file-name file (current-source-directory)))
                       rest ...))
       ((_ (assume-valid-file-name file) rest ...)
-       ;; FILE is not a literal, so resolve it relative to the source
+       ;; FILE is not a literal, so resolve it relative to the current
        ;; directory.  Since the user declared FILE is valid, do not pass
        ;; #:literal? #f so that we do not warn about it later on.
        #'(%local-file file
-                      (delay (absolute-file-name file (current-source-directory)))
+                      (delay (absolute-file-name file (getcwd)))
                       rest ...))
       ((_ file rest ...)
        ;; Resolve FILE relative to the current directory.
