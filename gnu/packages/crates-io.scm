@@ -7365,20 +7365,21 @@ floating-point primitives to an @code{io::Write}.")
 inclusion of Windows resources in the most resilient fashion imaginable.")
     (license license:expat)))
 
-(define-public rust-ena-0.13
+(define-public rust-ena-0.14
   (package
     (name "rust-ena")
-    (version "0.13.1")
+    (version "0.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "ena" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0dkggq0qwv140y2kjfd4spp77zi3v7vnpm4bfy7s7r4cla7xqi49"))))
+        (base32 "1hrnkx2swbczn0jzpscxxipx7jcxhg6sf9vk911ff91wm6a2nh6p"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-dogged" ,rust-dogged-0.2)
         ("rust-log" ,rust-log-0.4)
         ("rust-petgraph" ,rust-petgraph-0.4))))
@@ -7388,6 +7389,19 @@ inclusion of Windows resources in the most resilient fashion imaginable.")
 congruence-closure in Rust.  It was extracted from rustc for independent
 experimentation.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-ena-0.13
+  (package
+    (inherit rust-ena-0.14)
+    (name "rust-ena")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ena" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dkggq0qwv140y2kjfd4spp77zi3v7vnpm4bfy7s7r4cla7xqi49"))))))
 
 (define-public rust-encode-unicode-0.3
   (package
