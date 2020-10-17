@@ -911,13 +911,13 @@ exists."
 
     (let* ((start-partition
             (and (not has-extended?)
-                 (not esp-partition)
                  (if (efi-installation?)
-                     (user-partition
-                      (fs-type 'fat32)
-                      (esp? #t)
-                      (size new-esp-size)
-                      (mount-point (default-esp-mount-point)))
+                     (and (not esp-partition)
+                          (user-partition
+                           (fs-type 'fat32)
+                           (esp? #t)
+                           (size new-esp-size)
+                           (mount-point (default-esp-mount-point))))
                      (user-partition
                       (fs-type 'ext4)
                       (bootable? #t)
