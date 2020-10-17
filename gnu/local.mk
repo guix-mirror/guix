@@ -1725,6 +1725,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xsane-fix-snprintf-buffer-length.patch	\
   %D%/packages/patches/xsane-support-ipv6.patch			\
   %D%/packages/patches/xsane-tighten-default-umask.patch	\
+  %D%/packages/patches/yggdrasil-extra-config.patch	\
   %D%/packages/patches/zziplib-CVE-2018-16548.patch
 
 MISC_DISTRO_FILES =				\

@@ -97,6 +97,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -3821,3 +3822,97 @@ stamps.")
 client and server.  It allows you to use remote block devices over a TCP/IP
 network.")
     (license license:gpl2)))
+
+(define-public yggdrasil
+  (package
+    (name "yggdrasil")
+    (version "0.3.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/yggdrasil-network/yggdrasil-go")
+         (commit (string-append "v" version))
+         (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0gk7gy8yq5nrnblv4imxzzm2hac4ri0hlw19ajfbc1zll5kj32gf"))
+       (patches (search-patches "yggdrasil-extra-config.patch"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/yggdrasil-network/yggdrasil-go"
+       ;; TODO: figure out how tests are run
+       #:tests? #f
+       #:install-source? #f
+       #:phases (modify-phases %standard-phases
+                  (replace 'build
+                    (lambda _
+                      (for-each
+                       (lambda (c)
+                         (invoke
+                          "go" "build" "-v" "-ldflags=-s -w"
+                          (string-append
+                           "github.com/yggdrasil-network/yggdrasil-go/cmd/" c)))
+                       (list "yggdrasil" "yggdrasilctl"))
+                      #t))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin/"))
+                             (doc (string-append out "/share/doc/yggdrasil/")))
+                        (mkdir-p bin)
+                        (for-each
+                         (lambda (f)
+                           (install-file f bin))
+                         (list "yggdrasil" "yggdrasilctl"))
+                        (mkdir-p doc)
+                        (copy-recursively
+                         (string-append
+                          "src/github.com/yggdrasil-network/yggdrasil-go/"
+                          "doc/yggdrasil-network.github.io")
+                         doc))
+                      #t)))))
+    ;; https://github.com/kardianos/minwinsvc is windows only
+    (propagated-inputs
+     `(("go-github-com-arceliar-phony" ,go-github-com-arceliar-phony)
+       ("go-github-com-cheggaaa-pb" ,go-github-com-cheggaaa-pb)
+       ("go-github-com-gologme-log" ,go-github-com-gologme-log)
+       ("go-github-com-hashicorp-go-syslog" ,go-github-com-hashicorp-go-syslog)
+       ("go-github-com-hjson-hjson-go" ,go-github-com-hjson-hjson-go)
+       ("go-github-com-kardianos-minwinsvc" ,go-github-com-kardianos-minwinsvc)
+       ("go-github-com-mitchellh-mapstructure"
+        ,go-github-com-mitchellh-mapstructure)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)
+       ("go-golang-zx2c4-com-wireguard" ,go-golang-zx2c4-com-wireguard)
+       ("go-netlink" ,go-netlink)
+       ("go-netns" ,go-netns)))
+    (home-page "https://yggdrasil-network.github.io/blog.html")
+    (synopsis
+     "Experiment in scalable routing as an encrypted IPv6 overlay network")
+    (description
+     "Yggdrasil is an early-stage implementation of a fully end-to-end encrypted
+IPv6 network.  It is lightweight, self-arranging, supported on multiple
+platforms and allows pretty much any IPv6-capable application to communicate
+securely with other Yggdrasil nodes.  Yggdrasil does not require you to have
+IPv6 Internet connectivity - it also works over IPv4.")
+    (license
+     ;; As a special exception to the GNU Lesser General Public License
+     ;; version 3 ("LGPL3"), the copyright holders of this Library give you
+     ;; permission to convey to a third party a Combined Work that links
+     ;; statically or dynamically to this Library without providing any Minimal
+     ;; Corresponding Source or Minimal Application Code as set out in 4d or
+     ;; providing the installation information set out in section 4e, provided
+     ;; that you comply with the other provisions of LGPL3 and provided that you
+     ;; meet, for the Application the terms and conditions of the license(s)
+     ;; which apply to the Application. Except as stated in this special
+     ;; exception, the provisions of LGPL3 will continue to comply in full to
+     ;; this Library. If you modify this Library, you may apply this exception
+     ;; to your version of this Library, but you are not obliged to do so. If
+     ;; you do not wish to do so, delete this exception statement from your
+     ;; version. This exception does not (and cannot) modify any license terms
+     ;; which apply to the Application, with which you must still comply
+     license:lgpl3)))
