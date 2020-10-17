@@ -7291,6 +7291,25 @@ floating-point primitives to an @code{io::Write}.")
      "A library for running child processes.")
     (license license:expat)))
 
+(define-public rust-dyn-clone-1
+  (package
+    (name "rust-dyn-clone")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dyn-clone" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10idzzq2sad7dhrfhrhcx7yckzj8il2bzr16204683ryclxdqlsc"))))
+    (arguments
+     `(#:skip-build? #t))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/dyn-clone")
+    (synopsis "Clone trait that is object-safe")
+    (description "Clone trait that is object-safe")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-dwrote-0.9
   (package
     (name "rust-dwrote")
