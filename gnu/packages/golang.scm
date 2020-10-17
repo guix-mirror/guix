@@ -6009,3 +6009,29 @@ JSON data to the machine.")
     (synopsis "Implementation of WireGuard in Go")
     (description "This package is a Go Implementation of WireGuard.")
     (license license:expat)))
+
+(define-public go-github-com-kardianos-minwinsvc
+  (package
+    (name "go-github-com-kardianos-minwinsvc")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kardianos/minwinsvc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0z941cxymkjcsj3p5l3g4wm2da3smz7iyqk2wbs5y8lmxd4kfzd8"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/kardianos/minwinsvc"))
+    (home-page "https://github.com/kardianos/minwinsvc/")
+    ;; some packages (Yggdrasil) need it to compile
+    ;; it's a tiny package and it's easier to bundle it than to patch it out
+    (synopsis "Minimal windows only service stub for Go")
+    (description "Go programs designed to run from most *nix style operating
+systems can import this package to enable running programs as services without
+modifying them.")
+    (license license:zlib)))
