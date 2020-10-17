@@ -42,6 +42,7 @@
              (gnu packages tex)
              (ice-9 match)
              (srfi srfi-19)
+             (srfi srfi-26)
              (srfi srfi-71))
 
 (define file-append*
@@ -595,6 +596,8 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
 (define* (html-manual source #:key (languages %languages)
                       (version "0.0")
                       (manual %manual)
+                      (mono-node-indexes (map list languages))
+                      (split-node-indexes (map list languages))
                       (date 1)
                       (options %makeinfo-html-options))
   "Return the HTML manuals built from SOURCE for all LANGUAGES, with the given
@@ -683,6 +686,8 @@ makeinfo OPTIONS."
   (let* ((name   (string-append manual "-html-manual"))
          (manual (computed-file name build)))
     (syntax-highlighted-html manual
+                             #:mono-node-indexes mono-node-indexes
+                             #:split-node-indexes split-node-indexes
                              #:name (string-append name "-highlighted"))))
 
 (define* (pdf-manual source #:key (languages %languages)
@@ -1029,6 +1034,8 @@ languages:\n"
                           #:key (languages %languages)
                           (version "0.0")
                           (date (time-second (current-time time-utc)))
+                          (mono-node-indexes (map list %languages))
+                          (split-node-indexes (map list %languages))
                           (manual %manual))
   "Return the union of the HTML and PDF manuals, as well as the indexes."
   (directory-union (string-append manual "-manual")
@@ -1039,7 +1046,12 @@ languages:\n"
                                 #:version version
                                 #:manual manual))
                         (list html-manual-indexes
-                              html-manual pdf-manual))
+                              (lambda (source . args)
+                                (apply html-manual source
+                                       #:mono-node-indexes mono-node-indexes
+                                       #:split-node-indexes split-node-indexes
+                                       args))
+                              pdf-manual))
                    #:copy? #t))
 
 (define (latest-commit+date directory)
@@ -1056,19 +1068,52 @@ commit date (an integer)."
 (let* ((root (canonicalize-path
               (string-append (current-source-directory) "/..")))
        (commit date (latest-commit+date root))
+       (version (or (getenv "GUIX_MANUAL_VERSION")
+                    (string-take commit 7)))
        (select? (let ((vcs? (git-predicate root)))
                   (lambda (file stat)
                     (and (vcs? file stat)
                          ;; Filter out this file.
-                         (not (string=? (basename file) "build.scm")))))))
+                         (not (string=? (basename file) "build.scm"))))))
+       (source (local-file root "guix" #:recursive? #t
+                           #:select? select?)))
+
+  (define guix-manual
+    (html-manual source
+                 #:manual "guix"
+                 #:version version
+                 #:date date))
+
+  (define mono-node-indexes
+    ;; Alist of indexes for GUIX-MANUAL, where each key is a language code and
+    ;; each value is a file-like object containing the identifier index.
+    (html-identifier-indexes guix-manual ""
+                             #:base-url (if (string=? %manual "guix")
+                                            (const "")
+                                            (cut string-append "/manual/" <>))
+                             #:languages %languages))
+
+  (define split-node-indexes
+    ;; Likewise for the split-node variant of GUIX-MANUAL.
+    (html-identifier-indexes guix-manual "/html_node"
+                             #:base-url (if (string=? %manual "guix")
+                                            (const "")
+                                            (cut string-append "/manual/" <>
+                                                 "/html_node"))
+                             #:languages %languages))
+
   (format (current-error-port)
           "building manual from work tree around commit ~a, ~a~%"
           commit
           (let* ((time (make-time time-utc 0 date))
                  (date (time-utc->date time)))
             (date->string date "~e ~B ~Y")))
-  (pdf+html-manual (local-file root "guix" #:recursive? #t
-                               #:select? select?)
-                   #:version (or (getenv "GUIX_MANUAL_VERSION")
-                                 (string-take commit 7))
+
+  (pdf+html-manual source
+                   ;; Always use the identifier index of GUIX-MANUAL.  That
+                   ;; way, "guix-cookbook" can contain link to definitions
+                   ;; that appear in GUIX-MANUAL.
+                   #:mono-node-indexes mono-node-indexes
+                   #:split-node-indexes split-node-indexes
+                   #:version version
                    #:date date))
