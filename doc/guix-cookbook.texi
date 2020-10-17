@@ -1435,7 +1435,7 @@ the @code{make-linux-libre} package definition:
       (begin
         (copy-file config ".config")
         (chmod ".config" #o666))
-      (invoke "make" ,defconfig))
+      (invoke "make" ,defconfig)))
 @end lisp
 
 Below is a sample kernel package.  The @code{linux-libre} package is nothing
@@ -1501,7 +1501,7 @@ And in the custom configure script from the `make-linux-libre` package:
   (display extra-configuration port)
   (close-port port))
 
-(invoke "make" "oldconfig"))))
+(invoke "make" "oldconfig")
 @end lisp
 
 So by not providing a configuration-file the @file{.config} starts blank, and
