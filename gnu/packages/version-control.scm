@@ -1901,14 +1901,14 @@ masters from remote CVS hosts.")
 (define-public vc-dwim
   (package
     (name "vc-dwim")
-    (version "1.9")
+    (version "1.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/vc-dwim/vc-dwim-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0mf1dd7wdqxsm4fcfinfd7iadzarmzvg747pbsbi32qpavpk8gdf"))))
+               "0am6axxdvkm2vwgg0gjrd930yv4dlsdbf0rdv0zh5bhy1ir64rph"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (native-inputs
