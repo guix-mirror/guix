@@ -446,7 +446,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2020.07")
+    (version "2020.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -454,7 +454,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0sjzy262x93aaqd6z24ziaq19xjjjk5f577ivf768vmvwsgbzxf1"))))
+                "08m6f1bh4pdcqbxf983qdb66ccd5vak5cbzc114yf3jwq2yinj0d"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
