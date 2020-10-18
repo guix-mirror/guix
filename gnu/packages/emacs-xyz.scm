@@ -383,29 +383,33 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
     (license license:gpl3+)))
 
 (define-public emacs-with-editor
-  (package
-    (name "emacs-with-editor")
-    (version "2.9.4")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/magit/with-editor")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1z3214zjf3dassb31k14gq4nbr3q8g5x87ydfah28hm4j08v0wb3"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)))
-    (home-page "https://github.com/magit/with-editor")
-    (synopsis "Emacs library for using Emacsclient as EDITOR")
-    (description
-     "This package provides an Emacs library to use the Emacsclient as
+  ;; This commit fixes an (magit) issue with emacs 28, see
+  ;; https://lists.gnu.org/archive/html/help-gnu-emacs/2020-10/msg00211.html
+  (let ((commit "c4768f51c7415119519b4626d8643d60e584098c")
+        (revision "1"))
+    (package
+      (name "emacs-with-editor")
+      (version (git-version "2.9.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/magit/with-editor")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "01ysb9pnscpmingay6njdywkqgj4hn5l5d9igsg3x7p7061jwwix"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/magit/with-editor")
+      (synopsis "Emacs library for using Emacsclient as EDITOR")
+      (description
+       "This package provides an Emacs library to use the Emacsclient as
 @code{$EDITOR} of child processes, making sure they know how to call home.
 For remote processes a substitute is provided, which communicates with Emacs
 on stdout instead of using a socket as the Emacsclient does.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-libgit
   (let ((commit "0ef8b13aef011a98b7da756e4f1ce3bb18e4d55a")
@@ -936,16 +940,16 @@ replacement.")
 (define-public emacs-haskell-mode
   (package
     (name "emacs-haskell-mode")
-    (version "17.1")
+    (version "17.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/haskell/haskell-mode")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0izcasi2v02zh08c863h43m8mmsldzy8pck43cllrfn0zf24v2qn"))))
+        (base32 "0zxbacqzr84krmhqpvzndnvlcjh1gs1x20ys0dykgd7chyhci5j5"))))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
     (native-inputs
@@ -1769,6 +1773,32 @@ also includes a pairing agent.")
 always indented.  It reindents after every change, making it more reliable
 than @code{electric-indent-mode}.")
     (license license:gpl2+)))
+
+(define-public emacs-gcmh
+  ;; No tagged release upstream.
+  (let ((commit "84c43a4c0b41a595ac6e299fa317d2831813e580")
+        (revision "0"))
+    (package
+      (name "emacs-gcmh")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/koral/gcmh")
+               (commit commit)))
+         (sha256
+          (base32 "1r3wiqhrzh7wvqy484nl031fd4bn4cpvkv9646s4cjgvnnnv7jz3"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/koral/gcmh")
+      (synopsis "Emacs Garbage Collector Magic Hack")
+      (description
+       "This package enforces a sneaky @dfn{garbage collector} (GC) strategy
+to minimize GC interference with the activity.  During normal use a high GC
+threshold is set.  When idling GC is immediately triggered and a low threshold
+is set.")
+      (license license:gpl3+))))
 
 (define-public emacs-ctrlf
   (package
@@ -3289,16 +3319,16 @@ This package also includes relevant snippets for yasnippet.")
 (define-public emacs-gdscript-mode
   (package
     (name "emacs-gdscript-mode")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/godotengine/emacs-gdscript-mode")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02by4bvdayldbjlz6jkp36m5rgcy2h5bwhqx2cj7wma6xf6cw3lf"))))
+        (base32 "09q0himrz7a6xgz0jmcl85qc5xhk5fwi6d2vw1n8qaiavm96ksdy"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/godotengine/emacs-gdscript-mode")
     (synopsis "GDScript support and syntax highlighting in Emacs")
@@ -24359,7 +24389,7 @@ Files} (@url{http://tools.ietf.org/html/rfc4180}).")
 (define-public emacs-org-journal
   (package
     (name "emacs-org-journal")
-    (version "2.0.0")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
@@ -24368,7 +24398,7 @@ Files} (@url{http://tools.ietf.org/html/rfc4180}).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18dqd0jy2x530lk0h4fcn9cld9qh4w7b3vxa60fpiia628vsv1dg"))))
+        (base32 "1p9i6v3bwi1ab576vc9qg1ki91197d6nkkg857s52zsan1zlkzzw"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/bastibe/org-journal")
     (synopsis "Simple Org mode journaling mode")
@@ -24802,7 +24832,7 @@ picked up when copy-pasting text from buffer to buffer.")
 (define-public emacs-org-webring
   (package
     (name "emacs-org-webring")
-    (version "1.6")
+    (version "1.9")
     (source
      (origin
        (method git-fetch)
@@ -24812,7 +24842,7 @@ picked up when copy-pasting text from buffer to buffer.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "00d7jqsbfa08rhyv3ry87rgy9ikv233spn4rz0d3riy0bp7b7j6b"))))
+         "09lm2h5d6xcdwilbmi6xs4qz33d0442m9iys9k36q9vhhakl7w4x"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases

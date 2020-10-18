@@ -827,9 +827,15 @@ Extensions} (DNSSEC).")
            (delete-file-recursively "src/contrib/libbpf")
            #t))))
     (build-system gnu-build-system)
+    (outputs (list "out" "doc" "lib" "tools"))
     (arguments
      `(#:configure-flags
-       (list "--sysconfdir=/etc"
+       (list (string-append "--docdir=" (assoc-ref %outputs "doc")
+                            "/share/" ,name "-" ,version)
+             (string-append "--infodir=" (assoc-ref %outputs "doc")
+                            "/share/info")
+             (string-append "--libdir=" (assoc-ref %outputs "lib") "/lib")
+             "--sysconfdir=/etc"
              "--localstatedir=/var"
              "--enable-dnstap"          ; let tools read/write capture files
              "--enable-fastparser"      ; disabled by default when .git/ exists
@@ -844,7 +850,7 @@ Extensions} (DNSSEC).")
              (substitute* "configure.ac"
                (("enable_xdp=yes" match)
                 (string-append match "\nlibbpf_LIBS=\"$libbpf_LIBS -lz\"")))
-             #t))
+             #true))
          (add-before 'bootstrap 'update-parser
            (lambda _
              (with-directory-excursion "src"
@@ -868,7 +874,26 @@ Extensions} (DNSSEC).")
                        "install"))))
          (add-after 'install 'install-info
            (lambda _
-             (invoke "make" "install-info"))))))
+             (invoke "make" "install-info")))
+         (add-after 'install 'break-circular-:lib->:out-reference
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (assoc-ref outputs "lib")))
+               (for-each (lambda (file)
+                           (substitute* file
+                             (("(prefix=).*" _ assign)
+                              (string-append assign lib "\n"))))
+                         (find-files lib "\\.pc$"))
+               #true)))
+         (add-after 'install 'split-:tools
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (tools (assoc-ref outputs "tools")))
+               (mkdir-p (string-append tools "/share/man"))
+               (rename-file (string-append out   "/bin")
+                            (string-append tools "/bin"))
+               (rename-file (string-append out   "/share/man/man1")
+                            (string-append tools "/share/man/man1"))
+               #true))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -961,7 +986,7 @@ synthesis, and on-the-fly re-configuration.")
     (inputs
      `(("fstrm" ,fstrm)
        ("gnutls" ,gnutls)
-       ("knot" ,knot)
+       ("knot:lib" ,knot "lib")
        ("libuv" ,libuv)
        ("lmdb" ,lmdb)
        ("luajit" ,luajit)

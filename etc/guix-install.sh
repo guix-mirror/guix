@@ -5,6 +5,7 @@
 # Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+# Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -54,6 +55,7 @@ REQUIRE=(
 
 PAS=$'[ \033[32;1mPASS\033[0m ] '
 ERR=$'[ \033[31;1mFAIL\033[0m ] '
+WAR=$'[ \033[33;1mWARN\033[0m ] '
 INF="[ INFO ] "
 
 DEBUG=0
@@ -197,6 +199,19 @@ chk_sys_arch()
     esac
 
     ARCH_OS="${arch}-${os}"
+}
+
+chk_sys_nscd()
+{ # Check if nscd is up and suggest to start it or install it
+    if [ "$(type -P pidof)" ]; then
+        if [ ! "$(pidof nscd)" ]; then
+            _msg "${WAR}We recommend installing and/or starting your distribution 'nscd' service"
+            _msg "${WAR}Please read 'info guix \"Application Setup\"' about \"Name Service Switch\""
+        fi
+    else
+        _msg "${INF}We cannot determine if your distribution 'nscd' service is running"
+        _msg "${INF}Please read 'info guix \"Application Setup\"' about \"Name Service Switch\""
+    fi
 }
 
 # ------------------------------------------------------------------------------
@@ -459,6 +474,26 @@ export XDG_DATA_DIRS="$GUIX_PROFILE/share:${XDG_DATA_DIRS:-/usr/local/share/:/us
 EOF
 }
 
+sys_create_shell_completion()
+{ # Symlink supported shell completions system-wide
+
+    var_guix=/var/guix/profiles/per-user/root/current-guix
+    bash_completion=/etc/bash_completion.d
+    zsh_completion=/usr/share/zsh/site-functions
+    fish_completion=/usr/share/fish/vendor_completions.d
+
+    { # Just in case
+        for dir_shell in $bash_completion $zsh_completion $fish_completion; do
+            [ -d "$dir_shell" ] || mkdir -p $dir_shell
+        done;
+
+        ln -sf ${var_guix}/etc/bash_completion.d/* "$bash_completion";
+        ln -sf ${var_guix}/share/zsh/site-functions/* "$zsh_completion";
+        ln -sf ${var_guix}/share/fish/vendor_completions.d/* "$fish_completion"; } &&
+        _msg "${PAS}installed shell completion"
+}
+
+
 welcome()
 {
     cat<<"EOF"
@@ -502,6 +537,7 @@ main()
     chk_gpg_keyring
     chk_init_sys
     chk_sys_arch
+    chk_sys_nscd
 
     _msg "${INF}system is ${ARCH_OS}"
 
@@ -516,6 +552,7 @@ main()
     sys_enable_guix_daemon
     sys_authorize_build_farms
     sys_create_init_profile
+    sys_create_shell_completion
 
     _msg "${INF}cleaning up ${tmp_path}"
     rm -r "${tmp_path}"

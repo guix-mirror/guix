@@ -1809,21 +1809,24 @@ network, which causes enabled computers to power on.")
 (define-public dmidecode
   (package
     (name "dmidecode")
-    (version "3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://savannah/dmidecode/dmidecode-"
-                    version ".tar.xz"))
-              (sha256
-               (base32
-                "1pcfhcgs2ifdjwp7amnsr3lq95pgxpr150bjhdinvl505px0cw07"))))
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/dmidecode/dmidecode-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "0m8lzg9rf1qssasiix672bxk5qwms90561g8hfkkhk31h2kkgiw2"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases (delete 'configure))
-       #:tests? #f                                ; no 'check' target
-       #:make-flags (list (string-append "prefix="
-                                         (assoc-ref %outputs "out")))))
+     `(#:tests? #f                                ; no 'check' target
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "prefix="
+                            (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))                   ; no configure script
     (home-page "https://www.nongnu.org/dmidecode/")
     (synopsis "Read hardware information from the BIOS")
     (description
@@ -2690,9 +2693,8 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no make check
-       #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "DESTDIR=" out)
-                            "prefix=/"))
+       #:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-python3-DeprecationWarning

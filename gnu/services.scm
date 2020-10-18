@@ -461,7 +461,12 @@ channels in use and CONFIG-FILE, if it is true."
 
   (mbegin %store-monad
     (let ((config-file (cond ((string? config-file)
-                              (local-file config-file "configuration.scm"))
+                              ;; CONFIG-FILE has been passed typically via
+                              ;; 'guix system reconfigure CONFIG-FILE' so we
+                              ;; can assume it's valid: tell 'local-file' to
+                              ;; not emit a warning.
+                              (local-file (assume-valid-file-name config-file)
+                                          "configuration.scm"))
                              ((not config-file)
                               #f)
                              (else

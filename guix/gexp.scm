@@ -48,6 +48,7 @@
             gexp-input-output
             gexp-input-native?
 
+            assume-valid-file-name
             local-file
             local-file?
             local-file-file
@@ -424,6 +425,12 @@ vicinity of DIRECTORY."
           (string-append directory "/" file))
          (else file))))
 
+(define-syntax-rule (assume-valid-file-name file)
+  "This is a syntactic keyword to tell 'local-file' that it can assume that
+the given file name is valid, even if it's not a string literal, and thus not
+warn about it."
+  file)
+
 (define-syntax local-file
   (lambda (s)
     "Return an object representing local file FILE to add to the store; this
@@ -442,12 +449,19 @@ where FILE is the entry's absolute file name and STAT is the result of
 This is the declarative counterpart of the 'interned-file' monadic procedure.
 It is implemented as a macro to capture the current source directory where it
 appears."
-    (syntax-case s ()
+    (syntax-case s (assume-valid-file-name)
       ((_ file rest ...)
        (string? (syntax->datum #'file))
        ;; FILE is a literal, so resolve it relative to the source directory.
        #'(%local-file file
                       (delay (absolute-file-name file (current-source-directory)))
+                      rest ...))
+      ((_ (assume-valid-file-name file) rest ...)
+       ;; FILE is not a literal, so resolve it relative to the current
+       ;; directory.  Since the user declared FILE is valid, do not pass
+       ;; #:literal? #f so that we do not warn about it later on.
+       #'(%local-file file
+                      (delay (absolute-file-name file (getcwd)))
                       rest ...))
       ((_ file rest ...)
        ;; Resolve FILE relative to the current directory.
@@ -456,7 +470,7 @@ appears."
                        (delay (absolute-file-name file (getcwd)))
                        rest ...
                        #:location 'location
-                       #:literal? #f)))
+                       #:literal? #f)))           ;warn if FILE is relative
       ((_)
        #'(syntax-error "missing file name"))
       (id

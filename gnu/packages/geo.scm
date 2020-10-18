@@ -1761,7 +1761,7 @@ track your position right from your laptop.")
                    license:zlib))))
 
 (define-public grass
-  (let* ((version "7.8.2")
+  (let* ((version "7.8.4")
          (majorminor (string-join (list-head (string-split version #\.) 2) ""))
          (grassxx (string-append "grass" majorminor)))
     (package
@@ -1773,7 +1773,7 @@ track your position right from your laptop.")
          (uri (string-append "https://grass.osgeo.org/" grassxx
                              "/source/grass-" version ".tar.gz"))
          (sha256
-          (base32 "1fwsm99kz0bxvjk7442qq1h45ikrmhba8bqclafb61gqg1q6ymrk"))))
+          (base32 "1yfghvp522ijww3n3l5xarjbc21rm0gmlgr3lvwxrv23bvxmllyr"))))
       (build-system gnu-build-system)
       (inputs
        `(("bzip2" ,bzip2)
@@ -1865,8 +1865,14 @@ track your position right from your laptop.")
                  (symlink (string-append dir "/lib")
                           (string-append out "/lib")))
                #t))
-           (add-after 'install-links 'wrap-python
-             (assoc-ref python:%standard-phases 'wrap)))))
+           (add-after 'install-links 'python:wrap
+             (assoc-ref python:%standard-phases 'wrap))
+           (add-after 'python:wrap 'wrap-with-python-interpreter
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/" ,grassxx)
+                   `("GRASS_PYTHON" = (,(which "python3"))))
+                 #t))))))
       (synopsis "GRASS Geographic Information System")
       (description
        "GRASS (Geographic Resources Analysis Support System), is a Geographic

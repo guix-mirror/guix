@@ -193,41 +193,40 @@ Python without keeping their credentials in a Docker configuration file.")
      `(#:import-path "github.com/containerd/containerd"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'chdir
-           (lambda _
-             (chdir "src/github.com/containerd/containerd")
-             #t))
          (add-after 'chdir 'patch-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs import-path outputs #:allow-other-keys)
              ;; TODO: Patch "socat", "unpigz".
-             (substitute* "./runtime/v1/linux/runtime.go"
-              (("defaultRuntime[ \t]*=.*")
-               (string-append "defaultRuntime = \""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"\n"))
-              (("defaultShim[ \t]*=.*")
-               (string-append "defaultShim = \""
-                              (assoc-ref outputs "out")
-                              "/bin/containerd-shim\"\n")))
-            (substitute* "./vendor/github.com/containerd/go-runc/runc.go"
-              (("DefaultCommand[ \t]*=.*")
-               (string-append "DefaultCommand = \""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"\n")))
-            (substitute* "vendor/github.com/containerd/continuity/testutil/loopback/loopback_linux.go"
-             (("exec\\.Command\\(\"losetup\"") ; )
-              (string-append "exec.Command(\""
-                             (assoc-ref inputs "util-linux")
-                             "/sbin/losetup\""))) ;)
-             #t))
+             (with-directory-excursion (string-append "src/" import-path)
+               (substitute* "./runtime/v1/linux/runtime.go"
+                 (("defaultRuntime[ \t]*=.*")
+                  (string-append "defaultRuntime = \""
+                                 (assoc-ref inputs "runc")
+                                 "/sbin/runc\"\n"))
+                 (("defaultShim[ \t]*=.*")
+                  (string-append "defaultShim = \""
+                                 (assoc-ref outputs "out")
+                                 "/bin/containerd-shim\"\n")))
+               (substitute* "./vendor/github.com/containerd/go-runc/runc.go"
+                 (("DefaultCommand[ \t]*=.*")
+                  (string-append "DefaultCommand = \""
+                                 (assoc-ref inputs "runc")
+                                 "/sbin/runc\"\n")))
+               (substitute* "vendor/github.com/containerd/continuity/testutil/loopback/loopback_linux.go"
+                 (("exec\\.Command\\(\"losetup\"") ; )
+                  (string-append "exec.Command(\""
+                                 (assoc-ref inputs "util-linux")
+                                 "/sbin/losetup\""))) ;)
+               #t)))
          (replace 'build
-           (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (apply invoke "make" make-flags)))
+           (lambda* (#:key import-path (make-flags '()) #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (apply invoke "make" make-flags))))
          (replace 'install
-           (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (apply invoke "make" (string-append "DESTDIR=" out) "install"
-                      make-flags)))))))
+           (lambda* (#:key import-path outputs (make-flags '()) #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (let* ((out (assoc-ref outputs "out")))
+                 (apply invoke "make" (string-append "DESTDIR=" out) "install"
+                        make-flags))))))))
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
        ("libseccomp" ,libseccomp)
@@ -658,8 +657,7 @@ provisioning etc.")
                                (string-append etc "/fish/completions"))
                  (install-file "zsh/_docker"
                                (string-append etc "/zsh/site-functions")))
-               (chdir "build")
-               (install-file "docker" out-bin)
+               (install-file "build/docker" out-bin)
                #t))))))
     (native-inputs
      `(("go" ,go)

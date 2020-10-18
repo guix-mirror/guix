@@ -165,6 +165,9 @@ file system, and many more features.")
                '("asciidoctor" "openssl"))
        ;; For building documentation.
        ("asciidoc" ,asciidoc)))
+    (inputs
+     `(("json-c" ,json-c-0.13)
+       ,@(alist-delete "json-c" (package-inputs newsboat))))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

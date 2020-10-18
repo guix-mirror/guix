@@ -6076,7 +6076,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "359")
+    (version "361")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -6086,7 +6086,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                                    "xterm-" version ".tgz")))
               (sha256
                (base32
-                "0lcjifz027j99zf2dnms0h43xp5zznxr39safrpyarv59jlmdjii"))))
+                "0gv27akkfb796aww1snq3c2sxmi8vajgfxk83g60awp4slh0yqc5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -6278,7 +6278,8 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32 "10alqdfmgml9ixdi1nyd9xlw8a5q0j8m2sv4g9p83pd6z1a0rpv2"))
-       (patches (search-patches "xpra-4.0.1-systemd-run.patch"))))
+       (patches (search-patches "xpra-4.0.1-systemd-run.patch"
+                                "xpra-4.0.4-norequests.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
     (inputs `(

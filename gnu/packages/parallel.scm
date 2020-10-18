@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -108,7 +108,7 @@ and they are executed on lists of files, hosts, users or other items.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "19.05.3-2")
+   (version "20.02.5")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -116,7 +116,7 @@ and they are executed on lists of files, hosts, users or other items.")
                   version ".tar.bz2"))
             (sha256
              (base32
-              "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))
+              "08qp60rxsny6fcx58xim88avx7f7h7q1vpq3lfw6nlha04r7lan3"))
             (modules '((guix build utils)))
             (snippet
              '(begin
@@ -140,19 +140,19 @@ and they are executed on lists of files, hosts, users or other items.")
                 #t))))
    ;; FIXME: More optional inputs could be added,
    ;; in particular mysql and gtk+.
-   (inputs `(("expect" ,expect)
-             ("freeipmi" ,freeipmi)
+   (inputs `(("freeipmi" ,freeipmi)
              ("hwloc" ,hwloc-2 "lib")
              ("json-c" ,json-c)
              ("linux-pam" , linux-pam)
              ("munge" ,munge)
              ("numactl" ,numactl)
-             ("perl" ,perl)
-             ("python" ,python-wrapper)
              ("readline" ,readline)))
    (native-inputs
     `(("autoconf" ,autoconf)
-      ("pkg-config" ,pkg-config)))
+      ("expect" ,expect)
+      ("perl" ,perl)
+      ("pkg-config" ,pkg-config)
+      ("python" ,python-wrapper)))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags

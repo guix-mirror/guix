@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,7 +94,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.21.26")
+    (version "0.22")
     (source (origin
               (method url-fetch)
               (uri
@@ -102,10 +103,10 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1sjfx9ln2zik5fr5mdjy1w184hgjn89v67i85z09x0m6qwhq5rpr"))))
+                "0xlhwdbnww7gjw474j54j94iwrzbzlqvnv6chlkga6yh4pcl5rvx"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
+     `(#:configure-flags '("-Ddocumentation=enabled")))
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
               ("avahi" ,avahi)
@@ -184,7 +185,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.40")
+    (version "0.41")
     (source (origin
               (method url-fetch)
               (uri
@@ -193,7 +194,7 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1pfkf2zl55g7krrp4qi5m8j9h4m9vc3rnz65f7gb75pbmiy5iyh9"))))
+                "1b0kxidz3h3anc006cjrrbb281zl75f1qaip4m3672pczdc2lwwa"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags

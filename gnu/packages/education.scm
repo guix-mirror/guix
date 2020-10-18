@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
@@ -956,30 +956,30 @@ floating through space.")
 (define-public mdk
   (package
     (name "mdk")
-    (version "1.2.10")
+    (version "1.2.11")
     (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/mdk/v1.2.10/mdk-"
-                          version ".tar.gz"))
-      (sha256
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/mdk/v" version "/mdk-"
+                           version ".tar.gz"))
+       (sha256
         (base32
-          "1rwcq2b5vvv7318j92nxc5dayj27dpfhzc4rjiv4ccvsc0x35x5h"))))
-   (build-system gnu-build-system)
+         "0rrac91ynya4jrhv14j9vvn21c5z80hi1zmmdxjb0d9zz6i7kjgb"))))
+    (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-gui=yes" "-with-readline=yes")))
     (native-inputs
      `(("flex" ,flex)
-       ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
-       ("ncurses" ,ncurses)))
-   (inputs
-    `(("readline" ,readline)
-      ("glib" ,glib)
-      ("gtk+" ,gtk+)
-      ("pango" ,pango)
-      ("libglade" ,libglade)))
-   (home-page "https://www.gnu.org/software/mdk/")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libglade" ,libglade)
+       ("ncurses" ,ncurses)
+       ("pango" ,pango)
+       ("readline" ,readline)))
+    (home-page "https://www.gnu.org/software/mdk/")
     (synopsis "Virtual development environment for Knuth's MIX")
     (description
      "GNU MDK is the Mix Development Kit, an emulation of the pedagogical

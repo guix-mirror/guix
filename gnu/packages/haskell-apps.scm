@@ -628,7 +628,7 @@ and mIRC chat codes.")
 (define-public kmonad
   (package
     (name "kmonad")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -637,7 +637,7 @@ and mIRC chat codes.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "064gnzzcm6fnxfiildbjmgbdxkhqvp61zrl6qhkl1pgbn27j1mll"))))
+        (base32 "1rp880zxvrznx0y1k464wjrds441dpsz94syhrkaw5dnmxf74yjd"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases

@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexey Abramov <levenson@mmer.org>
+;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,6 +142,7 @@
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
   #:use-module (guix build-system perl)
@@ -776,7 +778,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.2.4")
+    (version "7.3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -785,12 +787,14 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h5q5nk2p2vx86w6rrbs7v70h81dpqqr68x6l3klzl3m0yj9agb1"))))
+                "1gg8ry67i20qapj4z20am9bm67m2q28kixcj7ja75m897vhzarnq"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
-    (inputs `(("python2-pysqlite" ,python2-pysqlite)
-              ("python2-six" ,python2-six)))
+    (inputs
+     `(("python2-pysqlite" ,python2-pysqlite)
+       ("python2-rfc6555" ,python2-rfc6555)
+       ("python2-six" ,python2-six)))
     (arguments
      ;; The setup.py script expects python-2.
      `(#:python ,python-2
@@ -1317,61 +1321,68 @@ compresses it.")
   (package
     (name "claws-mail")
     (version "3.17.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.claws-mail.org/releases/claws-mail-" version
-                    ".tar.xz"))
-              (sha256
-               (base32
-                "1j6x09621wng0lavh53nwzh9vqjzpspl8kh5azh7kbihpi4ldfb0"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("bogofilter" ,bogofilter)
-              ("curl" ,curl)
-              ("dbus-glib" ,dbus-glib)
-              ("enchant" ,enchant)
-              ("expat" ,expat)
-              ("ghostscript" ,ghostscript)
-              ("hicolor-icon-theme" ,hicolor-icon-theme)
-              ("gnupg" ,gnupg)
-              ("gnutls" ,gnutls)
-              ("gpgme" ,gpgme)
-              ("gtk" ,gtk+-2)
-              ("libarchive" ,libarchive)
-              ("libcanberra" ,libcanberra)
-              ("libetpan" ,libetpan)
-              ("libical" ,libical)
-              ("libnotify" ,libnotify)
-              ("libsm" ,libsm)
-              ("libxml2" ,libxml2)
-              ("perl" ,perl)
-              ("python-2" ,python-2)
-              ("mime-info" ,shared-mime-info)
-              ("startup-notification" ,startup-notification)))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://www.claws-mail.org/releases/claws-mail-"
+         version ".tar.xz"))
+       (sha256
+        (base32 "1j6x09621wng0lavh53nwzh9vqjzpspl8kh5azh7kbihpi4ldfb0"))))
+    (build-system glib-or-gtk-build-system)
     (arguments
-      '(#:configure-flags
-        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant"
-          "--enable-ldap")
-        #:make-flags
-        ;; Disable updating icon cache since it's done by the profile hook.
-        ;; Conflict with other packages in the profile would be inevitable
-        ;; otherwise.
-        '("gtk_update_icon_cache=true")
-        #:phases (modify-phases %standard-phases
-                   (add-before 'build 'patch-mime
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       (substitute* "src/procmime.c"
-                         (("/usr/share/mime/globs")
-                          (string-append (assoc-ref inputs "mime-info")
-                                         "/share/mime/globs"))))))))
+     `(#:configure-flags
+       (list
+        "--enable-gnutls"
+        "--enable-pgpmime-plugin"
+        "--enable-enchant"
+        "--enable-ldap")
+       #:make-flags
+       ;; Disable updating icon cache since it's done by the profile hook.
+       ;; Conflict with other packages in the profile would be inevitable
+       ;; otherwise.
+       (list
+        "gtk_update_icon_cache=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-mime
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/procmime.c"
+               (("/usr/share/mime/globs")
+                (string-append (assoc-ref inputs "mime-info")
+                               "/share/mime/globs"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bogofilter" ,bogofilter)
+       ("curl" ,curl)
+       ("dbus-glib" ,dbus-glib)
+       ("enchant" ,enchant)
+       ("expat" ,expat)
+       ("ghostscript" ,ghostscript)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("gnupg" ,gnupg)
+       ("gnutls" ,gnutls)
+       ("gpgme" ,gpgme)
+       ("gtk" ,gtk+-2)
+       ("libarchive" ,libarchive)
+       ("libcanberra" ,libcanberra)
+       ("libetpan" ,libetpan)
+       ("libical" ,libical)
+       ("libnotify" ,libnotify)
+       ("libsm" ,libsm)
+       ("libxml2" ,libxml2)
+       ("perl" ,perl)
+       ("python-2" ,python-2)
+       ("mime-info" ,shared-mime-info)
+       ("startup-notification" ,startup-notification)))
     (synopsis "GTK-based Email client")
-    (description
-     "Claws-Mail is an email client (and news reader) based on GTK+.  The
-appearance and interface are designed to be familiar to new users coming from
-other popular email clients, as well as experienced users.  Almost all commands
-are accessible with the keyboard.  Plus, Claws-Mail is extensible via addons
-which can add many functionalities to the base client.")
+    (description "Claws-Mail is an email client (and news reader) based on GTK+.
+The appearance and interface are designed to be familiar to new users coming
+from other popular email clients, as well as experienced users.  Almost all
+commands are accessible with the keyboard.  Plus, Claws-Mail is extensible via
+addons which can add many functionalities to the base client.")
     (home-page "https://www.claws-mail.org/")
     (license license:gpl3+))) ; most files are actually public domain or x11
 
@@ -1965,14 +1976,14 @@ header.")
 (define-public perl-email-sender
   (package
     (name "perl-email-sender")
-    (version "1.300034")
+    (version "1.300035")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "Email-Sender-" version ".tar.gz"))
        (sha256
-        (base32 "14aj9kqa9dr2bdhzn2qvjj2mffj8wjb5397z8qw7qg057fk3ib05"))))
+        (base32 "0yfssp3rqdx1dmgvnygarzgkpkhqm28r5sd0gh87ksk8yxndhjql"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -3219,16 +3230,16 @@ on the fly.  Both programs are written in C and are very fast.")
 (define-public swaks
   (package
     (name "swaks")
-    (version "20190914.0")
+    (version "20201014.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://jetmore.org/john/code/swaks/files/swaks-"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jetmore/swaks")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "12awq5z4sdd54cxprj834zajxhkpy4jwhzf1fhigcx1zbhdaacsp"))))
+        (base32 "131i2b1yxhnbqkfk4kky40pfanqw2c5lcgbnjhfqp5cvpawpk2ai"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-io-socket-inet6" ,perl-io-socket-inet6)
@@ -3239,10 +3250,15 @@ on the fly.  Both programs are written in C and are very fast.")
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'set-build_version
+           (lambda _
+             (substitute* "swaks"
+               (("\"DEVRELEASE\"") (format #f "\"~a\"" ,version)))
+             #true))
          (delete 'configure)
          (replace 'build
            (lambda _
-             (invoke "pod2man" "doc/ref.pod" "swaks.1")))
+             (invoke "pod2man" "doc/base.pod" "swaks.1")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

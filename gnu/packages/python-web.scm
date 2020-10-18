@@ -90,14 +90,13 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.6.2")
+    (version "3.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
-        (base32
-         "09pkw6f1790prnrq0k8cqgnf1qy57ll8lpmc6kld09q7zw4vi6i5"))
+        (base32 "0i9n7h8n06m2d8ryqyk4fv1si1m44ibq7blbfaxq46vx7jydg339"))
        (patches (search-patches "python-aiohttp-3.6.2-no-warning-fail.patch"))))
     (build-system python-build-system)
     (arguments
@@ -2348,13 +2347,13 @@ and to spawn subprocesses to handle requests.")
 (define-public python-pastedeploy
   (package
     (name "python-pastedeploy")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PasteDeploy" version))
        (sha256
-        (base32 "16qsq5y6mryslmbp5pn35x4z8z3ndp5rpgl42h226879nrw9hmg7"))))
+        (base32 "05s88qdjdwd9d9qs13fap7nqgxs7qs5qfzzjbrc5va13k2mxdskd"))))
     (build-system python-build-system)
     (arguments
      '(#:test-target "pytest"))

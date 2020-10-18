@@ -384,6 +384,7 @@ STORE is an open connection to the store."
          ;; Make the specified system generation the default entry.
          (params (first (profile-boot-parameters %system-profile
                                                  (list number))))
+         (locale (boot-parameters-locale params))
          (old-generations
           (delv number (reverse (generation-numbers %system-profile))))
          (old-params (profile-boot-parameters
@@ -396,6 +397,7 @@ STORE is an open connection to the store."
           ((bootcfg (lower-object
                      ((bootloader-configuration-file-generator bootloader)
                       bootloader-config entries
+                      #:locale locale
                       #:old-entries old-entries)))
            (drvs -> (list bootcfg)))
         (mbegin %store-monad

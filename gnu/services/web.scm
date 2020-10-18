@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,7 +91,7 @@
 
             nginx-configuration
             nginx-configuration?
-            nginx-configuartion-nginx
+            nginx-configuration-nginx
             nginx-configuration-log-directory
             nginx-configuration-run-directory
             nginx-configuration-server-blocks
@@ -525,6 +526,10 @@
   (modules nginx-configuration-modules (default '()))
   (global-directives nginx-configuration-global-directives
                      (default '((events . ()))))
+  (lua-package-path nginx-lua-package-path ;list of <package>
+                    (default #f))
+  (lua-package-cpath nginx-lua-package-cpath ;list of <package>
+                     (default #f))
   (extra-content nginx-configuration-extra-content
                  (default ""))
   (file          nginx-configuration-file         ;#f | string | file-like
@@ -630,6 +635,8 @@ of index files."
                  server-names-hash-bucket-max-size
                  modules
                  global-directives
+                 lua-package-path
+                 lua-package-cpath
                  extra-content)
    (apply mixed-text-file "nginx.conf"
           (flatten
@@ -646,11 +653,19 @@ of index files."
            "    scgi_temp_path " run-directory "/scgi_temp;\n"
            "    access_log " log-directory "/access.log;\n"
            "    include " nginx "/share/nginx/conf/mime.types;\n"
-           (if server-names-hash-bucket-size
-               (string-append
-                "    server_names_hash_bucket_size "
-                (number->string server-names-hash-bucket-size)
-                ";\n")
+           (if lua-package-path
+               #~(format #f "    lua_package_path ~s;~%"
+                         (string-join (map (lambda (path)
+                                             (string-append path "/lib/?.lua"))
+                                           '#$lua-package-path)
+                                      ";"))
+               "")
+           (if lua-package-cpath
+               #~(format #f "    lua_package_cpath ~s;~%"
+                         (string-join (map (lambda (cpath)
+                                             (string-append cpath "/lib/lua/?.lua"))
+                                           '#$lua-package-cpath)
+                                      ";"))
                "")
            (if server-names-hash-bucket-max-size
                (string-append

@@ -1411,7 +1411,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
 (define-public jasper
   (package
     (name "jasper")
-    (version "2.0.21")
+    (version "2.0.22")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1420,21 +1420,10 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0p3qr4j4pjs5vn5amm6ih9hb4wmm72marhmfw08svcs4rrr88p9y"))))
+                "1qw96mwwd9xw21jg5s7njqgbam566skj93i81aflijy40s31dfwz"))))
     (build-system cmake-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-checking-disabled-things
-           (lambda _
-             ;; The MIF codec was disabled for security reasons in JasPer 2.0.20
-             ;; but its test suite still assumes that the format is supported.
-             (for-each delete-file
-                       (find-files "data/test" "\\.mif$")) ; for run_test_1
-             (substitute* "test/bin/run_test_2"
-               (("image_formats\\+=\\(mif\\)") ""))
-             #t)))))
-    (inputs `(("libjpeg" ,libjpeg-turbo)))
+    (inputs
+     `(("libjpeg" ,libjpeg-turbo)))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
 implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,
@@ -1542,33 +1531,6 @@ differences in file encoding, image quality, and other small variations.")
 files (known as @dfn{steganography}).  Neither color nor sample frequencies are
 changed, making the embedding resistant against first-order statistical tests.")
     (license license:gpl2+)))
-
-(define-public stb-image-for-extempore
-  (let ((revision "1")
-        (commit "152a250a702bf28951bb0220d63bc0c99830c498"))
-    (package
-      (name "stb-image-for-extempore")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source
-       (origin (method git-fetch)
-               (uri (git-reference
-                     (url "https://github.com/extemporelang/stb")
-                     (commit commit)))
-               (sha256
-                (base32
-                 "0y0aa20pj9311x2ii06zg8xs34idg14hfgldqc5ymizc6cf1qiqv"))
-               (file-name (string-append name "-" version "-checkout"))))
-      (build-system cmake-build-system)
-      (arguments `(#:tests? #f))        ; no tests included
-      ;; Extempore refuses to build on architectures other than x86_64
-      (supported-systems '("x86_64-linux"))
-      (home-page "https://github.com/extemporelang/stb")
-      (synopsis "Image library for Extempore")
-      (description
-       "This package is a collection of assorted single-file libraries.  Of
-all included libraries only the image loading and decoding library is
-installed as @code{stb_image}.")
-      (license license:public-domain))))
 
 (define-public optipng
   (package

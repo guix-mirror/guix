@@ -2213,7 +2213,7 @@ Password Generator\".")
 (define-public perl-crypt-rijndael
   (package
     (name "perl-crypt-rijndael")
-    (version "1.14")
+    (version "1.15")
     (source
      (origin
       (method url-fetch)
@@ -2221,8 +2221,7 @@ Password Generator\".")
             "mirror://cpan/authors/id/L/LE/LEONT/Crypt-Rijndael-"
             version ".tar.gz"))
       (sha256
-       (base32
-        "03l5nwq97a8q9na4dpd4m3r7vrwpranx225vw8xm40w7zvgw6lb4"))))
+       (base32 "0qs1b6ma4sj0ip5d8544fzgc1bbankc4qlmznp8hay8dk5arp650"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Crypt-Rijndael")
     (synopsis "Crypt::CBC compliant Rijndael encryption module")
@@ -8606,14 +8605,14 @@ and @code{deserialize_regexp}.")
 (define-public perl-role-tiny-2
   (package
     (inherit perl-role-tiny)
-    (version "2.001001")
+    (version "2.001004")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Role-Tiny-" version ".tar.gz"))
        (sha256
-        (base32 "16yryg3cr14xw201gm8k8ci00hs60fy8lk2xhnaqa85n5m68flk8"))))))
+        (base32 "11qn516352yhi794www3ykwa9xv2gxpfnhn9jcn10x0ahl95gflj"))))))
 
 (define-public perl-safe-isa
   (package

@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -803,8 +804,8 @@ packages.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys
-  (let ((commit "c709ea063b76879dc9915358f55d4d77c16ab6d5")
-        (revision "6"))
+  (let ((commit "05986578812163b26672dabd9b425240ae2bb0ad")
+        (revision "7"))
     (package
       (name "go-golang-org-x-sys")
       (version (git-version "0.0.0" revision commit))
@@ -816,7 +817,7 @@ packages.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "15nq53a6kcqchng4j0d1pjw0m6hny6126nhjdwqw5n9dzh6a226d"))))
+                  "1q2rxb6z5l6pmlckjsz2l0b8lw7bqgk6frhzbmi1dv0y5irb2ka7"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys"
@@ -5743,3 +5744,86 @@ Included are the following:
 except that it adds convenience functions that use the fmt package to format
 error messages.")
     (license license:bsd-3)))
+
+(define-public go-github-com-arceliar-phony
+  (let ((commit "d0c68492aca0bd4b5c5c8e0452c9b4c8af923eaf")
+        (revision "0"))
+    (package
+      (name "go-github-com-arceliar-phony")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Arceliar/phony")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0876y0hlb1zh8hn0pxrb5zfdadvaqmqwlr66p19yl2a76galz992"))))
+      (arguments
+       '(#:import-path "github.com/Arceliar/phony"))
+      (build-system go-build-system)
+      (home-page "https://github.com/Arceliar/phony")
+      (synopsis "Very minimal actor model library")
+      (description "Phony is a very minimal actor model library for Go,
+inspired by the causal messaging system in the Pony programming language.")
+      (license license:expat))))
+
+(define-public go-github-com-cheggaaa-pb
+  (package
+    (name "go-github-com-cheggaaa-pb")
+    (version "3.0.4")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cheggaaa/pb/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0xhsv9yf3fz918ay6w0d87jnb3hk9vxvi16jk172kqq26x7jixd0"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/cheggaaa/pb/"))
+    (propagated-inputs
+     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-mattn-go-colorable" ,go-github-com-mattn-go-colorable)
+       ("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (native-inputs
+     `(("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)))
+    (home-page "https://github.com/cheggaaa/pb/")
+    (synopsis "Console progress bar for Go")
+    (description "This package is a Go library that draws progress bars on
+the terminal.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-gologme-log
+  ;; this is the same as v1.2.0, only the LICENSE file changed
+  (let ((commit "720ba0b3ccf0a91bc6018c9967a2479f93f56a55"))
+    (package
+      (name "go-github-com-gologme-log")
+      (version "1.2.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gologme/log")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0z3gs5ngv2jszp42ypp3ai0pn410v3b2m674g73ma7vsbn2yjk1n"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gologme/log"))
+      (home-page "https://github.com/gologme/log/")
+      (synopsis
+       "Fork of the golang built in log package to add support for levels")
+      (description "This package is a drop in replacement for the built-in Go
+log package.  All the functionality of the built-in package still exists and
+is unchanged.  This package contains a series of small enhancements and
+additions.")
+      (license license:bsd-3))))

@@ -86,6 +86,7 @@
 ;;; Copyright © 2020 Hendursaga <hendursaga@yahoo.com>
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
+;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -107,6 +108,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
@@ -1665,7 +1667,24 @@ of @code{xmlfile}.")
     (description "This Python library allows reading and writing to the Excel XLSX, XLSM,
 XLTX and XLTM file formats that are defined by the Office Open XML (OOXML)
 standard.")
+    (properties  `((python2-variant . ,(delay python2-openpyxl))))
     (license license:expat)))
+
+(define-public python2-openpyxl
+  (let ((base (package-with-python2
+               (strip-python2-variant python-openpyxl))))
+    (package
+      (inherit base)
+      ;; This is the latest version that has python2 support
+      (version "2.6.4")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (pypi-uri "openpyxl" version))
+          (sha256
+           (base32
+            "1qzjj8nwj4dn0mhq1j64f136afiqqb81lvqiikipz3g1g0b80lqx"))))
+      (arguments '(#:tests? #f)))))     ; No test suite.
 
 (define-public python-eventlet
   (package
@@ -6048,6 +6067,61 @@ memoizing PEG/Packrat parser in Python.")
 (define-public python2-grako
   (package-with-python2 python-grako))
 
+(define-public python-grandalf
+  (package
+    (name "python-grandalf")
+    (version "0.7")
+    (source
+     (origin
+       ;; There's no source tarball on PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bdcht/grandalf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03p8w8ljpb87qbyldm3s6b7qi30hfcn43h33iwlgqcf31fjsyr4g"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "setup.py" "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-ply" ,python-ply)))
+    (home-page "https://github.com/bdcht/grandalf")
+    (synopsis "Graph and drawing algorithms framework")
+    (description
+     "Grandalf is a Python package made for experimentations with graphs
+drawing algorithms.  It is written in pure Python, and currently implements
+two layouts: the Sugiyama hierarchical layout and the force-driven or energy
+minimization approach.  While not as fast or featured as graphviz or other
+libraries like OGDF (C++), it provides a way to walk and draw graphs no larger
+than thousands of nodes, while keeping the source code simple enough to tweak
+and hack any part of it for experimental purpose.  With a total of about 1500
+lines of Python, the code involved in drawing the Sugiyama (dot) layout fits
+in less than 600 lines.  The energy minimization approach is comprised of only
+250 lines!
+
+Grandalf does only 2 not-so-simple things:
+@itemize
+@item computing the nodes (x,y) coordinates (based on provided nodes
+dimensions, and a chosen layout)
+@item routing the edges with lines or nurbs
+@end itemize
+
+It doesn’t depend on any GTK/Qt/whatever graphics toolkit.  This means that it
+will help you find where to draw things like nodes and edges, but it’s up to
+you to actually draw things with your favorite toolkit.")
+    ;; The user can choose either license.
+    (license (list license:gpl2 license:epl1.0))))
+
 (define-public python-gridmap
   (package
     (name "python-gridmap")
@@ -10071,13 +10145,14 @@ simulation, statistical modeling, machine learning and much more.")
        (uri (pypi-uri "chardet" version))
        (sha256
         (base32
-         "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))
-        (patches (search-patches "python-chardet-3.0.4-pytest.patch"))))
+         "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (build-system python-build-system)
+    ;; XXX: Incompatible with Pytest 4: <https://github.com/chardet/chardet/issues/173>.
+    (arguments `(#:tests? #f))
     (home-page "https://github.com/chardet/chardet")
     (synopsis "Universal encoding detector for Python 2 and 3")
     (description
@@ -15980,6 +16055,51 @@ validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
 (define-public python2-rfc3987
   (package-with-python2 python-rfc3987))
 
+;; The latest commit contains fixes for building with both python3 and python2.
+(define-public python-rfc6555
+  (let ((commit "1a181b432312731f6742a5eb558dae4761d32361")
+        (revision "1"))
+    (package
+      (name "python-rfc6555")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/sethmlarson/rfc6555")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1bxl17j9vs69cshcqnlwamr03hnykxqnwz3mdgi6x3s2k4q18npp"))))
+      (build-system python-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (if tests?
+                 ;; Other tests require network access.
+                 (invoke "pytest" "tests/test_ipv6.py")
+                 #t))))))
+      (native-inputs
+       `(("python-pytest" ,python-pytest)))
+      (home-page "https://pypi.org/project/rfc6555/")
+      (synopsis "Python implementation of RFC 6555")
+      (description
+       "Python implementation of the Happy Eyeballs Algorithm described in RFC
+6555.  Provided with a single file and dead-simple API to allow easy vendoring
+and integration into other projects.")
+      (properties `((python2-variant . ,(delay python2-rfc6555))))
+      (license license:asl2.0))))
+
+(define-public python2-rfc6555
+  (let ((base (package-with-python2
+               (strip-python2-variant python-rfc6555))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-selectors2" ,python2-selectors2))))))
+
 (define-public python-validators
   (package
     (name "python-validators")
@@ -17189,6 +17309,31 @@ user's @file{~/Trash} directory.")
                        (string-append (getcwd) ":" (getenv "PYTHONPATH")))
                #t))))))))
 
+(define-public python-pyfavicon
+  (package
+    (name "python-pyfavicon")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyfavicon" version))
+       (sha256
+        (base32 "15wfpa99hvcfsv8j0m8iprmydi2p4qkhm86qfx485244y0ia5mgx"))))
+    (build-system python-build-system)
+    (arguments
+     ;; There are no tests in the PyPI tarball and the tests from the
+     ;; repository require online data.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/bilelmoussaoui/pyfavicon")
+    (synopsis "Async favicon fetcher")
+    (description
+     "@code{pyfavicon} is an async favicon fetcher.")
+    (license license:expat)))
+
 (define-public python-yapf
   (package
     (name "python-yapf")
@@ -17349,6 +17494,58 @@ Week instances stringify to this form.")
 
 (define-public python2-isoweek
   (package-with-python2 python-isoweek))
+
+(define-public python-pyzbar
+  (package
+    (name "python-pyzbar")
+    (version "0.1.8")
+    (source
+     (origin
+       ;; There's no source tarball on PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NaturalHistoryMuseum/pyzbar")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fqlfg5p2v9lzzzi0si2sz54lblprk6jjjhjw54b64lp58c1yhsl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-failing-test
+           (lambda _
+             ;; This tests if find_library was called once, but we remove
+             ;; the call in the stage below to make the library find libzbar.
+             (delete-file "pyzbar/tests/test_zbar_library.py")
+             #t))
+         (add-before 'build 'set-library-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libzbar (assoc-ref inputs "zbar")))
+               (substitute* "pyzbar/zbar_library.py"
+                 (("find_library\\('zbar'\\)")
+                  (string-append "'" libzbar "/lib/libzbar.so.0'")))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-numpy" ,python-numpy)
+       ("python-pillow" ,python-pillow)))
+    (inputs
+     `(("zbar" ,zbar)))
+    (home-page "https://github.com/NaturalHistoryMuseum/pyzbar/")
+    (synopsis "Read one-dimensional barcodes and QR codes")
+    (description
+     "Read one-dimensional barcodes and QR codes using the zbar library.
+
+Features:
+
+@itemize
+@item Pure python
+@item Works with PIL / Pillow images, OpenCV / numpy ndarrays, and raw bytes
+@item Decodes locations of barcodes
+@item No dependencies, other than the zbar library itself
+@end itemize")
+    (license license:expat)))
 
 (define-public python-tokenize-rt
   (package
@@ -20337,12 +20534,23 @@ Notation (CSON).")
              (invoke "python" "-X" "dev" "-m" "unittest" "-v" "test")))
          (add-after 'unpack 'disable-tests
            (lambda* _
-             (substitute* "test/test_selector.py"
-               ;; XXX: This test fails for unknown reason inside the build
-               ;; environment.
+             ;; XXX: 7 tests fail out of 220. Disable them for now.
+             (substitute* (list "test/test_selector.py"
+                                "test/test_mock.py")
                (("def test_events_watched_outside_test_are_ignored")
                 "@unittest.skip('disabled by guix')
-    def test_events_watched_outside_test_are_ignored")))))))
+    def test_events_watched_outside_test_are_ignored")
+               (("def test_awaited_from_autospec_mock.*" line)
+                (string-append line "        return True\n"))
+               (("def test_create_autospec_on_coroutine_and_using_assert_methods.*" line)
+                (string-append line "        return True\n"))
+               (("def test_patch_coroutine_with_multiple_scopes.*" line)
+                (string-append line "        return True\n"))
+               (("def test_multiple_patches_on_coroutine.*" line)
+                (string-append line "        return True\n"))
+               (("def test_patch_coroutine_only_when_running.*" line)
+                (string-append line "        return True\n")))
+             #t)))))
     (home-page "https://github.com/Martiusweb/asynctest")
     (synopsis "Extension of unittest for testing asyncio libraries")
     (description

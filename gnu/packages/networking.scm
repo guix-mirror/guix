@@ -1041,14 +1041,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.8")
+    (version "5.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "0ikmz36bdfwxscsfcgjmyzg70hwr8i3wpdhcp1vmk3q4ip858frg"))))
+                "0vwam1ay184z237vnl8ivb0rdjjbljp9pj3kjzhc6yzq180k4aai"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

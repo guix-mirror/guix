@@ -44,6 +44,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,6 +129,7 @@
   #:use-module (guix download)
   #:use-module (guix bzr-download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -2107,14 +2109,14 @@ database.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.854")
+  (version "1.855")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/DB_File-"
                           version ".tar.gz"))
       (sha256
-        (base32 "0fv0any5am6vr6h1wcwhnraj70hd55fs4d8c2y7chsc9alf9di5y"))))
+        (base32 "0q599h7g4jkzks5dxf1zifx9k7l9vif26r2dlgkzxkg6bfif5zyr"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
@@ -2619,13 +2621,13 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.3.18")
+    (version "1.3.20")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "SQLAlchemy" version))
       (sha256
-       (base32 "1rwc6ss1cnz3kxx0p9p6xw0w79r8qw03lcc29k31yb3rcigvfbys"))))
+       (base32 "18b9am7bsqc4nj3d2h5r93i002apczxfvpfpcqbd6f0385zmrwnj"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython) ; for C extensions
@@ -2975,6 +2977,36 @@ database).")
 
 (define-public python2-sadisplay
   (package-with-python2 python-sadisplay))
+
+(define-public yoyo-migrations
+  (package
+    (name "yoyo-migrations")
+    (version "7.2.0")
+    (source
+     (origin
+       ;; We use the upstream repository, as the tests are not included in the
+       ;; PyPI releases.
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://hg.sr.ht/~olly/yoyo")
+             (changeset (string-append "v" version "-release"))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "0q2z9bgdj3wyix7yvqsayfs21grp5av8ilh411lgmjhigszkvhcq"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: Tests require a connection to some pgsql database and psycopg
+     ;; fails to connect to it.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-sqlparse" ,python-sqlparse)
+       ("python-tabulate" ,python-tabulate)))
+    (home-page "https://ollycope.com/software/yoyo/latest/")
+    (synopsis "Database migrations with SQL")
+    (description
+     "Yoyo is a database schema migration tool.  Migrations are written as SQL
+files or Python scripts that define a list of migration steps.")
+    (license license:asl2.0)))
 
 (define-public python-mysqlclient
   (package

@@ -83,6 +83,9 @@
     "base/third_party/symbolize" ;BSD-3
     "base/third_party/xdg_mime" ;LGPL2.0+ or Academic 2.0
     "base/third_party/xdg_user_dirs" ;Expat
+    ;; XXX: Chromium requires a newer C++ standard library.  Remove this when
+    ;; the default GCC is 9 or later.
+    "buildtools/third_party/libc++" ;ASL2.0, with LLVM exceptions
     "chrome/third_party/mozilla_security_manager" ;MPL-1.1/GPL2+/LGPL2.1+
     "courgette/third_party/bsdiff" ;BSD-2, BSD protection license
     "courgette/third_party/divsufsort" ;Expat
@@ -111,7 +114,6 @@
     "third_party/boringssl/src/third_party/fiat" ;Expat
     "third_party/breakpad" ;BSD-3
     "third_party/brotli" ;Expat
-    "third_party/cacheinvalidation" ;ASL2.0
     "third_party/catapult" ;BSD-3
     "third_party/catapult/common/py_vulcanize/third_party/rcssmin" ;ASL2.0
     "third_party/catapult/common/py_vulcanize/third_party/rjsmin" ;ASL2.0
@@ -139,9 +141,15 @@
     "third_party/depot_tools/owners.py" ;BSD-3
     "third_party/devtools-frontend" ;BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/acorn" ;Expat
+    "third_party/devtools-frontend/src/front_end/third_party/chromium" ;BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/codemirror" ;Expat
     "third_party/devtools-frontend/src/front_end/third_party/fabricjs" ;Expat
+    "third_party/devtools-frontend/src/front_end/third_party/i18n" ;ASL2.0
+    "third_party/devtools-frontend/src/front_end/third_party/intl-messageformat" ;BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/lighthouse" ;ASL2.0
+    "third_party/devtools-frontend/src/front_end/third_party/lit-html" ;BSD-3
+    "third_party/devtools-frontend/src/front_end/third_party/lodash-isequal" ;Expat
+    "third_party/devtools-frontend/src/front_end/third_party/marked" ;Expat, BSD-3
     "third_party/devtools-frontend/src/front_end/third_party/wasmparser" ;ASL2.0
     "third_party/devtools-frontend/src/third_party/axe-core" ;MPL2.0
     "third_party/devtools-frontend/src/third_party/pyjson5" ;ASL2.0
@@ -159,6 +167,8 @@
     "third_party/iccjpeg" ;IJG
     "third_party/inspector_protocol" ;BSD-3
     "third_party/jinja2" ;BSD-3
+    ;; XXX: Unbundle this when switching back to libstdc++.
+    "third_party/jsoncpp" ;Public Domain or Expat
     "third_party/jstemplate" ;ASL2.0
     "third_party/khronos" ;Expat, SGI
     "third_party/leveldatabase" ;BSD-3
@@ -175,6 +185,11 @@
     "third_party/libsrtp" ;BSD-3
     "third_party/libsync" ;ASL2.0
     "third_party/libudev" ;LGPL2.1+
+
+    ;; FIXME: build/linux/unbundle/libvpx.gn does not work for all users.
+    "third_party/libvpx" ;BSD-3
+    "third_party/libvpx/source/libvpx/third_party/x86inc" ;Expat
+
     "third_party/libwebm" ;BSD-3
     "third_party/libxml/chromium" ;BSD-3
     "third_party/libyuv" ;BSD-3
@@ -186,6 +201,7 @@
     "third_party/metrics_proto" ;BSD-3
     "third_party/modp_b64" ;BSD-3
     "third_party/nasm" ;BSD-2
+    "third_party/nearby" ;ASL2.0
     "third_party/node" ;Expat
     "third_party/node/node_modules/polymer-bundler/lib/third_party/UglifyJS2" ;BSD-2
     "third_party/one_euro_filter" ;BSD-3
@@ -208,9 +224,13 @@
     "third_party/protobuf/third_party/six" ;Expat
     "third_party/pyjson5" ;ASL2.0
     "third_party/qcms" ;Expat
+    ;; XXX: System re2 cannot be used when Chromium uses libc++ because the re2
+    ;; ABI relies on libstdc++ internals.  See build/linux/unbundle/re2.gn.
+    "third_party/re2" ;BSD-3
     "third_party/rnnoise" ;BSD-3
     "third_party/s2cellid" ;ASL2.0
     "third_party/schema_org" ;CC-BY-SA3.0
+    "third_party/securemessage" ;ASL2.0
     "third_party/skia" ;BSD-3
     "third_party/skia/include/third_party/skcms" ;BSD-3
     "third_party/skia/third_party/skcms" ;BSD-3
@@ -222,12 +242,13 @@
     "third_party/sqlite" ;Public domain
     "third_party/swiftshader" ;ASL2.0
     "third_party/swiftshader/third_party/astc-encoder" ;ASL2.0
-    "third_party/swiftshader/third_party/llvm-7.0" ;NCSA
+    "third_party/swiftshader/third_party/llvm-10.0" ;ASL2.0, with LLVM exception
     "third_party/swiftshader/third_party/llvm-subzero" ;NCSA
     "third_party/swiftshader/third_party/marl" ;ASL2.0
     "third_party/swiftshader/third_party/subzero" ;NCSA
     "third_party/swiftshader/third_party/SPIRV-Headers" ;X11-style
     "third_party/tcmalloc/chromium" ;BSD-3
+    "third_party/ukey2" ;ASL2.0
     "third_party/usb_ids" ;BSD-3
     "third_party/usrsctp" ;BSD-2
     "third_party/vulkan_memory_allocator" ;Expat
@@ -246,8 +267,10 @@
     "third_party/widevine/cdm/widevine_cdm_version.h" ;BSD-3
     "third_party/widevine/cdm/widevine_cdm_common.h" ;BSD-3
     "third_party/woff2" ;ASL2.0
+    "third_party/xcbproto" ;X11
     "third_party/xdg-utils" ;Expat
     "third_party/zlib/google" ;BSD-3
+    "third_party/zxcvbn-cpp" ;Expat
     "url/third_party/mozilla" ;BSD-3, MPL1.1/GPL2+/LGPL2.1+
     "v8/src/third_party/siphash" ;Public domain
     "v8/src/third_party/utf8-decoder" ;Expat
@@ -258,26 +281,8 @@
 (define %blacklisted-files
   ;; 'third_party/blink/perf_tests/resources/svg/HarveyRayner.svg' carries a
   ;; nonfree license according to LICENSES in the same directory.  As we don't
-  ;; run the Blink performance tests, just remove everything to save ~24MiB.
+  ;; run the Blink performance tests, just remove everything to save ~70MiB.
   '("third_party/blink/perf_tests"))
-
-(define (gentoo-patch name revision hash)
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://gitweb.gentoo.org/repo/gentoo.git/plain"
-                        "/www-client/chromium/files/" name "?id=" revision))
-    (file-name (string-append "ungoogled-" name))
-    (sha256 (base32 hash))))
-
-;; This repository contains libstdc++ compatibility patches for Chromium.
-(define (chromium-gcc-patchset commit hash)
-  (origin
-    (method git-fetch)
-    (uri (git-reference
-          (url "https://github.com/stha09/chromium-patches")
-          (commit commit)))
-    (file-name (git-file-name "chromium-gcc-patches" commit))
-    (sha256 (base32 hash))))
 
 (define (debian-patch name revision hash)
   (origin
@@ -289,38 +294,34 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %ungoogled-revision "57244cdfc21dc05910862152d91cc528103c988a")
-(define %debian-revision "debian/83.0.4103.116-3")
-(define %gentoo-revision "f3f649046d31ebdbc8c4a302b2384504eff78027")
+(define (arch-patch name revision hash)
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://raw.githubusercontent.com/archlinux"
+                        "/svntogit-packages/" revision "/trunk/" name))
+    (sha256 (base32 hash))))
 
-(define %gentoo-patches
-  ;; This patch is necessary for compatibility with FFmpeg 4.3.
-  (list (gentoo-patch "chromium-84-mediaalloc.patch" %gentoo-revision
-                      "0snxdc4nb8ykzncz62vpsl8hgxpy24m17mycx67i2gckmrpslzzv")))
-
-(define %chromium-gcc-patches
-  (chromium-gcc-patchset
-   "chromium-84-patchset-3"
-   "0l05gx3pn703n47anjwsl5sjcqw8kaxmivf7llax97kj3k6d127v"))
+(define %chromium-version "86.0.4240.75")
+(define %ungoogled-revision "c34a56db4c121238fface560e21531b6199ce5dd")
+(define %debian-revision "debian/84.0.4147.105-1")
+(define %arch-revision "2cbe439471932d30ff2c8ded6b3dfd51b312bbc9")
 
 (define %debian-patches
   (list (debian-patch "system/zlib.patch" %debian-revision
-                      "0bp2vh1cgmwjrn1zkpphkd3bs662s23xwdhy3abm9cfjvwrj117n")
-        (debian-patch "system/jsoncpp.patch" %debian-revision
-                      "0d95brl4a5y5w142yd0rvf59z513h7chsz0vnm034d6lqf22ahwf")
+                      "09vqgs37w9ycc7par14wa7rnvmg9bm0z9pqg6fyl3iqvpghyjyr4")
         (debian-patch "system/openjpeg.patch" %debian-revision
                       "0zd6v5njx1pc7i0y6mslxvpx5j4cq01mmyx55qcqx8qzkm0gm48j")))
 
 (define %arch-patches
-  (list (origin
-          (method url-fetch)
-          (uri "https://git.archlinux.org/svntogit/packages.git/plain/trunk/\
-chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
-&id=93b5b90621b4827084288197c6e0e09b987b372a")
-          (file-name "ungoogled-chromium-fix-vaapi-on-intel.patch")
-          (sha256
-           (base32
-            "16jbjjf4d9jp52rdrrxx5vm69nx3w0qrijgjpwapnmcif13z55g4")))))
+  (list (arch-patch "check-for-enable-accelerated-video-decode-on-Linux.patch"
+                    %arch-revision
+                    "12qj23dcp2g2ivyfyj13m4fzf68nllb9djwcxf1h195gn8wkml03")
+        (arch-patch "only-fall-back-to-the-i965-driver-if-we-re-on-iHD.patch"
+                    %arch-revision
+                    "0073qjp0dp9kj2ix2j6cxrima01rpdpkcjj9crxlb9b43b4cc53m")
+        (arch-patch "fix-invalid-end-iterator-usage-in-CookieMonster.patch"
+                    %arch-revision
+                    "1p1wy3dfncw0hhz77a1km0xjhix69ksgbpa569qz86nv76jbgn39")))
 
 (define %ungoogled-origin
   (origin
@@ -331,7 +332,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "15a1xpmabdxr1mn61m0jm9a5l987rxdji8b1b6zy39mr636vcwfi"))))
+      "18p9a7qffmy8m03nqva7maalgil13lj2mn0s56v3crbs4wk4lalj"))))
 
 ;; This is a source 'snippet' that does the following:
 ;; *) Applies various patches for unbundling purposes and libstdc++ compatibility.
@@ -354,20 +355,18 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
           (for-each (lambda (patch)
                       (invoke "patch" "-p1" "--force" "--input"
                               patch "--no-backup-if-mismatch"))
-                    (append
-                     '#+%gentoo-patches '#+%debian-patches '#+%arch-patches
-                     (find-files #$%chromium-gcc-patches "\\.patch$")
-                     '#+(list (local-file
-                               (search-patch
-                                "ungoogled-chromium-system-nspr.patch")))))
+                    (append '#+%debian-patches '#+%arch-patches
+                            '#+(list (local-file
+                                      (search-patch
+                                       "ungoogled-chromium-system-nspr.patch")))))
 
           (with-directory-excursion #+%ungoogled-origin
             (format #t "Ungooglifying...~%")
             (force-output)
             (invoke "python" "utils/prune_binaries.py" chromium-dir
                     "pruning.list")
-            (invoke "python" "utils/patches.py" "apply"
-                    chromium-dir "patches")
+            (invoke "python" "utils/patches.py" "apply" chromium-dir
+                    "patches")
             (invoke "python" "utils/domain_substitution.py" "apply" "-r"
                     "domain_regex.list" "-f" "domain_substitution.list"
                     "-c" "/tmp/domainscache.tar.gz" chromium-dir))
@@ -396,8 +395,8 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
           (invoke "python" "build/linux/unbundle/replace_gn_files.py"
                   "--system-libraries" "ffmpeg" "flac" "fontconfig"
                   "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
-                  "libjpeg" "libpng" "libvpx" "libwebp" "libxml"
-                  "libxslt" "openh264" "opus" "re2" "snappy" "zlib")
+                  "libjpeg" "libpng" "libwebp" "libxml" "libxslt"
+                  "openh264" "opus" "snappy" "zlib")
           #t))))
 
 (define opus+custom
@@ -411,16 +410,6 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
         ;; sizes.  Chromium requires that this is enabled.
         `(cons "--enable-custom-modes"
                ,flags))))))
-
-;; Chromium still has Python2-only code, so we need this special Python 2
-;; variant of xcb-proto.
-(define xcb-proto/python2
-  (package/inherit
-   xcb-proto
-   (name "python2-xcb-proto")
-   (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("python" ,python-2)))))
 
 ;; 'make-ld-wrapper' can only work with an 'ld' executable, so we need
 ;; this trick to make it wrap 'lld'.
@@ -450,7 +439,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
-    (version (string-append "84.0.4147.125-0."
+    (version (string-append %chromium-version "-0."
                             (string-take %ungoogled-revision 7)))
     (synopsis "Graphical web browser")
     (source (origin
@@ -460,7 +449,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
                                   (car (string-split version #\-)) ".tar.xz"))
               (sha256
                (base32
-                "1xdg9pnnvbzasmra09rl7wdrir61rfcqml46jj7kv39drwk9chwq"))
+                "1ddw4p9zfdzhi5hrd8x14k4w326znljzprnpfi2f917rlpnl2ynx"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
@@ -470,8 +459,6 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
        #:validate-runpath? #f
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (ice-9 ftw)
-                  (ice-9 regex)
                   (srfi srfi-26))
        #:configure-flags
        ;; See tools/gn/docs/cookbook.md and
@@ -486,7 +473,6 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
              (string-append "max_jobs_per_link="
                             (number->string (parallel-job-count)))
              "clang_use_chrome_plugins=false"
-             "use_custom_libcxx=false"
              "use_sysroot=false"
              "goma_dir=\"\""
              "enable_nacl=false"
@@ -505,15 +491,12 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
              "enable_vr=false"
              "enable_widevine=false"
              ;; Disable type-checking for the Web UI to avoid a Java dependency.
-             "closure_compile=false"
+             "enable_js_type_check=false"
 
              ;; Define a custom toolchain that simply looks up CC, AR and
              ;; friends from the environment.
              "custom_toolchain=\"//build/toolchain/linux/unbundle:default\""
              "host_toolchain=\"//build/toolchain/linux/unbundle:default\""
-
-             (string-append "xcbproto_path=\""
-                            (assoc-ref %build-inputs "xcb-proto") "/share/xcb\"")
 
              ;; Prefer system libraries.
              "use_system_freetype=true"
@@ -547,16 +530,13 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
              ;; WebRTC stuff.
              "rtc_use_h264=true"
              ;; Don't use bundled sources.
-             "rtc_build_json=false"
+             "rtc_build_json=true"      ;FIXME: libc++ std::string ABI difference
              "rtc_build_libevent=false"
              "rtc_build_libvpx=false"
              "rtc_build_opus=false"
              "rtc_build_ssl=false"
              "rtc_build_libsrtp=true"   ;FIXME: fails to find headers
              "rtc_build_usrsctp=true"   ;TODO: package this
-             (string-append "rtc_jsoncpp_root=\""
-                            (assoc-ref %build-inputs "jsoncpp")
-                            "/include/jsoncpp/json\"")
              (string-append "rtc_ssl_root=\""
                             (assoc-ref %build-inputs "openssl")
                             "/include/openssl\""))
@@ -564,12 +544,6 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-stuff
            (lambda _
-             ;; Fix build with newer re2.  Taken from:
-             ;; https://chromium-review.googlesource.com/c/chromium/src/+/2145261
-             (substitute* "components/autofill/core/browser/address_rewriter.cc"
-               (("options\\.set_utf8\\(true\\)")
-                "options.set_encoding(RE2::Options::EncodingUTF8)"))
-
              (substitute*
                  '("base/process/launch_posix.cc"
                    "base/third_party/dynamic_annotations/dynamic_annotations.c"
@@ -615,10 +589,8 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
 
              (substitute*
                  "third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.h"
-               (("include \"third_party/curl") "include \"curl"))
-
-             (substitute* "third_party/webrtc/rtc_base/strings/json.h"
-               (("#include \"third_party/jsoncpp/") "#include \"json/"))
+               (("include \"third_party/curl")
+                "include \"curl"))
 
              (substitute* '("components/viz/common/gpu/vulkan_context_provider.h"
                             "components/viz/common/resources/resource_format_utils.h"
@@ -627,17 +599,6 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
 
              (substitute* "third_party/skia/include/gpu/vk/GrVkVulkan.h"
                (("include/third_party/vulkan/") ""))
-
-             ;; Building chromedriver embeds some files using the ZIP
-             ;; format which doesn't support timestamps before
-             ;; 1980. Therefore, advance the timestamps of the files
-             ;; which are included so that building chromedriver
-             ;; works.
-             (let ((circa-1980 (* 10 366 24 60 60)))
-               (for-each (lambda (file)
-                           (utime file circa-1980 circa-1980))
-                         '("chrome/test/chromedriver/extension/background.js"
-                           "chrome/test/chromedriver/extension/manifest.json")))
 
              #t))
          (add-after 'patch-stuff 'add-absolute-references
@@ -660,9 +621,22 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
 
-             ;; Make sure the right build tools are used.
+             ;; Define the GN toolchain.
              (setenv "AR" "llvm-ar") (setenv "NM" "llvm-nm")
              (setenv "CC" "clang") (setenv "CXX" "clang++")
+
+             (let ((gcc (assoc-ref inputs  "gcc")))
+               ;; Remove the default compiler from CPLUS_INCLUDE_PATH to
+               ;; prevent header conflict with the bundled libcxx.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                              #\:))
+                        ":"))
+               (format #t
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH")))
 
              (setenv "CXXFLAGS"
                      (string-join
@@ -728,7 +702,10 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
                     (lib            (string-append out "/lib"))
                     (man            (string-append out "/share/man/man1"))
                     (applications   (string-append out "/share/applications"))
-                    (install-regexp (make-regexp "\\.(bin|pak|so)$"))
+                    (libs           '("chrome_100_percent.pak"
+                                      "chrome_200_percent.pak"
+                                      "resources.pak"
+                                      "v8_context_snapshot.bin"))
                     (locales        (string-append lib "/locales"))
                     (resources      (string-append lib "/resources"))
                     (preferences    (assoc-ref inputs "master-preferences"))
@@ -753,9 +730,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
                (copy-file preferences (string-append lib "/master_preferences"))
 
                (with-directory-excursion "out/Release"
-                 (for-each (lambda (file)
-                             (install-file file lib))
-                           (scandir "." (cut regexp-exec install-regexp <>)))
+                 (for-each (cut install-file <> lib) libs)
                  (copy-file "chrome" (string-append lib "/chromium"))
 
                  (copy-recursively "locales" locales)
@@ -785,7 +760,7 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
                #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("clang" ,clang-10)
+       ("clang" ,clang-11)
        ("gn" ,gn)
        ("gperf" ,gperf)
        ("ld-wrapper" ,(make-lld-wrapper lld))
@@ -817,7 +792,6 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
        ("gtk+" ,gtk+)
        ("harfbuzz" ,harfbuzz)
        ("icu4c" ,icu4c-67)
-       ("jsoncpp" ,jsoncpp)
        ("lcms" ,lcms)
        ("libevent" ,libevent)
        ("libffi" ,libffi)
@@ -851,13 +825,11 @@ chromium-fix-vaapi-on-intel.patch?h=packages/chromium\
        ("pango" ,pango)
        ("pciutils" ,pciutils)
        ("pulseaudio" ,pulseaudio)
-       ("re2" ,re2)
        ("snappy" ,snappy)
        ("speech-dispatcher" ,speech-dispatcher)
        ("udev" ,eudev)
        ("valgrind" ,valgrind)
-       ("vulkan-headers" ,vulkan-headers)
-       ("xcb-proto" ,xcb-proto/python2)))
+       ("vulkan-headers" ,vulkan-headers)))
 
     ;; Building Chromium takes ... a very long time.  On a single core, a busy
     ;; mid-end x86 system may need more than 24 hours to complete the build.

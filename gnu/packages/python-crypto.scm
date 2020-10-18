@@ -61,6 +61,7 @@
   #:use-module (gnu packages swig)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
 
@@ -91,14 +92,14 @@ Python.  It does not bind to libotr.")
 (define-public python-base58
   (package
     (name "python-base58")
-    (version "1.0.3")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "base58" version))
        (sha256
         (base32
-         "0q1yr0n5jaf17xq98m7dma6z4rh8p19ch55l1s09gi3rk5ckqycs"))))
+         "0yfaqp76kbdb62hikr5n4jkkfjfmii89grwfy6sw3fmsv5hrap1n"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyhamcrest" ,python-pyhamcrest)))
@@ -141,13 +142,13 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
 (define-public python-passlib
   (package
     (name "python-passlib")
-    (version "1.7.2")
+    (version "1.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "passlib" version))
        (sha256
-        (base32 "1a5ngap7kq0b4azq8nlfg6xg5bcl1i0v1sbynhmbr631jgpnqrld"))))
+        (base32 "015y5qaw9qnxr29lg60dml1g5rbqd4586wy5n8m41ib55gvm1zfy"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -157,8 +158,8 @@ Password Scheme\"} by Niels Provos and David Mazieres.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-PYTHON_EGG_CACHE
-           ;; some tests require access to "$HOME/.cython"
-           (lambda* _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
+           ;; Some tests require access to "$HOME/.cython".
+           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
     (home-page "https://bitbucket.org/ecollins/passlib")
     (synopsis "Comprehensive password hashing framework")
     (description
@@ -1065,6 +1066,53 @@ through the Engine interface.")
              (propagated-inputs
               `(("python2-typing" ,python2-typing))))))
 
+(define-public python-pykeepass
+  (package
+    (name "python-pykeepass")
+    (version "3.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       ;; Source tarball on PyPI doesn't include tests.
+       (uri (git-reference
+             (url "https://github.com/libkeepass/pykeepass")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wxbfpy7467mlnfsvmh685fhfnq4fki9y7yc9cylp30r5n3hisaj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-kdbx-writable
+           ;; Tests have to write to the .kdbx files in the test directory.
+           (lambda _
+             (with-directory-excursion "tests"
+               (for-each make-file-writable (find-files "."))
+               #t)))
+         (add-before 'build 'patch-requirements
+           (lambda _
+             ;; Update requirements from dependency==version
+             ;; to dependency>=version.
+             (substitute* "setup.py"
+               (("==") ">="))
+             #t)))))
+    (propagated-inputs
+     `(("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-construct" ,python-construct)
+       ("python-dateutil" ,python-dateutil)
+       ("python-future" ,python-future)
+       ("python-lxml" ,python-lxml)
+       ("python-pycryptodome" ,python-pycryptodome)))
+    (home-page "https://github.com/libkeepass/pykeepass")
+    (synopsis "Python library to interact with keepass databases")
+    (description
+     "This library allows you to write entries to a KeePass database.  It
+supports KDBX3 and KDBX4.")
+    ;; There are no copyright headers in the source code.  The LICENSE file
+    ;; indicates GPL3.
+    (license license:gpl3+)))
+
 (define-public python-pylibscrypt
   (package
     (name "python-pylibscrypt")
@@ -1137,6 +1185,26 @@ functions exposed by @code{NaCl} library via @code{libsodium}.  It has
 been constructed to maintain extensive documentation on how to use
 @code{NaCl} as well as being completely portable.")
     (license license:asl2.0)))
+
+(define-public python-pyotp
+  (package
+    (name "python-pyotp")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyotp" version))
+       (sha256
+        (base32 "0a1dx07y785xyl70h0vj6vssg13qfx11w04d0gz8h48qffsymv01"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/pyauth/pyotp")
+    (synopsis "Python One Time Password Library")
+    (description
+     "PyOTP is a Python library for generating and verifying one-time
+passwords.  It can be used to implement two-factor (2FA) or multi-factor
+(MFA) authentication methods in web applications and in other systems that
+require users to log in.")
+    (license license:expat)))
 
 (define-public python-scrypt
   (package
@@ -1542,20 +1610,28 @@ signatures.")
 (define-public python-pgpy
   (package
     (name "python-pgpy")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "PGPy" version))
         (sha256
-         (base32
-          "0i4lqhzdwkjkim3wab0kqadx28z3r5ixlh6qxj4lif4gif56c0m7"))))
+         (base32 "11rrq15gmn6qbahli7czflfcngjl7zyybjlvk732my6axnf2d754"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")))))))
     (native-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-pyasn1" ,python-pyasn1)
+       ("python-pytest" ,python-pytest)
        ("python-singledispatch" ,python-singledispatch)
-       ("python-six" ,python-six)))
+       ("python-six" ,python-six)
+       ("python-wheel" ,python-wheel)))
     (home-page "https://github.com/SecurityInnovation/PGPy")
     (synopsis "Python implementation of OpenPGP")
     (description

@@ -84,7 +84,8 @@ loop-back communications.")
 
 (define (containerd-shepherd-service config)
   (let* ((package (docker-configuration-containerd config))
-         (debug? (docker-configuration-debug? config)))
+         (debug? (docker-configuration-debug? config))
+         (containerd (docker-configuration-containerd config)))
     (shepherd-service
            (documentation "containerd daemon.")
            (provision '(containerd))
@@ -93,6 +94,9 @@ loop-back communications.")
                            #$@(if debug?
                                   '("--log-level=debug")
                                   '()))
+                     ;; For finding containerd-shim binary.
+                     #:environment-variables
+                     (list (string-append "PATH=" #$containerd "/bin"))
                      #:log-file "/var/log/containerd.log"))
            (stop #~(make-kill-destructor)))))
 

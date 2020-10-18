@@ -198,6 +198,33 @@ grep "forget.*(guix build-system gnu)" "$module_dir/err" # hint
 
 rm -f "$module_dir"/*
 
+# Unbound variable: don't suggest modules that do not export the variable.
+cat > "$module_dir/aa-private.scm" <<EOF
+(define-module (aa-private))
+(define make-thing #f)
+(set! make-thing make-thing)   ;don't inline
+EOF
+
+cat > "$module_dir/bb-public.scm" <<EOF
+(define-module (bb-public) #:export (make-thing))
+(define make-thing identity)
+EOF
+
+cat > "$module_dir/cc-user.scm" <<EOF
+;; Make those module available in the global name space.
+(load-from-path "aa-private.scm")
+(load-from-path "bb-public.scm")
+
+(define-module (cc-user))
+(make-thing 42)
+EOF
+! guix build -f "$module_dir/cc-user.scm" -n 2> "$module_dir/err"
+cat "$module_dir/err"
+grep "make-thing.*unbound" "$module_dir/err"		 # actual error
+grep "forget.*(bb-public)" "$module_dir/err"		 # hint
+
+rm -f "$module_dir"/*
+
 # Wrong 'define-module' clause reported by 'warn-about-load-error'.
 cat > "$module_dir/foo.scm" <<EOF
 (define-module (something foo)

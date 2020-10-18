@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -32,7 +32,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public sl
   (package
@@ -77,52 +78,51 @@ typing @command{sl} instead of @command{ls}.")
                                    "See LICENSE in the distribution."))))
 
 (define-public filters
-  (let ((version "2.55")
-        (commit "c5c291916b52ed9e6418448a8eee30475fb9adcf"))
-    (package
-      (name "filters")
-      (version "2.55")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://git.joeyh.name/filters")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1gaigpda1w9wxfh8an3sam1hpacc1bhxl696w4yj0vzhc6izqvxs"))
-         (modules '((guix build utils)))
-         (snippet '(begin
-                     ;; kenny is under nonfree Artistic License (Perl) 1.0.
-                     (delete-file "kenny")
-                     (substitute* "Makefile"
-                       (("kenny")
-                        ""))))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags
-         (list "CC=gcc" (string-append "DESTDIR=" %output))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'unpack 'fix-install-directories
-             (lambda _
-               (substitute* "Makefile"
-                 (("/usr/games")
-                  "/bin/")
-                 (("/usr/share/")
-                  "/share/"))
-               #t)))
-         #:tests? #f))                  ; no test suite
-      (native-inputs
-       `(("bison" ,bison)
-         ("flex" ,flex)))
-      (inputs
-       `(("perl" ,perl)))
-      (home-page "https://joeyh.name/code/filters/")
-      (synopsis "Various amusing text filters")
-      (description
-       "The filters collection harks back to the late 1980s, when various text
+  (package
+    (name "filters")
+    (version "2.55")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://git.joeyh.name/filters")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gaigpda1w9wxfh8an3sam1hpacc1bhxl696w4yj0vzhc6izqvxs"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; kenny is under nonfree Artistic License (Perl) 1.0.
+                   (delete-file "kenny")
+                   (substitute* "Makefile"
+                     (("kenny")
+                      ""))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'respect-prefix
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr/games")
+                "$(prefix)/bin/")
+               (("/usr")
+                "$(prefix)"))
+             #t)))
+       #:tests? #f))                    ; no test suite
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "https://joeyh.name/code/filters/")
+    (synopsis "Various amusing text filters")
+    (description
+     "The filters collection harks back to the late 1980s, when various text
 filters were written to munge written language in amusing ways.  The earliest
 and best known were legends such as the Swedish Chef filter and B1FF.
 
@@ -156,13 +156,13 @@ This package contains the following filter commands:
 @end enumerate
 
 The GNU project hosts a similar collection of filters, the GNU talkfilters.")
-      (license                    ; see debian/copyright
-       (list license:gpl2+        ; most of the filters
-             license:gpl2         ; rasterman, ky00te.dir/* nethackify, pirate
-             license:gpl3+        ; scramble, scottish
-             license:public-domain      ; jethro, kraut, ken, studly
-             license:gpl1+         ; cockney, jive, nyc only say "gpl"
-             license:expat)))))    ; newspeak
+    (license                      ; see debian/copyright
+     (list license:gpl2+          ; most of the filters
+           license:gpl2           ; rasterman, ky00te.dir/* nethackify, pirate
+           license:gpl3+          ; scramble, scottish
+           license:public-domain  ; jethro, kraut, ken, studly
+           license:gpl1+          ; cockney, jive, nyc only say "gpl"
+           license:expat))))     ; newspeak
 
 (define-public xsnow
   (package

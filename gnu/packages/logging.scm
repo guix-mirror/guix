@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
@@ -165,9 +165,8 @@ commands, displaying the results via a web interface.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
-             "PREFIX="
-             (string-append "DESTDIR="
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX="
                             (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
@@ -178,14 +177,14 @@ commands, displaying the results via a web interface.")
                  (("ncursesw\\/panel.h") "panel.h")
                  (("ncursesw\\/ncurses.h") "ncurses.h")))
              #t))
-         (delete 'configure))
+         (delete 'configure))           ; no configure script
        #:tests? #f)) ; no test suite (make check just runs cppcheck)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://vanheusden.com/multitail/")
-    (synopsis "Monitor multiple logfiles")
+    (synopsis "Monitor multiple log files")
     (description
-     "MultiTail allows you to monitor logfiles and command output in multiple
-windows in a terminal, colorize, filter and merge.")
+     "MultiTail can monitor, color, filter, and merge log files and command
+output in multiple windows in a terminal.")
     (license license:gpl2+)))
 
 (define-public spdlog

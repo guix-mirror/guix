@@ -551,6 +551,78 @@ This is modified version, specifically intended for use with the NGinx
 documentation.")
       (license license:bsd-2))))
 
+(define nginx-socket-cloexec
+  (package
+    (inherit nginx)
+    (name "nginx-socket-cloexec") ;required for lua-resty-shell
+    (source
+     (origin
+       (inherit (package-source nginx))
+       (patches (append (search-patches "nginx-socket-cloexec.patch")
+                        (origin-patches (package-source nginx))))))))
+
+(define-public nginx-lua-module
+  (package
+    (inherit nginx)
+    (name "nginx-lua-module")
+    (version "0.10.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/openresty/lua-nginx-module")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "lua-nginx-module" version))
+       (sha256
+        (base32
+         "1j216isp0546hycklbr5wi8mlga5hq170hk7f2sm16sfavlkh5gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("nginx-sources" ,(package-source nginx-socket-cloexec))
+       ("luajit" ,luajit)
+       ,@(package-inputs nginx)))
+    (arguments
+     (substitute-keyword-arguments
+         `(#:configure-flags '("--add-dynamic-module=.")
+           #:make-flags '("modules")
+           #:modules ((guix build utils)
+                      (guix build gnu-build-system)
+                      (ice-9 popen)
+                      (ice-9 regex)
+                      (ice-9 textual-ports))
+           ,@(package-arguments nginx))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'unpack-nginx-sources
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               (begin
+                 ;; The nginx source code is part of the module’s source.
+                 (format #t "decompressing nginx source code~%")
+                 (let ((tar (assoc-ref inputs "tar"))
+                       (nginx-srcs (assoc-ref inputs "nginx-sources")))
+                   (invoke (string-append tar "/bin/tar")
+                           "xvf" nginx-srcs "--strip-components=1"))
+                 #t)))
+           (add-before 'configure 'set-luajit-env
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((luajit (assoc-ref inputs "luajit")))
+                 (setenv "LUAJIT_LIB"
+                         (string-append luajit "/lib"))
+                 (setenv "LUAJIT_INC"
+                         (string-append luajit "/include/luajit-2.1"))
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((modules-dir (string-append (assoc-ref outputs "out")
+                                                 "/etc/nginx/modules")))
+                 (install-file "objs/ngx_http_lua_module.so" modules-dir)
+                 #t)))
+           (delete 'fix-root-dirs)
+           (delete 'install-man-page)))))
+    (synopsis "NGINX module for Lua programming language support")
+    (description "This NGINX module provides a scripting support with Lua
+programming language.")))
+
 (define-public lighttpd
   (package
     (name "lighttpd")
