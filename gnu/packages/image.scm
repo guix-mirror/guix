@@ -1530,33 +1530,6 @@ files (known as @dfn{steganography}).  Neither color nor sample frequencies are
 changed, making the embedding resistant against first-order statistical tests.")
     (license license:gpl2+)))
 
-(define-public stb-image-for-extempore
-  (let ((revision "1")
-        (commit "152a250a702bf28951bb0220d63bc0c99830c498"))
-    (package
-      (name "stb-image-for-extempore")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source
-       (origin (method git-fetch)
-               (uri (git-reference
-                     (url "https://github.com/extemporelang/stb")
-                     (commit commit)))
-               (sha256
-                (base32
-                 "0y0aa20pj9311x2ii06zg8xs34idg14hfgldqc5ymizc6cf1qiqv"))
-               (file-name (string-append name "-" version "-checkout"))))
-      (build-system cmake-build-system)
-      (arguments `(#:tests? #f))        ; no tests included
-      ;; Extempore refuses to build on architectures other than x86_64
-      (supported-systems '("x86_64-linux"))
-      (home-page "https://github.com/extemporelang/stb")
-      (synopsis "Image library for Extempore")
-      (description
-       "This package is a collection of assorted single-file libraries.  Of
-all included libraries only the image loading and decoding library is
-installed as @code{stb_image}.")
-      (license license:public-domain))))
-
 (define-public optipng
   (package
     (name "optipng")

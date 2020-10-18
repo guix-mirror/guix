@@ -821,20 +821,6 @@ components which highly leverage existing libraries in the larger LLVM Project."
                    "0846h8vn3zlc00jkmvrmy88gc6ql6014c02l4jv78fpvfigmgssg"
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
-(define-public llvm-for-extempore
-  (package (inherit llvm-3.8)
-    (name "llvm-for-extempore")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://extempore.moso.com.au/extras/"
-                           "llvm-3.8.0.src-patched-for-extempore.tar.xz"))
-       (sha256
-        (base32
-         "1svdl6fxn8l01ni8mpm0bd5h856ahv3h9sdzgmymr6fayckjvqzs"))))
-    ;; Extempore refuses to build on architectures other than x86_64
-    (supported-systems '("x86_64-linux"))))
-
 (define-public libcxx
   (package
     (name "libcxx")

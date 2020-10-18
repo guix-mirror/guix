@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,6 +139,7 @@
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages stb)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
@@ -745,16 +747,64 @@ MusePack, Monkey's Audio, and WavPack files.")
                                " --mcpu=generic --attr=none")))
              #t)))))
     (inputs
-     `(("llvm" ,llvm-for-extempore)
+     `(("llvm"
+        ,(package
+           (inherit llvm-3.8)
+           (name "llvm-for-extempore")
+           (source
+            (origin
+              (method url-fetch)
+              (uri (string-append "http://extempore.moso.com.au/extras/"
+                                  "llvm-3.8.0.src-patched-for-extempore.tar.xz"))
+              (sha256
+               (base32
+                "1svdl6fxn8l01ni8mpm0bd5h856ahv3h9sdzgmymr6fayckjvqzs"))))))
        ("libffi" ,libffi)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
        ("glfw" ,glfw)
        ("apr" ,apr)
-       ("stb-image" ,stb-image-for-extempore)
+       ("stb-image"
+        ,(let ((revision "1")
+               (commit "152a250a702bf28951bb0220d63bc0c99830c498"))
+           (package
+             (inherit stb-image)
+             (name "stb-image-for-extempore")
+             (version (git-version "0" revision commit))
+             (source
+              (origin (method git-fetch)
+                      (uri (git-reference
+                            (url "https://github.com/extemporelang/stb")
+                            (commit commit)))
+                      (sha256
+                       (base32
+                        "0y0aa20pj9311x2ii06zg8xs34idg14hfgldqc5ymizc6cf1qiqv"))
+                      (file-name (git-file-name name version))))
+             (build-system cmake-build-system)
+             (arguments `(#:tests? #f)) ;no tests included
+             (inputs '()))))
        ("kiss-fft" ,kiss-fft-for-extempore)
        ("nanovg" ,nanovg-for-extempore)
-       ("portmidi" ,portmidi-for-extempore)
+       ("portmidi"
+        ,(let ((version "217")
+               (revision "0")
+               (commit "8602f548f71daf5ef638b2f7d224753400cb2158"))
+           (package
+             (inherit portmidi)
+             (name "portmidi-for-extempore")
+             (version (git-version version revision commit))
+             (source (origin
+                       (method git-fetch)
+                       (uri (git-reference
+                             (url "https://github.com/extemporelang/portmidi")
+                             (commit commit)))
+                       (file-name (git-file-name name version))
+                       (sha256
+                        (base32
+                         "1qidzl1s3kzhczzm96rcd2ppn27a97k2axgfh1zhvyf0s52d7m4w"))))
+             (build-system cmake-build-system)
+             (arguments `(#:tests? #f)) ;no tests
+             (native-inputs '()))))
        ("assimp" ,assimp)
        ("alsa-lib" ,alsa-lib)
        ("portaudio" ,portaudio)
@@ -2183,29 +2233,6 @@ main purpose is to liberate raw audio rendering from audio and MIDI drivers.")
      "PortMidi is a library supporting real-time input and output of MIDI data
 using a system-independent interface.")
     (license license:expat)))
-
-(define-public portmidi-for-extempore
-  (let ((version "217")
-        (revision "0")
-        (commit "8602f548f71daf5ef638b2f7d224753400cb2158"))
-    (package (inherit portmidi)
-      (name "portmidi-for-extempore")
-      (version (git-version version revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/extemporelang/portmidi")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1qidzl1s3kzhczzm96rcd2ppn27a97k2axgfh1zhvyf0s52d7m4w"))))
-      (build-system cmake-build-system)
-      (arguments `(#:tests? #f))        ; no tests
-      (native-inputs '())
-      ;; Extempore refuses to build on architectures other than x86_64
-      (supported-systems '("x86_64-linux"))
-      (home-page "https://github.com/extemporelang/portmidi/"))))
 
 (define-public python-pyportmidi
   (package
