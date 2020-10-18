@@ -81,6 +81,7 @@
 ;;; Copyright © 2020 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Marco Grassi <marco.au.grassi98@protonmail.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6682,27 +6683,25 @@ regardless of @code{highlight-symbol-idle-delay}.
       (license license:gpl2+))))
 
 (define-public emacs-symbol-overlay
-  (let ((commit "e40a7c407f24158c45eaa5f54ed41f5e416a51dc")
-        (revision "1"))
-    (package
-      (name "emacs-symbol-overlay")
-      (version (git-version "4.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/wolray/symbol-overlay")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0ibz3392d3jw1l8006h9kf8s7bg6vl7jc92bmqc031a433009ic7"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/wolray/symbol-overlay")
-      (synopsis "Highlight symbols and perform various search operations on them")
-      (description
-       "This package provides functions for highlighting and navigating
+  (package
+    (name "emacs-symbol-overlay")
+    (version "4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wolray/symbol-overlay")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10n0871xzycifyqp73xnbqmrgy60imlb26yhm3p6vfj3d84mg1b2"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/wolray/symbol-overlay")
+    (synopsis "Highlight symbols and perform various search operations on them")
+    (description
+     "This package provides functions for highlighting and navigating
 between symbols.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-hl-todo
   (package
