@@ -631,7 +631,8 @@ by @code{binstar}, @code{binstar-build}, and @code{chalmers}.")
       (uri (pypi-uri "Babel" version))
       (sha256
        (base32
-        "0f0f2vvs1mpdpz2c0mg1mnc3sih8bizmc1h9m67kdsnqs3i2mb0s"))))
+        "0f0f2vvs1mpdpz2c0mg1mnc3sih8bizmc1h9m67kdsnqs3i2mb0s"))
+      (patches (search-patches "python-babel-fix-parse-future-test.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
