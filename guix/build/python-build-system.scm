@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -178,18 +179,31 @@ when running checks after installing the package."
                            (if old-path (string-append ":" old-path) "")))
     #t))
 
-(define* (install #:key outputs (configure-flags '()) use-setuptools?
+(define* (install #:key inputs outputs (configure-flags '()) use-setuptools?
                   #:allow-other-keys)
   "Install a given Python package."
   (let* ((out (python-output outputs))
-         (params (append (list (string-append "--prefix=" out))
+         (python (assoc-ref inputs "python"))
+         (major-minor (map string->number
+                           (take (string-split (python-version python) #\.) 2)))
+         (<3.7? (match major-minor
+                   ((major minor)
+                    (or (< major 3) (and (= major 3) (< minor 7))))))
+         (params (append (list (string-append "--prefix=" out)
+                               "--no-compile")
                          (if use-setuptools?
                              ;; distutils does not accept these flags
                              (list "--single-version-externally-managed"
-                                    "--root=/")
+                                   "--root=/")
                              '())
                          configure-flags)))
     (call-setuppy "install" params use-setuptools?)
+    ;; Rather than produce potentially non-reproducible .pyc files on Pythons
+    ;; older than 3.7, whose 'compileall' module lacks the
+    ;; '--invalidation-mode' option, do not generate any.
+    (unless <3.7?
+      (invoke "python" "-m" "compileall" "--invalidation-mode=unchecked-hash"
+              out))
     #t))
 
 (define* (wrap #:key inputs outputs #:allow-other-keys)
@@ -250,10 +264,8 @@ installed with setuptools."
 
 (define %standard-phases
   ;; The build phase only builds C extensions and copies the Python sources,
-  ;; while the install phase byte-compiles and copies them to the prefix
-  ;; directory.  The tests are run after the install phase because otherwise
-  ;; the cached .pyc generated during the tests execution seem to interfere
-  ;; with the byte compilation of the install phase.
+  ;; while the install phase copies then byte-compiles the sources to the
+  ;; prefix directory.
   (modify-phases gnu:%standard-phases
     (add-after 'unpack 'ensure-no-mtimes-pre-1980 ensure-no-mtimes-pre-1980)
     (add-after 'ensure-no-mtimes-pre-1980 'enable-bytecode-determinism
@@ -261,9 +273,8 @@ installed with setuptools."
     (delete 'bootstrap)
     (delete 'configure)                 ;not needed
     (replace 'build build)
-    (delete 'check)                     ;moved after the install phase
+    (replace 'check check)
     (replace 'install install)
-    (add-after 'install 'check check)
     (add-after 'install 'wrap wrap)
     (add-before 'strip 'rename-pth-file rename-pth-file)))
 
