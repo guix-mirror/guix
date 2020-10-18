@@ -87,6 +87,7 @@
 ;;; Copyright © 2020 Malte Frank Gerdes <malte.f.gerdes@gmail.com>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2020 Bonface Munyoki Kilyungi <bonfacemunyoki@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22493,3 +22494,33 @@ NestedText is both simple and natural.  Only a small number of concepts and rule
 be kept in mind when creating it.  It is easily created, modified, or viewed with
 a text editor and easily understood and used by both programmers and non-programmers.")
     (license license:expat))) ; MIT license
+
+(define-public python-parallel
+  (package
+    (name "python-parallel")
+    (version "1.6.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.parallelpython.com/downloads/pp/pp-"
+             version ".zip"))
+       (sha256
+        (base32
+         "1mzk4yabxj6r149fswhis18hd8dnag5sj8i4wb06450zq3pi8dh7"))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; No test suite.
+    (home-page "https://www.parallelpython.com")
+    (synopsis "Parallel and distributed programming for Python")
+    (description "Parallel Python module (PP) provides an easy and efficient
+way to create parallel-enabled applications for SMP computers and clusters.
+PP module features cross-platform portability and dynamic load balancing.
+Thus applications written with PP will parallelize efficiently even on
+heterogeneous and multi-platform clusters (including clusters running other
+applications with variable CPU loads).")
+    (license license:bsd-3)))
+
+(define-public python2-parallel
+  (package-with-python2 python-parallel))
