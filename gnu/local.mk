@@ -861,6 +861,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-7.0-libc-search-path.patch		\
   %D%/packages/patches/clang-9.0-libc-search-path.patch		\
   %D%/packages/patches/clang-10.0-libc-search-path.patch	\
+  %D%/packages/patches/clang-11.0-libc-search-path.patch	\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-9-libsanitizer-mode-field.patch	\

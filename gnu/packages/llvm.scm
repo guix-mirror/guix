@@ -450,17 +450,17 @@ output), and Binutils.")
               ("libc-debug" ,glibc "debug")
               ("libc-static" ,glibc "static")))))
 
-(define-public llvm-10
+(define-public llvm-11
   (package
     (name "llvm")
-    (version "10.0.0")
+    (version "11.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
       (sha256
        (base32
-        "1pwgm6cr0xr5a0hrbqs1zvsvvjvy0yq1y47c96804wcs795s90yz"))))
+        "0s94lwil98w7zb7cjrbnxli0z7gklb312pkw74xs1d6zk346hgwi"))))
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
@@ -511,6 +511,39 @@ front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:asl2.0)))  ;with LLVM exceptions, see LICENSE.txt
+
+(define-public clang-runtime-11
+  (clang-runtime-from-llvm
+   llvm-11
+   "0d5j5l8phwqjjscmk8rmqn0i2i0abl537gdbkagl8fjpzy1gyjip"))
+
+(define-public clang-11
+  (clang-from-llvm llvm-11 clang-runtime-11
+                   "02ajkij85966vd150iy246mv16dsaph1kfi0y8wnncp8w6nar5hg"
+                   #:patches '("clang-11.0-libc-search-path.patch")
+                   #:tools-extra
+                   (origin
+                     (method url-fetch)
+                     (uri (llvm-uri "clang-tools-extra"
+                                    (package-version llvm-11)))
+                     (sha256
+                      (base32
+                       "02bcwwn54661madhq4nxc069s7p7pj5gpqi8ww50w3anbpviilzy")))))
+
+(define-public clang-toolchain-11
+  (make-clang-toolchain clang-11))
+
+(define-public llvm-10
+  (package
+    (inherit llvm-11)
+    (version "10.0.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (llvm-uri "llvm" version))
+      (sha256
+       (base32
+        "1pwgm6cr0xr5a0hrbqs1zvsvvjvy0yq1y47c96804wcs795s90yz"))))))
 
 (define-public clang-runtime-10
   (clang-runtime-from-llvm
