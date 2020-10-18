@@ -833,16 +833,16 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public lld
   (package
     (name "lld")
-    (version (package-version llvm-10))
+    (version "11.0.0")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "lld" version))
               (sha256
                (base32
-                "026pwcbczcg0j5c9h7hxxrn3ki81ia9m9sfn0sy0bvzffv2xg85r"))))
+                "077xyh7sij6mhp4dc4kdcmp9whrpz332fa12rwxnzp3wgd5bxrzg"))))
     (build-system cmake-build-system)
     (inputs
-     `(("llvm" ,llvm-10)))
+     `(("llvm" ,llvm-11)))
     (arguments
      `(#:build-type "Release"
        ;; TODO: Tests require the lit tool, which isn't installed by the LLVM
