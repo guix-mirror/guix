@@ -5383,6 +5383,35 @@ The package supersedes both the @code{libertineotf} and the
                    license:silofl1.1
                    license:lppl))))
 
+(define-public texlive-dejavu
+  (package
+    (inherit (simple-texlive-package
+              "texlive-dejavu"
+              (list "/doc/fonts/dejavu/"
+
+                    "/fonts/enc/dvips/dejavu/"
+                    "/fonts/map/dvips/dejavu/"
+
+                    "/fonts/afm/public/dejavu/"
+                    "/fonts/tfm/public/dejavu/"
+                    "/fonts/truetype/public/dejavu/"
+                    "/fonts/type1/public/dejavu/"
+                    "/fonts/vf/public/dejavu/"
+
+                    "/tex/latex/dejavu/")
+              (base32
+               "0y4qf5jl0xncah9nkcaalmy69wwq02n3j895zp71n2p0nfi24aka")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/libertine")
+    (synopsis "LaTeX support for the DejaVu fonts")
+    (description
+     "The package contains LaTeX support for the DejaVu fonts, which are
+derived from the Vera fonts but contain more characters and styles.  The fonts
+are included in the original TrueType format, and in converted Type 1 format.
+The (currently) supported encodings are: OT1, T1, IL2, TS1, T2*, X2, QX, and
+LGR.  The package doesn't (currently) support mathematics.")
+    (license license:lppl)))
+
 (define-public texlive-latex-titlesec
   (package
     (name "texlive-latex-titlesec")
