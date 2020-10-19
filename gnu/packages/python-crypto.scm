@@ -742,7 +742,7 @@ ECB and OFB).")
 (define-public python-asn1crypto
   (package
     (name "python-asn1crypto")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
       (origin
        (method git-fetch)
@@ -752,7 +752,7 @@ ECB and OFB).")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0c7rj3hs9fplrj4bv63ppvnnr8fay727w3a9zx3jfkz63wklvm1w"))))
+          "19abibn6jw20mzi1ln4n9jjvpdka8ygm4m439hplyrdfqbvgm01r"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
