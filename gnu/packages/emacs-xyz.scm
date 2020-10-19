@@ -9392,8 +9392,14 @@ news items, openrc and runscripts.")
            (lambda _
              (substitute* "evil-test-helpers.el"
                (("\\(undo-tree-mode 1\\)") ""))
-             #t)))))
+             #t))
+         (add-before 'install 'make-info
+           (lambda _
+             (with-directory-excursion "doc/build/texinfo"
+                 (invoke "makeinfo" "--no-split"
+                         "-o" "evil.info" "evil.texi")))))))
     (build-system emacs-build-system)
+    (native-inputs `(("texinfo" ,texinfo)))
     (home-page "https://github.com/emacs-evil/evil")
     (synopsis "Extensible Vi layer for Emacs")
     (description
