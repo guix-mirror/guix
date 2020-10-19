@@ -1635,11 +1635,19 @@ audio/video codec library.")
                "1j7mdk9szrljgv4sdx69bm1pnbb3cldbdxbkr42jbdi9zn11gl7g"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
+       ((#:modules modules %gnu-build-system-modules)
+        `((srfi srfi-1)
+          ,@modules))
        ((#:configure-flags flags)
-        `(delete "--enable-libdav1d" (delete "--enable-libaom" (delete "--enable-librav1e"
-                  ,flags))))))
-    (inputs (alist-delete "dav1d" (alist-delete "libaom" (alist-delete "rav1e"
-                           (package-inputs ffmpeg)))))))
+        `(fold delete
+               ,flags
+               '("--enable-libdav1d"
+                 "--enable-libaom"
+                 "--enable-librav1e"
+                 "--enable-libsrt")))))
+    (inputs (fold alist-delete
+                  (package-inputs ffmpeg)
+                  '("dav1d" "libaom" "rav1e" "srt")))))
 
 (define-public ffmpeg-2.8
   (package
