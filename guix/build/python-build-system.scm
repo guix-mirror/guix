@@ -265,7 +265,8 @@ installed with setuptools."
 (define %standard-phases
   ;; The build phase only builds C extensions and copies the Python sources,
   ;; while the install phase copies then byte-compiles the sources to the
-  ;; prefix directory.
+  ;; prefix directory.  The check phase is moved after the installation phase
+  ;; to ease testing the built package.
   (modify-phases gnu:%standard-phases
     (add-after 'unpack 'ensure-no-mtimes-pre-1980 ensure-no-mtimes-pre-1980)
     (add-after 'ensure-no-mtimes-pre-1980 'enable-bytecode-determinism
@@ -273,8 +274,9 @@ installed with setuptools."
     (delete 'bootstrap)
     (delete 'configure)                 ;not needed
     (replace 'build build)
-    (replace 'check check)
+    (delete 'check)                     ;moved after the install phase
     (replace 'install install)
+    (add-after 'install 'check check)
     (add-after 'install 'wrap wrap)
     (add-before 'strip 'rename-pth-file rename-pth-file)))
 
