@@ -9396,7 +9396,7 @@ cross-compiling.
 @code{let-system} is useful in the occasional case where the object
 spliced into the gexp depends on the target system, as in this example:
 
-@example
+@lisp
 #~(system*
    #+(let-system system
        (cond ((string-prefix? "armhf-" system)
@@ -9406,7 +9406,7 @@ spliced into the gexp depends on the target system, as in this example:
              (else
               (error "dunno!"))))
    "-net" "user" #$image)
-@end example
+@end lisp
 @end deffn
 
 @deffn {Scheme Syntax} with-parameters ((@var{parameter} @var{value}) @dots{}) @var{exp}

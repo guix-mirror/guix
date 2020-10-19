@@ -605,11 +605,11 @@ to make recommendations or instructions visible to them by inserting
 special comments like this (@pxref{xgettext Invocation,,, gettext, GNU
 Gettext}):
 
-@example
+@lisp
 ;; TRANSLATORS: "X11 resize-and-rotate" should not be translated.
 (description "ARandR is designed to provide a simple visual front end
 for the X11 resize-and-rotate (RandR) extension. @dots{}")
-@end example
+@end lisp
 
 @node Snippets versus Phases
 @subsection Snippets versus Phases
